@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Data.Domain</RootNamespace>
+    <AssemblyName>Microsoft.Data.Domain</AssemblyName>
+    <!-- TODO: compile as a portable assembly -->
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\Microsoft.Data.Domain.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\Microsoft.Data.Domain.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.OData.Edm, Version=6.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.OData.Edm.6.6.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\Ensure.cs">
+      <Link>.Shared\Ensure.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ExpressionHelperMethods.cs">
+      <Link>.Shared\ExpressionHelperMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ExpressionHelpers.cs">
+      <Link>.Shared\ExpressionHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\TypeExtensions.cs">
+      <Link>.Shared\TypeExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Domain.cs" />
+    <Compile Include="Domain.OfT.cs" />
+    <Compile Include="DomainBase.cs" />
+    <Compile Include="DomainConfiguration.cs" />
+    <Compile Include="DomainContext.cs" />
+    <Compile Include="DomainData.cs" />
+    <Compile Include="DomainParticipantAttribute.cs" />
+    <Compile Include="IDomain.cs" />
+    <Compile Include="IDomainProfiler.cs" />
+    <Compile Include="IDomainPolicy.cs" />
+    <Compile Include="IExpandableDomain.cs" />
+    <Compile Include="InvocationContext.cs" />
+    <Compile Include="Model\DefaultModelHandler.cs" />
+    <Compile Include="Model\DomainModel.cs" />
+    <Compile Include="Model\IModelExtender.cs" />
+    <Compile Include="Model\IModelHandler.cs" />
+    <Compile Include="Model\IModelMapper.cs" />
+    <Compile Include="Model\IModelProducer.cs" />
+    <Compile Include="Model\IModelVisibilityFilter.cs" />
+    <Compile Include="Model\ModelContext.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyBag.cs" />
+    <Compile Include="QueryableSource.cs" />
+    <Compile Include="Query\DefaultQueryHandler.cs" />
+    <Compile Include="Query\IQueryExecutor.cs" />
+    <Compile Include="Query\IQueryExpressionExpander.cs" />
+    <Compile Include="Query\IQueryExpressionFilter.cs" />
+    <Compile Include="Query\IQueryExpressionInspector.cs" />
+    <Compile Include="Query\IQueryExpressionNormalizer.cs" />
+    <Compile Include="Query\IQueryExpressionSourcer.cs" />
+    <Compile Include="Query\IQueryFilter.cs" />
+    <Compile Include="Query\IQueryHandler.cs" />
+    <Compile Include="Query\QueryContext.cs" />
+    <Compile Include="Query\QueryExpressionContext.cs" />
+    <Compile Include="Query\QueryModelReference.cs" />
+    <Compile Include="Query\QueryRequest.cs" />
+    <Compile Include="Query\QueryResult.cs" />
+    <Compile Include="Submit\ChangeSet.cs" />
+    <Compile Include="Submit\ChangeSetEntry.cs" />
+    <Compile Include="Submit\DefaultSubmitHandler.cs" />
+    <Compile Include="Submit\IChangeSetEntryAuthorizer.cs" />
+    <Compile Include="Submit\IChangeSetEntryFilter.cs" />
+    <Compile Include="Submit\IChangeSetEntryValidator.cs" />
+    <Compile Include="Submit\IChangeSetPreparer.cs" />
+    <Compile Include="Submit\ISubmitAuthorizer.cs" />
+    <Compile Include="Submit\ISubmitExecutor.cs" />
+    <Compile Include="Submit\ISubmitFilter.cs" />
+    <Compile Include="Submit\ISubmitHandler.cs" />
+    <Compile Include="Submit\SubmitContext.cs" />
+    <Compile Include="Submit\SubmitResult.cs" />
+    <Compile Include="Submit\ValidationException.cs" />
+    <Compile Include="Submit\ValidationResult.cs" />
+    <Compile Include="Submit\ValidationResults.cs" />
+    <Compile Include="Submit\ValidationSeverity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Microsoft.Data.Domain.nuspec" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

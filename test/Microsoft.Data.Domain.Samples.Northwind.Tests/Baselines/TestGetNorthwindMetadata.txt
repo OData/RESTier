@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="Microsoft.Data.Domain.Samples.Northwind.Models" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Alphabetical_list_of_product">
+        <Key>
+          <PropertyRef Name="ProductID" />
+          <PropertyRef Name="ProductName" />
+          <PropertyRef Name="Discontinued" />
+          <PropertyRef Name="CategoryName" />
+        </Key>
+        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="Discontinued" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
+        <Property Name="SupplierID" Type="Edm.Int32" />
+        <Property Name="CategoryID" Type="Edm.Int32" />
+        <Property Name="QuantityPerUnit" Type="Edm.String" MaxLength="20" />
+        <Property Name="UnitPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
+        <Property Name="UnitsInStock" Type="Edm.Int16" />
+        <Property Name="UnitsOnOrder" Type="Edm.Int16" />
+        <Property Name="ReorderLevel" Type="Edm.Int16" />
+      </EntityType>
+      <EntityType Name="Category">
+        <Key>
+          <PropertyRef Name="CategoryID" />
+        </Key>
+        <Property Name="CategoryID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
+        <Property Name="Description" Type="Edm.String" MaxLength="max" />
+        <Property Name="Picture" Type="Edm.Binary" MaxLength="max" />
+        <NavigationProperty Name="Products" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Product)" Partner="Category" />
+      </EntityType>
+      <EntityType Name="Product">
+        <Key>
+          <PropertyRef Name="ProductID" />
+        </Key>
+        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="SupplierID" Type="Edm.Int32" />
+        <Property Name="CategoryID" Type="Edm.Int32" />
+        <Property Name="QuantityPerUnit" Type="Edm.String" MaxLength="20" />
+        <Property Name="UnitPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
+        <Property Name="UnitsInStock" Type="Edm.Int16" />
+        <Property Name="UnitsOnOrder" Type="Edm.Int16" />
+        <Property Name="ReorderLevel" Type="Edm.Int16" />
+        <Property Name="Discontinued" Type="Edm.Boolean" Nullable="false" />
+        <NavigationProperty Name="Category" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Category" Partner="Products">
+          <ReferentialConstraint Property="CategoryID" ReferencedProperty="CategoryID" />
+        </NavigationProperty>
+        <NavigationProperty Name="Order_Details" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order_Detail)" Partner="Product" />
+        <NavigationProperty Name="Supplier" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Supplier" Partner="Products">
+          <ReferentialConstraint Property="SupplierID" ReferencedProperty="SupplierID" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Order_Detail">
+        <Key>
+          <PropertyRef Name="OrderID" />
+          <PropertyRef Name="ProductID" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="UnitPrice" Type="Edm.Decimal" Nullable="false" Precision="19" Scale="4" />
+        <Property Name="Quantity" Type="Edm.Int16" Nullable="false" />
+        <Property Name="Discount" Type="Edm.Single" Nullable="false" />
+        <NavigationProperty Name="Order" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Order" Nullable="false" Partner="Order_Details">
+          <ReferentialConstraint Property="OrderID" ReferencedProperty="OrderID" />
+        </NavigationProperty>
+        <NavigationProperty Name="Product" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Product" Nullable="false" Partner="Order_Details">
+          <ReferentialConstraint Property="ProductID" ReferencedProperty="ProductID" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Order">
+        <Key>
+          <PropertyRef Name="OrderID" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CustomerID" Type="Edm.String" MaxLength="5" />
+        <Property Name="EmployeeID" Type="Edm.Int32" />
+        <Property Name="ShipVia" Type="Edm.Int32" />
+        <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
+        <Property Name="ShipName" Type="Edm.String" MaxLength="40" />
+        <Property Name="ShipAddress" Type="Edm.String" MaxLength="60" />
+        <Property Name="ShipCity" Type="Edm.String" MaxLength="15" />
+        <Property Name="ShipRegion" Type="Edm.String" MaxLength="15" />
+        <Property Name="ShipPostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="ShipCountry" Type="Edm.String" MaxLength="15" />
+        <NavigationProperty Name="Customer" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Customer" Partner="Orders">
+          <ReferentialConstraint Property="CustomerID" ReferencedProperty="CustomerID" />
+        </NavigationProperty>
+        <NavigationProperty Name="Employee" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Employee" Partner="Orders">
+          <ReferentialConstraint Property="EmployeeID" ReferencedProperty="EmployeeID" />
+        </NavigationProperty>
+        <NavigationProperty Name="Order_Details" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order_Detail)" Partner="Order" />
+        <NavigationProperty Name="Shipper" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Shipper" Partner="Orders">
+          <ReferentialConstraint Property="ShipVia" ReferencedProperty="ShipperID" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="Customer">
+        <Key>
+          <PropertyRef Name="CustomerID" />
+        </Key>
+        <Property Name="CustomerID" Type="Edm.String" Nullable="false" MaxLength="5" />
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="ContactName" Type="Edm.String" MaxLength="30" />
+        <Property Name="ContactTitle" Type="Edm.String" MaxLength="30" />
+        <Property Name="Address" Type="Edm.String" MaxLength="60" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="Region" Type="Edm.String" MaxLength="15" />
+        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="Phone" Type="Edm.String" MaxLength="24" />
+        <Property Name="Fax" Type="Edm.String" MaxLength="24" />
+        <NavigationProperty Name="CustomerDemographics" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.CustomerDemographic)" Partner="Customers" />
+        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order)" Partner="Customer" />
+      </EntityType>
+      <EntityType Name="CustomerDemographic">
+        <Key>
+          <PropertyRef Name="CustomerTypeID" />
+        </Key>
+        <Property Name="CustomerTypeID" Type="Edm.String" Nullable="false" MaxLength="10" />
+        <Property Name="CustomerDesc" Type="Edm.String" MaxLength="max" />
+        <NavigationProperty Name="Customers" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Customer)" Partner="CustomerDemographics" />
+      </EntityType>
+      <EntityType Name="Employee">
+        <Key>
+          <PropertyRef Name="EmployeeID" />
+        </Key>
+        <Property Name="EmployeeID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="LastName" Type="Edm.String" Nullable="false" MaxLength="20" />
+        <Property Name="FirstName" Type="Edm.String" Nullable="false" MaxLength="10" />
+        <Property Name="Title" Type="Edm.String" MaxLength="30" />
+        <Property Name="TitleOfCourtesy" Type="Edm.String" MaxLength="25" />
+        <Property Name="Address" Type="Edm.String" MaxLength="60" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="Region" Type="Edm.String" MaxLength="15" />
+        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="HomePhone" Type="Edm.String" MaxLength="24" />
+        <Property Name="Extension" Type="Edm.String" MaxLength="4" />
+        <Property Name="Photo" Type="Edm.Binary" MaxLength="max" />
+        <Property Name="Notes" Type="Edm.String" MaxLength="max" />
+        <Property Name="ReportsTo" Type="Edm.Int32" />
+        <Property Name="PhotoPath" Type="Edm.String" MaxLength="255" />
+        <NavigationProperty Name="Employees1" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Employee)" Partner="Employee1" />
+        <NavigationProperty Name="Employee1" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Employee" Partner="Employees1">
+          <ReferentialConstraint Property="ReportsTo" ReferencedProperty="EmployeeID" />
+        </NavigationProperty>
+        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order)" Partner="Employee" />
+        <NavigationProperty Name="Territories" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Territory)" Partner="Employees" />
+      </EntityType>
+      <EntityType Name="Territory">
+        <Key>
+          <PropertyRef Name="TerritoryID" />
+        </Key>
+        <Property Name="TerritoryID" Type="Edm.String" Nullable="false" MaxLength="20" />
+        <Property Name="TerritoryDescription" Type="Edm.String" Nullable="false" MaxLength="50" />
+        <Property Name="RegionID" Type="Edm.Int32" Nullable="false" />
+        <NavigationProperty Name="Region" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Region" Nullable="false" Partner="Territories">
+          <ReferentialConstraint Property="RegionID" ReferencedProperty="RegionID" />
+        </NavigationProperty>
+        <NavigationProperty Name="Employees" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Employee)" Partner="Territories" />
+      </EntityType>
+      <EntityType Name="Region">
+        <Key>
+          <PropertyRef Name="RegionID" />
+        </Key>
+        <Property Name="RegionID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="RegionDescription" Type="Edm.String" Nullable="false" MaxLength="50" />
+        <NavigationProperty Name="Territories" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Territory)" Partner="Region" />
+      </EntityType>
+      <EntityType Name="Shipper">
+        <Key>
+          <PropertyRef Name="ShipperID" />
+        </Key>
+        <Property Name="ShipperID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="Phone" Type="Edm.String" MaxLength="24" />
+        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order)" Partner="Shipper" />
+      </EntityType>
+      <EntityType Name="Supplier">
+        <Key>
+          <PropertyRef Name="SupplierID" />
+        </Key>
+        <Property Name="SupplierID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="ContactName" Type="Edm.String" MaxLength="30" />
+        <Property Name="ContactTitle" Type="Edm.String" MaxLength="30" />
+        <Property Name="Address" Type="Edm.String" MaxLength="60" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="Region" Type="Edm.String" MaxLength="15" />
+        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="Phone" Type="Edm.String" MaxLength="24" />
+        <Property Name="Fax" Type="Edm.String" MaxLength="24" />
+        <Property Name="HomePage" Type="Edm.String" MaxLength="max" />
+        <NavigationProperty Name="Products" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Product)" Partner="Supplier" />
+      </EntityType>
+      <EntityType Name="Category_Sales_for_1997">
+        <Key>
+          <PropertyRef Name="CategoryName" />
+        </Key>
+        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
+        <Property Name="CategorySales" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Contact">
+        <Key>
+          <PropertyRef Name="ContactID" />
+        </Key>
+        <Property Name="ContactID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ContactType" Type="Edm.String" MaxLength="50" />
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="ContactName" Type="Edm.String" MaxLength="30" />
+        <Property Name="ContactTitle" Type="Edm.String" MaxLength="30" />
+        <Property Name="Address" Type="Edm.String" MaxLength="60" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="Region" Type="Edm.String" MaxLength="15" />
+        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="Phone" Type="Edm.String" MaxLength="24" />
+        <Property Name="Extension" Type="Edm.String" MaxLength="4" />
+        <Property Name="Fax" Type="Edm.String" MaxLength="24" />
+        <Property Name="HomePage" Type="Edm.String" MaxLength="max" />
+        <Property Name="PhotoPath" Type="Edm.String" MaxLength="255" />
+        <Property Name="Photo" Type="Edm.Binary" MaxLength="max" />
+      </EntityType>
+      <EntityType Name="Current_Product_List">
+        <Key>
+          <PropertyRef Name="ProductID" />
+          <PropertyRef Name="ProductName" />
+        </Key>
+        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+      </EntityType>
+      <EntityType Name="Customer_and_Suppliers_by_City">
+        <Key>
+          <PropertyRef Name="CompanyName" />
+          <PropertyRef Name="Relationship" />
+        </Key>
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="Relationship" Type="Edm.String" Nullable="false" MaxLength="9" Unicode="false" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="ContactName" Type="Edm.String" MaxLength="30" />
+      </EntityType>
+      <EntityType Name="Invoice">
+        <Key>
+          <PropertyRef Name="CustomerName" />
+          <PropertyRef Name="Salesperson" />
+          <PropertyRef Name="OrderID" />
+          <PropertyRef Name="ShipperName" />
+          <PropertyRef Name="ProductID" />
+          <PropertyRef Name="ProductName" />
+          <PropertyRef Name="UnitPrice" />
+          <PropertyRef Name="Quantity" />
+          <PropertyRef Name="Discount" />
+        </Key>
+        <Property Name="CustomerName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="Salesperson" Type="Edm.String" Nullable="false" MaxLength="31" />
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ShipperName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="UnitPrice" Type="Edm.Decimal" Nullable="false" Precision="19" Scale="4" />
+        <Property Name="Quantity" Type="Edm.Int16" Nullable="false" />
+        <Property Name="Discount" Type="Edm.Single" Nullable="false" />
+        <Property Name="ShipName" Type="Edm.String" MaxLength="40" />
+        <Property Name="ShipAddress" Type="Edm.String" MaxLength="60" />
+        <Property Name="ShipCity" Type="Edm.String" MaxLength="15" />
+        <Property Name="ShipRegion" Type="Edm.String" MaxLength="15" />
+        <Property Name="ShipPostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="ShipCountry" Type="Edm.String" MaxLength="15" />
+        <Property Name="CustomerID" Type="Edm.String" MaxLength="5" />
+        <Property Name="Address" Type="Edm.String" MaxLength="60" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="Region" Type="Edm.String" MaxLength="15" />
+        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="ExtendedPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
+        <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Order_Details_Extended">
+        <Key>
+          <PropertyRef Name="OrderID" />
+          <PropertyRef Name="ProductID" />
+          <PropertyRef Name="ProductName" />
+          <PropertyRef Name="UnitPrice" />
+          <PropertyRef Name="Quantity" />
+          <PropertyRef Name="Discount" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="UnitPrice" Type="Edm.Decimal" Nullable="false" Precision="19" Scale="4" />
+        <Property Name="Quantity" Type="Edm.Int16" Nullable="false" />
+        <Property Name="Discount" Type="Edm.Single" Nullable="false" />
+        <Property Name="ExtendedPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Order_Subtotal">
+        <Key>
+          <PropertyRef Name="OrderID" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Subtotal" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Orders_Qry">
+        <Key>
+          <PropertyRef Name="OrderID" />
+          <PropertyRef Name="CompanyName" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="CustomerID" Type="Edm.String" MaxLength="5" />
+        <Property Name="EmployeeID" Type="Edm.Int32" />
+        <Property Name="ShipVia" Type="Edm.Int32" />
+        <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
+        <Property Name="ShipName" Type="Edm.String" MaxLength="40" />
+        <Property Name="ShipAddress" Type="Edm.String" MaxLength="60" />
+        <Property Name="ShipCity" Type="Edm.String" MaxLength="15" />
+        <Property Name="ShipRegion" Type="Edm.String" MaxLength="15" />
+        <Property Name="ShipPostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="ShipCountry" Type="Edm.String" MaxLength="15" />
+        <Property Name="Address" Type="Edm.String" MaxLength="60" />
+        <Property Name="City" Type="Edm.String" MaxLength="15" />
+        <Property Name="Region" Type="Edm.String" MaxLength="15" />
+        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
+        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+      </EntityType>
+      <EntityType Name="Product_Sales_for_1997">
+        <Key>
+          <PropertyRef Name="CategoryName" />
+          <PropertyRef Name="ProductName" />
+        </Key>
+        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="ProductSales" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Products_Above_Average_Price">
+        <Key>
+          <PropertyRef Name="ProductName" />
+        </Key>
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="UnitPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Products_by_Category">
+        <Key>
+          <PropertyRef Name="CategoryName" />
+          <PropertyRef Name="ProductName" />
+          <PropertyRef Name="Discontinued" />
+        </Key>
+        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="Discontinued" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="QuantityPerUnit" Type="Edm.String" MaxLength="20" />
+        <Property Name="UnitsInStock" Type="Edm.Int16" />
+      </EntityType>
+      <EntityType Name="Sales_by_Category">
+        <Key>
+          <PropertyRef Name="CategoryID" />
+          <PropertyRef Name="CategoryName" />
+          <PropertyRef Name="ProductName" />
+        </Key>
+        <Property Name="CategoryID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
+        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="ProductSales" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Sales_Totals_by_Amount">
+        <Key>
+          <PropertyRef Name="OrderID" />
+          <PropertyRef Name="CompanyName" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
+        <Property Name="SaleAmount" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Summary_of_Sales_by_Quarter">
+        <Key>
+          <PropertyRef Name="OrderID" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Subtotal" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="Summary_of_Sales_by_Year">
+        <Key>
+          <PropertyRef Name="OrderID" />
+        </Key>
+        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Subtotal" Type="Edm.Decimal" Precision="19" Scale="4" />
+      </EntityType>
+      <EntityType Name="sysdiagram">
+        <Key>
+          <PropertyRef Name="diagram_id" />
+        </Key>
+        <Property Name="diagram_id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="name" Type="Edm.String" Nullable="false" MaxLength="128" />
+        <Property Name="principal_id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="version" Type="Edm.Int32" />
+        <Property Name="definition" Type="Edm.Binary" MaxLength="max" />
+      </EntityType>
+      <EntityContainer Name="NorthwindContext">
+        <EntitySet Name="Alphabetical_list_of_products" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Alphabetical_list_of_product" />
+        <EntitySet Name="Categories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Category">
+          <NavigationPropertyBinding Path="Products" Target="Products" />
+        </EntitySet>
+        <EntitySet Name="Products" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product">
+          <NavigationPropertyBinding Path="Category" Target="Categories" />
+          <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
+          <NavigationPropertyBinding Path="Supplier" Target="Suppliers" />
+        </EntitySet>
+        <EntitySet Name="Order_Details" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order_Detail">
+          <NavigationPropertyBinding Path="Order" Target="Orders" />
+          <NavigationPropertyBinding Path="Product" Target="Products" />
+        </EntitySet>
+        <EntitySet Name="Orders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order">
+          <NavigationPropertyBinding Path="Customer" Target="Customers" />
+          <NavigationPropertyBinding Path="Employee" Target="Employees" />
+          <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
+          <NavigationPropertyBinding Path="Shipper" Target="Shippers" />
+        </EntitySet>
+        <EntitySet Name="Customers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Customer">
+          <NavigationPropertyBinding Path="CustomerDemographics" Target="CustomerDemographics" />
+          <NavigationPropertyBinding Path="Orders" Target="Orders" />
+        </EntitySet>
+        <EntitySet Name="CustomerDemographics" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.CustomerDemographic">
+          <NavigationPropertyBinding Path="Customers" Target="Customers" />
+        </EntitySet>
+        <EntitySet Name="Employees" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Employee">
+          <NavigationPropertyBinding Path="Employees1" Target="Employees" />
+          <NavigationPropertyBinding Path="Employee1" Target="Employees" />
+          <NavigationPropertyBinding Path="Orders" Target="Orders" />
+          <NavigationPropertyBinding Path="Territories" Target="Territories" />
+        </EntitySet>
+        <EntitySet Name="Territories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Territory">
+          <NavigationPropertyBinding Path="Region" Target="Regions" />
+          <NavigationPropertyBinding Path="Employees" Target="Employees" />
+        </EntitySet>
+        <EntitySet Name="Regions" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Region">
+          <NavigationPropertyBinding Path="Territories" Target="Territories" />
+        </EntitySet>
+        <EntitySet Name="Shippers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Shipper">
+          <NavigationPropertyBinding Path="Orders" Target="Orders" />
+        </EntitySet>
+        <EntitySet Name="Suppliers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Supplier">
+          <NavigationPropertyBinding Path="Products" Target="Products" />
+        </EntitySet>
+        <EntitySet Name="Category_Sales_for_1997" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Category_Sales_for_1997" />
+        <EntitySet Name="Contacts" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Contact" />
+        <EntitySet Name="Current_Product_Lists" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Current_Product_List" />
+        <EntitySet Name="Customer_and_Suppliers_by_Cities" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Customer_and_Suppliers_by_City" />
+        <EntitySet Name="Invoices" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Invoice" />
+        <EntitySet Name="Order_Details_Extendeds" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order_Details_Extended" />
+        <EntitySet Name="Order_Subtotals" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order_Subtotal" />
+        <EntitySet Name="Orders_Qries" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Orders_Qry" />
+        <EntitySet Name="Product_Sales_for_1997" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product_Sales_for_1997" />
+        <EntitySet Name="Products_Above_Average_Prices" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Products_Above_Average_Price" />
+        <EntitySet Name="Products_by_Categories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Products_by_Category" />
+        <EntitySet Name="Sales_by_Categories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Sales_by_Category" />
+        <EntitySet Name="Sales_Totals_by_Amounts" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Sales_Totals_by_Amount" />
+        <EntitySet Name="Summary_of_Sales_by_Quarters" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Summary_of_Sales_by_Quarter" />
+        <EntitySet Name="Summary_of_Sales_by_Years" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Summary_of_Sales_by_Year" />
+        <EntitySet Name="sysdiagrams" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.sysdiagram" />
+        <EntitySet Name="CurrentOrders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order" />
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
