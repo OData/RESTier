@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using Microsoft.Data.Domain.EntityFramework;
@@ -13,10 +14,13 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
     [Grant(DomainPermissionType.All, On = "Customers")]
     [Grant(DomainPermissionType.All, On = "Employees")]
     [Grant(DomainPermissionType.All, On = "CurrentOrders")]
-    [Grant(DomainPermissionType.All, On = "Orders", To = "Manager")]
+    [Grant(DomainPermissionType.All, On = "Orders")] //, To = "Manager")]
+    [Grant(DomainPermissionType.All, On = "Products")]
     public class NorthwindDomain : DbDomain<NorthwindContext>
     {
-        [Assert("Manager")]
+        public NorthwindContext Context { get { return DbContext; } }
+
+        // [Assert("Manager")]
         protected IQueryable<Order> CurrentOrders
         {
             get

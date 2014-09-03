@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using System.Web.Http.Results;
 using System.Web.OData.Domain.Batch;
 using System.Web.OData.Domain.Filters;
@@ -28,11 +27,9 @@ using Microsoft.OData.Edm.Library;
 
 namespace System.Web.OData.Domain
 {
-    [ODataRouting]
     [ODataDomainFormatting]
-    [ApiExplorerSettings(IgnoreApi = true)]
     [ODataDomainExceptionFilter]
-    public abstract class ODataDomainController : ApiController
+    public abstract class ODataDomainController : ODataController
     {
         private IDomain _domain;
 

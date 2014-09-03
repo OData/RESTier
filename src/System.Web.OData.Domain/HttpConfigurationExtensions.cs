@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Domain.Batch;
@@ -8,7 +7,6 @@ using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Microsoft.Data.Domain;
-using Microsoft.OData.Edm;
 
 namespace System.Web.OData.Domain
 {
@@ -21,12 +19,12 @@ namespace System.Web.OData.Domain
             ODataDomainBatchHandler batchHandler = null)
             where TController : ODataDomainController, new()
         {
-            IList<IODataRoutingConvention> conventions = ODataRoutingConventions.CreateDefault();
-            conventions.Insert(0, new DefaultODataRoutingConvention(typeof(TController).Name));
-
             using (TController controller = new TController())
             {
-                IEdmModel model = await controller.Domain.GetModelAsync();
+                var model = await controller.Domain.GetModelAsync();
+                var conventions = ODataRoutingConventions.CreateDefault();
+                conventions.Insert(0, new DefaultODataRoutingConvention(typeof(TController).Name));
+                conventions.Insert(0, new AttributeRoutingConvention(model, config));
 
                 if (batchHandler != null && batchHandler.ContextFactory == null)
                 {
@@ -40,7 +38,7 @@ namespace System.Web.OData.Domain
                     new DefaultODataPathHandler(),
                     conventions,
                     batchHandler);
-            };
+            }
         }
     }
 }
