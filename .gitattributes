@@ -6,6 +6,8 @@
 *.jpg binary
 *.png binary
 *.snk binary
+*.mdf binary
+*.ldf binary
 
 *.ascx text
 *.cd text
