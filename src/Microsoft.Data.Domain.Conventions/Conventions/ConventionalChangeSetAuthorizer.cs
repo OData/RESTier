@@ -6,6 +6,9 @@ using Microsoft.Data.Domain.Submit;
 
 namespace Microsoft.Data.Domain.Conventions
 {
+    /// <summary>
+    /// A conventional change set entry authorizer.
+    /// </summary>
     public class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
     {
         private Type _targetType;
@@ -16,6 +19,7 @@ namespace Microsoft.Data.Domain.Conventions
             this._targetType = targetType;
         }
 
+        /// <inheritdoc/>
         public static void ApplyTo(
             DomainConfiguration configuration,
             Type targetType)
@@ -26,6 +30,7 @@ namespace Microsoft.Data.Domain.Conventions
                 new ConventionalChangeSetAuthorizer(targetType));
         }
 
+        /// <inheritdoc/>
         public Task<bool> AuthorizeAsync(
             SubmitContext context, ChangeSetEntry entry,
             CancellationToken cancellationToken)

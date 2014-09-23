@@ -9,6 +9,7 @@ namespace Microsoft.Data.Domain
     [AttributeUsage(AttributeTargets.Class)]
     public class EnableConventionsAttribute : DomainParticipantAttribute
     {
+        /// <inheritdoc/>
         public override void Configure(
             DomainConfiguration configuration,
             Type type)
@@ -16,6 +17,7 @@ namespace Microsoft.Data.Domain
             configuration.EnableConventions(type);
         }
 
+        /// <inheritdoc/>
         public override void Initialize(
             DomainContext context,
             Type type, object instance)

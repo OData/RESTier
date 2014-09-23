@@ -7,6 +7,9 @@ using Microsoft.OData.Edm;
 
 namespace Microsoft.Data.Domain.Conventions
 {
+    /// <summary>
+    /// A conventional query expression filter on entity set.
+    /// </summary>
     public class ConventionalEntitySetFilter : IQueryExpressionFilter
     {
         private Type _targetType;
@@ -16,6 +19,7 @@ namespace Microsoft.Data.Domain.Conventions
             this._targetType = targetType;
         }
 
+        /// <inheritdoc/>
         public static void ApplyTo(
             DomainConfiguration configuration,
             Type targetType)
@@ -26,6 +30,7 @@ namespace Microsoft.Data.Domain.Conventions
                 new ConventionalEntitySetFilter(targetType));
         }
 
+        /// <inheritdoc/>
         public Expression Filter(QueryExpressionContext context)
         {
             if (context.ModelReference == null)

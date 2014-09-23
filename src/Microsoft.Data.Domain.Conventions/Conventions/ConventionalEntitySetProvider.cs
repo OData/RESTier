@@ -13,6 +13,10 @@ namespace Microsoft.Data.Domain.Conventions
     using Model;
     using Query;
 
+    /// <summary>
+    /// A conventional entity set provider that extends a model, maps between
+    /// the model space and the object space, and expands a query expression.
+    /// </summary>
     public class ConventionalEntitySetProvider :
         IModelExtender, IModelMapper, IQueryExpressionExpander
     {
@@ -23,6 +27,7 @@ namespace Microsoft.Data.Domain.Conventions
             this._targetType = targetType;
         }
 
+        /// <inheritdoc/>
         public static void ApplyTo(
             DomainConfiguration configuration,
             Type targetType)
@@ -35,6 +40,7 @@ namespace Microsoft.Data.Domain.Conventions
             configuration.AddHookPoint(typeof(IQueryExpressionExpander), provider);
         }
 
+        /// <inheritdoc/>
         public Task ExtendModelAsync(
             ModelContext context,
             CancellationToken cancellationToken)
@@ -58,6 +64,7 @@ namespace Microsoft.Data.Domain.Conventions
             return Task.FromResult<object>(null);
         }
 
+        /// <inheritdoc/>
         public bool TryGetRelevantType(
             DomainContext context,
             string name, out Type relevantType)
@@ -73,6 +80,7 @@ namespace Microsoft.Data.Domain.Conventions
             return relevantType != null;
         }
 
+        /// <inheritdoc/>
         public bool TryGetRelevantType(
             DomainContext context,
             string namespaceName, string name,
@@ -82,6 +90,7 @@ namespace Microsoft.Data.Domain.Conventions
             return false;
         }
 
+        /// <inheritdoc/>
         public Expression Expand(QueryExpressionContext context)
         {
             if (context.ModelReference == null)

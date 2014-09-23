@@ -9,6 +9,9 @@ using DataAnnotations = System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Data.Domain.Conventions
 {
+    /// <summary>
+    /// A conventional change set entry validator.
+    /// </summary>
     public class ConventionalChangeSetEntryValidator :
         IChangeSetEntryValidator
     {
@@ -16,9 +19,13 @@ namespace Microsoft.Data.Domain.Conventions
         {
         }
 
+        /// <summary>
+        /// A static instance of conventional change set entry validator.
+        /// </summary>
         public static readonly ConventionalChangeSetEntryValidator Instance =
             new ConventionalChangeSetEntryValidator();
 
+        /// <inheritdoc/>
         public Task ValidateEntityAsync(
             SubmitContext context, ChangeSetEntry entry,
             ValidationResults validationResults,

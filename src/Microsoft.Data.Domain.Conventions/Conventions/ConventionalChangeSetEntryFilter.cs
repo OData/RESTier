@@ -6,6 +6,9 @@ using Microsoft.Data.Domain.Submit;
 
 namespace Microsoft.Data.Domain.Conventions
 {
+    /// <summary>
+    /// A conventional change set entry filter.
+    /// </summary>
     public class ConventionalChangeSetEntryFilter : IChangeSetEntryFilter
     {
         private Type _targetType;
@@ -16,6 +19,7 @@ namespace Microsoft.Data.Domain.Conventions
             this._targetType = targetType;
         }
 
+        /// <inheritdoc/>
         public static void ApplyTo(
             DomainConfiguration configuration,
             Type targetType)
@@ -26,6 +30,7 @@ namespace Microsoft.Data.Domain.Conventions
                 new ConventionalChangeSetEntryFilter(targetType));
         }
 
+        /// <inheritdoc/>
         public Task OnExecutingEntryAsync(
             SubmitContext context, ChangeSetEntry entry,
             CancellationToken cancellationToken)
@@ -33,6 +38,7 @@ namespace Microsoft.Data.Domain.Conventions
             return this.InvokeFilterMethodAsync(context, entry, "ing");
         }
 
+        /// <inheritdoc/>
         public Task OnExecutedEntryAsync(
             SubmitContext context, ChangeSetEntry entry,
             CancellationToken cancellationToken)
