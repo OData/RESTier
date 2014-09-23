@@ -66,6 +66,6 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
         public string PostalCode { get; set; }
 
         [StringLength(15)]
-        public string Country { get; set; }
+        public string CountryRegion { get; set; }
     }
 }

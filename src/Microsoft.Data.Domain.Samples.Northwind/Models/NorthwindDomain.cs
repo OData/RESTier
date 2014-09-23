@@ -32,7 +32,7 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
 
         private IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
         {
-            return customers.Where(c => c.Country == "France");
+            return customers.Where(c => c.CountryRegion == "France");
         }
     }
 }

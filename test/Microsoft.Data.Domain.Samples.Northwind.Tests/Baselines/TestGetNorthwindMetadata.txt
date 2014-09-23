@@ -108,7 +108,7 @@
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />
         <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="Phone" Type="Edm.String" MaxLength="24" />
         <Property Name="Fax" Type="Edm.String" MaxLength="24" />
         <NavigationProperty Name="CustomerDemographics" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.CustomerDemographic)" Partner="Customers" />
@@ -135,7 +135,7 @@
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />
         <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="HomePhone" Type="Edm.String" MaxLength="24" />
         <Property Name="Extension" Type="Edm.String" MaxLength="4" />
         <Property Name="Photo" Type="Edm.Binary" MaxLength="max" />
@@ -190,7 +190,7 @@
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />
         <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="Phone" Type="Edm.String" MaxLength="24" />
         <Property Name="Fax" Type="Edm.String" MaxLength="24" />
         <Property Name="HomePage" Type="Edm.String" MaxLength="max" />
@@ -216,7 +216,7 @@
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />
         <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="Phone" Type="Edm.String" MaxLength="24" />
         <Property Name="Extension" Type="Edm.String" MaxLength="4" />
         <Property Name="Fax" Type="Edm.String" MaxLength="24" />
@@ -274,7 +274,7 @@
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />
         <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="ExtendedPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
         <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
       </EntityType>
@@ -323,7 +323,7 @@
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />
         <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="Country" Type="Edm.String" MaxLength="15" />
+        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
       </EntityType>
       <EntityType Name="Product_Sales_for_1997">
         <Key>
