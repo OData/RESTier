@@ -232,6 +232,10 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 var efNavProperty = efEntityType.NavigationProperties
                     .Where(np => np.FromEndMember == efEnd)
                     .SingleOrDefault();
+                if (efNavProperty == null)
+                {
+                    continue;
+                }
                 var efTargetEntityType = efNavProperty
                     .ToEndMember.GetEntityType();
                 if (!elementMap.ContainsKey(efTargetEntityType))
@@ -314,6 +318,10 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 var efNavProperty = efEntityType.NavigationProperties
                     .Where(np => np.FromEndMember == efEnd)
                     .SingleOrDefault();
+                if (efNavProperty == null)
+                {
+                    continue;
+                }
                 var navProperty = entityType.FindProperty(
                     efNavProperty.Name) as IEdmNavigationProperty;
                 if (navProperty == null)
