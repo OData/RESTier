@@ -19,10 +19,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using Microsoft.Data.Domain.EntityFramework;
 using Microsoft.Data.Domain.Security;
 
@@ -30,17 +27,29 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
 {
     [EnableConventions]
     [EnableRoleBasedSecurity]
-    [Grant(DomainPermissionType.Inspect)]
     [Grant(DomainPermissionType.All, On = "Customers")]
-    [Grant(DomainPermissionType.All, On = "Employees")]
-    [Grant(DomainPermissionType.All, On = "CurrentOrders")]
-    [Grant(DomainPermissionType.All, On = "Orders")] //, To = "Manager")]
     [Grant(DomainPermissionType.All, On = "Products")]
+    [Grant(DomainPermissionType.All, On = "CurrentOrders")]
+    [Grant(DomainPermissionType.All, On = "ExpensiveProducts")]
+    [Grant(DomainPermissionType.All, On = "Orders")]
+    [Grant(DomainPermissionType.All, On = "Employees")]
+    [Grant(DomainPermissionType.Inspect, On = "Suppliers")]
+    [Grant(DomainPermissionType.Read, On = "Suppliers")]
+
     public class NorthwindDomain : DbDomain<NorthwindContext>
     {
         public NorthwindContext Context { get { return DbContext; } }
 
-        // [Assert("Manager")]
+        // Imperative views. Currenly CUD operations not supported
+        protected IQueryable<Product> ExpensiveProducts
+        {
+            get
+            {
+                return this.Source<Product>("Products")
+                    .Where(c => c.UnitPrice > 50);
+            }
+        }
+
         protected IQueryable<Order> CurrentOrders
         {
             get
@@ -50,9 +59,26 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
             }
         }
 
+        // Entity set filter
         private IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
         {
             return customers.Where(c => c.CountryRegion == "France");
+        }
+
+        // Submit logic
+        private void OnUpdatingProducts(Product product)
+        {
+            WriteLog(DateTime.Now.ToString() + product.ProductID + " is being updated");
+        }
+
+        private void OnInsertedProducts(Product product)
+        {
+            WriteLog(DateTime.Now.ToString() + product.ProductID + " has been inserted");
+        }
+
+        private void WriteLog(string text)
+        {
+            // Fake writing log method for submit logic demo
         }
     }
 }

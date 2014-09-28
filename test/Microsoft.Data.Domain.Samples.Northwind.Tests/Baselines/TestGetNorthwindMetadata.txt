@@ -398,18 +398,10 @@
         <Property Name="definition" Type="Edm.Binary" MaxLength="max" />
       </EntityType>
       <EntityContainer Name="NorthwindContext">
-        <EntitySet Name="Alphabetical_list_of_products" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Alphabetical_list_of_product" />
-        <EntitySet Name="Categories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Category">
-          <NavigationPropertyBinding Path="Products" Target="Products" />
-        </EntitySet>
         <EntitySet Name="Products" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product">
           <NavigationPropertyBinding Path="Category" Target="Categories" />
           <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
           <NavigationPropertyBinding Path="Supplier" Target="Suppliers" />
-        </EntitySet>
-        <EntitySet Name="Order_Details" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order_Detail">
-          <NavigationPropertyBinding Path="Order" Target="Orders" />
-          <NavigationPropertyBinding Path="Product" Target="Products" />
         </EntitySet>
         <EntitySet Name="Orders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order">
           <NavigationPropertyBinding Path="Customer" Target="Customers" />
@@ -421,44 +413,16 @@
           <NavigationPropertyBinding Path="CustomerDemographics" Target="CustomerDemographics" />
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
         </EntitySet>
-        <EntitySet Name="CustomerDemographics" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.CustomerDemographic">
-          <NavigationPropertyBinding Path="Customers" Target="Customers" />
-        </EntitySet>
         <EntitySet Name="Employees" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Employee">
           <NavigationPropertyBinding Path="Employees1" Target="Employees" />
           <NavigationPropertyBinding Path="Employee1" Target="Employees" />
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
           <NavigationPropertyBinding Path="Territories" Target="Territories" />
         </EntitySet>
-        <EntitySet Name="Territories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Territory">
-          <NavigationPropertyBinding Path="Region" Target="Regions" />
-          <NavigationPropertyBinding Path="Employees" Target="Employees" />
-        </EntitySet>
-        <EntitySet Name="Regions" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Region">
-          <NavigationPropertyBinding Path="Territories" Target="Territories" />
-        </EntitySet>
-        <EntitySet Name="Shippers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Shipper">
-          <NavigationPropertyBinding Path="Orders" Target="Orders" />
-        </EntitySet>
         <EntitySet Name="Suppliers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Supplier">
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>
-        <EntitySet Name="Category_Sales_for_1997" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Category_Sales_for_1997" />
-        <EntitySet Name="Contacts" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Contact" />
-        <EntitySet Name="Current_Product_Lists" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Current_Product_List" />
-        <EntitySet Name="Customer_and_Suppliers_by_Cities" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Customer_and_Suppliers_by_City" />
-        <EntitySet Name="Invoices" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Invoice" />
-        <EntitySet Name="Order_Details_Extendeds" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order_Details_Extended" />
-        <EntitySet Name="Order_Subtotals" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order_Subtotal" />
-        <EntitySet Name="Orders_Qries" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Orders_Qry" />
-        <EntitySet Name="Product_Sales_for_1997" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product_Sales_for_1997" />
-        <EntitySet Name="Products_Above_Average_Prices" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Products_Above_Average_Price" />
-        <EntitySet Name="Products_by_Categories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Products_by_Category" />
-        <EntitySet Name="Sales_by_Categories" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Sales_by_Category" />
-        <EntitySet Name="Sales_Totals_by_Amounts" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Sales_Totals_by_Amount" />
-        <EntitySet Name="Summary_of_Sales_by_Quarters" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Summary_of_Sales_by_Quarter" />
-        <EntitySet Name="Summary_of_Sales_by_Years" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Summary_of_Sales_by_Year" />
-        <EntitySet Name="sysdiagrams" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.sysdiagram" />
+        <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product" />
         <EntitySet Name="CurrentOrders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order" />
       </EntityContainer>
     </Schema>
