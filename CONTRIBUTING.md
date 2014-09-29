@@ -3,7 +3,7 @@
 Contirbution to Domain Framework is on the way...
 
 ##Discussion
-You can participate into discussions and ask questions about ODataCpp at our [Github issues](https://github.com/OData/DomainFramework/issues). 
+You can participate into discussions and ask questions about Domain Framework at our [Github issues](https://github.com/OData/DomainFramework/issues). 
 
 
 ###Bug reports
