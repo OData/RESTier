@@ -18,6 +18,7 @@
 // OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using System.Web.OData;
@@ -38,7 +39,7 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Controllers
             }
         }
 
-        // OData Attibute Routing
+        // OData Attribute Routing
         [ODataRoute("Customers({key})/CompanyName")]
         [ODataRoute("Customers({key})/CompanyName/$value")]
         public string GetCustomerCompanyName([FromODataUri]string key)
