@@ -15,5 +15,6 @@ _[Ss]cripts
 *.vsp
 *.psess
 *.orig
+*.pdb
 TrippinDB.mdf
 TrippinDB_log.ldf

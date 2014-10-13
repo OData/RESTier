@@ -1,0 +1,57 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="tools\DF.tasks.targets"/>
+
+  <ItemGroup>
+    <SolutionsToBuild Include="DomainFramework.sln">
+      <BuildInParallel>$(BuildInParallel)</BuildInParallel>
+    </SolutionsToBuild>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ProjectGuid>{120146C7-7CFD-4857-ACC0-78C2CD83C2C2}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <NuGetFolder>.nuget</NuGetFolder>
+    <NuGetExe>$(NuGetFolder)\NuGet.exe</NuGetExe>
+  </PropertyGroup>
+
+  <Target Name="DownloadNuGet" Condition=" '$(NotDownloadNuget)' != 'true' ">
+    <DownloadNuGet Condition="" OutputFileName="$(NuGetExe)" MinimumVersion="2.7.0" />
+  </Target>
+
+  <Target Name="RestorePackages" DependsOnTargets="DownloadNuGet">
+    <Message Text="Restoring NuGet packages..." Importance="High" />
+    <Exec Command='"$(NuGetExe)" restore "%(SolutionsToBuild.Identity)" -PackagesDirectory packages -NonInteractive -Verbosity detailed -ConfigFile "$(MsBuildThisFileDirectory)$(NuGetFolder)\NuGet.Config" -NoCache' />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="RestorePackages">
+    <MakeDir Directories="bin\$(Configuration)" />
+    <MSBuild
+          Projects="@(SolutionsToBuild)"
+          BuildInParallel="%(SolutionsToBuild.BuildInParallel)"
+          Targets="Build"
+          Condition=" '%(SolutionsToBuild.Portable)' != 'true' or '$(BuildPortable)' == 'true' "
+          Properties="Configuration=$(Configuration);CodeAnalysis=$(CodeAnalysis);StyleCopEnabled=$(StyleCopEnabled);VisualStudioVersion=$(VisualStudioVersion)" />
+  </Target>
+
+  <Target Name="ProjectCopRun">
+  </Target>
+  <Target Name="StyleCopRun">
+  </Target>
+  <Target Name="Clean">
+    <MSBuild
+          Projects="@(SolutionsToBuild)"
+          BuildInParallel="%(SolutionsToBuild.BuildInParallel)"
+          Targets="Clean"
+          Condition=" '%(SolutionsToBuild.Portable)' != 'true' or '$(BuildPortable)' == 'true' "
+          Properties="Configuration=$(Configuration);VisualStudioVersion=$(VisualStudioVersion)" />
+    <RemoveDir Directories="bin\$(Configuration)" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="RestorePackages">
+    <MSBuild
+          Projects="@(SolutionsToBuild)"
+          BuildInParallel="%(SolutionsToBuild.BuildInParallel)"
+          Targets="ReBuild"
+          Condition=" '%(SolutionsToBuild.Portable)' != 'true' or '$(BuildPortable)' == 'true' "
+          Properties="Configuration=$(Configuration);CodeAnalysis=$(CodeAnalysis);StyleCopEnabled=$(StyleCopEnabled);VisualStudioVersion=$(VisualStudioVersion);OutputPath=$(OutputPath)Product;EnableProjectCop=false" />
+  </Target>
+</Project>
