@@ -7,9 +7,9 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <description>$description$</description>
-    <copyright>Copyright © Microsoft Corporation 2014</copyright>
+    <copyright>Copyright Â© Microsoft Corporation 2014</copyright>
     <dependencies>
-      <dependency id="Microsoft.Data.Domain" version="[1.0.0-pre,]" />
+      <dependency id="Microsoft.Data.Domain" version="[0.1.0-pre,]" />
     </dependencies>
   </metadata>
 </package>
