@@ -65,7 +65,7 @@ namespace System.Web.OData.Domain.Routing
         /// <returns>String corresponding to controller action name</returns>
         public string SelectAction(ODataPath odataPath, HttpControllerContext controllerContext, ILookup<string, HttpActionDescriptor> actionMap)
         {
-            // TODO: implement action selection for  $link, navigation scenarios, etc.
+            // TODO: implement action selection for $ref, navigation scenarios, etc.
 
             Ensure.NotNull(odataPath, "odataPath");
             Ensure.NotNull(controllerContext, "controllerContext");
@@ -84,7 +84,7 @@ namespace System.Web.OData.Domain.Routing
                 return "PostAction";
             }
 
-            //let WebAPI select default action
+            // Let WebAPI select default action
             return null;
         }
 

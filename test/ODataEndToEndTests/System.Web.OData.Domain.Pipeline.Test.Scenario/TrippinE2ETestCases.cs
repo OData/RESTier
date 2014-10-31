@@ -52,7 +52,7 @@ namespace System.Web.OData.Domain.Test.Scenario
             this.TestClientContext.SaveChanges();
             int personId = person.PersonId;
 
-            //count this entity
+            // Count this entity
             var count = this.TestClientContext.People.Count();
             Assert.Equal(personId, count);
 

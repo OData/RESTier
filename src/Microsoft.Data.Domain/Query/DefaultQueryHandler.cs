@@ -162,7 +162,7 @@ namespace Microsoft.Data.Domain.Query
                         this._context.ReplaceVisitedNode(visited);
                     }
 
-                    // Only visit the visited node's childen if
+                    // Only visit the visited node's children if
                     // the visited node represents domain data
                     if (!(this._context.ModelReference is DomainDataReference))
                     {

@@ -40,7 +40,7 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
     {
         public NorthwindContext Context { get { return DbContext; } }
 
-        // Imperative views. Currenly CUD operations not supported
+        // Imperative views. Currently CUD operations not supported
         protected IQueryable<Product> ExpensiveProducts
         {
             get

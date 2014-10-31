@@ -70,7 +70,7 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
             instance.Airlines.RemoveRange(instance.Airlines);
             instance.Airports.RemoveRange(instance.Airports);
             instance.Trips.RemoveRange(instance.Trips);
-            //This is to set the People Id from 0
+            // This is to set the People Id from 0
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('People', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Flights', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Trips', RESEED, 0)");

@@ -97,8 +97,7 @@ namespace Microsoft.Data.Domain.Conventions
 
         private static EdmTypeReference GetTypeReference(Type type)
         {
-            // Only handle primtive type right now
-
+            // Only handle primitive type right now
             bool isNullable;
             EdmPrimitiveTypeKind? primitiveTypeKind = EdmHelpers.GetPrimitiveTypeKind(type, out isNullable);
 

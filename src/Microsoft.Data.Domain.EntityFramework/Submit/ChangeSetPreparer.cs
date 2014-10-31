@@ -98,7 +98,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Submit
                 // 1) it doesn't exist
                 // 2) concurrency checks have failed
                 // we should account for both - I can see 3 options:
-                // a. always return "PreConditionFailed" result - this is the canonical behavior of WebAPI odata (see http://blogs.msdn.com/b/webdev/archive/2014/03/13/getting-started-with-asp-net-web-api-2-2-for-odata-v4-0.aspx)
+                // a. always return "PreConditionFailed" result - this is the canonical behavior of WebAPI OData (see http://blogs.msdn.com/b/webdev/archive/2014/03/13/getting-started-with-asp-net-web-api-2-2-for-odata-v4-0.aspx)
                 //  - this makes sense because if someone deleted the record, then you still have a concurrency error
                 // b. possibly doing a 2nd query with just the keys to see if the record still exists
                 // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values, letting the save fail if there are concurrency errors
