@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="FxCop rules for Domain Framework" Description="This rule set contains the rules for  Domain Framework." ToolsVersion="10.0">
+  <RuleHintPaths>
+    <Path>..\packages\CustomFxCopRules</Path>
+  </RuleHintPaths>
+  <IncludeAll Action="Error" />
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1062" Action="None" />
+    <Rule Id="MW1200" Action="None" />
+  </Rules>
+</RuleSet>

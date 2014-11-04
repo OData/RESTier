@@ -18,26 +18,15 @@
 // OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Resources;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Domain Framework")]
-[assembly: AssemblyDescription("A framework for authoring rich domain data and logic over a data source proxy.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft.Data.Domain")]
-[assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2014")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+#if !NOT_CLS_COMPLIANT
+[assembly: CLSCompliant(true)]
+#endif
+[assembly: NeutralResourcesLanguage("en-US")]
 
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("601cb3e2-9da5-4857-ac6e-428b8f475ec1")]
+[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyInformationalVersion("0.1.0-pre")]
