@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EBBFEC
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Web.OData.Domain.Test", "test\System.Web.OData.Domain.Test\System.Web.OData.Domain.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,5 +117,6 @@ Global
 		{4AC28EC2-FBCF-44CA-A922-0B257F55DE0D} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{B379640E-9064-438D-8DA5-6F7B394C2C46} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
+		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
 	EndGlobalSection
 EndGlobal

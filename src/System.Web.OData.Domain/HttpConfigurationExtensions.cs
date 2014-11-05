@@ -1,15 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Domain.Batch;
 using System.Web.OData.Domain.Routing;
-using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Microsoft.Data.Domain;
+using Microsoft.OData.Edm;
 
 namespace System.Web.OData.Domain
 {
@@ -25,23 +26,66 @@ namespace System.Web.OData.Domain
             using (TController controller = new TController())
             {
                 var model = await controller.Domain.GetModelAsync();
-                var conventions = ODataRoutingConventions.CreateDefault();
-                conventions.Insert(0, new DefaultODataRoutingConvention(typeof(TController).Name));
-                conventions.Insert(0, new AttributeRoutingConvention(model, config));
+                var conventions = CreateODataDomainRoutingConventions<TController>(config, model);
 
                 if (batchHandler != null && batchHandler.ContextFactory == null)
                 {
                     batchHandler.ContextFactory = () => new TController().Domain.Context;
                 }
 
-                return config.MapODataServiceRoute(
-                    routeName,
-                    routePrefix,
-                    model,
-                    new DefaultODataPathHandler(),
-                    conventions,
-                    batchHandler);
+                var routes = config.Routes;
+                routePrefix = RemoveTrailingSlash(routePrefix);
+
+                if (batchHandler != null)
+                {
+                    batchHandler.ODataRouteName = routeName;
+                    var batchTemplate = String.IsNullOrEmpty(routePrefix) ? ODataRouteConstants.Batch
+                        : routePrefix + '/' + ODataRouteConstants.Batch;
+                    routes.MapHttpBatchRoute(routeName + "Batch", batchTemplate, batchHandler);
+                }
+
+                var routeConstraint = new DefaultODataPathRouteConstraint(new DefaultODataPathHandler(), model,
+                    routeName, conventions);
+                var route = new ODataRoute(routePrefix, routeConstraint);
+                routes.Add(routeName, route);
+                return route;
             }
+        }
+
+        public static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TController>(
+            this HttpConfiguration config, IEdmModel model)
+            where TController : ODataDomainController, new()
+        {
+            var conventions = ODataRoutingConventions.CreateDefault();
+            var index = 0;
+            for (; index < conventions.Count; index++)
+            {
+                var unmapped = conventions[index] as UnmappedRequestRoutingConvention;
+                if (unmapped != null)
+                {
+                    break;
+                }
+            }
+
+            conventions.Insert(index, new DefaultODataRoutingConvention(typeof(TController).Name));
+            conventions.Insert(0, new AttributeRoutingConvention(model, config));
+            return conventions;
+        }
+
+        private static string RemoveTrailingSlash(string routePrefix)
+        {
+            if (String.IsNullOrEmpty(routePrefix))
+            {
+                return routePrefix;
+            }
+
+            var prefixLastIndex = routePrefix.Length - 1;
+            if (routePrefix[prefixLastIndex] == '/')
+            {
+                // Remove the last trailing slash if it has one.
+                routePrefix = routePrefix.Substring(0, routePrefix.Length - 1);
+            }
+            return routePrefix;
         }
     }
 }

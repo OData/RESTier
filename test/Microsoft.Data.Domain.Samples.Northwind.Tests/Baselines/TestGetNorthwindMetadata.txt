@@ -419,6 +419,9 @@
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
           <NavigationPropertyBinding Path="Territories" Target="Territories" />
         </EntitySet>
+        <EntitySet Name="Regions" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Region">
+          <NavigationPropertyBinding Path="Territories" Target="Territories" />
+        </EntitySet>
         <EntitySet Name="Suppliers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Supplier">
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>

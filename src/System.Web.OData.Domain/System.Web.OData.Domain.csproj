@@ -82,6 +82,7 @@
     <Compile Include="Results\EntityCollectionResult.cs" />
     <Compile Include="Results\EntityQueryResult.cs" />
     <Compile Include="Results\EntityResult.cs" />
+    <Compile Include="Routing\DefaultODataPathRouteConstraint.cs" />
     <Compile Include="Routing\DefaultODataRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
   </ItemGroup>

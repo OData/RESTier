@@ -16,6 +16,7 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Models
     [Grant(DomainPermissionType.All, On = "ExpensiveProducts")]
     [Grant(DomainPermissionType.All, On = "Orders")]
     [Grant(DomainPermissionType.All, On = "Employees")]
+    [Grant(DomainPermissionType.All, On = "Regions")]
     [Grant(DomainPermissionType.Inspect, On = "Suppliers")]
     [Grant(DomainPermissionType.Read, On = "Suppliers")]
 
