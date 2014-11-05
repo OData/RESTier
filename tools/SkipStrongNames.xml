@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assemblies defaultPublicKeyToken="31bf3856ad364e35">
+  <assembly name="Microsoft.Data.Domain"/>
+  <assembly name="Microsoft.Data.Domain.Conventions"/>
+  <assembly name="Microsoft.Data.Domain.EntityFramework"/>
+  <assembly name="Microsoft.Data.Domain.Security"/>
+  <assembly name="System.Web.OData.Domain"/>
+</assemblies>
