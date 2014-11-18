@@ -18,10 +18,13 @@
 // OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Annotations;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Microsoft.Data.Domain.Model
 {
@@ -30,7 +33,8 @@ namespace Microsoft.Data.Domain.Model
     // to elements that are not supposed to be visible.
     internal class DomainModel : IEdmModel
     {
-        private IDictionary<string, DomainEntityContainer> _entityContainers;
+        private readonly Lazy<ConcurrentDictionary<string, DomainEntityContainer>> _entityContainers =
+            new Lazy<ConcurrentDictionary<string, DomainEntityContainer>>(LazyThreadSafetyMode.PublicationOnly);
 
         public DomainModel(DomainConfiguration configuration, IEdmModel model)
         {
@@ -204,22 +208,8 @@ namespace Microsoft.Data.Domain.Model
         private DomainEntityContainer GetDomainEntityContainer(
             IEdmEntityContainer entityContainer)
         {
-            if (this._entityContainers == null)
-            {
-                this._entityContainers = new Dictionary<
-                    string, DomainEntityContainer>();
-            }
-            DomainEntityContainer domainEntityContainer = null;
-            if (!this._entityContainers.TryGetValue(
-                    entityContainer.FullName(),
-                    out domainEntityContainer))
-            {
-                domainEntityContainer = new DomainEntityContainer(
-                    this, entityContainer);
-                this._entityContainers.Add(
-                    entityContainer.FullName(),
-                    domainEntityContainer);
-            }
+            var domainEntityContainer = this._entityContainers.Value.GetOrAdd(
+                entityContainer.FullName(), name => new DomainEntityContainer(this, entityContainer));
             return domainEntityContainer;
         }
     }

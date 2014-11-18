@@ -71,11 +71,19 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 .ObjectContext.MetadataWorkspace;
             var namespaceName = efModel.GetItems<EntityType>(DataSpace.CSpace)
                 .Select(t => efModel.GetObjectSpaceType(t).NamespaceName)
-                .Distinct().SingleOrDefault();
+                .GroupBy(nameSpace => nameSpace)
+                .Select(group => new
+                {
+                    NameSpace = group.Key,
+                    Count = group.Count(),
+                })
+                .OrderByDescending(nsItem => nsItem.Count)
+                .Select(nsItem => nsItem.NameSpace)
+                .FirstOrDefault();
             if (namespaceName == null)
             {
-                // TODO: support multiple schemas
-                throw new NotSupportedException();
+                // When dbContext has not a namespace, just use its type name as namespace.
+                namespaceName = dbContext.GetType().Namespace ?? dbContext.GetType().Name;
             }
 
             var efEntityContainer = efModel.GetItems<

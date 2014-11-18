@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -76,7 +77,7 @@ namespace Microsoft.Data.Domain
     {
         private static readonly DomainConfiguration s_global = new DomainConfiguration();
         private static readonly IDictionary<object, DomainConfiguration> s_configurations =
-            new Dictionary<object, DomainConfiguration>();
+            new ConcurrentDictionary<object, DomainConfiguration>();
 
         private readonly IDictionary<Type, object> _singletons =
             new Dictionary<Type, object>();
