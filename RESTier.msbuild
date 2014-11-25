@@ -1,9 +1,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="tools\DF.tasks.targets"/>
+  <Import Project="tools\RESTier.tasks.targets"/>
   <UsingTask TaskName="SkipStrongNames.CheckSkipStrongNamesStatus" AssemblyFile="$(SkipStrongNamesExe)" />
 
   <ItemGroup>
-    <SolutionsToBuild Include="DomainFramework.sln">
+    <SolutionsToBuild Include="RESTier.sln">
       <BuildInParallel>$(BuildInParallel)</BuildInParallel>
     </SolutionsToBuild>
   </ItemGroup>
@@ -16,10 +16,12 @@
     <CodeAnalysis Condition=" '$(CodeAnalysis)' == '' and '$(Configuration)' != 'Release' ">true</CodeAnalysis>
     <SkipStrongNamesExe>$(MSBuildThisFileDirectory)packages\Microsoft.Web.SkipStrongNames.1.0.0\tools\SkipStrongNames.exe</SkipStrongNamesExe>
     <SkipStrongNamesXml>$(MSBuildThisFileDirectory)tools\SkipStrongNames.xml</SkipStrongNamesXml>
+    <AdditionalRestoreProps></AdditionalRestoreProps>
   </PropertyGroup>
 
   <Target Name="RestoreSkipStrongNames" DependsOnTargets="DownloadNuGet">
-    <Exec Command='"$(NuGetExe)" restore .nuget\packages.config -PackagesDirectory packages -NonInteractive -Verbosity detailed -ConfigFile .nuget\NuGet.Config' />
+    <Exec Command='"$(NuGetExe)" restore .nuget\packages.config -PackagesDirectory packages -NonInteractive ^
+          -Verbosity detailed -ConfigFile .nuget\NuGet.Config' />
   </Target>
 
   <Target Name="EnableSkipStrongNames" DependsOnTargets="RestoreSkipStrongNames">
@@ -44,7 +46,9 @@
 
   <Target Name="RestorePackages" DependsOnTargets="DownloadNuGet">
     <Message Text="Restoring NuGet packages..." Importance="High" />
-    <Exec Command='"$(NuGetExe)" restore "%(SolutionsToBuild.Identity)" -PackagesDirectory packages -NonInteractive -Verbosity detailed -ConfigFile "$(MsBuildThisFileDirectory)$(NuGetFolder)\NuGet.Config" -NoCache' />
+    <Exec Command='"$(NuGetExe)" restore "%(SolutionsToBuild.Identity)" -PackagesDirectory packages -NonInteractive ^
+          -Verbosity detailed -ConfigFile "$(MsBuildThisFileDirectory)$(NuGetFolder)\NuGet.Config" ^
+          -NoCache $(AdditionalRestoreProps)' />
   </Target>
 
   <Target Name="BuildTools">

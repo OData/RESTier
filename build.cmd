@@ -2,7 +2,7 @@
 pushd %~dp0
 setlocal
 
-if exist bin goto build
+if exist bin goto Build
 mkdir bin
 
 :Build
@@ -15,12 +15,12 @@ if not exist %MSBuild% @set MSBuild="%ProgramFiles%\MSBuild\12.0\Bin\MSBuild.exe
 
 if "%1" == "" goto BuildDefaults
 
-%MSBuild% DomainFramework.msbuild /m /nr:false /t:%* /p:Platform="Any CPU" /p:Desktop=true /v:M /fl /flp:LogFile=bin\msbuild.log;Verbosity=Normal
+%MSBuild% RESTier.msbuild /m /nr:false /t:%* /p:Platform="Any CPU" /p:Desktop=true /v:M /fl /flp:LogFile=bin\msbuild.log;Verbosity=Normal
 if %ERRORLEVEL% neq 0 goto BuildFail
 goto BuildSuccess
 
 :BuildDefaults
-%MSBuild% DomainFramework.msbuild /m /nr:false /p:Platform="Any CPU" /p:Desktop=true /v:M /fl /flp:LogFile=bin\msbuild.log;Verbosity=Normal
+%MSBuild% RESTier.msbuild /m /nr:false /p:Platform="Any CPU" /p:Desktop=true /v:M /fl /flp:LogFile=bin\msbuild.log;Verbosity=Normal
 if %ERRORLEVEL% neq 0 goto BuildFail
 goto BuildSuccess
 
@@ -32,7 +32,7 @@ goto End
 :BuildSuccess
 echo.
 echo **** BUILD SUCCESSFUL ***
-goto end
+goto End
 
 :End
 popd

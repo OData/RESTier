@@ -2,6 +2,11 @@
 pushd %~dp0
 setlocal
 
+if exist .nuget\nuget.exe goto Prepare
+echo Downloading Nuget.exe
+call build.cmd DownloadNuGet >NUL
+
+:Prepare
 if exist bin\nuget goto Configure
 md bin\nuget
 
@@ -15,11 +20,11 @@ md bin\nuget\%config%
 :Build
 set params=-Prop Configuration=%config% -OutputDirectory bin\nuget\%config%
 
-tools\NuGet\NuGet pack src\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj %params%
-tools\NuGet\NuGet pack src\Microsoft.Data.Domain.Conventions\Microsoft.Data.Domain.Conventions.csproj %params%
-tools\NuGet\NuGet pack src\Microsoft.Data.Domain.Security\Microsoft.Data.Domain.Security.csproj %params%
-tools\NuGet\NuGet pack src\Microsoft.Data.Domain.EntityFramework\Microsoft.Data.Domain.EntityFramework.csproj %params%
-tools\NuGet\NuGet pack src\System.Web.OData.Domain\System.Web.OData.Domain.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain.Conventions\Microsoft.Data.Domain.Conventions.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain.Security\Microsoft.Data.Domain.Security.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain.EntityFramework\Microsoft.Data.Domain.EntityFramework.csproj %params%
+.nuget\NuGet pack src\System.Web.OData.Domain\System.Web.OData.Domain.csproj %params%
 
 popd
 endlocal

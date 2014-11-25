@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="FxCop rules for Domain Framework" Description="This rule set contains the rules for  Domain Framework." ToolsVersion="10.0">
+<RuleSet Name="FxCop rules for RESTier" Description="This rule set contains the rules for RESTier." ToolsVersion="10.0">
   <RuleHintPaths>
     <Path>..\packages\CustomFxCopRules</Path>
   </RuleHintPaths>

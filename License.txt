@@ -1,4 +1,4 @@
-Domain Framework ver. 1.0
+RESTier ver. 1.0
 Copyright (c) Microsoft Corporation
 All rights reserved.
 MIT License
