@@ -54,7 +54,7 @@ namespace Microsoft.Data.Domain.Security
             IEdmModel model, IEdmSchemaElement element)
         {
             // TODO: properly filter types
-            if (element is IEdmType)
+            if (element is IEdmType || element is IEdmOperation)
             {
                 return true;
             }

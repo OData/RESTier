@@ -298,25 +298,7 @@ namespace System.Web.OData.Domain
 
         private static IEdmTypeReference GetTypeReference(IEdmType type)
         {
-            bool isNullable = false;
-            switch (type.TypeKind)
-            {
-                case EdmTypeKind.Collection:
-                    return new EdmCollectionTypeReference(type as IEdmCollectionType);
-                case EdmTypeKind.Complex:
-                    return new EdmComplexTypeReference(type as IEdmComplexType, isNullable);
-                case EdmTypeKind.Entity:
-                    return new EdmEntityTypeReference(type as IEdmEntityType, isNullable);
-                case EdmTypeKind.EntityReference:
-                    return new EdmEntityReferenceTypeReference(type as IEdmEntityReferenceType, isNullable);
-                case EdmTypeKind.Enum:
-                    return new EdmEnumTypeReference(type as IEdmEnumType, isNullable);
-                case EdmTypeKind.Primitive:
-                    return new EdmPrimitiveTypeReference(type as IEdmPrimitiveType, isNullable);
-                case EdmTypeKind.None:
-                default:
-                    throw new InvalidOperationException("Could not get a TypeReference for type with kind: " + type.ToTraceString());
-            }
+            return type.GetEdmTypeReference(isNullable: false);
         }
 
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)

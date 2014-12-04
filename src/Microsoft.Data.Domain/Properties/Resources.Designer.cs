@@ -59,5 +59,14 @@ namespace Microsoft.Data.Domain.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a supported EDM type..
+        /// </summary>
+        internal static string EdmTypeNotSupported {
+            get {
+                return ResourceManager.GetString("EdmTypeNotSupported", resourceCulture);
+            }
+        }
     }
 }

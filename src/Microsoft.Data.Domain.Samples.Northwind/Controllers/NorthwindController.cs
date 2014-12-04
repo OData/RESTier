@@ -64,5 +64,13 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Controllers
             }
             return Ok(price);
         }
+
+        [HttpGet]
+        [ODataRoute("Products/Microsoft.Data.Domain.Samples.Northwind.Models.MostExpensive")]
+        public IHttpActionResult MostExpensive()
+        {
+            var product = DbContext.Products.Max(p => p.UnitPrice);
+            return Ok(product);
+        }
     }
 }

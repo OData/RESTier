@@ -31,6 +31,9 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>.Shared\Ensure.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\Error.cs">
+      <Link>.Shared\Error.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\ExpressionHelperMethods.cs">
       <Link>.Shared\ExpressionHelperMethods.cs</Link>
     </Compile>
@@ -47,6 +50,7 @@
     <Compile Include="DomainContext.cs" />
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />
+    <Compile Include="EdmLibHelpers.cs" />
     <Compile Include="IDomain.cs" />
     <Compile Include="IDomainProfiler.cs" />
     <Compile Include="IDomainPolicy.cs" />

@@ -39,6 +39,7 @@
     <Compile Include="Conventions\ConventionalChangeSetEntryFilter.cs" />
     <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
     <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
+    <Compile Include="Conventions\ConventionalModelExtender.cs" />
     <Compile Include="DomainConfigurationExtensions.cs" />
     <Compile Include="EnableConventionsAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

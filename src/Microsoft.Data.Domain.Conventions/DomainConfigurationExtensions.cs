@@ -44,6 +44,7 @@ namespace Microsoft.Data.Domain
             configuration.AddHookPoint(typeof(IChangeSetEntryValidator),
                 ConventionalChangeSetEntryValidator.Instance);
             ConventionalEntitySetProvider.ApplyTo(configuration, targetType);
+            ConventionalModelExtender.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
         }
     }

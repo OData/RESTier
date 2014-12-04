@@ -397,6 +397,10 @@
         <Property Name="version" Type="Edm.Int32" />
         <Property Name="definition" Type="Edm.Binary" MaxLength="max" />
       </EntityType>
+      <Function Name="MostExpensive" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Product)" Nullable="false" />
+        <ReturnType Type="Edm.Double" Nullable="false" />
+      </Function>
       <EntityContainer Name="NorthwindContext">
         <EntitySet Name="Products" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product">
           <NavigationPropertyBinding Path="Category" Target="Categories" />
