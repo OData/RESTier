@@ -24,3 +24,14 @@ When reporting a bug at the issue tracker, please use the following template:
 ### Further technical details
 *Optional, details of the root cause if known*  
 ```
+##Code Contribution
+Developers are welcomed to contribute to the code.
+###How to contribute
+You can contribute to the code by sending a [pull request](https://help.github.com/articles/using-pull-requests/) directly.
+
+###Coding guidelines
+In order to favor readability, please follow the coding guidelines below:
+
+[Engineering guildelines-coding guidelines](https://github.com/aspnet/Home/wiki/Engineering-guidelines#coding-guidelines)
+
+[MVC + Web API Integration Stack Coding Guidelines ](http://aspwiki/Default.aspx?Page=MVC_WebAPI_Integration_Stack_Coding_Guidelines&NS=&AspxAutoDetectCookieSupport=1)
