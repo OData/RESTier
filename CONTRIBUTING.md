@@ -34,4 +34,3 @@ In order to favor readability, please follow the coding guidelines below:
 
 [Engineering guildelines-coding guidelines](https://github.com/aspnet/Home/wiki/Engineering-guidelines#coding-guidelines)
 
-[MVC + Web API Integration Stack Coding Guidelines ](http://aspwiki/Default.aspx?Page=MVC_WebAPI_Integration_Stack_Coding_Guidelines&NS=&AspxAutoDetectCookieSupport=1)
