@@ -56,7 +56,7 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
             // This is to set the People Id from 0
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('People', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Flights', RESEED, 0)");
-            instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Trips', RESEED, 0)");
+            instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('TripsTable', RESEED, 0)");
             instance.SaveChanges();
 
             #region Airports
