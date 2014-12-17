@@ -432,6 +432,7 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 1)),
                     EndsAt = new DateTimeOffset(new DateTime(2014, 2, 4)),
                     Flights = new List<Flight>(){flights[0], flights[1]},
+                    LastUpdated = DateTime.UtcNow,
                 },
                 new Trip
                 {
@@ -441,7 +442,8 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
                     Budget = 3000.0f,
                     Description = "Trip from San Francisco to New York City. It is a 4 days' trip.",
                     StartsAt = new DateTimeOffset(new DateTime(2014, 1, 1)),
-                    EndsAt = new DateTimeOffset(new DateTime(2014, 1, 4)),                
+                    EndsAt = new DateTimeOffset(new DateTime(2014, 1, 4)),
+                    LastUpdated = DateTime.UtcNow,
                 },
                 new Trip
                 {
@@ -451,7 +453,8 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
                     Budget = 2650.0f,
                     Description = "Happy honeymoon trip",
                     StartsAt = new DateTime(2014, 2, 1),
-                    EndsAt = new DateTime(2014, 2, 4)
+                    EndsAt = new DateTime(2014, 2, 4),
+                    LastUpdated = DateTime.UtcNow,
                 }
             };
             instance.Trips.AddRange(trips);

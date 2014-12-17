@@ -16,7 +16,7 @@ namespace System.Web.OData.Domain.Test.Services.Trippin
     {
         protected void Application_Start()
         {
-            // Pls run this drop-and-create for TrippinModel DB whenever model changes:
+            // Please run this drop-and-create for TrippinModel DB whenever model changes:
             // Database.SetInitializer(new DropCreateDatabaseAlways<TrippinModel>());
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }

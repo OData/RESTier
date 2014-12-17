@@ -3,6 +3,7 @@
 
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
+using Microsoft.OData.Edm.Csdl;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,24 @@ namespace System.Web.OData.Domain.Test.Scenario
             : base(new Uri("http://localhost:18384/api/Trippin/"))
         {
             ResetDataSource();
+        }
+
+        [Fact]
+        public void AnnotationComputedOptimisticConcurrency()
+        {
+            var requestMessage = new HttpWebRequestMessage(
+                new DataServiceClientRequestMessageArgs(
+                    "GET",
+                    new Uri(this.ServiceBaseUri.OriginalString + "$metadata", UriKind.Absolute),
+                    true,
+                    false,
+                    new Dictionary<string, string>()));
+            using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
+            {
+                var modelStr = r.ReadToEnd();
+                Assert.Contains("<Annotation Term=\"Org.OData.Core.V1.Computed\" Bool=\"true\" />", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<Annotation Term=\"Org.OData.Core.V1.OptimisticConcurrency\">", modelStr, StringComparison.Ordinal);
+            }
         }
 
         [Fact]
@@ -82,9 +101,11 @@ namespace System.Web.OData.Domain.Test.Scenario
                 .SingleOrDefault();
             Assert.Equal("Cooper", lastName);
 
-            // Update a property   
-            Dictionary<string, string> headers = new Dictionary<string, string>()
-            { { "Content-Type", "application/json" } };
+            // Update a property
+            Dictionary<string, string> headers = new Dictionary<string, string>() 
+            {
+                { "Content-Type", "application/json" } 
+            };
 
             ODataMessageWriterSettings writerSettings = new ODataMessageWriterSettings
             {
@@ -113,8 +134,7 @@ namespace System.Web.OData.Domain.Test.Scenario
 
             // Query a property's value : ~/$value
             headers.Clear();
-            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings
-            { BaseUri = this.TestClientContext.BaseUri };
+            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings { BaseUri = this.TestClientContext.BaseUri };
 
             request = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
@@ -324,8 +344,7 @@ namespace System.Web.OData.Domain.Test.Scenario
 
             // Get $ref
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings
-            { BaseUri = this.TestClientContext.BaseUri };
+            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings { BaseUri = this.TestClientContext.BaseUri };
 
             HttpWebRequestMessage request = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
@@ -407,23 +426,27 @@ namespace System.Web.OData.Domain.Test.Scenario
             Trip trip1 = new Trip()
             {
                 PersonId = personId,
+                TrackGuid = Guid.NewGuid(),
                 ShareId = new Guid("c95d15e8-582b-44cf-9e97-ff63a5f26091"),
                 Name = "Honeymoon",
                 Budget = 2000.0f,
                 Description = "Happy honeymoon trip",
                 StartsAt = startDate,
-                EndsAt = startDate.AddDays(3)
+                EndsAt = startDate.AddDays(3),
+                LastUpdated = DateTime.UtcNow,
             };
 
             Trip trip2 = new Trip()
             {
                 PersonId = personId,
+                TrackGuid = Guid.NewGuid(),
                 ShareId = new Guid("56947cf5-2133-43b8-81f0-b6c3f1e5e51a"),
                 Name = "Honeymoon",
                 Budget = 3000.0f,
                 Description = "Happy honeymoon trip",
                 StartsAt = startDate.AddDays(1),
-                EndsAt = startDate.AddDays(5)
+                EndsAt = startDate.AddDays(5),
+                LastUpdated = DateTime.UtcNow,
             };
 
             this.TestClientContext.AddToTrips(trip1);
@@ -462,22 +485,22 @@ namespace System.Web.OData.Domain.Test.Scenario
                 {
                     StreamReader reader = new StreamReader(stream);
                     var expectedPayload = "{"
-                        +"\r\n"
-                        +@"  ""@odata.context"":""http://localhost:18384/api/Trippin/$metadata#Collection($ref)"",""value"":["
-                        +"\r\n"
-                        +@"    {"
-                        +"\r\n"
-                        +string.Format(@"      ""@odata.id"":""http://localhost:18384/api/Trippin/Trips({0})""", trip1.TripId)
-                        +"\r\n"
-                        +"    },{"
-                        +"\r\n"
-                        +string.Format(@"      ""@odata.id"":""http://localhost:18384/api/Trippin/Trips({0})""", trip2.TripId)
-                        +"\r\n"
-                        +"    }"
-                        +"\r\n"
-                        +"  ]"
-                        +"\r\n"
-                        +"}";
+                        + "\r\n"
+                        + @"  ""@odata.context"":""http://localhost:18384/api/Trippin/$metadata#Collection($ref)"",""value"":["
+                        + "\r\n"
+                        + @"    {"
+                        + "\r\n"
+                        + string.Format(@"      ""@odata.id"":""http://localhost:18384/api/Trippin/Trips({0})""", trip1.TripId)
+                        + "\r\n"
+                        + "    },{"
+                        + "\r\n"
+                        + string.Format(@"      ""@odata.id"":""http://localhost:18384/api/Trippin/Trips({0})""", trip2.TripId)
+                        + "\r\n"
+                        + "    }"
+                        + "\r\n"
+                        + "  ]"
+                        + "\r\n"
+                        + "}";
                     var content = reader.ReadToEnd();
                     Assert.Equal(expectedPayload, content);
                 }

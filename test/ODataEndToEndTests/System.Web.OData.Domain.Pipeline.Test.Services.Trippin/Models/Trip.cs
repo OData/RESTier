@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace System.Web.OData.Domain.Test.Services.Trippin.Models
@@ -10,6 +11,9 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
     public class Trip
     {
         public int TripId { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public Guid? TrackGuid { get; set; }
 
         public int? PersonId { get; set; }
 
@@ -30,5 +34,8 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         public TimeSpan TotalTimespan { get { return this.EndsAt - this.StartsAt; } }
 
         public virtual ICollection<Flight> Flights { get; set; }
+
+        [ConcurrencyCheck]
+        public DateTimeOffset LastUpdated { get; set; }
     }
 }

@@ -11,6 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Domain.Model;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Csdl;
+using Microsoft.OData.Edm.Expressions;
+using Microsoft.OData.Edm.Library.Annotations;
+using Microsoft.OData.Edm.Library.Values;
+using Microsoft.OData.Edm.Vocabularies.V1;
 using EdmLib = Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Data.Domain.EntityFramework.Model
@@ -83,12 +88,18 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 {
                     continue;
                 }
+                List<EdmLib.EdmStructuralProperty> concurrencyProperties;
                 var entityType = ModelProducer.CreateEntityType(
-                    efModel, efEntityType, model);
+                    efModel, efEntityType, model, out concurrencyProperties);
                 model.AddElement(entityType);
                 elementMap.Add(efEntityType, entityType);
                 var entitySet = entityContainer.AddEntitySet(
                     efEntitySet.Name, entityType);
+                if (concurrencyProperties != null)
+                {
+                    model.SetOptimisticConcurrencyAnnotation(entitySet, concurrencyProperties);
+                }
+
                 elementMap.Add(efEntitySet, entitySet);
             }
 
@@ -108,12 +119,13 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
         private static IEdmEntityType CreateEntityType(
             MetadataWorkspace efModel, EntityType efEntityType,
-            IEdmModel model)
+            EdmLib.EdmModel model, out List<EdmLib.EdmStructuralProperty> concurrencyProperties)
         {
             // TODO: support complex and entity inheritance
             var oType = efModel.GetObjectSpaceType(efEntityType) as EntityType;
             var entityType = new EdmLib.EdmEntityType(
                 oType.NamespaceName, oType.Name);
+            concurrencyProperties = null;
             foreach (var efProperty in efEntityType.Properties)
             {
                 var type = ModelProducer.GetPrimitiveTypeReference(efProperty);
@@ -124,25 +136,24 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                     {
                         defaultValue = efProperty.DefaultValue.ToString();
                     }
-                    var concurrencyMode = EdmConcurrencyMode.None;
-                    if (efProperty.ConcurrencyMode == ConcurrencyMode.Fixed)
-                    {
-                        concurrencyMode = EdmConcurrencyMode.Fixed;
-                    }
+
                     var property = entityType.AddStructuralProperty(
                         efProperty.Name, type, defaultValue,
-                        concurrencyMode);
+                        EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
                     MetadataProperty storeGeneratedPattern = null;
                     efProperty.MetadataProperties.TryGetValue(
                         c_annotationSchema + ":StoreGeneratedPattern",
                         true, out storeGeneratedPattern);
+
                     if (storeGeneratedPattern != null)
                     {
-                        // TODO: figure out why this doesn't serialize
-                        model.DirectValueAnnotationsManager.SetAnnotationValue(
-                            property, c_annotationSchema,
-                            "StoreGeneratedPattern",
-                            storeGeneratedPattern.Value);
+                        SetComputedAnnotation(model, property);
+                    }
+
+                    if (efProperty.ConcurrencyMode == ConcurrencyMode.Fixed)
+                    {
+                        concurrencyProperties = concurrencyProperties ?? new List<EdmLib.EdmStructuralProperty>();
+                        concurrencyProperties.Add(property);
                     }
                 }
             }
@@ -150,6 +161,15 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 .Select(p => entityType.FindProperty(p.Name))
                 .Cast<IEdmStructuralProperty>());
             return entityType;
+        }
+
+        private static void SetComputedAnnotation(EdmLib.EdmModel model, IEdmProperty target)
+        {
+            // when 'target' is <Key> property, V4's 'Computed' also has the meaning of OData V3's 'Identity'.
+            var val = new EdmBooleanConstant(value: true);
+            var annotation = new EdmAnnotation(target, CoreVocabularyModel.ComputedTerm, val);
+            annotation.SetSerializationLocation(model, EdmVocabularyAnnotationSerializationLocation.Inline);
+            model.SetVocabularyAnnotation(annotation);
         }
 
         private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(

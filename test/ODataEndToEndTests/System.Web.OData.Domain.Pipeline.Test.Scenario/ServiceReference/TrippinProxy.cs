@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generation date: 9/24/2014 8:29:49 AM
+// Generation date: 11/27/2014 1:00:35 AM
 namespace System.Web.OData.Domain.Test.Services.Trippin.Models
 {
     /// <summary>
@@ -231,7 +231,9 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         <Key>
           <PropertyRef Name=""FlightId"" />
         </Key>
-        <Property Name=""FlightId"" Type=""Edm.Int32"" Nullable=""false"" />
+        <Property Name=""FlightId"" Type=""Edm.Int32"" Nullable=""false"">
+          <Annotation Term=""Org.OData.Core.V1.Computed"" Bool=""true"" />
+        </Property>
         <Property Name=""ConfirmationCode"" Type=""Edm.String"" MaxLength=""max"" />
         <Property Name=""StartsAt"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <Property Name=""EndsAt"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
@@ -255,7 +257,9 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         <Key>
           <PropertyRef Name=""PersonId"" />
         </Key>
-        <Property Name=""PersonId"" Type=""Edm.Int32"" Nullable=""false"" />
+        <Property Name=""PersonId"" Type=""Edm.Int32"" Nullable=""false"">
+          <Annotation Term=""Org.OData.Core.V1.Computed"" Bool=""true"" />
+        </Property>
         <Property Name=""UserName"" Type=""Edm.String"" MaxLength=""max"" />
         <Property Name=""FirstName"" Type=""Edm.String"" MaxLength=""max"" />
         <Property Name=""LastName"" Type=""Edm.String"" MaxLength=""max"" />
@@ -267,7 +271,12 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         <Key>
           <PropertyRef Name=""TripId"" />
         </Key>
-        <Property Name=""TripId"" Type=""Edm.Int32"" Nullable=""false"" />
+        <Property Name=""TripId"" Type=""Edm.Int32"" Nullable=""false"">
+          <Annotation Term=""Org.OData.Core.V1.Computed"" Bool=""true"" />
+        </Property>
+        <Property Name=""TrackGuid"" Type=""Edm.Guid"">
+          <Annotation Term=""Org.OData.Core.V1.Computed"" Bool=""true"" />
+        </Property>
         <Property Name=""PersonId"" Type=""Edm.Int32"" />
         <Property Name=""ShareId"" Type=""Edm.Guid"" Nullable=""false"" />
         <Property Name=""Name"" Type=""Edm.String"" MaxLength=""max"" />
@@ -275,6 +284,7 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         <Property Name=""Description"" Type=""Edm.String"" MaxLength=""max"" />
         <Property Name=""StartsAt"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <Property Name=""EndsAt"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
+        <Property Name=""LastUpdated"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <NavigationProperty Name=""Flights"" Type=""Collection(System.Web.OData.Domain.Test.Services.Trippin.Models.Flight)"" />
       </EntityType>
       <EntityContainer Name=""TrippinModel"">
@@ -291,6 +301,11 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         </EntitySet>
         <EntitySet Name=""Trips"" EntityType=""System.Web.OData.Domain.Test.Services.Trippin.Models.Trip"">
           <NavigationPropertyBinding Path=""Flights"" Target=""Flights"" />
+          <Annotation Term=""Org.OData.Core.V1.OptimisticConcurrency"">
+            <Collection>
+              <PropertyPath>LastUpdated</PropertyPath>
+            </Collection>
+          </Annotation>
         </EntitySet>
         <ActionImport Name=""ResetDataSource"" Action=""System.Web.OData.Domain.Test.Services.Trippin.DomainPipeline.ResetDataSource"" />
       </EntityContainer>
@@ -1310,8 +1325,14 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         /// <param name="budget">Initial value of Budget.</param>
         /// <param name="startsAt">Initial value of StartsAt.</param>
         /// <param name="endsAt">Initial value of EndsAt.</param>
+        /// <param name="lastUpdated">Initial value of LastUpdated.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.0.0")]
-        public static Trip CreateTrip(int tripId, global::System.Guid shareId, float budget, global::System.DateTimeOffset startsAt, global::System.DateTimeOffset endsAt)
+        public static Trip CreateTrip(int tripId, 
+                    global::System.Guid shareId, 
+                    float budget, 
+                    global::System.DateTimeOffset startsAt, 
+                    global::System.DateTimeOffset endsAt, 
+                    global::System.DateTimeOffset lastUpdated)
         {
             Trip trip = new Trip();
             trip.TripId = tripId;
@@ -1319,6 +1340,7 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
             trip.Budget = budget;
             trip.StartsAt = startsAt;
             trip.EndsAt = endsAt;
+            trip.LastUpdated = lastUpdated;
             return trip;
         }
         /// <summary>
@@ -1344,6 +1366,29 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         private int _TripId;
         partial void OnTripIdChanging(int value);
         partial void OnTripIdChanged();
+        /// <summary>
+        /// There are no comments for Property TrackGuid in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.0.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("TrackGuid")]
+        public global::System.Nullable<global::System.Guid> TrackGuid
+        {
+            get
+            {
+                return this._TrackGuid;
+            }
+            set
+            {
+                this.OnTrackGuidChanging(value);
+                this._TrackGuid = value;
+                this.OnTrackGuidChanged();
+                this.OnPropertyChanged("TrackGuid");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.0.0")]
+        private global::System.Nullable<global::System.Guid> _TrackGuid;
+        partial void OnTrackGuidChanging(global::System.Nullable<global::System.Guid> value);
+        partial void OnTrackGuidChanged();
         /// <summary>
         /// There are no comments for Property PersonId in the schema.
         /// </summary>
@@ -1505,6 +1550,29 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         private global::System.DateTimeOffset _EndsAt;
         partial void OnEndsAtChanging(global::System.DateTimeOffset value);
         partial void OnEndsAtChanged();
+        /// <summary>
+        /// There are no comments for Property LastUpdated in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.0.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("LastUpdated")]
+        public global::System.DateTimeOffset LastUpdated
+        {
+            get
+            {
+                return this._LastUpdated;
+            }
+            set
+            {
+                this.OnLastUpdatedChanging(value);
+                this._LastUpdated = value;
+                this.OnLastUpdatedChanged();
+                this.OnPropertyChanged("LastUpdated");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.0.0")]
+        private global::System.DateTimeOffset _LastUpdated;
+        partial void OnLastUpdatedChanging(global::System.DateTimeOffset value);
+        partial void OnLastUpdatedChanged();
         /// <summary>
         /// There are no comments for Property Flights in the schema.
         /// </summary>
