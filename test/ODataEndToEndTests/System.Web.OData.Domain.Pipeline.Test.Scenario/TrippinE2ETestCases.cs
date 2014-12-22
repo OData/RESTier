@@ -39,6 +39,41 @@ namespace System.Web.OData.Domain.Test.Scenario
         }
 
         [Fact]
+        public void AnnotationRequiredMaxMinLengthTimestamp()
+        {
+            var requestMessage = new HttpWebRequestMessage(
+                new DataServiceClientRequestMessageArgs(
+                    "GET",
+                    new Uri(this.ServiceBaseUri.OriginalString + "$metadata", UriKind.Absolute),
+                    useDefaultCredentials: true,
+                    usePostTunneling: false,
+                    headers: new Dictionary<string, string>()));
+            using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
+            {
+                var modelStr = r.ReadToEnd();
+
+                // [Required] ==> Nullable="false"
+                Assert.Contains(
+                    "<Property Name=\"FirstName\" Type=\"Edm.String\" Nullable=\"false\" MaxLength=\"max\" />",
+                    modelStr,
+                    StringComparison.Ordinal);
+
+                // [MaxLength] [MinLength] --> only MaxLength=".."
+                Assert.Contains(
+                    "<Property Name=\"LastName\" Type=\"Edm.String\" MaxLength=\"26\" />",
+                    modelStr,
+                    StringComparison.Ordinal);
+
+                // [Timestamp] ==> Computed
+                Assert.Contains(
+                    "<Property Name=\"TimeStampValue\" Type=\"Edm.Binary\" Nullable=\"false\" MaxLength=\"8\">\r\n"
+                        + "          <Annotation Term=\"Org.OData.Core.V1.Computed\" Bool=\"true\" />",
+                    modelStr,
+                    StringComparison.Ordinal);
+            }
+        }
+
+        [Fact]
         public void CURDEntity()
         {
             this.TestClientContext.MergeOption = Microsoft.OData.Client.MergeOption.OverwriteChanges;

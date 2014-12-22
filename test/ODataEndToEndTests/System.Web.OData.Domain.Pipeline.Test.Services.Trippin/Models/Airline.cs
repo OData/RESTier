@@ -11,5 +11,8 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
         public string AirlineCode { get; set; }
 
         public string Name { get; set; }
+
+        [Timestamp]
+        public Byte[] TimeStampValue { get; set; }
     }
 }

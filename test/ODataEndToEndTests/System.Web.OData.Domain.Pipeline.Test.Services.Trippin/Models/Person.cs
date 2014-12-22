@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace System.Web.OData.Domain.Test.Services.Trippin.Models
 {
@@ -15,8 +16,10 @@ namespace System.Web.OData.Domain.Test.Services.Trippin.Models
 
         public string UserName { get; set; }
 
+        [Required]
         public string FirstName { get; set; }
 
+        [MaxLength(26), MinLength(1)]
         public string LastName { get; set; }
 
         public long Concurrency { get; set; }
