@@ -2,11 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Data.Domain.Properties;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core.Properties;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
     public static class EdmLibHelpers
     {

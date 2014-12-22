@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Data.Domain.Query
+namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
     /// Represents a reference to query data in terms of a model.

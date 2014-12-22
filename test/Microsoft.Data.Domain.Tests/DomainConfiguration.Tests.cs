@@ -1,17 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Data.Domain.Tests
+namespace Microsoft.Restier.Core.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using Model;
-    using Query;
-    using Submit;
-
     [TestClass]
     public class DomainConfigurationTests
     {

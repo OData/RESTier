@@ -2,8 +2,9 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.OData.Edm;
 
-namespace Microsoft.OData.Edm
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
     internal static class EdmHelpers
     {

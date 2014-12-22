@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Microsoft.Data.Domain.Query
+namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
     /// Represents a query request.

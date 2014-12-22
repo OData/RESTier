@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Data.Domain.Model
+namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
     /// Represents a hook point that implements a model flow.

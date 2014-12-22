@@ -4,7 +4,7 @@
 using System;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Data.Domain.Query
+namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
     /// Represents context under which a query flow operates.

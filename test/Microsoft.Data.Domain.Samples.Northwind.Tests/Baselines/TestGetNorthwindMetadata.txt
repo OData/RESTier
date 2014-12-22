@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
   <edmx:DataServices>
-    <Schema Namespace="Microsoft.Data.Domain.Samples.Northwind.Models" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+    <Schema Namespace="Microsoft.Restier.Samples.Northwind.Models" xmlns="http://docs.oasis-open.org/odata/ns/edm">
       <EntityType Name="Alphabetical_list_of_product">
         <Key>
           <PropertyRef Name="ProductID" />
@@ -33,7 +33,7 @@
         <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
         <Property Name="Description" Type="Edm.String" MaxLength="max" />
         <Property Name="Picture" Type="Edm.Binary" MaxLength="max" />
-        <NavigationProperty Name="Products" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Product)" Partner="Category" />
+        <NavigationProperty Name="Products" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" Partner="Category" />
       </EntityType>
       <EntityType Name="Product">
         <Key>
@@ -51,11 +51,11 @@
         <Property Name="UnitsOnOrder" Type="Edm.Int16" />
         <Property Name="ReorderLevel" Type="Edm.Int16" />
         <Property Name="Discontinued" Type="Edm.Boolean" Nullable="false" />
-        <NavigationProperty Name="Category" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Category" Partner="Products">
+        <NavigationProperty Name="Category" Type="Microsoft.Restier.Samples.Northwind.Models.Category" Partner="Products">
           <ReferentialConstraint Property="CategoryID" ReferencedProperty="CategoryID" />
         </NavigationProperty>
-        <NavigationProperty Name="Order_Details" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order_Detail)" Partner="Product" />
-        <NavigationProperty Name="Supplier" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Supplier" Partner="Products">
+        <NavigationProperty Name="Order_Details" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Order_Detail)" Partner="Product" />
+        <NavigationProperty Name="Supplier" Type="Microsoft.Restier.Samples.Northwind.Models.Supplier" Partner="Products">
           <ReferentialConstraint Property="SupplierID" ReferencedProperty="SupplierID" />
         </NavigationProperty>
       </EntityType>
@@ -73,10 +73,10 @@
         <Property Name="UnitPrice" Type="Edm.Decimal" Nullable="false" Precision="19" Scale="4" />
         <Property Name="Quantity" Type="Edm.Int16" Nullable="false" />
         <Property Name="Discount" Type="Edm.Single" Nullable="false" />
-        <NavigationProperty Name="Order" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Order" Nullable="false" Partner="Order_Details">
+        <NavigationProperty Name="Order" Type="Microsoft.Restier.Samples.Northwind.Models.Order" Nullable="false" Partner="Order_Details">
           <ReferentialConstraint Property="OrderID" ReferencedProperty="OrderID" />
         </NavigationProperty>
-        <NavigationProperty Name="Product" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Product" Nullable="false" Partner="Order_Details">
+        <NavigationProperty Name="Product" Type="Microsoft.Restier.Samples.Northwind.Models.Product" Nullable="false" Partner="Order_Details">
           <ReferentialConstraint Property="ProductID" ReferencedProperty="ProductID" />
         </NavigationProperty>
       </EntityType>
@@ -97,14 +97,14 @@
         <Property Name="ShipRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="ShipPostalCode" Type="Edm.String" MaxLength="10" />
         <Property Name="ShipCountry" Type="Edm.String" MaxLength="15" />
-        <NavigationProperty Name="Customer" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Customer" Partner="Orders">
+        <NavigationProperty Name="Customer" Type="Microsoft.Restier.Samples.Northwind.Models.Customer" Partner="Orders">
           <ReferentialConstraint Property="CustomerID" ReferencedProperty="CustomerID" />
         </NavigationProperty>
-        <NavigationProperty Name="Employee" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Employee" Partner="Orders">
+        <NavigationProperty Name="Employee" Type="Microsoft.Restier.Samples.Northwind.Models.Employee" Partner="Orders">
           <ReferentialConstraint Property="EmployeeID" ReferencedProperty="EmployeeID" />
         </NavigationProperty>
-        <NavigationProperty Name="Order_Details" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order_Detail)" Partner="Order" />
-        <NavigationProperty Name="Shipper" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Shipper" Partner="Orders">
+        <NavigationProperty Name="Order_Details" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Order_Detail)" Partner="Order" />
+        <NavigationProperty Name="Shipper" Type="Microsoft.Restier.Samples.Northwind.Models.Shipper" Partner="Orders">
           <ReferentialConstraint Property="ShipVia" ReferencedProperty="ShipperID" />
         </NavigationProperty>
       </EntityType>
@@ -123,8 +123,8 @@
         <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
         <Property Name="Phone" Type="Edm.String" MaxLength="24" />
         <Property Name="Fax" Type="Edm.String" MaxLength="24" />
-        <NavigationProperty Name="CustomerDemographics" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.CustomerDemographic)" Partner="Customers" />
-        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order)" Partner="Customer" />
+        <NavigationProperty Name="CustomerDemographics" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.CustomerDemographic)" Partner="Customers" />
+        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Order)" Partner="Customer" />
       </EntityType>
       <EntityType Name="CustomerDemographic">
         <Key>
@@ -132,7 +132,7 @@
         </Key>
         <Property Name="CustomerTypeID" Type="Edm.String" Nullable="false" MaxLength="10" />
         <Property Name="CustomerDesc" Type="Edm.String" MaxLength="max" />
-        <NavigationProperty Name="Customers" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Customer)" Partner="CustomerDemographics" />
+        <NavigationProperty Name="Customers" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Customer)" Partner="CustomerDemographics" />
       </EntityType>
       <EntityType Name="Employee">
         <Key>
@@ -156,12 +156,12 @@
         <Property Name="Notes" Type="Edm.String" MaxLength="max" />
         <Property Name="ReportsTo" Type="Edm.Int32" />
         <Property Name="PhotoPath" Type="Edm.String" MaxLength="255" />
-        <NavigationProperty Name="Employees1" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Employee)" Partner="Employee1" />
-        <NavigationProperty Name="Employee1" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Employee" Partner="Employees1">
+        <NavigationProperty Name="Employees1" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Employee)" Partner="Employee1" />
+        <NavigationProperty Name="Employee1" Type="Microsoft.Restier.Samples.Northwind.Models.Employee" Partner="Employees1">
           <ReferentialConstraint Property="ReportsTo" ReferencedProperty="EmployeeID" />
         </NavigationProperty>
-        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order)" Partner="Employee" />
-        <NavigationProperty Name="Territories" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Territory)" Partner="Employees" />
+        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Order)" Partner="Employee" />
+        <NavigationProperty Name="Territories" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Territory)" Partner="Employees" />
       </EntityType>
       <EntityType Name="Territory">
         <Key>
@@ -170,10 +170,10 @@
         <Property Name="TerritoryID" Type="Edm.String" Nullable="false" MaxLength="20" />
         <Property Name="TerritoryDescription" Type="Edm.String" Nullable="false" MaxLength="50" />
         <Property Name="RegionID" Type="Edm.Int32" Nullable="false" />
-        <NavigationProperty Name="Region" Type="Microsoft.Data.Domain.Samples.Northwind.Models.Region" Nullable="false" Partner="Territories">
+        <NavigationProperty Name="Region" Type="Microsoft.Restier.Samples.Northwind.Models.Region" Nullable="false" Partner="Territories">
           <ReferentialConstraint Property="RegionID" ReferencedProperty="RegionID" />
         </NavigationProperty>
-        <NavigationProperty Name="Employees" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Employee)" Partner="Territories" />
+        <NavigationProperty Name="Employees" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Employee)" Partner="Territories" />
       </EntityType>
       <EntityType Name="Region">
         <Key>
@@ -183,7 +183,7 @@
           <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
         </Property>
         <Property Name="RegionDescription" Type="Edm.String" Nullable="false" MaxLength="50" />
-        <NavigationProperty Name="Territories" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Territory)" Partner="Region" />
+        <NavigationProperty Name="Territories" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Territory)" Partner="Region" />
       </EntityType>
       <EntityType Name="Shipper">
         <Key>
@@ -194,7 +194,7 @@
         </Property>
         <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
         <Property Name="Phone" Type="Edm.String" MaxLength="24" />
-        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Order)" Partner="Shipper" />
+        <NavigationProperty Name="Orders" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Order)" Partner="Shipper" />
       </EntityType>
       <EntityType Name="Supplier">
         <Key>
@@ -214,7 +214,7 @@
         <Property Name="Phone" Type="Edm.String" MaxLength="24" />
         <Property Name="Fax" Type="Edm.String" MaxLength="24" />
         <Property Name="HomePage" Type="Edm.String" MaxLength="max" />
-        <NavigationProperty Name="Products" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Product)" Partner="Supplier" />
+        <NavigationProperty Name="Products" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" Partner="Supplier" />
       </EntityType>
       <EntityType Name="Category_Sales_for_1997">
         <Key>
@@ -446,39 +446,39 @@
         <Property Name="definition" Type="Edm.Binary" MaxLength="max" />
       </EntityType>
       <Function Name="MostExpensive" IsBound="true">
-        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Data.Domain.Samples.Northwind.Models.Product)" Nullable="false" />
+        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" Nullable="false" />
         <ReturnType Type="Edm.Double" Nullable="false" />
       </Function>
       <EntityContainer Name="NorthwindContext">
-        <EntitySet Name="Products" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product">
+        <EntitySet Name="Products" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product">
           <NavigationPropertyBinding Path="Category" Target="Categories" />
           <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
           <NavigationPropertyBinding Path="Supplier" Target="Suppliers" />
         </EntitySet>
-        <EntitySet Name="Orders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order">
+        <EntitySet Name="Orders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order">
           <NavigationPropertyBinding Path="Customer" Target="Customers" />
           <NavigationPropertyBinding Path="Employee" Target="Employees" />
           <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
           <NavigationPropertyBinding Path="Shipper" Target="Shippers" />
         </EntitySet>
-        <EntitySet Name="Customers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Customer">
+        <EntitySet Name="Customers" EntityType="Microsoft.Restier.Samples.Northwind.Models.Customer">
           <NavigationPropertyBinding Path="CustomerDemographics" Target="CustomerDemographics" />
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
         </EntitySet>
-        <EntitySet Name="Employees" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Employee">
+        <EntitySet Name="Employees" EntityType="Microsoft.Restier.Samples.Northwind.Models.Employee">
           <NavigationPropertyBinding Path="Employees1" Target="Employees" />
           <NavigationPropertyBinding Path="Employee1" Target="Employees" />
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
           <NavigationPropertyBinding Path="Territories" Target="Territories" />
         </EntitySet>
-        <EntitySet Name="Regions" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Region">
+        <EntitySet Name="Regions" EntityType="Microsoft.Restier.Samples.Northwind.Models.Region">
           <NavigationPropertyBinding Path="Territories" Target="Territories" />
         </EntitySet>
-        <EntitySet Name="Suppliers" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Supplier">
+        <EntitySet Name="Suppliers" EntityType="Microsoft.Restier.Samples.Northwind.Models.Supplier">
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>
-        <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Product" />
-        <EntitySet Name="CurrentOrders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order" />
+        <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product" />
+        <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>

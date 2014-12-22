@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Data.Domain.Samples.Northwind</RootNamespace>
-    <AssemblyName>Microsoft.Data.Domain.Samples.Northwind</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Samples.Northwind</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Samples.Northwind</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -155,25 +155,25 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Data.Domain.Conventions\Microsoft.Data.Domain.Conventions.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain.Conventions\Microsoft.Restier.Conventions.csproj">
       <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
-      <Name>Microsoft.Data.Domain.Conventions</Name>
+      <Name>Microsoft.Restier.Conventions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Data.Domain.EntityFramework\Microsoft.Data.Domain.EntityFramework.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
-      <Name>Microsoft.Data.Domain.EntityFramework</Name>
+      <Name>Microsoft.Restier.EntityFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Data.Domain.Security\Microsoft.Data.Domain.Security.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain.Security\Microsoft.Restier.Security.csproj">
       <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
-      <Name>Microsoft.Data.Domain.Security</Name>
+      <Name>Microsoft.Restier.Security</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
-      <Name>Microsoft.Data.Domain</Name>
+      <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\System.Web.OData.Domain\System.Web.OData.Domain.csproj">
+    <ProjectReference Include="..\System.Web.OData.Domain\Microsoft.Restier.WebApi.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>System.Web.OData.Domain</Name>
+      <Name>Microsoft.Restier.WebApi</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

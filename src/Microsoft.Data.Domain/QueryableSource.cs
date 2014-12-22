@@ -8,7 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
     internal abstract class QueryableSource : IOrderedQueryable, IQueryProvider
     {
@@ -28,7 +28,7 @@ namespace Microsoft.Data.Domain
 
         IQueryProvider IQueryable.Provider
         {
-	        get
+            get
             {
                 return this;
             }

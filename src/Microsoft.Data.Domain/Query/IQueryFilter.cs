@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Data.Domain.Query
+namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
     /// Represents a hook point that filters a query.

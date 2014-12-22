@@ -5,10 +5,11 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Model;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Data.Domain.Conventions
+namespace Microsoft.Restier.Conventions
 {
     public class ConventionalModelExtender : IModelExtender
     {

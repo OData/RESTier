@@ -5,8 +5,8 @@
     <ProjectGuid>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Data.Domain</RootNamespace>
-    <AssemblyName>Microsoft.Data.Domain</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Core</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Core</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -105,7 +105,7 @@
     <Compile Include="Submit\ValidationSeverity.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.Data.Domain.nuspec" />
+    <None Include="Microsoft.Restier.Core.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

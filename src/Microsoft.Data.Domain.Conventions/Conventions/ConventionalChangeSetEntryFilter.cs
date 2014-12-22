@@ -5,9 +5,10 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Submit;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Data.Domain.Conventions
+namespace Microsoft.Restier.Conventions
 {
     /// <summary>
     /// A conventional change set entry filter.

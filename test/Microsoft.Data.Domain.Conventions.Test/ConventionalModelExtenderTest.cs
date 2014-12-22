@@ -5,13 +5,14 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Web.OData.Builder;
-using Microsoft.Data.Domain.Model;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Xunit;
 using Xunit.Extensions;
 
-namespace Microsoft.Data.Domain.Conventions.Test
+namespace Microsoft.Restier.Conventions.Test
 {
     public class ConventionalModelExtenderTest
     {

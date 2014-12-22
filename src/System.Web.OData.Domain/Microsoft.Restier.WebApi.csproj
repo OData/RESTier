@@ -5,8 +5,8 @@
     <ProjectGuid>{186F667E-54E5-4B57-9998-21D74CB77C24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.Web.OData.Domain</RootNamespace>
-    <AssemblyName>System.Web.OData.Domain</AssemblyName>
+    <RootNamespace>Microsoft.Restier.WebApi</RootNamespace>
+    <AssemblyName>Microsoft.Restier.WebApi</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -87,14 +87,14 @@
     <Compile Include="Filters\ValidationResultDto.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
-      <Name>Microsoft.Data.Domain</Name>
+      <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="System.Web.OData.Domain.nuspec">
+    <None Include="Microsoft.Restier.WebApi.nuspec">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

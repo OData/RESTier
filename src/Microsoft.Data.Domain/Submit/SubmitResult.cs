@@ -2,9 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 
-namespace Microsoft.Data.Domain.Submit
+namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
     /// Represents a submit result.

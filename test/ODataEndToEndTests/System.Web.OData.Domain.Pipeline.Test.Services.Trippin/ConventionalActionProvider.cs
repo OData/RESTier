@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.Data.Domain.Model;
-using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData.Domain;
+using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Data.Domain.Conventions
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
     public class ConventionalActionProvider : IModelExtender
     {

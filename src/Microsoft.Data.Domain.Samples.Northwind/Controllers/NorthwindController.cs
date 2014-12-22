@@ -5,11 +5,11 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using System.Web.OData;
-using System.Web.OData.Domain;
 using System.Web.OData.Routing;
-using Microsoft.Data.Domain.Samples.Northwind.Models;
+using Microsoft.Restier.Samples.Northwind.Models;
+using Microsoft.Restier.WebApi;
 
-namespace Microsoft.Data.Domain.Samples.Northwind.Controllers
+namespace Microsoft.Restier.Samples.Northwind.Controllers
 {
     public class NorthwindController :
         ODataDomainController<NorthwindDomain>
@@ -66,7 +66,7 @@ namespace Microsoft.Data.Domain.Samples.Northwind.Controllers
         }
 
         [HttpGet]
-        [ODataRoute("Products/Microsoft.Data.Domain.Samples.Northwind.Models.MostExpensive")]
+        [ODataRoute("Products/Microsoft.Restier.Samples.Northwind.Models.MostExpensive")]
         public IHttpActionResult MostExpensive()
         {
             var product = DbContext.Products.Max(p => p.UnitPrice);

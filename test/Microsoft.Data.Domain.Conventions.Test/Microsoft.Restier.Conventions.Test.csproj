@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B10AC223-BB61-4229-A063-353AD5D7E3C6}</ProjectGuid>
+    <ProjectGuid>{1629B189-52CE-4450-8377-7A9503C98C74}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Data.Domain.Samples.Northwind.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Data.Domain.Samples.Northwind.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Conventions.Test</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Conventions.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,15 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.OData.Core">
       <HintPath>..\..\packages\Microsoft.OData.Core.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
     </Reference>
@@ -53,12 +44,14 @@
     <Reference Include="Microsoft.Spatial">
       <HintPath>..\..\packages\Microsoft.Spatial.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq.4.2.1409.1722\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -68,12 +61,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.OData">
       <HintPath>..\..\packages\Microsoft.AspNet.OData.5.3.0\lib\net45\System.Web.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit">
+      <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.extensions">
+      <HintPath>..\..\packages\xunit.extensions.1.9.2\lib\net20\xunit.extensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -82,86 +77,25 @@
         <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
       </ItemGroup>
     </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
+    <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="..\Shared\BaselineHelpers.cs">
-      <Link>.Shared\BaselineHelpers.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ODataTestHelpers.cs">
-      <Link>.Shared\ODataTestHelpers.cs</Link>
-    </Compile>
-    <Compile Include="AssemblyTests.cs" />
-    <Compile Include="ODataFeedTests.cs" />
+    <Compile Include="ConventionalModelExtenderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryTests.cs" />
-    <Compile Include="SaveTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain.Conventions\Microsoft.Data.Domain.Conventions.csproj">
-      <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
-      <Name>Microsoft.Data.Domain.Conventions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain.EntityFramework\Microsoft.Data.Domain.EntityFramework.csproj">
-      <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
-      <Name>Microsoft.Data.Domain.EntityFramework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain.Samples.Northwind\Microsoft.Data.Domain.Samples.Northwind.csproj">
-      <Project>{bce769ad-2d64-4ead-b83d-1328621cf6e6}</Project>
-      <Name>Microsoft.Data.Domain.Samples.Northwind</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain.Security\Microsoft.Data.Domain.Security.csproj">
-      <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
-      <Name>Microsoft.Data.Domain.Security</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj">
-      <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
-      <Name>Microsoft.Data.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\System.Web.OData.Domain\System.Web.OData.Domain.csproj">
-      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>System.Web.OData.Domain</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Northwind.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Northwind_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestBatch.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestCustomersEntitySetQuery.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestCustomersEntitySetTopSkipQuery.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestGetNorthwindMetadata.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestPatchProductReturnContent.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestPostAction.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestPostOrderInvalidShipVia.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Baselines\TestPutProductReturnContent.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\..\src\Microsoft.Data.Domain.Conventions\Microsoft.Restier.Conventions.csproj">
+      <Project>{5A10C8BB-5CA0-4D41-A731-45CD29A30D34}</Project>
+      <Name>Microsoft.Restier.Conventions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
+      <Project>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</Project>
+      <Name>Microsoft.Restier.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

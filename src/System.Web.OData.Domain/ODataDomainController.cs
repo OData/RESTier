@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,23 +13,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
-using System.Web.OData.Domain.Batch;
-using System.Web.OData.Domain.Filters;
-using System.Web.OData.Domain.Results;
+using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Formatter;
 using System.Web.OData.Query;
 using System.Web.OData.Results;
 using System.Web.OData.Routing;
-using Microsoft.Data.Domain;
-using Microsoft.Data.Domain.Query;
-using Microsoft.Data.Domain.Submit;
 using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Filters;
+using Microsoft.Restier.WebApi.Results;
 
-namespace System.Web.OData.Domain
+namespace Microsoft.Restier.WebApi
 {
     [ODataDomainFormatting]
     [ODataDomainExceptionFilter]

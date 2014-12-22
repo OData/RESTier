@@ -2,10 +2,10 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Web.Http;
-using System.Web.OData.Domain.Batch;
-using System.Web.OData.Domain.Test.Services.Trippin.Controllers;
+using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers;
 
-namespace System.Web.OData.Domain.Test.Services.Trippin
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
     public static class WebApiConfig
     {

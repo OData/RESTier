@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
@@ -9,16 +8,17 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Model;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
-using Microsoft.OData.Edm.Expressions;
+using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Edm.Vocabularies.V1;
-using EdmLib = Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core.Model;
+using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
+using EdmProperty = System.Data.Entity.Core.Metadata.Edm.EdmProperty;
 
-namespace Microsoft.Data.Domain.EntityFramework.Model
+namespace Microsoft.Restier.EntityFramework.Model
 {
     /// <summary>
     /// Represents a model producer that uses the
@@ -47,11 +47,11 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
         /// A task that represents the asynchronous
         /// operation whose result is the base model.
         /// </returns>
-        public Task<EdmLib.EdmModel> ProduceModelAsync(
+        public Task<EdmModel> ProduceModelAsync(
             ModelContext context,
             CancellationToken cancellationToken)
         {
-            var model = new EdmLib.EdmModel();
+            var model = new EdmModel();
             var domainContext = context.DomainContext;
             var dbContext = domainContext.GetProperty<DbContext>("DbContext");
             var elementMap = new Dictionary<MetadataItem, IEdmElement>();
@@ -76,7 +76,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
             var efEntityContainer = efModel.GetItems<
                 EntityContainer>(DataSpace.CSpace).Single();
-            var entityContainer = new EdmLib.EdmEntityContainer(
+            var entityContainer = new EdmEntityContainer(
                 namespaceName, efEntityContainer.Name);
             elementMap.Add(efEntityContainer, entityContainer);
 
@@ -88,8 +88,8 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 {
                     continue;
                 }
-                List<EdmLib.EdmStructuralProperty> concurrencyProperties;
-                var entityType = ModelProducer.CreateEntityType(
+                List<EdmStructuralProperty> concurrencyProperties;
+                var entityType = CreateEntityType(
                     efModel, efEntityType, model, out concurrencyProperties);
                 model.AddElement(entityType);
                 elementMap.Add(efEntityType, entityType);
@@ -105,9 +105,9 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
             foreach (var efAssociationSet in efEntityContainer.AssociationSets)
             {
-                ModelProducer.AddNavigationProperties(
+                AddNavigationProperties(
                     efModel, efAssociationSet, model, elementMap);
-                ModelProducer.AddNavigationPropertyBindings(
+                AddNavigationPropertyBindings(
                     efModel, efAssociationSet, model, elementMap);
             }
 
@@ -119,16 +119,16 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
         private static IEdmEntityType CreateEntityType(
             MetadataWorkspace efModel, EntityType efEntityType,
-            EdmLib.EdmModel model, out List<EdmLib.EdmStructuralProperty> concurrencyProperties)
+            EdmModel model, out List<EdmStructuralProperty> concurrencyProperties)
         {
             // TODO: support complex and entity inheritance
             var oType = efModel.GetObjectSpaceType(efEntityType) as EntityType;
-            var entityType = new EdmLib.EdmEntityType(
+            var entityType = new EdmEntityType(
                 oType.NamespaceName, oType.Name);
             concurrencyProperties = null;
             foreach (var efProperty in efEntityType.Properties)
             {
-                var type = ModelProducer.GetPrimitiveTypeReference(efProperty);
+                var type = GetPrimitiveTypeReference(efProperty);
                 if (type != null)
                 {
                     string defaultValue = null;
@@ -152,7 +152,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
                     if (efProperty.ConcurrencyMode == ConcurrencyMode.Fixed)
                     {
-                        concurrencyProperties = concurrencyProperties ?? new List<EdmLib.EdmStructuralProperty>();
+                        concurrencyProperties = concurrencyProperties ?? new List<EdmStructuralProperty>();
                         concurrencyProperties.Add(property);
                     }
                 }
@@ -163,7 +163,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
             return entityType;
         }
 
-        private static void SetComputedAnnotation(EdmLib.EdmModel model, IEdmProperty target)
+        private static void SetComputedAnnotation(EdmModel model, IEdmProperty target)
         {
             // when 'target' is <Key> property, V4's 'Computed' also has the meaning of OData V3's 'Identity'.
             var val = new EdmBooleanConstant(value: true);
@@ -184,23 +184,23 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
             switch (kind)
             {
                 default:
-                    return EdmLib.EdmCoreModel.Instance.GetPrimitive(
+                    return EdmCoreModel.Instance.GetPrimitive(
                         kind, efProperty.Nullable);
                 case EdmPrimitiveTypeKind.Binary:
-                    return EdmLib.EdmCoreModel.Instance.GetBinary(
+                    return EdmCoreModel.Instance.GetBinary(
                         efProperty.IsMaxLength, efProperty.MaxLength,
                         efProperty.Nullable);
                 case EdmPrimitiveTypeKind.Decimal:
-                    return EdmLib.EdmCoreModel.Instance.GetDecimal(
+                    return EdmCoreModel.Instance.GetDecimal(
                         efProperty.Precision, efProperty.Scale,
                         efProperty.Nullable);
                 case EdmPrimitiveTypeKind.String:
-                    return EdmLib.EdmCoreModel.Instance.GetString(
+                    return EdmCoreModel.Instance.GetString(
                         efProperty.IsMaxLength, efProperty.MaxLength,
                         efProperty.IsUnicode, efProperty.Nullable);
                 case EdmPrimitiveTypeKind.DateTimeOffset:
                 case EdmPrimitiveTypeKind.Duration:
-                    return EdmLib.EdmCoreModel.Instance.GetTemporal(
+                    return EdmCoreModel.Instance.GetTemporal(
                         kind, efProperty.Precision, efProperty.Nullable);
             }
         }
@@ -243,14 +243,14 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
         private static void AddNavigationProperties(
             MetadataWorkspace efModel, AssociationSet efAssociationSet,
-            EdmLib.EdmModel model, IDictionary<MetadataItem, IEdmElement> elementMap)
+            EdmModel model, IDictionary<MetadataItem, IEdmElement> elementMap)
         {
             if (efAssociationSet.AssociationSetEnds.Count != 2)
             {
                 return;
             }
             var efAssociation = efAssociationSet.ElementType;
-            var navPropertyInfos = new EdmLib.EdmNavigationPropertyInfo[2];
+            var navPropertyInfos = new EdmNavigationPropertyInfo[2];
             for (var i = 0; i < 2; i++)
             {
                 var efEnd = efAssociation.AssociationEndMembers[i];
@@ -275,14 +275,14 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 }
                 var targetEntityType = elementMap[
                     efTargetEntityType] as IEdmEntityType;
-                navPropertyInfos[i] = new EdmLib.EdmNavigationPropertyInfo()
+                navPropertyInfos[i] = new EdmNavigationPropertyInfo()
                 {
                     ContainsTarget = false,
                     Name = efNavProperty.Name,
                     OnDelete = efEnd.DeleteBehavior == OperationAction.Cascade
                         ? EdmOnDeleteAction.Cascade : EdmOnDeleteAction.None,
                     Target = targetEntityType,
-                    TargetMultiplicity = ModelProducer.GetEdmMultiplicity(
+                    TargetMultiplicity = GetEdmMultiplicity(
                         efNavProperty.ToEndMember.RelationshipMultiplicity)
                 };
                 var constraint = efAssociation.Constraint;
@@ -298,7 +298,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
             {
                 var efEnd = efAssociation.AssociationEndMembers[1];
                 var efEntityType = efEnd.GetEntityType();
-                var entityType = elementMap[efEntityType] as EdmLib.EdmEntityType;
+                var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[1].Name) == null)
                 {
                     entityType.AddUnidirectionalNavigation(navPropertyInfos[1]);
@@ -308,7 +308,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
             {
                 var efEnd = efAssociation.AssociationEndMembers[0];
                 var efEntityType = efEnd.GetEntityType();
-                var entityType = elementMap[efEntityType] as EdmLib.EdmEntityType;
+                var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[0].Name) == null)
                 {
                     entityType.AddUnidirectionalNavigation(navPropertyInfos[0]);
@@ -318,7 +318,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
             {
                 var efEnd = efAssociation.AssociationEndMembers[0];
                 var efEntityType = efEnd.GetEntityType();
-                var entityType = elementMap[efEntityType] as EdmLib.EdmEntityType;
+                var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[0].Name) == null)
                 {
                     entityType.AddBidirectionalNavigation(
@@ -329,7 +329,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
 
         private static void AddNavigationPropertyBindings(
             MetadataWorkspace efModel, AssociationSet efAssociationSet,
-            EdmLib.EdmModel model, IDictionary<MetadataItem, IEdmElement> elementMap)
+            EdmModel model, IDictionary<MetadataItem, IEdmElement> elementMap)
         {
             if (efAssociationSet.AssociationSetEnds.Count != 2)
             {
@@ -359,7 +359,7 @@ namespace Microsoft.Data.Domain.EntityFramework.Model
                 {
                     continue;
                 }
-                var entitySet = elementMap[efSetEnd.EntitySet] as EdmLib.EdmEntitySet;
+                var entitySet = elementMap[efSetEnd.EntitySet] as EdmEntitySet;
                 var efTargetSetEnd = efAssociationSet.AssociationSetEnds
                     .Single(e => e.Name == efNavProperty.ToEndMember.Name);
                 entitySet.AddNavigationTarget(navProperty,

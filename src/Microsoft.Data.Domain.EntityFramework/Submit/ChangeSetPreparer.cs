@@ -10,10 +10,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Query;
-using Microsoft.Data.Domain.Submit;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Data.Domain.EntityFramework.Submit
+namespace Microsoft.Restier.EntityFramework.Submit
 {
     public class ChangeSetPreparer : IChangeSetPreparer
     {
@@ -42,21 +43,21 @@ namespace Microsoft.Data.Domain.EntityFramework.Submit
                 {
                     entity = set.Create();
 
-                    ChangeSetPreparer.SetValues(entity, entityType, entry.LocalValues);
+                    SetValues(entity, entityType, entry.LocalValues);
 
                     set.Add(entity);
                 }
                 else if (entry.IsDelete)
                 {
-                    entity = await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
+                    entity = await FindEntity(context, entry, cancellationToken);
                     set.Remove(entity);
                 }
                 else if (entry.IsUpdate)
                 {
-                    entity = await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
+                    entity = await FindEntity(context, entry, cancellationToken);
 
                     DbEntityEntry dbEntry = dbContext.Entry(entity);
-                    ChangeSetPreparer.SetValues(dbEntry, entry, entityType);
+                    SetValues(dbEntry, entry, entityType);
                 }
                 else
                 {
@@ -104,8 +105,8 @@ namespace Microsoft.Data.Domain.EntityFramework.Submit
 
                 object newInstance = Activator.CreateInstance(entityType);
 
-                ChangeSetPreparer.SetValues(newInstance, entityType, entry.EntityKey);
-                ChangeSetPreparer.SetValues(newInstance, entityType, entry.LocalValues);
+                SetValues(newInstance, entityType, entry.EntityKey);
+                SetValues(newInstance, entityType, entry.LocalValues);
 
                 dbEntry.CurrentValues.SetValues(newInstance);
             }

@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
-using Microsoft.Data.Domain;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 
-namespace System.Web.OData.Domain.Results
+namespace Microsoft.Restier.WebApi.Results
 {
     /// <summary>
     /// Represents a collection of entity instances being returned from an action.

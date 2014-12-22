@@ -4,9 +4,9 @@
 using System.Data.Entity;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Submit;
+using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Data.Domain.EntityFramework.Submit
+namespace Microsoft.Restier.EntityFramework.Submit
 {
     public class SubmitExecutor : ISubmitExecutor
     {

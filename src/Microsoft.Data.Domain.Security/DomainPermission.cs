@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Data.Domain.Security
+namespace Microsoft.Restier.Security
 {
     /// <summary>
     /// Represents a role-based security statement that grants or

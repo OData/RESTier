@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Data.Domain.Model
+namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
     /// Represents a hook point that maps between

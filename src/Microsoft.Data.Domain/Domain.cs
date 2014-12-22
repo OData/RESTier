@@ -9,13 +9,12 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
-    using Model;
-    using Query;
-    using Submit;
-
     /// <summary>
     /// Represents the domain engine and provides a set of static
     /// (Shared in Visual Basic) methods for interacting with objects

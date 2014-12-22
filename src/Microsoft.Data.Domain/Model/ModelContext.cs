@@ -3,7 +3,7 @@
 
 using Microsoft.OData.Edm.Library;
 
-namespace Microsoft.Data.Domain.Model
+namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
     /// Represents context under which a model flow operates.

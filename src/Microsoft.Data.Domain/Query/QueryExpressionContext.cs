@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.Data.Domain.Query
+namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
     /// Represents context for a query expression that

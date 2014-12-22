@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Represents methods that identify domain data.

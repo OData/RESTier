@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Represents a base class for a domain.

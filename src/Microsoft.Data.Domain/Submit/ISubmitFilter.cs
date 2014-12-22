@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Data.Domain.Submit
+namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
     /// Represents a hook point that filters a submission.

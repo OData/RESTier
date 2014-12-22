@@ -3,16 +3,16 @@
 
 using System;
 using System.Data.Entity;
-using Microsoft.Data.Domain.Model;
-using Microsoft.Data.Domain.Query;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.EntityFramework.Model;
+using Microsoft.Restier.EntityFramework.Query;
+using Microsoft.Restier.EntityFramework.Submit;
 
-namespace Microsoft.Data.Domain.EntityFramework
+namespace Microsoft.Restier.EntityFramework
 {
-    using Microsoft.Data.Domain.EntityFramework.Submit;
-    using Microsoft.Data.Domain.Submit;
-    using Model;
-    using Query;
-
     /// <summary>
     /// Represents a domain over a DbContext.
     /// </summary>

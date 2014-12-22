@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RESTier")]
+[assembly: AssemblyTitle("RESTier Core")]
 [assembly: AssemblyDescription("A framework for authoring rich domain data and logic over a data source proxy.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft.Data.Domain")]
+[assembly: AssemblyProduct("Microsoft.Restier.Core")]
 [assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

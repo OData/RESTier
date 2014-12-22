@@ -4,7 +4,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Data.Domain.Tests
+namespace Microsoft.Restier.Core.Tests
 {
     [TestClass]
     public class InvocationContextTests

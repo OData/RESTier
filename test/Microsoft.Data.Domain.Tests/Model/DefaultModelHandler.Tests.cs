@@ -6,9 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Data.Domain.Model.Tests
+namespace Microsoft.Restier.Core.Tests.Model
 {
     [TestClass]
     public class DefaultModelHandlerTests
@@ -37,7 +38,7 @@ namespace Microsoft.Data.Domain.Model.Tests
 
             public TestModelExtender(int index)
             {
-                this._index = index;
+                _index = index;
             }
 
             public async Task ExtendModelAsync(
@@ -45,10 +46,10 @@ namespace Microsoft.Data.Domain.Model.Tests
                 CancellationToken cancellationToken)
             {
                 var entityType = new EdmEntityType(
-                    "TestNamespace", "TestName" + this._index);
+                    "TestNamespace", "TestName" + _index);
                 context.Model.AddElement(entityType);
                 (context.Model.EntityContainer as EdmEntityContainer)
-                    .AddEntitySet("TestEntitySet" + this._index, entityType);
+                    .AddEntitySet("TestEntitySet" + _index, entityType);
                 await Task.Yield();
             }
         }

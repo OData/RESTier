@@ -2,8 +2,9 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Restier.Core;
 
-namespace Microsoft.Data.Domain.Security
+namespace Microsoft.Restier.Security
 {
     /// <summary>
     /// Specifies that principal-supplied role-based

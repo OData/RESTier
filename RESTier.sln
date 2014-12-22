@@ -7,46 +7,46 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D5E947EB-03C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{3F748477-9CDD-485C-A885-1FEC14A24331}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain", "src\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj", "{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Core", "src\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj", "{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{8C1F84BA-3888-4FC5-A286-506A11C54463}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.Conventions", "src\Microsoft.Data.Domain.Conventions\Microsoft.Data.Domain.Conventions.csproj", "{5A10C8BB-5CA0-4D41-A731-45CD29A30D34}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Conventions", "src\Microsoft.Data.Domain.Conventions\Microsoft.Restier.Conventions.csproj", "{5A10C8BB-5CA0-4D41-A731-45CD29A30D34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.Security", "src\Microsoft.Data.Domain.Security\Microsoft.Data.Domain.Security.csproj", "{B15A5064-F0D2-480C-A51E-3430A8360827}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Security", "src\Microsoft.Data.Domain.Security\Microsoft.Restier.Security.csproj", "{B15A5064-F0D2-480C-A51E-3430A8360827}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{0355FEC8-17CF-44B4-9D24-685266A349FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.EntityFramework", "src\Microsoft.Data.Domain.EntityFramework\Microsoft.Data.Domain.EntityFramework.csproj", "{F7EC910E-17CE-4579-84C5-36D3777B3218}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.EntityFramework", "src\Microsoft.Data.Domain.EntityFramework\Microsoft.Restier.EntityFramework.csproj", "{F7EC910E-17CE-4579-84C5-36D3777B3218}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Publishers", "Publishers", "{432208D4-54DF-453E-96AE-CB7721461030}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Web.OData.Domain", "src\System.Web.OData.Domain\System.Web.OData.Domain.csproj", "{186F667E-54E5-4B57-9998-21D74CB77C24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi", "src\System.Web.OData.Domain\Microsoft.Restier.WebApi.csproj", "{186F667E-54E5-4B57-9998-21D74CB77C24}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.Tests", "test\Microsoft.Data.Domain.Tests\Microsoft.Data.Domain.Tests.csproj", "{D1F0FA28-73A1-4202-807B-DCAF5FFEDC2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Core.Tests", "test\Microsoft.Data.Domain.Tests\Microsoft.Restier.Core.Tests.csproj", "{D1F0FA28-73A1-4202-807B-DCAF5FFEDC2F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E136CA13-ECD1-4565-B183-A48F78570DE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.Samples.Northwind", "src\Microsoft.Data.Domain.Samples.Northwind\Microsoft.Data.Domain.Samples.Northwind.csproj", "{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind", "src\Microsoft.Data.Domain.Samples.Northwind\Microsoft.Restier.Samples.Northwind.csproj", "{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.Samples.Northwind.Tests", "test\Microsoft.Data.Domain.Samples.Northwind.Tests\Microsoft.Data.Domain.Samples.Northwind.Tests.csproj", "{B10AC223-BB61-4229-A063-353AD5D7E3C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.Tests", "test\Microsoft.Data.Domain.Samples.Northwind.Tests\Microsoft.Restier.Samples.Northwind.Tests.csproj", "{B10AC223-BB61-4229-A063-353AD5D7E3C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODataEndToEndTests", "ODataEndToEndTests", "{4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Web.OData.Domain.Test.Scenario", "test\ODataEndToEndTests\System.Web.OData.Domain.Pipeline.Test.Scenario\System.Web.OData.Domain.Test.Scenario.csproj", "{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Scenario", "test\ODataEndToEndTests\System.Web.OData.Domain.Pipeline.Test.Scenario\Microsoft.Restier.WebApi.Test.Scenario.csproj", "{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Web.OData.Domain.Test.Services.Trippin", "test\ODataEndToEndTests\System.Web.OData.Domain.Pipeline.Test.Services.Trippin\System.Web.OData.Domain.Test.Services.Trippin.csproj", "{B379640E-9064-438D-8DA5-6F7B394C2C46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Services.Trippin", "test\ODataEndToEndTests\System.Web.OData.Domain.Pipeline.Test.Services.Trippin\Microsoft.Restier.WebApi.Test.Services.Trippin.csproj", "{B379640E-9064-438D-8DA5-6F7B394C2C46}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EBBFEC28-7D5C-4870-AD2B-F881EEC5E8A0}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Web.OData.Domain.Test", "test\System.Web.OData.Domain.Test\System.Web.OData.Domain.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test", "test\System.Web.OData.Domain.Test\Microsoft.Restier.WebApi.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Data.Domain.Conventions.Test", "test\Microsoft.Data.Domain.Conventions.Test\Microsoft.Data.Domain.Conventions.Test.csproj", "{1629B189-52CE-4450-8377-7A9503C98C74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Conventions.Test", "test\Microsoft.Data.Domain.Conventions.Test\Microsoft.Restier.Conventions.Test.csproj", "{1629B189-52CE-4450-8377-7A9503C98C74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

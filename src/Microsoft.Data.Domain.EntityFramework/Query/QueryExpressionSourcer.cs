@@ -4,9 +4,9 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.Data.Domain.Query;
+using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Data.Domain.EntityFramework.Query
+namespace Microsoft.Restier.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query expression sourcer that uses a DbContext.

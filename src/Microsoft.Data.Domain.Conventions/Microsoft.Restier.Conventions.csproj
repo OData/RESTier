@@ -2,11 +2,11 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory),RESTier.sln))\tools\RESTier.settings.targets" />
   <PropertyGroup>
-    <ProjectGuid>{B15A5064-F0D2-480C-A51E-3430A8360827}</ProjectGuid>
+    <ProjectGuid>{5A10C8BB-5CA0-4D41-A731-45CD29A30D34}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Data.Domain.Security</RootNamespace>
-    <AssemblyName>Microsoft.Data.Domain.Security</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Conventions</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Conventions</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -18,6 +18,7 @@
       <HintPath>..\..\packages\Microsoft.OData.Edm.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -30,24 +31,27 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>.Shared\Ensure.cs</Link>
     </Compile>
-    <Compile Include="AssertAttribute.cs" />
+    <Compile Include="..\Shared\TypeExtensions.cs">
+      <Link>.Shared\TypeExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetAuthorizer.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetEntryFilter.cs" />
+    <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
+    <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
+    <Compile Include="Conventions\ConventionalModelExtender.cs" />
     <Compile Include="DomainConfigurationExtensions.cs" />
-    <Compile Include="DomainPermission.cs" />
-    <Compile Include="DenyAttribute.cs" />
-    <Compile Include="EnableRoleBasedSecurityAttribute.cs" />
-    <Compile Include="GrantAttribute.cs" />
-    <Compile Include="InvocationContextExtensions.cs" />
+    <Compile Include="EnableConventionsAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoleBasedAuthorization.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
-      <Name>Microsoft.Data.Domain</Name>
+      <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.Data.Domain.Security.nuspec" />
+    <None Include="Microsoft.Restier.Conventions.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

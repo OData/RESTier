@@ -8,10 +8,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Query;
-using QueryContext = Microsoft.Data.Domain.Query.QueryContext;
+using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Data.Domain.EntityFramework.Query
+namespace Microsoft.Restier.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query executor that uses Entity Framework methods.

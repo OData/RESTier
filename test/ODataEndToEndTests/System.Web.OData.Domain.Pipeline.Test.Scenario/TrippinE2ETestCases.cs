@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.OData.Client;
-using Microsoft.OData.Core;
-using Microsoft.OData.Edm.Csdl;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web.OData.Domain.Test.Services.Trippin.Models;
+using Microsoft.OData.Client;
+using Microsoft.OData.Core;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
-namespace System.Web.OData.Domain.Test.Scenario
+namespace Microsoft.Restier.WebApi.Test.Scenario
 {
     public class TrippinE2ETestCases : E2ETestBase<TrippinModel>
     {
@@ -117,7 +117,7 @@ namespace System.Web.OData.Domain.Test.Scenario
         [Fact]
         public void UQProperty()
         {
-            this.TestClientContext.MergeOption = Microsoft.OData.Client.MergeOption.OverwriteChanges;
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
             // Post an entity
             Person person = new Person()
             {
@@ -444,7 +444,7 @@ namespace System.Web.OData.Domain.Test.Scenario
         [Fact]
         public void CURDCollectionNavigationPropertyAndRef()
         {
-            this.TestClientContext.MergeOption = Microsoft.OData.Client.MergeOption.OverwriteChanges;
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
 
             Person person = new Person()
             {

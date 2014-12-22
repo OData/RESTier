@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.Restier.Core;
 
-namespace Microsoft.Data.Domain.Security
+namespace Microsoft.Restier.Security
 {
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic)
@@ -16,7 +17,7 @@ namespace Microsoft.Data.Domain.Security
     public static class InvocationContextExtensions
     {
         private const string AssertedRoles =
-            "Microsoft.Data.Domain.Security.AssertedRoles";
+            "Microsoft.Restier.Security.AssertedRoles";
 
         /// <summary>
         /// Asserts that a role should be present for the current principal.

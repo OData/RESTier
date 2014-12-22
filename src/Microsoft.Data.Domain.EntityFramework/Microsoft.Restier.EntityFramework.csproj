@@ -5,8 +5,8 @@
     <ProjectGuid>{F7EC910E-17CE-4579-84C5-36D3777B3218}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Data.Domain.EntityFramework</RootNamespace>
-    <AssemblyName>Microsoft.Data.Domain.EntityFramework</AssemblyName>
+    <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
+    <AssemblyName>Microsoft.Restier.EntityFramework</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -52,13 +52,13 @@
     <Compile Include="Submit\SubmitExecutor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj">
+    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
-      <Name>Microsoft.Data.Domain</Name>
+      <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.Data.Domain.EntityFramework.nuspec" />
+    <None Include="Microsoft.Restier.EntityFramework.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

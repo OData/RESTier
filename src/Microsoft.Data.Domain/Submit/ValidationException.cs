@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Data.Domain.Submit
+namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
     /// Represents an exception that indicates validation errors occurred on entities.

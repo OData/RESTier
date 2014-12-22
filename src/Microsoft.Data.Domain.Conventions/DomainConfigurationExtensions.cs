@@ -2,13 +2,12 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Conventions
 {
-    using System.ComponentModel;
-    using Conventions;
-    using Submit;
-
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic)
     /// methods for interacting with objects that implement

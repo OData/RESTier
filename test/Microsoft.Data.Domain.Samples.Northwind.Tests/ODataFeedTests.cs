@@ -12,13 +12,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Samples.Northwind;
-using Microsoft.Data.Domain.Samples.Northwind.Models;
-using Microsoft.Data.Domain.Tests;
+using Microsoft.Restier.Samples.Northwind.Models;
+using Microsoft.Restier.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace NorthwindService.Tests
+namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     [TestClass]
     public class ODataFeedTests
@@ -63,7 +62,7 @@ Accept: application/json;odata.metadata=minimal
 Accept-Charset: UTF-8
 User-Agent: Microsoft ADO.NET Data Services
 
-{""@odata.type"":""#Microsoft.Data.Domain.Samples.Northwind.Models.Product"",""CategoryID"":null,""Discontinued"":false,""ProductID"":0,""ProductName"":""Horizon"",""QuantityPerUnit"":""4"",""ReorderLevel"":10,""SupplierID"":null,""UnitPrice"":2.5,""UnitsInStock"":100,""UnitsOnOrder"":0}
+{""@odata.type"":""#Microsoft.Restier.Samples.Northwind.Models.Product"",""CategoryID"":null,""Discontinued"":false,""ProductID"":0,""ProductName"":""Horizon"",""QuantityPerUnit"":""4"",""ReorderLevel"":10,""SupplierID"":null,""UnitPrice"":2.5,""UnitsInStock"":100,""UnitsOnOrder"":0}
 --changeset_3ffaecfa-069f-4ad7-bb41-bcc2481ea0dd
 Content-Type: application/http
 Content-Transfer-Encoding: binary
@@ -77,7 +76,7 @@ Accept: application/json;odata.metadata=minimal
 Accept-Charset: UTF-8
 User-Agent: Microsoft ADO.NET Data Services
 
-{""@odata.type"":""#Microsoft.Data.Domain.Samples.Northwind.Models.Product"",""CategoryID"":null,""Discontinued"":true,""ProductID"":0,""ProductName"":""Commons"",""QuantityPerUnit"":""5"",""ReorderLevel"":11,""SupplierID"":null,""UnitPrice"":15.99,""UnitsInStock"":200,""UnitsOnOrder"":10}
+{""@odata.type"":""#Microsoft.Restier.Samples.Northwind.Models.Product"",""CategoryID"":null,""Discontinued"":true,""ProductID"":0,""ProductName"":""Commons"",""QuantityPerUnit"":""5"",""ReorderLevel"":11,""SupplierID"":null,""UnitPrice"":15.99,""UnitsInStock"":200,""UnitsOnOrder"":10}
 --changeset_3ffaecfa-069f-4ad7-bb41-bcc2481ea0dd
 Content-Type: application/http
 Content-Transfer-Encoding: binary
@@ -172,12 +171,12 @@ User-Agent: Microsoft ADO.NET Data Services
             // NOTE: explicitly leaving CategoryID, Discontinued, QuantityPerUnit and UnitPrice
             // out of the PUT request content to test these values get set to their default value
             string putContentString = @"{
-    ""@odata.type"":""#Microsoft.Data.Domain.Samples.Northwind.Models.Product"",
-	""ProductName"":""TestPut"",
-	""ReorderLevel"":23,
-	""UnitsInStock"":15,
-	""UnitsOnOrder"":1,
-	""SupplierID"":1
+    ""@odata.type"":""#Microsoft.Restier.Samples.Northwind.Models.Product"",
+    ""ProductName"":""TestPut"",
+    ""ReorderLevel"":23,
+    ""UnitsInStock"":15,
+    ""UnitsOnOrder"":1,
+    ""SupplierID"":1
 }";
 
             StringContent putContent = new StringContent(putContentString, UTF8Encoding.Default, "application/json");
@@ -219,8 +218,8 @@ User-Agent: Microsoft ADO.NET Data Services
             int id = ODataFeedTests.InsertTestProduct();
 
             string patchContentString = @"{
-    ""@odata.type"":""#Microsoft.Data.Domain.Samples.Northwind.Models.Product"",
-	""ProductName"":""Commons""
+    ""@odata.type"":""#Microsoft.Restier.Samples.Northwind.Models.Product"",
+    ""ProductName"":""Commons""
 }";
 
             StringContent patchContent = new StringContent(patchContentString, UTF8Encoding.Default, "application/json");
@@ -277,7 +276,7 @@ User-Agent: Microsoft ADO.NET Data Services
         public async Task TestPostOrderInvalidShipVia()
         {
             dynamic order = new ExpandoObject();
-            ((IDictionary<string, object>)order)["@odata.type"] = "#Microsoft.Data.Domain.Samples.Northwind.Models.Order";
+            ((IDictionary<string, object>)order)["@odata.type"] = "#Microsoft.Restier.Samples.Northwind.Models.Order";
             order.CustomerID = "ALFKI";
             order.Freight = 35.5m;
             order.ShipVia = 15;

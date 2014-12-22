@@ -4,7 +4,7 @@
 using System;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Data.Domain.Submit
+namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
     /// Represents context under which a submit flow operates.

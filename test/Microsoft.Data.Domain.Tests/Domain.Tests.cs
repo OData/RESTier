@@ -3,21 +3,19 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Data.Domain.Tests
+namespace Microsoft.Restier.Core.Tests
 {
-    using Model;
-    using Query;
-    using Submit;
-
     [TestClass]
     public class DomainTests
     {
@@ -31,8 +29,8 @@ namespace Microsoft.Data.Domain.Tests
                 ModelContext context,
                 CancellationToken cancellationToken)
             {
-                Assert.AreSame(this.DomainContext, context.DomainContext);
-                return Task.FromResult(this.Model);
+                Assert.AreSame(DomainContext, context.DomainContext);
+                return Task.FromResult(Model);
             }
         }
 
@@ -66,8 +64,8 @@ namespace Microsoft.Data.Domain.Tests
                 QueryContext context,
                 CancellationToken cancellationToken)
             {
-                Assert.AreSame(this.DomainContext, context.DomainContext);
-                return Task.FromResult(new QueryResult(this.Results));
+                Assert.AreSame(DomainContext, context.DomainContext);
+                return Task.FromResult(new QueryResult(Results));
             }
         }
 
@@ -81,8 +79,8 @@ namespace Microsoft.Data.Domain.Tests
                 SubmitContext context,
                 CancellationToken cancellationToken)
             {
-                Assert.AreSame(this.DomainContext, context.DomainContext);
-                return Task.FromResult(new SubmitResult(this.ChangeSet));
+                Assert.AreSame(DomainContext, context.DomainContext);
+                return Task.FromResult(new SubmitResult(ChangeSet));
             }
         }
 
@@ -100,7 +98,7 @@ namespace Microsoft.Data.Domain.Tests
             {
                 get
                 {
-                    if (this._context == null)
+                    if (_context == null)
                     {
                         var configuration = new DomainConfiguration();
                         var modelHandler = new TestModelHandler();
@@ -116,15 +114,15 @@ namespace Microsoft.Data.Domain.Tests
                         configuration.SetHookPoint(
                             typeof(ISubmitHandler), submitHandler);
                         configuration.EnsureCommitted();
-                        this._context = new DomainContext(configuration);
-                        modelHandler.DomainContext = this._context;
-                        this.Model = modelHandler.Model = new EdmModel();
-                        queryHandler.DomainContext = this._context;
-                        this.Results = queryHandler.Results = new string[] { "Test" };
-                        submitHandler.DomainContext = this._context;
-                        this.ChangeSet = submitHandler.ChangeSet = new ChangeSet();
+                        _context = new DomainContext(configuration);
+                        modelHandler.DomainContext = _context;
+                        Model = modelHandler.Model = new EdmModel();
+                        queryHandler.DomainContext = _context;
+                        Results = queryHandler.Results = new string[] { "Test" };
+                        submitHandler.DomainContext = _context;
+                        ChangeSet = submitHandler.ChangeSet = new ChangeSet();
                     }
-                    return this._context;
+                    return _context;
                 }
             }
         }
@@ -135,7 +133,7 @@ namespace Microsoft.Data.Domain.Tests
             var domain = new TestDomain();
             var domainModel = await domain.GetModelAsync();
             var domainModelType = typeof(Domain).Assembly.GetType(
-                "Microsoft.Data.Domain.Model.DomainModel");
+                "Microsoft.Restier.Core.Model.DomainModel");
             Assert.IsTrue(domainModelType.IsAssignableFrom(domainModel.GetType()));
             Assert.AreSame(domain.Model, domainModelType
                 .GetProperty("InnerModel").GetValue(domainModel));
@@ -154,7 +152,7 @@ namespace Microsoft.Data.Domain.Tests
 
             var domainModel = await Domain.GetModelAsync(context);
             var domainModelType = typeof(Domain).Assembly.GetType(
-                "Microsoft.Data.Domain.Model.DomainModel");
+                "Microsoft.Restier.Core.Model.DomainModel");
             Assert.IsTrue(domainModelType.IsAssignableFrom(domainModel.GetType()));
             Assert.AreSame(modelHandler.Model, domainModelType
                 .GetProperty("InnerModel").GetValue(domainModel));

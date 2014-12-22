@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Batch;
-using Microsoft.Data.Domain;
-using Microsoft.Data.Domain.Submit;
-using DomainEngine = Microsoft.Data.Domain.Domain;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
 
-namespace System.Web.OData.Domain.Batch
+namespace Microsoft.Restier.WebApi.Batch
 {
     public class ODataDomainChangeSetRequestItem : ChangeSetRequestItem
     {
@@ -75,7 +75,7 @@ namespace System.Web.OData.Domain.Batch
 
         internal async void SubmitChangeSet(ChangeSet changeSet, Action postSubmitAction)
         {
-            SubmitResult submitResults = await DomainEngine.SubmitAsync(this.context, changeSet);
+            SubmitResult submitResults = await Domain.SubmitAsync(this.context, changeSet);
 
             postSubmitAction();
         }
@@ -84,7 +84,7 @@ namespace System.Web.OData.Domain.Batch
         {
             foreach (HttpRequestMessage request in this.Requests)
             {
-                request.Properties.Add("Microsoft.Data.Domain.Submit.ChangeSet", changeSetProperty);
+                request.Properties.Add("Microsoft.Restier.Submit.ChangeSet", changeSetProperty);
             }
         }
 

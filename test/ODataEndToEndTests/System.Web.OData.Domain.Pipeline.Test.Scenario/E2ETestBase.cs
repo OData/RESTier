@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using Microsoft.OData.Client;
 
-namespace System.Web.OData.Domain.Test.Scenario
+namespace Microsoft.Restier.WebApi.Test.Scenario
 {
     /// <summary>
     /// Summary description for E2ETestBase

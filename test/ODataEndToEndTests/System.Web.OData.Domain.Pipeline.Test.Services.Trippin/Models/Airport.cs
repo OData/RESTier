@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace System.Web.OData.Domain.Test.Services.Trippin.Models
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
     public class Airport
     {

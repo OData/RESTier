@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -8,10 +9,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Batch;
 using System.Web.OData.Batch;
-using Microsoft.Data.Domain;
 using Microsoft.OData.Core;
+using Microsoft.Restier.Core;
 
-namespace System.Web.OData.Domain.Batch
+namespace Microsoft.Restier.WebApi.Batch
 {
     public class ODataDomainBatchHandler : DefaultODataBatchHandler
     {

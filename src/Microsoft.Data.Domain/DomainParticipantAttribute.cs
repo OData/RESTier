@@ -4,7 +4,7 @@
 using System;
 using System.Linq;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Specifies a set of methods that can participate in the

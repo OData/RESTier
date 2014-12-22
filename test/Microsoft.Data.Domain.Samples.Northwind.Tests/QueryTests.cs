@@ -2,13 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Query;
-using Microsoft.Data.Domain.Samples.Northwind.Models;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Data.Domain.Samples.Northwind.Tests
+namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     [TestClass]
     public class QueryTests

@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Submit;
+using Microsoft.Restier.Core.Submit;
 using DataAnnotations = System.ComponentModel.DataAnnotations;
+using ValidationResult = Microsoft.Restier.Core.Submit.ValidationResult;
 
-namespace Microsoft.Data.Domain.Conventions
+namespace Microsoft.Restier.Conventions
 {
     /// <summary>
     /// A conventional change set entry validator.
@@ -55,7 +55,7 @@ namespace Microsoft.Data.Domain.Conventions
                         DataAnnotations.ValidationResult validationResult = validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != DataAnnotations.ValidationResult.Success)
                         {
-                            validationResults.Add(new Submit.ValidationResult()
+                            validationResults.Add(new ValidationResult()
                             {
                                 Id = validationAttribute.GetType().FullName,
                                 Message = validationResult.ErrorMessage,

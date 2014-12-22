@@ -20,11 +20,11 @@ md bin\nuget\%config%
 :Build
 set params=-Prop Configuration=%config% -OutputDirectory bin\nuget\%config%
 
-.nuget\NuGet pack src\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj %params%
-.nuget\NuGet pack src\Microsoft.Data.Domain.Conventions\Microsoft.Data.Domain.Conventions.csproj %params%
-.nuget\NuGet pack src\Microsoft.Data.Domain.Security\Microsoft.Data.Domain.Security.csproj %params%
-.nuget\NuGet pack src\Microsoft.Data.Domain.EntityFramework\Microsoft.Data.Domain.EntityFramework.csproj %params%
-.nuget\NuGet pack src\System.Web.OData.Domain\System.Web.OData.Domain.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain.Conventions\Microsoft.Restier.Conventions.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain.Security\Microsoft.Restier.Security.csproj %params%
+.nuget\NuGet pack src\Microsoft.Data.Domain.EntityFramework\Microsoft.Restier.EntityFramework.csproj %params%
+.nuget\NuGet pack src\System.Web.OData.Domain\Microsoft.Restier.WebApi.csproj %params%
 
 popd
 endlocal

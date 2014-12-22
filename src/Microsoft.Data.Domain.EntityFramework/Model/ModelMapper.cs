@@ -3,9 +3,10 @@
 
 using System;
 using System.Data.Entity;
-using Microsoft.Data.Domain.Model;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Data.Domain.EntityFramework.Model
+namespace Microsoft.Restier.EntityFramework.Model
 {
     /// <summary>
     /// Represents a model mapper based on a DbContext.

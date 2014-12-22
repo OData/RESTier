@@ -6,15 +6,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Routing;
+using System.Web.OData;
 using System.Web.OData.Builder;
-using System.Web.OData.Domain.Routing;
 using System.Web.OData.Routing;
-using Microsoft.Data.Domain;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.WebApi.Routing;
 using Xunit;
 using Xunit.Extensions;
 
-namespace System.Web.OData.Domain.Test
+namespace Microsoft.Restier.WebApi.Test
 {
     public class DefaultODataPathRouteConstraintTest
     {

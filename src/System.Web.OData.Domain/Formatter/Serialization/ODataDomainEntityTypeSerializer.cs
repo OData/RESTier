@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System.Web.OData.Domain.Results;
+using System;
+using System.Web.OData;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
+using Microsoft.Restier.WebApi.Results;
 
-namespace System.Web.OData.Domain.Formatter.Serialization
+namespace Microsoft.Restier.WebApi.Formatter.Serialization
 {
     public class ODataDomainEntityTypeSerializer : ODataEntityTypeSerializer
     {

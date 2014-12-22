@@ -9,7 +9,7 @@ using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Microsoft.OData.Edm;
 
-namespace System.Web.OData.Domain.Routing
+namespace Microsoft.Restier.WebApi.Routing
 {
     public class DefaultODataPathRouteConstraint : ODataPathRouteConstraint
     {

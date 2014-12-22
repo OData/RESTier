@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Data.Domain.Model
+namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
     /// Represents a hook point that extends a model.

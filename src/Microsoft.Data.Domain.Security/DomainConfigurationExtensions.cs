@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Data.Domain.Security
+namespace Microsoft.Restier.Security
 {
-    using Model;
-    using Query;
-
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic)
     /// methods for interacting with objects that implement
@@ -19,7 +19,7 @@ namespace Microsoft.Data.Domain.Security
     public static class DomainConfigurationExtensions
     {
         private const string Permissions =
-            "Microsoft.Data.Domain.Security.Permissions";
+            "Microsoft.Restier.Security.Permissions";
 
         /// <summary>
         /// Enables principal-supplied role-based security for a domain.

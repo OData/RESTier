@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("This package contains everything you need to create OData v4.0 endpoints using ASP.NET Web API OData wired to a domain provided by the RESTier.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("System.Web.OData.Domain")]
+[assembly: AssemblyProduct("Microsoft.Restier.WebApi")]
 [assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -3,12 +3,14 @@
 
 using System;
 using System.Linq;
-using Microsoft.Data.Domain.EntityFramework;
-using Microsoft.Data.Domain.Security;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Conventions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.Security;
 
-namespace Microsoft.Data.Domain.Samples.Northwind.Models
+namespace Microsoft.Restier.Samples.Northwind.Models
 {
     [EnableConventions]
     [EnableRoleBasedSecurity]

@@ -4,9 +4,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain.Submit;
+using Microsoft.Restier.Core.Submit;
 
-namespace System.Web.OData.Domain.Batch
+namespace Microsoft.Restier.WebApi.Batch
 {
     public class ODataDomainChangeSetProperty
     {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Microsoft.Data.Domain.Submit
+namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
     /// Represents an entry in a change set.

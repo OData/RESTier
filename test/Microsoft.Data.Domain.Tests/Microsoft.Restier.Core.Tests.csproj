@@ -6,8 +6,8 @@
     <ProjectGuid>{D1F0FA28-73A1-4202-807B-DCAF5FFEDC2F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Data.Domain.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Data.Domain.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Core.Tests</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -69,9 +69,9 @@
     <Compile Include="Domain.OfT.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain\Microsoft.Data.Domain.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
-      <Name>Microsoft.Data.Domain</Name>
+      <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

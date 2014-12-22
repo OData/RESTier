@@ -1,16 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.OData.Core;
-using Microsoft.OData.Core.UriParser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Routing;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
+using Microsoft.OData.Core;
+using Microsoft.OData.Core.UriParser;
 
-namespace System.Web.OData.Domain.Pipeline.Test.Services.Trippin
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
     public static class Helpers
     {

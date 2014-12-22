@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.Data.Domain.Submit;
+using System;
+using Microsoft.Restier.Core.Submit;
 
-namespace System.Web.OData.Domain.Filters
+namespace Microsoft.Restier.WebApi.Filters
 {
     /// <summary>
     /// A data transfer object that is used to serialize ValidationResult instances to the client.

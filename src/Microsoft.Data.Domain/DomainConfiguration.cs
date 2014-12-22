@@ -2,17 +2,15 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
-    using Model;
-    using Query;
-    using Submit;
-
     /// <summary>
     /// Represents a configuration that defines a domain.
     /// </summary>

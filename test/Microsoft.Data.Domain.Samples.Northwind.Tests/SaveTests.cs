@@ -3,12 +3,13 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.Domain;
-using Microsoft.Data.Domain.Samples.Northwind.Models;
-using Microsoft.Data.Domain.Submit;
+using Microsoft.Restier.Conventions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace NorthwindService.Tests
+namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     [TestClass]
     public class SaveTests

@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security;
 using System.Threading;
-using Microsoft.Data.Domain.Model;
-using Microsoft.Data.Domain.Query;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Data.Domain.Security
+namespace Microsoft.Restier.Security
 {
     /// <summary>
     /// Represents a role-based authorization system.
@@ -18,9 +19,9 @@ namespace Microsoft.Data.Domain.Security
         IModelVisibilityFilter, IQueryExpressionInspector
     {
         private const string Permissions =
-            "Microsoft.Data.Domain.Security.Permissions";
+            "Microsoft.Restier.Security.Permissions";
         private const string AssertedRoles =
-            "Microsoft.Data.Domain.Security.AssertedRoles";
+            "Microsoft.Restier.Security.AssertedRoles";
 
         /// <summary>
         /// Gets the default role-based authorization system instance, which

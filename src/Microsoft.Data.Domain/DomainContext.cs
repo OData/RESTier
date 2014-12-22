@@ -3,10 +3,8 @@
 
 using System;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
-    using Submit;
-
     /// <summary>
     /// Represents context under which a domain operates.
     /// </summary>

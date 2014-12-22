@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Data.Domain
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Represents a bag of properties.

@@ -1,17 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.Data.Domain;
-using Microsoft.Data.Domain.Conventions;
-using Microsoft.Data.Domain.EntityFramework;
-using System.Web.OData.Domain.Test.Services.Trippin.Models;
+using System;
+using Microsoft.Restier.Conventions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
-namespace System.Web.OData.Domain.Test.Services.Trippin.DomainPipeline
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
 {
-    [TestAttribute]
-    public class TrippinDomainPipeline : DbDomain<TrippinModel>
+    [Test]
+    public class TrippinDomain : DbDomain<TrippinModel>
     {
-        public TrippinDomainPipeline()
+        public TrippinDomain()
             :base()
         {
         }

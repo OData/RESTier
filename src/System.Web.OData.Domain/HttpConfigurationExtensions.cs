@@ -1,18 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.OData.Domain.Batch;
-using System.Web.OData.Domain.Routing;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
-using Microsoft.Data.Domain;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Routing;
 
-namespace System.Web.OData.Domain
+namespace Microsoft.Restier.WebApi
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions

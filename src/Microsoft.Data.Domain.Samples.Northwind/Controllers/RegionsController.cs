@@ -4,9 +4,9 @@
 using System.Linq;
 using System.Web.Http;
 using System.Web.OData;
-using Microsoft.Data.Domain.Samples.Northwind.Models;
+using Microsoft.Restier.Samples.Northwind.Models;
 
-namespace Microsoft.Data.Domain.Samples.Northwind.Controllers
+namespace Microsoft.Restier.Samples.Northwind.Controllers
 {
     public class RegionsController : ODataController
     {

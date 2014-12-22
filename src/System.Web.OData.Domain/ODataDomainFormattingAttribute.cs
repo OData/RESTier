@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Controllers;
-using System.Web.OData.Domain.Formatter.Serialization;
 using System.Web.OData.Formatter;
 using System.Web.OData.Formatter.Deserialization;
+using Microsoft.Restier.WebApi.Formatter.Serialization;
 
-namespace System.Web.OData.Domain
+namespace Microsoft.Restier.WebApi
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class ODataDomainFormattingAttribute : Attribute, IControllerConfiguration
