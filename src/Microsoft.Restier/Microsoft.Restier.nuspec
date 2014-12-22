@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Microsoft.Restier</id>
+    <version>0.1.0-pre</version>
+    <title>RESTier</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <description>Includes RESTier related packages. RESTier is a RESTful API development framework for building standardized, OData V4 based RESTful services on .NET.</description>
+    <copyright>Copyright © Microsoft Corporation 2014</copyright>
+
+    <dependencies>
+      <dependency id="Microsoft.Restier.Core" version="[0.1.0-pre,]" />
+      <dependency id="Microsoft.Restier.Conventions" version="[0.1.0-pre,]" />
+      <dependency id="Microsoft.Restier.Security" version="[0.1.0-pre,]" />
+      <dependency id="Microsoft.Restier.EntityFramework" version="[0.1.0-pre,]" />
+      <dependency id="Microsoft.Restier.WebApi" version="[0.1.0-pre,]" />
+    </dependencies>
+  </metadata>
+</package>
