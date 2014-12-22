@@ -1,9 +1,5 @@
-#How to contribute?
-
-Contirbution to Domain Framework is on the way...
-
 ##Discussion
-You can participate into discussions and ask questions about Domain Framework at our [Github issues](https://github.com/OData/DomainFramework/issues). 
+You can participate into discussions and ask questions about RESTier at our [Github issues](https://github.com/OData/RESTier/issues). 
 
 
 ###Bug reports
@@ -26,6 +22,7 @@ When reporting a bug at the issue tracker, please use the following template:
 ```
 ##Code Contribution
 Developers are welcomed to contribute to the code.
+
 ###How to contribute
 You can contribute to the code by sending a [pull request](https://help.github.com/articles/using-pull-requests/) directly.
 
