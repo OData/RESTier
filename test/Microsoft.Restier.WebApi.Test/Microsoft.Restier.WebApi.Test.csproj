@@ -85,11 +85,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\System.Web.OData.Domain\Microsoft.Restier.WebApi.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
       <Project>{186F667E-54E5-4B57-9998-21D74CB77C24}</Project>
       <Name>Microsoft.Restier.WebApi</Name>
     </ProjectReference>

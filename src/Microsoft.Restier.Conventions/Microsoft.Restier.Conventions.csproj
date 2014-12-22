@@ -2,22 +2,16 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory),RESTier.sln))\tools\RESTier.settings.targets" />
   <PropertyGroup>
-    <ProjectGuid>{F7EC910E-17CE-4579-84C5-36D3777B3218}</ProjectGuid>
+    <ProjectGuid>{5A10C8BB-5CA0-4D41-A731-45CD29A30D34}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
-    <AssemblyName>Microsoft.Restier.EntityFramework</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Conventions</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Conventions</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.OData.Edm, Version=6.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -26,8 +20,6 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
@@ -39,26 +31,27 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>.Shared\Ensure.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\EnumerableExtensions.cs">
-      <Link>.Shared\EnumerableExtensions.cs</Link>
+    <Compile Include="..\Shared\TypeExtensions.cs">
+      <Link>.Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="DbDomain.cs" />
-    <Compile Include="Model\ModelMapper.cs" />
-    <Compile Include="Model\ModelProducer.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetAuthorizer.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetEntryFilter.cs" />
+    <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
+    <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
+    <Compile Include="Conventions\ConventionalModelExtender.cs" />
+    <Compile Include="DomainConfigurationExtensions.cs" />
+    <Compile Include="EnableConventionsAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\QueryExecutor.cs" />
-    <Compile Include="Query\QueryExpressionSourcer.cs" />
-    <Compile Include="Submit\ChangeSetPreparer.cs" />
-    <Compile Include="Submit\SubmitExecutor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.Restier.EntityFramework.nuspec" />
+    <None Include="Microsoft.Restier.Conventions.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

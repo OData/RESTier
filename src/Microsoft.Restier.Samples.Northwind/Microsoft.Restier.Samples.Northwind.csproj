@@ -155,23 +155,23 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Data.Domain.Conventions\Microsoft.Restier.Conventions.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
       <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
       <Name>Microsoft.Restier.Conventions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Data.Domain.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
       <Name>Microsoft.Restier.EntityFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Data.Domain.Security\Microsoft.Restier.Security.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
       <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
       <Name>Microsoft.Restier.Security</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Data.Domain\Microsoft.Restier.Core.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\System.Web.OData.Domain\Microsoft.Restier.WebApi.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
       <Name>Microsoft.Restier.WebApi</Name>
     </ProjectReference>
