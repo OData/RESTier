@@ -73,11 +73,9 @@ namespace Microsoft.Restier.WebApi.Batch
             return new ChangeSetResponseItem(responses);
         }
 
-        internal async void SubmitChangeSet(ChangeSet changeSet, Action postSubmitAction)
+        internal async Task SubmitChangeSet(ChangeSet changeSet)
         {
             SubmitResult submitResults = await Domain.SubmitAsync(this.context, changeSet);
-
-            postSubmitAction();
         }
 
         private void SetChangeSetProperty(ODataDomainChangeSetProperty changeSetProperty)
