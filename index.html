@@ -1,0 +1,18 @@
+---
+layout: default
+---
+
+RESTier is a RESTful API development framework for building standardized, OData V4 based REST services on .NET. It can be seen as a middle-ware on top of Web API OData.  RESTier is built with the inspiration of combining simplicity of WCF DS with the flexibility of Web API OData.
+
+{% for category in site.categories %} 
+  <h2>{{ category[0] | join: "/" }}</h2>
+  <ul>
+    {% for posts in category %}
+      {% for post in posts reversed %}
+      {% if post.url %} 
+        <li><a href="{{site.baseurl}}{{ post.url }}">{{ post.title }}</a></li>
+      {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </ul>
+{% endfor %}
