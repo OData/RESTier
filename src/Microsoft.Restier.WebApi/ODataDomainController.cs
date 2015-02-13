@@ -54,6 +54,19 @@ namespace Microsoft.Restier.WebApi
         }
 
         protected abstract IDomain CreateDomain();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                var disposable = this._domain as IDisposable;
+
+                if (disposable != null)
+                {
+                    disposable.Dispose();
+                }
+            }
+        }
     }
 
     public class ODataDomainController<T> : ODataDomainController
