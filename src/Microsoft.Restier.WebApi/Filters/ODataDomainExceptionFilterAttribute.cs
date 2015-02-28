@@ -29,7 +29,7 @@ namespace Microsoft.Restier.WebApi.Filters
             if (validationException != null)
             {
                 exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(
-                    HttpStatusCode.InternalServerError,
+                    HttpStatusCode.BadRequest,
                     validationException.ValidationResults.Select(r => new ValidationResultDto(r)),
                     actionExecutedContext.ActionContext.RequestContext.Configuration.Services.GetContentNegotiator(),
                     actionExecutedContext.Request,

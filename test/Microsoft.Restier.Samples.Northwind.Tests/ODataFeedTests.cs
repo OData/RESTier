@@ -284,7 +284,11 @@ User-Agent: Microsoft ADO.NET Data Services
             string newOrderContent = JsonConvert.SerializeObject(order);
             StringContent content = new StringContent(newOrderContent, UTF8Encoding.Default, "application/json");
 
-            await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Orders", HttpMethod.Post, content, HttpStatusCode.InternalServerError);
+            await ODataFeedTests.TestODataRequest(
+                "http://localhost/api/Northwind/Orders",
+                HttpMethod.Post,
+                content,
+                HttpStatusCode.BadRequest);
 
             NorthwindContext ctx = GetDbContext();
             Order notInsertedOrder = ctx.Orders.FirstOrDefault(o => o.Freight == 35.5m);

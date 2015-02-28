@@ -696,5 +696,18 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 this.TestClientContext.Detach(flight);
             }
         }
+
+        [Fact]
+        public void PostReturnBadRequestStatusWithSeviceValidationMessage()
+        {
+            Person person = new Person() { FirstName = "Fn", LastName = "" };
+            this.TestClientContext.AddToPeople(person);
+            var ex = Assert.Throws<DataServiceRequestException>(() => this.TestClientContext.SaveChanges());
+            var clientException = Assert.IsAssignableFrom<DataServiceClientException>(ex.InnerException);
+            Assert.Equal(400, clientException.StatusCode);
+            Assert.Contains(
+                "The field LastName must be a string or array type with a minimum length of '1'",
+                clientException.Message);
+        }
     }
 }
