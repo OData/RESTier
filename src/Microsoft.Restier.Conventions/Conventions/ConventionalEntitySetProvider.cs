@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Conventions
                     .SingleOrDefault(se => se.Name == elementType.Name);
                 if (entityType == null)
                 {
-                    // TODO: add new entity type representing entity shape
+                    // TODO GitHubIssue#33 : Add new entity type representing entity shape
                     continue;
                 }
                 container.AddEntitySet(entitySetProperty.Name, entityType);

@@ -294,7 +294,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(instance, "instance");
             if (!hookPointType.IsAssignableFrom(instance.GetType()))
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             this._singletons[hookPointType] = instance;
@@ -371,7 +371,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(instance, "instance");
             if (!hookPointType.IsAssignableFrom(instance.GetType()))
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             IList<object> instances = null;

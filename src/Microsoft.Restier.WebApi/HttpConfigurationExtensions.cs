@@ -18,7 +18,7 @@ namespace Microsoft.Restier.WebApi
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions
     {
-        // TODO: this can't be async; model should be loaded later on demand
+        // TODO GitHubIssue#51 : Support model lazy loading
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
             this HttpConfiguration config, string routeName, string routePrefix,
             ODataDomainBatchHandler batchHandler = null)

@@ -265,7 +265,7 @@ namespace Microsoft.Restier.Core.Query
                 return new CollectionElementReference(source);
             }
 
-            // TODO: handle other cases: projection operators etc.
+            // TODO GitHubIssue#29 : Handle projection operators in query expression
             return null;
         }
 

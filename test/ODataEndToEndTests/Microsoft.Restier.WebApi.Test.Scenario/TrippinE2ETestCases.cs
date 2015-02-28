@@ -250,7 +250,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             people2 = this.TestClientContext.People.Skip(personId - 1).ToList();
             Assert.Equal(personId, people2.First().PersonId);
 
-            // TODO : $count=true
+            // TODO GitHubIssue#46 : case for $count=true
         }
 
         [Fact]
@@ -267,7 +267,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 FlightNumber = "MU589",
                 StartsAt = startDate,
                 EndsAt = endDate,
-                //  TODO: How to describe a timespan equal to or greater than 1 day.
+                // TODO GitHubIssue#47 : SQL issue when duration lenght greater than 1 day
+                // How to describe a timespan equal to or greater than 1 day.
                 Duration = duration,
                 AirlineId = "MU",
                 SeatNumber = "C32",
@@ -435,7 +436,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.NotNull(exception);
             Assert.Equal(404, exception.Response.StatusCode);
 
-            // TODO : WebApi doesn't allow return a null entity.
+            // TODO GitHubIssue#48 : Add case for null entity return value
+            // WebApi doesn't allow return a null entity.
             // Query an Navigation Property
             //airline2 = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "FlightId", flight.FlightId } }).Airline.GetValue();
             //Assert.Null(airline2);

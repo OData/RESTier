@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(expression);
             if (!typeof(IQueryable<TElement>).IsAssignableFrom(expression.Type))
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             return new QueryableSource<TElement>(expression);
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Core
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
             if (type == null)
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             type = typeof(QueryableSource<>).MakeGenericType(

@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets a value indicating whether an Entity has been added, modified, or deleted.
         /// </summary>
-        // TODO: make the ChangeSet 'dynamic' so it gets added to as things change during the flow
+        // TODO GitHubIssue#37 : make the ChangeSet 'dynamic' so it gets added to as things change during the flow
         public bool AnEntityHasChanged { get; set; }
     }
 }

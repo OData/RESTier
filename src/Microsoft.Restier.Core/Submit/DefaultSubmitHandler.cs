@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Core.Submit
             }
             if (!authorized)
             {
-                // TODO: Figure out a more appropriate exception
+                // TODO GitHubIssue#32 : Figure out a more appropriate exception
                 throw new SecurityException();
             }
             if (context.Result != null)
@@ -298,7 +298,8 @@ namespace Microsoft.Restier.Core.Submit
         {
             if (changeSet.AnEntityHasChanged)
             {
-                throw new InvalidOperationException("Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.");//TODO: error message);
+                // TODO GitHubIssue#24 : error message
+                throw new InvalidOperationException("Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.");
             }
         }
     }

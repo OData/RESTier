@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
             }
             if (type == typeof(DateTime))
             {
-                // TODO: how to map DateTime's in OData v4?  there is no Edm.DateTime type anymore
+                // TODO GitHubIssue#49 : how to map DateTime's in OData v4?  there is no Edm.DateTime type anymore
                 return null;
             }
             if (type == typeof(DateTimeOffset))
@@ -76,7 +76,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
             if (type == typeof(TimeSpan))
             {
                 return EdmPrimitiveTypeKind.Duration;
-                // TODO: this should really be TimeOfDay, but EdmPrimitiveTypeKind doesn't support that type
+                // TODO GitHubIssue#49 : this should really be TimeOfDay, but EdmPrimitiveTypeKind doesn't support that type
                 // return EdmPrimitiveTypeKind.TimeOfDay;
             }
             if (type == typeof(void))

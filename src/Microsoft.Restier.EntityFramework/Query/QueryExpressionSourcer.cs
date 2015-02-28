@@ -40,11 +40,10 @@ namespace Microsoft.Restier.EntityFramework.Query
             var dbContext = context.QueryContext
                 .DomainContext.GetProperty<DbContext>("DbContext");
             var dbSetProperty = dbContext.GetType().GetProperties()
-                .Where(prop => prop.Name == context.ModelReference.EntitySet.Name)
-                .First();
+                .First(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (!embedded)
             {
-                // TODO: once there is a real domain entity manager,
+                // TODO GitHubIssue#37 : Add domain entity manager for tracking entities
                 // the underlying DbContext shouldn't track the entities
                 var dbSet = dbSetProperty.GetValue(dbContext);
                 //dbSet = dbSet.GetType().GetMethod("AsNoTracking").Invoke(dbSet, null);

@@ -11,9 +11,7 @@ using Microsoft.OData.Edm.Annotations;
 
 namespace Microsoft.Restier.Core.Model
 {
-    // TODO: implement domain versions of all the other
-    // EDM interfaces to ensure it is impossible to get
-    // to elements that are not supposed to be visible.
+    // TODO GitHubIssue#27 : Support full Edm interfaces
     internal class DomainModel : IEdmModel
     {
         private readonly Lazy<ConcurrentDictionary<string, DomainEntityContainer>> _entityContainers =

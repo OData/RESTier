@@ -40,8 +40,7 @@ namespace Microsoft.Restier.Tests
 
                 File.WriteAllText(actualContentPath, actualContent);
 
-                // TODO:  Figure out a better update baseline experience.  Currently the Test Explorer doesn't let you select
-                // individual items from the test output.
+                // TODO GitHubIssue#45 : Improve baseline test
                 Assert.Fail(
                     "The Response.Content is not correct. \r\nExpected:\r\n{0}\r\n\r\nActual:\r\n{1}\r\n\r\n" +
                         "Run the following command to update the baselines:  \r\nCopy /y {2} {3}\r\n",

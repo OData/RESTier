@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Security
             InvocationContext context,
             IEdmModel model, IEdmSchemaElement element)
         {
-            // TODO: properly filter types
+            // TODO GitHubIssue#34 : Filter out proper visible types
             if (element is IEdmType || element is IEdmOperation)
             {
                 return true;
@@ -102,7 +102,7 @@ namespace Microsoft.Restier.Security
         /// </returns>
         public bool Inspect(QueryExpressionContext context)
         {
-            // TODO: something other than entity sets
+            // TODO GitHubIssue#35 : Support Inspect more elements in authorization
             if (context.ModelReference == null)
             {
                 return true;
@@ -123,7 +123,7 @@ namespace Microsoft.Restier.Security
                 .GetProperty<IEnumerable<DomainPermission>>(Permissions);
             if (permissions == null)
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new SecurityException(
                     "Not authorized for read: " + entitySet.Name);
             }
@@ -136,7 +136,7 @@ namespace Microsoft.Restier.Security
                 (assertedRoles != null && assertedRoles.Contains(p.Role))));
             if (!permissions.Any() || permissions.Any(p => p.IsDeny))
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new SecurityException(
                     "Not authorized for read: " + entitySet.Name);
             }

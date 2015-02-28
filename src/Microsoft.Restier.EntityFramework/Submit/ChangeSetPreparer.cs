@@ -78,7 +78,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
             object entity = result.Results.SingleOrDefault();
             if (entity == null)
             {
-                // TODO: there are 2 cases where the entity is not found:
+                // TODO GitHubIssue#38 : Handle the case when entity is resolved
+                // there are 2 cases where the entity is not found:
                 // 1) it doesn't exist
                 // 2) concurrency checks have failed
                 // we should account for both - I can see 3 options:

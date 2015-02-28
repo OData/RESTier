@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return entitySet;
                 }
-                // TODO: others
+                // TODO GitHubIssue#30 : others
                 return null;
             }
         }

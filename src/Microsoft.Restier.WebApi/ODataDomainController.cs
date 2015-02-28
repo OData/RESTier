@@ -138,7 +138,7 @@ namespace Microsoft.Restier.WebApi
             ODataQueryContext queryContext = new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
 
-            // TODO: investigate stable ordering in reference to WCF data services
+            // TODO GitHubIssue#41 : Ensure stable ordering for query
             ODataQuerySettings settings = new ODataQuerySettings()
             {
                 HandleNullPropagation = HandleNullPropagationOption.False,
@@ -221,8 +221,9 @@ namespace Microsoft.Restier.WebApi
             Dictionary<string, object> result = new Dictionary<string, object>();
             IEnumerable<IEdmStructuralProperty> keys = entityType.Key();
 
-            // TODO: this parsing implementation does not allow key values to contain commas
-            // Get the WebAPI team to make KeyValuePathSegment.Values collection public (or have the parsing logic public)
+            // TODO GitHubIssue#42 : Improve key parsing logic
+            // this parsing implementation does not allow key values to contain commas
+            // Depending on the WebAPI to make KeyValuePathSegment.Values collection public (or have the parsing logic public)
             string[] values = keySegment.Value.Split(',');
             if (values.Length > 1)
             {
@@ -304,7 +305,7 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
-                // TODO: support non-Entity ($select/$value) queries
+                // TODO GitHubIssue#43 : support non-Entity ($select/$value) queries
                 return this.Request.CreateResponse(
                     HttpStatusCode.OK, new EntityResult(query, typeReference, this.Domain.Context));
             }

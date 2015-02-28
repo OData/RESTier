@@ -33,7 +33,7 @@ namespace Microsoft.Restier.WebApi.Filters
             get { return this.result.PropertyName; }
         }
 
-        // TODO: implement Target.  if this is a $batch request return the ContentId "$0" for the target.
+        // TODO GitHubIssue#40 : Implement Target for ValidationResultDTO
         //public string Target
         //{
         //    get { return this.result.Target.ToString(); }

@@ -176,8 +176,7 @@ namespace Microsoft.Restier.Core.Query
                     node = this.Source(node);
                 }
 
-                // TODO: IQueryExpressionTranslator - for when the domain
-                // types are different from the data source proxy types
+                // TODO GitHubIssue#28 : Support transformation between domain types and data source proxy types 
 
                 this._context.PopVisitedNode();
 
@@ -203,7 +202,7 @@ namespace Microsoft.Restier.Core.Query
                         if (!visited.Type.IsAssignableFrom(normalized.Type))
                         {
                             // Normalizer cannot change expression type
-                            // TODO: error message
+                            // TODO GitHubIssue#24 : error message
                             throw new InvalidOperationException();
                         }
                         return normalized;
@@ -219,7 +218,7 @@ namespace Microsoft.Restier.Core.Query
                         .GetHookPoints<IQueryExpressionInspector>().Reverse());
                 if (inspectors.Any(i => !i.Inspect(this._context)))
                 {
-                    // TODO: error message
+                    // TODO GitHubIssue#24 : error message
                     throw new InvalidOperationException("Inspection failed.");
                 }
             }
@@ -239,7 +238,7 @@ namespace Microsoft.Restier.Core.Query
                         if (!visited.Type.IsAssignableFrom(expanded.Type))
                         {
                             // Expander cannot change expression type
-                            // TODO: error message
+                            // TODO GitHubIssue#24 : error message
                             throw new InvalidOperationException();
                         }
                         this._context.PushVisitedNode(null);
@@ -270,7 +269,7 @@ namespace Microsoft.Restier.Core.Query
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
                             // Filter cannot change expression type
-                            // TODO: error message
+                            // TODO GitHubIssue#24 : error message
                             throw new InvalidOperationException();
                         }
                         this._processed.Add(visited, processed);

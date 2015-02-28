@@ -80,7 +80,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 namespaceName, efEntityContainer.Name);
             elementMap.Add(efEntityContainer, entityContainer);
 
-            // TODO: support complex and enumeration types
+            // TODO GitHubIssue#36 : support complex and enumeration types
             foreach (var efEntitySet in efEntityContainer.EntitySets)
             {
                 var efEntityType = efEntitySet.ElementType;
@@ -111,7 +111,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     efModel, efAssociationSet, model, elementMap);
             }
 
-            // TODO: support function imports
+            // TODO GitHubIssue#36 : support function imports
             model.AddElement(entityContainer);
 
             return Task.FromResult(model);
@@ -121,7 +121,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             MetadataWorkspace efModel, EntityType efEntityType,
             EdmModel model, out List<EdmStructuralProperty> concurrencyProperties)
         {
-            // TODO: support complex and entity inheritance
+            // TODO GitHubIssue#36 : support complex and entity inheritance
             var oType = efModel.GetObjectSpaceType(efEntityType) as EntityType;
             var entityType = new EdmEntityType(
                 oType.NamespaceName, oType.Name);

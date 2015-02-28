@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Conventions
             {
                 object entity = dataModificationEntry.Entity;
 
-                // TODO: should this PropertyDescriptorCollection be cached?
+                // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 PropertyDescriptorCollection properties = new AssociatedMetadataTypeTypeDescriptionProvider(entity.GetType())
                     .GetTypeDescriptor(entity).GetProperties();
 

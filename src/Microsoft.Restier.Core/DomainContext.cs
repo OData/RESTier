@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(configuration, "configuration");
             if (!configuration.IsCommitted)
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             this.Configuration = configuration;

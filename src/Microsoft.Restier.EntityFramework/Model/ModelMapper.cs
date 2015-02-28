@@ -50,7 +50,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             string name,
             out Type relevantType)
         {
-            // TODO: support something beyond entity sets
+            // TODO GitHubIssue#39 : support something beyond entity sets
             relevantType = null;
             var property = this._dbContextType.GetProperty(name);
             if (property != null)
@@ -90,7 +90,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             string namespaceName, string name,
             out Type relevantType)
         {
-            // TODO: support composable function imports
+            // TODO GitHubIssue#39 : support composable function imports
             relevantType = null;
             return false;
         }

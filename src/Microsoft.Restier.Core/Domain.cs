@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Core
     /// (Shared in Visual Basic) methods for interacting with objects
     /// that implement <see cref="IDomain"/>.
     /// </summary>
-    public static class Domain // TODO: transactions, exception filters
+    public static class Domain // TODO GitHubIssue#25,#26 : transactions, exception filters
     {
         #region Model
 
@@ -327,7 +327,7 @@ namespace Microsoft.Restier.Core
             var elementType = Domain.EnsureElementType(context, null, name);
             if (typeof(TElement) != elementType)
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             return Domain.SourceCore<TElement>(null, name, arguments);
@@ -419,7 +419,7 @@ namespace Microsoft.Restier.Core
                 context, namespaceName, name);
             if (typeof(TElement) != elementType)
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
             return Domain.SourceCore<TElement>(namespaceName, name, arguments);
@@ -468,7 +468,7 @@ namespace Microsoft.Restier.Core
             }
             if (elementType == null)
             {
-                // TODO: error message
+                // TODO GitHubIssue#24 : error message
                 throw new NotSupportedException();
             }
             return elementType;

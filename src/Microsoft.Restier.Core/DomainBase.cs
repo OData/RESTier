@@ -97,7 +97,7 @@ namespace Microsoft.Restier.Core
             {
                 if (candidate.BaseConfiguration == null)
                 {
-                    // TODO: error message
+                    // TODO GitHubIssue#24 : error message
                     throw new ArgumentException();
                 }
                 candidate = candidate.BaseConfiguration;
