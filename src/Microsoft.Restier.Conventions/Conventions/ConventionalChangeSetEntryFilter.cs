@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Conventions
                 BindingFlags.IgnoreCase |
                 BindingFlags.DeclaredOnly);
 
-            if (method != null && 
+            if (method != null &&
                 (method.ReturnType == typeof(void) ||
                 typeof(Task).IsAssignableFrom(method.ReturnType)))
             {
@@ -145,15 +146,8 @@ namespace Microsoft.Restier.Conventions
 
         private static bool ParametersMatch(ParameterInfo[] methodParameters, object[] parameters)
         {
-            bool match = methodParameters.Length == parameters.Length;
-            if (match)
-            {
-                for (int i = 0; i < methodParameters.Length; i++)
-                {
-                    match &= methodParameters[i].ParameterType.IsAssignableFrom(parameters[i].GetType());
-                }
-            }
-            return match;
+            return methodParameters.Length == parameters.Length
+                && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
         }
     }
 }
