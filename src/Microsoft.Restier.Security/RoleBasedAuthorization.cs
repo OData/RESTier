@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
@@ -54,6 +55,7 @@ namespace Microsoft.Restier.Security
             InvocationContext context,
             IEdmModel model, IEdmSchemaElement element)
         {
+            Ensure.NotNull(element);
             // TODO GitHubIssue#34 : Filter out proper visible types
             if (element is IEdmType || element is IEdmOperation)
             {
@@ -87,6 +89,7 @@ namespace Microsoft.Restier.Security
             InvocationContext context,
             IEdmModel model, IEdmEntityContainerElement element)
         {
+            Ensure.NotNull(element);
             return this.IsVisible(configuration,
                 context, null, element.Name);
         }
@@ -102,6 +105,7 @@ namespace Microsoft.Restier.Security
         /// </returns>
         public bool Inspect(QueryExpressionContext context)
         {
+            Ensure.NotNull(context);
             // TODO GitHubIssue#35 : Support Inspect more elements in authorization
             if (context.ModelReference == null)
             {
