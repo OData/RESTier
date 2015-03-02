@@ -48,6 +48,7 @@ namespace Microsoft.Restier.Conventions
             ModelContext context,
             CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context);
             var model = context.Model;
             foreach (var entitySetProperty in this.AddedEntitySets)
             {
@@ -96,6 +97,7 @@ namespace Microsoft.Restier.Conventions
         /// <inheritdoc/>
         public Expression Expand(QueryExpressionContext context)
         {
+            Ensure.NotNull(context);
             if (context.ModelReference == null)
             {
                 return null;

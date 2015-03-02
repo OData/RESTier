@@ -39,6 +39,7 @@ namespace Microsoft.Restier.Conventions
             SubmitContext context, ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context);
             bool result = true;
 
             Type returnType = typeof(bool);

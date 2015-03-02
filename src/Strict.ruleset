@@ -2,7 +2,6 @@
 <RuleSet Name="FxCop rules for RESTier" Description="This rule set contains the rules for RESTier." ToolsVersion="10.0">
   <IncludeAll Action="Error" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
-    <Rule Id="CA1062" Action="None" />
     <Rule Id="MW1200" Action="None" />
   </Rules>
 </RuleSet>

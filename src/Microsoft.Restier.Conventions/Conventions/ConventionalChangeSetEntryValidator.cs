@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -34,6 +35,7 @@ namespace Microsoft.Restier.Conventions
             ValidationResults validationResults,
             CancellationToken cancellationToken)
         {
+            Ensure.NotNull(validationResults);
             DataModificationEntry dataModificationEntry = entry as DataModificationEntry;
             if (dataModificationEntry != null)
             {

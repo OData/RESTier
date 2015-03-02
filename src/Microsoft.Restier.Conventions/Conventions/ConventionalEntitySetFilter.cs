@@ -37,6 +37,7 @@ namespace Microsoft.Restier.Conventions
         /// <inheritdoc/>
         public Expression Filter(QueryExpressionContext context)
         {
+            Ensure.NotNull(context);
             if (context.ModelReference == null)
             {
                 return null;

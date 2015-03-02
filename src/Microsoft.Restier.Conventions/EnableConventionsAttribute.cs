@@ -26,6 +26,8 @@ namespace Microsoft.Restier.Conventions
             DomainContext context,
             Type type, object instance)
         {
+            Ensure.NotNull(context);
+            Ensure.NotNull(type);
             context.SetProperty(type.AssemblyQualifiedName, instance);
         }
     }
