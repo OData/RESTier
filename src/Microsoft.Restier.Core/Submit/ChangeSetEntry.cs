@@ -273,6 +273,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public IQueryable ApplyTo(IQueryable query)
         {
+            Ensure.NotNull(query);
             if (this.IsNew)
             {
                 throw new InvalidOperationException("DataModificationEntry.ApplyTo cannot be called on an IsNew entry.");

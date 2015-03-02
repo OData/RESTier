@@ -48,6 +48,7 @@ namespace Microsoft.Restier.Core
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
+            Ensure.NotNull(expression);
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
             if (type == null)
             {

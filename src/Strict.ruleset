@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="FxCop rules for RESTier" Description="This rule set contains the rules for RESTier." ToolsVersion="10.0">
-  <RuleHintPaths>
-    <Path>..\packages\CustomFxCopRules</Path>
-  </RuleHintPaths>
   <IncludeAll Action="Error" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1062" Action="None" />
