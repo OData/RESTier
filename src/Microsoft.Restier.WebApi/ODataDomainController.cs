@@ -66,6 +66,7 @@ namespace Microsoft.Restier.WebApi
                     disposable.Dispose();
                 }
             }
+            base.Dispose(disposing);
         }
     }
 

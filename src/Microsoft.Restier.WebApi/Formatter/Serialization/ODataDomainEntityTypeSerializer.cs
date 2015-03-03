@@ -29,6 +29,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
 
         public override string CreateETag(EntityInstanceContext entityInstanceContext)
         {
+            Ensure.NotNull(entityInstanceContext);
             string etag = null;
             object etagGetterObject;
             if (entityInstanceContext.Request.Properties.TryGetValue("ETagGetter", out etagGetterObject))

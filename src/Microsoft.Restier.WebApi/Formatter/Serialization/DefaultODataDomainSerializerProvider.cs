@@ -41,7 +41,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
 
         public override ODataEdmTypeSerializer GetEdmTypeSerializer(IEdmTypeReference edmType)
         {
-            if (edmType.Definition.TypeKind == EdmTypeKind.Entity)
+            if (edmType.IsEntity())
             {
                 return this.entityTypeSerializer;
             }
