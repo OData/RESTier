@@ -155,6 +155,7 @@ public async Task<IHttpActionResult> GetCustomersCount()
     return Ok(await OnFilterCustomers(DbContext.Customers).CountAsync());
 }
 ```
+
 ### Submit Logic
 Using the same conventions, RESTier can provide custom business logic when entities are submitted. You can do this to all entity set with all operations (`Updated`, `Inserted`, `Deleted`; `Updating`, `Inserting`, `Deleting`) as long as you follow the naming convention `On[Operation][EntitySet]`. For example, by adding the code below to `NorthwindDomain.cs`, you can define what is to be done when updating a `Product`: 
 ```csharp
