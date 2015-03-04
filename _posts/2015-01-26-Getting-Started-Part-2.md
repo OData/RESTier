@@ -5,13 +5,14 @@ description: ""
 category: Getting Started
 ---
 
-This is the second part of a tutorial for a RESTier sample service based on the [Northwind database](http://msdn.microsoft.com/en-us/library/8b6y4c7s.aspx). Here we introduce rich domain logic while bridging the feature gap between [Web API OData](http://www.asp.net/web-api/overview/odata-support-in-aspnet-web-api/odata-v4/create-an-odata-v4-endpoint) and the [previous tutorial](https://github.com/OData/RESTier/wiki/Getting-started---Basic-Tutorial).
+This is the second part of a tutorial for a RESTier sample service based on the [Northwind database](http://msdn.microsoft.com/en-us/library/8b6y4c7s.aspx). Here we introduce rich domain logic while bridging the feature gap between [Web API OData](http://www.asp.net/web-api/overview/odata-support-in-aspnet-web-api/odata-v4/create-an-odata-v4-endpoint) and the [previous tutorial](http://odata.github.io/RESTier/Getting-Started-Part-1/).
 
 ## Fallback to Web API OData
 RESTier is currently a preview release, so there remain features that are not yet natively supported. For example, CUD (Create, Update, Delete) operations are only supported for top-level entities. Given these limitations, we provide ways to fallback to Web API OData to fill these feature gaps. In doing so, we also demonstrate the core methods for extending RESTier in the future.
 
 ### Attribute Routing
 Attribute Routing allows [an entity's property to be accessed directly via a unique URL](http://docs.oasis-open.org/odata/odata/v4.0/errata02/os/complete/part2-url-conventions/odata-v4.0-errata02-os-part2-url-conventions-complete.html#_Toc406398085), so that the value can be directly retrieved or updated. While Attribute Routing isn't yet supported by RESTier, you can fall back to Web API OData in order to add this functionality. To do so, add the code below to `NorthwindController.cs`. 
+
 ```csharp
 using Microsoft.Restier.WebApi;
 using RESTierDemo.Models;
@@ -60,6 +61,7 @@ public IHttpActionResult UpdateProductUnitPrice(int key, [FromBody]decimal price
     return Ok(price);
 }
 ```
+
 **Enable Entity Counts**
 
 Entity counts are not currently supported by the `ODataDomainController`, but you can easily implement them yourself. The example below asynchronously queries the database for the count.
@@ -102,6 +104,7 @@ public class NorthwindDomain : DbDomain<NorthwindContext>
 	// Other code
 }
 ```
+
 After adding the `[EnableConventions]` attribute and the code for the `CurrentOrders` imperative view, you will notice that `http://localhost:<ISS Express port>/api/Northwind/$metadata` now contains:
 
 ```xml
@@ -110,8 +113,10 @@ After adding the `[EnableConventions]` attribute and the code for the `CurrentOr
 	<EntitySet Name="CurrentOrders" EntityType="Microsoft.Data.Domain.Samples.Northwind.Models.Order" />
 </EntityContainer>
 ```
+
 Further, you can now query `CurrentOrders` via `http://localhost:31181/api/Northwind/CurrentOrders` and get:
-```
+
+```json
 {
     "@odata.context": "http://localhost:31181/api/Northwind/$metadata#CurrentOrders",
     "value": [
@@ -158,6 +163,8 @@ public async Task<IHttpActionResult> GetCustomersCount()
 
 ### Submit Logic
 Using the same conventions, RESTier can provide custom business logic when entities are submitted. You can do this to all entity set with all operations (`Updated`, `Inserted`, `Deleted`; `Updating`, `Inserting`, `Deleting`) as long as you follow the naming convention `On[Operation][EntitySet]`. For example, by adding the code below to `NorthwindDomain.cs`, you can define what is to be done when updating a `Product`: 
+
+
 ```csharp
 private void OnUpdatingProducts(Product product)
 {
