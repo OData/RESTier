@@ -16,17 +16,17 @@ namespace Microsoft.Restier.WebApi.Batch
 {
     public class ODataDomainBatchHandler : DefaultODataBatchHandler
     {
-        public ODataDomainBatchHandler(HttpServer httpServer, Func<DomainContext> contextFactory = null)
+        public ODataDomainBatchHandler(HttpServer httpServer, Func<IDomain> domainFactory = null)
             : base(httpServer)
         {
-            this.ContextFactory = contextFactory;
+            this.DomainFactory = domainFactory;
         }
 
-        public Func<DomainContext> ContextFactory { get; set; }
+        public Func<IDomain> DomainFactory { get; set; }
 
         public override async Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (this.ContextFactory == null)
+            if (this.DomainFactory == null)
             {
                 throw new InvalidOperationException("ODataDomainBatchHandler was called without a DomainContext Factory.");
             }
@@ -70,7 +70,7 @@ namespace Microsoft.Restier.WebApi.Batch
 
         protected virtual ChangeSetRequestItem CreateChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests)
         {
-            return new ODataDomainChangeSetRequestItem(changeSetRequests, this.ContextFactory());
+            return new ODataDomainChangeSetRequestItem(changeSetRequests, this.DomainFactory);
         }
     }
 }

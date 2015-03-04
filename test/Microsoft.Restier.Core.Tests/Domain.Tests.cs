@@ -125,6 +125,10 @@ namespace Microsoft.Restier.Core.Tests
                     return _context;
                 }
             }
+
+            public void Dispose()
+            {
+            }
         }
 
         [TestMethod]

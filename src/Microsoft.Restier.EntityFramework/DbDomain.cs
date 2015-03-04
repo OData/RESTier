@@ -2,7 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+#if EF7
+using Microsoft.Data.Entity;
+#else
 using System.Data.Entity;
+#endif
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -81,7 +85,11 @@ namespace Microsoft.Restier.EntityFramework
         {
             var context = base.CreateDomainContext(configuration);
             var dbContext = this.CreateDbContext();
+#if EF7
+            // TODO: Figure out the equivalent measurement to suppress proxy generation in EF7.
+#else
             dbContext.Configuration.ProxyCreationEnabled = false;
+#endif
             context.SetProperty("DbContext", dbContext);
             return context;
         }

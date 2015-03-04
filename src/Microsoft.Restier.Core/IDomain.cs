@@ -10,7 +10,7 @@ namespace Microsoft.Restier.Core
     /// A domain composes a domain configuration with semantics
     /// around the creation and disposal of a domain context.
     /// </remarks>
-    public interface IDomain
+    public interface IDomain : System.IDisposable
     {
         /// <summary>
         /// Gets the context for this domain.

@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+#if EF7
+using Microsoft.Data.Entity;
+#else
 using System.Data.Entity;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;

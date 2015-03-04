@@ -2,8 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+#if EF7
+using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
+using IAsyncQueryProvider = Microsoft.Data.Entity.Query.IAsyncQueryProvider;
+#else
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+#endif
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -88,10 +94,17 @@ namespace Microsoft.Restier.EntityFramework.Query
             IQueryable query, Expression expression,
             CancellationToken cancellationToken)
         {
+#if EF7
+            var provider = query.Provider as IAsyncQueryProvider;
+            var result = await provider.ExecuteAsync<TResult>(
+                expression, cancellationToken);
+            return new QueryResult(new TResult[] { result });
+#else
             var provider = query.Provider as IDbAsyncQueryProvider;
             var result = await provider.ExecuteAsync<TResult>(
                 expression, cancellationToken);
             return new QueryResult(new TResult[] { result });
+#endif
         }
 
         private static IQueryable<TElement> StripPagingOperators<TElement>(

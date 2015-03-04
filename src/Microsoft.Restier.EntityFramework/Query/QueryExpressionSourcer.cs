@@ -2,7 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+#if EF7
+using Microsoft.Data.Entity;
+#else
 using System.Data.Entity;
+#endif
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Restier.Core.Query;

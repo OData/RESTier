@@ -14,14 +14,14 @@ namespace Microsoft.Restier.WebApi.Batch
 {
     public class ODataDomainChangeSetRequestItem : ChangeSetRequestItem
     {
-        private DomainContext context;
+        private Func<IDomain> domainFactory;
 
-        public ODataDomainChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, DomainContext context)
+        public ODataDomainChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<IDomain> domainFactory)
             : base(requests)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(domainFactory, "domainFactory");
 
-            this.context = context;
+            this.domainFactory = domainFactory;
         }
 
         public override async Task<ODataBatchResponseItem> SendRequestAsync(HttpMessageInvoker invoker, CancellationToken cancellationToken)
@@ -75,7 +75,10 @@ namespace Microsoft.Restier.WebApi.Batch
 
         internal async Task SubmitChangeSet(ChangeSet changeSet)
         {
-            SubmitResult submitResults = await Domain.SubmitAsync(this.context, changeSet);
+            using (var domain = this.domainFactory())
+            {
+                SubmitResult submitResults = await domain.SubmitAsync(changeSet);
+            }
         }
 
         private void SetChangeSetProperty(ODataDomainChangeSetProperty changeSetProperty)

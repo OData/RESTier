@@ -21,17 +21,20 @@ namespace Microsoft.Restier.WebApi
         // TODO GitHubIssue#51 : Support model lazy loading
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
             this HttpConfiguration config, string routeName, string routePrefix,
+            Func<IDomain> domainFactory,
             ODataDomainBatchHandler batchHandler = null)
             where TController : ODataDomainController, new()
         {
-            using (TController controller = new TController())
+            Ensure.NotNull(domainFactory, "domainFactory");
+
+            using (var domain = domainFactory())
             {
-                var model = await controller.Domain.GetModelAsync();
+                var model = await domain.GetModelAsync();
                 var conventions = CreateODataDomainRoutingConventions<TController>(config, model);
 
-                if (batchHandler != null && batchHandler.ContextFactory == null)
+                if (batchHandler != null && batchHandler.DomainFactory == null)
                 {
-                    batchHandler.ContextFactory = () => new TController().Domain.Context;
+                    batchHandler.DomainFactory = domainFactory;
                 }
 
                 var routes = config.Routes;
@@ -51,6 +54,15 @@ namespace Microsoft.Restier.WebApi
                 routes.Add(routeName, route);
                 return route;
             }
+        }
+
+        public static async Task<ODataRoute> MapODataDomainRoute<TController>(
+            this HttpConfiguration config, string routeName, string routePrefix,
+            ODataDomainBatchHandler batchHandler = null)
+            where TController : ODataDomainController, new()
+        {
+            return await MapODataDomainRoute<TController>(
+                config, routeName, routePrefix, () => new TController().Domain, batchHandler);
         }
 
         public static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TController>(
