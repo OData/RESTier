@@ -6,7 +6,7 @@ category: Getting Started
 ---
 
 
-RESTier is a new RESTful API development framework for building standardized OData V4 services with rich domain logic. This tutorial shows how to create a basic OData V4 endpoint using RESTier in a few minutes. Then in [part 2](https://github.com/OData/RESTier/wiki/Getting-started---Advanced-Tutorial), we will show how to add advanced OData features and rich domain logic on top of this sample service. We will be using [Northwind](http://msdn.microsoft.com/en-us/library/8b6y4c7s.aspx) as the sample database and [Entity Framework](http://msdn.microsoft.com/en-us/data/ef.aspx) as the data proxy.
+RESTier is a new RESTful API development framework for building standardized OData V4 services with rich domain logic. This tutorial shows how to create a basic OData V4 endpoint using RESTier in a few minutes. Then in [part 2](http://odata.github.io/RESTier/Getting-Started-Part-2/), we will show how to add advanced OData features and rich domain logic on top of this sample service. We will be using [Northwind](http://msdn.microsoft.com/en-us/library/8b6y4c7s.aspx) as the sample database and [Entity Framework](http://msdn.microsoft.com/en-us/data/ef.aspx) as the data proxy.
 
 #### Create the Visual Studio Project
 In [Visual Studio](http://msdn.microsoft.com/en-us/vstudio/aa718325.aspx), from the File menu, select _New > Project_.
