@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.EntityFramework.Properties;
 
 namespace Microsoft.Restier.EntityFramework.Submit
 {
@@ -61,7 +62,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 }
                 else
                 {
-                    throw new NotSupportedException("A DataModificationEntry must be either New, Update or Delete.");
+                    throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                 }
 
                 entry.Entity = entity;
@@ -89,7 +90,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values, letting the save fail if there are concurrency errors
 
                 //throw new EntityNotFoundException
-                throw new InvalidOperationException("Could not find the specified resource.");
+                throw new InvalidOperationException(Resources.ResourceNotFound);
             }
 
             return entity;
