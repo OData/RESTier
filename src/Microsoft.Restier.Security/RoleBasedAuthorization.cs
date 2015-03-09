@@ -10,6 +10,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Security.Properties;
 
 namespace Microsoft.Restier.Security
 {
@@ -127,9 +128,7 @@ namespace Microsoft.Restier.Security
                 .GetProperty<IEnumerable<DomainPermission>>(Permissions);
             if (permissions == null)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new SecurityException(
-                    "Not authorized for read: " + entitySet.Name);
+                throw new SecurityException(string.Format(Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
             permissions = permissions.Where(p => (
                 p.PermissionType == DomainPermissionType.All ||
@@ -140,9 +139,7 @@ namespace Microsoft.Restier.Security
                 (assertedRoles != null && assertedRoles.Contains(p.Role))));
             if (!permissions.Any() || permissions.Any(p => p.IsDeny))
             {
-                // TODO GitHubIssue#24 : error message
-                throw new SecurityException(
-                    "Not authorized for read: " + entitySet.Name);
+                throw new SecurityException(string.Format(Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
             return true;
         }
