@@ -2,10 +2,12 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Restier.Conventions.Properties;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 
@@ -123,7 +125,8 @@ namespace Microsoft.Restier.Conventions
                     return "OnExecut" + suffix + actionEntry.ActionName;
 
                 default:
-                    throw new InvalidOperationException("Invalid ChangeSetEntry Type: " + entry.Type);
+                    throw new InvalidOperationException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
             }
         }
 
@@ -140,7 +143,8 @@ namespace Microsoft.Restier.Conventions
                     return actionEntry.GetArgumentArray();
 
                 default:
-                    throw new InvalidOperationException("Invalid ChangeSetEntry Type: " + entry.Type);
+                    throw new InvalidOperationException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
             }
         }
 
