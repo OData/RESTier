@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -52,8 +54,8 @@ namespace Microsoft.Restier.Core.Submit
             foreach (var authorizer in context
                 .GetHookPoints<ISubmitAuthorizer>().Reverse())
             {
-                    authorized = await authorizer.AuthorizeAsync(
-                        context, cancellationToken);
+                authorized = await authorizer.AuthorizeAsync(
+                    context, cancellationToken);
                 if (!authorized || context.Result != null)
                 {
                     break;
@@ -164,29 +166,29 @@ namespace Microsoft.Restier.Core.Submit
                     string noPermissionMessage = null;
                     if (dataModification.IsNew)
                     {
-                        noPermissionMessage = "The current user does not have permission to insert entities into the EntitySet '{0}'.";
+                        noPermissionMessage = Resources.NoPermissionToInsertEntity;
                     }
                     else if (dataModification.IsUpdate)
                     {
-                        noPermissionMessage = "The current user does not have permission to update entities into the EntitySet '{0}'.";
+                        noPermissionMessage = Resources.NoPermissionToUpdateEntity;
                     }
                     else if (dataModification.IsDelete)
                     {
-                        noPermissionMessage = "The current user does not have permission to delete entities into the EntitySet '{0}'.";
+                        noPermissionMessage = Resources.NoPermissionToDeleteEntity;
                     }
                     else
                     {
-                        throw new NotSupportedException("A DataModification must be either: IsNew, IsUpdate, or IsDelete.");
+                        throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                     }
 
                     return string.Format(noPermissionMessage, dataModification.EntitySetName);
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
-                    return string.Format("The current user does not have permission to invoke the requested action '{0}'.", actionInvocation.ActionName);
+                    return string.Format(CultureInfo.InvariantCulture, Resources.NoPermissionToInvokeAction, actionInvocation.ActionName);
 
                 default:
-                    throw new InvalidOperationException("Invalid ChangeSetEntry Type: " + entry.Type);
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
             }
         }
 
@@ -207,7 +209,7 @@ namespace Microsoft.Restier.Core.Submit
 
             if (validationResults.HasErrors)
             {
-                string validationErrorMessage = "The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information.";
+                string validationErrorMessage = Resources.ValidationFailsTheOperation;
                 throw new ValidationException(validationErrorMessage)
                 {
                     ValidationResults = validationResults.Errors
@@ -298,8 +300,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             if (changeSet.AnEntityHasChanged)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new InvalidOperationException("Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.");
+                throw new InvalidOperationException(Resources.ErrorInVerifyingNoEntityHasChanged);
             }
         }
     }

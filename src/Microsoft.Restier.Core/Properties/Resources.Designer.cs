@@ -61,11 +61,110 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A DataModification must be either: IsNew, IsUpdate, or IsDelete..
+        /// </summary>
+        internal static string DataModificationMustBeCUD {
+            get {
+                return ResourceManager.GetString("DataModificationMustBeCUD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;DataModificationEntry.ApplyTo cannot be called on an IsNew entry..
+        /// </summary>
+        internal static string DataModificationNotSupportCreateEntity {
+            get {
+                return ResourceManager.GetString("DataModificationNotSupportCreateEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey..
+        /// </summary>
+        internal static string DataModificationRequiresEntityKey {
+            get {
+                return ResourceManager.GetString("DataModificationRequiresEntityKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} is not a supported EDM type..
         /// </summary>
         internal static string EdmTypeNotSupported {
             get {
                 return ResourceManager.GetString("EdmTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates..
+        /// </summary>
+        internal static string ErrorInVerifyingNoEntityHasChanged {
+            get {
+                return ResourceManager.GetString("ErrorInVerifyingNoEntityHasChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inspection failed..
+        /// </summary>
+        internal static string InspectionFailed {
+            get {
+                return ResourceManager.GetString("InspectionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid ChangeSetEntry Type: {0}..
+        /// </summary>
+        internal static string InvalidChangeSetEntryType {
+            get {
+                return ResourceManager.GetString("InvalidChangeSetEntryType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to delete entities from the EntitySet &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoPermissionToDeleteEntity {
+            get {
+                return ResourceManager.GetString("NoPermissionToDeleteEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to insert entities into the EntitySet &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoPermissionToInsertEntity {
+            get {
+                return ResourceManager.GetString("NoPermissionToInsertEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to invoke the requested action &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoPermissionToInvokeAction {
+            get {
+                return ResourceManager.GetString("NoPermissionToInvokeAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to update entities in the EntitySet &apos;{0}&apos;..
+        /// </summary>
+        internal static string NoPermissionToUpdateEntity {
+            get {
+                return ResourceManager.GetString("NoPermissionToUpdateEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information..
+        /// </summary>
+        internal static string ValidationFailsTheOperation {
+            get {
+                return ResourceManager.GetString("ValidationFailsTheOperation", resourceCulture);
             }
         }
     }

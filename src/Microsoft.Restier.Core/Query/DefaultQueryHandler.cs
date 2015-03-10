@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -122,7 +123,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return null;
                 }
-                
+
                 // Initialize and push the visited node
                 var visited = node;
                 this._context.PushVisitedNode(visited);
@@ -218,8 +219,7 @@ namespace Microsoft.Restier.Core.Query
                         .GetHookPoints<IQueryExpressionInspector>().Reverse());
                 if (inspectors.Any(i => !i.Inspect(this._context)))
                 {
-                    // TODO GitHubIssue#24 : error message
-                    throw new InvalidOperationException("Inspection failed.");
+                    throw new InvalidOperationException(Resources.InspectionFailed);
                 }
             }
 

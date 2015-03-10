@@ -117,7 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DataModificationMustBeCUD" xml:space="preserve">
+    <value>A DataModification must be either: IsNew, IsUpdate, or IsDelete.</value>
+  </data>
+  <data name="DataModificationNotSupportCreateEntity" xml:space="preserve">
+    <value>"DataModificationEntry.ApplyTo cannot be called on an IsNew entry.</value>
+  </data>
+  <data name="DataModificationRequiresEntityKey" xml:space="preserve">
+    <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
+  </data>
   <data name="EdmTypeNotSupported" xml:space="preserve">
     <value>{0} is not a supported EDM type.</value>
+  </data>
+  <data name="ErrorInVerifyingNoEntityHasChanged" xml:space="preserve">
+    <value>Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.</value>
+  </data>
+  <data name="InspectionFailed" xml:space="preserve">
+    <value>Inspection failed.</value>
+  </data>
+  <data name="InvalidChangeSetEntryType" xml:space="preserve">
+    <value>Invalid ChangeSetEntry Type: {0}.</value>
+  </data>
+  <data name="NoPermissionToDeleteEntity" xml:space="preserve">
+    <value>The current user does not have permission to delete entities from the EntitySet '{0}'.</value>
+  </data>
+  <data name="NoPermissionToInsertEntity" xml:space="preserve">
+    <value>The current user does not have permission to insert entities into the EntitySet '{0}'.</value>
+  </data>
+  <data name="NoPermissionToInvokeAction" xml:space="preserve">
+    <value>The current user does not have permission to invoke the requested action '{0}'.</value>
+  </data>
+  <data name="NoPermissionToUpdateEntity" xml:space="preserve">
+    <value>The current user does not have permission to update entities in the EntitySet '{0}'.</value>
+  </data>
+  <data name="ValidationFailsTheOperation" xml:space="preserve">
+    <value>The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information.</value>
   </data>
 </root>

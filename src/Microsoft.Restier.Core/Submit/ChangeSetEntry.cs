@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -276,7 +277,7 @@ namespace Microsoft.Restier.Core.Submit
             Ensure.NotNull(query);
             if (this.IsNew)
             {
-                throw new InvalidOperationException("DataModificationEntry.ApplyTo cannot be called on an IsNew entry.");
+                throw new InvalidOperationException(Resources.DataModificationNotSupportCreateEntity);
             }
 
             Type type = query.ElementType;
@@ -293,7 +294,7 @@ namespace Microsoft.Restier.Core.Submit
 
             if (where == null)
             {
-                throw new InvalidOperationException("There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.");
+                throw new InvalidOperationException(Resources.DataModificationRequiresEntityKey);
             }
 
             if (this.OriginalValues != null)
