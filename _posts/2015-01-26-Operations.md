@@ -13,6 +13,7 @@ The basic idea is to allow user to extend the `Edm Model` to add actions and fun
 Here we assume that you are familiar with the basic use of RESTier, if not, please refer to the [basic tutorial](https://github.com/OData/RESTier/wiki/Samples-1:-Getting-started---basic).
 
 First, add the convention method `OnModelExtending` in `NorthwindDomain`:
+
 ```csharp
     using Microsoft.OData.Edm;
     using Microsoft.OData.Edm.Library;
@@ -37,6 +38,7 @@ First, add the convention method `OnModelExtending` in `NorthwindDomain`:
 ```
 
 Then, in the `NorthwindController`, add the following code:
+
 ```csharp
     public class NorthwindController : ODataDomainController<NorthwindDomain>
     {
