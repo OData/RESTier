@@ -14,6 +14,7 @@ Nonetheless, we received feedback from early customers that it may be organizati
 Here we assume that you are familiar with the basic implementation of RESTier; if not, please first refer to the [basic tutorials](https://github.com/OData/RESTier/wiki/Getting-started---Basic-Tutorial).
 
 Below is the _default_ controller:
+
 ```csharp
     public class NorthwindController :ODataDomainController<NorthwindDomain>
     {
