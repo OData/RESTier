@@ -61,11 +61,10 @@ namespace Microsoft.Restier.WebApi
         {
             if (disposing)
             {
-                var disposable = this._domain as IDisposable;
-
-                if (disposable != null)
+                if (this._domain != null)
                 {
-                    disposable.Dispose();
+                    this._domain.Dispose();
+                    this._domain = null;
                 }
             }
             base.Dispose(disposing);
@@ -178,24 +177,29 @@ namespace Microsoft.Restier.WebApi
             object[] queryArgs = null;
             ODataPathSegment firstPathSegment = path.Segments.FirstOrDefault();
             rootEntityType = null;
-            if (firstPathSegment is EntitySetPathSegment)
+            var entitySetPathSegment = firstPathSegment as EntitySetPathSegment;
+            if (entitySetPathSegment != null)
             {
-                IEdmEntitySetBase entitySet = ((EntitySetPathSegment)firstPathSegment).EntitySetBase;
+                IEdmEntitySetBase entitySet = entitySetPathSegment.EntitySetBase;
                 querySource = entitySet;
                 rootEntityType = entitySet.EntityType();
             }
-            else if (firstPathSegment is UnboundFunctionPathSegment)
+            else
             {
-                UnboundFunctionPathSegment functionSegment = (UnboundFunctionPathSegment)firstPathSegment;
-                IEdmFunctionImport functionImport = functionSegment.Function;
-                querySource = functionImport;
-                IEdmEntityTypeReference entityTypeRef = functionImport.Function.ReturnType.AsEntity();
-                rootEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
-
-                if (functionImport.Function.Parameters.Any())
+                var unboundFunctionPathSegment = firstPathSegment as UnboundFunctionPathSegment;
+                if (unboundFunctionPathSegment != null)
                 {
-                    queryArgs = functionImport.Function.Parameters.Select(
-                        p => functionSegment.GetParameterValue(p.Name)).ToArray();
+                    UnboundFunctionPathSegment functionSegment = unboundFunctionPathSegment;
+                    IEdmFunctionImport functionImport = functionSegment.Function;
+                    querySource = functionImport;
+                    IEdmEntityTypeReference entityTypeRef = functionImport.Function.ReturnType.AsEntity();
+                    rootEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
+
+                    if (functionImport.Function.Parameters.Any())
+                    {
+                        queryArgs = functionImport.Function.Parameters.Select(
+                            p => functionSegment.GetParameterValue(p.Name)).ToArray();
+                    }
                 }
             }
 
@@ -273,7 +277,7 @@ namespace Microsoft.Restier.WebApi
             return Expression.Equal(property, constant);
         }
 
-        private IQueryable ApplyNavigation(IQueryable queryable, NavigationPathSegment navigationSegment, ref IEdmEntityType currentEntityType, ref Type currentType)
+        private static IQueryable ApplyNavigation(IQueryable queryable, NavigationPathSegment navigationSegment, ref IEdmEntityType currentEntityType, ref Type currentType)
         {
             ParameterExpression entityParameterExpression = Expression.Parameter(currentType);
             Expression navigationPropertyExpression = Expression.Property(entityParameterExpression, navigationSegment.NavigationPropertyName);
@@ -377,7 +381,7 @@ namespace Microsoft.Restier.WebApi
             DataModificationEntry updateEntry = new DataModificationEntry(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
-                this.GetPathKeyValues(path),
+                GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 edmEntityObject.CreatePropertyDictionary());
             updateEntry.IsFullReplaceUpdate = isFullReplaceUpdate;
@@ -412,7 +416,7 @@ namespace Microsoft.Restier.WebApi
             DataModificationEntry deleteEntry = new DataModificationEntry(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
-                this.GetPathKeyValues(path),
+                GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 null);
 
@@ -469,7 +473,7 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
-        private IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
+        private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
         {
             if (path.PathTemplate == "~/entityset/key" ||
                 path.PathTemplate == "~/entityset/key/cast")

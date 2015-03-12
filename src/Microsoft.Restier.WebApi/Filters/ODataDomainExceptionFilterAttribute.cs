@@ -19,7 +19,7 @@ namespace Microsoft.Restier.WebApi.Filters
     /// An ExceptionFilter that is capable of serializing well-known exceptions to the client.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public class ODataDomainExceptionFilterAttribute : ExceptionFilterAttribute
+    public sealed class ODataDomainExceptionFilterAttribute : ExceptionFilterAttribute
     {
         public override async Task OnExceptionAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {

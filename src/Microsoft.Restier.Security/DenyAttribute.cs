@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class DenyAttribute : DomainParticipantAttribute
+    public sealed class DenyAttribute : DomainParticipantAttribute
     {
         /// <summary>
         /// Initializes a new deny attribute.

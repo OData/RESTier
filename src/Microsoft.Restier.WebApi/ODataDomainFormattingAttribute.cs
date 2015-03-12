@@ -12,7 +12,7 @@ using Microsoft.Restier.WebApi.Formatter.Serialization;
 namespace Microsoft.Restier.WebApi
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class ODataDomainFormattingAttribute : Attribute, IControllerConfiguration
+    public sealed class ODataDomainFormattingAttribute : Attribute, IControllerConfiguration
     {
         public void Initialize(HttpControllerSettings controllerSettings, HttpControllerDescriptor controllerDescriptor)
         {

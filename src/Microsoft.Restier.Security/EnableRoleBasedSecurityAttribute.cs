@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class)]
-    public class EnableRoleBasedSecurityAttribute : DomainParticipantAttribute
+    public sealed class EnableRoleBasedSecurityAttribute : DomainParticipantAttribute
     {
         /// <summary>
         /// Configures a domain configuration.

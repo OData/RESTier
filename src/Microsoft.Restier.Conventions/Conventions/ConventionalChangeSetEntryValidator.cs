@@ -23,11 +23,13 @@ namespace Microsoft.Restier.Conventions
         {
         }
 
+        private static readonly ConventionalChangeSetEntryValidator instance =
+           new ConventionalChangeSetEntryValidator();
+
         /// <summary>
         /// A static instance of conventional change set entry validator.
         /// </summary>
-        public static readonly ConventionalChangeSetEntryValidator Instance =
-            new ConventionalChangeSetEntryValidator();
+        public static ConventionalChangeSetEntryValidator Instance { get { return instance; } }
 
         /// <inheritdoc/>
         public Task ValidateEntityAsync(

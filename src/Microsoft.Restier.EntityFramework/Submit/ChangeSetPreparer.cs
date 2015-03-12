@@ -23,8 +23,9 @@ namespace Microsoft.Restier.EntityFramework.Submit
         {
         }
 
-        public static readonly ChangeSetPreparer
-            Instance = new ChangeSetPreparer();
+        private static readonly ChangeSetPreparer instance = new ChangeSetPreparer();
+
+        public static ChangeSetPreparer Instance { get { return instance; } }
 
         public async Task PrepareAsync(
             SubmitContext context,

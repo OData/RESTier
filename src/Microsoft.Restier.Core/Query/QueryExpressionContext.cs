@@ -60,7 +60,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this.GetModelReference(this.VisitedNode);
+                return this.GetModelReferenceForNode(this.VisitedNode);
             }
         }
 
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core.Query
         /// A reference to the model element
         /// that represents the expression node.
         /// </returns>
-        public QueryModelReference GetModelReference(Expression node)
+        private QueryModelReference GetModelReferenceForNode(Expression node)
         {
             QueryModelReference modelReference = null;
             if (node != null)
@@ -154,7 +154,7 @@ namespace Microsoft.Restier.Core.Query
                 }
                 else if (method.GetCustomAttributes<ExtensionAttribute>().Any())
                 {
-                    var thisModelReference = this.GetModelReference(
+                    var thisModelReference = this.GetModelReferenceForNode(
                         methodCall.Arguments[0]);
                     if (thisModelReference != null)
                     {
@@ -172,7 +172,7 @@ namespace Microsoft.Restier.Core.Query
                     methodCall = node as MethodCallExpression;
                     if (methodCall != null)
                     {
-                        modelReference = this.GetModelReference(node);
+                        modelReference = this.GetModelReferenceForNode(node);
                         if (modelReference != null)
                         {
                             var method = methodCall.Method;
@@ -197,7 +197,7 @@ namespace Microsoft.Restier.Core.Query
             var member = this.VisitedNode as MemberExpression;
             if (member != null)
             {
-                modelReference = this.GetModelReference(member.Expression);
+                modelReference = this.GetModelReferenceForNode(member.Expression);
                 if (modelReference != null)
                 {
                     modelReference = new PropertyDataReference(
@@ -243,7 +243,7 @@ namespace Microsoft.Restier.Core.Query
             return modelReference;
         }
 
-        private QueryModelReference ComputeDerivedDataReference(
+        private static QueryModelReference ComputeDerivedDataReference(
             MethodCallExpression methodCall, QueryModelReference source)
         {
             var method = methodCall.Method;
@@ -266,11 +266,6 @@ namespace Microsoft.Restier.Core.Query
             }
 
             // TODO GitHubIssue#29 : Handle projection operators in query expression
-            return null;
-        }
-
-        private QueryModelReference ComputeChildDataReference()
-        {
             return null;
         }
 

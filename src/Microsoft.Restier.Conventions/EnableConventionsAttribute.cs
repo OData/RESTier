@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Conventions
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class)]
-    public class EnableConventionsAttribute : DomainParticipantAttribute
+    public sealed class EnableConventionsAttribute : DomainParticipantAttribute
     {
         /// <inheritdoc/>
         public override void Configure(

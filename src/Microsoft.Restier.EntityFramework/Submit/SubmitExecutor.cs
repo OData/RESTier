@@ -18,7 +18,9 @@ namespace Microsoft.Restier.EntityFramework.Submit
         {
         }
 
-        public static readonly SubmitExecutor Instance = new SubmitExecutor();
+        private static readonly SubmitExecutor instance = new SubmitExecutor();
+
+        public static SubmitExecutor Instance { get { return instance; } }
 
         public async Task<SubmitResult> ExecuteSubmitAsync(
             SubmitContext context, CancellationToken cancellationToken)

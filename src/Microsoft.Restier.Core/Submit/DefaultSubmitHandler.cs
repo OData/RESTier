@@ -181,12 +181,11 @@ namespace Microsoft.Restier.Core.Submit
                         throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                     }
 
-                    return string.Format(noPermissionMessage, dataModification.EntitySetName);
+                    return string.Format(CultureInfo.InvariantCulture, noPermissionMessage, dataModification.EntitySetName);
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
                     return string.Format(CultureInfo.InvariantCulture, Resources.NoPermissionToInvokeAction, actionInvocation.ActionName);
-
                 default:
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
             }

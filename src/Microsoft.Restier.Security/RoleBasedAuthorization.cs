@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Threading;
@@ -25,12 +26,13 @@ namespace Microsoft.Restier.Security
         private const string AssertedRoles =
             "Microsoft.Restier.Security.AssertedRoles";
 
+        private static readonly RoleBasedAuthorization instance = new RoleBasedAuthorization();
+
         /// <summary>
         /// Gets the default role-based authorization system instance, which
         /// uses the current security principal to determine role membership.
         /// </summary>
-        public static readonly RoleBasedAuthorization Default =
-            new RoleBasedAuthorization();
+        public static RoleBasedAuthorization Default { get { return instance; } }
 
         /// <summary>
         /// Indicates if a schema element is currently visible.
@@ -128,7 +130,7 @@ namespace Microsoft.Restier.Security
                 .GetProperty<IEnumerable<DomainPermission>>(Permissions);
             if (permissions == null)
             {
-                throw new SecurityException(string.Format(Resources.ReadDeniedOnEntitySet, entitySet.Name));
+                throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
             permissions = permissions.Where(p => (
                 p.PermissionType == DomainPermissionType.All ||
@@ -139,7 +141,7 @@ namespace Microsoft.Restier.Security
                 (assertedRoles != null && assertedRoles.Contains(p.Role))));
             if (!permissions.Any() || permissions.Any(p => p.IsDeny))
             {
-                throw new SecurityException(string.Format(Resources.ReadDeniedOnEntitySet, entitySet.Name));
+                throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
             return true;
         }

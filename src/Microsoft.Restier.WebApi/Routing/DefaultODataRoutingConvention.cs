@@ -17,7 +17,7 @@ namespace Microsoft.Restier.WebApi.Routing
         public DefaultODataRoutingConvention(string controllerName)
         {
             Ensure.NotNull(controllerName);
-            if (controllerName.EndsWith("Controller"))
+            if (controllerName.EndsWith("Controller", StringComparison.Ordinal))
             {
                 controllerName = controllerName.Substring(0, controllerName.Length - "Controller".Length);
             }

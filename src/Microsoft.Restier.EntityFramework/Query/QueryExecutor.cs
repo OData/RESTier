@@ -27,10 +27,12 @@ namespace Microsoft.Restier.EntityFramework.Query
         {
         }
 
+        private static readonly QueryExecutor instance = new QueryExecutor();
+
         /// <summary>
         /// Gets the single instance of this query executor.
         /// </summary>
-        public static readonly QueryExecutor Instance = new QueryExecutor();
+        public static QueryExecutor Instance { get { return instance; } }
 
         /// <summary>
         /// Asynchronously executes a query and produces a query result.

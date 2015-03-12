@@ -22,11 +22,12 @@ namespace Microsoft.Restier.EntityFramework.Query
         {
         }
 
+        private static readonly QueryExpressionSourcer instance = new QueryExpressionSourcer();
+
         /// <summary>
         /// Gets the single instance of this query expression sourcer.
         /// </summary>
-        public static readonly QueryExpressionSourcer Instance =
-            new QueryExpressionSourcer();
+        public static QueryExpressionSourcer Instance { get { return instance; } }
 
         /// <summary>
         /// Sources an expression.

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
@@ -48,7 +49,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
                 }
             }
 
-            string message = string.Format("{0} cannot write an object of type '{1}'.", typeof(ODataDomainFeedSerializer).Name, feedType.FullName());
+            string message = string.Format(CultureInfo.InvariantCulture, "{0} cannot write an object of type '{1}'.", typeof(ODataDomainFeedSerializer).Name, feedType.FullName());
             throw new SerializationException(message);
         }
     }

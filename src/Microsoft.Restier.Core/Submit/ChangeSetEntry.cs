@@ -301,7 +301,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 foreach (KeyValuePair<string, object> item in this.OriginalValues)
                 {
-                    if (!item.Key.StartsWith("@"))
+                    if (!item.Key.StartsWith("@", StringComparison.Ordinal))
                     {
                         where = ApplyPredicate(param, where, item);
                     }

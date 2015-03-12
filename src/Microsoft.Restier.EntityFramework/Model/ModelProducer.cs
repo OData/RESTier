@@ -30,10 +30,16 @@ namespace Microsoft.Restier.EntityFramework.Model
         private const string c_annotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
+        private ModelProducer()
+        {
+        }
+
+        private static readonly ModelProducer instance = new ModelProducer();
+
         /// <summary>
         /// Gets the single instance of this model producer.
         /// </summary>
-        public static readonly ModelProducer Instance = new ModelProducer();
+        public static ModelProducer Instance { get { return instance; } }
 
         /// <summary>
         /// Asynchronously produces a base model.
@@ -107,10 +113,8 @@ namespace Microsoft.Restier.EntityFramework.Model
 
             foreach (var efAssociationSet in efEntityContainer.AssociationSets)
             {
-                AddNavigationProperties(
-                    efModel, efAssociationSet, model, elementMap);
-                AddNavigationPropertyBindings(
-                    efModel, efAssociationSet, model, elementMap);
+                AddNavigationProperties(efAssociationSet, elementMap);
+                AddNavigationPropertyBindings(efAssociationSet, elementMap);
             }
 
             // TODO GitHubIssue#36 : support function imports
@@ -244,8 +248,8 @@ namespace Microsoft.Restier.EntityFramework.Model
         };
 
         private static void AddNavigationProperties(
-            MetadataWorkspace efModel, AssociationSet efAssociationSet,
-            EdmModel model, IDictionary<MetadataItem, IEdmElement> elementMap)
+            AssociationSet efAssociationSet,
+            IDictionary<MetadataItem, IEdmElement> elementMap)
         {
             if (efAssociationSet.AssociationSetEnds.Count != 2)
             {
@@ -330,14 +334,13 @@ namespace Microsoft.Restier.EntityFramework.Model
         }
 
         private static void AddNavigationPropertyBindings(
-            MetadataWorkspace efModel, AssociationSet efAssociationSet,
-            EdmModel model, IDictionary<MetadataItem, IEdmElement> elementMap)
+            AssociationSet efAssociationSet,
+            IDictionary<MetadataItem, IEdmElement> elementMap)
         {
             if (efAssociationSet.AssociationSetEnds.Count != 2)
             {
                 return;
             }
-            var efAssociation = efAssociationSet.ElementType;
             for (var i = 0; i < 2; i++)
             {
                 var efSetEnd = efAssociationSet.AssociationSetEnds[i];

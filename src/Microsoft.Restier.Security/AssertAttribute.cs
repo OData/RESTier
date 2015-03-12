@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public class AssertAttribute : Attribute, IDomainPolicy
+    public sealed class AssertAttribute : Attribute, IDomainPolicy
     {
         /// <summary>
         /// Initializes a new assert attribute.

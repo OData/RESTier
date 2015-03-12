@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class GrantAttribute : DomainParticipantAttribute
+    public sealed class GrantAttribute : DomainParticipantAttribute
     {
         /// <summary>
         /// Initializes a new grant attribute.
