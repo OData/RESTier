@@ -13,7 +13,7 @@ namespace System.Collections
             if (enumerator.MoveNext())
             {
                 throw new InvalidOperationException(
-                    "A query for a single entity resulted in more than one record.");
+                    Microsoft.Restier.Shared.SharedResources.QueryShouldGetSingleRecord);
             }
 
             return result;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -27,6 +28,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Filters;
+using Microsoft.Restier.WebApi.Properties;
 using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi
@@ -89,7 +91,7 @@ namespace Microsoft.Restier.WebApi
             ODataPath path = odataProperties.Path;
             if (path == null)
             {
-                throw new InvalidOperationException("Controller cannot have null path");
+                throw new InvalidOperationException(Resources.ControllerRequiresPath);
             }
 
             IQueryable queryable = this.GetQuery(odataProperties);
@@ -158,13 +160,13 @@ namespace Microsoft.Restier.WebApi
             HttpRequestMessageProperties properties = this.Request.ODataProperties();
             if (properties == null)
             {
-                throw new InvalidOperationException("Invalid request - No ODataProperties");
+                throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
             }
 
             ODataPath path = properties.Path;
             if (path == null)
             {
-                throw new InvalidOperationException("Invalid request - ODataPath is null.");
+                throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
             }
 
             return path;
@@ -234,13 +236,14 @@ namespace Microsoft.Restier.WebApi
                     string[] keyValues = value.Split('=');
                     if (keyValues.Length != 2)
                     {
-                        throw new InvalidOperationException("Keys were not specified in the format of 'KeyName=KeyValue'");
+                        throw new InvalidOperationException(Resources.IncorrectKeyFormat);
                     }
 
                     // Validate the key name
                     if (!keys.Select(k => k.Name).Contains(keyValues[0]))
                     {
-                        throw new InvalidOperationException(string.Format("Specified key '{0}' is not a valid property of entity '{1}'", keyValues[0], entityType.Name));
+                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
+                            Resources.KeyNotValidForEntityType, keyValues[0], entityType.Name));
                     }
 
                     result.Add(keyValues[0], ODataUriUtils.ConvertFromUriLiteral(keyValues[1], ODataVersion.V4));
@@ -252,7 +255,7 @@ namespace Microsoft.Restier.WebApi
                 // Validate it has exactly one key
                 if (keys.Count() > 1)
                 {
-                    throw new InvalidOperationException("Only one key was specified, when multiple were expected");
+                    throw new InvalidOperationException(Resources.MultiKeyValuesExpected);
                 }
 
                 string keyName = keys.First().Name;
@@ -323,7 +326,7 @@ namespace Microsoft.Restier.WebApi
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
             {
-                throw new NotImplementedException("Currently only EntitySets can be inserted into.");
+                throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
 
             DataModificationEntry postEntry = new DataModificationEntry(
@@ -368,7 +371,7 @@ namespace Microsoft.Restier.WebApi
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
             {
-                throw new NotImplementedException("Currently only EntitySets can be updated.");
+                throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
             DataModificationEntry updateEntry = new DataModificationEntry(
@@ -403,7 +406,7 @@ namespace Microsoft.Restier.WebApi
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
             {
-                throw new NotImplementedException("Currently only EntitySets can be deleted from.");
+                throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
             DataModificationEntry deleteEntry = new DataModificationEntry(
@@ -476,7 +479,8 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
-                throw new InvalidOperationException("Invalid request - Expecting ~/entityset/key path template");
+                throw new InvalidOperationException(string.Format(
+                    CultureInfo.InvariantCulture, Resources.InvalidPathTemplateInRequest, "~/entityset/key"));
             }
         }
 

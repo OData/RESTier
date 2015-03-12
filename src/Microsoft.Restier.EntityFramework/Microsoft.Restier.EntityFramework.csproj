@@ -42,6 +42,12 @@
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>.Shared\EnumerableExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\SharedResources\SharedResources.EntityFramework.Designer.cs">
+      <Link>SharedResources.EntityFramework.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SharedResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="DbDomain.cs" />
     <Compile Include="Model\ModelMapper.cs" />
     <Compile Include="Model\ModelProducer.cs" />
@@ -75,6 +81,11 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Shared\SharedResources\SharedResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResources.EntityFramework.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Restier.Shared</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

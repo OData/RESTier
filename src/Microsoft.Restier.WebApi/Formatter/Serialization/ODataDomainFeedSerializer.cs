@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.WebApi.Properties;
 using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi.Formatter.Serialization
@@ -25,7 +26,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             IEdmEntitySetBase entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
             if (entitySet == null)
             {
-                throw new SerializationException("EntitySet is missing during serialization.");
+                throw new SerializationException(Resources.EntitySetMissingForSerialization);
             }
 
             EntityCollectionResult collectionResult = (EntityCollectionResult)graph;

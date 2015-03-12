@@ -79,12 +79,22 @@
     <Compile Include="ODataDomainFormattingAttribute.cs" />
     <Compile Include="Filters\ODataDomainExceptionFilterAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Results\EntityCollectionResult.cs" />
     <Compile Include="Results\EntityQueryResult.cs" />
     <Compile Include="Results\EntityResult.cs" />
     <Compile Include="Routing\DefaultODataPathRouteConstraint.cs" />
     <Compile Include="Routing\DefaultODataRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
+    <Compile Include="..\Shared\SharedResources\SharedResources.WebApi.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SharedResources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
@@ -98,7 +108,17 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Shared\SharedResources\SharedResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResources.WebApi.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Restier.Shared</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CodeAnalysisDictionary.xml">
       <Link>CodeAnalysisDictionary.xml</Link>

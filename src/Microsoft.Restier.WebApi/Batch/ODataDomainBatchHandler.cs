@@ -11,6 +11,7 @@ using System.Web.Http.Batch;
 using System.Web.OData.Batch;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.WebApi.Properties;
 
 namespace Microsoft.Restier.WebApi.Batch
 {
@@ -28,7 +29,7 @@ namespace Microsoft.Restier.WebApi.Batch
         {
             if (this.DomainFactory == null)
             {
-                throw new InvalidOperationException("ODataDomainBatchHandler was called without a DomainContext Factory.");
+                throw new InvalidOperationException(Resources.BatchHandlerRequiresDomainContextFactory);
             }
 
             Ensure.NotNull(request, "request");
