@@ -184,7 +184,7 @@ User-Agent: Microsoft ADO.NET Data Services
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Products(" + id + ")", new HttpMethod("PUT"), putContent, expectedStatusCode, headers, NormalizeProductId, baselineFileName);
 
             NorthwindContext ctx = GetDbContext();
-            Product product = ctx.Products.Find(id);
+            Product product = ctx.Products.FirstOrDefault(e => e.ProductID == id);
 
             Assert.AreEqual("TestPut", product.ProductName);
             Assert.AreEqual(false, product.Discontinued);
@@ -227,7 +227,7 @@ User-Agent: Microsoft ADO.NET Data Services
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Products(" + id + ")", new HttpMethod("PATCH"), patchContent, expectedStatusCode, headers, NormalizeProductId, baselineFileName);
 
             NorthwindContext ctx = GetDbContext();
-            Product product = ctx.Products.Find(id);
+            Product product = ctx.Products.FirstOrDefault(e => e.ProductID == id);
 
             Assert.AreEqual("Commons", product.ProductName);
             Assert.AreEqual(true, product.Discontinued);
@@ -251,7 +251,11 @@ User-Agent: Microsoft ADO.NET Data Services
         private static int InsertTestProduct()
         {
             NorthwindContext ctx = GetDbContext();
+#if EF7
+            Product product = new Product();
+#else
             Product product = ctx.Products.Create();
+#endif
             product.ProductName = "Deleted";
             product.Discontinued = true;
             product.QuantityPerUnit = "95";

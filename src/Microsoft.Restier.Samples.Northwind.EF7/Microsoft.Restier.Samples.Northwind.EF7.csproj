@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AF007CEF-19B7-426D-AE97-E7D99ECACBB9}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Restier.Samples.Northwind</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Samples.Northwind</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;EF7</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;EF7</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework.Core, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Core.7.0.0-beta4-12175\lib\net45\EntityFramework.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Relational, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Relational.7.0.0-beta4-12175\lib\net451\EntityFramework.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.SqlServer.7.0.0-beta4-12175\lib\net451\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.ConfigurationModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.ConfigurationModel.1.0.0-beta4-10813\lib\net45\Microsoft.Framework.ConfigurationModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.DependencyInjection, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.DependencyInjection.1.0.0-beta4-10834\lib\net45\Microsoft.Framework.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.Logging.1.0.0-beta4-10820\lib\net45\Microsoft.Framework.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.Logging.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.Logging.Interfaces.1.0.0-beta4-10820\lib\net45\Microsoft.Framework.Logging.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.OptionsModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.OptionsModel.1.0.0-beta4-10807\lib\net45\Microsoft.Framework.OptionsModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.OData.Core, Version=6.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.OData.Core.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=6.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.OData.Edm.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Spatial.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq">
+      <HintPath>..\..\packages\Remotion.Linq.2.0.0-alpha-002\lib\portable-net45+win+wpa81+wp80\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Interactive.Async, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Ix-Async.1.2.3\lib\net45\System.Interactive.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Collections.Concurrent" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.OData, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.3.0\lib\net45\System.Web.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\Northwind.mdf" />
+    <Content Include="App_Data\Northwind_log.ldf">
+      <DependentUpon>Northwind.mdf</DependentUpon>
+    </Content>
+    <Content Include="Global.asax" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\App_Start\WebApiConfig.cs">
+      <Link>App_Start\WebApiConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Controllers\NorthwindController.cs">
+      <Link>Controllers\NorthwindController.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Controllers\RegionsController.cs">
+      <Link>Controllers\RegionsController.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Alphabetical_list_of_product.cs">
+      <Link>Models\Alphabetical_list_of_product.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Category.cs">
+      <Link>Models\Category.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Category_Sales_for_1997.cs">
+      <Link>Models\Category_Sales_for_1997.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Contact.cs">
+      <Link>Models\Contact.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Current_Product_List.cs">
+      <Link>Models\Current_Product_List.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Customer.cs">
+      <Link>Models\Customer.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\CustomerDemographic.cs">
+      <Link>Models\CustomerDemographic.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Customer_and_Suppliers_by_City.cs">
+      <Link>Models\Customer_and_Suppliers_by_City.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Employee.cs">
+      <Link>Models\Employee.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Invoice.cs">
+      <Link>Models\Invoice.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\NorthwindContext.cs">
+      <Link>Models\NorthwindContext.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\NorthwindDomain.cs">
+      <Link>Models\NorthwindDomain.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Order.cs">
+      <Link>Models\Order.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Orders_Qry.cs">
+      <Link>Models\Orders_Qry.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Order_Detail.cs">
+      <Link>Models\Order_Detail.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Order_Details_Extended.cs">
+      <Link>Models\Order_Details_Extended.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Order_Subtotal.cs">
+      <Link>Models\Order_Subtotal.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Product.cs">
+      <Link>Models\Product.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Products_Above_Average_Price.cs">
+      <Link>Models\Products_Above_Average_Price.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Products_by_Category.cs">
+      <Link>Models\Products_by_Category.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Product_Sales_for_1997.cs">
+      <Link>Models\Product_Sales_for_1997.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Region.cs">
+      <Link>Models\Region.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Sales_by_Category.cs">
+      <Link>Models\Sales_by_Category.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Sales_Totals_by_Amount.cs">
+      <Link>Models\Sales_Totals_by_Amount.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Shipper.cs">
+      <Link>Models\Shipper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Summary_of_Sales_by_Quarter.cs">
+      <Link>Models\Summary_of_Sales_by_Quarter.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Summary_of_Sales_by_Year.cs">
+      <Link>Models\Summary_of_Sales_by_Year.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Supplier.cs">
+      <Link>Models\Supplier.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\sysdiagram.cs">
+      <Link>Models\sysdiagram.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind\Models\Territory.cs">
+      <Link>Models\Territory.cs</Link>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
+      <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
+      <Name>Microsoft.Restier.Conventions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Restier.EntityFramework7\Microsoft.Restier.EntityFramework7.csproj">
+      <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
+      <Name>Microsoft.Restier.EntityFramework7</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
+      <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
+      <Name>Microsoft.Restier.Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
+      <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
+      <Name>Microsoft.Restier.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
+      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
+      <Name>Microsoft.Restier.WebApi</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>31181</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:31187/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

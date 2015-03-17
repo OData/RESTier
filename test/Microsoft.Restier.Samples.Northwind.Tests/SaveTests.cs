@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
@@ -45,8 +46,12 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             await domain.SubmitAsync(new ChangeSet(new ChangeSetEntry[] { createCustomer }));
 
             NorthwindContext ctx = new NorthwindContext();
-            
+
+#if EF7
+            Customer newCustomer = await ctx.Customers.FirstOrDefaultAsync(e => e.CustomerID == "NEW01");
+#else
             Customer newCustomer = await ctx.Customers.FindAsync("NEW01");
+#endif
             // The "OnInserting" should have been appended by the OnInsertingCustomers filter
             Assert.AreEqual("New CustOnInserting", newCustomer.CompanyName);
             

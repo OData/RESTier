@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory),RESTier.sln))\tools\RESTier.settings.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{D54A765E-4604-4C73-868B-0E0459B3A6B6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
+    <AssemblyName>Microsoft.Restier.EntityFramework7</AssemblyName>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;EF7</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework.Core, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Core.7.0.0-beta4-12175\lib\net45\EntityFramework.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Relational, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Relational.7.0.0-beta4-12175\lib\net451\EntityFramework.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.SqlServer.7.0.0-beta4-12175\lib\net451\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.ConfigurationModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.ConfigurationModel.1.0.0-beta4-10813\lib\net45\Microsoft.Framework.ConfigurationModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.DependencyInjection, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.DependencyInjection.1.0.0-beta4-10834\lib\net45\Microsoft.Framework.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.Logging.1.0.0-beta4-10820\lib\net45\Microsoft.Framework.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.Logging.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.Logging.Interfaces.1.0.0-beta4-10820\lib\net45\Microsoft.Framework.Logging.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.OptionsModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.OptionsModel.1.0.0-beta4-10807\lib\net45\Microsoft.Framework.OptionsModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=6.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.OData.Edm.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Remotion.Linq.2.0.0-alpha-002\lib\portable-net45+win+wpa81+wp80\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Concurrent" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Interactive.Async, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Ix-Async.1.2.3\lib\net45\System.Interactive.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\GlobalSuppressions.cs">
+      <Link>GlobalSuppressions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\DbDomain.cs">
+      <Link>DbDomain.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\Model\ModelMapper.cs">
+      <Link>Model.Shared\ModelMapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExecutor.cs">
+      <Link>Query.Shared\QueryExecutor.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionSourcer.cs">
+      <Link>Query.Shared\QueryExpressionSourcer.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\Submit\SubmitExecutor.cs">
+      <Link>Submit.Shared\SubmitExecutor.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\Ensure.cs">
+      <Link>.Shared\Ensure.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\EnumerableExtensions.cs">
+      <Link>.Shared\EnumerableExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\SharedResources\SharedResources.EntityFramework.Designer.cs">
+      <Link>SharedResources.EntityFramework.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SharedResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ModelProducer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Submit\ChangeSetPreparer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
+      <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
+      <Name>Microsoft.Restier.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Microsoft.Restier.EntityFramework.nuspec" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CodeAnalysisDictionary.xml">
+      <Link>CodeAnalysisDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Query\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Shared\SharedResources\SharedResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResources.EntityFramework.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Restier.Shared</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

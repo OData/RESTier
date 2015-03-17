@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6A88BA5D-50C7-46F3-873B-07040BF16B57}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Restier.Samples.Northwind.Tests</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Samples.Northwind.EF7.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;EF7</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;EF7</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework.Core, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Core.7.0.0-beta4-12175\lib\net45\EntityFramework.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Relational, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.Relational.7.0.0-beta4-12175\lib\net451\EntityFramework.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.SqlServer.7.0.0-beta4-12175\lib\net451\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.ConfigurationModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.ConfigurationModel.1.0.0-beta4-10813\lib\net45\Microsoft.Framework.ConfigurationModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.DependencyInjection, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.DependencyInjection.1.0.0-beta4-10834\lib\net45\Microsoft.Framework.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.Logging.1.0.0-beta4-10820\lib\net45\Microsoft.Framework.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.Logging.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.Logging.Interfaces.1.0.0-beta4-10820\lib\net45\Microsoft.Framework.Logging.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Framework.OptionsModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.Framework.OptionsModel.1.0.0-beta4-10807\lib\net45\Microsoft.Framework.OptionsModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.OData.Core">
+      <HintPath>..\..\packages\Microsoft.OData.Core.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm">
+      <HintPath>..\..\packages\Microsoft.OData.Edm.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Spatial">
+      <HintPath>..\..\packages\Microsoft.Spatial.6.7.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.OData">
+      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.3.0\lib\net45\System.Web.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq">
+      <HintPath>..\..\packages\Remotion.Linq.2.0.0-alpha-002\lib\portable-net45+win+wpa81+wp80\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Interactive.Async, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Ix-Async.1.2.3\lib\net45\System.Interactive.Async.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.1.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind.Tests\AssemblyTests.cs">
+      <Link>AssemblyTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind.Tests\ODataFeedTests.cs">
+      <Link>ODataFeedTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind.Tests\QueryTests.cs">
+      <Link>QueryTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Restier.Samples.Northwind.Tests\SaveTests.cs">
+      <Link>SaveTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\BaselineHelpers.cs">
+      <Link>.Shared\BaselineHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ODataTestHelpers.cs">
+      <Link>.Shared\ODataTestHelpers.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
+      <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
+      <Name>Microsoft.Restier.Conventions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework7\Microsoft.Restier.EntityFramework7.csproj">
+      <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
+      <Name>Microsoft.Restier.EntityFramework7</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Samples.Northwind.EF7\Microsoft.Restier.Samples.Northwind.EF7.csproj">
+      <Project>{af007cef-19b7-426d-ae97-e7d99ecacbb9}</Project>
+      <Name>Microsoft.Restier.Samples.Northwind.EF7</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
+      <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
+      <Name>Microsoft.Restier.Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
+      <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
+      <Name>Microsoft.Restier.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
+      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
+      <Name>Microsoft.Restier.WebApi</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestBatch.txt">
+      <Link>Baselines\TestBatch.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestCustomersEntitySetQuery.txt">
+      <Link>Baselines\TestCustomersEntitySetQuery.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestCustomersEntitySetTopSkipQuery.txt">
+      <Link>Baselines\TestCustomersEntitySetTopSkipQuery.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestGetNorthwindMetadata.txt">
+      <Link>Baselines\TestGetNorthwindMetadata.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPatchProductReturnContent.txt">
+      <Link>Baselines\TestPatchProductReturnContent.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPostAction.txt">
+      <Link>Baselines\TestPostAction.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPostOrderInvalidShipVia.txt">
+      <Link>Baselines\TestPostOrderInvalidShipVia.txt</Link>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPutProductReturnContent.txt">
+      <Link>Baselines\TestPutProductReturnContent.txt</Link>
+    </Content>
+    <Content Include="App_Data\Northwind.mdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App_Data\Northwind_log.ldf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

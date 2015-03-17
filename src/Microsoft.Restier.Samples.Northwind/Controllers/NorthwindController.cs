@@ -1,7 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+#if EF7
+using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Data.Entity.Update;
+#else
 using System.Data.Entity.Infrastructure;
+#endif
 using System.Linq;
 using System.Web.Http;
 using System.Web.OData;
@@ -40,7 +45,7 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         [ODataRoute("Products({key})/UnitPrice")]
         public IHttpActionResult UpdateProductUnitPrice(int key, [FromBody]decimal price)
         {
-            var entity = DbContext.Products.Find(key);
+            var entity = DbContext.Products.FirstOrDefault(e => e.ProductID == key);
             if (entity == null)
             {
                 return NotFound();

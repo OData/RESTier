@@ -98,15 +98,12 @@ namespace Microsoft.Restier.EntityFramework.Query
         {
 #if EF7
             var provider = query.Provider as IAsyncQueryProvider;
-            var result = await provider.ExecuteAsync<TResult>(
-                expression, cancellationToken);
-            return new QueryResult(new TResult[] { result });
 #else
             var provider = query.Provider as IDbAsyncQueryProvider;
+#endif
             var result = await provider.ExecuteAsync<TResult>(
                 expression, cancellationToken);
             return new QueryResult(new TResult[] { result });
-#endif
         }
 
         private static IQueryable<TElement> StripPagingOperators<TElement>(

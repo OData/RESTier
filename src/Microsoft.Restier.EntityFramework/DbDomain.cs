@@ -86,7 +86,7 @@ namespace Microsoft.Restier.EntityFramework
             var context = base.CreateDomainContext(configuration);
             var dbContext = this.CreateDbContext();
 #if EF7
-            // TODO: Figure out the equivalent measurement to suppress proxy generation in EF7.
+            // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
 #else
             dbContext.Configuration.ProxyCreationEnabled = false;
 #endif
