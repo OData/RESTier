@@ -48,6 +48,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Conventions.Test", "test\Microsoft.Restier.Conventions.Test\Microsoft.Restier.Conventions.Test.csproj", "{1629B189-52CE-4450-8377-7A9503C98C74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.EntityFramework7", "src\Microsoft.Restier.EntityFramework7\Microsoft.Restier.EntityFramework7.csproj", "{D54A765E-4604-4C73-868B-0E0459B3A6B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.EF7", "src\Microsoft.Restier.Samples.Northwind.EF7\Microsoft.Restier.Samples.Northwind.EF7.csproj", "{AF007CEF-19B7-426D-AE97-E7D99ECACBB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.EF7.Tests", "test\Microsoft.Restier.Samples.Northwind.EF7.Tests\Microsoft.Restier.Samples.Northwind.EF7.Tests.csproj", "{6A88BA5D-50C7-46F3-873B-07040BF16B57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +108,18 @@ Global
 		{1629B189-52CE-4450-8377-7A9503C98C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1629B189-52CE-4450-8377-7A9503C98C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1629B189-52CE-4450-8377-7A9503C98C74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54A765E-4604-4C73-868B-0E0459B3A6B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54A765E-4604-4C73-868B-0E0459B3A6B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54A765E-4604-4C73-868B-0E0459B3A6B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54A765E-4604-4C73-868B-0E0459B3A6B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF007CEF-19B7-426D-AE97-E7D99ECACBB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF007CEF-19B7-426D-AE97-E7D99ECACBB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF007CEF-19B7-426D-AE97-E7D99ECACBB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF007CEF-19B7-426D-AE97-E7D99ECACBB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A88BA5D-50C7-46F3-873B-07040BF16B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A88BA5D-50C7-46F3-873B-07040BF16B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A88BA5D-50C7-46F3-873B-07040BF16B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A88BA5D-50C7-46F3-873B-07040BF16B57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,5 +143,8 @@ Global
 		{B379640E-9064-438D-8DA5-6F7B394C2C46} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
 		{1629B189-52CE-4450-8377-7A9503C98C74} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
+		{D54A765E-4604-4C73-868B-0E0459B3A6B6} = {0355FEC8-17CF-44B4-9D24-685266A349FB}
+		{AF007CEF-19B7-426D-AE97-E7D99ECACBB9} = {E136CA13-ECD1-4565-B183-A48F78570DE3}
+		{6A88BA5D-50C7-46F3-873B-07040BF16B57} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
 	EndGlobalSection
 EndGlobal
