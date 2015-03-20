@@ -1,17 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.OData.Routing;
-using System.Web.OData.Routing.Conventions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Routing;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData.Routing;
+using System.Web.OData.Routing.Conventions;
+using WebApiODataEx = System.Web.OData.Extensions;
 
 namespace Microsoft.Restier.WebApi
 {
@@ -48,8 +50,29 @@ namespace Microsoft.Restier.WebApi
                     routes.MapHttpBatchRoute(routeName + "Batch", batchTemplate, batchHandler);
                 }
 
-                var routeConstraint = new DefaultODataPathRouteConstraint(new DefaultODataPathHandler(), model,
-                    routeName, conventions);
+                DefaultODataPathHandler odataPathHanlder = new DefaultODataPathHandler();
+
+                var getResolverSettings = typeof(WebApiODataEx.HttpConfigurationExtensions).GetMethod("GetResolverSettings", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (getResolverSettings != null)
+                {
+                    var resolveSettings = getResolverSettings.Invoke(null, new object[] { config });
+                    PropertyInfo prop = odataPathHanlder.GetType().GetProperty("ResolverSetttings", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    if (null != prop && prop.CanWrite)
+                    {
+                        prop.SetValue(odataPathHanlder, resolveSettings, null);
+                    }
+
+                    // In case WebAPI OData fix "ResolverSetttings" to "ResolverSettings". So we set both "ResolverSetttings" and "ResolverSettings".
+                    prop = odataPathHanlder.GetType().GetProperty("ResolverSettings", BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (null != prop && prop.CanWrite)
+                    {
+                        prop.SetValue(odataPathHanlder, resolveSettings, null);
+                    }
+                }
+
+                var routeConstraint = new DefaultODataPathRouteConstraint(odataPathHanlder, model, routeName, conventions);
                 var route = new ODataRoute(routePrefix, routeConstraint);
                 routes.Add(routeName, route);
                 return route;

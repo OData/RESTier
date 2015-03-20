@@ -40,6 +40,19 @@ namespace Microsoft.Restier.Tests
             Func<string, string> postProcessContentHandler = null,
             [CallerMemberName] string baselineFileName = "")
         {
+            using (HttpResponseMessage response = await GetResponse(requestUri, httpMethod, requestContent, registerOData, headers))
+            {
+                await CheckResponse(response, expectedStatusCode, baselineFileName, postProcessContentHandler);
+            }
+        }
+
+        public static async Task<HttpResponseMessage> GetResponse(
+            string requestUri,
+            HttpMethod httpMethod,
+            HttpContent requestContent,
+            Action<HttpConfiguration, HttpServer> registerOData,
+            IEnumerable<KeyValuePair<string, string>> headers = null)
+        {
             using (HttpConfiguration config = new HttpConfiguration())
             {
                 using (HttpServer server = new HttpServer(config))
@@ -58,10 +71,7 @@ namespace Microsoft.Restier.Tests
                             }
                         }
 
-                        using (HttpResponseMessage response = await client.SendAsync(request, CancellationToken.None))
-                        {
-                            await CheckResponse(response, expectedStatusCode, baselineFileName, postProcessContentHandler);
-                        }
+                        return await client.SendAsync(request, CancellationToken.None);
                     }
                     finally
                     {

@@ -8,6 +8,7 @@ using Microsoft.Data.Entity.Update;
 using System.Data.Entity.Infrastructure;
 #endif
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Routing;
@@ -76,6 +77,35 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         {
             var product = DbContext.Products.Max(p => p.UnitPrice);
             return Ok(product);
+        }
+
+        [HttpPost]
+        [ODataRoute("Products({key})/Microsoft.Restier.Samples.Northwind.Models.IncreasePrice")]
+        public IHttpActionResult IncreasePrice([FromODataUri] int key, ODataActionParameters parameters)
+        {
+            var entity = DbContext.Products.FirstOrDefault(e => e.ProductID == key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+            entity.UnitPrice = entity.UnitPrice + (int)parameters["diff"];
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DbContext.Products.Any(p => p.ProductID == key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
         }
     }
 }

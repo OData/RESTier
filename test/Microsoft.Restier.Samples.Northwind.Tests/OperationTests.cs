@@ -1,0 +1,103 @@
+﻿using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Samples.Northwind.Models;
+using Microsoft.Restier.Tests;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Web.OData.Extensions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Http;
+
+namespace Microsoft.Restier.Samples.Northwind.Tests
+{
+    [TestClass]
+    public class OperationTests
+    {
+        private NorthwindDomain domain = new NorthwindDomain();
+
+        private IQueryable<Product> ProductsQuery
+        {
+            get { return this.domain.Source<Product>("Products"); }
+        }
+
+        [TestMethod]
+        public async Task FunctionCallWithFullName()
+        {
+            await FunctionCall(true, (config, server) => WebApiConfig.RegisterNorthwind(config, server));
+        }
+
+        [TestMethod]
+        public async Task FunctionCallWithUnqualifiedName()
+        {
+            await FunctionCall(false, (config, server) =>
+                {
+                    config.EnableUnqualifiedNameCall(true);
+                    WebApiConfig.RegisterNorthwind(config, server);
+                });
+        }
+
+        private async Task FunctionCall(bool isqualified, Action<HttpConfiguration, HttpServer> registerOData)
+        {
+            var response = await ODataTestHelpers.GetResponse(
+                isqualified ?
+                "http://localhost/api/Northwind/Products/Microsoft.Restier.Samples.Northwind.Models.MostExpensive"
+                :"http://localhost/api/Northwind/Products/MostExpensive",
+                HttpMethod.Get,
+                null,
+                registerOData,
+                null);
+
+            var responseString = await BaselineHelpers.GetFormattedContent(response);
+            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+        }
+
+        [TestMethod]
+        public async Task ActionCallWithFullName()
+        {
+            await ActionCall(false, (config, server) => { WebApiConfig.RegisterNorthwind(config, server); });
+        }
+
+        [TestMethod]
+        public async Task ActionCallWithUnqualifiedName()
+        {
+            await ActionCall(true, (config, server) => { config.EnableUnqualifiedNameCall(true); WebApiConfig.RegisterNorthwind(config, server); });
+        }
+
+        private async Task ActionCall(bool isqualified, Action<HttpConfiguration, HttpServer> registerOData)
+        {
+            var query = this.domain.Source<Product>("Products").OrderBy(p => p.ProductID).Take(1);
+            QueryResult result = await this.domain.QueryAsync(
+                   new QueryRequest(query, true));
+
+            var product = result.Results.OfType<Product>().First();
+            var price = product.UnitPrice;
+
+            var response = await ODataTestHelpers.GetResponse(
+                isqualified ?
+                string.Format("http://localhost/api/Northwind/Products({0})/IncreasePrice", product.ProductID)
+                : string.Format("http://localhost/api/Northwind/Products({0})/Microsoft.Restier.Samples.Northwind.Models.IncreasePrice", product.ProductID),
+                HttpMethod.Post,
+                new StringContent(@"{""diff"":2}", UTF8Encoding.Default, "application/json"),
+                registerOData,
+                null);
+
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
+
+            var getResponse = await ODataTestHelpers.GetResponse(
+                string.Format("http://localhost/api/Northwind/Products({0})", product.ProductID),
+                HttpMethod.Get,
+                null,
+                (config, server) => { WebApiConfig.RegisterNorthwind(config, server); },
+                null);
+
+            Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
+            var responseString = await BaselineHelpers.GetFormattedContent(getResponse);
+            Assert.IsTrue(responseString.Contains(string.Format(@"""UnitPrice"":{0}", price + 2)));
+        }
+    }
+}

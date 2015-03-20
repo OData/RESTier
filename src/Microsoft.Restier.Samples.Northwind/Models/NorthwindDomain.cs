@@ -37,6 +37,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                 entitySetPathExpression: null, isComposable: false);
             mostExpensive.AddParameter("bindingParameter", products);
             model.AddElement(mostExpensive);
+
+            var increasePrice = new EdmAction(ns, "IncreasePrice", null, true, null);
+            increasePrice.AddParameter("bindingParameter", new EdmEntityTypeReference(product as IEdmEntityType, false));
+            increasePrice.AddParameter("diff", EdmCoreModel.Instance.GetInt32(false));
+            model.AddElement(increasePrice);
             return model;
         }
 

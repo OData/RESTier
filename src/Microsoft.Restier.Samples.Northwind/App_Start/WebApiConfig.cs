@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Web.Http;
+using System.Web.OData.Extensions;
 using Microsoft.Restier.Samples.Northwind.Controllers;
 using Microsoft.Restier.WebApi;
 using Microsoft.Restier.WebApi.Batch;
@@ -17,6 +18,7 @@ namespace Microsoft.Restier.Samples.Northwind
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            config.EnableUnqualifiedNameCall(true);
             RegisterNorthwind(config, GlobalConfiguration.DefaultServer);
 
             config.Routes.MapHttpRoute(
