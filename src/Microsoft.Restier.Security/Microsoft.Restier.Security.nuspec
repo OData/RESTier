@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <package>
   <metadata>
     <id>$id$</id>
@@ -9,7 +9,7 @@
     <description>$description$</description>
     <copyright>Copyright © Microsoft Corporation 2014</copyright>
     <dependencies>
-      <dependency id="Microsoft.Restier.Core" version="[0.1.0-pre,]" />
+      <dependency id="Microsoft.Restier.Core" version="[0.2.0-beta,]" />
     </dependencies>
   </metadata>
 </package>
