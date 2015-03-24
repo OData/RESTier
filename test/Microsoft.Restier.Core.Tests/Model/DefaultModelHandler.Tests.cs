@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Core.Tests.Model
 {
-    [TestClass]
     public class DefaultModelHandlerTests
     {
         private class TestModelProducer : IModelProducer
@@ -81,7 +80,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
             var configuration = new DomainConfiguration();
@@ -98,19 +97,19 @@ namespace Microsoft.Restier.Core.Tests.Model
             var context = new DomainContext(configuration);
 
             var model = await Domain.GetModelAsync(context);
-            Assert.AreEqual(3, model.SchemaElements.Count());
-            Assert.IsNull(model.SchemaElements
+            Assert.Equal(3, model.SchemaElements.Count());
+            Assert.Null(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));
-            Assert.IsNotNull(model.SchemaElements
+            Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName2"));
-            Assert.IsNotNull(model.SchemaElements
+            Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName3"));
-            Assert.IsNotNull(model.EntityContainer);
-            Assert.IsNull(model.EntityContainer.Elements
+            Assert.NotNull(model.EntityContainer);
+            Assert.Null(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet"));
-            Assert.IsNotNull(model.EntityContainer.Elements
+            Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet2"));
-            Assert.IsNotNull(model.EntityContainer.Elements
+            Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet3"));
         }
     }

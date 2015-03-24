@@ -2,28 +2,26 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    [TestClass]
     public class DomainContextTests
     {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void DomainContextOnlyAcceptsCommittedConfiguration()
         {
             var configuration = new DomainConfiguration();
-            new DomainContext(configuration);
+            Assert.Throws<ArgumentException>(() => new DomainContext(configuration));
         }
 
-        [TestMethod]
+        [Fact]
         public void NewDomainContextIsConfiguredCorrectly()
         {
             var configuration = new DomainConfiguration();
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
-            Assert.AreSame(configuration, context.Configuration);
+            Assert.Same(configuration, context.Configuration);
         }
     }
 }

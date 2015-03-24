@@ -1,22 +1,20 @@
-﻿using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Samples.Northwind.Models;
-using Microsoft.Restier.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Web.OData.Extensions;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData.Extensions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Samples.Northwind.Models;
+using Microsoft.Restier.Tests;
+using Xunit;
 
 namespace Microsoft.Restier.Samples.Northwind.Tests
 {
-    [TestClass]
-    public class OperationTests
+    public class OperationTests : TestBase
     {
         private NorthwindDomain domain = new NorthwindDomain();
 
@@ -25,13 +23,13 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             get { return this.domain.Source<Product>("Products"); }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FunctionCallWithFullName()
         {
             await FunctionCall(true, (config, server) => WebApiConfig.RegisterNorthwind(config, server));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FunctionCallWithUnqualifiedName()
         {
             await FunctionCall(false, (config, server) =>
@@ -46,23 +44,23 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             var response = await ODataTestHelpers.GetResponse(
                 isqualified ?
                 "http://localhost/api/Northwind/Products/Microsoft.Restier.Samples.Northwind.Models.MostExpensive"
-                :"http://localhost/api/Northwind/Products/MostExpensive",
+                : "http://localhost/api/Northwind/Products/MostExpensive",
                 HttpMethod.Get,
                 null,
                 registerOData,
                 null);
 
             var responseString = await BaselineHelpers.GetFormattedContent(response);
-            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ActionCallWithFullName()
         {
             await ActionCall(false, (config, server) => { WebApiConfig.RegisterNorthwind(config, server); });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ActionCallWithUnqualifiedName()
         {
             await ActionCall(true, (config, server) => { config.EnableUnqualifiedNameCall(true); WebApiConfig.RegisterNorthwind(config, server); });
@@ -86,7 +84,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
                 registerOData,
                 null);
 
-            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
             var getResponse = await ODataTestHelpers.GetResponse(
                 string.Format("http://localhost/api/Northwind/Products({0})", product.ProductID),
@@ -95,9 +93,9 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
                 (config, server) => { WebApiConfig.RegisterNorthwind(config, server); },
                 null);
 
-            Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
             var responseString = await BaselineHelpers.GetFormattedContent(getResponse);
-            Assert.IsTrue(responseString.Contains(string.Format(@"""UnitPrice"":{0}", price + 2)));
+            Assert.True(responseString.Contains(string.Format(@"""UnitPrice"":{0}", price + 2)));
         }
     }
 }

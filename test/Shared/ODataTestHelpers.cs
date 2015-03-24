@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Tests
 {
@@ -90,7 +90,7 @@ namespace Microsoft.Restier.Tests
         {
             string content = await BaselineHelpers.GetFormattedContent(response);
 
-            Assert.AreEqual(expectedStatusCode, response.StatusCode, "Response.StatusCode\r\nContent:\r\n{0}", content);
+            Assert.Equal(expectedStatusCode, response.StatusCode);
 
             if (content != null)
             {

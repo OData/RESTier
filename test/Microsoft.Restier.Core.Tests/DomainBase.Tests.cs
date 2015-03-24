@@ -2,18 +2,17 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    [TestClass]
     public class DomainBaseTests
     {
         private class TestDomain : DomainBase
         {
         }
 
-        [TestMethod]
+        [Fact]
         public void DefaultDomainBaseCanBeCreatedAndDisposed()
         {
             using (var domain = new TestDomain())
@@ -22,50 +21,46 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DefaultDomainBaseIsConfiguredCorrectly()
         {
             using (var domain = new TestDomain())
             {
                 var expandableDomain = domain as IExpandableDomain;
-                Assert.IsNotNull(expandableDomain.Configuration);
-                Assert.IsFalse(expandableDomain.IsInitialized);
-                Assert.IsNotNull(expandableDomain.Context);
-                Assert.IsTrue(expandableDomain.IsInitialized);
-                Assert.AreSame(expandableDomain.Configuration,
+                Assert.NotNull(expandableDomain.Configuration);
+                Assert.False(expandableDomain.IsInitialized);
+                Assert.NotNull(expandableDomain.Context);
+                Assert.True(expandableDomain.IsInitialized);
+                Assert.Same(expandableDomain.Configuration,
                     expandableDomain.Context.Configuration);
             }
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ObjectDisposedException))]
+        [Fact]
         public void DisposedDomainBaseCannotAccessConfiguration()
         {
             var domain = new TestDomain();
             domain.Dispose();
-            var configuration = ((IExpandableDomain)domain).Configuration;
+            Assert.Throws<ObjectDisposedException>(() => { var configuration = ((IExpandableDomain)domain).Configuration; });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ObjectDisposedException))]
+        [Fact]
         public void DisposedDomainBaseCannotAccessIsInitialized()
         {
             var domain = new TestDomain();
             domain.Dispose();
-            var configuration = ((IExpandableDomain)domain).IsInitialized;
+            Assert.Throws<ObjectDisposedException>(() => { var configuration = ((IExpandableDomain)domain).IsInitialized; });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ObjectDisposedException))]
+        [Fact]
         public void DisposedDomainBaseCannotAccessContext()
         {
             var domain = new TestDomain();
             domain.Dispose();
-            var configuration = ((IExpandableDomain)domain).Context;
+            Assert.Throws<ObjectDisposedException>(() => { var configuration = ((IExpandableDomain)domain).Context; });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ObjectDisposedException))]
+        [Fact]
         public void DisposedDomainBaseCannotBeInitialized()
         {
             var domain = new TestDomain();
@@ -73,11 +68,10 @@ namespace Microsoft.Restier.Core.Tests
             var derivedConfig = new DomainConfiguration(
                 expandableDomain.Configuration);
             domain.Dispose();
-            expandableDomain.Initialize(derivedConfig);
+            Assert.Throws<ObjectDisposedException>(() => expandableDomain.Initialize(derivedConfig));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void DomainBaseCannotBeInitializedIfAlreadyInitialized()
         {
             var domain = new TestDomain();
@@ -85,20 +79,19 @@ namespace Microsoft.Restier.Core.Tests
             var derivedConfig = new DomainConfiguration(
                 expandableDomain.Configuration);
             var context = expandableDomain.Context;
-            expandableDomain.Initialize(derivedConfig);
+            Assert.Throws<InvalidOperationException>(() => expandableDomain.Initialize(derivedConfig));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void DomainBaseCannotBeInitializedWithUnrelatedConfiguration()
         {
             var domain = new TestDomain();
             var expandableDomain = domain as IExpandableDomain;
             var otherConfig = new DomainConfiguration();
-            expandableDomain.Initialize(otherConfig);
+            Assert.Throws<ArgumentException>(() => expandableDomain.Initialize(otherConfig));
         }
 
-        [TestMethod]
+        [Fact]
         public void ExpandedDomainBaseIsInitializedCorrectly()
         {
             var domain = new TestDomain();
@@ -108,20 +101,20 @@ namespace Microsoft.Restier.Core.Tests
             derivedConfig.EnsureCommitted();
 
             expandableDomain.Initialize(derivedConfig);
-            Assert.IsTrue(expandableDomain.IsInitialized);
-            Assert.AreSame(derivedConfig,
+            Assert.True(expandableDomain.IsInitialized);
+            Assert.Same(derivedConfig,
                 expandableDomain.Context.Configuration);
         }
 
-        [TestMethod]
+        [Fact]
         public void AllTestDomainsHaveSameConfigurationUntilInvalidated()
         {
             IExpandableDomain domain1 = new TestDomain();
             IExpandableDomain domain2 = new TestDomain();
-            Assert.AreSame(domain2.Configuration, domain1.Configuration);
+            Assert.Same(domain2.Configuration, domain1.Configuration);
             DomainConfiguration.Invalidate(domain1.GetType());
             IExpandableDomain domain3 = new TestDomain();
-            Assert.AreNotSame(domain3.Configuration, domain2.Configuration);
+            Assert.NotSame(domain3.Configuration, domain2.Configuration);
         }
 
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
@@ -140,7 +133,7 @@ namespace Microsoft.Restier.Core.Tests
                 Type type)
             {
                 base.Configure(configuration, type);
-                Assert.AreSame(typeof(TestDomainWithParticipants), type);
+                Assert.Same(typeof(TestDomainWithParticipants), type);
                 configuration.SetProperty(this.Value, true);
             }
 
@@ -149,7 +142,7 @@ namespace Microsoft.Restier.Core.Tests
                 Type type, object instance)
             {
                 base.Initialize(context, type, instance);
-                Assert.AreSame(typeof(TestDomainWithParticipants), type);
+                Assert.Same(typeof(TestDomainWithParticipants), type);
                 context.SetProperty(this.Value + ".Self", instance);
                 context.SetProperty(this.Value, true);
             }
@@ -158,7 +151,7 @@ namespace Microsoft.Restier.Core.Tests
                 DomainContext context,
                 Type type, object instance)
             {
-                Assert.AreSame(typeof(TestDomainWithParticipants), type);
+                Assert.Same(typeof(TestDomainWithParticipants), type);
                 context.SetProperty(this.Value, false);
                 base.Dispose(context, type, instance);
             }
@@ -170,24 +163,24 @@ namespace Microsoft.Restier.Core.Tests
         {
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDomainAppliesDomainParticipantsCorrectly()
         {
             IExpandableDomain domain = new TestDomainWithParticipants();
 
             var configuration = domain.Configuration;
-            Assert.IsTrue(configuration.GetProperty<bool>("Test1"));
-            Assert.IsTrue(configuration.GetProperty<bool>("Test2"));
+            Assert.True(configuration.GetProperty<bool>("Test1"));
+            Assert.True(configuration.GetProperty<bool>("Test2"));
 
             var context = domain.Context;
-            Assert.IsTrue(context.GetProperty<bool>("Test1"));
-            Assert.AreSame(domain, context.GetProperty("Test1.Self"));
-            Assert.IsTrue(context.GetProperty<bool>("Test2"));
-            Assert.AreSame(domain, context.GetProperty("Test2.Self"));
+            Assert.True(context.GetProperty<bool>("Test1"));
+            Assert.Same(domain, context.GetProperty("Test1.Self"));
+            Assert.True(context.GetProperty<bool>("Test2"));
+            Assert.Same(domain, context.GetProperty("Test2.Self"));
 
             (domain as IDisposable).Dispose();
-            Assert.IsFalse(context.GetProperty<bool>("Test2"));
-            Assert.IsFalse(context.GetProperty<bool>("Test1"));
+            Assert.False(context.GetProperty<bool>("Test2"));
+            Assert.False(context.GetProperty<bool>("Test1"));
         }
     }
 }

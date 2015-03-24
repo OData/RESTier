@@ -14,33 +14,32 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.Restier.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Restier.Samples.Northwind.Tests
 {
-    [TestClass]
-    public class ODataFeedTests
+    public class ODataFeedTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public async Task TestGetNorthwindMetadata()
         {
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/$metadata");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestCustomersEntitySetQuery()
         {
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Customers");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestCustomersEntitySetTopSkipQuery()
         {
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Customers?$top=5&$skip=1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestBatch()
         {
             int id = ODataFeedTests.InsertTestProduct();
@@ -108,23 +107,23 @@ User-Agent: Microsoft ADO.NET Data Services
                 .OrderBy(b => b.ProductName)
                 .ToArray();
 
-            Assert.AreEqual(2, insertedProducts.Length);
+            Assert.Equal(2, insertedProducts.Length);
 
-            Assert.AreEqual("Commons", insertedProducts[0].ProductName);
-            Assert.AreEqual(true, insertedProducts[0].Discontinued);
-            Assert.AreEqual("5", insertedProducts[0].QuantityPerUnit);
-            Assert.AreEqual((short)11, insertedProducts[0].ReorderLevel);
-            Assert.AreEqual(15.99m, insertedProducts[0].UnitPrice);
-            Assert.AreEqual((short)200, insertedProducts[0].UnitsInStock);
-            Assert.AreEqual((short)10, insertedProducts[0].UnitsOnOrder);
+            Assert.Equal("Commons", insertedProducts[0].ProductName);
+            Assert.Equal(true, insertedProducts[0].Discontinued);
+            Assert.Equal("5", insertedProducts[0].QuantityPerUnit);
+            Assert.Equal((short)11, insertedProducts[0].ReorderLevel);
+            Assert.Equal(15.99m, insertedProducts[0].UnitPrice);
+            Assert.Equal((short)200, insertedProducts[0].UnitsInStock);
+            Assert.Equal((short)10, insertedProducts[0].UnitsOnOrder);
 
-            Assert.AreEqual("Horizon", insertedProducts[1].ProductName);
-            Assert.AreEqual(false, insertedProducts[1].Discontinued);
-            Assert.AreEqual("4", insertedProducts[1].QuantityPerUnit);
-            Assert.AreEqual((short)10, insertedProducts[1].ReorderLevel);
-            Assert.AreEqual(2.5m, insertedProducts[1].UnitPrice);
-            Assert.AreEqual((short)100, insertedProducts[1].UnitsInStock);
-            Assert.AreEqual((short)0, insertedProducts[1].UnitsOnOrder);
+            Assert.Equal("Horizon", insertedProducts[1].ProductName);
+            Assert.Equal(false, insertedProducts[1].Discontinued);
+            Assert.Equal("4", insertedProducts[1].QuantityPerUnit);
+            Assert.Equal((short)10, insertedProducts[1].ReorderLevel);
+            Assert.Equal(2.5m, insertedProducts[1].UnitPrice);
+            Assert.Equal((short)100, insertedProducts[1].UnitsInStock);
+            Assert.Equal((short)0, insertedProducts[1].UnitsOnOrder);
 
             ctx.Products.RemoveRange(insertedProducts);
             ctx.SaveChanges();
@@ -151,13 +150,13 @@ User-Agent: Microsoft ADO.NET Data Services
             return Regex.Replace(input, regexPattern, replacementString);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestPutProduct()
         {
             await TestPut(null, HttpStatusCode.NoContent);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestPutProductReturnContent()
         {
             KeyValuePair<string, string>[] headers = { new KeyValuePair<string, string>("prefer", "return=representation") };
@@ -186,27 +185,27 @@ User-Agent: Microsoft ADO.NET Data Services
             NorthwindContext ctx = GetDbContext();
             Product product = ctx.Products.FirstOrDefault(e => e.ProductID == id);
 
-            Assert.AreEqual("TestPut", product.ProductName);
-            Assert.AreEqual(false, product.Discontinued);
-            Assert.IsNull(product.QuantityPerUnit);
-            Assert.AreEqual((short)23, product.ReorderLevel);
-            Assert.IsNull(product.UnitPrice);
-            Assert.AreEqual((short)15, product.UnitsInStock);
-            Assert.AreEqual((short)1, product.UnitsOnOrder);
-            Assert.AreEqual(1, product.SupplierID);
-            Assert.IsNull(product.CategoryID);
+            Assert.Equal("TestPut", product.ProductName);
+            Assert.Equal(false, product.Discontinued);
+            Assert.Null(product.QuantityPerUnit);
+            Assert.Equal((short)23, product.ReorderLevel);
+            Assert.Null(product.UnitPrice);
+            Assert.Equal((short)15, product.UnitsInStock);
+            Assert.Equal((short)1, product.UnitsOnOrder);
+            Assert.Equal(1, product.SupplierID);
+            Assert.Null(product.CategoryID);
 
             ctx.Products.Remove(product);
             ctx.SaveChanges();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestPatchProduct()
         {
             await TestPatch(null, HttpStatusCode.NoContent);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestPatchProductReturnContent()
         {
             KeyValuePair<string, string>[] headers = { new KeyValuePair<string, string>("prefer", "return=representation") };
@@ -229,13 +228,13 @@ User-Agent: Microsoft ADO.NET Data Services
             NorthwindContext ctx = GetDbContext();
             Product product = ctx.Products.FirstOrDefault(e => e.ProductID == id);
 
-            Assert.AreEqual("Commons", product.ProductName);
-            Assert.AreEqual(true, product.Discontinued);
-            Assert.AreEqual("95", product.QuantityPerUnit);
-            Assert.AreEqual((short)68, product.ReorderLevel);
-            Assert.AreEqual(5.6m, product.UnitPrice);
-            Assert.AreEqual((short)40, product.UnitsInStock);
-            Assert.AreEqual((short)13, product.UnitsOnOrder);
+            Assert.Equal("Commons", product.ProductName);
+            Assert.Equal(true, product.Discontinued);
+            Assert.Equal("95", product.QuantityPerUnit);
+            Assert.Equal((short)68, product.ReorderLevel);
+            Assert.Equal(5.6m, product.UnitPrice);
+            Assert.Equal((short)40, product.UnitsInStock);
+            Assert.Equal((short)13, product.UnitsOnOrder);
 
             ctx.Products.Remove(product);
             ctx.SaveChanges();
@@ -273,10 +272,10 @@ User-Agent: Microsoft ADO.NET Data Services
         {
             NorthwindContext ctx = GetDbContext();
             Product deletedProduct = ctx.Products.SingleOrDefault(p => p.ProductID == productId);
-            Assert.IsNull(deletedProduct);
+            Assert.Null(deletedProduct);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestPostOrderInvalidShipVia()
         {
             dynamic order = new ExpandoObject();
@@ -296,7 +295,7 @@ User-Agent: Microsoft ADO.NET Data Services
 
             NorthwindContext ctx = GetDbContext();
             Order notInsertedOrder = ctx.Orders.FirstOrDefault(o => o.Freight == 35.5m);
-            Assert.IsNull(notInsertedOrder, "The Order should not have been inserted.");
+            Assert.Null(notInsertedOrder);
         }
 
         private static Task TestODataRequest(

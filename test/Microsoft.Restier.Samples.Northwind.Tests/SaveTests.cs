@@ -2,18 +2,16 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Samples.Northwind.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Samples.Northwind.Tests
 {
-    [TestClass]
-    public class SaveTests
+    public class SaveTests : TestBase
     {
         [EnableConventions]
         private class TestEntityFilterReturnsTaskDomain : NorthwindDomain
@@ -28,7 +26,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         /// <summary>
         /// Tests an Entity Inserting Filter that returns a Task is awaited successfully.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public async Task TestEntityFilterReturnsTask()
         {
             TestEntityFilterReturnsTaskDomain domain = new TestEntityFilterReturnsTaskDomain();
@@ -53,8 +51,8 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             Customer newCustomer = await ctx.Customers.FindAsync("NEW01");
 #endif
             // The "OnInserting" should have been appended by the OnInsertingCustomers filter
-            Assert.AreEqual("New CustOnInserting", newCustomer.CompanyName);
-            
+            Assert.Equal("New CustOnInserting", newCustomer.CompanyName);
+
             ctx.Customers.Remove(newCustomer);
             await ctx.SaveChangesAsync();
         }

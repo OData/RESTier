@@ -12,11 +12,10 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    [TestClass]
     public class DomainTests
     {
         private class TestModelHandler : IModelHandler
@@ -29,7 +28,7 @@ namespace Microsoft.Restier.Core.Tests
                 ModelContext context,
                 CancellationToken cancellationToken)
             {
-                Assert.AreSame(DomainContext, context.DomainContext);
+                Assert.Same(DomainContext, context.DomainContext);
                 return Task.FromResult(Model);
             }
         }
@@ -64,7 +63,7 @@ namespace Microsoft.Restier.Core.Tests
                 QueryContext context,
                 CancellationToken cancellationToken)
             {
-                Assert.AreSame(DomainContext, context.DomainContext);
+                Assert.Same(DomainContext, context.DomainContext);
                 return Task.FromResult(new QueryResult(Results));
             }
         }
@@ -79,7 +78,7 @@ namespace Microsoft.Restier.Core.Tests
                 SubmitContext context,
                 CancellationToken cancellationToken)
             {
-                Assert.AreSame(DomainContext, context.DomainContext);
+                Assert.Same(DomainContext, context.DomainContext);
                 return Task.FromResult(new SubmitResult(ChangeSet));
             }
         }
@@ -131,19 +130,19 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DomainGetModelAsyncForwardsCorrectly()
         {
             var domain = new TestDomain();
             var domainModel = await domain.GetModelAsync();
             var domainModelType = typeof(Domain).Assembly.GetType(
                 "Microsoft.Restier.Core.Model.DomainModel");
-            Assert.IsTrue(domainModelType.IsAssignableFrom(domainModel.GetType()));
-            Assert.AreSame(domain.Model, domainModelType
+            Assert.True(domainModelType.IsAssignableFrom(domainModel.GetType()));
+            Assert.Same(domain.Model, domainModelType
                 .GetProperty("InnerModel").GetValue(domainModel));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetModelAsyncCorrectlyUsesModelHandler()
         {
             var configuration = new DomainConfiguration();
@@ -157,35 +156,34 @@ namespace Microsoft.Restier.Core.Tests
             var domainModel = await Domain.GetModelAsync(context);
             var domainModelType = typeof(Domain).Assembly.GetType(
                 "Microsoft.Restier.Core.Model.DomainModel");
-            Assert.IsTrue(domainModelType.IsAssignableFrom(domainModel.GetType()));
-            Assert.AreSame(modelHandler.Model, domainModelType
+            Assert.True(domainModelType.IsAssignableFrom(domainModel.GetType()));
+            Assert.Same(modelHandler.Model, domainModelType
                 .GetProperty("InnerModel").GetValue(domainModel));
         }
 
-        [TestMethod]
+        [Fact]
         public void DomainSourceOfEntityContainerElementIsCorrect()
         {
             var domain = new TestDomain();
             var arguments = new object[0];
 
             var source = domain.Source("Test", arguments);
-            Assert.AreEqual(typeof(string), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(string), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(string), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(2, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(2, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
             var configuration = new DomainConfiguration();
@@ -193,10 +191,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
             var arguments = new object[0];
 
-            Domain.Source(context, "Test", arguments);
+            Assert.Throws<NotSupportedException>(() => Domain.Source(context, "Test", arguments));
         }
 
-        [TestMethod]
+        [Fact]
         public void SourceOfEntityContainerElementIsCorrect()
         {
             var configuration = new DomainConfiguration();
@@ -207,47 +205,46 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = Domain.Source(context, "Test", arguments);
-            Assert.AreEqual(typeof(string), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(string), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(string), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(2, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(2, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void DomainSourceOfComposableFunctionIsCorrect()
         {
             var domain = new TestDomain();
             var arguments = new object[0];
 
             var source = domain.Source("Namespace", "Function", arguments);
-            Assert.AreEqual(typeof(DateTime), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(DateTime), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(3, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[2] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(3, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[2] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
             var configuration = new DomainConfiguration();
@@ -255,10 +252,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
             var arguments = new object[0];
 
-            Domain.Source(context, "Namespace", "Function", arguments);
+            Assert.Throws<NotSupportedException>(() => Domain.Source(context, "Namespace", "Function", arguments));
         }
 
-        [TestMethod]
+        [Fact]
         public void SourceOfComposableFunctionIsCorrect()
         {
             var configuration = new DomainConfiguration();
@@ -270,47 +267,46 @@ namespace Microsoft.Restier.Core.Tests
 
             var source = Domain.Source(context,
                 "Namespace", "Function", arguments);
-            Assert.AreEqual(typeof(DateTime), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(DateTime), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(3, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[2] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(3, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[2] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void GenericDomainSourceOfEntityContainerElementIsCorrect()
         {
             var domain = new TestDomain();
             var arguments = new object[0];
 
             var source = domain.Source<string>("Test", arguments);
-            Assert.AreEqual(typeof(string), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(string), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(string), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(2, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(2, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void GenericSourceOfEntityContainerElementThrowsIfWrongType()
         {
             var configuration = new DomainConfiguration();
@@ -320,10 +316,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
             var arguments = new object[0];
 
-            Domain.Source<object>(context, "Test", arguments);
+            Assert.Throws<ArgumentException>(() => Domain.Source<object>(context, "Test", arguments));
         }
 
-        [TestMethod]
+        [Fact]
         public void GenericSourceOfEntityContainerElementIsCorrect()
         {
             var configuration = new DomainConfiguration();
@@ -334,22 +330,22 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = Domain.Source<string>(context, "Test", arguments);
-            Assert.AreEqual(typeof(string), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(string), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(string), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(2, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(2, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void GenericDomainSourceOfComposableFunctionIsCorrect()
         {
             var domain = new TestDomain();
@@ -357,25 +353,24 @@ namespace Microsoft.Restier.Core.Tests
 
             var source = domain.Source<DateTime>(
                 "Namespace", "Function", arguments);
-            Assert.AreEqual(typeof(DateTime), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(DateTime), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(3, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[2] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(3, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[2] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void GenericSourceOfComposableFunctionThrowsIfWrongType()
         {
             var configuration = new DomainConfiguration();
@@ -385,10 +380,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
             var arguments = new object[0];
 
-            Domain.Source<object>(context, "Namespace", "Function", arguments);
+            Assert.Throws<ArgumentException>(() => Domain.Source<object>(context, "Namespace", "Function", arguments));
         }
 
-        [TestMethod]
+        [Fact]
         public void GenericSourceOfComposableFunctionIsCorrect()
         {
             var configuration = new DomainConfiguration();
@@ -400,25 +395,24 @@ namespace Microsoft.Restier.Core.Tests
 
             var source = Domain.Source<DateTime>(context,
                 "Namespace", "Function", arguments);
-            Assert.AreEqual(typeof(DateTime), source.ElementType);
-            Assert.IsTrue(source.Expression is MethodCallExpression);
+            Assert.Equal(typeof(DateTime), source.ElementType);
+            Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
-            Assert.IsNull(methodCall.Object);
-            Assert.AreEqual(typeof(DomainData), methodCall.Method.DeclaringType);
-            Assert.AreEqual("Source", methodCall.Method.Name);
-            Assert.AreEqual(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
-            Assert.AreEqual(3, methodCall.Arguments.Count);
-            Assert.IsTrue(methodCall.Arguments[0] is ConstantExpression);
-            Assert.AreEqual("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[1] is ConstantExpression);
-            Assert.AreEqual("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
-            Assert.IsTrue(methodCall.Arguments[2] is ConstantExpression);
-            Assert.AreEqual(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
-            Assert.AreEqual(source.Expression.ToString(), source.ToString());
+            Assert.Null(methodCall.Object);
+            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal("Source", methodCall.Method.Name);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(3, methodCall.Arguments.Count);
+            Assert.True(methodCall.Arguments[0] is ConstantExpression);
+            Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[1] is ConstantExpression);
+            Assert.Equal("Function", (methodCall.Arguments[1] as ConstantExpression).Value);
+            Assert.True(methodCall.Arguments[2] is ConstantExpression);
+            Assert.Equal(arguments, (methodCall.Arguments[2] as ConstantExpression).Value);
+            Assert.Equal(source.Expression.ToString(), source.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void SourceQueryableCannotGenericEnumerate()
         {
             var configuration = new DomainConfiguration();
@@ -428,11 +422,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
 
             var source = Domain.Source<string>(context, "Test");
-            source.GetEnumerator();
+            Assert.Throws<NotSupportedException>(() => source.GetEnumerator());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void SourceQueryableCannotEnumerate()
         {
             var configuration = new DomainConfiguration();
@@ -442,11 +435,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
 
             var source = Domain.Source<string>(context, "Test");
-            (source as IEnumerable).GetEnumerator();
+            Assert.Throws<NotSupportedException>(() => (source as IEnumerable).GetEnumerator());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void SourceQueryProviderCannotGenericExecute()
         {
             var configuration = new DomainConfiguration();
@@ -456,11 +448,10 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
 
             var source = Domain.Source<string>(context, "Test");
-            source.Provider.Execute<string>(null);
+            Assert.Throws<NotSupportedException>(() => source.Provider.Execute<string>(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void SourceQueryProviderCannotExecute()
         {
             var configuration = new DomainConfiguration();
@@ -470,30 +461,30 @@ namespace Microsoft.Restier.Core.Tests
             var context = new DomainContext(configuration);
 
             var source = Domain.Source<string>(context, "Test");
-            source.Provider.Execute(null);
+            Assert.Throws<NotSupportedException>(() => source.Provider.Execute(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DomainQueryAsyncWithQueryReturnsResults()
         {
             var domain = new TestDomain();
 
             var results = await domain.QueryAsync(
                 domain.Source<string>("Test"));
-            Assert.IsTrue(results.SequenceEqual(new string[] { "Test" }));
+            Assert.True(results.SequenceEqual(new string[] { "Test" }));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DomainQueryAsyncWithSingletonQueryReturnsResult()
         {
             var domain = new TestDomain();
 
             var result = await domain.QueryAsync(
                 domain.Source<string>("Test"), q => q.Single());
-            Assert.AreEqual("Test", result);
+            Assert.Equal("Test", result);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DomainQueryAsyncCorrectlyForwardsCall()
         {
             var domain = new TestDomain();
@@ -501,11 +492,11 @@ namespace Microsoft.Restier.Core.Tests
             var queryRequest = new QueryRequest(
                 domain.Source<string>("Test"), true);
             var queryResult = await domain.QueryAsync(queryRequest);
-            Assert.IsTrue(queryResult.Results.Cast<string>()
+            Assert.True(queryResult.Results.Cast<string>()
                 .SequenceEqual(new string[] { "Test" }));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QueryAsyncCorrectlyUsesQueryHandler()
         {
             var configuration = new DomainConfiguration();
@@ -525,20 +516,20 @@ namespace Microsoft.Restier.Core.Tests
             var queryRequest = new QueryRequest(
                 Domain.Source<string>(context, "Test"), true);
             var queryResult = await Domain.QueryAsync(context, queryRequest);
-            Assert.IsTrue(queryResult.Results.Cast<string>()
+            Assert.True(queryResult.Results.Cast<string>()
                 .SequenceEqual(new string[] { "Test" }));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DomainSubmitAsyncCorrectlyForwardsCall()
         {
             var domain = new TestDomain();
 
             var submitResult = await domain.SubmitAsync();
-            Assert.AreSame(domain.ChangeSet, submitResult.CompletedChangeSet);
+            Assert.Same(domain.ChangeSet, submitResult.CompletedChangeSet);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SubmitAsyncCorrectlyUsesSubmitHandler()
         {
             var configuration = new DomainConfiguration();
@@ -553,10 +544,10 @@ namespace Microsoft.Restier.Core.Tests
             modelHandler.DomainContext = context;
             modelHandler.Model = new EdmModel();
             submitHandler.DomainContext = context;
-            submitHandler.ChangeSet= new ChangeSet();
+            submitHandler.ChangeSet = new ChangeSet();
 
             var submitResult = await Domain.SubmitAsync(context);
-            Assert.AreSame(submitHandler.ChangeSet,
+            Assert.Same(submitHandler.ChangeSet,
                 submitResult.CompletedChangeSet);
         }
     }

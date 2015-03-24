@@ -2,11 +2,10 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    [TestClass]
     public class DomainOfTTests
     {
         private class InnerDomain : DomainBase
@@ -96,42 +95,42 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DomainOfTCorrectlyWrapsAutoConstructedInnerDomain()
         {
             IExpandableDomain domain = new OuterDomain();
 
             var configuration = domain.Configuration;
-            Assert.IsNull(configuration.GetProperty<string>("Value"));
-            Assert.IsTrue(configuration.GetProperty<bool>("InnerDomain"));
-            Assert.IsTrue(configuration.GetProperty<bool>("OuterDomain"));
+            Assert.Null(configuration.GetProperty<string>("Value"));
+            Assert.True(configuration.GetProperty<bool>("InnerDomain"));
+            Assert.True(configuration.GetProperty<bool>("OuterDomain"));
 
             var context = domain.Context;
-            Assert.IsTrue(context.GetProperty<bool>("InnerDomain"));
-            Assert.IsTrue(context.GetProperty<bool>("OuterDomain"));
+            Assert.True(context.GetProperty<bool>("InnerDomain"));
+            Assert.True(context.GetProperty<bool>("OuterDomain"));
 
             (domain as IDisposable).Dispose();
-            Assert.IsFalse(context.GetProperty<bool>("OuterDomain"));
-            Assert.IsFalse(context.GetProperty<bool>("InnerDomain"));
+            Assert.False(context.GetProperty<bool>("OuterDomain"));
+            Assert.False(context.GetProperty<bool>("InnerDomain"));
         }
 
-        [TestMethod]
+        [Fact]
         public void DomainOfTCorrectlyWrapsCustomConstructedInnerDomain()
         {
             IExpandableDomain domain = new OuterDomain("Test");
 
             var configuration = domain.Configuration;
-            Assert.AreEqual("Test", configuration.GetProperty<string>("Value"));
-            Assert.IsTrue(configuration.GetProperty<bool>("InnerDomain"));
-            Assert.IsTrue(configuration.GetProperty<bool>("OuterDomain"));
+            Assert.Equal("Test", configuration.GetProperty<string>("Value"));
+            Assert.True(configuration.GetProperty<bool>("InnerDomain"));
+            Assert.True(configuration.GetProperty<bool>("OuterDomain"));
 
             var context = domain.Context;
-            Assert.IsTrue(context.GetProperty<bool>("InnerDomain"));
-            Assert.IsTrue(context.GetProperty<bool>("OuterDomain"));
+            Assert.True(context.GetProperty<bool>("InnerDomain"));
+            Assert.True(context.GetProperty<bool>("OuterDomain"));
 
             (domain as IDisposable).Dispose();
-            Assert.IsFalse(context.GetProperty<bool>("OuterDomain"));
-            Assert.IsFalse(context.GetProperty<bool>("InnerDomain"));
+            Assert.False(context.GetProperty<bool>("OuterDomain"));
+            Assert.False(context.GetProperty<bool>("InnerDomain"));
         }
     }
 }

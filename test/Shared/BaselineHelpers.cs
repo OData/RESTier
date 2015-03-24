@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Microsoft.Restier.Tests
 {
@@ -41,20 +41,20 @@ namespace Microsoft.Restier.Tests
                 File.WriteAllText(actualContentPath, actualContent);
 
                 // TODO GitHubIssue#45 : Improve baseline test
-                Assert.Fail(
+                Assert.True(false, string.Format(
                     "The Response.Content is not correct. \r\nExpected:\r\n{0}\r\n\r\nActual:\r\n{1}\r\n\r\n" +
                         "Run the following command to update the baselines:  \r\nCopy /y {2} {3}\r\n",
                     expectedContent,
                     actualContent,
                     actualContentPath,
-                    BaselineHelpers.GetExpectedContentPathInSourceControl(baselinePath));
+                    BaselineHelpers.GetExpectedContentPathInSourceControl(baselinePath)));
             }
         }
 
         public static void VerifyBaselineDoesNotExist(string baselinePath)
         {
             string expectedContentPath = GetExpectedContentPath(baselinePath);
-            Assert.IsFalse(File.Exists(expectedContentPath));
+            Assert.False(File.Exists(expectedContentPath));
         }
 
         private static string GetExpectedContentPath(string baselinePath)
