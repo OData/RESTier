@@ -37,10 +37,10 @@
       <Link>GlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Ensure.cs">
-      <Link>.Shared\Ensure.cs</Link>
+      <Link>Shared\Ensure.cs</Link>
     </Compile>
     <Compile Include="..\Shared\EnumerableExtensions.cs">
-      <Link>.Shared\EnumerableExtensions.cs</Link>
+      <Link>Shared\EnumerableExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Shared\SharedResources\SharedResources.EntityFramework.Designer.cs">
       <Link>SharedResources.EntityFramework.Designer.cs</Link>

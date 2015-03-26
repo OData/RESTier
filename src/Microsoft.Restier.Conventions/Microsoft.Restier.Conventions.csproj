@@ -29,10 +29,10 @@
       <Link>GlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Ensure.cs">
-      <Link>.Shared\Ensure.cs</Link>
+      <Link>Shared\Ensure.cs</Link>
     </Compile>
     <Compile Include="..\Shared\TypeExtensions.cs">
-      <Link>.Shared\TypeExtensions.cs</Link>
+      <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
     <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />
     <Compile Include="Conventions\ConventionalChangeSetAuthorizer.cs" />

@@ -54,19 +54,19 @@
       <Link>GlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Ensure.cs">
-      <Link>.Shared\Ensure.cs</Link>
+      <Link>Shared\Ensure.cs</Link>
     </Compile>
     <Compile Include="..\Shared\EnumerableExtensions.cs">
-      <Link>.Shared\EnumerableExtensions.cs</Link>
+      <Link>Shared\EnumerableExtensions.cs</Link>
     </Compile>
     <Compile Include="..\Shared\ExpressionHelperMethods.cs">
-      <Link>.Shared\ExpressionHelperMethods.cs</Link>
+      <Link>Shared\ExpressionHelperMethods.cs</Link>
     </Compile>
     <Compile Include="..\Shared\ExpressionHelpers.cs">
-      <Link>.Shared\ExpressionHelpers.cs</Link>
+      <Link>Shared\ExpressionHelpers.cs</Link>
     </Compile>
     <Compile Include="..\Shared\TypeExtensions.cs">
-      <Link>.Shared\TypeExtensions.cs</Link>
+      <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
     <Compile Include="Batch\ODataDomainBatchHandler.cs" />
     <Compile Include="Batch\ODataDomainChangeSetProperty.cs" />

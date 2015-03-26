@@ -28,7 +28,7 @@
       <Link>GlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Ensure.cs">
-      <Link>.Shared\Ensure.cs</Link>
+      <Link>Shared\Ensure.cs</Link>
     </Compile>
     <Compile Include="AssertAttribute.cs" />
     <Compile Include="DomainConfigurationExtensions.cs" />
