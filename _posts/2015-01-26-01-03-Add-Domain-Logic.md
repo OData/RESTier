@@ -2,6 +2,7 @@
 layout: post
 title: "1.3 Add Domain Logic to an OData service"
 description: ""
+permalink: /Getting-Started-Part-2/
 category: "1. Getting Started"
 ---
 
