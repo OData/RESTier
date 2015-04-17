@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "RESTier now open sourced on GitHub"
+title: "5.2 RESTier now open sourced on GitHub"
 description: ""
-category: Announcements
+category: "5. Announcements"
 ---
 
 The source code of RESTier now is open-souced on [GitHub](http://github.com/OData/RESTier), together with the test code and the [Northwind Samples](https://github.com/OData/RESTier/tree/master/test/Microsoft.Restier.Samples.Northwind.Tests). 
