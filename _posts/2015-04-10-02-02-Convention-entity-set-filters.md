@@ -30,7 +30,7 @@ namespace AdventureWorksLTSample.Models
         {
             return entitySet.Where(s => s.ProductID % 3 == 0).AsQueryable();
         }
-	}
+    }
 }
 {% endhighlight %}
 

@@ -25,14 +25,14 @@ namespace AdventureWorksLTSample.Models
 {
     [EnableConventions]
     public class AdventureWorksDomain : DbDomain<AdventureWorksContext>
-	{
-		protected IQueryable<Product> ColoredProducts
-	    {
-	        get
-	        {
-	            return this.Source<Product>("Products").Where(s => !string.IsNullOrEmpty(s.Color));
-	        }
-		}
+    {
+        protected IQueryable<Product> ColoredProducts
+        {
+            get
+            {
+                return this.Source<Product>("Products").Where(s => !string.IsNullOrEmpty(s.Color));
+            }
+        }
     }
 }
 {% endhighlight %}
