@@ -14,26 +14,24 @@ Entity set filter convention helps plug in a piece of filtering logic for entity
 Supposed that ~/AdventureWorksLT/Products can get all the Product entities, the below OnFilterProducts method will filter some Product entities by checking the ProductID.
 
 {% highlight csharp %}
+using Microsoft.Restier.Conventions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.EntityFramework;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 
-	using Microsoft.Restier.Conventions;
-	using Microsoft.Restier.Core;
-	using Microsoft.Restier.EntityFramework;
-	using System.Data.Entity;
-	using System.Linq;
-	using System.Threading.Tasks;
-	
-	namespace AdventureWorksLTSample.Models
-	{
-	    [EnableConventions]
-	    public class AdventureWorksDomain : DbDomain<AdventureWorksContext>
-	    {
-	        private IQueryable<Product> OnFilterProducts(IQueryable<Product> entitySet)
-	        {
-	            return entitySet.Where(s => s.ProductID % 3 == 0).AsQueryable();
-	        }
-		}
+namespace AdventureWorksLTSample.Models
+{
+    [EnableConventions]
+    public class AdventureWorksDomain : DbDomain<AdventureWorksContext>
+    {
+        private IQueryable<Product> OnFilterProducts(IQueryable<Product> entitySet)
+        {
+            return entitySet.Where(s => s.ProductID % 3 == 0).AsQueryable();
+        }
 	}
-
+}
 {% endhighlight %}
 
 Now some testings will show that:
