@@ -108,6 +108,6 @@ namespace AdventureWorksLTSample.Controllers
 }
 {% endhighlight %}
 
-This code adds the `GetCustomers` action to the domain controller to override the default route to the `Customers` entity set. The user-defined action is prioritized.
+This code adds the `GetCustomers` action to the domain controller to override the default route to the `Customers` entity set. User-defined actions with **attribute routing** are **prioritized**.
 
 There is no need to list more samples here because they are exactly the same as the ones defined in normal Web API projects. The only difference is that we put all the actions in the same domain controller.
