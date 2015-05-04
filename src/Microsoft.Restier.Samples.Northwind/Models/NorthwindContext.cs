@@ -28,6 +28,10 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         public NorthwindContext()
             : base("name=NorthwindConnection")
         {
+            if (!Database.Exists())
+            {
+                LoadDataSource();
+            }
         }
 #endif
 
@@ -63,6 +67,26 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         public virtual DbSet<Sales_Totals_by_Amount> Sales_Totals_by_Amounts { get; set; }
         public virtual DbSet<Summary_of_Sales_by_Quarter> Summary_of_Sales_by_Quarters { get; set; }
         public virtual DbSet<Summary_of_Sales_by_Year> Summary_of_Sales_by_Years { get; set; }
+
+        public void ResetDataSource()
+        {
+            if (Database.Exists())
+            {
+                Database.Delete();
+            }
+
+            LoadDataSource();
+        }
+
+        private static void LoadDataSource()
+        {
+            var dbPath = SqlLoader.GetDatabaseDirectory(null);
+            var loader = new SqlLoader();
+            loader.SetDatabaseEngine("(localdb)\\v11.0");
+            loader.AddScript("instnwdb.sql");
+            loader.AddScriptArgument("SqlSamplesDatabasePath", dbPath);
+            loader.Execute(dbPath);
+        }
 
 #if EF7
         protected override void OnModelCreating(Data.Entity.Metadata.ModelBuilder modelBuilder)

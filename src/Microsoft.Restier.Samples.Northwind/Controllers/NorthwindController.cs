@@ -107,5 +107,13 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
             }
             return StatusCode(HttpStatusCode.NoContent);
         }
+
+        [HttpPost]
+        [ODataRoute("ResetDataSource")]
+        public IHttpActionResult ResetDataSource()
+        {
+            DbContext.ResetDataSource();
+            return StatusCode(HttpStatusCode.NoContent);
+        }
     }
 }

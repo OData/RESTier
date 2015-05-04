@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
     [Grant(DomainPermissionType.All, On = "Regions")]
     [Grant(DomainPermissionType.Inspect, On = "Suppliers")]
     [Grant(DomainPermissionType.Read, On = "Suppliers")]
+    [Grant(DomainPermissionType.All, On = "ResetDataSource")]
     public class NorthwindDomain : DbDomain<NorthwindContext>
     {
         public NorthwindContext Context { get { return DbContext; } }
@@ -42,6 +43,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             increasePrice.AddParameter("bindingParameter", new EdmEntityTypeReference(product as IEdmEntityType, false));
             increasePrice.AddParameter("diff", EdmCoreModel.Instance.GetInt32(false));
             model.AddElement(increasePrice);
+
+            var resetDataSource = new EdmAction(ns, "ResetDataSource", null, false, null);
+            model.AddElement(resetDataSource);
+            var entityContainer = (EdmEntityContainer)model.EntityContainer;
+            entityContainer.AddActionImport("ResetDataSource", resetDataSource);
             return model;
         }
 

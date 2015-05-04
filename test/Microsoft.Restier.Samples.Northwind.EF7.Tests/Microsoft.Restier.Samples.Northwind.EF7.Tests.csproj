@@ -200,10 +200,7 @@
     <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPutProductReturnContent.txt">
       <Link>Baselines\TestPutProductReturnContent.txt</Link>
     </Content>
-    <Content Include="App_Data\Northwind.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\Northwind_log.ldf">
+    <Content Include="App_Data\instnwdb.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

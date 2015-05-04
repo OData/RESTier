@@ -97,9 +97,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Northwind.mdf" />
-    <Content Include="App_Data\Northwind_log.ldf">
-      <DependentUpon>Northwind.mdf</DependentUpon>
+    <Content Include="App_Data\instnwdb.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
@@ -136,6 +135,7 @@
     <Compile Include="Models\Sales_by_Category.cs" />
     <Compile Include="Models\Sales_Totals_by_Amount.cs" />
     <Compile Include="Models\Shipper.cs" />
+    <Compile Include="Models\SqlLoader.cs" />
     <Compile Include="Models\Summary_of_Sales_by_Quarter.cs" />
     <Compile Include="Models\Summary_of_Sales_by_Year.cs" />
     <Compile Include="Models\Supplier.cs" />
@@ -152,7 +152,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
       <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
