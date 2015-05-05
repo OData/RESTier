@@ -453,6 +453,7 @@
         <Parameter Name="bindingParameter" Type="Microsoft.Restier.Samples.Northwind.Models.Product" Nullable="false" />
         <Parameter Name="diff" Type="Edm.Int32" Nullable="false" />
       </Action>
+      <Action Name="ResetDataSource" />
       <EntityContainer Name="NorthwindContext">
         <EntitySet Name="Products" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product">
           <NavigationPropertyBinding Path="Category" Target="Categories" />
@@ -483,6 +484,7 @@
         </EntitySet>
         <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product" />
         <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order" />
+        <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>
