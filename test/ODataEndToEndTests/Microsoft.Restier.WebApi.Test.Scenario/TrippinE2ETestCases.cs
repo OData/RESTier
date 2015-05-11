@@ -17,7 +17,6 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         public TrippinE2ETestCases()
             : base(new Uri("http://localhost:18384/api/Trippin/"))
         {
-            ResetDataSource();
         }
 
         [Fact]

@@ -17,9 +17,10 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             this.ServiceBaseUri = serviceBaseUri;
             TestClientContext = Activator.CreateInstance(typeof(TDSC), this.ServiceBaseUri) as TDSC;
+            ResetDataSource();
         }
 
-        protected void ResetDataSource()
+        private void ResetDataSource()
         {
             this.TestClientContext.Execute(new Uri("/ResetDataSource", UriKind.Relative), "POST");
         }
