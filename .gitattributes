@@ -8,6 +8,7 @@
 *.snk binary
 *.mdf binary
 *.ldf binary
+*.sql binary
 
 *.ascx text
 *.cd text
