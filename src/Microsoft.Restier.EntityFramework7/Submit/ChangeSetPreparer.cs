@@ -1,12 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework.Properties;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +8,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.ChangeTracking;
+using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Data.Entity.Metadata;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.EntityFramework.Properties;
 
 namespace Microsoft.Restier.EntityFramework.Submit
 {
@@ -116,8 +118,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
         private static void SetValues(EntityEntry dbEntry, DataModificationEntry entry, Type entityType)
         {
-            StateEntry stateEntry = dbEntry.StateEntry;
-            Microsoft.Data.Entity.Metadata.IEntityType edmType = stateEntry.EntityType;
+            //StateEntry stateEntry = ((IAccessor<InternalEntityEntry>) dbEntry.StateEntry;
+            IEntityType edmType = dbEntry.Metadata;
 
             if (entry.IsFullReplaceUpdate)
             {
@@ -131,7 +133,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 ChangeSetPreparer.SetValues(newInstance, entityType, entry.EntityKey);
                 ChangeSetPreparer.SetValues(newInstance, entityType, entry.LocalValues);
 
-                foreach (var property in edmType.Properties)
+                foreach (var property in edmType.GetProperties())
                 {
                     object val;
                     if (!entry.LocalValues.TryGetValue(property.Name, out val))
@@ -139,7 +141,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         PropertyInfo propertyInfo = entityType.GetProperty(property.Name);
                         val = propertyInfo.GetValue(newInstance);
                     }
-                    stateEntry[property] = val;
+                    //stateEntry[property] = val;
+                    dbEntry.Property(property.Name).CurrentValue = val;
                 }
             }
             else
@@ -151,11 +154,11 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
                 object instance = null;
 
-                foreach (var property in edmType.Properties)
+                foreach (var property in edmType.GetProperties())
                 {
                     object val;
 
-                    var edmPropName = property["EdmPropertyName"];
+                    var edmPropName = (string)property["EdmPropertyName"];
                     if (edmPropName != null && entry.LocalValues.TryGetValue(edmPropName, out val))
                     {
                         if (instance == null)
@@ -172,7 +175,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
                     {
                         continue;
                     }
-                    stateEntry[property] = val;
+                    //stateEntry[property] = val;
+                    dbEntry.Property(property.Name).CurrentValue = val;
                 }
             }
         }

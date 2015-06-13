@@ -3,6 +3,7 @@
 
 #if EF7
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Metadata;
 #else
 using System.Data.Entity;
 #endif
@@ -14,15 +15,27 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 #if EF7
         public NorthwindContext()
         {
+            try
+            {
+                if (!Database.AsRelational().Exists())
+                {
+                    LoadDataSource();
+                }
+            }
+            catch
+            {
+                ResetDataSource();
+            }
         }
 
-        protected override void OnConfiguring(DbContextOptions options)
+        protected override void OnConfiguring(EntityOptionsBuilder optionsBuilder)
         {
-            base.OnConfiguring(options);
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // Seems for now EF7 can't support named connection string like "name=NorthwindConnection",
             // find an equivalent approach when it's ready.
-            options.UseSqlServer(@"data source=(LocalDB)\v11.0;attachdbfilename=|DataDirectory|\Northwind.mdf;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
+            optionsBuilder.UseSqlServer(@"data source=(LocalDB)\v11.0;attachdbfilename=|DataDirectory|\Northwind.mdf;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
+
+            base.OnConfiguring(optionsBuilder);
         }
 #else
         public NorthwindContext()
@@ -70,11 +83,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
         public void ResetDataSource()
         {
+#if EF7
+            Database.EnsureDeleted();
+#else
             if (Database.Exists())
             {
                 Database.Delete();
             }
-
+#endif
             LoadDataSource();
         }
 
@@ -89,9 +105,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         }
 
 #if EF7
-        protected override void OnModelCreating(Data.Entity.Metadata.ModelBuilder modelBuilder)
+        protected override void OnModelCreating(Data.Entity.ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ForSqlServer().UseIdentity();
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // After EF7 adds support for DataAnnotation, some of following configuration could be deprecated.
@@ -170,7 +188,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                 entityBuilder.ForSqlServer().Table("Employees");
                 entityBuilder.Property(e => e.LastName).Required().MaxLength(20);
                 entityBuilder.Property(e => e.FirstName).Required().MaxLength(10);
-                entityBuilder.HasMany(e => e.Employees1).WithOne(e => e.Employee1).Required(false).ForeignKey(e => e.ReportsTo);
+                entityBuilder.Collection(e => e.Employees1).InverseReference(e => e.Employee1).Required(false).ForeignKey(e => e.ReportsTo);
             });
 
             modelBuilder.Entity<Invoice>(entityBuilder =>
@@ -196,7 +214,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Order>(entityBuilder =>
             {
                 entityBuilder.ForSqlServer().Table("Orders");
-                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
+                entityBuilder.Collection(e => e.Order_Details).InverseReference(e => e.Order).Required().ForeignKey(e => e.OrderID);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
@@ -248,7 +266,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             {
                 entityBuilder.ForSqlServer().Table("Products");
                 entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
-                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Product).Required();
+                entityBuilder.Collection(e => e.Order_Details).InverseReference(e => e.Product).Required();
             });
 
             modelBuilder.Entity<Product_Sales_for_1997>(entityBuilder =>
@@ -312,14 +330,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Shipper>(entityBuilder =>
             {
                 entityBuilder.ForSqlServer().Table("Shippers");
-                entityBuilder.HasMany(e => e.Orders).WithOne(e => e.Shipper).ForeignKey(e => e.ShipVia).Required(false);
+                entityBuilder.Collection(e => e.Orders).InverseReference(e => e.Shipper).ForeignKey(e => e.ShipVia).Required(false);
             });
 
             modelBuilder.Entity<Summary_of_Sales_by_Quarter>(entityBuilder =>
             {
                 entityBuilder.ForSqlServer().Table("Summary of Sales by Quarter");
                 entityBuilder.Property(e => e.Subtotal).ForSqlServer().ColumnType("money");
-                entityBuilder.Property(e => e.OrderID).StoreComputed(false);
+                entityBuilder.Property(e => e.OrderID).StoreGeneratedPattern(StoreGeneratedPattern.None);
                 entityBuilder.Key(e => e.OrderID);
             });
 
@@ -327,7 +345,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             {
                 entityBuilder.ForSqlServer().Table("Summary of Sales by Year");
                 entityBuilder.Property(e => e.Subtotal).ForSqlServer().ColumnType("money");
-                entityBuilder.Property(e => e.OrderID).StoreComputed(false);
+                entityBuilder.Property(e => e.OrderID).StoreGeneratedPattern(StoreGeneratedPattern.None);
                 entityBuilder.Key(e => e.OrderID);
             });
 
@@ -348,6 +366,8 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // ToTable() is not yet supported in EF7, remove following ignores after it's ready.
+            modelBuilder.Ignore<CustomerDemographic>();
+
             modelBuilder.Entity<Customer>().Ignore(e => e.CustomerDemographics);
 
             modelBuilder.Entity<Employee>().Ignore(e => e.Territories);

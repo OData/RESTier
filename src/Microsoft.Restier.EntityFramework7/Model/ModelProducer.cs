@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
+using Microsoft.Data.Entity.Infrastructure;
 
 namespace Microsoft.Restier.EntityFramework.Model
 {
@@ -59,10 +60,10 @@ namespace Microsoft.Restier.EntityFramework.Model
             var model = new EdmModel();
             var domainContext = context.DomainContext;
             var dbContext = domainContext.GetProperty<DbContext>("DbContext");
-            var elementMap = new Dictionary<IMetadata, IEdmElement>();
+            var elementMap = new Dictionary<IAnnotatable, IEdmElement>();
             var efModel = dbContext.Model;
             var namespaceName = efModel.EntityTypes
-                .Select(t => t.HasClrType ? t.Type.Namespace : null)
+                .Select(t => t.HasClrType() ? t.ClrType.Namespace : null)
                 .Where(t => t != null)
                 .GroupBy(nameSpace => nameSpace)
                 .Select(group => new
@@ -102,7 +103,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 elementMap.Add(efEntityType, entityType);
 
                 System.Reflection.PropertyInfo propInfo;
-                if (dbSetProperties.TryGetValue(efEntityType.Type, out propInfo))
+                if (dbSetProperties.TryGetValue(efEntityType.ClrType, out propInfo))
                 {
                     var entitySet = entityContainer.AddEntitySet(propInfo.Name, entityType);
                     if (concurrencyProperties != null)
@@ -114,7 +115,7 @@ namespace Microsoft.Restier.EntityFramework.Model
 
             foreach (var efEntityType in entityTypes)
             {
-                foreach (var navi in efEntityType.Navigations)
+                foreach (var navi in efEntityType.GetNavigations())
                 {
                     ModelProducer.AddNavigationProperties(
                         efModel, navi, model, elementMap);
@@ -135,9 +136,9 @@ namespace Microsoft.Restier.EntityFramework.Model
         {
             // TODO GitHubIssue#36 : support complex and entity inheritance
             var entityType = new EdmEntityType(
-                efEntityType.Type.Namespace, efEntityType.Type.Name);
+                efEntityType.ClrType.Namespace, efEntityType.ClrType.Name);
             concurrencyProperties = null;
-            foreach (var efProperty in efEntityType.Properties)
+            foreach (var efProperty in efEntityType.GetProperties())
             {
                 var type = ModelProducer.GetPrimitiveTypeReference(efProperty);
                 if (type != null)
@@ -152,7 +153,8 @@ namespace Microsoft.Restier.EntityFramework.Model
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
 
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-                    if (efProperty.GenerateValueOnAdd || efProperty.IsStoreComputed)
+                    if (efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Computed ||
+                        efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Identity)
                     {
                         SetComputedAnnotation(model, property);
                     }
@@ -165,7 +167,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 }
             }
 
-            var key = efEntityType.TryGetPrimaryKey();
+            var key = efEntityType.GetPrimaryKey();
             if (key != null)
             {
                 entityType.AddKeys(key.Properties
@@ -188,7 +190,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             IProperty efProperty)
         {
             var kind = EdmPrimitiveTypeKind.None;
-            var propertyType = efProperty.PropertyType;
+            var propertyType = efProperty.ClrType;
             if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(System.Nullable<>))
             {
                 propertyType = propertyType.GetGenericArguments()[0];
@@ -205,7 +207,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                         kind, efProperty.IsNullable);
                 case EdmPrimitiveTypeKind.Binary:
                     return EdmCoreModel.Instance.GetBinary(
-                        efProperty.MaxLength < 0, efProperty.MaxLength,
+                        efProperty.GetMaxLength() < 0, efProperty.GetMaxLength(),
                         efProperty.IsNullable);
                 case EdmPrimitiveTypeKind.Decimal:
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
@@ -216,7 +218,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 case EdmPrimitiveTypeKind.String:
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
                     return EdmCoreModel.Instance.GetString(
-                        efProperty.MaxLength < 0, efProperty.MaxLength,
+                        efProperty.GetMaxLength() < 0, efProperty.GetMaxLength(),
                         null, efProperty.IsNullable);
                 case EdmPrimitiveTypeKind.DateTimeOffset:
                 case EdmPrimitiveTypeKind.Duration:
@@ -266,13 +268,13 @@ namespace Microsoft.Restier.EntityFramework.Model
 
         private static void AddNavigationProperties(
             IModel efModel, INavigation navi,
-            EdmModel model, IDictionary<IMetadata, IEdmElement> elementMap)
+            EdmModel model, IDictionary<IAnnotatable, IEdmElement> elementMap)
         {
-            if (!navi.PointsToPrincipal)
+            if (!navi.PointsToPrincipal())
             {
                 return;
             }
-            var naviPair = new INavigation[] { navi, navi.TryGetInverse() };
+            var naviPair = new INavigation[] { navi, navi.FindInverse() };
             var navPropertyInfos = new EdmNavigationPropertyInfo[2];
             for (var i = 0; i < 2; i++)
             {
@@ -305,11 +307,11 @@ namespace Microsoft.Restier.EntityFramework.Model
                         naviPair[i]),
                 };
                 var foreignKey = naviPair[i].ForeignKey;
-                if (foreignKey != null && naviPair[i].PointsToPrincipal)
+                if (foreignKey != null && naviPair[i].PointsToPrincipal())
                 {
                     navPropertyInfos[i].DependentProperties = foreignKey.Properties
                         .Select(p => entityType.FindProperty(p.Name) as IEdmStructuralProperty);
-                    navPropertyInfos[i].PrincipalProperties = foreignKey.ReferencedProperties
+                    navPropertyInfos[i].PrincipalProperties = foreignKey.PrincipalKey.Properties
                         .Select(p => targetEntityType.FindProperty(p.Name) as IEdmStructuralProperty);
                 }
             }
@@ -345,13 +347,13 @@ namespace Microsoft.Restier.EntityFramework.Model
 
         private static void AddNavigationPropertyBindings(
             IModel efModel, INavigation navi,
-            EdmEntityContainer container, IDictionary<IMetadata, IEdmElement> elementMap)
+            EdmEntityContainer container, IDictionary<IAnnotatable, IEdmElement> elementMap)
         {
-            if (!navi.PointsToPrincipal)
+            if (!navi.PointsToPrincipal())
             {
                 return;
             }
-            var naviPair = new INavigation[] { navi, navi.TryGetInverse() };
+            var naviPair = new INavigation[] { navi, navi.FindInverse() };
             for (var i = 0; i < 2; i++)
             {
                 if (naviPair[i] == null) continue;
