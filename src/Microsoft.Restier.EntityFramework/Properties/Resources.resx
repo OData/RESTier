@@ -124,4 +124,7 @@
     <value>Could not find the specified resource.</value>
     <comment>The target entity not found for modification</comment>
   </data>
+  <data name="UnsupportedStructurePropertyType" xml:space="preserve">
+    <value>The type '{0}' is not supported for a structure property.</value>
+  </data>
 </root>
