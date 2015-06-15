@@ -20,6 +20,7 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// Represents a domain over a DbContext.
     /// </summary>
+    [CLSCompliant(false)]
     public class DbDomain<T> : DomainBase
         where T : DbContext
     {
