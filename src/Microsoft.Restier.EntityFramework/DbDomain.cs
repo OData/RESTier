@@ -20,7 +20,9 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// Represents a domain over a DbContext.
     /// </summary>
+#if EF7
     [CLSCompliant(false)]
+#endif
     public class DbDomain<T> : DomainBase
         where T : DbContext
     {
