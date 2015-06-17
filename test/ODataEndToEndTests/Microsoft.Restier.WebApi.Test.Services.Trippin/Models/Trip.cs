@@ -38,5 +38,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
         [ConcurrencyCheck]
         public DateTimeOffset LastUpdated { get; set; }
+
+        public virtual ICollection<Event> Events { get; set; }
     }
 }
