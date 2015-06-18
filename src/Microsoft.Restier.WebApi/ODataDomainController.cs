@@ -551,6 +551,12 @@ namespace Microsoft.Restier.WebApi
                 object value;
                 if (entity.TryGetPropertyValue(propertyName, out value))
                 {
+                    var complexObj = value as EdmComplexObject;
+                    if (complexObj != null)
+                    {
+                        value = CreatePropertyDictionary(complexObj);
+                    }
+
                     propertyValues.Add(propertyName, value);
                 }
             }

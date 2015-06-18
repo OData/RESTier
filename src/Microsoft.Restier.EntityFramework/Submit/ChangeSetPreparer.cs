@@ -127,8 +127,22 @@ namespace Microsoft.Restier.EntityFramework.Submit
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
+                object value = propertyPair.Value;
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
-                propertyInfo.SetValue(instance, propertyPair.Value);
+                if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
+                {
+                    var dic = value as IReadOnlyDictionary<string, object>;
+                    if (dic == null)
+                    {
+                        string info = string.Format("{0} <- {1}", propertyInfo.PropertyType, value.GetType());
+                        throw new Exception("Unsupported type for:" + info);
+                    }
+
+                    value = Activator.CreateInstance(propertyInfo.PropertyType);
+                    SetValues(value, propertyInfo.PropertyType, dic);
+                }
+
+                propertyInfo.SetValue(instance, value);
             }
         }
     }

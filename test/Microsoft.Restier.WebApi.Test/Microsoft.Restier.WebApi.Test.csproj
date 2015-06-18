@@ -81,6 +81,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DefaultODataPathRouteConstraintTest.cs" />
+    <Compile Include="ODataDomainControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
