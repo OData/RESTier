@@ -1,16 +1,14 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 
 namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
 {
     class LibraryContext : DbContext
     {
         public LibraryContext()
-            : base()//"ComplexTypeTest")
+            : base("LibraryContext")
         {
-            if (Database.Exists())
-            {
-              Database.Delete();
-            }
+            Database.SetInitializer(new TestInitializer());
         }
 
         public DbSet<Book> Books { get; set; }
@@ -18,5 +16,19 @@ namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
         public DbSet<Publisher> Publishers { get; set; }
 
         public DbSet<Person> Readers { get; set; }
-   }
+    }
+
+    class TestInitializer : DropCreateDatabaseAlways<LibraryContext>
+    {
+        protected override void Seed(LibraryContext context)
+        {
+            context.Readers.Add(new Person
+            {
+                Addr = new Address { Street = "street1" }, 
+                FullName = "p1",
+                Id = new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461")
+            });
+            context.SaveChanges();
+        }
+    }
 }

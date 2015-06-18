@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChangeSetPreparerTests.cs" />
     <Compile Include="Models\Library\Book.cs" />
     <Compile Include="Models\Library\Address.cs" />
     <Compile Include="Models\Library\LibraryContext.cs" />

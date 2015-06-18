@@ -118,7 +118,22 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
                 {
                     DbPropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
-                    propertyEntry.CurrentValue = propertyPair.Value;
+                    object value = propertyPair.Value;
+
+                    if (propertyEntry is DbComplexPropertyEntry)
+                    {
+                        var dic = value as IReadOnlyDictionary<string, object>;
+                        if (dic == null)
+                        {
+                            throw new Exception("Unsupported type for property:" + propertyPair.Key);
+                        }
+
+                        var type = propertyEntry.CurrentValue.GetType();
+                        value = Activator.CreateInstance(type);
+                        SetValues(value, type, dic);
+                    }
+
+                    propertyEntry.CurrentValue = value;
                 }
             }
         }
@@ -134,8 +149,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                     var dic = value as IReadOnlyDictionary<string, object>;
                     if (dic == null)
                     {
-                        string info = string.Format("{0} <- {1}", propertyInfo.PropertyType, value.GetType());
-                        throw new Exception("Unsupported type for:" + info);
+                        throw new Exception("Unsupported type for property:" + propertyPair.Key);
                     }
 
                     value = Activator.CreateInstance(propertyInfo.PropertyType);

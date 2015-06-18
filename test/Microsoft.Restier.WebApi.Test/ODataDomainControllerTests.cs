@@ -42,7 +42,7 @@ namespace Microsoft.Restier.WebApi.Test
         }
 
         [Fact]
-        public async Task GetPost()
+        public async Task PostTest()
         {
             const string payload = "{'Name': 'var1', 'Addr':{'Zip':330}}";
             var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/Products")
