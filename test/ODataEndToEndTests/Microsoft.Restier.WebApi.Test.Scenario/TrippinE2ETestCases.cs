@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
+using Microsoft.OData.Edm.Csdl;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
@@ -326,7 +327,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Airline airline = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             this.TestClientContext.AddToAirlines(airline);
@@ -646,7 +648,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Airline airline = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             // Post an entity
