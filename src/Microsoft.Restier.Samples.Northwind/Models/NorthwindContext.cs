@@ -3,7 +3,9 @@
 
 #if EF7
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
+using Microsoft.Data.Entity.Relational;
 #else
 using System.Data.Entity;
 #endif
@@ -17,18 +19,18 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             try
             {
-                if (!Database.AsRelational().Exists())
+                if (!this.Database.GetService<IRelationalDatabaseCreator>().Exists())
                 {
                     LoadDataSource();
                 }
             }
             catch
             {
-                ResetDataSource();
+                LoadDataSource();
             }
         }
 
-        protected override void OnConfiguring(EntityOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // Seems for now EF7 can't support named connection string like "name=NorthwindConnection",
