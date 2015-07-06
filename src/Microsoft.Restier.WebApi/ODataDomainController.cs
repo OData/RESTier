@@ -326,6 +326,11 @@ namespace Microsoft.Restier.WebApi
 
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+
             ODataPath path = this.GetPath();
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
@@ -359,14 +364,24 @@ namespace Microsoft.Restier.WebApi
             return this.CreateCreatedODataResult(postEntry.Entity);
         }
 
-        public Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            return this.Update(edmEntityObject, true, cancellationToken);
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+
+            return await this.Update(edmEntityObject, true, cancellationToken);
         }
 
-        public Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            return this.Update(edmEntityObject, false, cancellationToken);
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+
+            return await this.Update(edmEntityObject, false, cancellationToken);
         }
 
         private async Task<IHttpActionResult> Update(EdmEntityObject edmEntityObject, bool isFullReplaceUpdate, CancellationToken cancellationToken)
