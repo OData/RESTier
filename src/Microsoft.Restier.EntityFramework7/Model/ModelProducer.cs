@@ -139,7 +139,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     string defaultValue = null;
                     if (efProperty.Relational().DefaultValue != null)
                     {
-                        defaultValue = efProperty.Relational().DefaultExpression;
+                        defaultValue = efProperty.Relational().DefaultValueSql;
                     }
                     var property = entityType.AddStructuralProperty(
                         efProperty.Name, type, defaultValue,
