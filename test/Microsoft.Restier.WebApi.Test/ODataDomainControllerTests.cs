@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -31,6 +32,44 @@ namespace Microsoft.Restier.WebApi.Test
             var configuration = new HttpConfiguration();
             configuration.MapODataDomainRoute<StoreDomainController>("store", "store").Wait();
             client = new HttpClient(new HttpServer(configuration));
+        }
+
+        [Fact]
+        public async Task MetadataTest()
+        {
+            const string expected = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<edmx:Edmx Version=""4.0"" xmlns:edmx=""http://docs.oasis-open.org/odata/ns/edmx"">
+  <edmx:DataServices>
+    <Schema Namespace=""Microsoft.Restier.WebApi.Test"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
+      <EntityType Name=""Product"">
+        <Key>
+          <PropertyRef Name=""Id"" />
+        </Key>
+        <Property Name=""Id"" Type=""Edm.Int32"" Nullable=""false"" />
+        <Property Name=""Name"" Type=""Edm.String"" />
+        <Property Name=""Addr"" Type=""Microsoft.Restier.WebApi.Test.Address"" Nullable=""false"" />
+        <Property Name=""Addr2"" Type=""Microsoft.Restier.WebApi.Test.Address"" />
+        <Property Name=""Addr3"" Type=""Microsoft.Restier.WebApi.Test.Address"" />
+      </EntityType>
+      <ComplexType Name=""Address"">
+        <Property Name=""Zip"" Type=""Edm.Int32"" Nullable=""false"" />
+      </ComplexType>
+    </Schema>
+    <Schema Namespace=""Default"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
+      <EntityContainer Name=""Container"">
+        <EntitySet Name=""Products"" EntityType=""Microsoft.Restier.WebApi.Test.Product"" />
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/$metadata");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml"));
+            var response = await client.SendAsync(request);
+            var result = await response.Content.ReadAsStringAsync();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -95,7 +134,12 @@ namespace Microsoft.Restier.WebApi.Test
 
         public string Name { get; set; }
 
+        [Required]
         public Address Addr { get; set; }
+
+        public Address Addr2 { get; set; }
+
+        public Address Addr3 { get; set; }
     }
 
     class Address
@@ -156,7 +200,12 @@ namespace Microsoft.Restier.WebApi.Test
     {
         public Expression Source(QueryExpressionContext context, bool embedded)
         {
-            var a = new[] { new Product { Id = 1 } };
+            var a = new[] { new Product
+            {
+                Id = 1,
+                Addr = new Address { Zip = 0001 },
+                Addr2= new Address { Zip = 0002 }
+            } };
 
             if (!embedded)
             {
@@ -172,7 +221,17 @@ namespace Microsoft.Restier.WebApi.Test
         {
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
             {
-                entry.Entity = new Product();
+                if (entry.LocalValues.All(l => l.Key != "Addr"))
+                {
+                    throw new Exception("Addr is required.");
+                }
+
+                entry.Entity = new Product
+                {
+                    Id = 1,
+                    Addr = new Address { Zip = 0001 },
+                    Addr2 = new Address { Zip = 0002 }
+                };
             }
 
             return Task.FromResult(new SubmitResult(new ChangeSet()));
