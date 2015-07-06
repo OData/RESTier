@@ -124,7 +124,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             MetadataWorkspace efModel,
             EntityType efEntityType,
             EdmModel model,
-            Dictionary<MetadataItem, IEdmElement> elementMap,
+            IDictionary<MetadataItem, IEdmElement> elementMap,
             out List<EdmStructuralProperty> concurrencyProperties)
         {
             // TODO GitHubIssue#36 : support complex and entity inheritance
@@ -180,7 +180,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         private static IEdmTypeReference GetTypeReference(
             EdmProperty efProperty,
             EdmModel model,
-            Dictionary<MetadataItem, IEdmElement> elementMap)
+            IDictionary<MetadataItem, IEdmElement> elementMap)
         {
             if (efProperty.IsPrimitiveType)
             {
@@ -198,7 +198,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         private static IEdmComplexTypeReference GetComplexTypeReference(
             EdmProperty efProperty,
             EdmModel model,
-            Dictionary<MetadataItem, IEdmElement> elementMap)
+            IDictionary<MetadataItem, IEdmElement> elementMap)
         {
             var efComplexType = efProperty.ComplexType;
             EdmComplexType complexType;

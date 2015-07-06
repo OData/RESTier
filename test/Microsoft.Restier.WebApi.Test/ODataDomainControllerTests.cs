@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -10,7 +11,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.OData;
 using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
@@ -19,6 +19,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Xunit;
+
 namespace Microsoft.Restier.WebApi.Test
 {
     public class ODataDomainControllerTests
@@ -134,12 +135,18 @@ namespace Microsoft.Restier.WebApi.Test
 
     class TestQueryExecutor : IQueryExecutor
     {
-        public Task<QueryResult> ExecuteQueryAsync<TElement>(QueryContext context, IQueryable<TElement> query, CancellationToken cancellationToken)
+        public Task<QueryResult> ExecuteQueryAsync<TElement>(
+            QueryContext context,
+            IQueryable<TElement> query,
+            CancellationToken cancellationToken)
         {
             return Task.FromResult(new QueryResult(query.ToList()));
         }
 
-        public Task<QueryResult> ExecuteSingleAsync<TResult>(QueryContext context, IQueryable query, Expression expression, CancellationToken cancellationToken)
+        public Task<QueryResult> ExecuteSingleAsync<TResult>(QueryContext context,
+            IQueryable query,
+            Expression expression,
+            CancellationToken cancellationToken)
         {
             return Task.FromResult(new QueryResult(new[] { query.Provider.Execute(expression) }));
         }

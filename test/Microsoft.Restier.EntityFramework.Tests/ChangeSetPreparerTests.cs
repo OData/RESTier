@@ -1,10 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework.Submit;
 using Microsoft.Restier.EntityFramework.Tests.Models.Library;
@@ -17,6 +17,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
         [Fact]
         public async Task ComplexTypeUpdate()
         {
+            // Arrange
             var libraryDomain = new LibraryDomain();
             var entry = new DataModificationEntry(
                 "Readers",
@@ -26,8 +27,12 @@ namespace Microsoft.Restier.EntityFramework.Tests
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });
             var changeSet = new ChangeSet(new[] { entry });
             var sc = new SubmitContext(libraryDomain.Context, changeSet);
+
+            // Act
             await ChangeSetPreparer.Instance.PrepareAsync(sc, CancellationToken.None);
             var person = entry.Entity as Person;
+
+            // Assert
             Assert.NotNull(person);
             Assert.Equal("332", person.Addr.Zip);
         }

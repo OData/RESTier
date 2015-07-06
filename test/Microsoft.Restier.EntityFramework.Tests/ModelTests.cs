@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.OData.Edm;
@@ -17,7 +20,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var model = Domain.GetModelAsync(new LibraryDomain().Context).Result;
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
-            Console.WriteLine(errors.Count());
+            Assert.Equal(0, errors.Count());
 
             var address = model.FindDeclaredType("Microsoft.Restier.EntityFramework.Tests.Models.Library.Address")
              as IEdmComplexType;
@@ -25,5 +28,4 @@ namespace Microsoft.Restier.EntityFramework.Tests
             Assert.Equal(2, address.Properties().Count());
         }
     }
-
 }
