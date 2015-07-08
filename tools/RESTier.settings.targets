@@ -21,6 +21,8 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>$(DFRootPath)\tools\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+
+    <StyleCopOverrideSettingsFile>$(DFRootPath)src\Common.Stylecop</StyleCopOverrideSettingsFile>
   </PropertyGroup>
 
   <!-- Per-configuration properties -->
