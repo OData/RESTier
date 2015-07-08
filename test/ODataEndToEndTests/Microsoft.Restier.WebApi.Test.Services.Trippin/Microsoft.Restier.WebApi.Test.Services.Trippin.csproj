@@ -137,7 +137,7 @@
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.OData">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.5.4.0\lib\net45\System.Web.OData.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.5.6.0\lib\net45\System.Web.OData.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup>

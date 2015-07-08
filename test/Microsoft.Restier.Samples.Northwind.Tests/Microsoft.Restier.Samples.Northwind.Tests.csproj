@@ -76,7 +76,7 @@
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.OData">
-      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.4.0\lib\net45\System.Web.OData.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.6.0\lib\net45\System.Web.OData.dll</HintPath>
     </Reference>
     <Reference Include="xunit, Version=1.9.2.1705, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
