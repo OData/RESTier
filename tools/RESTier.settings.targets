@@ -24,6 +24,10 @@
 
     <StyleCopOverrideSettingsFile>$(DFRootPath)src\Common.Stylecop</StyleCopOverrideSettingsFile>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <StyleCopAdditionalAddinPaths Include="$(DFRootPath)packages\Microsoft.OData.StyleCop.1.0.0\lib" />
+  </ItemGroup>
 
   <!-- Per-configuration properties -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
