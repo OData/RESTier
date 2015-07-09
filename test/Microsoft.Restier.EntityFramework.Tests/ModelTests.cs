@@ -20,7 +20,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var model = Domain.GetModelAsync(new LibraryDomain().Context).Result;
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
-            Assert.Equal(0, errors.Count());
+            Assert.Empty(errors);
 
             var address = model.FindDeclaredType("Microsoft.Restier.EntityFramework.Tests.Models.Library.Address")
              as IEdmComplexType;

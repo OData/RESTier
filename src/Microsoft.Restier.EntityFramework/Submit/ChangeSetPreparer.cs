@@ -125,6 +125,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         var dic = value as IReadOnlyDictionary<string, object>;
                         if (dic == null)
                         {
+                            // TODO GitHubIssue#103 : Choose property error message for unknown type
                             throw new Exception("Unsupported type for property:" + propertyPair.Key);
                         }
 
@@ -149,6 +150,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                     var dic = value as IReadOnlyDictionary<string, object>;
                     if (dic == null)
                     {
+                        // TODO GitHubIssue#103 : Choose property error message for unknown type
                         throw new Exception("Unsupported type for property:" + propertyPair.Key);
                     }
 

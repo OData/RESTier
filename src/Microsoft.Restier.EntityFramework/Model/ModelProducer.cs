@@ -191,8 +191,8 @@ namespace Microsoft.Restier.EntityFramework.Model
                 return GetComplexTypeReference(efProperty, model, elementMap);
             }
 
-            throw new NotSupportedException(
-                string.Format(Resources.UnsupportedStructurePropertyType, efProperty.TypeUsage.EdmType));
+            // TODO GitHubIssue#103 : Choose property error message for unknown type
+            return null;
         }
 
         private static IEdmComplexTypeReference GetComplexTypeReference(
@@ -233,7 +233,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             var efKind = efProperty.PrimitiveType.PrimitiveTypeKind;
             if (!s_primitiveTypeKindMap.TryGetValue(efKind, out kind))
             {
-                // throw UnsupportedStructureType ?
+                // TODO GitHubIssue#103 : Choose property error message for unknown type
                 return null;
             }
             switch (kind)
