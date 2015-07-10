@@ -328,6 +328,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a data modification entry in a change set.
     /// </summary>
+    /// <typeparam name="T">The entity type.</typeparam>
     public class DataModificationEntry<T> : DataModificationEntry
         where T : class
     {

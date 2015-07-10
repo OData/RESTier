@@ -20,6 +20,7 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// Represents a domain over a DbContext.
     /// </summary>
+    /// <typeparam name="T">The DbContext type.</typeparam>
 #if EF7
     [CLSCompliant(false)]
 #endif
