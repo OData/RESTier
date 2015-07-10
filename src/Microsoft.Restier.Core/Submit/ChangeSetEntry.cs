@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Core.Submit
         PreEventing,
         /// <summary>
         /// The entity was modified within its own pre eventing interception method.  This indicates that the entity
-        /// should be revalidated but its 'ing interception point should not be invoked again.
+        /// should be revalidated but its eventing interception point should not be invoked again.
         /// </summary>
         ChangedWithinOwnPreEventing,
         /// <summary>

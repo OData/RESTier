@@ -1,6 +1,14 @@
 <StyleCopSettings Version="105">
   <GlobalSettings>
     <StringProperty Name="MergeSettingsFiles">NoMerge</StringProperty>
+    <CollectionProperty Name="RecognizedWords">
+      <Value>composable</Value>
+      <Value>Db</Value>
+      <Value>enum</Value>
+      <Value>eventing</Value>
+      <Value>queryable</Value>
+      <Value>sourcer</Value>
+    </CollectionProperty>
   </GlobalSettings>
   <Parsers>
     <Parser ParserId="StyleCop.CSharp.CsParser">
