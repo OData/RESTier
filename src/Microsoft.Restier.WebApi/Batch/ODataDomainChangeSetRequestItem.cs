@@ -12,10 +12,18 @@ using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.WebApi.Batch
 {
+    /// <summary>
+    /// Represents a domain <see cref="ChangeSet"/> request.
+    /// </summary>
     public class ODataDomainChangeSetRequestItem : ChangeSetRequestItem
     {
         private Func<IDomain> domainFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ODataDomainChangeSetRequestItem" /> class.
+        /// </summary>
+        /// <param name="requests">The request messages.</param>
+        /// <param name="domainFactory">Gets or sets the callback to create domain.</param>
         public ODataDomainChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<IDomain> domainFactory)
             : base(requests)
         {
@@ -24,6 +32,12 @@ namespace Microsoft.Restier.WebApi.Batch
             this.domainFactory = domainFactory;
         }
 
+        /// <summary>
+        /// Asynchronously sends the request.
+        /// </summary>
+        /// <param name="invoker">The invoker.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that represents this asynchronous operation.</returns>
         public override async Task<ODataBatchResponseItem> SendRequestAsync(HttpMessageInvoker invoker, CancellationToken cancellationToken)
         {
             Ensure.NotNull(invoker, "invoker");

@@ -33,16 +33,25 @@ using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi
 {
+    /// <summary>
+    /// The base class for all domain controllers.
+    /// </summary>
     [ODataDomainFormatting]
     [ODataDomainExceptionFilter]
     public abstract class ODataDomainController : ODataController
     {
         private IDomain _domain;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ODataDomainController" /> class.
+        /// </summary>
         protected ODataDomainController()
         {
         }
 
+        /// <summary>
+        /// Gets the <see cref="IDomain"/> interface of the domain of the <see cref="ODataDomainController"/>.
+        /// </summary>
         public IDomain Domain
         {
             get
@@ -55,8 +64,16 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
+        /// <summary>
+        /// Creates a domain instance.
+        /// </summary>
+        /// <returns>The domain instance created.</returns>
         protected abstract IDomain CreateDomain();
 
+        /// <summary>
+        /// Disposes the domain and the controller.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposing is happening.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -71,18 +88,29 @@ namespace Microsoft.Restier.WebApi
         }
     }
 
+    /// <summary>
+    /// The base class for all domain controllers with domain specified.
+    /// </summary>
+    /// <typeparam name="T">The specified domain class.</typeparam>
     public class ODataDomainController<T> : ODataDomainController
         where T : class, IDomain
     {
+        /// <summary>
+        /// Gets the domain class of the <see cref="ODataDomainController"/>.
+        /// </summary>
         public new T Domain
         {
             get
             {
                 return base.Domain as T;
             }
-
         }
 
+        /// <summary>
+        /// Handles a GET request to query entities.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the response message.</returns>
         public async Task<HttpResponseMessage> Get(
             CancellationToken cancellationToken)
         {
@@ -101,6 +129,10 @@ namespace Microsoft.Restier.WebApi
             return this.CreateQueryResponse(result.Results.AsQueryable(), path.EdmType);
         }
 
+        /// <summary>
+        /// Creates a domain instance of type T.
+        /// </summary>
+        /// <returns>The domain instance created.</returns>
         protected override IDomain CreateDomain()
         {
             return Activator.CreateInstance<T>();
@@ -324,6 +356,12 @@ namespace Microsoft.Restier.WebApi
             return type.GetEdmTypeReference(isNullable: false);
         }
 
+        /// <summary>
+        /// Handles a POST request to create an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to create.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the creation result.</returns>
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
             if (!this.ModelState.IsValid)
@@ -364,6 +402,12 @@ namespace Microsoft.Restier.WebApi
             return this.CreateCreatedODataResult(postEntry.Entity);
         }
 
+        /// <summary>
+        /// Handles a PUT request to fully update an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to update.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
             if (!this.ModelState.IsValid)
@@ -374,6 +418,12 @@ namespace Microsoft.Restier.WebApi
             return await this.Update(edmEntityObject, true, cancellationToken);
         }
 
+        /// <summary>
+        /// Handles a PATCH request to partially update an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to update.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
             if (!this.ModelState.IsValid)
@@ -419,6 +469,11 @@ namespace Microsoft.Restier.WebApi
             return this.CreateUpdatedODataResult(updateEntry.Entity);
         }
 
+        /// <summary>
+        /// Handles a DELETE request to delete an entity.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the deletion result.</returns>
         public async Task<IHttpActionResult> Delete(CancellationToken cancellationToken)
         {
             ODataPath path = this.GetPath();
@@ -453,6 +508,11 @@ namespace Microsoft.Restier.WebApi
             return this.StatusCode(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// Handles a POST request to an action.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the action result.</returns>
         public async Task<IHttpActionResult> PostAction(CancellationToken cancellationToken)
         {
             ODataPath path = this.GetPath();

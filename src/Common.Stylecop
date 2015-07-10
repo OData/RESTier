@@ -2,11 +2,15 @@
   <GlobalSettings>
     <StringProperty Name="MergeSettingsFiles">NoMerge</StringProperty>
     <CollectionProperty Name="RecognizedWords">
+      <Value>changeset</Value>
       <Value>composable</Value>
       <Value>Db</Value>
+      <Value>deserializer</Value>
       <Value>enum</Value>
       <Value>eventing</Value>
+      <Value>nullable</Value>
       <Value>queryable</Value>
+      <Value>RESTier</Value>
       <Value>sourcer</Value>
     </CollectionProperty>
   </GlobalSettings>

@@ -21,6 +21,12 @@ namespace Microsoft.Restier.WebApi.Filters
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public sealed class ODataDomainExceptionFilterAttribute : ExceptionFilterAttribute
     {
+        /// <summary>
+        /// The callback to execute when exception occurs.
+        /// </summary>
+        /// <param name="actionExecutedContext">The context where the action is executed.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that represents the callback execution.</returns>
         public override async Task OnExceptionAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
             IHttpActionResult exceptionResult = null;

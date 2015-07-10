@@ -14,6 +14,12 @@ namespace Microsoft.Restier.WebApi.Results
     /// </summary>
     public class EntityResult : EntityQueryResult
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityResult" /> class.
+        /// </summary>
+        /// <param name="query">The query that returns an entity.</param>
+        /// <param name="edmType">The EDM type reference of the entity.</param>
+        /// <param name="context">The context where the action is executed.</param>
         public EntityResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
             : base(edmType)
         {
@@ -25,8 +31,14 @@ namespace Microsoft.Restier.WebApi.Results
             this.Result = query.SingleOrDefault();
         }
 
+        /// <summary>
+        /// Gets the result object.
+        /// </summary>
         public object Result { get; private set; }
 
+        /// <summary>
+        /// Gets the context where the action is executed.
+        /// </summary>
         public DomainContext Context { get; private set; }
     }
 }

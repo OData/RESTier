@@ -17,10 +17,23 @@ using WebApiODataEx = System.Web.OData.Extensions;
 
 namespace Microsoft.Restier.WebApi
 {
+    /// <summary>
+    /// Offers a collection of extension methods to <see cref="HttpConfiguration"/>.
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions
     {
-        // TODO GitHubIssue#51 : Support model lazy loading
+        /// <summary>
+        /// Maps the domain routes to the given domain controller.
+        /// </summary>
+        /// <typeparam name="TController">The domain controller.</typeparam>
+        /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
+        /// <param name="routeName">The name of the route.</param>
+        /// <param name="routePrefix">The prefix of the route.</param>
+        /// <param name="domainFactory">The callback to create domain instances.</param>
+        /// <param name="batchHandler">The handler for batch requests.</param>
+        /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
+        /// TODO GitHubIssue#51 : Support model lazy loading
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
             this HttpConfiguration config, string routeName, string routePrefix,
             Func<IDomain> domainFactory,
@@ -79,6 +92,15 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
+        /// <summary>
+        /// Maps the domain routes to the given domain controller.
+        /// </summary>
+        /// <typeparam name="TController">The domain controller.</typeparam>
+        /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
+        /// <param name="routeName">The name of the route.</param>
+        /// <param name="routePrefix">The prefix of the route.</param>
+        /// <param name="batchHandler">The handler for batch requests.</param>
+        /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
             this HttpConfiguration config, string routeName, string routePrefix,
             ODataDomainBatchHandler batchHandler = null)
@@ -88,6 +110,13 @@ namespace Microsoft.Restier.WebApi
                 config, routeName, routePrefix, () => new TController().Domain, batchHandler);
         }
 
+        /// <summary>
+        /// Creates the default routing conventions.
+        /// </summary>
+        /// <typeparam name="TController">The domain controller.</typeparam>
+        /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
+        /// <param name="model">The EDM model.</param>
+        /// <returns>The routing conventions created.</returns>
         public static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TController>(
             this HttpConfiguration config, IEdmModel model)
             where TController : ODataDomainController, new()
