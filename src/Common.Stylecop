@@ -29,6 +29,10 @@
           </RuleSettings>
         </Rule>
       </Rules>
+      <AnalyzerSettings>
+        <BooleanProperty Name="IgnorePrivates">True</BooleanProperty>
+        <BooleanProperty Name="IgnoreInternals">True</BooleanProperty>
+      </AnalyzerSettings>
     </Analyzer>
     <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.OrderingRules">
       <Rules>
@@ -38,7 +42,6 @@
           </RuleSettings>
         </Rule>
       </Rules>
-      <AnalyzerSettings />
     </Analyzer>
     <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.ReadabilityRules">
       <Rules>
