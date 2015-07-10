@@ -13,6 +13,10 @@ namespace Microsoft.Restier.WebApi.Results
     {
         private IEdmTypeReference edmType;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityQueryResult" /> class.
+        /// </summary>
+        /// <param name="edmType">The EDM type reference of the entity result.</param>
         protected EntityQueryResult(IEdmTypeReference edmType)
         {
             Ensure.NotNull(edmType, "edmType");
@@ -20,6 +24,9 @@ namespace Microsoft.Restier.WebApi.Results
             this.edmType = edmType;
         }
 
+        /// <summary>
+        /// Gets the EDM type reference of the entity result.
+        /// </summary>
         public IEdmTypeReference EdmType
         {
             get

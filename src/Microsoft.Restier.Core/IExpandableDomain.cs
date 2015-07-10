@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Core
         DomainConfiguration Configuration { get; }
 
         /// <summary>
-        /// Gets a value indicating if this
+        /// Gets a value indicating whether this
         /// expandable domain has been initialized.
         /// </summary>
         bool IsInitialized { get; }

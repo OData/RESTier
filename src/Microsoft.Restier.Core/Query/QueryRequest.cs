@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core.Query
     public class QueryRequest
     {
         /// <summary>
-        /// Initializes a new query request with a composed query.
+        /// Initializes a new instance of the <see cref="QueryRequest" /> class with a composed query.
         /// </summary>
         /// <param name="query">
         /// A composed query that was derived from a queryable source.
@@ -54,6 +54,9 @@ namespace Microsoft.Restier.Core.Query
         /// Indicates if the total number of items should be retrieved
         /// when the result has been filtered using paging operators.
         /// </param>
+        /// <returns>
+        /// The created instance of the <see cref="QueryRequest"/> class.
+        /// </returns>
         public static QueryRequest Create<TElement, TResult>(
             IQueryable<TElement> query,
             Expression<Func<IQueryable<TElement>, TResult>> singularExpression,
@@ -78,6 +81,9 @@ namespace Microsoft.Restier.Core.Query
         /// Indicates if the total number of items should be retrieved
         /// when the result has been filtered using paging operators.
         /// </param>
+        /// <returns>
+        /// The created instance of the <see cref="QueryRequest"/> class.
+        /// </returns>
         public static QueryRequest Create(
             IQueryable query,
             LambdaExpression singularExpression,

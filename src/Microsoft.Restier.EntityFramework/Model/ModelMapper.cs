@@ -20,7 +20,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         private readonly Type _dbContextType;
 
         /// <summary>
-        /// Initializes a new model mapper.
+        /// Initializes a new instance of the <see cref="ModelMapper" /> class.
         /// </summary>
         /// <param name="dbContextType">
         /// The type of a DbContext class.

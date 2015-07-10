@@ -14,14 +14,14 @@ namespace Microsoft.Restier.Core
         private DomainContext _domainContext;
 
         /// <summary>
-        /// Initializes a new domain.
+        /// Initializes a new instance of the <see cref="DomainBase"/> class.
         /// </summary>
         protected DomainBase()
         {
         }
 
         /// <summary>
-        /// Finalizes this domain.
+        /// Finalizes an instance of the <see cref="DomainBase"/> class.
         /// </summary>
         ~DomainBase()
         {
@@ -154,7 +154,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets a value indicating if this domain
+        /// Gets a value indicating whether this domain
         /// has created its domain context.
         /// </summary>
         protected bool HasDomainContext
@@ -184,7 +184,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets a value indicating if this domain has been disposed.
+        /// Gets a value indicating whether this domain has been disposed.
         /// </summary>
         protected bool IsDisposed { get; private set; }
 

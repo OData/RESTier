@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Security
     public sealed class DenyAttribute : DomainParticipantAttribute
     {
         /// <summary>
-        /// Initializes a new deny attribute.
+        /// Initializes a new instance of the <see cref="DenyAttribute" /> class.
         /// </summary>
         /// <param name="permissionType">
         /// A built-in or custom permission type.

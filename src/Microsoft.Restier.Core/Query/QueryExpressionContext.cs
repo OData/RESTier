@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Core.Query
             new Dictionary<Expression, QueryModelReference>();
 
         /// <summary>
-        /// Initializes a new query expression context.
+        /// Initializes a new instance of the <see cref="QueryExpressionContext" /> class.
         /// </summary>
         /// <param name="queryContext">
         /// A query context.

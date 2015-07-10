@@ -8,8 +8,17 @@ using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
+    /// <summary>
+    /// Offers a collection of helper methods for <see cref="IEdmType"/>.
+    /// </summary>
     public static class EdmLibHelpers
     {
+        /// <summary>
+        /// Gets the EDM type reference for the EDM type definition.
+        /// </summary>
+        /// <param name="edmType">The EDM type definition.</param>
+        /// <param name="isNullable">Indicates whether the type is nullable.</param>
+        /// <returns>The created EDM type reference.</returns>
         public static IEdmTypeReference GetEdmTypeReference(this IEdmType edmType, bool isNullable)
         {
             Ensure.NotNull(edmType, "edmType");

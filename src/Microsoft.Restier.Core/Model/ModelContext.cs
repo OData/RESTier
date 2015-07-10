@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core.Model
     public class ModelContext : InvocationContext
     {
         /// <summary>
-        /// Initializes a new model context.
+        /// Initializes a new instance of the <see cref="ModelContext" /> class.
         /// </summary>
         /// <param name="domainContext">
         /// A domain context.

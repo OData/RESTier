@@ -12,13 +12,27 @@ using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi.Formatter.Serialization
 {
+    /// <summary>
+    /// The serializer for entity collection result.
+    /// </summary>
     public class ODataDomainFeedSerializer : ODataFeedSerializer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ODataDomainFeedSerializer" /> class.
+        /// </summary>
+        /// <param name="provider">The serializer provider.</param>
         public ODataDomainFeedSerializer(ODataSerializerProvider provider)
             : base(provider)
         {
         }
 
+        /// <summary>
+        /// Writes the entity collection results to the response message.
+        /// </summary>
+        /// <param name="graph">The entity collection results.</param>
+        /// <param name="type">The type of the entities.</param>
+        /// <param name="messageWriter">The message writer.</param>
+        /// <param name="writeContext">The writing context.</param>
         public override void WriteObject(object graph, Type type, ODataMessageWriter messageWriter, ODataSerializerContext writeContext)
         {
             Ensure.NotNull(messageWriter, "messageWriter");

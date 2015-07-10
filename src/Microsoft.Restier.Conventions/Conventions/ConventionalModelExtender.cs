@@ -11,15 +11,27 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Conventions
 {
+    /// <summary>
+    /// The conventional implementation of <see cref="IModelExtender" />.
+    /// </summary>
     public class ConventionalModelExtender : IModelExtender
     {
         private Type _targetType;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionalModelExtender" /> class.
+        /// </summary>
+        /// <param name="targetType">The target type on which to invoke model extending.</param>
         public ConventionalModelExtender(Type targetType)
         {
             _targetType = targetType;
         }
 
+        /// <summary>
+        /// Apply a <see cref="ConventionalModelExtender"/> instance to the <see cref="DomainConfiguration"/>.
+        /// </summary>
+        /// <param name="configuration">The domain configuration.</param>
+        /// <param name="targetType">The target type on which to invoke model extending.</param>
         public static void ApplyTo(DomainConfiguration configuration, Type targetType)
         {
             Ensure.NotNull(configuration, "configuration");
@@ -27,6 +39,12 @@ namespace Microsoft.Restier.Conventions
             configuration.AddHookPoint(typeof(IModelExtender), new ConventionalModelExtender(targetType));
         }
 
+        /// <summary>
+        /// Asynchronously extends the model.
+        /// </summary>
+        /// <param name="context">The context that contains the model.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that represents this asynchronous operation.</returns>
         public Task ExtendModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             ExtendModel(context);

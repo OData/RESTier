@@ -27,14 +27,16 @@ namespace Microsoft.Restier.Core.Submit
         public ChangeSetEntryType Type { get; private set; }
 
         /// <summary>
-        /// Gets the dynamic state of this change set entry.
+        /// Gets or sets the dynamic state of this change set entry.
         /// </summary>
         public DynamicChangeSetEntityState ChangeSetEntityState { get; set; }
 
         /// <summary>
         /// Indicates if this change set entry is in a changed state.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// If this change set entry is in a changed state.
+        /// </returns>
         public bool HasChanged()
         {
             return this.ChangeSetEntityState == DynamicChangeSetEntityState.Changed ||
@@ -77,7 +79,7 @@ namespace Microsoft.Restier.Core.Submit
         PreEventing,
         /// <summary>
         /// The entity was modified within its own pre eventing interception method.  This indicates that the entity
-        /// should be revalidated but its 'ing interception point should not be invoked again.
+        /// should be revalidated but its eventing interception point should not be invoked again.
         /// </summary>
         ChangedWithinOwnPreEventing,
         /// <summary>
@@ -122,7 +124,7 @@ namespace Microsoft.Restier.Core.Submit
     public class DataModificationEntry : ChangeSetEntry
     {
         /// <summary>
-        /// Initializes a new data modification entry.
+        /// Initializes a new instance of the <see cref="DataModificationEntry" /> class.
         /// </summary>
         /// <param name="entitySetName">
         /// The name of the entity set in question.
@@ -172,12 +174,12 @@ namespace Microsoft.Restier.Core.Submit
         public IReadOnlyDictionary<string, object> EntityKey { get; private set; }
 
         /// <summary>
-        /// Gets the action to be taken.
+        /// Gets or sets the action to be taken.
         /// </summary>
         public AddAction AddAction { get; set; }
 
         /// <summary>
-        /// Gets a value indicating if the modification is a new entity.
+        /// Gets a value indicating whether the modification is a new entity.
         /// </summary>
         public bool IsNew
         {
@@ -188,7 +190,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets a value indicating if the modification is updating an entity.
+        /// Gets a value indicating whether the modification is updating an entity.
         /// </summary>
         public bool IsUpdate
         {
@@ -199,7 +201,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets a value indicating whether the entity should be fully replaced by the modification.
+        /// Gets or sets a value indicating whether the entity should be fully replaced by the modification.
         /// </summary>
         /// <remarks>
         /// If true, all properties will be updated, even if the property isn't in LocalValues.
@@ -208,7 +210,7 @@ namespace Microsoft.Restier.Core.Submit
         public bool IsFullReplaceUpdate { get; set; }
 
         /// <summary>
-        /// Gets a value indicating if the modification is deleting an entity.
+        /// Gets a value indicating whether the modification is deleting an entity.
         /// </summary>
         public bool IsDelete
         {
@@ -328,11 +330,12 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a data modification entry in a change set.
     /// </summary>
+    /// <typeparam name="T">The entity type.</typeparam>
     public class DataModificationEntry<T> : DataModificationEntry
         where T : class
     {
         /// <summary>
-        /// Initializes a new data modification entry.
+        /// Initializes a new instance of the <see cref="DataModificationEntry{T}" /> class.
         /// </summary>
         /// <param name="entitySetName">
         /// The name of the entity set in question.
@@ -384,7 +387,7 @@ namespace Microsoft.Restier.Core.Submit
     public class ActionInvocationEntry : ChangeSetEntry
     {
         /// <summary>
-        /// Initializes a new action invocation entry.
+        /// Initializes a new instance of the <see cref="ActionInvocationEntry" /> class.
         /// </summary>
         /// <param name="actionName">
         /// An action name.
@@ -424,6 +427,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets an array of the arguments to pass to the action.
         /// </summary>
+        /// <returns>
+        /// An array of the arguments to pass to the action.
+        /// </returns>
         public object[] GetArgumentArray()
         {
             if (this.Arguments == null)

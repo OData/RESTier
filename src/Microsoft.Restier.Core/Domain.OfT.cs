@@ -8,13 +8,14 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a domain that expands upon on another domain.
     /// </summary>
+    /// <typeparam name="T">The inner domain.</typeparam>
     public class Domain<T> : DomainBase
         where T : IExpandableDomain
     {
         private T _expandableDomain;
 
         /// <summary>
-        /// Initializes a new domain.
+        /// Initializes a new instance of the <see cref="Domain{T}" /> class.
         /// </summary>
         public Domain()
         {

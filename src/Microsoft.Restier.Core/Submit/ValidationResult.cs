@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     public class ValidationResult
     {
         /// <summary>
-        /// Gets the identifier for this validation result.
+        /// Gets or sets the identifier for this validation result.
         /// </summary>
         /// <remarks>
         /// Id allows programmatic matching of validation results between tiers.
@@ -17,28 +17,31 @@ namespace Microsoft.Restier.Core.Submit
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets the item to which the validation result applies.
+        /// Gets or sets the item to which the validation result applies.
         /// </summary>
         public object Target { get; set; }
 
         /// <summary>
-        /// Gets the name of the property to which the validation result applies.  If null, the validation result applies to the whole Target.
+        /// Gets or sets the name of the property to which the validation result applies.  If null, the validation result applies to the whole Target.
         /// </summary>
         public string PropertyName { get; set; }
 
         /// <summary>
-        /// Gets the severity of this validation result.
+        /// Gets or sets the severity of this validation result.
         /// </summary>
         public ValidationSeverity Severity { get; set; }
 
         /// <summary>
-        /// Gets the message to be displayed to the end user for this validation result.
+        /// Gets or sets the message to be displayed to the end user for this validation result.
         /// </summary>
         public string Message { get; set; }
 
         /// <summary>
         /// Returns the string that represents this validation result.
         /// </summary>
+        /// <returns>
+        /// The string that represents this validation result.
+        /// </returns>
         public override string ToString()
         {
             return this.Message;

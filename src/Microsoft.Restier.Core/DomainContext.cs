@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core
     public class DomainContext : PropertyBag
     {
         /// <summary>
-        /// Initializes a new domain context.
+        /// Initializes a new instance of the <see cref="DomainContext" /> class.
         /// </summary>
         /// <param name="configuration">
         /// A domain configuration.
@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Core
         public DomainConfiguration Configuration { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating if this domain
+        /// Gets a value indicating whether this domain
         /// context is current submitting changes.
         /// </summary>
         public bool IsSubmitting { get; internal set; }
