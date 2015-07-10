@@ -18,7 +18,7 @@ namespace Microsoft.Restier.Core.Query
         private long? _totalCount;
 
         /// <summary>
-        /// Initializes a new query result with an error.
+        /// Initializes a new instance of the <see cref="QueryResult" /> class with an error.
         /// </summary>
         /// <param name="error">
         /// An error.
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
-        /// Initializes a new query result with in-memory results.
+        /// Initializes a new instance of the <see cref="QueryResult" /> class with in-memory results.
         /// </summary>
         /// <param name="results">
         /// In-memory results.

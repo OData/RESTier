@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Query
         private readonly string _name;
 
         /// <summary>
-        /// Initializes a new domain data reference.
+        /// Initializes a new instance of the <see cref="DomainDataReference" /> class.
         /// </summary>
         /// <param name="context">
         /// A query context.
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
-        /// Initializes a new domain data reference to a function.
+        /// Initializes a new instance of the <see cref="DomainDataReference" /> class referring to a function.
         /// </summary>
         /// <param name="context">
         /// A query context.
@@ -154,7 +154,7 @@ namespace Microsoft.Restier.Core.Query
     public class DerivedDataReference : QueryModelReference
     {
         /// <summary>
-        /// Initializes a new derived data reference.
+        /// Initializes a new instance of the <see cref="DerivedDataReference" /> class.
         /// </summary>
         /// <param name="source">
         /// A source query model reference.
@@ -199,7 +199,7 @@ namespace Microsoft.Restier.Core.Query
     public class CollectionElementReference : DerivedDataReference
     {
         /// <summary>
-        /// Initializes a new collection element reference.
+        /// Initializes a new instance of the <see cref="CollectionElementReference" /> class.
         /// </summary>
         /// <param name="source">
         /// A source query model reference.
@@ -234,7 +234,7 @@ namespace Microsoft.Restier.Core.Query
         private readonly string _propertyName;
 
         /// <summary>
-        /// Initializes a new property data reference.
+        /// Initializes a new instance of the <see cref="PropertyDataReference" /> class.
         /// </summary>
         /// <param name="source">
         /// A source query model reference.

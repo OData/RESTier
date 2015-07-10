@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core
         private T _expandableDomain;
 
         /// <summary>
-        /// Initializes a new domain.
+        /// Initializes a new instance of the <see cref="Domain{T}" /> class.
         /// </summary>
         public Domain()
         {

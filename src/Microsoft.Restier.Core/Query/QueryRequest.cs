@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core.Query
     public class QueryRequest
     {
         /// <summary>
-        /// Initializes a new query request with a composed query.
+        /// Initializes a new instance of the <see cref="QueryRequest" /> class with a composed query.
         /// </summary>
         /// <param name="query">
         /// A composed query that was derived from a queryable source.

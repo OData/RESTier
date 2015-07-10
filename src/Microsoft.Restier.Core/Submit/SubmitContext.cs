@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Submit
         private SubmitResult _result;
 
         /// <summary>
-        /// Initializes a new submit context.
+        /// Initializes a new instance of the <see cref="SubmitContext" /> class.
         /// </summary>
         /// <param name="domainContext">
         /// A domain context.

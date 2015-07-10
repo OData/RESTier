@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Core.Submit
     public class DataModificationEntry : ChangeSetEntry
     {
         /// <summary>
-        /// Initializes a new data modification entry.
+        /// Initializes a new instance of the <see cref="DataModificationEntry" /> class.
         /// </summary>
         /// <param name="entitySetName">
         /// The name of the entity set in question.
@@ -199,7 +199,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets a value indicating whether the entity should be fully replaced by the modification.
+        /// Gets or sets a value indicating whether the entity should be fully replaced by the modification.
         /// </summary>
         /// <remarks>
         /// If true, all properties will be updated, even if the property isn't in LocalValues.
@@ -332,7 +332,7 @@ namespace Microsoft.Restier.Core.Submit
         where T : class
     {
         /// <summary>
-        /// Initializes a new data modification entry.
+        /// Initializes a new instance of the <see cref="DataModificationEntry{T}" /> class.
         /// </summary>
         /// <param name="entitySetName">
         /// The name of the entity set in question.
@@ -384,7 +384,7 @@ namespace Microsoft.Restier.Core.Submit
     public class ActionInvocationEntry : ChangeSetEntry
     {
         /// <summary>
-        /// Initializes a new action invocation entry.
+        /// Initializes a new instance of the <see cref="ActionInvocationEntry" /> class.
         /// </summary>
         /// <param name="actionName">
         /// An action name.

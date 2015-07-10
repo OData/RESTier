@@ -66,7 +66,7 @@ namespace Microsoft.Restier.Core
             new Dictionary<Type, IList<object>>();
 
         /// <summary>
-        /// Initializes a domain configuration.
+        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
         /// </summary>
         public DomainConfiguration()
             : this(null, null)
@@ -74,7 +74,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Initializes a domain configuration.
+        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
         /// </summary>
         /// <param name="key">
         /// A domain configuration key.
@@ -85,8 +85,8 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Initializes a domain configuration that
-        /// is based on an existing configuration.
+        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class
+        /// that is based on an existing configuration.
         /// </summary>
         /// <param name="baseConfiguration">
         /// An existing domain configuration.
@@ -97,8 +97,8 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Initializes a domain configuration that
-        /// is based on an existing configuration.
+        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class
+        /// that is based on an existing configuration.
         /// </summary>
         /// <param name="key">
         /// A domain configuration key.

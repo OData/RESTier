@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Security
     public sealed class AssertAttribute : Attribute, IDomainPolicy
     {
         /// <summary>
-        /// Initializes a new assert attribute.
+        /// Initializes a new instance of the <see cref="AssertAttribute" /> class.
         /// </summary>
         /// <param name="role">
         /// The name of a role.

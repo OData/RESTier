@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core.Submit
         private List<ChangeSetEntry> entries;
 
         /// <summary>
-        /// Initializes a new change set.
+        /// Initializes a new instance of the <see cref="ChangeSet" /> class.
         /// </summary>
         public ChangeSet()
             : this(null)
@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Initializes a new change set.
+        /// Initializes a new instance of the <see cref="ChangeSet" /> class.
         /// </summary>
         /// <param name="entries">
         /// A set of change set entries.
