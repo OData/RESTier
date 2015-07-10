@@ -54,6 +54,9 @@ namespace Microsoft.Restier.Core.Query
         /// Indicates if the total number of items should be retrieved
         /// when the result has been filtered using paging operators.
         /// </param>
+        /// <returns>
+        /// The created instance of the <see cref="QueryRequest"/> class.
+        /// </returns>
         public static QueryRequest Create<TElement, TResult>(
             IQueryable<TElement> query,
             Expression<Func<IQueryable<TElement>, TResult>> singularExpression,
@@ -78,6 +81,9 @@ namespace Microsoft.Restier.Core.Query
         /// Indicates if the total number of items should be retrieved
         /// when the result has been filtered using paging operators.
         /// </param>
+        /// <returns>
+        /// The created instance of the <see cref="QueryRequest"/> class.
+        /// </returns>
         public static QueryRequest Create(
             IQueryable query,
             LambdaExpression singularExpression,

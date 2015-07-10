@@ -39,6 +39,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Returns the string that represents this validation result.
         /// </summary>
+        /// <returns>
+        /// The string that represents this validation result.
+        /// </returns>
         public override string ToString()
         {
             return this.Message;
