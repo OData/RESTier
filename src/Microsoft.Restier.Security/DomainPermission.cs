@@ -104,12 +104,12 @@ namespace Microsoft.Restier.Security
         }
 
         /// <summary>
-        /// Gets a value indicating if this domain permission grants access.
+        /// Gets a value indicating whether this domain permission grants access.
         /// </summary>
         public bool IsGrant { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating if this domain permission denies access.
+        /// Gets a value indicating whether this domain permission denies access.
         /// </summary>
         public bool IsDeny { get; private set; }
 

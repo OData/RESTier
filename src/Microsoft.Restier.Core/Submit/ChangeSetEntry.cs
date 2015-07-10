@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Core.Submit
         public ChangeSetEntryType Type { get; private set; }
 
         /// <summary>
-        /// Gets the dynamic state of this change set entry.
+        /// Gets or sets the dynamic state of this change set entry.
         /// </summary>
         public DynamicChangeSetEntityState ChangeSetEntityState { get; set; }
 
@@ -172,12 +172,12 @@ namespace Microsoft.Restier.Core.Submit
         public IReadOnlyDictionary<string, object> EntityKey { get; private set; }
 
         /// <summary>
-        /// Gets the action to be taken.
+        /// Gets or sets the action to be taken.
         /// </summary>
         public AddAction AddAction { get; set; }
 
         /// <summary>
-        /// Gets a value indicating if the modification is a new entity.
+        /// Gets a value indicating whether the modification is a new entity.
         /// </summary>
         public bool IsNew
         {
@@ -188,7 +188,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets a value indicating if the modification is updating an entity.
+        /// Gets a value indicating whether the modification is updating an entity.
         /// </summary>
         public bool IsUpdate
         {
@@ -208,7 +208,7 @@ namespace Microsoft.Restier.Core.Submit
         public bool IsFullReplaceUpdate { get; set; }
 
         /// <summary>
-        /// Gets a value indicating if the modification is deleting an entity.
+        /// Gets a value indicating whether the modification is deleting an entity.
         /// </summary>
         public bool IsDelete
         {
