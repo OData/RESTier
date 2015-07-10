@@ -4,7 +4,7 @@
     Checks for lines that are too long.
   </Description>
   <Properties>
-    <IntegerProperty Name="LineLength" DefaultValue="-1" FriendlyName="Max Line Length"
+    <IntegerProperty Name="LineLength" DefaultValue="80" FriendlyName="Max Line Length"
                     Description="The maximum line length allowed." />
   </Properties>
   <Rules>
