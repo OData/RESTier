@@ -9,12 +9,19 @@ using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.WebApi.Batch
 {
+    /// <summary>
+    /// Represents a domain <see cref="ChangeSet"/> property.
+    /// </summary>
     public class ODataDomainChangeSetProperty
     {
         private readonly ODataDomainChangeSetRequestItem changeSetRequestItem;
         private readonly TaskCompletionSource<bool> changeSetCompletedTaskSource;
         private int subRequestCount;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ODataDomainChangeSetProperty" /> class.
+        /// </summary>
+        /// <param name="changeSetRequestItem">The changeset request item.</param>
         public ODataDomainChangeSetProperty(ODataDomainChangeSetRequestItem changeSetRequestItem)
         {
             this.changeSetRequestItem = changeSetRequestItem;
@@ -22,8 +29,15 @@ namespace Microsoft.Restier.WebApi.Batch
             this.subRequestCount = this.changeSetRequestItem.Requests.Count();
         }
 
+        /// <summary>
+        /// Gets or sets the changeset.
+        /// </summary>
         public ChangeSet ChangeSet { get; set; }
 
+        /// <summary>
+        /// The callback to execute when the changeset is completed.
+        /// </summary>
+        /// <returns>The task object that represents this callback execution.</returns>
         public Task OnChangeSetCompleted()
         {
             if (Interlocked.Decrement(ref this.subRequestCount) == 0)

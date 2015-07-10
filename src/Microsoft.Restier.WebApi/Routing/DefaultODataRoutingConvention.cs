@@ -10,10 +10,17 @@ using System.Web.OData.Routing.Conventions;
 
 namespace Microsoft.Restier.WebApi.Routing
 {
+    /// <summary>
+    /// The default routing convention implementation.
+    /// </summary>
     public class DefaultODataRoutingConvention : IODataRoutingConvention
     {
         private string controllerName;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultODataRoutingConvention"/> class.
+        /// </summary>
+        /// <param name="controllerName">The name of the controller.</param>
         public DefaultODataRoutingConvention(string controllerName)
         {
             Ensure.NotNull(controllerName);
