@@ -34,7 +34,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Indicates if this change set entry is in a changed state.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// If this change set entry is in a changed state.
+        /// </returns>
         public bool HasChanged()
         {
             return this.ChangeSetEntityState == DynamicChangeSetEntityState.Changed ||
@@ -425,6 +427,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets an array of the arguments to pass to the action.
         /// </summary>
+        /// <returns>
+        /// An array of the arguments to pass to the action.
+        /// </returns>
         public object[] GetArgumentArray()
         {
             if (this.Arguments == null)
