@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Security
     public sealed class GrantAttribute : DomainParticipantAttribute
     {
         /// <summary>
-        /// Initializes a new grant attribute.
+        /// Initializes a new instance of the <see cref="GrantAttribute" /> class.
         /// </summary>
         /// <param name="permissionType">
         /// A built-in or custom permission type.

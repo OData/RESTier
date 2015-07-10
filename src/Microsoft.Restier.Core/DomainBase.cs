@@ -14,14 +14,14 @@ namespace Microsoft.Restier.Core
         private DomainContext _domainContext;
 
         /// <summary>
-        /// Initializes a new domain.
+        /// Initializes a new instance of the <see cref="DomainBase"/> class.
         /// </summary>
         protected DomainBase()
         {
         }
 
         /// <summary>
-        /// Finalizes this domain.
+        /// Finalizes an instance of the <see cref="DomainBase"/> class.
         /// </summary>
         ~DomainBase()
         {

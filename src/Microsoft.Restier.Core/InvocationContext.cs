@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Core
     public class InvocationContext : PropertyBag
     {
         /// <summary>
-        /// Initializes a new invocation context.
+        /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
         /// <param name="domainContext">
         /// A domain context.

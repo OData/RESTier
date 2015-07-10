@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core.Submit
         private ChangeSet _completedChangeSet;
 
         /// <summary>
-        /// Initializes a new submit result with an error.
+        /// Initializes a new instance of the <see cref="SubmitResult" /> class with an error.
         /// </summary>
         /// <param name="error">
         /// An error.
@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Initializes a new submit result.
+        /// Initializes a new instance of the <see cref="SubmitResult" /> class
         /// </summary>
         /// <param name="completedChangeSet">
         /// A completed change set.

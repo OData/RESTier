@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Query
         private QueryResult _result;
 
         /// <summary>
-        /// Initializes a new query context.
+        /// Initializes a new instance of the <see cref="QueryContext" /> class.
         /// </summary>
         /// <param name="domainContext">
         /// A domain context.

@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core
     public class DomainContext : PropertyBag
     {
         /// <summary>
-        /// Initializes a new domain context.
+        /// Initializes a new instance of the <see cref="DomainContext" /> class.
         /// </summary>
         /// <param name="configuration">
         /// A domain configuration.

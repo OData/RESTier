@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core
     public abstract class DomainParticipantAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new domain participant attribute.
+        /// Initializes a new instance of the <see cref="DomainParticipantAttribute" /> class.
         /// </summary>
         protected DomainParticipantAttribute()
         {
