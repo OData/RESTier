@@ -170,7 +170,7 @@ namespace Microsoft.Restier.Core
         public DomainConfiguration BaseConfiguration { get; private set; }
 
         /// <summary>
-        /// Indicates if this domain configuration has been committed.
+        /// Gets a value indicating whether this domain configuration has been committed.
         /// </summary>
         public bool IsCommitted { get; private set; }
 

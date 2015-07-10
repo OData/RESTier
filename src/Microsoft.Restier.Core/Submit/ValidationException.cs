@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets the validation results.
+        /// Gets or sets the validation results.
         /// </summary>
         public IEnumerable<ValidationResult> ValidationResults
         {

@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Conventions
            new ConventionalChangeSetEntryValidator();
 
         /// <summary>
-        /// A static instance of conventional change set entry validator.
+        /// Gets a static instance of conventional change set entry validator.
         /// </summary>
         public static ConventionalChangeSetEntryValidator Instance { get { return instance; } }
 
