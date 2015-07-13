@@ -33,6 +33,7 @@ namespace System.Linq.Expressions
             {
                 return type.GetGenericArguments()[0];
             }
+
             return enumerableType;
         }
     }

@@ -128,6 +128,7 @@ namespace Microsoft.Restier.EntityFramework
                     dbContext.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
     }

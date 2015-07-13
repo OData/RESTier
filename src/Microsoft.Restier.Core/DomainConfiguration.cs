@@ -117,6 +117,7 @@ namespace Microsoft.Restier.Core
             {
                 DomainConfiguration.s_configurations[key] = this;
             }
+
             if (DomainConfiguration.s_global == null)
             {
                 this.SetHookPoint(typeof(IModelHandler),
@@ -187,6 +188,7 @@ namespace Microsoft.Restier.Core
                 {
                     throw new InvalidOperationException();
                 }
+
                 this.IsCommitted = true;
             }
         }
@@ -227,6 +229,7 @@ namespace Microsoft.Restier.Core
             {
                 return this.BaseConfiguration.GetProperty(name);
             }
+
             return null;
         }
 
@@ -273,6 +276,7 @@ namespace Microsoft.Restier.Core
                     instance = profiler.Profile(instance);
                 }
             }
+
             return instance;
         }
 
@@ -291,6 +295,7 @@ namespace Microsoft.Restier.Core
             {
                 throw new InvalidOperationException();
             }
+
             Ensure.NotNull(hookPointType, "hookPointType");
             Ensure.NotNull(instance, "instance");
             if (!hookPointType.IsAssignableFrom(instance.GetType()))
@@ -298,6 +303,7 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             this._singletons[hookPointType] = instance;
         }
 
@@ -339,6 +345,7 @@ namespace Microsoft.Restier.Core
             {
                 profilers = this.GetHookPoints<IDomainProfiler>();
             }
+
             foreach (T instance in this.GetHookPoints(typeof(T)))
             {
                 T finalInstance = instance;
@@ -349,6 +356,7 @@ namespace Microsoft.Restier.Core
                         finalInstance = profiler.Profile(finalInstance);
                     }
                 }
+
                 yield return finalInstance;
             }
         }
@@ -368,6 +376,7 @@ namespace Microsoft.Restier.Core
             {
                 throw new InvalidOperationException();
             }
+
             Ensure.NotNull(hookPointType, "hookPointType");
             Ensure.NotNull(instance, "instance");
             if (!hookPointType.IsAssignableFrom(instance.GetType()))
@@ -375,12 +384,14 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             IList<object> instances = null;
             if (!this._multiCasts.TryGetValue(hookPointType, out instances))
             {
                 instances = new List<object>();
                 this._multiCasts.Add(hookPointType, instances);
             }
+
             instances.Add(instance);
         }
 
@@ -394,6 +405,7 @@ namespace Microsoft.Restier.Core
             {
                 instance = this.BaseConfiguration.GetHookPoint(hookPointType);
             }
+
             return instance;
         }
 
@@ -404,11 +416,13 @@ namespace Microsoft.Restier.Core
             {
                 instances = this.BaseConfiguration.GetHookPoints(hookPointType);
             }
+
             IList<object> list = null;
             if (this._multiCasts.TryGetValue(hookPointType, out list))
             {
                 instances = instances.Concat(list);
             }
+
             return instances;
         }
     }

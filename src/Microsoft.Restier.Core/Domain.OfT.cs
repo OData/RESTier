@@ -79,6 +79,7 @@ namespace Microsoft.Restier.Core
                     disposable.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
 
@@ -90,6 +91,7 @@ namespace Microsoft.Restier.Core
                 {
                     this._expandableDomain = this.CreateExpandableDomain();
                 }
+
                 return this._expandableDomain;
             }
         }

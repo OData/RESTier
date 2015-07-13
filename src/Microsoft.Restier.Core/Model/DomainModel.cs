@@ -67,6 +67,7 @@ namespace Microsoft.Restier.Core.Model
                         element = this.GetDomainEntityContainer(
                             entityContainer);
                     }
+
                     return element;
                 }).Where(element => this.IsSchemaElementVisible(element));
             }
@@ -83,6 +84,7 @@ namespace Microsoft.Restier.Core.Model
                 {
                     entityContainer = null;
                 }
+
                 return entityContainer;
             }
         }
@@ -103,6 +105,7 @@ namespace Microsoft.Restier.Core.Model
             {
                 type = null;
             }
+
             return type;
         }
 
@@ -141,6 +144,7 @@ namespace Microsoft.Restier.Core.Model
             {
                 term = null;
             }
+
             return term;
         }
 
@@ -163,6 +167,7 @@ namespace Microsoft.Restier.Core.Model
             {
                 return entityContainer.Elements.Any();
             }
+
             return this.Configuration
                 .GetHookPoints<IModelVisibilityFilter>().Reverse()
                 .All(filter => filter.IsVisible(this.Configuration,
@@ -177,12 +182,14 @@ namespace Microsoft.Restier.Core.Model
             {
                 return this.IsSchemaElementVisible(schemaElement);
             }
+
             var entityContainerElement = element as IEdmEntityContainerElement;
             if (entityContainerElement != null)
             {
                 return entityContainerElement.Container
                     .Elements.Contains(entityContainerElement);
             }
+
             return true;
         }
 
@@ -239,6 +246,7 @@ namespace Microsoft.Restier.Core.Model
             {
                 entitySet = null;
             }
+
             return entitySet;
         }
 
@@ -249,6 +257,7 @@ namespace Microsoft.Restier.Core.Model
             {
                 singleton = null;
             }
+
             return singleton;
         }
 

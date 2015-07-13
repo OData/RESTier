@@ -92,6 +92,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     throw new InvalidOperationException();
                 }
+
                 this._resultsSource = value;
             }
         }
@@ -140,6 +141,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     throw new InvalidOperationException();
                 }
+
                 Ensure.NotNull(value, "value");
                 this._totalCount = value;
             }

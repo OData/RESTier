@@ -59,6 +59,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 throw new NotSupportedException();
             }
+
             var queryType = expression.Type
                 .FindGenericType(typeof(IQueryable<>));
             if (queryType != null)
@@ -82,10 +83,12 @@ namespace Microsoft.Restier.Core.Query
                 }) as Task<QueryResult>;
                 result = await task;
             }
+
             if (result != null)
             {
                 result.ResultsSource = visitor.EntitySet;
             }
+
             context.Result = result;
 
             // STEP 4: post-filter
@@ -206,9 +209,11 @@ namespace Microsoft.Restier.Core.Query
                             // TODO GitHubIssue#24 : error message
                             throw new InvalidOperationException();
                         }
+
                         return normalized;
                     }
                 }
+
                 return visited;
             }
 
@@ -241,6 +246,7 @@ namespace Microsoft.Restier.Core.Query
                             // TODO GitHubIssue#24 : error message
                             throw new InvalidOperationException();
                         }
+
                         this._context.PushVisitedNode(null);
                         expanded = this.Visit(expanded);
                         this._context.PopVisitedNode();
@@ -248,9 +254,11 @@ namespace Microsoft.Restier.Core.Query
                         {
                             callback();
                         }
+
                         return expanded;
                     }
                 }
+
                 return visited;
             }
 
@@ -272,6 +280,7 @@ namespace Microsoft.Restier.Core.Query
                             // TODO GitHubIssue#24 : error message
                             throw new InvalidOperationException();
                         }
+
                         this._processed.Add(visited, processed);
                         this._context.PushVisitedNode(null);
                         try
@@ -283,12 +292,14 @@ namespace Microsoft.Restier.Core.Query
                             this._context.PopVisitedNode();
                             this._processed.Remove(visited);
                         }
+
                         if (callback != null)
                         {
                             callback();
                         }
                     }
                 }
+
                 return processed;
             }
 
@@ -302,12 +313,14 @@ namespace Microsoft.Restier.Core.Query
                     // Missing sourcer
                     throw new NotSupportedException();
                 }
+
                 node = sourcer.Source(this._context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression
                     throw new NotSupportedException();
                 }
+
                 if (this.BaseQuery == null)
                 {
                     // The very first time the sourcer is used, the
@@ -319,13 +332,16 @@ namespace Microsoft.Restier.Core.Query
                     {
                         throw new NotSupportedException();
                     }
+
                     this.BaseQuery = constant.Value as IQueryable;
                     if (this.BaseQuery == null)
                     {
                         throw new NotSupportedException();
                     }
+
                     node = this.BaseQuery.Expression;
                 }
+
                 return node;
             }
         }

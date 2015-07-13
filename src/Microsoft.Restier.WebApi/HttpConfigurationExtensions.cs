@@ -150,6 +150,7 @@ namespace Microsoft.Restier.WebApi
                 // Remove the last trailing slash if it has one.
                 routePrefix = routePrefix.Substring(0, routePrefix.Length - 1);
             }
+
             return routePrefix;
         }
     }

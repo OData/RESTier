@@ -43,6 +43,7 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             return new QueryableSource<TElement>(expression);
         }
 
@@ -55,6 +56,7 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             type = typeof(QueryableSource<>).MakeGenericType(
                 type.GetGenericArguments()[0]);
             return Activator.CreateInstance(type,

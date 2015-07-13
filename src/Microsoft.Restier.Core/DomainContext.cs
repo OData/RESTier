@@ -29,6 +29,7 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             this.Configuration = configuration;
         }
 

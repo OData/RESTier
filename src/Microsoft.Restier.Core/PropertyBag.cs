@@ -50,6 +50,7 @@ namespace Microsoft.Restier.Core
             {
                 value = default(T);
             }
+
             return (T)value;
         }
 

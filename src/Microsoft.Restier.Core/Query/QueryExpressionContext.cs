@@ -48,6 +48,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return null;
                 }
+
                 return this._visitedNodes.Peek();
             }
         }
@@ -122,6 +123,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 this._modelReferences.TryGetValue(node, out modelReference);
             }
+
             return modelReference;
         }
 
@@ -220,6 +222,7 @@ namespace Microsoft.Restier.Core.Query
                 namespaceName = methodCall.Arguments[
                     argumentIndex++] as ConstantExpression;
             }
+
             name = methodCall.Arguments[argumentIndex++] as ConstantExpression;
             if ((argumentIndex == 1 || namespaceName != null) && name != null)
             {
@@ -240,6 +243,7 @@ namespace Microsoft.Restier.Core.Query
                     }
                 }
             }
+
             return modelReference;
         }
 

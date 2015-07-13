@@ -40,6 +40,7 @@ namespace Microsoft.Restier.Security
                 assertedRoles = new List<string>();
                 context.SetProperty(AssertedRoles, assertedRoles);
             }
+
             assertedRoles.Add(role);
         }
 

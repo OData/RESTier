@@ -40,6 +40,7 @@ namespace Microsoft.Restier.Core.Model
                 context.Model = await producer.ProduceModelAsync(
                     context, cancellationToken);
             }
+
             if (context.Model == null)
             {
                 context.Model = new EdmModel();

@@ -66,6 +66,7 @@ namespace Microsoft.Restier.Security
                 permissions = new List<DomainPermission>();
                 configuration.SetProperty(Permissions, permissions);
             }
+
             permissions.Add(permission);
         }
     }

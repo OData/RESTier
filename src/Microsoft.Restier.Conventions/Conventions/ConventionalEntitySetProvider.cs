@@ -63,8 +63,10 @@ namespace Microsoft.Restier.Conventions
                     // TODO GitHubIssue#33 : Add new entity type representing entity shape
                     continue;
                 }
+
                 container.AddEntitySet(entitySetProperty.Name, entityType);
             }
+
             return Task.FromResult<object>(null);
         }
 
@@ -81,6 +83,7 @@ namespace Microsoft.Restier.Conventions
                 relevantType = entitySetProperty
                     .PropertyType.GetGenericArguments()[0];
             }
+
             return relevantType != null;
         }
 
@@ -102,16 +105,19 @@ namespace Microsoft.Restier.Conventions
             {
                 return null;
             }
+
             var domainDataReference = context.ModelReference as DomainDataReference;
             if (domainDataReference == null)
             {
                 return null;
             }
+
             var entitySet = domainDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;
             }
+
             var entitySetProperty = this.AddedEntitySets
                 .SingleOrDefault(p => p.Name == entitySet.Name);
             if (entitySetProperty != null)
@@ -127,6 +133,7 @@ namespace Microsoft.Restier.Conventions
                         return null;
                     }
                 }
+
                 var result = entitySetProperty.GetValue(target) as IQueryable;
                 if (result != null)
                 {
@@ -136,6 +143,7 @@ namespace Microsoft.Restier.Conventions
                     {
                         policy.Activate(context.QueryContext);
                     }
+
                     context.AfterNestedVisitCallback = () =>
                     {
                         foreach (var policy in policies.Reverse())
@@ -143,9 +151,11 @@ namespace Microsoft.Restier.Conventions
                             policy.Deactivate(context.QueryContext);
                         }
                     };
+
                     return result.Expression;
                 }
             }
+
             return null;
         }
 

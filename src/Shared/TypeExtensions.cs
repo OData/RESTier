@@ -14,6 +14,7 @@ namespace System
                 {
                     return type;
                 }
+
                 if (definition.IsInterface)
                 {
                     foreach (var interfaceType in type.GetInterfaces())
@@ -25,8 +26,10 @@ namespace System
                         }
                     }
                 }
+
                 type = type.BaseType;
             }
+
             return null;
         }
     }

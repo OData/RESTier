@@ -95,6 +95,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 {
                     continue;
                 }
+
                 List<EdmStructuralProperty> concurrencyProperties;
                 var entityType = CreateEntityType(efModel, efEntityType, model, elementMap, out concurrencyProperties);
                 model.AddElement(entityType);
@@ -162,6 +163,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     }
                 }
             }
+
             entityType.AddKeys(efEntityType.KeyProperties
                 .Select(p => entityType.FindProperty(p.Name))
                 .Cast<IEdmStructuralProperty>());
@@ -236,6 +238,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 // TODO GitHubIssue#103 : Choose property error message for unknown type
                 return null;
             }
+
             switch (kind)
             {
                 default:
@@ -304,6 +307,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 return;
             }
+
             var efAssociation = efAssociationSet.ElementType;
             var navPropertyInfos = new EdmNavigationPropertyInfo[2];
             for (var i = 0; i < 2; i++)
@@ -314,6 +318,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 {
                     continue;
                 }
+
                 var entityType = elementMap[efEntityType] as IEdmEntityType;
                 var efNavProperty = efEntityType.NavigationProperties
                     .Where(np => np.FromEndMember == efEnd)
@@ -322,12 +327,14 @@ namespace Microsoft.Restier.EntityFramework.Model
                 {
                     continue;
                 }
+
                 var efTargetEntityType = efNavProperty
                     .ToEndMember.GetEntityType();
                 if (!elementMap.ContainsKey(efTargetEntityType))
                 {
                     continue;
                 }
+
                 var targetEntityType = elementMap[
                     efTargetEntityType] as IEdmEntityType;
                 navPropertyInfos[i] = new EdmNavigationPropertyInfo()
@@ -340,6 +347,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     TargetMultiplicity = GetEdmMultiplicity(
                         efNavProperty.ToEndMember.RelationshipMultiplicity)
                 };
+
                 var constraint = efAssociation.Constraint;
                 if (constraint != null && constraint.ToRole == efEnd)
                 {
@@ -349,6 +357,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                         .Select(p => targetEntityType.FindProperty(p.Name) as IEdmStructuralProperty);
                 }
             }
+
             if (navPropertyInfos[0] == null && navPropertyInfos[1] != null)
             {
                 var efEnd = efAssociation.AssociationEndMembers[1];
@@ -359,6 +368,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     entityType.AddUnidirectionalNavigation(navPropertyInfos[1]);
                 }
             }
+
             if (navPropertyInfos[0] != null && navPropertyInfos[1] == null)
             {
                 var efEnd = efAssociation.AssociationEndMembers[0];
@@ -369,6 +379,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     entityType.AddUnidirectionalNavigation(navPropertyInfos[0]);
                 }
             }
+
             if (navPropertyInfos[0] != null && navPropertyInfos[1] != null)
             {
                 var efEnd = efAssociation.AssociationEndMembers[0];
@@ -390,6 +401,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 return;
             }
+
             for (var i = 0; i < 2; i++)
             {
                 var efSetEnd = efAssociationSet.AssociationSetEnds[i];
@@ -399,6 +411,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 {
                     continue;
                 }
+
                 var entityType = elementMap[efEntityType] as IEdmEntityType;
                 var efNavProperty = efEntityType.NavigationProperties
                     .Where(np => np.FromEndMember == efEnd)
@@ -407,12 +420,14 @@ namespace Microsoft.Restier.EntityFramework.Model
                 {
                     continue;
                 }
+
                 var navProperty = entityType.FindProperty(
                     efNavProperty.Name) as IEdmNavigationProperty;
                 if (navProperty == null)
                 {
                     continue;
                 }
+
                 var entitySet = elementMap[efSetEnd.EntitySet] as EdmEntitySet;
                 var efTargetSetEnd = efAssociationSet.AssociationSetEnds
                     .Single(e => e.Name == efNavProperty.ToEndMember.Name);

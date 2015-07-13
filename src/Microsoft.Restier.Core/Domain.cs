@@ -74,6 +74,7 @@ namespace Microsoft.Restier.Core
                 configuration.Model = new DomainModel(configuration, result);
                 model = configuration.Model;
             }
+
             return model;
         }
 
@@ -330,6 +331,7 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             return Domain.SourceCore<TElement>(null, name, arguments);
         }
 
@@ -422,6 +424,7 @@ namespace Microsoft.Restier.Core
                 // TODO GitHubIssue#24 : error message
                 throw new ArgumentException();
             }
+
             return Domain.SourceCore<TElement>(namespaceName, name, arguments);
         }
 
@@ -444,11 +447,13 @@ namespace Microsoft.Restier.Core
                     hasElementType = mapper.TryGetRelevantType(
                         context, namespaceName, name, out elementType);
                 }
+
                 if (hasElementType)
                 {
                     break;
                 }
             }
+
             if (!hasElementType)
             {
                 var mapper = context.Configuration.GetHookPoint<IModelMapper>();
@@ -466,11 +471,13 @@ namespace Microsoft.Restier.Core
                     }
                 }
             }
+
             if (elementType == null)
             {
                 // TODO GitHubIssue#24 : error message
                 throw new NotSupportedException();
             }
+
             return elementType;
         }
 
@@ -497,6 +504,7 @@ namespace Microsoft.Restier.Core
                     Expression.Constant(arguments, typeof(object[]))
                 };
             }
+
             return new QueryableSource<TElement>(
                 Expression.Call(
                     null,
@@ -587,6 +595,7 @@ namespace Microsoft.Restier.Core
             {
                 return first;
             }
+
             return default(TResult);
         }
 
@@ -697,6 +706,7 @@ namespace Microsoft.Restier.Core
             {
                 throw new InvalidOperationException();
             }
+
             var submitContext = new SubmitContext(context, changeSet);
             context.IsSubmitting = true;
             try

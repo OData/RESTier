@@ -39,6 +39,7 @@ namespace Microsoft.Restier.Core
                 DomainParticipantAttribute.ApplyDisposal(
                     this.GetType(), this, this._domainContext);
             }
+
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -51,6 +52,7 @@ namespace Microsoft.Restier.Core
                 {
                     throw new ObjectDisposedException(this.GetType().FullName);
                 }
+
                 return this.DomainConfiguration;
             }
         }
@@ -63,6 +65,7 @@ namespace Microsoft.Restier.Core
                 {
                     throw new ObjectDisposedException(this.GetType().FullName);
                 }
+
                 return this.HasDomainContext;
             }
         }
@@ -75,6 +78,7 @@ namespace Microsoft.Restier.Core
                 {
                     throw new ObjectDisposedException(this.GetType().FullName);
                 }
+
                 return this.DomainContext;
             }
         }
@@ -86,10 +90,12 @@ namespace Microsoft.Restier.Core
             {
                 throw new ObjectDisposedException(this.GetType().FullName);
             }
+
             if (this._domainContext != null)
             {
                 throw new InvalidOperationException();
             }
+
             Ensure.NotNull(derivedConfiguration, "derivedConfiguration");
             var baseConfiguration = this.DomainConfiguration;
             var candidate = derivedConfiguration;
@@ -100,8 +106,10 @@ namespace Microsoft.Restier.Core
                     // TODO GitHubIssue#24 : error message
                     throw new ArgumentException();
                 }
+
                 candidate = candidate.BaseConfiguration;
             }
+
             this._domainConfiguration = derivedConfiguration;
             this._domainContext = this.CreateDomainContext(derivedConfiguration);
             DomainParticipantAttribute.ApplyInitialization(
@@ -140,15 +148,18 @@ namespace Microsoft.Restier.Core
                     {
                         configuration = DomainConfiguration.FromKey(key);
                     }
+
                     if (configuration == null)
                     {
                         configuration = this.CreateDomainConfiguration();
                         DomainParticipantAttribute.ApplyConfiguration(
                             this.GetType(), configuration);
                     }
+
                     configuration.EnsureCommitted();
                     this._domainConfiguration = configuration;
                 }
+
                 return this._domainConfiguration;
             }
         }
@@ -179,6 +190,7 @@ namespace Microsoft.Restier.Core
                     DomainParticipantAttribute.ApplyInitialization(
                         this.GetType(), this, this._domainContext);
                 }
+
                 return this._domainContext;
             }
         }

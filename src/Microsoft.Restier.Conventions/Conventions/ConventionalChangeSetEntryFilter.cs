@@ -118,6 +118,7 @@ namespace Microsoft.Restier.Conventions
                     {
                         operationName = "Delet";
                     }
+
                     return "On" + operationName + suffix + dataModification.EntitySetName;
 
                 case ChangeSetEntryType.ActionInvocation:

@@ -41,6 +41,7 @@ namespace Microsoft.Restier.Core
                 DomainParticipantAttribute.ApplyConfiguration(
                     type.BaseType, configuration);
             }
+
             var attributes = type.GetCustomAttributes(
                 typeof(DomainParticipantAttribute), false);
             foreach (DomainParticipantAttribute attribute in attributes)
@@ -72,6 +73,7 @@ namespace Microsoft.Restier.Core
                 DomainParticipantAttribute.ApplyInitialization(
                     type.BaseType, instance, context);
             }
+
             var attributes = type.GetCustomAttributes(
                 typeof(DomainParticipantAttribute), false);
             foreach (DomainParticipantAttribute attribute in attributes)
@@ -104,6 +106,7 @@ namespace Microsoft.Restier.Core
             {
                 attribute.Dispose(context, type, instance);
             }
+
             if (type.BaseType != null)
             {
                 DomainParticipantAttribute.ApplyDisposal(

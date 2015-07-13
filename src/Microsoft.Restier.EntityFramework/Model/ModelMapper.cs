@@ -66,6 +66,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     relevantType = type.GetGenericArguments()[0];
                 }
             }
+
             return relevantType != null;
         }
 

@@ -47,6 +47,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 throw new NotSupportedException();
             }
+
             await preparer.PrepareAsync(context, cancellationToken);
 
             // authorize
@@ -61,11 +62,13 @@ namespace Microsoft.Restier.Core.Submit
                     break;
                 }
             }
+
             if (!authorized)
             {
                 // TODO GitHubIssue#32 : Figure out a more appropriate exception
                 throw new SecurityException();
             }
+
             if (context.Result != null)
             {
                 return context.Result;
@@ -279,6 +282,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 throw new NotSupportedException();
             }
+
             context.Result = await executor.ExecuteSubmitAsync(context, cancellationToken);
         }
 

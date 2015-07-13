@@ -45,6 +45,7 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     this.entries = new List<ChangeSetEntry>();
                 }
+
                 return this.entries;
             }
         }

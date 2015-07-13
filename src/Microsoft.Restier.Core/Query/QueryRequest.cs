@@ -29,6 +29,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 throw new NotSupportedException();
             }
+
             this.Expression = query.Expression;
             this.IncludeTotalCount = includeTotalCount;
         }
@@ -118,6 +119,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return this._query.Expression;
                 }
+
                 return base.VisitParameter(node);
             }
         }

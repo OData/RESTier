@@ -63,6 +63,7 @@ namespace Microsoft.Restier.EntityFramework.Query
                 var countQuery = QueryExecutor.StripPagingOperators(query);
                 totalCount = await countQuery.LongCountAsync(cancellationToken);
             }
+
             return new QueryResult(
                 await query.ToArrayAsync(cancellationToken),
                 totalCount);
@@ -116,6 +117,7 @@ namespace Microsoft.Restier.EntityFramework.Query
             {
                 query = query.Provider.CreateQuery<TElement>(expression);
             }
+
             return query;
         }
 
@@ -129,6 +131,7 @@ namespace Microsoft.Restier.EntityFramework.Query
             {
                 expression = methodCall.Arguments[0];
             }
+
             return expression;
         }
     }

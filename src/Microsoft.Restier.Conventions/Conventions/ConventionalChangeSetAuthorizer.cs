@@ -68,6 +68,7 @@ namespace Microsoft.Restier.Conventions
                         return Task.FromResult(result);
                     }
                 }
+
                 var parameters = method.GetParameters();
                 if (parameters.Length == 0)
                 {
@@ -97,6 +98,7 @@ namespace Microsoft.Restier.Conventions
                     {
                         operationName = "Delete";
                     }
+
                     return "Can" + operationName + dataModification.EntitySetName;
 
                 case ChangeSetEntryType.ActionInvocation:

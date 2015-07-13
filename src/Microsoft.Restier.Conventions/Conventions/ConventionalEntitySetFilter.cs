@@ -42,16 +42,19 @@ namespace Microsoft.Restier.Conventions
             {
                 return null;
             }
+
             var domainDataReference = context.ModelReference as DomainDataReference;
             if (domainDataReference == null)
             {
                 return null;
             }
+
             var entitySet = domainDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;
             }
+
             var returnType = context.VisitedNode.Type
                 .FindGenericType(typeof(IQueryable<>));
             var elementType = returnType.GetGenericArguments()[0];
@@ -76,6 +79,7 @@ namespace Microsoft.Restier.Conventions
                         return null;
                     }
                 }
+
                 var parameters = method.GetParameters();
                 if (parameters.Length == 1 &&
                     parameters[0].ParameterType == returnType)
@@ -92,6 +96,7 @@ namespace Microsoft.Restier.Conventions
                     }
                 }
             }
+
             return null;
         }
     }

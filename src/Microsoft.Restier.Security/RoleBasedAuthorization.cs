@@ -64,6 +64,7 @@ namespace Microsoft.Restier.Security
             {
                 return true;
             }
+
             return this.IsVisible(configuration,
                 context, element.Namespace, element.Name);
         }
@@ -115,16 +116,19 @@ namespace Microsoft.Restier.Security
             {
                 return true;
             }
+
             var domainDataReference = context.ModelReference as DomainDataReference;
             if (domainDataReference == null)
             {
                 return true;
             }
+
             var entitySet = domainDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return true;
             }
+
             var assertedRoles = context.QueryContext
                 .GetProperty<List<string>>(AssertedRoles);
             var permissions = context.QueryContext.DomainContext.Configuration
@@ -133,6 +137,7 @@ namespace Microsoft.Restier.Security
             {
                 throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
+
             permissions = permissions.Where(p => (
                 p.PermissionType == DomainPermissionType.All ||
                 p.PermissionType == DomainPermissionType.Read) && (
@@ -144,6 +149,7 @@ namespace Microsoft.Restier.Security
             {
                 throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
+
             return true;
         }
 
@@ -174,12 +180,14 @@ namespace Microsoft.Restier.Security
                 assertedRoles = context.GetProperty<
                     List<string>>(AssertedRoles);
             }
+
             var permissions = configuration.GetProperty<
                 IEnumerable<DomainPermission>>(Permissions);
             if (permissions == null)
             {
                 return false;
             }
+
             permissions = permissions.Where(p => (
                 p.PermissionType == DomainPermissionType.All ||
                 p.PermissionType == DomainPermissionType.Inspect) && (
@@ -191,6 +199,7 @@ namespace Microsoft.Restier.Security
             {
                 return false;
             }
+
             return true;
         }
     }

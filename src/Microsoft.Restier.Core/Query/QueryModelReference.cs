@@ -108,6 +108,7 @@ namespace Microsoft.Restier.Core.Query
                     {
                         return source.Type;
                     }
+
                     var function = this.Element as IEdmFunctionImport;
                     if (function != null)
                     {
@@ -122,6 +123,7 @@ namespace Microsoft.Restier.Core.Query
                         return function.ReturnType.Definition;
                     }
                 }
+
                 return null;
             }
         }
@@ -222,6 +224,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return collectionType.ElementType.Definition;
                 }
+
                 return null;
             }
         }
@@ -261,6 +264,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return this.Property.Type.Definition;
                 }
+
                 return null;
             }
         }
@@ -277,6 +281,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     return structuredType.FindProperty(this._propertyName);
                 }
+
                 return null;
             }
         }

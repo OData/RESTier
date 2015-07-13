@@ -73,6 +73,7 @@ namespace Microsoft.Restier.WebApi.Batch
                     {
                         changeSetRequest.CopyBatchRequestProperties(request);
                     }
+
                     requests.Add(this.CreateChangeSetRequestItem(changeSetRequests));
                 }
                 else if (batchReader.State == ODataBatchReaderState.Operation)

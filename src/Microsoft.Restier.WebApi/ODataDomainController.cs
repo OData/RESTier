@@ -60,6 +60,7 @@ namespace Microsoft.Restier.WebApi
                 {
                     this._domain = this.CreateDomain();
                 }
+
                 return this._domain;
             }
         }
@@ -84,6 +85,7 @@ namespace Microsoft.Restier.WebApi
                     this._domain = null;
                 }
             }
+
             base.Dispose(disposing);
         }
     }
@@ -390,7 +392,6 @@ namespace Microsoft.Restier.WebApi
                 changeSet.Entries.Add(postEntry);
 
                 SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
-
             }
             else
             {
@@ -521,6 +522,7 @@ namespace Microsoft.Restier.WebApi
             {
                 throw new NotSupportedException();
             }
+
             ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);
 
             ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
@@ -635,6 +637,7 @@ namespace Microsoft.Restier.WebApi
                     propertyValues.Add(propertyName, value);
                 }
             }
+
             return propertyValues;
         }
     }

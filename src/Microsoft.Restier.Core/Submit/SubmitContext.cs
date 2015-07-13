@@ -53,6 +53,7 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     throw new InvalidOperationException();
                 }
+
                 this._changeSet = value;
             }
         }
