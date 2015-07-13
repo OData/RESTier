@@ -63,7 +63,6 @@ namespace Microsoft.OData.StyleCop
                             csharpDocument.RootElement,
                             lineNumber,
                             TrailingWhiteSpacesRuleName);
-                        continue;
                     }
 
                     if (checkLeadingTabs)
