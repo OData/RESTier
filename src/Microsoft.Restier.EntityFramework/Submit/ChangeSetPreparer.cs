@@ -118,7 +118,23 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
                 {
                     DbPropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
-                    propertyEntry.CurrentValue = propertyPair.Value;
+                    object value = propertyPair.Value;
+
+                    if (propertyEntry is DbComplexPropertyEntry)
+                    {
+                        var dic = value as IReadOnlyDictionary<string, object>;
+                        if (dic == null)
+                        {
+                            // TODO GitHubIssue#103 : Choose property error message for unknown type
+                            throw new Exception("Unsupported type for property:" + propertyPair.Key);
+                        }
+
+                        var type = propertyEntry.CurrentValue.GetType();
+                        value = Activator.CreateInstance(type);
+                        SetValues(value, type, dic);
+                    }
+
+                    propertyEntry.CurrentValue = value;
                 }
             }
         }
@@ -127,8 +143,22 @@ namespace Microsoft.Restier.EntityFramework.Submit
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
+                object value = propertyPair.Value;
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
-                propertyInfo.SetValue(instance, propertyPair.Value);
+                if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
+                {
+                    var dic = value as IReadOnlyDictionary<string, object>;
+                    if (dic == null)
+                    {
+                        // TODO GitHubIssue#103 : Choose property error message for unknown type
+                        throw new Exception("Unsupported type for property:" + propertyPair.Key);
+                    }
+
+                    value = Activator.CreateInstance(propertyInfo.PropertyType);
+                    SetValues(value, propertyInfo.PropertyType, dic);
+                }
+
+                propertyInfo.SetValue(instance, value);
             }
         }
     }

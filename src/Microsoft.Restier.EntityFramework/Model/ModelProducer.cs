@@ -16,6 +16,7 @@ using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.EntityFramework.Properties;
 using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
 using EdmProperty = System.Data.Entity.Core.Metadata.Edm.EdmProperty;
 
@@ -82,10 +83,8 @@ namespace Microsoft.Restier.EntityFramework.Model
                 namespaceName = dbContext.GetType().Namespace ?? dbContext.GetType().Name;
             }
 
-            var efEntityContainer = efModel.GetItems<
-                EntityContainer>(DataSpace.CSpace).Single();
-            var entityContainer = new EdmEntityContainer(
-                namespaceName, efEntityContainer.Name);
+            var efEntityContainer = efModel.GetItems<EntityContainer>(DataSpace.CSpace).Single();
+            var entityContainer = new EdmEntityContainer(namespaceName, efEntityContainer.Name);
             elementMap.Add(efEntityContainer, entityContainer);
 
             // TODO GitHubIssue#36 : support complex and enumeration types
@@ -97,12 +96,10 @@ namespace Microsoft.Restier.EntityFramework.Model
                     continue;
                 }
                 List<EdmStructuralProperty> concurrencyProperties;
-                var entityType = CreateEntityType(
-                    efModel, efEntityType, model, out concurrencyProperties);
+                var entityType = CreateEntityType(efModel, efEntityType, model, elementMap, out concurrencyProperties);
                 model.AddElement(entityType);
                 elementMap.Add(efEntityType, entityType);
-                var entitySet = entityContainer.AddEntitySet(
-                    efEntitySet.Name, entityType);
+                var entitySet = entityContainer.AddEntitySet(efEntitySet.Name, entityType);
                 if (concurrencyProperties != null)
                 {
                     model.SetOptimisticConcurrencyAnnotation(entitySet, concurrencyProperties);
@@ -124,17 +121,19 @@ namespace Microsoft.Restier.EntityFramework.Model
         }
 
         private static IEdmEntityType CreateEntityType(
-            MetadataWorkspace efModel, EntityType efEntityType,
-            EdmModel model, out List<EdmStructuralProperty> concurrencyProperties)
+            MetadataWorkspace efModel,
+            EntityType efEntityType,
+            EdmModel model,
+            IDictionary<MetadataItem, IEdmElement> elementMap,
+            out List<EdmStructuralProperty> concurrencyProperties)
         {
             // TODO GitHubIssue#36 : support complex and entity inheritance
             var oType = efModel.GetObjectSpaceType(efEntityType) as EntityType;
-            var entityType = new EdmEntityType(
-                oType.NamespaceName, oType.Name);
+            var entityType = new EdmEntityType(oType.NamespaceName, oType.Name);
             concurrencyProperties = null;
             foreach (var efProperty in efEntityType.Properties)
             {
-                var type = GetPrimitiveTypeReference(efProperty);
+                var type = GetTypeReference(efProperty, model, elementMap);
                 if (type != null)
                 {
                     string defaultValue = null;
@@ -178,13 +177,63 @@ namespace Microsoft.Restier.EntityFramework.Model
             model.SetVocabularyAnnotation(annotation);
         }
 
-        private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(
-            EdmProperty efProperty)
+        private static IEdmTypeReference GetTypeReference(
+            EdmProperty efProperty,
+            EdmModel model,
+            IDictionary<MetadataItem, IEdmElement> elementMap)
+        {
+            if (efProperty.IsPrimitiveType)
+            {
+                return GetPrimitiveTypeReference(efProperty);
+            }
+            else if (efProperty.IsComplexType)
+            {
+                return GetComplexTypeReference(efProperty, model, elementMap);
+            }
+
+            // TODO GitHubIssue#103 : Choose property error message for unknown type
+            return null;
+        }
+
+        private static IEdmComplexTypeReference GetComplexTypeReference(
+            EdmProperty efProperty,
+            EdmModel model,
+            IDictionary<MetadataItem, IEdmElement> elementMap)
+        {
+            var efComplexType = efProperty.ComplexType;
+            EdmComplexType complexType;
+            IEdmElement element;
+
+            if (elementMap.TryGetValue(efComplexType, out element))
+            {
+                complexType = (EdmComplexType)element;
+            }
+            else
+            {
+                complexType = new EdmComplexType(efComplexType.NamespaceName, efComplexType.Name);
+                elementMap.Add(efComplexType, complexType);
+                model.AddElement(complexType);
+
+                foreach (var property in efComplexType.Properties)
+                {
+                    var propertyTypeRef = GetTypeReference(property, model, elementMap);
+                    if (propertyTypeRef != null)
+                    {
+                        complexType.AddStructuralProperty(property.Name, propertyTypeRef);
+                    }
+                }
+            }
+
+            return new EdmComplexTypeReference(complexType, efProperty.Nullable);
+        }
+
+        private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(EdmProperty efProperty)
         {
             var kind = EdmPrimitiveTypeKind.None;
             var efKind = efProperty.PrimitiveType.PrimitiveTypeKind;
             if (!s_primitiveTypeKindMap.TryGetValue(efKind, out kind))
             {
+                // TODO GitHubIssue#103 : Choose property error message for unknown type
                 return null;
             }
             switch (kind)

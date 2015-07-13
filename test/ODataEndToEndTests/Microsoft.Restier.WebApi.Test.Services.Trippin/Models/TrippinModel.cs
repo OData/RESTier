@@ -31,6 +31,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         public DbSet<Airline> Airlines { get; set; }
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Trip> Trips { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         private static TrippinModel instance;
         public static TrippinModel Instance

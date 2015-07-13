@@ -35,13 +35,15 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Airline airline = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             Airline airline1 = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             Flight flight = new Flight()
@@ -126,7 +128,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Airline airline = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             Flight flight = new Flight()

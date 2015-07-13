@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
+using Microsoft.OData.Edm.Csdl;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
@@ -111,6 +112,71 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var persons = this.TestClientContext.People
                 .AddQueryOption("$filter", string.Format("PersonId eq {0}", personId)).ToList();
             Assert.Equal(0, persons.Count);
+        }
+
+        [Fact]
+        public void CURDEntityWithComplexType()
+        {
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
+
+            // Post an entity
+            var entry = new Event
+            {
+                Description = "event1",
+                OccursAt = new Location { Address = "address1" }
+            };
+
+            this.TestClientContext.AddToEvents(entry);
+            this.TestClientContext.SaveChanges();
+            int eventId = entry.Id;
+            this.TestClientContext.Detach(entry);
+
+            // Query this entity
+            entry =
+                this.TestClientContext.Events.ByKey(new Dictionary<string, object> { { "Id", eventId } }).GetValue();
+            Assert.Equal("event1", entry.Description);
+            Assert.Equal("address1", entry.OccursAt.Address);
+            this.TestClientContext.Detach(entry);
+
+            // PUT this entity
+            entry = new Event
+            {
+                Id = eventId,
+                Description = "event2",
+                OccursAt = new Location { Address = "address2" }
+            };
+            this.TestClientContext.AttachTo("Events", entry);
+            this.TestClientContext.UpdateObject(entry);
+            this.TestClientContext.SaveChanges(SaveChangesOptions.ReplaceOnUpdate);
+            this.TestClientContext.Detach(entry);
+
+            // Query this entity
+            entry =
+                this.TestClientContext.Events.ByKey(new Dictionary<string, object> { { "Id", eventId } }).GetValue();
+            Assert.Equal("event2", entry.Description);
+            Assert.Equal("address2", entry.OccursAt.Address);
+
+            // Update an entity
+            entry.OccursAt.Address = "address3";
+            this.TestClientContext.UpdateObject(entry);
+            this.TestClientContext.SaveChanges();
+            this.TestClientContext.Detach(entry);
+
+            // Query this entity
+            entry =
+                this.TestClientContext.Events.ByKey(new Dictionary<string, object> { { "Id", eventId } }).GetValue();
+            Assert.Equal("event2", entry.Description);
+            Assert.Equal("address3", entry.OccursAt.Address);
+
+            // Delete an entity
+            var count = this.TestClientContext.Events
+                .AddQueryOption("$filter", string.Format("Id eq {0}", eventId)).ToList().Count;
+            Assert.Equal(1, count);
+            this.TestClientContext.DeleteObject(entry);
+            this.TestClientContext.SaveChanges();
+            count = this.TestClientContext.Events
+                .AddQueryOption("$filter", string.Format("Id eq {0}", eventId)).ToList().Count;
+            Assert.Equal(0, count);
         }
 
         [Fact]
@@ -326,7 +392,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Airline airline = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             this.TestClientContext.AddToAirlines(airline);
@@ -646,7 +713,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Airline airline = new Airline()
             {
                 Name = "American Delta",
-                AirlineCode = "DL"
+                AirlineCode = "DL",
+                TimeStampValue = new byte[] { 0 }
             };
 
             // Post an entity
