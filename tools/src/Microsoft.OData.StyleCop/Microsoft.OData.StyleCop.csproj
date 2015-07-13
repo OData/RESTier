@@ -48,17 +48,15 @@
   <ItemGroup>
     <Compile Include="FileHeaderRule.cs" />
     <Compile Include="LineLengthRule.cs" />
+    <Compile Include="LineSpaceRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UseVarRule.cs" />
     <Compile Include="UsingOutsideNamespaceRule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FileHeaderRule.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LineLengthRule.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="FileHeaderRule.xml" />
+    <EmbeddedResource Include="LineLengthRule.xml" />
+    <EmbeddedResource Include="LineSpaceRule.xml" />
     <EmbeddedResource Include="UseVarRule.xml" />
     <EmbeddedResource Include="UsingOutsideNamespaceRule.xml" />
   </ItemGroup>

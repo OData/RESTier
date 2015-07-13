@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SourceAnalyzer Name="Microsoft.OData.StyleCop.LineSpaceRule">
+  <Description>
+    Checks for lines that contain invalid white-spaces.
+  </Description>
+  <Rules>
+    <Rule Name="LineMustNotContainTrailingWhiteSpaces" CheckId="OR4004">
+      <Context>Line must not contain trailing white-spaces.</Context>
+      <Description>Makes sure the lines do not contain trailing white-spaces.</Description>
+    </Rule>
+    <Rule Name="LineMustNotContainOnlyWhiteSpaces" CheckId="OR4005">
+      <Context>Line must not contain only white-spaces.</Context>
+      <Description>Makes sure the lines do not contain only white-spaces.</Description>
+    </Rule>
+    <Rule Name="LineMustNotContainLeadingTabs" CheckId="OR4006">
+      <Context>Line must not contain leading tabs.</Context>
+      <Description>Makes sure the lines do not contain leading tabs.</Description>
+    </Rule>
+  </Rules>
+</SourceAnalyzer>
+
