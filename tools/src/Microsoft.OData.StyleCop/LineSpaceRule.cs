@@ -42,7 +42,12 @@ namespace Microsoft.OData.StyleCop
                 {
                     lineNumber++;
 
-                    if (checkTrailingWhiteSpaces && line.Length > 0 && char.IsWhiteSpace(line[line.Length - 1]))
+                    if (line.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    if (checkTrailingWhiteSpaces && char.IsWhiteSpace(line[line.Length - 1]))
                     {
                         AddViolation(
                             csharpDocument.RootElement,
