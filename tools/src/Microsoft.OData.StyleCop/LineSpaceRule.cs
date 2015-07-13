@@ -10,8 +10,7 @@ namespace Microsoft.OData.StyleCop
     public class LineSpaceRule : SourceAnalyzer
     {
         private const string TrailingWhiteSpacesRuleName = "LineMustNotContainTrailingWhiteSpaces";
-        private const string OnlyWhiteSpacesRuleName = "LineMustNotContainOnlyWhiteSpaces";
-        private const string LeadingTabsRuleName = "LineMustNotContainLeadingTabs";
+        private const string TabIndentationRuleName = "LineMustNotContainTabIndentation";
 
         public override void AnalyzeDocument(CodeDocument document)
         {
@@ -21,18 +20,16 @@ namespace Microsoft.OData.StyleCop
                 CheckLineSpace(
                     csharpDocument,
                     IsRuleEnabled(csharpDocument, TrailingWhiteSpacesRuleName),
-                    IsRuleEnabled(csharpDocument, OnlyWhiteSpacesRuleName),
-                    IsRuleEnabled(csharpDocument, LeadingTabsRuleName));
+                    IsRuleEnabled(csharpDocument, TabIndentationRuleName));
             }
         }
 
         private void CheckLineSpace(
             CsDocument csharpDocument,
             bool checkTrailingWhiteSpaces,
-            bool checkOnlyWhiteSpaces,
-            bool checkLeadingTabs)
+            bool checkTabIndentation)
         {
-            if (!checkTrailingWhiteSpaces && !checkOnlyWhiteSpaces && !checkLeadingTabs)
+            if (!checkTrailingWhiteSpaces && !checkTabIndentation)
             {
                 return;
             }
@@ -45,19 +42,7 @@ namespace Microsoft.OData.StyleCop
                 {
                     lineNumber++;
 
-                    string trimmedLine = line.TrimEnd();
-                    if (checkOnlyWhiteSpaces && trimmedLine.Length == 0 && line.Length > 0)
-                    {
-                        AddViolation(
-                            csharpDocument.RootElement,
-                            lineNumber,
-                            OnlyWhiteSpacesRuleName);
-                        continue;
-                    }
-
-                    if (checkTrailingWhiteSpaces
-                        && trimmedLine.Length < line.Length
-                        && !line.TrimStart().StartsWith("//"))
+                    if (checkTrailingWhiteSpaces && line.Length > 0 && char.IsWhiteSpace(line[line.Length - 1]))
                     {
                         AddViolation(
                             csharpDocument.RootElement,
@@ -65,7 +50,7 @@ namespace Microsoft.OData.StyleCop
                             TrailingWhiteSpacesRuleName);
                     }
 
-                    if (checkLeadingTabs)
+                    if (checkTabIndentation)
                     {
                         foreach (var c in line)
                         {
@@ -79,7 +64,7 @@ namespace Microsoft.OData.StyleCop
                                 AddViolation(
                                     csharpDocument.RootElement,
                                     lineNumber,
-                                    LeadingTabsRuleName);
+                                    TabIndentationRuleName);
                                 break;
                             }
                         }

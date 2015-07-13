@@ -8,13 +8,9 @@
       <Context>Line must not contain trailing white-spaces.</Context>
       <Description>Makes sure the lines do not contain trailing white-spaces.</Description>
     </Rule>
-    <Rule Name="LineMustNotContainOnlyWhiteSpaces" CheckId="OR4005">
-      <Context>Line must not contain only white-spaces.</Context>
-      <Description>Makes sure the lines do not contain only white-spaces.</Description>
-    </Rule>
-    <Rule Name="LineMustNotContainLeadingTabs" CheckId="OR4006">
-      <Context>Line must not contain leading tabs.</Context>
-      <Description>Makes sure the lines do not contain leading tabs.</Description>
+    <Rule Name="LineMustNotContainTabIndentation" CheckId="OR4005">
+      <Context>Line must not contain Tab indentation.</Context>
+      <Description>Makes sure the lines do not contain Tab indentation.</Description>
     </Rule>
   </Rules>
 </SourceAnalyzer>
