@@ -17,6 +17,9 @@ using Microsoft.Restier.EntityFramework.Properties;
 
 namespace Microsoft.Restier.EntityFramework.Submit
 {
+    /// <summary>
+    /// To prepare changed entries for the given <see cref="ChangeSet"/>.
+    /// </summary>
     public class ChangeSetPreparer : IChangeSetPreparer
     {
         private ChangeSetPreparer()
@@ -25,8 +28,17 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
         private static readonly ChangeSetPreparer instance = new ChangeSetPreparer();
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="ChangeSetPreparer"/> class.
+        /// </summary>
         public static ChangeSetPreparer Instance { get { return instance; } }
 
+        /// <summary>
+        /// Asynchronously prepare the <see cref="ChangeSet"/>.
+        /// </summary>
+        /// <param name="context">The context that contains the <see cref="ChangeSet"/>.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that represents this asynchronous operation.</returns>
         public async Task PrepareAsync(
             SubmitContext context,
             CancellationToken cancellationToken)
@@ -126,7 +138,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         if (dic == null)
                         {
                             // TODO GitHubIssue#103 : Choose property error message for unknown type
-                            throw new Exception("Unsupported type for property:" + propertyPair.Key);
+                            throw new NotSupportedException("Unsupported type for property:" + propertyPair.Key);
                         }
 
                         var type = propertyEntry.CurrentValue.GetType();
@@ -151,7 +163,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                     if (dic == null)
                     {
                         // TODO GitHubIssue#103 : Choose property error message for unknown type
-                        throw new Exception("Unsupported type for property:" + propertyPair.Key);
+                        throw new NotSupportedException("Unsupported type for property:" + propertyPair.Key);
                     }
 
                     value = Activator.CreateInstance(propertyInfo.PropertyType);
