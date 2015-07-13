@@ -50,6 +50,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 return this._error;
             }
+
             set
             {
                 Ensure.NotNull(value, "value");
@@ -71,6 +72,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 return this._completedChangeSet;
             }
+
             set
             {
                 Ensure.NotNull(value, "value");

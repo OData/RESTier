@@ -62,6 +62,7 @@ namespace Microsoft.Restier.Core
 
         private readonly IDictionary<Type, object> _singletons =
             new Dictionary<Type, object>();
+
         private readonly IDictionary<Type, IList<object>> _multiCasts =
             new Dictionary<Type, IList<object>>();
 

@@ -509,6 +509,7 @@ namespace Microsoft.Restier.Core
         private static readonly MethodInfo s_source2Method = typeof(DomainData)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 2);
+
         private static readonly MethodInfo s_source3Method = typeof(DomainData)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);

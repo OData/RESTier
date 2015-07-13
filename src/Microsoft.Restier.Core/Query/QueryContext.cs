@@ -47,6 +47,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this._request;
             }
+
             set
             {
                 if (this.Result != null)
@@ -67,6 +68,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this._result;
             }
+
             set
             {
                 Ensure.NotNull(value, "value");

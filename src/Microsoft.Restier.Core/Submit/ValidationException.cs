@@ -57,6 +57,7 @@ namespace Microsoft.Restier.Core.Submit
                     return this.validationResults;
                 }
             }
+
             set
             {
                 this.validationResults = value;

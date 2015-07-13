@@ -61,6 +61,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this._error;
             }
+
             set
             {
                 Ensure.NotNull(value, "value");
@@ -84,6 +85,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this._resultsSource;
             }
+
             set
             {
                 if (this._error != null)
@@ -106,6 +108,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this._results;
             }
+
             set
             {
                 Ensure.NotNull(value, "value");
@@ -130,6 +133,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this._totalCount;
             }
+
             set
             {
                 if (this._results == null)

@@ -46,6 +46,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 return this._changeSet;
             }
+
             set
             {
                 if (this.Result != null)
@@ -65,6 +66,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 return this._result;
             }
+
             set
             {
                 Ensure.NotNull(value, "value");

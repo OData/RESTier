@@ -21,10 +21,9 @@ namespace Microsoft.Restier.Security
     public class RoleBasedAuthorization :
         IModelVisibilityFilter, IQueryExpressionInspector
     {
-        private const string Permissions =
-            "Microsoft.Restier.Security.Permissions";
-        private const string AssertedRoles =
-            "Microsoft.Restier.Security.AssertedRoles";
+        private const string Permissions = "Microsoft.Restier.Security.Permissions";
+
+        private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
 
         private static readonly RoleBasedAuthorization instance = new RoleBasedAuthorization();
 

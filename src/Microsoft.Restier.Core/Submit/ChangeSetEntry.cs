@@ -69,19 +69,23 @@ namespace Microsoft.Restier.Core.Submit
         /// If an entity has changed it gets this state
         /// </summary>
         Changed,
+
         /// <summary>
         /// The entity has been validated.
         /// </summary>
         Validated,
+
         /// <summary>
         /// The entity set deleting, inserting or updating events are raised
         /// </summary>
         PreEventing,
+
         /// <summary>
         /// The entity was modified within its own pre eventing interception method.  This indicates that the entity
         /// should be revalidated but its eventing interception point should not be invoked again.
         /// </summary>
         ChangedWithinOwnPreEventing,
+
         /// <summary>
         /// The entity's pre events have been raised
         /// </summary>
@@ -374,6 +378,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 return base.Entity as T;
             }
+
             set
             {
                 base.Entity = value;
