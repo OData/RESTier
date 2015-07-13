@@ -53,6 +53,7 @@ namespace Microsoft.Restier.EntityFramework.Query
                 // TODO GitHubIssue#37 : Add domain entity manager for tracking entities
                 // the underlying DbContext shouldn't track the entities
                 var dbSet = dbSetProperty.GetValue(dbContext);
+
                 //dbSet = dbSet.GetType().GetMethod("AsNoTracking").Invoke(dbSet, null);
                 return Expression.Constant(dbSet);
             }

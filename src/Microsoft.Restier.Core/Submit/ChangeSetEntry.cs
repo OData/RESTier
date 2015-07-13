@@ -322,10 +322,11 @@ namespace Microsoft.Restier.Core.Submit
         {
             MemberExpression name = Expression.Property(param, item.Key);
             object itemValue = item.Value;
+
             // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary in DataModificationEntry::ApplyPredicate
-            //Expression value = itemValue != null
-            //    ? LinqParameterContainer.Parameterize(itemValue.GetType(), itemValue)
-            //    : Expression.Constant(value: null);
+            // Expression value = itemValue != null
+            //     ? LinqParameterContainer.Parameterize(itemValue.GetType(), itemValue)
+            //     : Expression.Constant(value: null);
             BinaryExpression equal = Expression.Equal(name, Expression.Constant(item.Value));
             return where == null ? equal : Expression.AndAlso(where, equal);
         }

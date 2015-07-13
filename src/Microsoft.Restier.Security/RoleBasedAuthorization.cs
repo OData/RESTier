@@ -58,6 +58,7 @@ namespace Microsoft.Restier.Security
             IEdmModel model, IEdmSchemaElement element)
         {
             Ensure.NotNull(element);
+
             // TODO GitHubIssue#34 : Filter out proper visible types
             if (element is IEdmType || element is IEdmOperation)
             {
@@ -108,6 +109,7 @@ namespace Microsoft.Restier.Security
         public bool Inspect(QueryExpressionContext context)
         {
             Ensure.NotNull(context);
+
             // TODO GitHubIssue#35 : Support Inspect more elements in authorization
             if (context.ModelReference == null)
             {
