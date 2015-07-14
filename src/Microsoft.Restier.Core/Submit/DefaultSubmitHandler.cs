@@ -98,7 +98,8 @@ namespace Microsoft.Restier.Core.Submit
                     await this.PerformValidate(context, currentChangeSetItems, cancellationToken);
 
                     await this.PerformPreEvent(context, currentChangeSetItems, cancellationToken);
-                } while (eventsChangeSet.AnEntityHasChanged && (innerLoopCount < maxLoop));
+                }
+                while (eventsChangeSet.AnEntityHasChanged && (innerLoopCount < maxLoop));
 
                 VerifyNoEntityHasChanged(eventsChangeSet);
 
@@ -107,7 +108,8 @@ namespace Microsoft.Restier.Core.Submit
                 eventsChangeSet.Entries.Clear();
 
                 await this.PerformPostEvent(context, currentChangeSetItems, cancellationToken);
-            } while (eventsChangeSet.AnEntityHasChanged && (outerLoopCount < maxLoop));
+            }
+            while (eventsChangeSet.AnEntityHasChanged && (outerLoopCount < maxLoop));
 
             VerifyNoEntityHasChanged(eventsChangeSet);
 

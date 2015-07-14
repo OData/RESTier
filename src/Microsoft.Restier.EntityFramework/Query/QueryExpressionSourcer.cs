@@ -27,7 +27,10 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// <summary>
         /// Gets the single instance of this query expression sourcer.
         /// </summary>
-        public static QueryExpressionSourcer Instance { get { return instance; } }
+        public static QueryExpressionSourcer Instance
+        {
+            get { return instance; }
+        }
 
         /// <summary>
         /// Sources an expression.

@@ -31,7 +31,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
         /// <summary>
         /// Gets the singleton instance of the <see cref="ChangeSetPreparer"/> class.
         /// </summary>
-        public static ChangeSetPreparer Instance { get { return instance; } }
+        public static ChangeSetPreparer Instance
+        {
+            get { return instance; }
+        }
 
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -117,7 +120,6 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 // Create a new, blank instance of the entity.  Copy over the key values, and set any updated values from the client on the new instance.
                 // Then apply all the properties of the new instance to the instance to be updated.  This will set any unspecified
                 // properties to their default value.
-
                 object newInstance = Activator.CreateInstance(entityType);
 
                 SetValues(newInstance, entityType, entry.EntityKey);

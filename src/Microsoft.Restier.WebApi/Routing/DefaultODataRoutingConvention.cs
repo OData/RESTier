@@ -58,7 +58,6 @@ namespace Microsoft.Restier.WebApi.Routing
         public string SelectAction(ODataPath odataPath, HttpControllerContext controllerContext, ILookup<string, HttpActionDescriptor> actionMap)
         {
             // TODO GitHubIssue#44 : implement action selection for $ref, navigation scenarios, etc.
-
             Ensure.NotNull(odataPath, "odataPath");
             Ensure.NotNull(controllerContext, "controllerContext");
             Ensure.NotNull(actionMap, "actionMap");

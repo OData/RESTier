@@ -29,7 +29,10 @@ namespace Microsoft.Restier.Conventions
         /// <summary>
         /// Gets a static instance of conventional change set entry validator.
         /// </summary>
-        public static ConventionalChangeSetEntryValidator Instance { get { return instance; } }
+        public static ConventionalChangeSetEntryValidator Instance
+        {
+            get { return instance; }
+        }
 
         /// <inheritdoc/>
         public Task ValidateEntityAsync(

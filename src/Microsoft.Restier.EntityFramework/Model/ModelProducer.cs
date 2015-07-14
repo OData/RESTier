@@ -40,7 +40,10 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// <summary>
         /// Gets the single instance of this model producer.
         /// </summary>
-        public static ModelProducer Instance { get { return instance; } }
+        public static ModelProducer Instance
+        {
+            get { return instance; }
+        }
 
         /// <summary>
         /// Asynchronously produces a base model.

@@ -26,7 +26,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
         /// <summary>
         /// Gets the singleton instance of the <see cref="SubmitExecutor"/> class.
         /// </summary>
-        public static SubmitExecutor Instance { get { return instance; } }
+        public static SubmitExecutor Instance
+        {
+            get { return instance; }
+        }
 
         /// <summary>
         /// Asynchronously executes the submission.

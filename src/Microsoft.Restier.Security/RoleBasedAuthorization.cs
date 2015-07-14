@@ -31,7 +31,10 @@ namespace Microsoft.Restier.Security
         /// Gets the default role-based authorization system instance, which
         /// uses the current security principal to determine role membership.
         /// </summary>
-        public static RoleBasedAuthorization Default { get { return instance; } }
+        public static RoleBasedAuthorization Default
+        {
+            get { return instance; }
+        }
 
         /// <summary>
         /// Indicates if a schema element is currently visible.

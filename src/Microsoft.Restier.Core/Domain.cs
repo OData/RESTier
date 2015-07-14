@@ -490,7 +490,8 @@ namespace Microsoft.Restier.Core
             if (namespaceName == null)
             {
                 sourceMethod = s_source2Method;
-                expressions = new Expression[] {
+                expressions = new Expression[]
+                {
                     Expression.Constant(name),
                     Expression.Constant(arguments, typeof(object[]))
                 };
@@ -498,7 +499,8 @@ namespace Microsoft.Restier.Core
             else
             {
                 sourceMethod = s_source3Method;
-                expressions = new Expression[] {
+                expressions = new Expression[]
+                {
                     Expression.Constant(namespaceName),
                     Expression.Constant(name),
                     Expression.Constant(arguments, typeof(object[]))

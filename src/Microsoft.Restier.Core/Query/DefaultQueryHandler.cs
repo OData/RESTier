@@ -68,7 +68,8 @@ namespace Microsoft.Restier.Core.Query
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteQueryAsync")
                     .MakeGenericMethod(queryType.GetGenericArguments()[0]);
-                var task = method.Invoke(executor, new object[] {
+                var task = method.Invoke(executor, new object[]
+                {
                     context, query, cancellationToken
                 }) as Task<QueryResult>;
                 result = await task;
@@ -78,7 +79,8 @@ namespace Microsoft.Restier.Core.Query
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteSingleAsync")
                     .MakeGenericMethod(expression.Type);
-                var task = method.Invoke(executor, new object[] {
+                var task = method.Invoke(executor, new object[]
+                {
                     context, visitor.BaseQuery, expression, cancellationToken
                 }) as Task<QueryResult>;
                 result = await task;
@@ -180,8 +182,7 @@ namespace Microsoft.Restier.Core.Query
                     node = this.Source(node);
                 }
 
-                // TODO GitHubIssue#28 : Support transformation between domain types and data source proxy types 
-
+                // TODO GitHubIssue#28 : Support transformation between domain types and data source proxy types
                 this._context.PopVisitedNode();
 
                 if (this._context.VisitedNode != null)
