@@ -58,13 +58,7 @@ namespace Microsoft.Restier.Conventions
             var returnType = context.VisitedNode.Type
                 .FindGenericType(typeof(IQueryable<>));
             var elementType = returnType.GetGenericArguments()[0];
-            var method = this._targetType.GetMethod(
-                "OnFilter" + entitySet.Name,
-                BindingFlags.NonPublic |
-                BindingFlags.Static |
-                BindingFlags.Instance |
-                BindingFlags.IgnoreCase |
-                BindingFlags.DeclaredOnly);
+            var method = this._targetType.GetQualifiedMethod("OnFilter" + entitySet.Name);
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)
             {

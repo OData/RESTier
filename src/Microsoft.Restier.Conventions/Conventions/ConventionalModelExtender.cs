@@ -53,13 +53,7 @@ namespace Microsoft.Restier.Conventions
 
         private void ExtendModel(ModelContext context)
         {
-            var method = _targetType.GetMethod(
-                "OnModelExtending",
-                BindingFlags.NonPublic |
-                    BindingFlags.Static |
-                    BindingFlags.Instance |
-                    BindingFlags.IgnoreCase |
-                    BindingFlags.DeclaredOnly);
+            var method = _targetType.GetQualifiedMethod("OnModelExtending");
             var returnType = typeof(EdmModel);
 
             if (method == null || method.ReturnType != returnType)

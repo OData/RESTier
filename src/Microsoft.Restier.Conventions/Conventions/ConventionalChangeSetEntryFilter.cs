@@ -60,13 +60,7 @@ namespace Microsoft.Restier.Conventions
             string methodName = ConventionalChangeSetEntryFilter.GetMethodName(entry, methodNameSuffix);
             object[] parameters = ConventionalChangeSetEntryFilter.GetParameters(entry);
 
-            MethodInfo method = this._targetType.GetMethod(
-                methodName,
-                BindingFlags.NonPublic |
-                BindingFlags.Instance |
-                BindingFlags.Static |
-                BindingFlags.IgnoreCase |
-                BindingFlags.DeclaredOnly);
+            MethodInfo method = this._targetType.GetQualifiedMethod(methodName);
 
             if (method != null &&
                 (method.ReturnType == typeof(void) ||

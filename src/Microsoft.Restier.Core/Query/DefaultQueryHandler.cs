@@ -68,10 +68,11 @@ namespace Microsoft.Restier.Core.Query
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteQueryAsync")
                     .MakeGenericMethod(queryType.GetGenericArguments()[0]);
-                var task = method.Invoke(executor, new object[]
+                var parameters = new object[]
                 {
                     context, query, cancellationToken
-                }) as Task<QueryResult>;
+                };
+                var task = method.Invoke(executor, parameters) as Task<QueryResult>;
                 result = await task;
             }
             else
@@ -79,10 +80,11 @@ namespace Microsoft.Restier.Core.Query
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteSingleAsync")
                     .MakeGenericMethod(expression.Type);
-                var task = method.Invoke(executor, new object[]
+                var parameters = new object[]
                 {
                     context, visitor.BaseQuery, expression, cancellationToken
-                }) as Task<QueryResult>;
+                };
+                var task = method.Invoke(executor, parameters) as Task<QueryResult>;
                 result = await task;
             }
 

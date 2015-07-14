@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Reflection;
+
 namespace System
 {
     internal static partial class TypeExtensions
@@ -31,6 +33,16 @@ namespace System
             }
 
             return null;
+        }
+
+        public static MethodInfo GetQualifiedMethod(this Type type, string methodName)
+        {
+            var bindingFlags = BindingFlags.NonPublic |
+                               BindingFlags.Static |
+                               BindingFlags.Instance |
+                               BindingFlags.IgnoreCase |
+                               BindingFlags.DeclaredOnly;
+            return type.GetMethod(methodName, bindingFlags);
         }
     }
 }

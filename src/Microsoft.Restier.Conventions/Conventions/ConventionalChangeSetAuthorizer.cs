@@ -46,13 +46,7 @@ namespace Microsoft.Restier.Conventions
 
             Type returnType = typeof(bool);
             string methodName = ConventionalChangeSetAuthorizer.GetAuthorizeMethodName(entry);
-            MethodInfo method = this._targetType.GetMethod(
-                methodName,
-                BindingFlags.NonPublic |
-                BindingFlags.Static |
-                BindingFlags.Instance |
-                BindingFlags.IgnoreCase |
-                BindingFlags.DeclaredOnly);
+            MethodInfo method = this._targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)
