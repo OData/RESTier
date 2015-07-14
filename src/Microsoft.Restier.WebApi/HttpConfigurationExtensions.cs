@@ -58,7 +58,7 @@ namespace Microsoft.Restier.WebApi
                 if (batchHandler != null)
                 {
                     batchHandler.ODataRouteName = routeName;
-                    var batchTemplate = String.IsNullOrEmpty(routePrefix) ? ODataRouteConstants.Batch
+                    var batchTemplate = string.IsNullOrEmpty(routePrefix) ? ODataRouteConstants.Batch
                         : routePrefix + '/' + ODataRouteConstants.Batch;
                     routes.MapHttpBatchRoute(routeName + "Batch", batchTemplate, batchHandler);
                 }
@@ -139,7 +139,7 @@ namespace Microsoft.Restier.WebApi
 
         private static string RemoveTrailingSlash(string routePrefix)
         {
-            if (String.IsNullOrEmpty(routePrefix))
+            if (string.IsNullOrEmpty(routePrefix))
             {
                 return routePrefix;
             }

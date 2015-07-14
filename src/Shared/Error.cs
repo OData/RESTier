@@ -14,7 +14,7 @@ namespace System
 
         public static string Format(string format, params object[] args)
         {
-            return String.Format(CultureInfo.CurrentCulture, format, args);
+            return string.Format(CultureInfo.CurrentCulture, format, args);
         }
     }
 }
