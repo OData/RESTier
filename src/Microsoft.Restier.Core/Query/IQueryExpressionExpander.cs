@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core.Query
     /// upward traversal of the query expression and after inspection. Since
     /// expansion fundamentally alters the query expression, the resulting
     /// expression is recursively processed to ensure that all appropriate
-    /// normalization, inspection, expansion, filtering and sourcing occurs. 
+    /// normalization, inspection, expansion, filtering and sourcing occurs.
     /// </para>
     /// <para>
     /// This is a multi-cast hook point whose instances
