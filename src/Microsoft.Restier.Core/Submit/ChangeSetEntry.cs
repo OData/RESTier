@@ -32,10 +32,10 @@ namespace Microsoft.Restier.Core.Submit
         public DynamicChangeSetEntityState ChangeSetEntityState { get; set; }
 
         /// <summary>
-        /// Indicates if this change set entry is in a changed state.
+        /// Indicates whether this change set entry is in a changed state.
         /// </summary>
         /// <returns>
-        /// If this change set entry is in a changed state.
+        /// Whether this change set entry is in a changed state.
         /// </returns>
         public bool HasChanged()
         {
@@ -81,8 +81,8 @@ namespace Microsoft.Restier.Core.Submit
         PreEventing,
 
         /// <summary>
-        /// The entity was modified within its own pre eventing interception method.  This indicates that the entity
-        /// should be revalidated but its eventing interception point should not be invoked again.
+        /// The entity was modified within its own pre eventing interception method. This indicates that the entity
+        /// should be revalidated but its pre eventing interception point should not be invoked again.
         /// </summary>
         ChangedWithinOwnPreEventing,
 

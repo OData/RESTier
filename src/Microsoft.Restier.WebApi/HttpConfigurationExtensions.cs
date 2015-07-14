@@ -23,6 +23,7 @@ namespace Microsoft.Restier.WebApi
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions
     {
+        /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
         /// Maps the domain routes to the given domain controller.
         /// </summary>
@@ -33,7 +34,6 @@ namespace Microsoft.Restier.WebApi
         /// <param name="domainFactory">The callback to create domain instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        /// TODO GitHubIssue#51 : Support model lazy loading
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
             this HttpConfiguration config, string routeName, string routePrefix,
             Func<IDomain> domainFactory,

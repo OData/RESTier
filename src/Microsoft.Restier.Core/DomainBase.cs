@@ -165,8 +165,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether this domain
-        /// has created its domain context.
+        /// Gets a value indicating whether this domain has created its domain context.
         /// </summary>
         protected bool HasDomainContext
         {

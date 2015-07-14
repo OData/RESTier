@@ -39,7 +39,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
         /// </summary>
-        /// <param name="context">The context that contains the <see cref="ChangeSet"/>.</param>
+        /// <param name="context">The submit context class used for preparation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
         public async Task PrepareAsync(

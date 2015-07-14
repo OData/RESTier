@@ -50,7 +50,7 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
-        /// Gets the <see cref="IDomain"/> interface of the domain of the <see cref="ODataDomainController"/>.
+        /// Gets the domain instance associated with the controller.
         /// </summary>
         public IDomain Domain
         {
