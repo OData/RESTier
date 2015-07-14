@@ -219,8 +219,7 @@ namespace Microsoft.Restier.Core.Query
             var argumentIndex = 0;
             if (methodCall.Method.GetParameters().Length > 2)
             {
-                namespaceName = methodCall.Arguments[
-                    argumentIndex++] as ConstantExpression;
+                namespaceName = methodCall.Arguments[argumentIndex++] as ConstantExpression;
             }
 
             name = methodCall.Arguments[argumentIndex++] as ConstantExpression;

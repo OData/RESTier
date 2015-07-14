@@ -180,12 +180,10 @@ namespace Microsoft.Restier.Security
             List<string> assertedRoles = null;
             if (context != null)
             {
-                assertedRoles = context.GetProperty<
-                    List<string>>(AssertedRoles);
+                assertedRoles = context.GetProperty<List<string>>(AssertedRoles);
             }
 
-            var permissions = configuration.GetProperty<
-                IEnumerable<DomainPermission>>(Permissions);
+            var permissions = configuration.GetProperty<IEnumerable<DomainPermission>>(Permissions);
             if (permissions == null)
             {
                 return false;

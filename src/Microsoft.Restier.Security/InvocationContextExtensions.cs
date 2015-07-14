@@ -33,8 +33,7 @@ namespace Microsoft.Restier.Security
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(role, "role");
-            var assertedRoles = context.GetProperty<
-                List<string>>(AssertedRoles);
+            var assertedRoles = context.GetProperty<List<string>>(AssertedRoles);
             if (assertedRoles == null)
             {
                 assertedRoles = new List<string>();
@@ -58,8 +57,7 @@ namespace Microsoft.Restier.Security
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(role, "role");
-            var assertedRoles = context.GetProperty<
-                List<string>>(AssertedRoles);
+            var assertedRoles = context.GetProperty<List<string>>(AssertedRoles);
             if (assertedRoles != null)
             {
                 int index = assertedRoles.LastIndexOf(role);

@@ -94,7 +94,7 @@ namespace Microsoft.Restier.Security
             Ensure.NotNull(permissionType, "permissionType");
             return new DomainPermission()
             {
-                IsGrant = false,IsDeny = true,
+                IsGrant = false, IsDeny = true,
                 PermissionType = permissionType,
                 NamespaceName = namespaceName,
                 SecurableName = securableName,

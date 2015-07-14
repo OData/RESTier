@@ -171,8 +171,7 @@ namespace Microsoft.Restier.Conventions
                 return properties.Where(p =>
                     !p.CanWrite && !p.GetMethod.IsPrivate &&
                     p.PropertyType.IsGenericType &&
-                    p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>)
-                ).ToArray();
+                    p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>)).ToArray();
             }
         }
     }

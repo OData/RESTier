@@ -47,10 +47,10 @@ namespace Microsoft.Restier.WebApi.Filters
         }
 
         // TODO GitHubIssue#40 : Implement Target for ValidationResultDTO
-        //public string Target
-        //{
-        //    get { return this.result.Target.ToString(); }
-        //}
+        ////public string Target
+        ////{
+        ////    get { return this.result.Target.ToString(); }
+        ////}
 
         /// <summary>
         /// Gets the string that represents the severity of the <see cref="ValidationResult"/> instance.

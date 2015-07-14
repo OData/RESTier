@@ -511,9 +511,7 @@ namespace Microsoft.Restier.Core
                 Expression.Call(
                     null,
                     sourceMethod.MakeGenericMethod(typeof(TElement)),
-                    expressions
-                )
-            );
+                    expressions));
         }
 
         private static readonly MethodInfo s_source2Method = typeof(DomainData)

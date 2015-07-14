@@ -105,7 +105,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 // b. possibly doing a 2nd query with just the keys to see if the record still exists
                 // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values, letting the save fail if there are concurrency errors
 
-                //throw new EntityNotFoundException
+                ////throw new EntityNotFoundException
                 throw new InvalidOperationException(Resources.ResourceNotFound);
             }
 

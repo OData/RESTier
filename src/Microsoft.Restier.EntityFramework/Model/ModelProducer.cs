@@ -338,8 +338,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     continue;
                 }
 
-                var targetEntityType = elementMap[
-                    efTargetEntityType] as IEdmEntityType;
+                var targetEntityType = elementMap[efTargetEntityType] as IEdmEntityType;
                 navPropertyInfos[i] = new EdmNavigationPropertyInfo()
                 {
                     ContainsTarget = false,

@@ -57,7 +57,7 @@ namespace Microsoft.Restier.EntityFramework.Query
                 // the underlying DbContext shouldn't track the entities
                 var dbSet = dbSetProperty.GetValue(dbContext);
 
-                //dbSet = dbSet.GetType().GetMethod("AsNoTracking").Invoke(dbSet, null);
+                ////dbSet = dbSet.GetType().GetMethod("AsNoTracking").Invoke(dbSet, null);
                 return Expression.Constant(dbSet);
             }
             else

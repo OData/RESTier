@@ -59,8 +59,7 @@ namespace Microsoft.Restier.Security
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(permission, "permission");
-            var permissions = configuration.GetProperty<
-                List<DomainPermission>>(Permissions);
+            var permissions = configuration.GetProperty<List<DomainPermission>>(Permissions);
             if (permissions == null)
             {
                 permissions = new List<DomainPermission>();
