@@ -61,6 +61,15 @@
         </Rule>
       </Rules>
     </Analyzer>
+    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.MaintainabilityRules">
+      <Rules>
+        <Rule Name="FileMayOnlyContainASingleClass">
+          <RuleSettings>
+            <BooleanProperty Name="Enabled">False</BooleanProperty>
+          </RuleSettings>
+        </Rule>
+      </Rules>
+    </Analyzer>
     <Analyzer AnalyzerId="Microsoft.OData.StyleCop.FileHeaderRule">
       <Rules />
       <AnalyzerSettings>
