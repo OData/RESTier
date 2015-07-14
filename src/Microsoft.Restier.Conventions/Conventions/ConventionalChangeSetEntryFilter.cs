@@ -33,13 +33,15 @@ namespace Microsoft.Restier.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(typeof(IChangeSetEntryFilter),
+            configuration.AddHookPoint(
+                typeof(IChangeSetEntryFilter),
                 new ConventionalChangeSetEntryFilter(targetType));
         }
 
         /// <inheritdoc/>
         public Task OnExecutingEntryAsync(
-            SubmitContext context, ChangeSetEntry entry,
+            SubmitContext context,
+            ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
             return this.InvokeFilterMethodAsync(context, entry, "ing");
@@ -47,14 +49,16 @@ namespace Microsoft.Restier.Conventions
 
         /// <inheritdoc/>
         public Task OnExecutedEntryAsync(
-            SubmitContext context, ChangeSetEntry entry,
+            SubmitContext context,
+            ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
             return this.InvokeFilterMethodAsync(context, entry, "ed");
         }
 
         private Task InvokeFilterMethodAsync(
-            SubmitContext context, ChangeSetEntry entry,
+            SubmitContext context,
+            ChangeSetEntry entry,
             string methodNameSuffix)
         {
             string methodName = ConventionalChangeSetEntryFilter.GetMethodName(entry, methodNameSuffix);

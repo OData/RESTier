@@ -65,8 +65,10 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of a function.
         /// </param>
-        public DomainDataReference(QueryContext context,
-            string namespaceName, string name)
+        public DomainDataReference(
+            QueryContext context,
+            string namespaceName,
+            string name)
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(namespaceName, "namespaceName");

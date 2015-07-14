@@ -186,7 +186,8 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable Source(
             this IDomain domain,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             params object[] arguments)
         {
             Ensure.NotNull(domain, "domain");
@@ -224,7 +225,8 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable Source(
             DomainContext context,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             params object[] arguments)
         {
             Ensure.NotNull(context, "context");
@@ -235,7 +237,8 @@ namespace Microsoft.Restier.Core
 
         private static IQueryable SourceCore(
             DomainContext context,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             object[] arguments)
         {
             var elementType = Domain.EnsureElementType(
@@ -369,7 +372,8 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable<TElement> Source<TElement>(
             this IDomain domain,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             params object[] arguments)
         {
             Ensure.NotNull(domain, "domain");
@@ -411,7 +415,8 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable<TElement> Source<TElement>(
             DomainContext context,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             params object[] arguments)
         {
             Ensure.NotNull(context, "context");
@@ -430,7 +435,8 @@ namespace Microsoft.Restier.Core
 
         private static Type EnsureElementType(
             DomainContext context,
-            string namespaceName, string name)
+            string namespaceName,
+            string name)
         {
             Type elementType = null;
             bool hasElementType = false;
@@ -482,7 +488,8 @@ namespace Microsoft.Restier.Core
         }
 
         private static IQueryable<TElement> SourceCore<TElement>(
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             object[] arguments)
         {
             MethodInfo sourceMethod = null;
@@ -546,7 +553,8 @@ namespace Microsoft.Restier.Core
         /// whose result is a sequence of the query results.
         /// </returns>
         public static async Task<IEnumerable<TElement>> QueryAsync<TElement>(
-            this IDomain domain, IQueryable<TElement> query,
+            this IDomain domain,
+            IQueryable<TElement> query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(domain, "domain");
@@ -583,7 +591,8 @@ namespace Microsoft.Restier.Core
         /// operation whose result is the singular result.
         /// </returns>
         public static async Task<TResult> QueryAsync<TElement, TResult>(
-            this IDomain domain, IQueryable<TElement> query,
+            this IDomain domain,
+            IQueryable<TElement> query,
             Expression<Func<IQueryable<TElement>, TResult>> singularExpression,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -616,7 +625,8 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a query result.
         /// </returns>
         public static Task<QueryResult> QueryAsync(
-            this IDomain domain, QueryRequest request,
+            this IDomain domain,
+            QueryRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(domain, "domain");
@@ -640,7 +650,8 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a query result.
         /// </returns>
         public static async Task<QueryResult> QueryAsync(
-            DomainContext context, QueryRequest request,
+            DomainContext context,
+            QueryRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");
@@ -673,12 +684,15 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a submit result.
         /// </returns>
         public static Task<SubmitResult> SubmitAsync(
-            this IDomain domain, ChangeSet changeSet = null,
+            this IDomain domain,
+            ChangeSet changeSet = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(domain, "domain");
-            return Domain.SubmitAsync(domain.Context,
-                changeSet, cancellationToken);
+            return Domain.SubmitAsync(
+                domain.Context,
+                changeSet,
+                cancellationToken);
         }
 
         /// <summary>
@@ -698,7 +712,8 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a submit result.
         /// </returns>
         public static async Task<SubmitResult> SubmitAsync(
-            DomainContext context, ChangeSet changeSet = null,
+            DomainContext context,
+            ChangeSet changeSet = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");

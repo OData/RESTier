@@ -59,9 +59,12 @@ namespace Microsoft.Restier.Core
 
             type = typeof(QueryableSource<>).MakeGenericType(
                 type.GetGenericArguments()[0]);
-            return Activator.CreateInstance(type,
+            return Activator.CreateInstance(
+                type,
                 BindingFlags.Public | BindingFlags.Instance,
-                null, new object[] { expression }, null) as IQueryable;
+                null,
+                new object[] { expression },
+                null) as IQueryable;
         }
 
         TResult IQueryProvider.Execute<TResult>(Expression expression)

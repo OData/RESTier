@@ -37,7 +37,8 @@ namespace Microsoft.Restier.Core.Query
         /// operation whose result is a query result.
         /// </returns>
         Task<QueryResult> ExecuteQueryAsync<TElement>(
-            QueryContext context, IQueryable<TElement> query,
+            QueryContext context,
+            IQueryable<TElement> query,
             CancellationToken cancellationToken);
 
         /// <summary>
@@ -65,7 +66,8 @@ namespace Microsoft.Restier.Core.Query
         /// </returns>
         Task<QueryResult> ExecuteSingleAsync<TResult>(
             QueryContext context,
-            IQueryable query, Expression expression,
+            IQueryable query,
+            Expression expression,
             CancellationToken cancellationToken);
     }
 }

@@ -92,7 +92,8 @@ namespace Microsoft.Restier.Core.Model
         /// </remarks>
         bool TryGetRelevantType(
             DomainContext context,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             out Type relevantType);
     }
 }

@@ -57,7 +57,8 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// operation whose result is a query result.
         /// </returns>
         public async Task<QueryResult> ExecuteQueryAsync<TElement>(
-            QueryContext context, IQueryable<TElement> query,
+            QueryContext context,
+            IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
             long? totalCount = null;
@@ -97,7 +98,8 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// </returns>
         public async Task<QueryResult> ExecuteSingleAsync<TResult>(
             QueryContext context,
-            IQueryable query, Expression expression,
+            IQueryable query,
+            Expression expression,
             CancellationToken cancellationToken)
         {
 #if EF7

@@ -92,7 +92,8 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// </returns>
         public bool TryGetRelevantType(
             DomainContext context,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             out Type relevantType)
         {
             // TODO GitHubIssue#39 : support composable function imports

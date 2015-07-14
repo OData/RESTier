@@ -170,8 +170,11 @@ namespace Microsoft.Restier.Core.Model
 
             return this.Configuration
                 .GetHookPoints<IModelVisibilityFilter>().Reverse()
-                .All(filter => filter.IsVisible(this.Configuration,
-                    this.Context, this.InnerModel, element));
+                .All(filter => filter.IsVisible(
+                    this.Configuration,
+                    this.Context,
+                    this.InnerModel,
+                    element));
         }
 
         private bool IsVocabularyAnnotatableVisible(
@@ -272,8 +275,11 @@ namespace Microsoft.Restier.Core.Model
         {
             return this._model.Configuration
                 .GetHookPoints<IModelVisibilityFilter>().Reverse()
-                .All(filter => filter.IsVisible(this._model.Configuration,
-                    this._model.Context, this._model.InnerModel, element));
+                .All(filter => filter.IsVisible(
+                    this._model.Configuration,
+                    this._model.Context,
+                    this._model.InnerModel,
+                    element));
         }
     }
 }

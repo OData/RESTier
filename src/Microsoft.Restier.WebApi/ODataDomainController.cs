@@ -280,8 +280,12 @@ namespace Microsoft.Restier.WebApi
                     // Validate the key name
                     if (!keys.Select(k => k.Name).Contains(keyValues[0]))
                     {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture,
-                            Resources.KeyNotValidForEntityType, keyValues[0], entityType.Name));
+                        throw new InvalidOperationException(
+                            string.Format(
+                            CultureInfo.InvariantCulture,
+                            Resources.KeyNotValidForEntityType,
+                            keyValues[0],
+                            entityType.Name));
                     }
 
                     result.Add(keyValues[0], ODataUriUtils.ConvertFromUriLiteral(keyValues[1], ODataVersion.V4));

@@ -36,7 +36,8 @@ namespace Microsoft.Restier.Conventions
 
         /// <inheritdoc/>
         public Task ValidateEntityAsync(
-            SubmitContext context, ChangeSetEntry entry,
+            SubmitContext context,
+            ChangeSetEntry entry,
             ValidationResults validationResults,
             CancellationToken cancellationToken)
         {

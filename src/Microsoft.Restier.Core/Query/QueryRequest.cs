@@ -63,8 +63,10 @@ namespace Microsoft.Restier.Core.Query
             Expression<Func<IQueryable<TElement>, TResult>> singularExpression,
             bool? includeTotalCount = null)
         {
-            return QueryRequest.Create(query as IQueryable,
-                singularExpression, includeTotalCount);
+            return QueryRequest.Create(
+                query as IQueryable,
+                singularExpression,
+                includeTotalCount);
         }
 
         /// <summary>

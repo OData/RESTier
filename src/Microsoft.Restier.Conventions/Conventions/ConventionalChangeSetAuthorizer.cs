@@ -32,13 +32,15 @@ namespace Microsoft.Restier.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(typeof(IChangeSetEntryAuthorizer),
+            configuration.AddHookPoint(
+                typeof(IChangeSetEntryAuthorizer),
                 new ConventionalChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
         public Task<bool> AuthorizeAsync(
-            SubmitContext context, ChangeSetEntry entry,
+            SubmitContext context,
+            ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(context);

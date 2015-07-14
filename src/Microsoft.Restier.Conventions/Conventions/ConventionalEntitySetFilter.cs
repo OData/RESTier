@@ -30,7 +30,8 @@ namespace Microsoft.Restier.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(typeof(IQueryExpressionFilter),
+            configuration.AddHookPoint(
+                typeof(IQueryExpressionFilter),
                 new ConventionalEntitySetFilter(targetType));
         }
 
@@ -80,10 +81,8 @@ namespace Microsoft.Restier.Conventions
                 {
                     var queryType = typeof(EnumerableQuery<>)
                         .MakeGenericType(elementType);
-                    var query = Activator.CreateInstance(
-                        queryType, context.VisitedNode);
-                    var result = method.Invoke(target,
-                        new object[] { query }) as IQueryable;
+                    var query = Activator.CreateInstance(queryType, context.VisitedNode);
+                    var result = method.Invoke(target, new object[] { query }) as IQueryable;
                     if (result != null && result != query)
                     {
                         return result.Expression;

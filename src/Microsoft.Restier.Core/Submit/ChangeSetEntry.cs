@@ -146,7 +146,8 @@ namespace Microsoft.Restier.Core.Submit
         /// The local values of the entity.
         /// </param>
         public DataModificationEntry(
-            string entitySetName, string entityTypeName,
+            string entitySetName,
+            string entityTypeName,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
@@ -358,7 +359,8 @@ namespace Microsoft.Restier.Core.Submit
         /// The local values of the entity.
         /// </param>
         public DataModificationEntry(
-            string entitySetName, string entityTypeName,
+            string entitySetName,
+            string entityTypeName,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)

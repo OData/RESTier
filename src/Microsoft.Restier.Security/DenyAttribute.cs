@@ -65,8 +65,12 @@ namespace Microsoft.Restier.Security
             DomainConfiguration configuration,
             Type type)
         {
-            var permission = DomainPermission.CreateDeny(this.PermissionType,
-                this.To, this.OnNamespace, this.On, this.OnChild);
+            var permission = DomainPermission.CreateDeny(
+                this.PermissionType,
+                this.To,
+                this.OnNamespace,
+                this.On,
+                this.OnChild);
             configuration.AddPermission(permission);
         }
     }

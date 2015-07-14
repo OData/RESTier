@@ -58,7 +58,8 @@ namespace Microsoft.Restier.Security
         public bool IsVisible(
             DomainConfiguration configuration,
             InvocationContext context,
-            IEdmModel model, IEdmSchemaElement element)
+            IEdmModel model,
+            IEdmSchemaElement element)
         {
             Ensure.NotNull(element);
 
@@ -68,8 +69,11 @@ namespace Microsoft.Restier.Security
                 return true;
             }
 
-            return this.IsVisible(configuration,
-                context, element.Namespace, element.Name);
+            return this.IsVisible(
+                configuration,
+                context,
+                element.Namespace,
+                element.Name);
         }
 
         /// <summary>
@@ -94,11 +98,15 @@ namespace Microsoft.Restier.Security
         public bool IsVisible(
             DomainConfiguration configuration,
             InvocationContext context,
-            IEdmModel model, IEdmEntityContainerElement element)
+            IEdmModel model,
+            IEdmEntityContainerElement element)
         {
             Ensure.NotNull(element);
-            return this.IsVisible(configuration,
-                context, null, element.Name);
+            return this.IsVisible(
+                configuration,
+                context,
+                null,
+                element.Name);
         }
 
         /// <summary>

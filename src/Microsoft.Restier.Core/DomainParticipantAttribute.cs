@@ -143,7 +143,8 @@ namespace Microsoft.Restier.Core
         /// </param>
         public virtual void Initialize(
             DomainContext context,
-            Type type, object instance)
+            Type type,
+            object instance)
         {
         }
 
@@ -161,7 +162,8 @@ namespace Microsoft.Restier.Core
         /// </param>
         public virtual void Dispose(
             DomainContext context,
-            Type type, object instance)
+            Type type,
+            object instance)
         {
         }
     }

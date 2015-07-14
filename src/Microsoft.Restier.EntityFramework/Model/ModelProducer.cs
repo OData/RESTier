@@ -147,12 +147,15 @@ namespace Microsoft.Restier.EntityFramework.Model
                     }
 
                     var property = entityType.AddStructuralProperty(
-                        efProperty.Name, type, defaultValue,
+                        efProperty.Name,
+                        type,
+                        defaultValue,
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
                     MetadataProperty storeGeneratedPattern = null;
                     efProperty.MetadataProperties.TryGetValue(
                         c_annotationSchema + ":StoreGeneratedPattern",
-                        true, out storeGeneratedPattern);
+                        true,
+                        out storeGeneratedPattern);
 
                     if (storeGeneratedPattern != null)
                     {
@@ -246,23 +249,30 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 default:
                     return EdmCoreModel.Instance.GetPrimitive(
-                        kind, efProperty.Nullable);
+                        kind,
+                        efProperty.Nullable);
                 case EdmPrimitiveTypeKind.Binary:
                     return EdmCoreModel.Instance.GetBinary(
-                        efProperty.IsMaxLength, efProperty.MaxLength,
+                        efProperty.IsMaxLength,
+                        efProperty.MaxLength,
                         efProperty.Nullable);
                 case EdmPrimitiveTypeKind.Decimal:
                     return EdmCoreModel.Instance.GetDecimal(
-                        efProperty.Precision, efProperty.Scale,
+                        efProperty.Precision,
+                        efProperty.Scale,
                         efProperty.Nullable);
                 case EdmPrimitiveTypeKind.String:
                     return EdmCoreModel.Instance.GetString(
-                        efProperty.IsMaxLength, efProperty.MaxLength,
-                        efProperty.IsUnicode, efProperty.Nullable);
+                        efProperty.IsMaxLength,
+                        efProperty.MaxLength,
+                        efProperty.IsUnicode,
+                        efProperty.Nullable);
                 case EdmPrimitiveTypeKind.DateTimeOffset:
                 case EdmPrimitiveTypeKind.Duration:
                     return EdmCoreModel.Instance.GetTemporal(
-                        kind, efProperty.Precision, efProperty.Nullable);
+                        kind,
+                        efProperty.Precision,
+                        efProperty.Nullable);
             }
         }
 
@@ -433,8 +443,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 var entitySet = elementMap[efSetEnd.EntitySet] as EdmEntitySet;
                 var efTargetSetEnd = efAssociationSet.AssociationSetEnds
                     .Single(e => e.Name == efNavProperty.ToEndMember.Name);
-                entitySet.AddNavigationTarget(navProperty,
-                    elementMap[efTargetSetEnd.EntitySet] as IEdmEntitySet);
+                entitySet.AddNavigationTarget(navProperty, elementMap[efTargetSetEnd.EntitySet] as IEdmEntitySet);
             }
         }
 

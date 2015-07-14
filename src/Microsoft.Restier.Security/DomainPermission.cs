@@ -43,8 +43,10 @@ namespace Microsoft.Restier.Security
         /// container, otherwise it identifies an element in a modeled schema.
         /// </remarks>
         public static DomainPermission CreateGrant(
-            string permissionType, string role = null,
-            string namespaceName = null, string securableName = null,
+            string permissionType,
+            string role = null,
+            string namespaceName = null,
+            string securableName = null,
             string childName = null)
         {
             Ensure.NotNull(permissionType, "permissionType");
@@ -87,8 +89,10 @@ namespace Microsoft.Restier.Security
         /// container, otherwise it identifies an element in a modeled schema.
         /// </remarks>
         public static DomainPermission CreateDeny(
-            string permissionType, string role = null,
-            string namespaceName = null, string securableName = null,
+            string permissionType,
+            string role = null,
+            string namespaceName = null,
+            string securableName = null,
             string childName = null)
         {
             Ensure.NotNull(permissionType, "permissionType");

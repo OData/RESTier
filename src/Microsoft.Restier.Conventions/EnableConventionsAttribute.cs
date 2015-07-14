@@ -24,7 +24,8 @@ namespace Microsoft.Restier.Conventions
         /// <inheritdoc/>
         public override void Initialize(
             DomainContext context,
-            Type type, object instance)
+            Type type,
+            object instance)
         {
             Ensure.NotNull(context);
             Ensure.NotNull(type);

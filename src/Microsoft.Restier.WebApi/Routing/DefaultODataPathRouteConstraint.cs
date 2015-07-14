@@ -23,7 +23,10 @@ namespace Microsoft.Restier.WebApi.Routing
         /// <param name="model">The EDM model.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routingConventions">The routing convention.</param>
-        public DefaultODataPathRouteConstraint(IODataPathHandler pathHandler, IEdmModel model, string routeName,
+        public DefaultODataPathRouteConstraint(
+            IODataPathHandler pathHandler,
+            IEdmModel model,
+            string routeName,
             IEnumerable<IODataRoutingConvention> routingConventions)
             : base(pathHandler, model, routeName, routingConventions)
         {

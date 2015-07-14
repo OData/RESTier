@@ -35,7 +35,9 @@ namespace Microsoft.Restier.WebApi
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
-            this HttpConfiguration config, string routeName, string routePrefix,
+            this HttpConfiguration config,
+            string routeName,
+            string routePrefix,
             Func<IDomain> domainFactory,
             ODataDomainBatchHandler batchHandler = null)
             where TController : ODataDomainController, new()
@@ -102,7 +104,9 @@ namespace Microsoft.Restier.WebApi
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
         public static async Task<ODataRoute> MapODataDomainRoute<TController>(
-            this HttpConfiguration config, string routeName, string routePrefix,
+            this HttpConfiguration config,
+            string routeName,
+            string routePrefix,
             ODataDomainBatchHandler batchHandler = null)
             where TController : ODataDomainController, new()
         {

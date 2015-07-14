@@ -117,7 +117,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         private async Task PerformValidate(
-            SubmitContext context, IEnumerable<ChangeSetEntry> changeSetItems,
+            SubmitContext context,
+            IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
             await this.InvokeAuthorizers(context, changeSetItems, cancellationToken);
@@ -138,7 +139,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         private async Task InvokeAuthorizers(
-            SubmitContext context, IEnumerable<ChangeSetEntry> changeSetItems,
+            SubmitContext context,
+            IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
             foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
@@ -197,7 +199,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         private async Task InvokeValidators(
-            SubmitContext context, IEnumerable<ChangeSetEntry> changeSetItems,
+            SubmitContext context,
+            IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
             ValidationResults validationResults = new ValidationResults();
@@ -222,7 +225,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         private async Task PerformPreEvent(
-            SubmitContext context, IEnumerable<ChangeSetEntry> changeSetItems,
+            SubmitContext context,
+            IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
             foreach (ChangeSetEntry entry in changeSetItems)
@@ -254,7 +258,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         private async Task PerformPersist(
-            SubmitContext context, IEnumerable<ChangeSetEntry> changeSetItems,
+            SubmitContext context,
+            IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
             // Once the change is persisted, the EntityState is lost.
@@ -289,7 +294,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         private async Task PerformPostEvent(
-            SubmitContext context, IEnumerable<ChangeSetEntry> changeSetItems,
+            SubmitContext context,
+            IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
             foreach (ChangeSetEntry entry in changeSetItems)

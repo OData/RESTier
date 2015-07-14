@@ -107,8 +107,7 @@ namespace Microsoft.Restier.Core
         /// <param name="baseConfiguration">
         /// An existing domain configuration.
         /// </param>
-        public DomainConfiguration(object key,
-            DomainConfiguration baseConfiguration)
+        public DomainConfiguration(object key, DomainConfiguration baseConfiguration)
         {
             this.Key = key;
             this.BaseConfiguration = baseConfiguration ??
@@ -120,12 +119,9 @@ namespace Microsoft.Restier.Core
 
             if (DomainConfiguration.s_global == null)
             {
-                this.SetHookPoint(typeof(IModelHandler),
-                    new DefaultModelHandler());
-                this.SetHookPoint(typeof(IQueryHandler),
-                    new DefaultQueryHandler());
-                this.SetHookPoint(typeof(ISubmitHandler),
-                    new DefaultSubmitHandler());
+                this.SetHookPoint(typeof(IModelHandler), new DefaultModelHandler());
+                this.SetHookPoint(typeof(IQueryHandler), new DefaultQueryHandler());
+                this.SetHookPoint(typeof(ISubmitHandler), new DefaultSubmitHandler());
                 this.EnsureCommitted();
             }
         }

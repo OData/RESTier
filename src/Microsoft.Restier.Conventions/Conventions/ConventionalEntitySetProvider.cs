@@ -73,7 +73,8 @@ namespace Microsoft.Restier.Conventions
         /// <inheritdoc/>
         public bool TryGetRelevantType(
             DomainContext context,
-            string name, out Type relevantType)
+            string name,
+            out Type relevantType)
         {
             relevantType = null;
             var entitySetProperty = this.AddedEntitySets
@@ -90,7 +91,8 @@ namespace Microsoft.Restier.Conventions
         /// <inheritdoc/>
         public bool TryGetRelevantType(
             DomainContext context,
-            string namespaceName, string name,
+            string namespaceName,
+            string name,
             out Type relevantType)
         {
             relevantType = null;

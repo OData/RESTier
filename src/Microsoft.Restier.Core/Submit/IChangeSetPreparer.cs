@@ -33,7 +33,6 @@ namespace Microsoft.Restier.Core.Submit
         /// to get current server values, and using a data provider mechanism
         /// to locally apply the supplied changes to the loaded entities.
         /// </remarks>
-        Task PrepareAsync(SubmitContext context,
-            CancellationToken cancellationToken);
+        Task PrepareAsync(SubmitContext context, CancellationToken cancellationToken);
     }
 }

@@ -40,8 +40,7 @@ namespace Microsoft.Restier.Conventions
 
             ConventionalChangeSetAuthorizer.ApplyTo(configuration, targetType);
             ConventionalChangeSetEntryFilter.ApplyTo(configuration, targetType);
-            configuration.AddHookPoint(typeof(IChangeSetEntryValidator),
-                ConventionalChangeSetEntryValidator.Instance);
+            configuration.AddHookPoint(typeof(IChangeSetEntryValidator), ConventionalChangeSetEntryValidator.Instance);
             ConventionalEntitySetProvider.ApplyTo(configuration, targetType);
             ConventionalModelExtender.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
