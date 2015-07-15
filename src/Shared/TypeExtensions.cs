@@ -7,6 +7,12 @@ namespace System
 {
     internal static partial class TypeExtensions
     {
+        private const BindingFlags QualifiedMethodBindingFlags = BindingFlags.NonPublic |
+                                                                 BindingFlags.Static |
+                                                                 BindingFlags.Instance |
+                                                                 BindingFlags.IgnoreCase |
+                                                                 BindingFlags.DeclaredOnly;
+
         public static Type FindGenericType(this Type type, Type definition)
         {
             while (type != null && type != typeof(object))
@@ -35,14 +41,9 @@ namespace System
             return null;
         }
 
-        public static MethodInfo GetQualifiedMethod(this Type type, string methodName)
+        internal static MethodInfo GetQualifiedMethod(this Type type, string methodName)
         {
-            var bindingFlags = BindingFlags.NonPublic |
-                               BindingFlags.Static |
-                               BindingFlags.Instance |
-                               BindingFlags.IgnoreCase |
-                               BindingFlags.DeclaredOnly;
-            return type.GetMethod(methodName, bindingFlags);
+            return type.GetMethod(methodName, QualifiedMethodBindingFlags);
         }
     }
 }
