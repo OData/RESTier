@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core.Model
     // TODO GitHubIssue#27 : Support full Edm interfaces
     internal class DomainModel : IEdmModel
     {
-        private readonly Lazy<ConcurrentDictionary<string, DomainEntityContainer>> _entityContainers =
+        private readonly Lazy<ConcurrentDictionary<string, DomainEntityContainer>> entityContainers =
             new Lazy<ConcurrentDictionary<string, DomainEntityContainer>>(LazyThreadSafetyMode.PublicationOnly);
 
         public DomainModel(DomainConfiguration configuration, IEdmModel model)
@@ -199,7 +199,7 @@ namespace Microsoft.Restier.Core.Model
         private DomainEntityContainer GetDomainEntityContainer(
             IEdmEntityContainer entityContainer)
         {
-            var domainEntityContainer = this._entityContainers.Value.GetOrAdd(
+            var domainEntityContainer = this.entityContainers.Value.GetOrAdd(
                 entityContainer.FullName(), name => new DomainEntityContainer(this, entityContainer));
             return domainEntityContainer;
         }
@@ -207,44 +207,44 @@ namespace Microsoft.Restier.Core.Model
 
     internal class DomainEntityContainer : IEdmEntityContainer
     {
-        private DomainModel _model;
-        private IEdmEntityContainer _innerContainer;
+        private DomainModel model;
+        private IEdmEntityContainer innerContainer;
 
         public DomainEntityContainer(
             DomainModel model,
             IEdmEntityContainer innerContainer)
         {
-            this._model = model;
-            this._innerContainer = innerContainer;
+            this.model = model;
+            this.innerContainer = innerContainer;
         }
 
         public string Namespace
         {
-            get { return this._innerContainer.Namespace; }
+            get { return this.innerContainer.Namespace; }
         }
 
         public string Name
         {
-            get { return this._innerContainer.Name; }
+            get { return this.innerContainer.Name; }
         }
 
         public EdmSchemaElementKind SchemaElementKind
         {
-            get { return this._innerContainer.SchemaElementKind; }
+            get { return this.innerContainer.SchemaElementKind; }
         }
 
         public IEnumerable<IEdmEntityContainerElement> Elements
         {
             get
             {
-                return this._innerContainer.Elements
+                return this.innerContainer.Elements
                     .Where(element => this.IsElementVisible(element));
             }
         }
 
         public IEdmEntitySet FindEntitySet(string setName)
         {
-            var entitySet = this._innerContainer.FindEntitySet(setName);
+            var entitySet = this.innerContainer.FindEntitySet(setName);
             if (entitySet != null && !this.IsElementVisible(entitySet))
             {
                 entitySet = null;
@@ -255,7 +255,7 @@ namespace Microsoft.Restier.Core.Model
 
         public IEdmSingleton FindSingleton(string singletonName)
         {
-            var singleton = this._innerContainer.FindSingleton(singletonName);
+            var singleton = this.innerContainer.FindSingleton(singletonName);
             if (singleton != null && !this.IsElementVisible(singleton))
             {
                 singleton = null;
@@ -267,18 +267,18 @@ namespace Microsoft.Restier.Core.Model
         public IEnumerable<IEdmOperationImport> FindOperationImports(
             string operationName)
         {
-            return this._innerContainer.FindOperationImports(operationName)
+            return this.innerContainer.FindOperationImports(operationName)
                 .Where(opImport => this.IsElementVisible(opImport));
         }
 
         private bool IsElementVisible(IEdmEntityContainerElement element)
         {
-            return this._model.Configuration
+            return this.model.Configuration
                 .GetHookPoints<IModelVisibilityFilter>().Reverse()
                 .All(filter => filter.IsVisible(
-                    this._model.Configuration,
-                    this._model.Context,
-                    this._model.InnerModel,
+                    this.model.Configuration,
+                    this.model.Context,
+                    this.model.InnerModel,
                     element));
         }
     }

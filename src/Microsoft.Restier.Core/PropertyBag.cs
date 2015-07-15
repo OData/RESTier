@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class PropertyBag
     {
-        private readonly IDictionary<string, object> _properties =
+        private readonly IDictionary<string, object> properties =
             new Dictionary<string, object>();
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Core
         public virtual bool HasProperty(string name)
         {
             Ensure.NotNull(name, "name");
-            return this._properties.ContainsKey(name);
+            return this.properties.ContainsKey(name);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(name, "name");
             object value = null;
-            this._properties.TryGetValue(name, out value);
+            this.properties.TryGetValue(name, out value);
             return value;
         }
 
@@ -83,7 +83,7 @@ namespace Microsoft.Restier.Core
         public void SetProperty(string name, object value)
         {
             Ensure.NotNull(name, "name");
-            this._properties[name] = value;
+            this.properties[name] = value;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Core
         public void ClearProperty(string name)
         {
             Ensure.NotNull(name, "name");
-            this._properties.Remove(name);
+            this.properties.Remove(name);
         }
     }
 }

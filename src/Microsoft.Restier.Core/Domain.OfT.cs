@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Core
     public class Domain<T> : DomainBase
         where T : IExpandableDomain
     {
-        private T _expandableDomain;
+        private T expandableDomain;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Domain{T}" /> class.
@@ -73,7 +73,7 @@ namespace Microsoft.Restier.Core
         {
             if (disposing)
             {
-                var disposable = this._expandableDomain as IDisposable;
+                var disposable = this.expandableDomain as IDisposable;
                 if (disposable != null)
                 {
                     disposable.Dispose();
@@ -87,12 +87,12 @@ namespace Microsoft.Restier.Core
         {
             get
             {
-                if (this._expandableDomain == null)
+                if (this.expandableDomain == null)
                 {
-                    this._expandableDomain = this.CreateExpandableDomain();
+                    this.expandableDomain = this.CreateExpandableDomain();
                 }
 
-                return this._expandableDomain;
+                return this.expandableDomain;
             }
         }
     }

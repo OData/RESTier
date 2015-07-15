@@ -11,8 +11,8 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class SubmitContext : InvocationContext
     {
-        private ChangeSet _changeSet;
-        private SubmitResult _result;
+        private ChangeSet changeSet;
+        private SubmitResult result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubmitContext" /> class.
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             get
             {
-                return this._changeSet;
+                return this.changeSet;
             }
 
             set
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Core.Submit
                     throw new InvalidOperationException();
                 }
 
-                this._changeSet = value;
+                this.changeSet = value;
             }
         }
 
@@ -65,13 +65,13 @@ namespace Microsoft.Restier.Core.Submit
         {
             get
             {
-                return this._result;
+                return this.result;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this._result = value;
+                this.result = value;
             }
         }
     }

@@ -17,19 +17,19 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// </summary>
     public class SubmitExecutor : ISubmitExecutor
     {
+        static SubmitExecutor()
+        {
+            Instance = new SubmitExecutor();
+        }
+
         private SubmitExecutor()
         {
         }
 
-        private static readonly SubmitExecutor instance = new SubmitExecutor();
-
         /// <summary>
         /// Gets the singleton instance of the <see cref="SubmitExecutor"/> class.
         /// </summary>
-        public static SubmitExecutor Instance
-        {
-            get { return instance; }
-        }
+        public static SubmitExecutor Instance { get; private set; }
 
         /// <summary>
         /// Asynchronously executes the submission.

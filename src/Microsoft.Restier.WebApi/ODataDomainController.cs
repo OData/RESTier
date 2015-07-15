@@ -40,7 +40,7 @@ namespace Microsoft.Restier.WebApi
     [ODataDomainExceptionFilter]
     public abstract class ODataDomainController : ODataController
     {
-        private IDomain _domain;
+        private IDomain domain;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ODataDomainController" /> class.
@@ -56,12 +56,12 @@ namespace Microsoft.Restier.WebApi
         {
             get
             {
-                if (this._domain == null)
+                if (this.domain == null)
                 {
-                    this._domain = this.CreateDomain();
+                    this.domain = this.CreateDomain();
                 }
 
-                return this._domain;
+                return this.domain;
             }
         }
 
@@ -79,10 +79,10 @@ namespace Microsoft.Restier.WebApi
         {
             if (disposing)
             {
-                if (this._domain != null)
+                if (this.domain != null)
                 {
-                    this._domain.Dispose();
-                    this._domain = null;
+                    this.domain.Dispose();
+                    this.domain = null;
                 }
             }
 

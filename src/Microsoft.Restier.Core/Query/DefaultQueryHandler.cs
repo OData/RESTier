@@ -106,18 +106,18 @@ namespace Microsoft.Restier.Core.Query
 
         private class QueryExpressionVisitor : ExpressionVisitor
         {
-            private readonly QueryExpressionContext _context;
-            private readonly IDictionary<Expression, Expression> _processed;
-            private IEnumerable<IQueryExpressionNormalizer> _normalizers;
-            private IEnumerable<IQueryExpressionInspector> _inspectors;
-            private IEnumerable<IQueryExpressionExpander> _expanders;
-            private IEnumerable<IQueryExpressionFilter> _filters;
-            private IQueryExpressionSourcer _sourcer;
+            private readonly QueryExpressionContext context;
+            private readonly IDictionary<Expression, Expression> processed;
+            private IEnumerable<IQueryExpressionNormalizer> normalizers;
+            private IEnumerable<IQueryExpressionInspector> inspectors;
+            private IEnumerable<IQueryExpressionExpander> expanders;
+            private IEnumerable<IQueryExpressionFilter> filters;
+            private IQueryExpressionSourcer sourcer;
 
             public QueryExpressionVisitor(QueryContext context)
             {
-                this._context = new QueryExpressionContext(context);
-                this._processed = new Dictionary<Expression, Expression>();
+                this.context = new QueryExpressionContext(context);
+                this.processed = new Dictionary<Expression, Expression>();
             }
 
             public IQueryable BaseQuery { get; private set; }
@@ -133,14 +133,14 @@ namespace Microsoft.Restier.Core.Query
 
                 // Initialize and push the visited node
                 var visited = node;
-                this._context.PushVisitedNode(visited);
+                this.context.PushVisitedNode(visited);
 
                 // If visited node has already been processed,
                 // skip normalization, inspection and filtering
                 // and simply replace with the processed node
-                if (this._processed.ContainsKey(visited))
+                if (this.processed.ContainsKey(visited))
                 {
-                    node = this._processed[visited];
+                    node = this.processed[visited];
                 }
                 else
                 {
@@ -150,12 +150,12 @@ namespace Microsoft.Restier.Core.Query
                     {
                         // Update the visited node
                         visited = node;
-                        this._context.ReplaceVisitedNode(visited);
+                        this.context.ReplaceVisitedNode(visited);
                     }
 
                     // Only visit the visited node's children if
                     // the visited node represents domain data
-                    if (!(this._context.ModelReference is DomainDataReference))
+                    if (!(this.context.ModelReference is DomainDataReference))
                     {
                         // Visit visited node's children
                         node = base.Visit(visited);
@@ -166,7 +166,7 @@ namespace Microsoft.Restier.Core.Query
 
                     // Try to expand the visited node
                     // if it represents domain data
-                    if (this._context.ModelReference is DomainDataReference)
+                    if (this.context.ModelReference is DomainDataReference)
                     {
                         node = this.Expand(visited);
                     }
@@ -179,18 +179,18 @@ namespace Microsoft.Restier.Core.Query
                 // and it represents domain data, then it must be
                 // in its most primitive form, so source the node
                 if (visited == node &&
-                    this._context.ModelReference is DomainDataReference)
+                    this.context.ModelReference is DomainDataReference)
                 {
                     node = this.Source(node);
                 }
 
                 // TODO GitHubIssue#28 : Support transformation between domain types and data source proxy types
-                this._context.PopVisitedNode();
+                this.context.PopVisitedNode();
 
-                if (this._context.VisitedNode != null)
+                if (this.context.VisitedNode != null)
                 {
-                    this.EntitySet = this._context.ModelReference != null ?
-                        this._context.ModelReference.EntitySet : null;
+                    this.EntitySet = this.context.ModelReference != null ?
+                        this.context.ModelReference.EntitySet : null;
                 }
 
                 return node;
@@ -198,12 +198,12 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Normalize(Expression visited)
             {
-                var normalizers = this._normalizers ??
-                    (this._normalizers = this._context.QueryContext
+                var normalizers = this.normalizers ??
+                    (this.normalizers = this.context.QueryContext
                         .GetHookPoints<IQueryExpressionNormalizer>().Reverse());
                 foreach (var normalizer in normalizers)
                 {
-                    var normalized = normalizer.Normalize(this._context);
+                    var normalized = normalizer.Normalize(this.context);
                     if (normalized != null && normalized != visited)
                     {
                         if (!visited.Type.IsAssignableFrom(normalized.Type))
@@ -222,10 +222,10 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                var inspectors = this._inspectors ??
-                    (this._inspectors = this._context.QueryContext
+                var inspectors = this.inspectors ??
+                    (this.inspectors = this.context.QueryContext
                         .GetHookPoints<IQueryExpressionInspector>().Reverse());
-                if (inspectors.Any(i => !i.Inspect(this._context)))
+                if (inspectors.Any(i => !i.Inspect(this.context)))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }
@@ -233,14 +233,14 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Expand(Expression visited)
             {
-                var expanders = this._expanders ??
-                    (this._expanders = this._context.QueryContext
+                var expanders = this.expanders ??
+                    (this.expanders = this.context.QueryContext
                         .GetHookPoints<IQueryExpressionExpander>().Reverse());
                 foreach (var expander in expanders)
                 {
-                    var expanded = expander.Expand(this._context);
-                    var callback = this._context.AfterNestedVisitCallback;
-                    this._context.AfterNestedVisitCallback = null;
+                    var expanded = expander.Expand(this.context);
+                    var callback = this.context.AfterNestedVisitCallback;
+                    this.context.AfterNestedVisitCallback = null;
                     if (expanded != null && expanded != visited)
                     {
                         if (!visited.Type.IsAssignableFrom(expanded.Type))
@@ -250,9 +250,9 @@ namespace Microsoft.Restier.Core.Query
                             throw new InvalidOperationException();
                         }
 
-                        this._context.PushVisitedNode(null);
+                        this.context.PushVisitedNode(null);
                         expanded = this.Visit(expanded);
-                        this._context.PopVisitedNode();
+                        this.context.PopVisitedNode();
                         if (callback != null)
                         {
                             callback();
@@ -267,14 +267,14 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Filter(Expression visited, Expression processed)
             {
-                var filters = this._filters ??
-                    (this._filters = this._context.QueryContext
+                var filters = this.filters ??
+                    (this.filters = this.context.QueryContext
                         .GetHookPoints<IQueryExpressionFilter>());
                 foreach (var filter in filters)
                 {
-                    var filtered = filter.Filter(this._context);
-                    var callback = this._context.AfterNestedVisitCallback;
-                    this._context.AfterNestedVisitCallback = null;
+                    var filtered = filter.Filter(this.context);
+                    var callback = this.context.AfterNestedVisitCallback;
+                    this.context.AfterNestedVisitCallback = null;
                     if (filtered != null && filtered != visited)
                     {
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
@@ -284,16 +284,16 @@ namespace Microsoft.Restier.Core.Query
                             throw new InvalidOperationException();
                         }
 
-                        this._processed.Add(visited, processed);
-                        this._context.PushVisitedNode(null);
+                        this.processed.Add(visited, processed);
+                        this.context.PushVisitedNode(null);
                         try
                         {
                             processed = this.Visit(filtered);
                         }
                         finally
                         {
-                            this._context.PopVisitedNode();
-                            this._processed.Remove(visited);
+                            this.context.PopVisitedNode();
+                            this.processed.Remove(visited);
                         }
 
                         if (callback != null)
@@ -308,8 +308,8 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Source(Expression node)
             {
-                var sourcer = this._sourcer ??
-                    (this._sourcer = this._context.QueryContext
+                var sourcer = this.sourcer ??
+                    (this.sourcer = this.context.QueryContext
                         .GetHookPoint<IQueryExpressionSourcer>());
                 if (sourcer == null)
                 {
@@ -317,7 +317,7 @@ namespace Microsoft.Restier.Core.Query
                     throw new NotSupportedException();
                 }
 
-                node = sourcer.Source(this._context, this.BaseQuery != null);
+                node = sourcer.Source(this.context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression

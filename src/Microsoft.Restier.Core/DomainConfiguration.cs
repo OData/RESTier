@@ -56,14 +56,14 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class DomainConfiguration : PropertyBag
     {
-        private static readonly DomainConfiguration s_global = new DomainConfiguration();
-        private static readonly IDictionary<object, DomainConfiguration> s_configurations =
+        private static readonly DomainConfiguration Global = new DomainConfiguration();
+        private static readonly IDictionary<object, DomainConfiguration> Configurations =
             new ConcurrentDictionary<object, DomainConfiguration>();
 
-        private readonly IDictionary<Type, object> _singletons =
+        private readonly IDictionary<Type, object> singletons =
             new Dictionary<Type, object>();
 
-        private readonly IDictionary<Type, IList<object>> _multiCasts =
+        private readonly IDictionary<Type, IList<object>> multiCasts =
             new Dictionary<Type, IList<object>>();
 
         /// <summary>
@@ -111,13 +111,13 @@ namespace Microsoft.Restier.Core
         {
             this.Key = key;
             this.BaseConfiguration = baseConfiguration ??
-                DomainConfiguration.s_global;
+                DomainConfiguration.Global;
             if (key != null)
             {
-                DomainConfiguration.s_configurations[key] = this;
+                DomainConfiguration.Configurations[key] = this;
             }
 
-            if (DomainConfiguration.s_global == null)
+            if (DomainConfiguration.Global == null)
             {
                 this.SetHookPoint(typeof(IModelHandler), new DefaultModelHandler());
                 this.SetHookPoint(typeof(IQueryHandler), new DefaultQueryHandler());
@@ -140,7 +140,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(key, "key");
             DomainConfiguration configuration = null;
-            DomainConfiguration.s_configurations
+            DomainConfiguration.Configurations
                 .TryGetValue(key, out configuration);
             return configuration;
         }
@@ -154,7 +154,7 @@ namespace Microsoft.Restier.Core
         public static void Invalidate(object key)
         {
             Ensure.NotNull(key, "key");
-            DomainConfiguration.s_configurations.Remove(key);
+            DomainConfiguration.Configurations.Remove(key);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace Microsoft.Restier.Core
         public bool HasHookPoint(Type hookPointType)
         {
             Ensure.NotNull(hookPointType, "hookPointType");
-            return this._singletons.ContainsKey(hookPointType) || (
+            return this.singletons.ContainsKey(hookPointType) || (
                 this.BaseConfiguration != null &&
                 this.BaseConfiguration.HasHookPoint(hookPointType));
         }
@@ -300,7 +300,7 @@ namespace Microsoft.Restier.Core
                 throw new ArgumentException();
             }
 
-            this._singletons[hookPointType] = instance;
+            this.singletons[hookPointType] = instance;
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace Microsoft.Restier.Core
         public bool HasHookPoints(Type hookPointType)
         {
             Ensure.NotNull(hookPointType, "hookPointType");
-            return this._multiCasts.ContainsKey(hookPointType) || (
+            return this.multiCasts.ContainsKey(hookPointType) || (
                 this.BaseConfiguration != null &&
                 this.BaseConfiguration.HasHookPoints(hookPointType));
         }
@@ -382,10 +382,10 @@ namespace Microsoft.Restier.Core
             }
 
             IList<object> instances = null;
-            if (!this._multiCasts.TryGetValue(hookPointType, out instances))
+            if (!this.multiCasts.TryGetValue(hookPointType, out instances))
             {
                 instances = new List<object>();
-                this._multiCasts.Add(hookPointType, instances);
+                this.multiCasts.Add(hookPointType, instances);
             }
 
             instances.Add(instance);
@@ -396,7 +396,7 @@ namespace Microsoft.Restier.Core
         private object GetHookPoint(Type hookPointType)
         {
             object instance = null;
-            if (!this._singletons.TryGetValue(hookPointType, out instance) &&
+            if (!this.singletons.TryGetValue(hookPointType, out instance) &&
                 this.BaseConfiguration != null)
             {
                 instance = this.BaseConfiguration.GetHookPoint(hookPointType);
@@ -414,7 +414,7 @@ namespace Microsoft.Restier.Core
             }
 
             IList<object> list = null;
-            if (this._multiCasts.TryGetValue(hookPointType, out list))
+            if (this.multiCasts.TryGetValue(hookPointType, out list))
             {
                 instances = instances.Concat(list);
             }

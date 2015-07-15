@@ -51,14 +51,14 @@ namespace Microsoft.Restier.WebApi.Batch
 
             Ensure.NotNull(request, "request");
 
-            ODataMessageReaderSettings oDataReaderSettings = new ODataMessageReaderSettings
+            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings
             {
                 DisableMessageStreamDisposal = true,
                 MessageQuotas = MessageQuotas,
                 BaseUri = GetBaseUri(request)
             };
 
-            ODataMessageReader reader = await request.Content.GetODataMessageReaderAsync(oDataReaderSettings, cancellationToken);
+            ODataMessageReader reader = await request.Content.GetODataMessageReaderAsync(readerSettings, cancellationToken);
             request.RegisterForDispose(reader);
 
             List<ODataBatchRequestItem> requests = new List<ODataBatchRequestItem>();

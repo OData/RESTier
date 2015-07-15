@@ -12,10 +12,10 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryResult
     {
-        private Exception _error;
-        private IEdmEntitySet _resultsSource;
-        private IEnumerable _results;
-        private long? _totalCount;
+        private Exception error;
+        private IEdmEntitySet resultsSource;
+        private IEnumerable results;
+        private long? totalCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryResult" /> class with an error.
@@ -59,16 +59,16 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this._error;
+                return this.error;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this._error = value;
-                this._resultsSource = null;
-                this._results = null;
-                this._totalCount = null;
+                this.error = value;
+                this.resultsSource = null;
+                this.results = null;
+                this.totalCount = null;
             }
         }
 
@@ -83,17 +83,17 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this._resultsSource;
+                return this.resultsSource;
             }
 
             set
             {
-                if (this._error != null)
+                if (this.error != null)
                 {
                     throw new InvalidOperationException();
                 }
 
-                this._resultsSource = value;
+                this.resultsSource = value;
             }
         }
 
@@ -107,16 +107,16 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this._results;
+                return this.results;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this._error = null;
-                this._resultsSource = null;
-                this._results = value;
-                this._totalCount = null;
+                this.error = null;
+                this.resultsSource = null;
+                this.results = value;
+                this.totalCount = null;
             }
         }
 
@@ -132,18 +132,18 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this._totalCount;
+                return this.totalCount;
             }
 
             set
             {
-                if (this._results == null)
+                if (this.results == null)
                 {
                     throw new InvalidOperationException();
                 }
 
                 Ensure.NotNull(value, "value");
-                this._totalCount = value;
+                this.totalCount = value;
             }
         }
     }

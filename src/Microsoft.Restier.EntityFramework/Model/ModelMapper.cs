@@ -17,7 +17,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// </summary>
     public class ModelMapper : IModelMapper
     {
-        private readonly Type _dbContextType;
+        private readonly Type dbContextType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelMapper" /> class.
@@ -28,7 +28,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         public ModelMapper(Type dbContextType)
         {
             Ensure.NotNull(dbContextType, "dbContextType");
-            this._dbContextType = dbContextType;
+            this.dbContextType = dbContextType;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         {
             // TODO GitHubIssue#39 : support something beyond entity sets
             relevantType = null;
-            var property = this._dbContextType.GetProperty(name);
+            var property = this.dbContextType.GetProperty(name);
             if (property != null)
             {
                 var type = property.PropertyType;

@@ -28,22 +28,22 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// </summary>
     public class ModelProducer : IModelProducer
     {
-        private const string c_annotationSchema =
+        private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
+
+        static ModelProducer()
+        {
+            Instance = new ModelProducer();
+        }
 
         private ModelProducer()
         {
         }
 
-        private static readonly ModelProducer instance = new ModelProducer();
-
         /// <summary>
         /// Gets the single instance of this model producer.
         /// </summary>
-        public static ModelProducer Instance
-        {
-            get { return instance; }
-        }
+        public static ModelProducer Instance { get; private set; }
 
         /// <summary>
         /// Asynchronously produces a base model.
@@ -132,8 +132,8 @@ namespace Microsoft.Restier.EntityFramework.Model
             out List<EdmStructuralProperty> concurrencyProperties)
         {
             // TODO GitHubIssue#36 : support complex and entity inheritance
-            var oType = efModel.GetObjectSpaceType(efEntityType) as EntityType;
-            var entityType = new EdmEntityType(oType.NamespaceName, oType.Name);
+            var objectSpaceType = efModel.GetObjectSpaceType(efEntityType) as EntityType;
+            var entityType = new EdmEntityType(objectSpaceType.NamespaceName, objectSpaceType.Name);
             concurrencyProperties = null;
             foreach (var efProperty in efEntityType.Properties)
             {
@@ -153,7 +153,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
                     MetadataProperty storeGeneratedPattern = null;
                     efProperty.MetadataProperties.TryGetValue(
-                        c_annotationSchema + ":StoreGeneratedPattern",
+                        AnnotationSchema + ":StoreGeneratedPattern",
                         true,
                         out storeGeneratedPattern);
 
@@ -239,7 +239,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         {
             var kind = EdmPrimitiveTypeKind.None;
             var efKind = efProperty.PrimitiveType.PrimitiveTypeKind;
-            if (!s_primitiveTypeKindMap.TryGetValue(efKind, out kind))
+            if (!primitiveTypeKindMap.TryGetValue(efKind, out kind))
             {
                 // TODO GitHubIssue#103 : Choose property error message for unknown type
                 return null;
@@ -277,7 +277,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         }
 
         private static IDictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
-            s_primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
+            primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
         {
             { PrimitiveTypeKind.Binary, EdmPrimitiveTypeKind.Binary },
             { PrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Boolean },

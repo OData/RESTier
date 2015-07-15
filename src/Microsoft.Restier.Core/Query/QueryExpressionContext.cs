@@ -16,8 +16,8 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryExpressionContext
     {
-        private Stack<Expression> _visitedNodes = new Stack<Expression>();
-        private IDictionary<Expression, QueryModelReference> _modelReferences =
+        private Stack<Expression> visitedNodes = new Stack<Expression>();
+        private IDictionary<Expression, QueryModelReference> modelReferences =
             new Dictionary<Expression, QueryModelReference>();
 
         /// <summary>
@@ -44,12 +44,12 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (this._visitedNodes.Count == 0)
+                if (this.visitedNodes.Count == 0)
                 {
                     return null;
                 }
 
-                return this._visitedNodes.Peek();
+                return this.visitedNodes.Peek();
             }
         }
 
@@ -79,7 +79,7 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         public void PushVisitedNode(Expression visitedNode)
         {
-            this._visitedNodes.Push(visitedNode);
+            this.visitedNodes.Push(visitedNode);
             this.UpdateModelReference();
         }
 
@@ -91,8 +91,8 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         public void ReplaceVisitedNode(Expression visitedNode)
         {
-            this._visitedNodes.Pop();
-            this._visitedNodes.Push(visitedNode);
+            this.visitedNodes.Pop();
+            this.visitedNodes.Push(visitedNode);
             this.UpdateModelReference();
         }
 
@@ -101,7 +101,7 @@ namespace Microsoft.Restier.Core.Query
         /// </summary>
         public void PopVisitedNode()
         {
-            this._visitedNodes.Pop();
+            this.visitedNodes.Pop();
             this.UpdateModelReference();
         }
 
@@ -121,7 +121,7 @@ namespace Microsoft.Restier.Core.Query
             QueryModelReference modelReference = null;
             if (node != null)
             {
-                this._modelReferences.TryGetValue(node, out modelReference);
+                this.modelReferences.TryGetValue(node, out modelReference);
             }
 
             return modelReference;
@@ -130,12 +130,12 @@ namespace Microsoft.Restier.Core.Query
         private void UpdateModelReference()
         {
             if (this.VisitedNode != null &&
-                !this._modelReferences.ContainsKey(this.VisitedNode))
+                !this.modelReferences.ContainsKey(this.VisitedNode))
             {
                 var modelReference = this.ComputeModelReference();
                 if (modelReference != null)
                 {
-                    this._modelReferences.Add(
+                    this.modelReferences.Add(
                         this.VisitedNode, modelReference);
                 }
             }
@@ -274,7 +274,7 @@ namespace Microsoft.Restier.Core.Query
 
         private IEnumerable<Expression> GetExpressionTrail()
         {
-            return this._visitedNodes.TakeWhile(node => node != null);
+            return this.visitedNodes.TakeWhile(node => node != null);
         }
     }
 }

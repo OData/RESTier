@@ -70,6 +70,16 @@
         </Rule>
       </Rules>
     </Analyzer>
+    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
+      <Rules />
+      <AnalyzerSettings>
+        <CollectionProperty Name="Hungarian">
+          <Value>is</Value>
+          <Value>ef</Value>
+          <Value>db</Value>
+        </CollectionProperty>
+      </AnalyzerSettings>
+    </Analyzer>
     <Analyzer AnalyzerId="Microsoft.OData.StyleCop.FileHeaderRule">
       <Rules />
       <AnalyzerSettings>

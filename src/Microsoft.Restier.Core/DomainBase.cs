@@ -10,8 +10,8 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public abstract class DomainBase : IExpandableDomain
     {
-        private DomainConfiguration _domainConfiguration;
-        private DomainContext _domainContext;
+        private DomainConfiguration domainConfiguration;
+        private DomainContext domainContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DomainBase"/> class.
@@ -34,10 +34,10 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public void Dispose()
         {
-            if (!this.IsDisposed && this._domainContext != null)
+            if (!this.IsDisposed && this.domainContext != null)
             {
                 DomainParticipantAttribute.ApplyDisposal(
-                    this.GetType(), this, this._domainContext);
+                    this.GetType(), this, this.domainContext);
             }
 
             this.Dispose(true);
@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Core
                 throw new ObjectDisposedException(this.GetType().FullName);
             }
 
-            if (this._domainContext != null)
+            if (this.domainContext != null)
             {
                 throw new InvalidOperationException();
             }
@@ -110,10 +110,10 @@ namespace Microsoft.Restier.Core
                 candidate = candidate.BaseConfiguration;
             }
 
-            this._domainConfiguration = derivedConfiguration;
-            this._domainContext = this.CreateDomainContext(derivedConfiguration);
+            this.domainConfiguration = derivedConfiguration;
+            this.domainContext = this.CreateDomainContext(derivedConfiguration);
             DomainParticipantAttribute.ApplyInitialization(
-                this.GetType(), this, this._domainContext);
+                this.GetType(), this, this.domainContext);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Microsoft.Restier.Core
         {
             get
             {
-                if (this._domainConfiguration == null)
+                if (this.domainConfiguration == null)
                 {
                     DomainConfiguration configuration = null;
                     var key = this.DomainConfigurationKey;
@@ -157,10 +157,10 @@ namespace Microsoft.Restier.Core
                     }
 
                     configuration.EnsureCommitted();
-                    this._domainConfiguration = configuration;
+                    this.domainConfiguration = configuration;
                 }
 
-                return this._domainConfiguration;
+                return this.domainConfiguration;
             }
         }
 
@@ -171,7 +171,7 @@ namespace Microsoft.Restier.Core
         {
             get
             {
-                return this._domainContext != null;
+                return this.domainContext != null;
             }
         }
 
@@ -182,15 +182,15 @@ namespace Microsoft.Restier.Core
         {
             get
             {
-                if (this._domainContext == null)
+                if (this.domainContext == null)
                 {
-                    this._domainContext = this.CreateDomainContext(
+                    this.domainContext = this.CreateDomainContext(
                         this.DomainConfiguration);
                     DomainParticipantAttribute.ApplyInitialization(
-                        this.GetType(), this, this._domainContext);
+                        this.GetType(), this, this.domainContext);
                 }
 
-                return this._domainContext;
+                return this.domainContext;
             }
         }
 
@@ -237,7 +237,7 @@ namespace Microsoft.Restier.Core
         {
             if (disposing)
             {
-                this._domainContext = null;
+                this.domainContext = null;
                 this.IsDisposed = true;
             }
         }

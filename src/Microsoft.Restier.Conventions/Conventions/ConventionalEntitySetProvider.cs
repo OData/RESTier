@@ -23,11 +23,11 @@ namespace Microsoft.Restier.Conventions
     public class ConventionalEntitySetProvider :
         IModelExtender, IModelMapper, IQueryExpressionExpander
     {
-        private Type _targetType;
+        private Type targetType;
 
         private ConventionalEntitySetProvider(Type targetType)
         {
-            this._targetType = targetType;
+            this.targetType = targetType;
         }
 
         /// <inheritdoc/>
@@ -128,9 +128,9 @@ namespace Microsoft.Restier.Conventions
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
                     target = context.QueryContext.DomainContext.GetProperty(
-                        this._targetType.AssemblyQualifiedName);
+                        this.targetType.AssemblyQualifiedName);
                     if (target == null ||
-                        !this._targetType.IsAssignableFrom(target.GetType()))
+                        !this.targetType.IsAssignableFrom(target.GetType()))
                     {
                         return null;
                     }
@@ -165,7 +165,7 @@ namespace Microsoft.Restier.Conventions
         {
             get
             {
-                var properties = this._targetType.GetProperties(
+                var properties = this.targetType.GetProperties(
                     BindingFlags.NonPublic |
                     BindingFlags.Static |
                     BindingFlags.Instance |

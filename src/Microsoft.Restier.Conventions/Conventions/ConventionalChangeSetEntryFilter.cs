@@ -18,12 +18,12 @@ namespace Microsoft.Restier.Conventions
     /// </summary>
     public class ConventionalChangeSetEntryFilter : IChangeSetEntryFilter
     {
-        private Type _targetType;
+        private Type targetType;
 
         private ConventionalChangeSetEntryFilter(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
-            this._targetType = targetType;
+            this.targetType = targetType;
         }
 
         /// <inheritdoc/>
@@ -64,7 +64,7 @@ namespace Microsoft.Restier.Conventions
             string methodName = ConventionalChangeSetEntryFilter.GetMethodName(entry, methodNameSuffix);
             object[] parameters = ConventionalChangeSetEntryFilter.GetParameters(entry);
 
-            MethodInfo method = this._targetType.GetQualifiedMethod(methodName);
+            MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
             if (method != null &&
                 (method.ReturnType == typeof(void) ||
@@ -74,9 +74,9 @@ namespace Microsoft.Restier.Conventions
                 if (!method.IsStatic)
                 {
                     target = context.DomainContext.GetProperty(
-                        this._targetType.AssemblyQualifiedName);
+                        this.targetType.AssemblyQualifiedName);
                     if (target == null ||
-                        !this._targetType.IsAssignableFrom(target.GetType()))
+                        !this.targetType.IsAssignableFrom(target.GetType()))
                     {
                         return Task.WhenAll();
                     }

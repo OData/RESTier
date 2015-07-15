@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Core.Submit
         /// and the post-persisting events save loops allowed before the DataService
         /// stops processing to prevent potential infinite loop.
         /// </summary>
-        private const int maxLoop = 200;
+        private const int MaxLoop = 200;
 
         /// <summary>
         /// Asynchronously executes the submit flow.
@@ -99,7 +99,7 @@ namespace Microsoft.Restier.Core.Submit
 
                     await this.PerformPreEvent(context, currentChangeSetItems, cancellationToken);
                 }
-                while (eventsChangeSet.AnEntityHasChanged && (innerLoopCount < maxLoop));
+                while (eventsChangeSet.AnEntityHasChanged && (innerLoopCount < MaxLoop));
 
                 VerifyNoEntityHasChanged(eventsChangeSet);
 
@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Core.Submit
 
                 await this.PerformPostEvent(context, currentChangeSetItems, cancellationToken);
             }
-            while (eventsChangeSet.AnEntityHasChanged && (outerLoopCount < maxLoop));
+            while (eventsChangeSet.AnEntityHasChanged && (outerLoopCount < MaxLoop));
 
             VerifyNoEntityHasChanged(eventsChangeSet);
 
@@ -145,21 +145,21 @@ namespace Microsoft.Restier.Core.Submit
         {
             foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
             {
-                string noPermissionMessage = null;
+                string message = null;
 
                 foreach (var authorizer in context
                     .GetHookPoints<IChangeSetEntryAuthorizer>().Reverse())
                 {
                     if (!await authorizer.AuthorizeAsync(context, entry, cancellationToken))
                     {
-                        noPermissionMessage = DefaultSubmitHandler.GetAuthorizeFailedMessage(entry);
+                        message = DefaultSubmitHandler.GetAuthorizeFailedMessage(entry);
                         break;
                     }
                 }
 
-                if (noPermissionMessage != null)
+                if (message != null)
                 {
-                    throw new SecurityException(noPermissionMessage);
+                    throw new SecurityException(message);
                 }
             }
         }
@@ -170,25 +170,25 @@ namespace Microsoft.Restier.Core.Submit
             {
                 case ChangeSetEntryType.DataModification:
                     DataModificationEntry dataModification = (DataModificationEntry)entry;
-                    string noPermissionMessage = null;
+                    string message = null;
                     if (dataModification.IsNew)
                     {
-                        noPermissionMessage = Resources.NoPermissionToInsertEntity;
+                        message = Resources.NoPermissionToInsertEntity;
                     }
                     else if (dataModification.IsUpdate)
                     {
-                        noPermissionMessage = Resources.NoPermissionToUpdateEntity;
+                        message = Resources.NoPermissionToUpdateEntity;
                     }
                     else if (dataModification.IsDelete)
                     {
-                        noPermissionMessage = Resources.NoPermissionToDeleteEntity;
+                        message = Resources.NoPermissionToDeleteEntity;
                     }
                     else
                     {
                         throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                     }
 
-                    return string.Format(CultureInfo.InvariantCulture, noPermissionMessage, dataModification.EntitySetName);
+                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;

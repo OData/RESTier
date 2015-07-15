@@ -103,23 +103,23 @@ namespace Microsoft.Restier.Core.Query
 
         private class SingularExpressionRewriter : ExpressionVisitor
         {
-            private readonly IQueryable _query;
-            private readonly ParameterExpression _parameter;
+            private readonly IQueryable query;
+            private readonly ParameterExpression parameter;
 
             public SingularExpressionRewriter(
                 IQueryable query,
                 ParameterExpression parameter)
             {
-                this._query = query;
-                this._parameter = parameter;
+                this.query = query;
+                this.parameter = parameter;
             }
 
             protected override Expression VisitParameter(
                 ParameterExpression node)
             {
-                if (node == this._parameter)
+                if (node == this.parameter)
                 {
-                    return this._query.Expression;
+                    return this.query.Expression;
                 }
 
                 return base.VisitParameter(node);

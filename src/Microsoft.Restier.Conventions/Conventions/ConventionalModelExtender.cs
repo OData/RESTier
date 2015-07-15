@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Conventions
     /// </summary>
     public class ConventionalModelExtender : IModelExtender
     {
-        private Type _targetType;
+        private Type targetType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionalModelExtender" /> class.
@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Conventions
         /// <param name="targetType">The target type on which to invoke model extending.</param>
         public ConventionalModelExtender(Type targetType)
         {
-            _targetType = targetType;
+            this.targetType = targetType;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Conventions
 
         private void ExtendModel(ModelContext context)
         {
-            var method = _targetType.GetQualifiedMethod("OnModelExtending");
+            var method = this.targetType.GetQualifiedMethod("OnModelExtending");
             var returnType = typeof(EdmModel);
 
             if (method == null || method.ReturnType != returnType)
@@ -64,8 +64,8 @@ namespace Microsoft.Restier.Conventions
             object target = null;
             if (!method.IsStatic)
             {
-                target = context.DomainContext.GetProperty(_targetType.AssemblyQualifiedName);
-                if (target == null || !_targetType.IsInstanceOfType(target))
+                target = context.DomainContext.GetProperty(targetType.AssemblyQualifiedName);
+                if (target == null || !targetType.IsInstanceOfType(target))
                 {
                     return;
                 }

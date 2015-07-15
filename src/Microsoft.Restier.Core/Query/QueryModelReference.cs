@@ -32,9 +32,9 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class DomainDataReference : QueryModelReference
     {
-        private readonly QueryContext _context;
-        private readonly string _namespaceName;
-        private readonly string _name;
+        private readonly QueryContext context;
+        private readonly string namespaceName;
+        private readonly string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DomainDataReference" /> class.
@@ -49,8 +49,8 @@ namespace Microsoft.Restier.Core.Query
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(name, "name");
-            this._context = context;
-            this._name = name;
+            this.context = context;
+            this.name = name;
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace Microsoft.Restier.Core.Query
             Ensure.NotNull(context, "context");
             Ensure.NotNull(namespaceName, "namespaceName");
             Ensure.NotNull(name, "name");
-            this._context = context;
-            this._namespaceName = namespaceName;
-            this._name = name;
+            this.context = context;
+            this.namespaceName = namespaceName;
+            this.name = name;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (this._namespaceName == null)
+                if (this.namespaceName == null)
                 {
                     var source = this.Element as IEdmNavigationSource;
                     if (source != null)
@@ -137,17 +137,17 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (this._namespaceName == null)
+                if (this.namespaceName == null)
                 {
-                    return this._context.Model.EntityContainer.Elements
-                        .SingleOrDefault(e => e.Name == this._name);
+                    return this.context.Model.EntityContainer.Elements
+                        .SingleOrDefault(e => e.Name == this.name);
                 }
                 else
                 {
-                    return this._context.Model.SchemaElements
+                    return this.context.Model.SchemaElements
                         .SingleOrDefault(e =>
-                            e.Namespace == this._namespaceName &&
-                            e.Name == this._name);
+                            e.Namespace == this.namespaceName &&
+                            e.Name == this.name);
                 }
             }
         }
@@ -237,7 +237,7 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class PropertyDataReference : DerivedDataReference
     {
-        private readonly string _propertyName;
+        private readonly string propertyName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyDataReference" /> class.
@@ -252,7 +252,7 @@ namespace Microsoft.Restier.Core.Query
             : base(source)
         {
             Ensure.NotNull(propertyName, "propertyName");
-            this._propertyName = propertyName;
+            this.propertyName = propertyName;
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace Microsoft.Restier.Core.Query
                 var structuredType = this.Source.Type as IEdmStructuredType;
                 if (structuredType != null)
                 {
-                    return structuredType.FindProperty(this._propertyName);
+                    return structuredType.FindProperty(this.propertyName);
                 }
 
                 return null;

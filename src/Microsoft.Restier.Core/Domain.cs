@@ -243,12 +243,12 @@ namespace Microsoft.Restier.Core
         {
             var elementType = Domain.EnsureElementType(
                 context, namespaceName, name);
-            var method = s_sourceCoreMethod.MakeGenericMethod(elementType);
+            var method = SourceCoreMethod.MakeGenericMethod(elementType);
             var args = new object[] { namespaceName, name, arguments };
             return method.Invoke(null, args) as IQueryable;
         }
 
-        private static readonly MethodInfo s_sourceCoreMethod = typeof(Domain)
+        private static readonly MethodInfo SourceCoreMethod = typeof(Domain)
             .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
             .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
 
@@ -496,7 +496,7 @@ namespace Microsoft.Restier.Core
             Expression[] expressions = null;
             if (namespaceName == null)
             {
-                sourceMethod = s_source2Method;
+                sourceMethod = Source2Method;
                 expressions = new Expression[]
                 {
                     Expression.Constant(name),
@@ -505,7 +505,7 @@ namespace Microsoft.Restier.Core
             }
             else
             {
-                sourceMethod = s_source3Method;
+                sourceMethod = Source3Method;
                 expressions = new Expression[]
                 {
                     Expression.Constant(namespaceName),
@@ -521,11 +521,11 @@ namespace Microsoft.Restier.Core
                     expressions));
         }
 
-        private static readonly MethodInfo s_source2Method = typeof(DomainData)
+        private static readonly MethodInfo Source2Method = typeof(DomainData)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 2);
 
-        private static readonly MethodInfo s_source3Method = typeof(DomainData)
+        private static readonly MethodInfo Source3Method = typeof(DomainData)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);
 

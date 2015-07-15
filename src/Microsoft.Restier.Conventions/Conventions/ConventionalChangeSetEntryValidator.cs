@@ -19,20 +19,19 @@ namespace Microsoft.Restier.Conventions
     public class ConventionalChangeSetEntryValidator :
         IChangeSetEntryValidator
     {
+        static ConventionalChangeSetEntryValidator()
+        {
+            Instance = new ConventionalChangeSetEntryValidator();
+        }
+
         private ConventionalChangeSetEntryValidator()
         {
         }
 
-        private static readonly ConventionalChangeSetEntryValidator instance =
-           new ConventionalChangeSetEntryValidator();
-
         /// <summary>
         /// Gets a static instance of conventional change set entry validator.
         /// </summary>
-        public static ConventionalChangeSetEntryValidator Instance
-        {
-            get { return instance; }
-        }
+        public static ConventionalChangeSetEntryValidator Instance { get; private set; }
 
         /// <inheritdoc/>
         public Task ValidateEntityAsync(

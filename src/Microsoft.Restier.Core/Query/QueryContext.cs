@@ -11,8 +11,8 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryContext : InvocationContext
     {
-        private QueryRequest _request;
-        private QueryResult _result;
+        private QueryRequest request;
+        private QueryResult result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext" /> class.
@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this._request;
+                return this.request;
             }
 
             set
@@ -56,7 +56,7 @@ namespace Microsoft.Restier.Core.Query
                 }
 
                 Ensure.NotNull(value, "value");
-                this._request = value;
+                this.request = value;
             }
         }
 
@@ -67,13 +67,13 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this._result;
+                return this.result;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this._result = value;
+                this.result = value;
             }
         }
     }

@@ -25,16 +25,20 @@ namespace Microsoft.Restier.Security
 
         private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
 
-        private static readonly RoleBasedAuthorization instance = new RoleBasedAuthorization();
+        static RoleBasedAuthorization()
+        {
+            Default = new RoleBasedAuthorization();
+        }
+
+        private RoleBasedAuthorization()
+        {
+        }
 
         /// <summary>
         /// Gets the default role-based authorization system instance, which
         /// uses the current security principal to determine role membership.
         /// </summary>
-        public static RoleBasedAuthorization Default
-        {
-            get { return instance; }
-        }
+        public static RoleBasedAuthorization Default { get; private set; }
 
         /// <summary>
         /// Indicates if a schema element is currently visible.

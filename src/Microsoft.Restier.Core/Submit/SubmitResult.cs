@@ -10,8 +10,8 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class SubmitResult
     {
-        private Exception _error;
-        private ChangeSet _completedChangeSet;
+        private Exception error;
+        private ChangeSet completedChangeSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubmitResult" /> class with an error.
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Core.Submit
         public SubmitResult(ChangeSet completedChangeSet)
         {
             Ensure.NotNull(completedChangeSet, "completedChangeSet");
-            this._completedChangeSet = completedChangeSet;
+            this.completedChangeSet = completedChangeSet;
         }
 
         /// <summary>
@@ -48,14 +48,14 @@ namespace Microsoft.Restier.Core.Submit
         {
             get
             {
-                return this._error;
+                return this.error;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this._error = value;
-                this._completedChangeSet = null;
+                this.error = value;
+                this.completedChangeSet = null;
             }
         }
 
@@ -70,13 +70,13 @@ namespace Microsoft.Restier.Core.Submit
         {
             get
             {
-                return this._completedChangeSet;
+                return this.completedChangeSet;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this._completedChangeSet = value;
+                this.completedChangeSet = value;
             }
         }
     }

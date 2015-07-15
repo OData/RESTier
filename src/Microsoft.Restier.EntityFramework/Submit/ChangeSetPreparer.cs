@@ -22,19 +22,19 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// </summary>
     public class ChangeSetPreparer : IChangeSetPreparer
     {
+        static ChangeSetPreparer()
+        {
+            Instance = new ChangeSetPreparer();
+        }
+
         private ChangeSetPreparer()
         {
         }
 
-        private static readonly ChangeSetPreparer instance = new ChangeSetPreparer();
-
         /// <summary>
         /// Gets the singleton instance of the <see cref="ChangeSetPreparer"/> class.
         /// </summary>
-        public static ChangeSetPreparer Instance
-        {
-            get { return instance; }
-        }
+        public static ChangeSetPreparer Instance { get; private set; }
 
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.

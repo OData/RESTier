@@ -17,12 +17,12 @@ namespace Microsoft.Restier.Conventions
     /// </summary>
     public class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
     {
-        private Type _targetType;
+        private Type targetType;
 
         private ConventionalChangeSetAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
-            this._targetType = targetType;
+            this.targetType = targetType;
         }
 
         /// <inheritdoc/>
@@ -48,7 +48,7 @@ namespace Microsoft.Restier.Conventions
 
             Type returnType = typeof(bool);
             string methodName = ConventionalChangeSetAuthorizer.GetAuthorizeMethodName(entry);
-            MethodInfo method = this._targetType.GetQualifiedMethod(methodName);
+            MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)
@@ -57,9 +57,9 @@ namespace Microsoft.Restier.Conventions
                 if (!method.IsStatic)
                 {
                     target = context.DomainContext.GetProperty(
-                        this._targetType.AssemblyQualifiedName);
+                        this.targetType.AssemblyQualifiedName);
                     if (target == null ||
-                        !this._targetType.IsAssignableFrom(target.GetType()))
+                        !this.targetType.IsAssignableFrom(target.GetType()))
                     {
                         return Task.FromResult(result);
                     }

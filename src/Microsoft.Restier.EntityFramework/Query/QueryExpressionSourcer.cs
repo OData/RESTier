@@ -18,19 +18,19 @@ namespace Microsoft.Restier.EntityFramework.Query
     /// </summary>
     public class QueryExpressionSourcer : IQueryExpressionSourcer
     {
+        static QueryExpressionSourcer()
+        {
+            Instance = new QueryExpressionSourcer();
+        }
+
         private QueryExpressionSourcer()
         {
         }
 
-        private static readonly QueryExpressionSourcer instance = new QueryExpressionSourcer();
-
         /// <summary>
         /// Gets the single instance of this query expression sourcer.
         /// </summary>
-        public static QueryExpressionSourcer Instance
-        {
-            get { return instance; }
-        }
+        public static QueryExpressionSourcer Instance { get; private set; }
 
         /// <summary>
         /// Sources an expression.

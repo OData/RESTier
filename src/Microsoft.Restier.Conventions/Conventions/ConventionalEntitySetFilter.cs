@@ -16,11 +16,11 @@ namespace Microsoft.Restier.Conventions
     /// </summary>
     public class ConventionalEntitySetFilter : IQueryExpressionFilter
     {
-        private Type _targetType;
+        private Type targetType;
 
         private ConventionalEntitySetFilter(Type targetType)
         {
-            this._targetType = targetType;
+            this.targetType = targetType;
         }
 
         /// <inheritdoc/>
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Conventions
             var returnType = context.VisitedNode.Type
                 .FindGenericType(typeof(IQueryable<>));
             var elementType = returnType.GetGenericArguments()[0];
-            var method = this._targetType.GetQualifiedMethod("OnFilter" + entitySet.Name);
+            var method = this.targetType.GetQualifiedMethod("OnFilter" + entitySet.Name);
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)
             {
@@ -67,9 +67,9 @@ namespace Microsoft.Restier.Conventions
                 if (!method.IsStatic)
                 {
                     target = context.QueryContext.DomainContext.GetProperty(
-                        this._targetType.AssemblyQualifiedName);
+                        this.targetType.AssemblyQualifiedName);
                     if (target == null ||
-                        !this._targetType.IsAssignableFrom(target.GetType()))
+                        !this.targetType.IsAssignableFrom(target.GetType()))
                     {
                         return null;
                     }
