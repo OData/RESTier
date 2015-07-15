@@ -21,6 +21,19 @@ namespace Microsoft.Restier.Core
         {
         }
 
+        private T ExpandableDomain
+        {
+            get
+            {
+                if (this.expandableDomain == null)
+                {
+                    this.expandableDomain = this.CreateExpandableDomain();
+                }
+
+                return this.expandableDomain;
+            }
+        }
+
         /// <summary>
         /// Creates the domain configuration for this domain.
         /// </summary>
@@ -81,19 +94,6 @@ namespace Microsoft.Restier.Core
             }
 
             base.Dispose(disposing);
-        }
-
-        private T ExpandableDomain
-        {
-            get
-            {
-                if (this.expandableDomain == null)
-                {
-                    this.expandableDomain = this.CreateExpandableDomain();
-                }
-
-                return this.expandableDomain;
-            }
         }
     }
 }

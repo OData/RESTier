@@ -6,6 +6,47 @@ using System;
 namespace Microsoft.Restier.Security
 {
     /// <summary>
+    /// Represents a set of built-in domain permission types.
+    /// </summary>
+    public static class DomainPermissionType
+    {
+        /// <summary>
+        /// Allows inspecting the model definition of a securable element.
+        /// </summary>
+        public const string Inspect = "Inspect";
+
+        /// <summary>
+        /// Allows creation of a new entity in an entity set.
+        /// </summary>
+        public const string Create = "Create";
+
+        /// <summary>
+        /// Allows reading entities from an entity set.
+        /// </summary>
+        public const string Read = "Read";
+
+        /// <summary>
+        /// Allows updating entities in an entity set.
+        /// </summary>
+        public const string Update = "Update";
+
+        /// <summary>
+        /// Allows deleting entities in an entity set.
+        /// </summary>
+        public const string Delete = "Delete";
+
+        /// <summary>
+        /// Allows invoking a function or action.
+        /// </summary>
+        public const string Invoke = "Invoke";
+
+        /// <summary>
+        /// Allows all actions on a securable element.
+        /// </summary>
+        public const string All = "All";
+    }
+
+    /// <summary>
     /// Represents a role-based security statement that grants or
     /// denies permission on a securable element to a specific role.
     /// </summary>
@@ -14,6 +55,41 @@ namespace Microsoft.Restier.Security
         private DomainPermission()
         {
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this domain permission grants access.
+        /// </summary>
+        public bool IsGrant { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this domain permission denies access.
+        /// </summary>
+        public bool IsDeny { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the permission being granted or denied.
+        /// </summary>
+        public string PermissionType { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the namespace containing the securable element.
+        /// </summary>
+        public string NamespaceName { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the securable element.
+        /// </summary>
+        public string SecurableName { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the child of the securable element.
+        /// </summary>
+        public string ChildName { get; private set; }
+
+        /// <summary>
+        /// Gets the role to which this domain permission applies.
+        /// </summary>
+        public string Role { get; private set; }
 
         /// <summary>
         /// Creates a grant permission.
@@ -106,81 +182,5 @@ namespace Microsoft.Restier.Security
                 Role = role
             };
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this domain permission grants access.
-        /// </summary>
-        public bool IsGrant { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this domain permission denies access.
-        /// </summary>
-        public bool IsDeny { get; private set; }
-
-        /// <summary>
-        /// Gets the type of the permission being granted or denied.
-        /// </summary>
-        public string PermissionType { get; private set; }
-
-        /// <summary>
-        /// Gets the name of the namespace containing the securable element.
-        /// </summary>
-        public string NamespaceName { get; private set; }
-
-        /// <summary>
-        /// Gets the name of the securable element.
-        /// </summary>
-        public string SecurableName { get; private set; }
-
-        /// <summary>
-        /// Gets the name of the child of the securable element.
-        /// </summary>
-        public string ChildName { get; private set; }
-
-        /// <summary>
-        /// Gets the role to which this domain permission applies.
-        /// </summary>
-        public string Role { get; private set; }
-    }
-
-    /// <summary>
-    /// Represents a set of built-in domain permission types.
-    /// </summary>
-    public static class DomainPermissionType
-    {
-        /// <summary>
-        /// Allows inspecting the model definition of a securable element.
-        /// </summary>
-        public const string Inspect = "Inspect";
-
-        /// <summary>
-        /// Allows creation of a new entity in an entity set.
-        /// </summary>
-        public const string Create = "Create";
-
-        /// <summary>
-        /// Allows reading entities from an entity set.
-        /// </summary>
-        public const string Read = "Read";
-
-        /// <summary>
-        /// Allows updating entities in an entity set.
-        /// </summary>
-        public const string Update = "Update";
-
-        /// <summary>
-        /// Allows deleting entities in an entity set.
-        /// </summary>
-        public const string Delete = "Delete";
-
-        /// <summary>
-        /// Allows invoking a function or action.
-        /// </summary>
-        public const string Invoke = "Invoke";
-
-        /// <summary>
-        /// Allows all actions on a securable element.
-        /// </summary>
-        public const string All = "All";
     }
 }

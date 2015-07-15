@@ -97,14 +97,6 @@ namespace Microsoft.Restier.WebApi.Batch
             }
         }
 
-        private void SetChangeSetProperty(ODataDomainChangeSetProperty changeSetProperty)
-        {
-            foreach (HttpRequestMessage request in this.Requests)
-            {
-                request.Properties.Add("Microsoft.Restier.Submit.ChangeSet", changeSetProperty);
-            }
-        }
-
         private static void DisposeResponses(IEnumerable<HttpResponseMessage> responses)
         {
             foreach (HttpResponseMessage response in responses)
@@ -113,6 +105,14 @@ namespace Microsoft.Restier.WebApi.Batch
                 {
                     response.Dispose();
                 }
+            }
+        }
+
+        private void SetChangeSetProperty(ODataDomainChangeSetProperty changeSetProperty)
+        {
+            foreach (HttpRequestMessage request in this.Requests)
+            {
+                request.Properties.Add("Microsoft.Restier.Submit.ChangeSet", changeSetProperty);
             }
         }
     }

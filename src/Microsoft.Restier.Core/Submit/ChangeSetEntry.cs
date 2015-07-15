@@ -10,41 +10,6 @@ using Microsoft.Restier.Core.Properties;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents an entry in a change set.
-    /// </summary>
-    public abstract class ChangeSetEntry
-    {
-        internal ChangeSetEntry(ChangeSetEntryType type)
-        {
-            this.Type = type;
-
-            this.ChangeSetEntityState = DynamicChangeSetEntityState.Changed;
-        }
-
-        /// <summary>
-        /// Gets the type of this change set entry.
-        /// </summary>
-        public ChangeSetEntryType Type { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the dynamic state of this change set entry.
-        /// </summary>
-        public DynamicChangeSetEntityState ChangeSetEntityState { get; set; }
-
-        /// <summary>
-        /// Indicates whether this change set entry is in a changed state.
-        /// </summary>
-        /// <returns>
-        /// Whether this change set entry is in a changed state.
-        /// </returns>
-        public bool HasChanged()
-        {
-            return this.ChangeSetEntityState == DynamicChangeSetEntityState.Changed ||
-                this.ChangeSetEntityState == DynamicChangeSetEntityState.ChangedWithinOwnPreEventing;
-        }
-    }
-
-    /// <summary>
     /// Specifies the type of a change set entry.
     /// </summary>
     public enum ChangeSetEntryType
@@ -120,6 +85,41 @@ namespace Microsoft.Restier.Core.Submit
         /// Specifies the entity is being removed.
         /// </summary>
         Removing
+    }
+
+    /// <summary>
+    /// Represents an entry in a change set.
+    /// </summary>
+    public abstract class ChangeSetEntry
+    {
+        internal ChangeSetEntry(ChangeSetEntryType type)
+        {
+            this.Type = type;
+
+            this.ChangeSetEntityState = DynamicChangeSetEntityState.Changed;
+        }
+
+        /// <summary>
+        /// Gets the type of this change set entry.
+        /// </summary>
+        public ChangeSetEntryType Type { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the dynamic state of this change set entry.
+        /// </summary>
+        public DynamicChangeSetEntityState ChangeSetEntityState { get; set; }
+
+        /// <summary>
+        /// Indicates whether this change set entry is in a changed state.
+        /// </summary>
+        /// <returns>
+        /// Whether this change set entry is in a changed state.
+        /// </returns>
+        public bool HasChanged()
+        {
+            return this.ChangeSetEntityState == DynamicChangeSetEntityState.Changed ||
+                this.ChangeSetEntityState == DynamicChangeSetEntityState.ChangedWithinOwnPreEventing;
+        }
     }
 
     /// <summary>

@@ -56,6 +56,62 @@ namespace Microsoft.Restier.Conventions
             return this.InvokeFilterMethodAsync(context, entry, "ed");
         }
 
+        private static string GetMethodName(ChangeSetEntry entry, string suffix)
+        {
+            switch (entry.Type)
+            {
+            case ChangeSetEntryType.DataModification:
+                DataModificationEntry dataModification = (DataModificationEntry)entry;
+                string operationName = null;
+                if (dataModification.IsNew)
+                {
+                    operationName = "Insert";
+                }
+                else if (dataModification.IsUpdate)
+                {
+                    operationName = "Updat";
+                }
+                else if (dataModification.IsDelete)
+                {
+                    operationName = "Delet";
+                }
+
+                return "On" + operationName + suffix + dataModification.EntitySetName;
+
+            case ChangeSetEntryType.ActionInvocation:
+                ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
+                return "OnExecut" + suffix + actionEntry.ActionName;
+
+            default:
+                throw new InvalidOperationException(string.Format(
+                    CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+            }
+        }
+
+        private static object[] GetParameters(ChangeSetEntry entry)
+        {
+            switch (entry.Type)
+            {
+            case ChangeSetEntryType.DataModification:
+                DataModificationEntry dataModification = (DataModificationEntry)entry;
+                return new object[] { dataModification.Entity };
+
+            case ChangeSetEntryType.ActionInvocation:
+                ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
+                return actionEntry.GetArgumentArray();
+
+            default:
+                throw new InvalidOperationException(string.Format(
+                    CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+            }
+        }
+
+        private static bool ParametersMatch(ParameterInfo[] methodParameters, object[] parameters)
+        {
+            return methodParameters.Length == parameters.Length
+                && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
+        }
+
         private Task InvokeFilterMethodAsync(
             SubmitContext context,
             ChangeSetEntry entry,
@@ -95,62 +151,6 @@ namespace Microsoft.Restier.Conventions
             }
 
             return Task.WhenAll();
-        }
-
-        private static string GetMethodName(ChangeSetEntry entry, string suffix)
-        {
-            switch (entry.Type)
-            {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
-                    string operationName = null;
-                    if (dataModification.IsNew)
-                    {
-                        operationName = "Insert";
-                    }
-                    else if (dataModification.IsUpdate)
-                    {
-                        operationName = "Updat";
-                    }
-                    else if (dataModification.IsDelete)
-                    {
-                        operationName = "Delet";
-                    }
-
-                    return "On" + operationName + suffix + dataModification.EntitySetName;
-
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                    return "OnExecut" + suffix + actionEntry.ActionName;
-
-                default:
-                    throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
-            }
-        }
-
-        private static object[] GetParameters(ChangeSetEntry entry)
-        {
-            switch (entry.Type)
-            {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
-                    return new object[] { dataModification.Entity };
-
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                    return actionEntry.GetArgumentArray();
-
-                default:
-                    throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
-            }
-        }
-
-        private static bool ParametersMatch(ParameterInfo[] methodParameters, object[] parameters)
-        {
-            return methodParameters.Length == parameters.Length
-                && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
         }
     }
 }

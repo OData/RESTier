@@ -35,6 +35,22 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
+        /// Gets or sets the composed query expression.
+        /// </summary>
+        public Expression Expression { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating if the total
+        /// number of items should be retrieved when the
+        /// result has been filtered using paging operators.
+        /// </summary>
+        /// <remarks>
+        /// Setting this to <c>true</c> may have a performance impact as
+        /// the data provider may need to execute two independent queries.
+        /// </remarks>
+        public bool? IncludeTotalCount { get; set; }
+
+        /// <summary>
         /// Creates a new singular query request with
         /// a composed query and scalar expression.
         /// </summary>
@@ -125,21 +141,5 @@ namespace Microsoft.Restier.Core.Query
                 return base.VisitParameter(node);
             }
         }
-
-        /// <summary>
-        /// Gets or sets the composed query expression.
-        /// </summary>
-        public Expression Expression { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating if the total
-        /// number of items should be retrieved when the
-        /// result has been filtered using paging operators.
-        /// </summary>
-        /// <remarks>
-        /// Setting this to <c>true</c> may have a performance impact as
-        /// the data provider may need to execute two independent queries.
-        /// </remarks>
-        public bool? IncludeTotalCount { get; set; }
     }
 }

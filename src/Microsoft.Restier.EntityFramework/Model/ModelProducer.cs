@@ -31,6 +31,42 @@ namespace Microsoft.Restier.EntityFramework.Model
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
+        private static IDictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
+            primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
+        {
+            { PrimitiveTypeKind.Binary, EdmPrimitiveTypeKind.Binary },
+            { PrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Boolean },
+            { PrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.Byte },
+            ////{ PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.DateTimeOffset },
+            { PrimitiveTypeKind.DateTimeOffset, EdmPrimitiveTypeKind.DateTimeOffset },
+            { PrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Decimal },
+            { PrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Double },
+            { PrimitiveTypeKind.Geography, EdmPrimitiveTypeKind.Geography },
+            { PrimitiveTypeKind.GeographyCollection, EdmPrimitiveTypeKind.GeographyCollection },
+            { PrimitiveTypeKind.GeographyLineString, EdmPrimitiveTypeKind.GeographyLineString },
+            { PrimitiveTypeKind.GeographyMultiLineString, EdmPrimitiveTypeKind.GeographyMultiLineString },
+            { PrimitiveTypeKind.GeographyMultiPoint, EdmPrimitiveTypeKind.GeographyMultiPoint },
+            { PrimitiveTypeKind.GeographyMultiPolygon, EdmPrimitiveTypeKind.GeographyMultiPolygon },
+            { PrimitiveTypeKind.GeographyPoint, EdmPrimitiveTypeKind.GeographyPoint },
+            { PrimitiveTypeKind.GeographyPolygon, EdmPrimitiveTypeKind.GeographyPolygon },
+            { PrimitiveTypeKind.Geometry, EdmPrimitiveTypeKind.Geometry },
+            { PrimitiveTypeKind.GeometryCollection, EdmPrimitiveTypeKind.GeometryCollection },
+            { PrimitiveTypeKind.GeometryLineString, EdmPrimitiveTypeKind.GeometryLineString },
+            { PrimitiveTypeKind.GeometryMultiLineString, EdmPrimitiveTypeKind.GeometryMultiLineString },
+            { PrimitiveTypeKind.GeometryMultiPoint, EdmPrimitiveTypeKind.GeometryMultiPoint },
+            { PrimitiveTypeKind.GeometryMultiPolygon, EdmPrimitiveTypeKind.GeometryMultiPolygon },
+            { PrimitiveTypeKind.GeometryPoint, EdmPrimitiveTypeKind.GeometryPoint },
+            { PrimitiveTypeKind.GeometryPolygon, EdmPrimitiveTypeKind.GeometryPolygon },
+            { PrimitiveTypeKind.Guid, EdmPrimitiveTypeKind.Guid },
+            { PrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int16 },
+            { PrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int32 },
+            { PrimitiveTypeKind.Int64, EdmPrimitiveTypeKind.Int64 },
+            { PrimitiveTypeKind.SByte, EdmPrimitiveTypeKind.SByte },
+            { PrimitiveTypeKind.Single, EdmPrimitiveTypeKind.Single },
+            { PrimitiveTypeKind.String, EdmPrimitiveTypeKind.String },
+            { PrimitiveTypeKind.Time, EdmPrimitiveTypeKind.Duration }
+        };
+
         static ModelProducer()
         {
             Instance = new ModelProducer();
@@ -275,42 +311,6 @@ namespace Microsoft.Restier.EntityFramework.Model
                         efProperty.Nullable);
             }
         }
-
-        private static IDictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
-            primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
-        {
-            { PrimitiveTypeKind.Binary, EdmPrimitiveTypeKind.Binary },
-            { PrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Boolean },
-            { PrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.Byte },
-            ////{ PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.DateTimeOffset },
-            { PrimitiveTypeKind.DateTimeOffset, EdmPrimitiveTypeKind.DateTimeOffset },
-            { PrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Decimal },
-            { PrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Double },
-            { PrimitiveTypeKind.Geography, EdmPrimitiveTypeKind.Geography },
-            { PrimitiveTypeKind.GeographyCollection, EdmPrimitiveTypeKind.GeographyCollection },
-            { PrimitiveTypeKind.GeographyLineString, EdmPrimitiveTypeKind.GeographyLineString },
-            { PrimitiveTypeKind.GeographyMultiLineString, EdmPrimitiveTypeKind.GeographyMultiLineString },
-            { PrimitiveTypeKind.GeographyMultiPoint, EdmPrimitiveTypeKind.GeographyMultiPoint },
-            { PrimitiveTypeKind.GeographyMultiPolygon, EdmPrimitiveTypeKind.GeographyMultiPolygon },
-            { PrimitiveTypeKind.GeographyPoint, EdmPrimitiveTypeKind.GeographyPoint },
-            { PrimitiveTypeKind.GeographyPolygon, EdmPrimitiveTypeKind.GeographyPolygon },
-            { PrimitiveTypeKind.Geometry, EdmPrimitiveTypeKind.Geometry },
-            { PrimitiveTypeKind.GeometryCollection, EdmPrimitiveTypeKind.GeometryCollection },
-            { PrimitiveTypeKind.GeometryLineString, EdmPrimitiveTypeKind.GeometryLineString },
-            { PrimitiveTypeKind.GeometryMultiLineString, EdmPrimitiveTypeKind.GeometryMultiLineString },
-            { PrimitiveTypeKind.GeometryMultiPoint, EdmPrimitiveTypeKind.GeometryMultiPoint },
-            { PrimitiveTypeKind.GeometryMultiPolygon, EdmPrimitiveTypeKind.GeometryMultiPolygon },
-            { PrimitiveTypeKind.GeometryPoint, EdmPrimitiveTypeKind.GeometryPoint },
-            { PrimitiveTypeKind.GeometryPolygon, EdmPrimitiveTypeKind.GeometryPolygon },
-            { PrimitiveTypeKind.Guid, EdmPrimitiveTypeKind.Guid },
-            { PrimitiveTypeKind.Int16, EdmPrimitiveTypeKind.Int16 },
-            { PrimitiveTypeKind.Int32, EdmPrimitiveTypeKind.Int32 },
-            { PrimitiveTypeKind.Int64, EdmPrimitiveTypeKind.Int64 },
-            { PrimitiveTypeKind.SByte, EdmPrimitiveTypeKind.SByte },
-            { PrimitiveTypeKind.Single, EdmPrimitiveTypeKind.Single },
-            { PrimitiveTypeKind.String, EdmPrimitiveTypeKind.String },
-            { PrimitiveTypeKind.Time, EdmPrimitiveTypeKind.Duration }
-        };
 
         private static void AddNavigationProperties(
             AssociationSet efAssociationSet,

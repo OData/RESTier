@@ -30,6 +30,22 @@ namespace Microsoft.Restier.Conventions
             this.targetType = targetType;
         }
 
+        private IEnumerable<PropertyInfo> AddedEntitySets
+        {
+            get
+            {
+                var properties = this.targetType.GetProperties(
+                    BindingFlags.NonPublic |
+                    BindingFlags.Static |
+                    BindingFlags.Instance |
+                    BindingFlags.DeclaredOnly);
+                return properties.Where(p =>
+                    !p.CanWrite && !p.GetMethod.IsPrivate &&
+                    p.PropertyType.IsGenericType &&
+                    p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>)).ToArray();
+            }
+        }
+
         /// <inheritdoc/>
         public static void ApplyTo(
             DomainConfiguration configuration,
@@ -159,22 +175,6 @@ namespace Microsoft.Restier.Conventions
             }
 
             return null;
-        }
-
-        private IEnumerable<PropertyInfo> AddedEntitySets
-        {
-            get
-            {
-                var properties = this.targetType.GetProperties(
-                    BindingFlags.NonPublic |
-                    BindingFlags.Static |
-                    BindingFlags.Instance |
-                    BindingFlags.DeclaredOnly);
-                return properties.Where(p =>
-                    !p.CanWrite && !p.GetMethod.IsPrivate &&
-                    p.PropertyType.IsGenericType &&
-                    p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>)).ToArray();
-            }
         }
     }
 }

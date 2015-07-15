@@ -127,6 +127,23 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
+        /// Gets the domain configuration key, if any.
+        /// </summary>
+        public object Key { get; private set; }
+
+        /// <summary>
+        /// Gets the base domain configuration.
+        /// </summary>
+        public DomainConfiguration BaseConfiguration { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this domain configuration has been committed.
+        /// </summary>
+        public bool IsCommitted { get; private set; }
+
+        internal DomainModel Model { get; set; }
+
+        /// <summary>
         /// Gets an existing domain configuration from a key.
         /// </summary>
         /// <param name="key">
@@ -156,21 +173,6 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(key, "key");
             DomainConfiguration.Configurations.Remove(key);
         }
-
-        /// <summary>
-        /// Gets the domain configuration key, if any.
-        /// </summary>
-        public object Key { get; private set; }
-
-        /// <summary>
-        /// Gets the base domain configuration.
-        /// </summary>
-        public DomainConfiguration BaseConfiguration { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this domain configuration has been committed.
-        /// </summary>
-        public bool IsCommitted { get; private set; }
 
         /// <summary>
         /// Ensures this domain configuration has been committed.
@@ -390,8 +392,6 @@ namespace Microsoft.Restier.Core
 
             instances.Add(instance);
         }
-
-        internal DomainModel Model { get; set; }
 
         private object GetHookPoint(Type hookPointType)
         {

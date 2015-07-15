@@ -22,6 +22,18 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public static class Domain // TODO GitHubIssue#25,#26 : transactions, exception filters
     {
+        private static readonly MethodInfo SourceCoreMethod = typeof(Domain)
+            .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
+            .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
+
+        private static readonly MethodInfo Source2Method = typeof(DomainData)
+            .GetMember("Source").Cast<MethodInfo>()
+            .Single(m => m.GetParameters().Length == 2);
+
+        private static readonly MethodInfo Source3Method = typeof(DomainData)
+            .GetMember("Source").Cast<MethodInfo>()
+            .Single(m => m.GetParameters().Length == 3);
+
         #region Model
 
         /// <summary>
@@ -235,23 +247,6 @@ namespace Microsoft.Restier.Core
             return Domain.SourceCore(context, namespaceName, name, arguments);
         }
 
-        private static IQueryable SourceCore(
-            DomainContext context,
-            string namespaceName,
-            string name,
-            object[] arguments)
-        {
-            var elementType = Domain.EnsureElementType(
-                context, namespaceName, name);
-            var method = SourceCoreMethod.MakeGenericMethod(elementType);
-            var args = new object[] { namespaceName, name, arguments };
-            return method.Invoke(null, args) as IQueryable;
-        }
-
-        private static readonly MethodInfo SourceCoreMethod = typeof(Domain)
-            .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
-            .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
-
         /// <summary>
         /// Gets a queryable source of data exposed by a domain.
         /// </summary>
@@ -422,8 +417,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
             Ensure.NotNull(namespaceName, "namespaceName");
             Ensure.NotNull(name, "name");
-            var elementType = Domain.EnsureElementType(
-                context, namespaceName, name);
+            var elementType = Domain.EnsureElementType(context, namespaceName, name);
             if (typeof(TElement) != elementType)
             {
                 // TODO GitHubIssue#24 : error message
@@ -432,103 +426,6 @@ namespace Microsoft.Restier.Core
 
             return Domain.SourceCore<TElement>(namespaceName, name, arguments);
         }
-
-        private static Type EnsureElementType(
-            DomainContext context,
-            string namespaceName,
-            string name)
-        {
-            Type elementType = null;
-            bool hasElementType = false;
-            var mappers = context.Configuration.GetHookPoints<IModelMapper>();
-            foreach (var mapper in mappers.Reverse())
-            {
-                if (namespaceName == null)
-                {
-                    hasElementType = mapper.TryGetRelevantType(
-                        context, name, out elementType);
-                }
-                else
-                {
-                    hasElementType = mapper.TryGetRelevantType(
-                        context, namespaceName, name, out elementType);
-                }
-
-                if (hasElementType)
-                {
-                    break;
-                }
-            }
-
-            if (!hasElementType)
-            {
-                var mapper = context.Configuration.GetHookPoint<IModelMapper>();
-                if (mapper != null)
-                {
-                    if (namespaceName == null)
-                    {
-                        hasElementType = mapper.TryGetRelevantType(
-                            context, name, out elementType);
-                    }
-                    else
-                    {
-                        hasElementType = mapper.TryGetRelevantType(
-                            context, namespaceName, name, out elementType);
-                    }
-                }
-            }
-
-            if (elementType == null)
-            {
-                // TODO GitHubIssue#24 : error message
-                throw new NotSupportedException();
-            }
-
-            return elementType;
-        }
-
-        private static IQueryable<TElement> SourceCore<TElement>(
-            string namespaceName,
-            string name,
-            object[] arguments)
-        {
-            MethodInfo sourceMethod = null;
-            Expression[] expressions = null;
-            if (namespaceName == null)
-            {
-                sourceMethod = Source2Method;
-                expressions = new Expression[]
-                {
-                    Expression.Constant(name),
-                    Expression.Constant(arguments, typeof(object[]))
-                };
-            }
-            else
-            {
-                sourceMethod = Source3Method;
-                expressions = new Expression[]
-                {
-                    Expression.Constant(namespaceName),
-                    Expression.Constant(name),
-                    Expression.Constant(arguments, typeof(object[]))
-                };
-            }
-
-            return new QueryableSource<TElement>(
-                Expression.Call(
-                    null,
-                    sourceMethod.MakeGenericMethod(typeof(TElement)),
-                    expressions));
-        }
-
-        private static readonly MethodInfo Source2Method = typeof(DomainData)
-            .GetMember("Source").Cast<MethodInfo>()
-            .Single(m => m.GetParameters().Length == 2);
-
-        private static readonly MethodInfo Source3Method = typeof(DomainData)
-            .GetMember("Source").Cast<MethodInfo>()
-            .Single(m => m.GetParameters().Length == 3);
-
         #endregion
 
         #region Query
@@ -739,6 +636,106 @@ namespace Microsoft.Restier.Core
             }
         }
 
+        #endregion
+
+        #region Source Private
+        private static IQueryable SourceCore(
+            DomainContext context,
+            string namespaceName,
+            string name,
+            object[] arguments)
+        {
+            var elementType = Domain.EnsureElementType(context, namespaceName, name);
+            var method = SourceCoreMethod.MakeGenericMethod(elementType);
+            var args = new object[] { namespaceName, name, arguments };
+            return method.Invoke(null, args) as IQueryable;
+        }
+
+        private static Type EnsureElementType(
+            DomainContext context,
+            string namespaceName,
+            string name)
+        {
+            Type elementType = null;
+            bool hasElementType = false;
+            var mappers = context.Configuration.GetHookPoints<IModelMapper>();
+            foreach (var mapper in mappers.Reverse())
+            {
+                if (namespaceName == null)
+                {
+                    hasElementType = mapper.TryGetRelevantType(
+                        context, name, out elementType);
+                }
+                else
+                {
+                    hasElementType = mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
+                }
+
+                if (hasElementType)
+                {
+                    break;
+                }
+            }
+
+            if (!hasElementType)
+            {
+                var mapper = context.Configuration.GetHookPoint<IModelMapper>();
+                if (mapper != null)
+                {
+                    if (namespaceName == null)
+                    {
+                        hasElementType = mapper.TryGetRelevantType(
+                            context, name, out elementType);
+                    }
+                    else
+                    {
+                        hasElementType = mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
+                    }
+                }
+            }
+
+            if (elementType == null)
+            {
+                // TODO GitHubIssue#24 : error message
+                throw new NotSupportedException();
+            }
+
+            return elementType;
+        }
+
+        private static IQueryable<TElement> SourceCore<TElement>(
+            string namespaceName,
+            string name,
+            object[] arguments)
+        {
+            MethodInfo sourceMethod = null;
+            Expression[] expressions = null;
+            if (namespaceName == null)
+            {
+                sourceMethod = Source2Method;
+                expressions = new Expression[]
+                {
+                    Expression.Constant(name),
+                    Expression.Constant(arguments, typeof(object[]))
+                };
+            }
+            else
+            {
+                sourceMethod = Source3Method;
+                expressions = new Expression[]
+                {
+                    Expression.Constant(namespaceName),
+                    Expression.Constant(name),
+                    Expression.Constant(arguments, typeof(object[]))
+                };
+            }
+
+            return new QueryableSource<TElement>(
+                Expression.Call(
+                    null,
+                    sourceMethod.MakeGenericMethod(typeof(TElement)),
+                    expressions));
+        }
         #endregion
     }
 }

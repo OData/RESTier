@@ -132,119 +132,169 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
+        /// Handles a POST request to create an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to create.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the creation result.</returns>
+        public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+
+            ODataPath path = this.GetPath();
+            IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
+            if (entitySet == null)
+            {
+                throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
+            }
+
+            DataModificationEntry postEntry = new DataModificationEntry(
+                entitySet.Name,
+                path.EdmType.FullTypeName(),
+                null,
+                null,
+                edmEntityObject.CreatePropertyDictionary());
+
+            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            if (changeSetProperty == null)
+            {
+                ChangeSet changeSet = new ChangeSet();
+                changeSet.Entries.Add(postEntry);
+
+                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+            }
+            else
+            {
+                changeSetProperty.ChangeSet.Entries.Add(postEntry);
+
+                await changeSetProperty.OnChangeSetCompleted();
+            }
+
+            return this.CreateCreatedODataResult(postEntry.Entity);
+        }
+
+        /// <summary>
+        /// Handles a PUT request to fully update an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to update.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the updated result.</returns>
+        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+
+            return await this.Update(edmEntityObject, true, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles a PATCH request to partially update an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to update.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the updated result.</returns>
+        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+
+            return await this.Update(edmEntityObject, false, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles a DELETE request to delete an entity.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the deletion result.</returns>
+        public async Task<IHttpActionResult> Delete(CancellationToken cancellationToken)
+        {
+            ODataPath path = this.GetPath();
+            IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
+            if (entitySet == null)
+            {
+                throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
+            }
+
+            DataModificationEntry deleteEntry = new DataModificationEntry(
+                entitySet.Name,
+                path.EdmType.FullTypeName(),
+                GetPathKeyValues(path),
+                this.GetOriginalValues(),
+                null);
+
+            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            if (changeSetProperty == null)
+            {
+                ChangeSet changeSet = new ChangeSet();
+                changeSet.Entries.Add(deleteEntry);
+
+                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+            }
+            else
+            {
+                changeSetProperty.ChangeSet.Entries.Add(deleteEntry);
+
+                await changeSetProperty.OnChangeSetCompleted();
+            }
+
+            return this.StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Handles a POST request to an action.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the action result.</returns>
+        public async Task<IHttpActionResult> PostAction(CancellationToken cancellationToken)
+        {
+            ODataPath path = this.GetPath();
+            UnboundActionPathSegment actionPathSegment = path.Segments.Last() as UnboundActionPathSegment;
+            if (actionPathSegment == null)
+            {
+                throw new NotSupportedException();
+            }
+
+            ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);
+
+            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            if (changeSetProperty == null)
+            {
+                ChangeSet changeSet = new ChangeSet();
+                changeSet.Entries.Add(entry);
+
+                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+            }
+            else
+            {
+                changeSetProperty.ChangeSet.Entries.Add(entry);
+
+                await changeSetProperty.OnChangeSetCompleted();
+            }
+
+            if (entry.Result != null)
+            {
+                return this.CreateOKResult(entry.Result);
+            }
+            else
+            {
+                return this.StatusCode(HttpStatusCode.NoContent);
+            }
+        }
+
+        /// <summary>
         /// Creates a domain instance of type T.
         /// </summary>
         /// <returns>The domain instance created.</returns>
         protected override IDomain CreateDomain()
         {
             return Activator.CreateInstance<T>();
-        }
-
-        private IQueryable GetQuery(HttpRequestMessageProperties odataProperties)
-        {
-            ODataPath path = this.GetPath();
-
-            IEdmEntityType currentEntityType;
-            IQueryable queryable = this.GetSource(path, out currentEntityType);
-
-            // Apply segments to queryable
-            Type currentType = queryable.ElementType;
-            foreach (ODataPathSegment segment in path.Segments.Skip(1))
-            {
-                KeyValuePathSegment keySegment = segment as KeyValuePathSegment;
-                if (keySegment != null)
-                {
-                    queryable = ApplyKeys(queryable, keySegment, currentEntityType, currentType);
-                }
-                else
-                {
-                    NavigationPathSegment navigationSegment = segment as NavigationPathSegment;
-                    if (navigationSegment != null)
-                    {
-                        queryable = ApplyNavigation(
-                            queryable,
-                            navigationSegment,
-                            ref currentEntityType,
-                            ref currentType);
-                    }
-                    else
-                    {
-                        throw new HttpResponseException(
-                            this.Request.CreateErrorResponse(
-                                HttpStatusCode.NotFound,
-                                "Path segment not supported: " + segment));
-                    }
-                }
-            }
-
-            ODataQueryContext queryContext =
-                new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
-            ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
-
-            // TODO GitHubIssue#41 : Ensure stable ordering for query
-            ODataQuerySettings settings = new ODataQuerySettings()
-            {
-                HandleNullPropagation = HandleNullPropagationOption.False,
-                EnsureStableOrdering = true,
-                EnableConstantParameterization = false,
-                PageSize = null,  // no support for server enforced PageSize, yet
-            };
-
-            queryable = queryOptions.ApplyTo(queryable, settings);
-
-            return queryable;
-        }
-
-        private ODataPath GetPath()
-        {
-            HttpRequestMessageProperties properties = this.Request.ODataProperties();
-            if (properties == null)
-            {
-                throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
-            }
-
-            ODataPath path = properties.Path;
-            if (path == null)
-            {
-                throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
-            }
-
-            return path;
-        }
-
-        private IQueryable GetSource(ODataPath path, out IEdmEntityType rootEntityType)
-        {
-            IEdmNamedElement querySource = null;
-            object[] queryArgs = null;
-            ODataPathSegment firstPathSegment = path.Segments.FirstOrDefault();
-            rootEntityType = null;
-            var entitySetPathSegment = firstPathSegment as EntitySetPathSegment;
-            if (entitySetPathSegment != null)
-            {
-                IEdmEntitySetBase entitySet = entitySetPathSegment.EntitySetBase;
-                querySource = entitySet;
-                rootEntityType = entitySet.EntityType();
-            }
-            else
-            {
-                var unboundFunctionPathSegment = firstPathSegment as UnboundFunctionPathSegment;
-                if (unboundFunctionPathSegment != null)
-                {
-                    UnboundFunctionPathSegment functionSegment = unboundFunctionPathSegment;
-                    IEdmFunctionImport functionImport = functionSegment.Function;
-                    querySource = functionImport;
-                    IEdmEntityTypeReference entityTypeRef = functionImport.Function.ReturnType.AsEntity();
-                    rootEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
-
-                    if (functionImport.Function.Parameters.Any())
-                    {
-                        queryArgs = functionImport.Function.Parameters.Select(
-                            p => functionSegment.GetParameterValue(p.Name)).ToArray();
-                    }
-                }
-            }
-
-            return Domain.Source(querySource.Name, queryArgs);
         }
 
         private static IQueryable ApplyKeys(
@@ -369,102 +419,24 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
-        private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType)
-        {
-            IEdmTypeReference typeReference = GetTypeReference(edmType);
-            if (typeReference.IsCollection())
-            {
-                return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Domain.Context));
-            }
-            else
-            {
-                // TODO GitHubIssue#43 : support non-Entity ($select/$value) queries
-                return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityResult(query, typeReference, this.Domain.Context));
-            }
-        }
-
         private static IEdmTypeReference GetTypeReference(IEdmType type)
         {
             return type.GetEdmTypeReference(isNullable: false);
         }
 
-        /// <summary>
-        /// Handles a POST request to create an entity.
-        /// </summary>
-        /// <param name="edmEntityObject">The entity object to create.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task object that contains the creation result.</returns>
-        public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
         {
-            if (!this.ModelState.IsValid)
+            if (path.PathTemplate == "~/entityset/key" ||
+                path.PathTemplate == "~/entityset/key/cast")
             {
-                return BadRequest(this.ModelState);
-            }
-
-            ODataPath path = this.GetPath();
-            IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
-            if (entitySet == null)
-            {
-                throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
-            }
-
-            DataModificationEntry postEntry = new DataModificationEntry(
-                entitySet.Name,
-                path.EdmType.FullTypeName(),
-                null,
-                null,
-                edmEntityObject.CreatePropertyDictionary());
-
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
-            if (changeSetProperty == null)
-            {
-                ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(postEntry);
-
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
+                return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(postEntry);
-
-                await changeSetProperty.OnChangeSetCompleted();
+                throw new InvalidOperationException(string.Format(
+                    CultureInfo.InvariantCulture, Resources.InvalidPathTemplateInRequest, "~/entityset/key"));
             }
-
-            return this.CreateCreatedODataResult(postEntry.Entity);
-        }
-
-        /// <summary>
-        /// Handles a PUT request to fully update an entity.
-        /// </summary>
-        /// <param name="edmEntityObject">The entity object to update.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task object that contains the updated result.</returns>
-        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
-        {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
-            return await this.Update(edmEntityObject, true, cancellationToken);
-        }
-
-        /// <summary>
-        /// Handles a PATCH request to partially update an entity.
-        /// </summary>
-        /// <param name="edmEntityObject">The entity object to update.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task object that contains the updated result.</returns>
-        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
-        {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
-            return await this.Update(edmEntityObject, false, cancellationToken);
         }
 
         private async Task<IHttpActionResult> Update(
@@ -505,99 +477,127 @@ namespace Microsoft.Restier.WebApi
             return this.CreateUpdatedODataResult(updateEntry.Entity);
         }
 
-        /// <summary>
-        /// Handles a DELETE request to delete an entity.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task object that contains the deletion result.</returns>
-        public async Task<IHttpActionResult> Delete(CancellationToken cancellationToken)
+        private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType)
         {
-            ODataPath path = this.GetPath();
-            IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
-            if (entitySet == null)
+            IEdmTypeReference typeReference = GetTypeReference(edmType);
+            if (typeReference.IsCollection())
             {
-                throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
-            }
-
-            DataModificationEntry deleteEntry = new DataModificationEntry(
-                entitySet.Name,
-                path.EdmType.FullTypeName(),
-                GetPathKeyValues(path),
-                this.GetOriginalValues(),
-                null);
-
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
-            if (changeSetProperty == null)
-            {
-                ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(deleteEntry);
-
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                return this.Request.CreateResponse(
+                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Domain.Context));
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(deleteEntry);
-
-                await changeSetProperty.OnChangeSetCompleted();
-            }
-
-            return this.StatusCode(HttpStatusCode.NoContent);
-        }
-
-        /// <summary>
-        /// Handles a POST request to an action.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The task object that contains the action result.</returns>
-        public async Task<IHttpActionResult> PostAction(CancellationToken cancellationToken)
-        {
-            ODataPath path = this.GetPath();
-            UnboundActionPathSegment actionPathSegment = path.Segments.Last() as UnboundActionPathSegment;
-            if (actionPathSegment == null)
-            {
-                throw new NotSupportedException();
-            }
-
-            ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);
-
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
-            if (changeSetProperty == null)
-            {
-                ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(entry);
-
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
-            }
-            else
-            {
-                changeSetProperty.ChangeSet.Entries.Add(entry);
-
-                await changeSetProperty.OnChangeSetCompleted();
-            }
-
-            if (entry.Result != null)
-            {
-                return this.CreateOKResult(entry.Result);
-            }
-            else
-            {
-                return this.StatusCode(HttpStatusCode.NoContent);
+                // TODO GitHubIssue#43 : support non-Entity ($select/$value) queries
+                return this.Request.CreateResponse(
+                    HttpStatusCode.OK, new EntityResult(query, typeReference, this.Domain.Context));
             }
         }
 
-        private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
+        private IQueryable GetQuery(HttpRequestMessageProperties odataProperties)
         {
-            if (path.PathTemplate == "~/entityset/key" ||
-                path.PathTemplate == "~/entityset/key/cast")
+            ODataPath path = this.GetPath();
+
+            IEdmEntityType currentEntityType;
+            IQueryable queryable = this.GetSource(path, out currentEntityType);
+
+            // Apply segments to queryable
+            Type currentType = queryable.ElementType;
+            foreach (ODataPathSegment segment in path.Segments.Skip(1))
             {
-                KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
-                return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
+                KeyValuePathSegment keySegment = segment as KeyValuePathSegment;
+                if (keySegment != null)
+                {
+                    queryable = ApplyKeys(queryable, keySegment, currentEntityType, currentType);
+                }
+                else
+                {
+                    NavigationPathSegment navigationSegment = segment as NavigationPathSegment;
+                    if (navigationSegment != null)
+                    {
+                        queryable = ApplyNavigation(
+                            queryable,
+                            navigationSegment,
+                            ref currentEntityType,
+                            ref currentType);
+                    }
+                    else
+                    {
+                        throw new HttpResponseException(
+                            this.Request.CreateErrorResponse(
+                                HttpStatusCode.NotFound,
+                                "Path segment not supported: " + segment));
+                    }
+                }
+            }
+
+            ODataQueryContext queryContext =
+                new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
+            ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
+
+            // TODO GitHubIssue#41 : Ensure stable ordering for query
+            ODataQuerySettings settings = new ODataQuerySettings()
+            {
+                HandleNullPropagation = HandleNullPropagationOption.False,
+                EnsureStableOrdering = true,
+                EnableConstantParameterization = false,
+                PageSize = null,  // no support for server enforced PageSize, yet
+            };
+
+            queryable = queryOptions.ApplyTo(queryable, settings);
+
+            return queryable;
+        }
+
+        private ODataPath GetPath()
+        {
+            HttpRequestMessageProperties properties = this.Request.ODataProperties();
+            if (properties == null)
+            {
+                throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
+            }
+
+            ODataPath path = properties.Path;
+            if (path == null)
+            {
+                throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
+            }
+
+            return path;
+        }
+
+        private IQueryable GetSource(ODataPath path, out IEdmEntityType rootEntityType)
+        {
+            IEdmNamedElement querySource = null;
+            object[] queryArgs = null;
+            ODataPathSegment firstPathSegment = path.Segments.FirstOrDefault();
+            rootEntityType = null;
+            var entitySetPathSegment = firstPathSegment as EntitySetPathSegment;
+            if (entitySetPathSegment != null)
+            {
+                IEdmEntitySetBase entitySet = entitySetPathSegment.EntitySetBase;
+                querySource = entitySet;
+                rootEntityType = entitySet.EntityType();
             }
             else
             {
-                throw new InvalidOperationException(string.Format(
-                    CultureInfo.InvariantCulture, Resources.InvalidPathTemplateInRequest, "~/entityset/key"));
+                var unboundFunctionPathSegment = firstPathSegment as UnboundFunctionPathSegment;
+                if (unboundFunctionPathSegment != null)
+                {
+                    UnboundFunctionPathSegment functionSegment = unboundFunctionPathSegment;
+                    IEdmFunctionImport functionImport = functionSegment.Function;
+                    querySource = functionImport;
+                    IEdmEntityTypeReference entityTypeRef = functionImport.Function.ReturnType.AsEntity();
+                    rootEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
+
+                    if (functionImport.Function.Parameters.Any())
+                    {
+                        queryArgs = functionImport.Function.Parameters.Select(
+                            p => functionSegment.GetParameterValue(p.Name)).ToArray();
+                    }
+                }
             }
+
+            return Domain.Source(querySource.Name, queryArgs);
         }
 
         private IReadOnlyDictionary<string, object> GetOriginalValues()

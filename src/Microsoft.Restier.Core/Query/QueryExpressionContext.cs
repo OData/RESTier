@@ -105,6 +105,32 @@ namespace Microsoft.Restier.Core.Query
             this.UpdateModelReference();
         }
 
+        private static QueryModelReference ComputeDerivedDataReference(
+            MethodCallExpression methodCall, QueryModelReference source)
+        {
+            var method = methodCall.Method;
+
+            // Source is a sequence of T and output is also a sequence of T
+            var sourceType = method.GetParameters()[0]
+                .ParameterType.FindGenericType(typeof(IEnumerable<>));
+            var resultType = method.ReturnType
+                .FindGenericType(typeof(IEnumerable<>));
+            if (sourceType == resultType)
+            {
+                return new DerivedDataReference(source);
+            }
+
+            // Source is a sequence of T and output is a single T
+            var sourceElementType = sourceType.GetGenericArguments()[0];
+            if (method.ReturnType == sourceElementType)
+            {
+                return new CollectionElementReference(source);
+            }
+
+            // TODO GitHubIssue#29 : Handle projection operators in query expression
+            return null;
+        }
+
         /// <summary>
         /// Gets a reference to the model element
         /// that represents an expression node.
@@ -244,32 +270,6 @@ namespace Microsoft.Restier.Core.Query
             }
 
             return modelReference;
-        }
-
-        private static QueryModelReference ComputeDerivedDataReference(
-            MethodCallExpression methodCall, QueryModelReference source)
-        {
-            var method = methodCall.Method;
-
-            // Source is a sequence of T and output is also a sequence of T
-            var sourceType = method.GetParameters()[0]
-                .ParameterType.FindGenericType(typeof(IEnumerable<>));
-            var resultType = method.ReturnType
-                .FindGenericType(typeof(IEnumerable<>));
-            if (sourceType == resultType)
-            {
-                return new DerivedDataReference(source);
-            }
-
-            // Source is a sequence of T and output is a single T
-            var sourceElementType = sourceType.GetGenericArguments()[0];
-            if (method.ReturnType == sourceElementType)
-            {
-                return new CollectionElementReference(source);
-            }
-
-            // TODO GitHubIssue#29 : Handle projection operators in query expression
-            return null;
         }
 
         private IEnumerable<Expression> GetExpressionTrail()

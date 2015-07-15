@@ -21,17 +21,17 @@ namespace Microsoft.Restier.Core
 
         public Expression Expression { get; private set; }
 
-        public override string ToString()
-        {
-            return this.Expression.ToString();
-        }
-
         IQueryProvider IQueryable.Provider
         {
             get
             {
                 return this;
             }
+        }
+
+        public override string ToString()
+        {
+            return this.Expression.ToString();
         }
 
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(

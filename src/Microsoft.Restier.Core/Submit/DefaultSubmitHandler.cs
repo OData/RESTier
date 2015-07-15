@@ -116,6 +116,55 @@ namespace Microsoft.Restier.Core.Submit
             return context.Result;
         }
 
+        private static string GetAuthorizeFailedMessage(ChangeSetEntry entry)
+        {
+            switch (entry.Type)
+            {
+            case ChangeSetEntryType.DataModification:
+                DataModificationEntry dataModification = (DataModificationEntry)entry;
+                string message = null;
+                if (dataModification.IsNew)
+                {
+                    message = Resources.NoPermissionToInsertEntity;
+                }
+                else if (dataModification.IsUpdate)
+                {
+                    message = Resources.NoPermissionToUpdateEntity;
+                }
+                else if (dataModification.IsDelete)
+                {
+                    message = Resources.NoPermissionToDeleteEntity;
+                }
+                else
+                {
+                    throw new NotSupportedException(Resources.DataModificationMustBeCUD);
+                }
+
+                return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
+
+            case ChangeSetEntryType.ActionInvocation:
+                ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
+                return string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.NoPermissionToInvokeAction,
+                    actionInvocation.ActionName);
+
+            default:
+                throw new InvalidOperationException(string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.InvalidChangeSetEntryType,
+                    entry.Type));
+            }
+        }
+
+        private static void VerifyNoEntityHasChanged(ChangeSet changeSet)
+        {
+            if (changeSet.AnEntityHasChanged)
+            {
+                throw new InvalidOperationException(Resources.ErrorInVerifyingNoEntityHasChanged);
+            }
+        }
+
         private async Task PerformValidate(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
@@ -161,47 +210,6 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     throw new SecurityException(message);
                 }
-            }
-        }
-
-        private static string GetAuthorizeFailedMessage(ChangeSetEntry entry)
-        {
-            switch (entry.Type)
-            {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
-                    string message = null;
-                    if (dataModification.IsNew)
-                    {
-                        message = Resources.NoPermissionToInsertEntity;
-                    }
-                    else if (dataModification.IsUpdate)
-                    {
-                        message = Resources.NoPermissionToUpdateEntity;
-                    }
-                    else if (dataModification.IsDelete)
-                    {
-                        message = Resources.NoPermissionToDeleteEntity;
-                    }
-                    else
-                    {
-                        throw new NotSupportedException(Resources.DataModificationMustBeCUD);
-                    }
-
-                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
-
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
-                    return string.Format(
-                        CultureInfo.InvariantCulture,
-                        Resources.NoPermissionToInvokeAction,
-                        actionInvocation.ActionName);
-
-                default:
-                    throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture,
-                        Resources.InvalidChangeSetEntryType,
-                        entry.Type));
             }
         }
 
@@ -311,14 +319,6 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     await filter.OnExecutedEntryAsync(context, entry, cancellationToken);
                 }
-            }
-        }
-
-        private static void VerifyNoEntityHasChanged(ChangeSet changeSet)
-        {
-            if (changeSet.AnEntityHasChanged)
-            {
-                throw new InvalidOperationException(Resources.ErrorInVerifyingNoEntityHasChanged);
             }
         }
     }

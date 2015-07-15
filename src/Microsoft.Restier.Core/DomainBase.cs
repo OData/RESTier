@@ -28,22 +28,6 @@ namespace Microsoft.Restier.Core
             this.Dispose(false);
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with
-        /// freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (!this.IsDisposed && this.domainContext != null)
-            {
-                DomainParticipantAttribute.ApplyDisposal(
-                    this.GetType(), this, this.domainContext);
-            }
-
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         DomainConfiguration IExpandableDomain.Configuration
         {
             get
@@ -81,39 +65,6 @@ namespace Microsoft.Restier.Core
 
                 return this.DomainContext;
             }
-        }
-
-        void IExpandableDomain.Initialize(
-            DomainConfiguration derivedConfiguration)
-        {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
-
-            if (this.domainContext != null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            Ensure.NotNull(derivedConfiguration, "derivedConfiguration");
-            var baseConfiguration = this.DomainConfiguration;
-            var candidate = derivedConfiguration;
-            while (candidate != baseConfiguration)
-            {
-                if (candidate.BaseConfiguration == null)
-                {
-                    // TODO GitHubIssue#24 : error message
-                    throw new ArgumentException();
-                }
-
-                candidate = candidate.BaseConfiguration;
-            }
-
-            this.domainConfiguration = derivedConfiguration;
-            this.domainContext = this.CreateDomainContext(derivedConfiguration);
-            DomainParticipantAttribute.ApplyInitialization(
-                this.GetType(), this, this.domainContext);
         }
 
         /// <summary>
@@ -198,6 +149,55 @@ namespace Microsoft.Restier.Core
         /// Gets a value indicating whether this domain has been disposed.
         /// </summary>
         protected bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with
+        /// freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (!this.IsDisposed && this.domainContext != null)
+            {
+                DomainParticipantAttribute.ApplyDisposal(
+                    this.GetType(), this, this.domainContext);
+            }
+
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void IExpandableDomain.Initialize(
+            DomainConfiguration derivedConfiguration)
+        {
+            if (this.IsDisposed)
+            {
+                throw new ObjectDisposedException(this.GetType().FullName);
+            }
+
+            if (this.domainContext != null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            Ensure.NotNull(derivedConfiguration, "derivedConfiguration");
+            var baseConfiguration = this.DomainConfiguration;
+            var candidate = derivedConfiguration;
+            while (candidate != baseConfiguration)
+            {
+                if (candidate.BaseConfiguration == null)
+                {
+                    // TODO GitHubIssue#24 : error message
+                    throw new ArgumentException();
+                }
+
+                candidate = candidate.BaseConfiguration;
+            }
+
+            this.domainConfiguration = derivedConfiguration;
+            this.domainContext = this.CreateDomainContext(derivedConfiguration);
+            DomainParticipantAttribute.ApplyInitialization(
+                this.GetType(), this, this.domainContext);
+        }
 
         /// <summary>
         /// Creates the domain configuration for this domain.
