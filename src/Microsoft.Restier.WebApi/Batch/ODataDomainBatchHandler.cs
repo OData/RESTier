@@ -42,7 +42,9 @@ namespace Microsoft.Restier.WebApi.Batch
         /// <param name="request">The HTTP request that contains the batch requests.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public override async Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public override async Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
         {
             if (this.DomainFactory == null)
             {
@@ -58,7 +60,8 @@ namespace Microsoft.Restier.WebApi.Batch
                 BaseUri = GetBaseUri(request)
             };
 
-            ODataMessageReader reader = await request.Content.GetODataMessageReaderAsync(readerSettings, cancellationToken);
+            ODataMessageReader reader =
+                await request.Content.GetODataMessageReaderAsync(readerSettings, cancellationToken);
             request.RegisterForDispose(reader);
 
             List<ODataBatchRequestItem> requests = new List<ODataBatchRequestItem>();
@@ -68,7 +71,8 @@ namespace Microsoft.Restier.WebApi.Batch
             {
                 if (batchReader.State == ODataBatchReaderState.ChangesetStart)
                 {
-                    IList<HttpRequestMessage> changeSetRequests = await batchReader.ReadChangeSetRequestAsync(batchId, cancellationToken);
+                    IList<HttpRequestMessage> changeSetRequests =
+                        await batchReader.ReadChangeSetRequestAsync(batchId, cancellationToken);
                     foreach (HttpRequestMessage changeSetRequest in changeSetRequests)
                     {
                         changeSetRequest.CopyBatchRequestProperties(request);
@@ -78,7 +82,10 @@ namespace Microsoft.Restier.WebApi.Batch
                 }
                 else if (batchReader.State == ODataBatchReaderState.Operation)
                 {
-                    HttpRequestMessage operationRequest = await batchReader.ReadOperationRequestAsync(batchId, bufferContentStream: true, cancellationToken: cancellationToken);
+                    HttpRequestMessage operationRequest = await batchReader.ReadOperationRequestAsync(
+                        batchId,
+                        bufferContentStream: true,
+                        cancellationToken: cancellationToken);
                     operationRequest.CopyBatchRequestProperties(request);
                     requests.Add(new OperationRequestItem(operationRequest));
                 }

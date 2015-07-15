@@ -33,7 +33,11 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         /// <param name="type">The type of the entities.</param>
         /// <param name="messageWriter">The message writer.</param>
         /// <param name="writeContext">The writing context.</param>
-        public override void WriteObject(object graph, Type type, ODataMessageWriter messageWriter, ODataSerializerContext writeContext)
+        public override void WriteObject(
+            object graph,
+            Type type,
+            ODataMessageWriter messageWriter,
+            ODataSerializerContext writeContext)
         {
             Ensure.NotNull(messageWriter, "messageWriter");
             Ensure.NotNull(writeContext, "writeContext");
@@ -63,7 +67,11 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
                 }
             }
 
-            string message = string.Format(CultureInfo.InvariantCulture, "{0} cannot write an object of type '{1}'.", typeof(ODataDomainFeedSerializer).Name, feedType.FullName());
+            string message = string.Format(
+                CultureInfo.InvariantCulture,
+                "{0} cannot write an object of type '{1}'.",
+                typeof(ODataDomainFeedSerializer).Name,
+                feedType.FullName());
             throw new SerializationException(message);
         }
     }

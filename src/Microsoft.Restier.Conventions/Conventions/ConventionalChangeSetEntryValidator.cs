@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -47,7 +48,8 @@ namespace Microsoft.Restier.Conventions
                 object entity = dataModificationEntry.Entity;
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
-                PropertyDescriptorCollection properties = new AssociatedMetadataTypeTypeDescriptionProvider(entity.GetType())
+                PropertyDescriptorCollection properties =
+                    new AssociatedMetadataTypeTypeDescriptionProvider(entity.GetType())
                     .GetTypeDescriptor(entity).GetProperties();
 
                 ValidationContext validationContext = new ValidationContext(entity);
@@ -56,10 +58,13 @@ namespace Microsoft.Restier.Conventions
                 {
                     validationContext.MemberName = property.Name;
 
-                    foreach (ValidationAttribute validationAttribute in property.Attributes.OfType<ValidationAttribute>())
+                    IEnumerable<ValidationAttribute> validationAttributes =
+                        property.Attributes.OfType<ValidationAttribute>();
+                    foreach (ValidationAttribute validationAttribute in validationAttributes)
                     {
                         object value = property.GetValue(entity);
-                        DataAnnotations.ValidationResult validationResult = validationAttribute.GetValidationResult(value, validationContext);
+                        DataAnnotations.ValidationResult validationResult =
+                            validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != DataAnnotations.ValidationResult.Success)
                         {
                             validationResults.Add(new ValidationResult()

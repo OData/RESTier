@@ -67,27 +67,32 @@ namespace Microsoft.Restier.WebApi
 
                 DefaultODataPathHandler odataPathHandler = new DefaultODataPathHandler();
 
-                var getResolverSettings = typeof(WebApiODataEx.HttpConfigurationExtensions).GetMethod("GetResolverSettings", BindingFlags.NonPublic | BindingFlags.Static);
+                var getResolverSettings = typeof(WebApiODataEx.HttpConfigurationExtensions)
+                    .GetMethod("GetResolverSettings", BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (getResolverSettings != null)
                 {
                     var resolveSettings = getResolverSettings.Invoke(null, new object[] { config });
-                    PropertyInfo prop = odataPathHandler.GetType().GetProperty("ResolverSetttings", BindingFlags.NonPublic | BindingFlags.Instance);
+                    PropertyInfo prop = odataPathHandler
+                        .GetType().GetProperty("ResolverSetttings", BindingFlags.NonPublic | BindingFlags.Instance);
 
                     if (null != prop && prop.CanWrite)
                     {
                         prop.SetValue(odataPathHandler, resolveSettings, null);
                     }
 
-                    // In case WebAPI OData fix "ResolverSetttings" to "ResolverSettings". So we set both "ResolverSetttings" and "ResolverSettings".
-                    prop = odataPathHandler.GetType().GetProperty("ResolverSettings", BindingFlags.NonPublic | BindingFlags.Instance);
+                    // In case WebAPI OData fix "ResolverSetttings" to "ResolverSettings".
+                    // So we set both "ResolverSetttings" and "ResolverSettings".
+                    prop = odataPathHandler
+                        .GetType().GetProperty("ResolverSettings", BindingFlags.NonPublic | BindingFlags.Instance);
                     if (null != prop && prop.CanWrite)
                     {
                         prop.SetValue(odataPathHandler, resolveSettings, null);
                     }
                 }
 
-                var routeConstraint = new DefaultODataPathRouteConstraint(odataPathHandler, model, routeName, conventions);
+                var routeConstraint =
+                    new DefaultODataPathRouteConstraint(odataPathHandler, model, routeName, conventions);
                 var route = new ODataRoute(routePrefix, routeConstraint);
                 routes.Add(routeName, route);
                 return route;

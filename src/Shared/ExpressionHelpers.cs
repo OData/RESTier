@@ -10,13 +10,19 @@ namespace System.Linq.Expressions
     {
         public static IQueryable Select(IQueryable query, LambdaExpression select)
         {
-            MethodInfo selectMethod = ExpressionHelperMethods.QueryableSelectGeneric.MakeGenericMethod(query.ElementType, select.Body.Type);
+            MethodInfo selectMethod =
+                ExpressionHelperMethods.QueryableSelectGeneric.MakeGenericMethod(
+                    query.ElementType,
+                    select.Body.Type);
             return selectMethod.Invoke(null, new object[] { query, select }) as IQueryable;
         }
 
         public static IQueryable SelectMany(IQueryable query, LambdaExpression selectMany, Type selectedElementType)
         {
-            MethodInfo selectManyMethod = ExpressionHelperMethods.QueryableSelectManyGeneric.MakeGenericMethod(query.ElementType, selectedElementType);
+            MethodInfo selectManyMethod =
+                ExpressionHelperMethods.QueryableSelectManyGeneric.MakeGenericMethod(
+                    query.ElementType,
+                    selectedElementType);
             return selectManyMethod.Invoke(null, new object[] { query, selectMany }) as IQueryable;
         }
 

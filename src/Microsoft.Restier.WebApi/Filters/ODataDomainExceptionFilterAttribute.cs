@@ -27,7 +27,9 @@ namespace Microsoft.Restier.WebApi.Filters
         /// <param name="actionExecutedContext">The context where the action is executed.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents the callback execution.</returns>
-        public override async Task OnExceptionAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
+        public override async Task OnExceptionAsync(
+            HttpActionExecutedContext actionExecutedContext,
+            CancellationToken cancellationToken)
         {
             IHttpActionResult exceptionResult = null;
 

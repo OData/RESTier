@@ -8,9 +8,14 @@ namespace System.Linq.Expressions
 {
     internal static class ExpressionHelperMethods
     {
-        private static MethodInfo selectMethod = GenericMethodOf(_ => Queryable.Select<int, int>(default(IQueryable<int>), i => i));
-        private static MethodInfo selectManyMethod = GenericMethodOf(_ => Queryable.SelectMany<int, int>(default(IQueryable<int>), i => default(IQueryable<int>)));
-        private static MethodInfo whereMethod = GenericMethodOf(_ => Queryable.Where<int>(default(IQueryable<int>), default(Expression<Func<int, bool>>)));
+        private static MethodInfo selectMethod =
+            GenericMethodOf(_ => Queryable.Select(default(IQueryable<int>), i => i));
+
+        private static MethodInfo selectManyMethod =
+            GenericMethodOf(_ => Queryable.SelectMany(default(IQueryable<int>), i => default(IQueryable<int>)));
+
+        private static MethodInfo whereMethod =
+            GenericMethodOf(_ => Queryable.Where(default(IQueryable<int>), default(Expression<Func<int, bool>>)));
 
         public static MethodInfo QueryableSelectGeneric
         {

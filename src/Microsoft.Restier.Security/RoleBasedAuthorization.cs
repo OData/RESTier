@@ -150,7 +150,8 @@ namespace Microsoft.Restier.Security
                 .GetProperty<IEnumerable<DomainPermission>>(Permissions);
             if (permissions == null)
             {
-                throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
+                throw new SecurityException(
+                    string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
 
             permissions = permissions.Where(p => (
@@ -162,7 +163,8 @@ namespace Microsoft.Restier.Security
                 (assertedRoles != null && assertedRoles.Contains(p.Role))));
             if (!permissions.Any() || permissions.Any(p => p.IsDeny))
             {
-                throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
+                throw new SecurityException(
+                    string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
 
             return true;

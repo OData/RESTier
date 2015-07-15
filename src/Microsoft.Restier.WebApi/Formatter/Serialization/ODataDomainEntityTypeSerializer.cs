@@ -30,7 +30,11 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         /// <param name="type">The type of the entity.</param>
         /// <param name="messageWriter">The message writer.</param>
         /// <param name="writeContext">The writing context.</param>
-        public override void WriteObject(object graph, Type type, ODataMessageWriter messageWriter, ODataSerializerContext writeContext)
+        public override void WriteObject(
+            object graph,
+            Type type,
+            ODataMessageWriter messageWriter,
+            ODataSerializerContext writeContext)
         {
             EntityResult entityResult = graph as EntityResult;
             if (entityResult != null)

@@ -38,7 +38,9 @@ namespace Microsoft.Restier.WebApi.Batch
         /// <param name="invoker">The invoker.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the batch response.</returns>
-        public override async Task<ODataBatchResponseItem> SendRequestAsync(HttpMessageInvoker invoker, CancellationToken cancellationToken)
+        public override async Task<ODataBatchResponseItem> SendRequestAsync(
+            HttpMessageInvoker invoker,
+            CancellationToken cancellationToken)
         {
             Ensure.NotNull(invoker, "invoker");
 

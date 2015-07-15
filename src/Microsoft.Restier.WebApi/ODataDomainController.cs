@@ -161,17 +161,24 @@ namespace Microsoft.Restier.WebApi
                     NavigationPathSegment navigationSegment = segment as NavigationPathSegment;
                     if (navigationSegment != null)
                     {
-                        queryable = ApplyNavigation(queryable, navigationSegment, ref currentEntityType, ref currentType);
+                        queryable = ApplyNavigation(
+                            queryable,
+                            navigationSegment,
+                            ref currentEntityType,
+                            ref currentType);
                     }
                     else
                     {
                         throw new HttpResponseException(
-                            this.Request.CreateErrorResponse(HttpStatusCode.NotFound, "Path segment not supported: " + segment));
+                            this.Request.CreateErrorResponse(
+                                HttpStatusCode.NotFound,
+                                "Path segment not supported: " + segment));
                     }
                 }
             }
 
-            ODataQueryContext queryContext = new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
+            ODataQueryContext queryContext =
+                new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
@@ -240,7 +247,11 @@ namespace Microsoft.Restier.WebApi
             return Domain.Source(querySource.Name, queryArgs);
         }
 
-        private static IQueryable ApplyKeys(IQueryable queryable, KeyValuePathSegment keySegment, IEdmEntityType entityType, Type type)
+        private static IQueryable ApplyKeys(
+            IQueryable queryable,
+            KeyValuePathSegment keySegment,
+            IEdmEntityType entityType,
+            Type type)
         {
             BinaryExpression keyFilter = null;
 
@@ -249,7 +260,8 @@ namespace Microsoft.Restier.WebApi
 
             foreach (KeyValuePair<string, object> keyValuePair in keyValues)
             {
-                BinaryExpression equalsExpression = CreateEqualsExpression(parameterExpression, keyValuePair.Key, keyValuePair.Value);
+                BinaryExpression equalsExpression =
+                    CreateEqualsExpression(parameterExpression, keyValuePair.Key, keyValuePair.Value);
                 keyFilter = keyFilter == null ? equalsExpression : Expression.And(keyFilter, equalsExpression);
             }
 
@@ -257,14 +269,17 @@ namespace Microsoft.Restier.WebApi
             return ExpressionHelpers.Where(queryable, whereExpression, type);
         }
 
-        private static IReadOnlyDictionary<string, object> GetPathKeyValues(KeyValuePathSegment keySegment, IEdmEntityType entityType)
+        private static IReadOnlyDictionary<string, object> GetPathKeyValues(
+            KeyValuePathSegment keySegment,
+            IEdmEntityType entityType)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
             IEnumerable<IEdmStructuralProperty> keys = entityType.Key();
 
             // TODO GitHubIssue#42 : Improve key parsing logic
             // this parsing implementation does not allow key values to contain commas
-            // Depending on the WebAPI to make KeyValuePathSegment.Values collection public (or have the parsing logic public)
+            // Depending on the WebAPI to make KeyValuePathSegment.Values collection public
+            // (or have the parsing logic public).
             string[] values = keySegment.Value.Split(',');
             if (values.Length > 1)
             {
@@ -307,7 +322,10 @@ namespace Microsoft.Restier.WebApi
             return result;
         }
 
-        private static BinaryExpression CreateEqualsExpression(ParameterExpression parameterExpression, string propertyName, object propertyValue)
+        private static BinaryExpression CreateEqualsExpression(
+            ParameterExpression parameterExpression,
+            string propertyName,
+            object propertyValue)
         {
             MemberExpression property = Expression.Property(parameterExpression, propertyName);
             ConstantExpression constant = Expression.Constant(propertyValue);
@@ -315,28 +333,38 @@ namespace Microsoft.Restier.WebApi
             return Expression.Equal(property, constant);
         }
 
-        private static IQueryable ApplyNavigation(IQueryable queryable, NavigationPathSegment navigationSegment, ref IEdmEntityType currentEntityType, ref Type currentType)
+        private static IQueryable ApplyNavigation(
+            IQueryable queryable,
+            NavigationPathSegment navigationSegment,
+            ref IEdmEntityType currentEntityType,
+            ref Type currentType)
         {
             ParameterExpression entityParameterExpression = Expression.Parameter(currentType);
-            Expression navigationPropertyExpression = Expression.Property(entityParameterExpression, navigationSegment.NavigationPropertyName);
+            Expression navigationPropertyExpression =
+                Expression.Property(entityParameterExpression, navigationSegment.NavigationPropertyName);
 
             currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
 
             if (navigationSegment.NavigationProperty.TargetMultiplicity() == EdmMultiplicity.Many)
             {
-                // get the element type of the target (the type should be an EntityCollection<T> for navigation queries).
+                // get the element type of the target
+                // (the type should be an EntityCollection<T> for navigation queries).
                 currentType = navigationPropertyExpression.Type.GetEnumerableItemType();
 
                 // need to explicitly define the delegate type as IEnumerable<T>
-                Type delegateType = typeof(Func<,>).MakeGenericType(queryable.ElementType, typeof(IEnumerable<>).MakeGenericType(currentType));
-                LambdaExpression selectBody = Expression.Lambda(delegateType, navigationPropertyExpression, entityParameterExpression);
+                Type delegateType = typeof(Func<,>).MakeGenericType(
+                    queryable.ElementType,
+                    typeof(IEnumerable<>).MakeGenericType(currentType));
+                LambdaExpression selectBody =
+                    Expression.Lambda(delegateType, navigationPropertyExpression, entityParameterExpression);
 
                 return ExpressionHelpers.SelectMany(queryable, selectBody, currentType);
             }
             else
             {
                 currentType = navigationPropertyExpression.Type;
-                LambdaExpression selectBody = Expression.Lambda(navigationPropertyExpression, entityParameterExpression);
+                LambdaExpression selectBody =
+                    Expression.Lambda(navigationPropertyExpression, entityParameterExpression);
                 return ExpressionHelpers.Select(queryable, selectBody);
             }
         }
@@ -439,7 +467,10 @@ namespace Microsoft.Restier.WebApi
             return await this.Update(edmEntityObject, false, cancellationToken);
         }
 
-        private async Task<IHttpActionResult> Update(EdmEntityObject edmEntityObject, bool isFullReplaceUpdate, CancellationToken cancellationToken)
+        private async Task<IHttpActionResult> Update(
+            EdmEntityObject edmEntityObject,
+            bool isFullReplaceUpdate,
+            CancellationToken cancellationToken)
         {
             ODataPath path = this.GetPath();
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
@@ -610,13 +641,15 @@ namespace Microsoft.Restier.WebApi
 
     internal static class Extensions
     {
-        private static PropertyInfo etagConcurrencyPropertiesProperty = typeof(ETag).GetProperty("ConcurrencyProperties", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static PropertyInfo etagConcurrencyPropertiesProperty =
+            typeof(ETag).GetProperty("ConcurrencyProperties", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public static void ApplyTo(this ETag etag, IDictionary<string, object> propertyValues)
         {
             if (etag != null)
             {
-                IDictionary<string, object> concurrencyProperties = (IDictionary<string, object>)etagConcurrencyPropertiesProperty.GetValue(etag);
+                IDictionary<string, object> concurrencyProperties =
+                    (IDictionary<string, object>)etagConcurrencyPropertiesProperty.GetValue(etag);
                 foreach (KeyValuePair<string, object> item in concurrencyProperties)
                 {
                     propertyValues.Add(item.Key, item.Value);

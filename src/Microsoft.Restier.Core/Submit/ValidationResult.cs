@@ -22,7 +22,8 @@ namespace Microsoft.Restier.Core.Submit
         public object Target { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the property to which the validation result applies.  If null, the validation result applies to the whole Target.
+        /// Gets or sets the name of the property to which the validation result applies.
+        /// If null, the validation result applies to the whole Target.
         /// </summary>
         public string PropertyName { get; set; }
 

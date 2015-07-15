@@ -192,9 +192,16 @@ namespace Microsoft.Restier.Core.Submit
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
-                    return string.Format(CultureInfo.InvariantCulture, Resources.NoPermissionToInvokeAction, actionInvocation.ActionName);
+                    return string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.NoPermissionToInvokeAction,
+                        actionInvocation.ActionName);
+
                 default:
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+                    throw new InvalidOperationException(string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.InvalidChangeSetEntryType,
+                        entry.Type));
             }
         }
 

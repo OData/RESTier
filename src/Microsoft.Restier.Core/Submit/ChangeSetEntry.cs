@@ -96,8 +96,8 @@ namespace Microsoft.Restier.Core.Submit
     /// This enum controls the actions requested for an entity.
     /// </summary>
     /// <remarks>
-    /// This is required because during the post-CUD events, the EntityState has been lost.  This enum allows the DomainService to remember
-    /// which pre-CUD event was raised for the Entity.
+    /// This is required because during the post-CUD events, the EntityState has been lost.
+    /// This enum allows the DomainService to remember which pre-CUD event was raised for the Entity.
     /// </remarks>
     public enum AddAction
     {
@@ -319,12 +319,15 @@ namespace Microsoft.Restier.Core.Submit
             return ExpressionHelpers.Where(query, whereLambda, type);
         }
 
-        private static Expression ApplyPredicate(ParameterExpression param, Expression where, KeyValuePair<string, object> item)
+        private static Expression ApplyPredicate(
+            ParameterExpression param,
+            Expression where,
+            KeyValuePair<string, object> item)
         {
             MemberExpression name = Expression.Property(param, item.Key);
             object itemValue = item.Value;
 
-            // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary in DataModificationEntry::ApplyPredicate
+            // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary
             // Expression value = itemValue != null
             //     ? LinqParameterContainer.Parameterize(itemValue.GetType(), itemValue)
             //     : Expression.Constant(value: null);

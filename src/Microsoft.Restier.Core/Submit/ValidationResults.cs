@@ -8,12 +8,13 @@ using System.Linq;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// ValidationResults is a collection of ValidationResult instances that identify what is not valid on a validated item.
+    /// Represents a collection of ValidationResult instances that identify what is not valid on a validated item.
     /// </summary>
     public class ValidationResults : Collection<ValidationResult>
     {
         /// <summary>
-        /// Gets a value indicating whether there are any results that have Severity equal to “Error” in the current validation results.
+        /// Gets a value indicating whether there is any result that has Severity equal to "Error"
+        /// in the current validation results.
         /// </summary>
         public bool HasErrors
         {
@@ -24,7 +25,8 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets a collection of ValidationResult instances that have Severity equal to “Error” in the current validation results.
+        /// Gets a collection of ValidationResult instances that have Severity equal to "Error"
+        /// in the current validation results.
         /// </summary>
         public IEnumerable<ValidationResult> Errors
         {
