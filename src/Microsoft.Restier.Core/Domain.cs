@@ -651,6 +651,40 @@ namespace Microsoft.Restier.Core
             return method.Invoke(null, args) as IQueryable;
         }
 
+        private static IQueryable<TElement> SourceCore<TElement>(
+            string namespaceName,
+            string name,
+            object[] arguments)
+        {
+            MethodInfo sourceMethod = null;
+            Expression[] expressions = null;
+            if (namespaceName == null)
+            {
+                sourceMethod = Source2Method;
+                expressions = new Expression[]
+                {
+                    Expression.Constant(name),
+                    Expression.Constant(arguments, typeof(object[]))
+                };
+            }
+            else
+            {
+                sourceMethod = Source3Method;
+                expressions = new Expression[]
+                {
+                    Expression.Constant(namespaceName),
+                    Expression.Constant(name),
+                    Expression.Constant(arguments, typeof(object[]))
+                };
+            }
+
+            return new QueryableSource<TElement>(
+                Expression.Call(
+                    null,
+                    sourceMethod.MakeGenericMethod(typeof(TElement)),
+                    expressions));
+        }
+
         private static Type EnsureElementType(
             DomainContext context,
             string namespaceName,
@@ -701,40 +735,6 @@ namespace Microsoft.Restier.Core
             }
 
             return elementType;
-        }
-
-        private static IQueryable<TElement> SourceCore<TElement>(
-            string namespaceName,
-            string name,
-            object[] arguments)
-        {
-            MethodInfo sourceMethod = null;
-            Expression[] expressions = null;
-            if (namespaceName == null)
-            {
-                sourceMethod = Source2Method;
-                expressions = new Expression[]
-                {
-                    Expression.Constant(name),
-                    Expression.Constant(arguments, typeof(object[]))
-                };
-            }
-            else
-            {
-                sourceMethod = Source3Method;
-                expressions = new Expression[]
-                {
-                    Expression.Constant(namespaceName),
-                    Expression.Constant(name),
-                    Expression.Constant(arguments, typeof(object[]))
-                };
-            }
-
-            return new QueryableSource<TElement>(
-                Expression.Call(
-                    null,
-                    sourceMethod.MakeGenericMethod(typeof(TElement)),
-                    expressions));
         }
         #endregion
     }
