@@ -228,5 +228,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
+
+        [EnableQuery]
+        [HttpGet]
+        [ODataRoute("Me")]
+        public IHttpActionResult Me()
+        {
+            return Ok(DbContext.People.Find(1));
+        }
     }
 }
