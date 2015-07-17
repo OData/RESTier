@@ -41,7 +41,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             ODataRoute odataRoute = Configuration.Routes[routeName] as ODataRoute;
             var prefixName = odataRoute.RoutePrefix;
             var requestUri = Request.RequestUri.ToString();
-            var serviceRootUri = requestUri.Substring(0, requestUri.IndexOf(prefixName) + prefixName.Length);
+            var serviceRootUri = requestUri.Substring(0, requestUri.IndexOf(prefixName, StringComparison.InvariantCultureIgnoreCase) + prefixName.Length);
             return serviceRootUri;
         }
 
@@ -104,6 +104,26 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
                 uris.Add(new Uri(string.Format("{0}/Trips({1})", serviceRootUri, trip.TripId)));
             }
             return Ok(uris);
+        }
+
+        [HttpGet]
+        [ODataRoute("People({key})/Trips({key2})/$ref")]
+        public IHttpActionResult GetRefToTripsFromPeople([FromODataUri]int key, [FromODataUri]int key2)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+            var trips = DbContext.Trips.Where(t => t.PersonId == key);
+            var serviceRootUri = GetServiceRootUri();
+
+            if (trips.All(t => t.TripId != key2))
+            {
+                return NotFound();
+            }
+
+            return Ok(new Uri(string.Format("{0}/Trips({1})", serviceRootUri, key2)));
         }
 
         [HttpPost]
