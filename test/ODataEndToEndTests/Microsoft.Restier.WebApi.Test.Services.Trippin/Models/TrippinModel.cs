@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
@@ -22,6 +23,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 c.MapRightKey("FlightId");
                 c.ToTable("TripAndFlights");
             });
+
+            modelBuilder.Entity<Person>().HasMany<Person>(p => p.Friends).WithMany().Map(
+                c =>
+                {
+                    c.MapLeftKey("Friend1Id");
+                    c.MapRightKey("Friend2Id");
+                    c.ToTable("PersonFriends");
+                }
+            );
 
             base.OnModelCreating(modelBuilder);
         }
@@ -49,6 +59,9 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         public static void ResetDataSource()
         {
             instance = new TrippinModel();
+
+            // As per kb321843, manually handle dropping Friends constraint before cleaning up People table.
+            instance.Database.ExecuteSqlCommand("DELETE FROM PersonFriends");
             instance.People.RemoveRange(instance.People);
             instance.Flights.RemoveRange(instance.Flights);
             instance.Airlines.RemoveRange(instance.Airlines);
@@ -259,39 +272,42 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
             #region People
 
+            #region Friends russellwhyte & scottketchum & ronaldmundy
+            var person1 = new Person
+            {
+                PersonId = 1,
+                FirstName = "Russell",
+                LastName = "Whyte",
+                UserName = "russellwhyte",
+            };
+
+
+            var person2 = new Person
+            {
+                PersonId = 2,
+                FirstName = "Scott",
+                LastName = "Ketchum",
+                UserName = "scottketchum",
+                Friends = new Collection<Person> { person1 }
+            };
+
+            var person3 = new Person
+            {
+                PersonId = 3,
+                FirstName = "Ronald",
+                LastName = "Mundy",
+                UserName = "ronaldmundy",
+                Friends = new Collection<Person> { person1, person2 }
+            };
+
+            person1.Friends = new Collection<Person> { person2 };
+            #endregion
+
             instance.People.AddRange(new List<Person>
             {
-                #region russellwhyte
-                new Person
-                {
-                    PersonId = 1,
-                    FirstName = "Russell",
-                    LastName = "Whyte",
-                    UserName = "russellwhyte",
-                },
-
-                #endregion
-
-                #region scottketchum
-                new Person
-                {
-                    PersonId = 2,
-                    FirstName = "Scott",
-                    LastName = "Ketchum",
-                    UserName = "scottketchum",
-                },
-
-                #endregion
-
-                #region ronaldmundy
-                new Person
-                {
-                    PersonId = 3,
-                    FirstName = "Ronald",
-                    LastName = "Mundy",
-                    UserName = "ronaldmundy",
-                },
-                #endregion
+                person1,
+                person2,
+                person3,
 
                 new Person
                 {
@@ -364,6 +380,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     UserName = "jonirosales",
                 }
             });
+
+
 
             #endregion
 
@@ -460,6 +478,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             };
             instance.Trips.AddRange(trips);
 
+            #endregion
+
+            #region Events
+
+            instance.Events.AddRange(new[]
+            {
+                new Event
+                {
+                    OccursAt = new Location
+                    {
+                        Address = "Address1"
+                    }
+                },
+            });
             #endregion
 
             instance.SaveChanges();
