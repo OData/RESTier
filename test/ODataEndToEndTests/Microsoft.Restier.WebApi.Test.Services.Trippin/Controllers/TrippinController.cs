@@ -16,18 +16,33 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
 {
     public class TrippinController : ODataDomainController<TrippinDomain>
     {
-        [ODataRoute("ResetDataSource")]
-        public void ResetDataSource()
-        {
-            TrippinModel.ResetDataSource();
-        }
-
         private TrippinModel DbContext
         {
             get
             {
                 return Domain.Context;
             }
+        }
+
+        /// <summary>
+        /// TODO: This method is for actual executing.
+        /// </summary>
+        [ODataRoute("ResetDataSource")]
+        public void ResetDataSource()
+        {
+            TrippinModel.ResetDataSource();
+        }
+
+        [ODataRoute("CleanUpExpiredTrips")]
+        public void CleanUpExpiredTrips()
+        {
+            Domain.CleanUpExpiredTrips();
+        }
+
+        [ODataRoute("Trips({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip")]
+        public IHttpActionResult EndTrip(int key)
+        {
+            return Ok(Domain.EndTrip(key));
         }
 
         private bool PeopleExists(int key)
@@ -56,6 +71,24 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         public string GetPersonLastName([FromODataUri]int key)
         {
             return DbContext.People.Where(c => c.PersonId == key).Select(c => c.LastName).FirstOrDefault();
+        }
+
+        [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
+        public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
+        {
+            return Ok(Domain.GetNumberOfFriends(key));
+        }
+
+        [ODataRoute("GetPersonWithMostFriends")]
+        public IHttpActionResult GetPersonWithMostFriends()
+        {
+            return Ok(Domain.GetPersonWithMostFriends());
+        }
+
+        [ODataRoute("GetPeopleWithFriendsAtLeast({n})")]
+        public IHttpActionResult GetPeopleWithFriendsAtLeast(int n)
+        {
+            return Ok(Domain.GetPeopleWithFriendsAtLeast(n));
         }
 
         [HttpPut]

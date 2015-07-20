@@ -13,6 +13,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         public TrippinModel()
             : base("name=TrippinModel")
         {
+            Database.SetInitializer(new TrippinDatabaseInitializer());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -495,6 +496,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             #endregion
 
             instance.SaveChanges();
+        }
+    }
+
+    class TrippinDatabaseInitializer : DropCreateDatabaseAlways<TrippinModel>
+    {
+        protected override void Seed(TrippinModel context)
+        {
+            TrippinModel.ResetDataSource();
         }
     }
 }
