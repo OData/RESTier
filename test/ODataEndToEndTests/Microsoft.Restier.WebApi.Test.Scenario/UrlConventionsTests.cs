@@ -79,18 +79,12 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
-        public void AddressingFunctionImportWithArgument()
-        {
-            TestGetPayloadContains("GetPeopleWithFriendsAtLeast(1)", "http://localhost:18384/api/Trippin/$metadata#People");
-        }
-
-        [Fact(Skip = "GitHub#125")]
         public void AddressingFunctionImportWithNamedArgument()
         {
             TestGetPayloadContains("GetPeopleWithFriendsAtLeast(n=1)", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
-        [Fact(Skip = "GitHub#125")]
+        [Fact]
         public void AddressingFunctionImportUsingParameterAlias()
         {
             TestGetPayloadContains("GetPeopleWithFriendsAtLeast(n=@n)?@n=1", "http://localhost:18384/api/Trippin/$metadata#People");

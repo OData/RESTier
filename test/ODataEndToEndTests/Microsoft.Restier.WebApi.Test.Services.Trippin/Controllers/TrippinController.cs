@@ -85,7 +85,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return Ok(Domain.GetPersonWithMostFriends());
         }
 
-        [ODataRoute("GetPeopleWithFriendsAtLeast({n})")]
+        [ODataRoute("GetPeopleWithFriendsAtLeast(n={n})")]
         public IHttpActionResult GetPeopleWithFriendsAtLeast(int n)
         {
             return Ok(Domain.GetPeopleWithFriendsAtLeast(n));
