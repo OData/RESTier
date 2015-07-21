@@ -120,6 +120,24 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             TestPostStatusCodeIs("CleanUpExpiredTrips()", 204);
         }
 
+        [Fact]
+        public void AddressingProperty()
+        {
+            TestGetPayloadContains("People(1)/LastName", "http://localhost:18384/api/Trippin/$metadata#People(1)/LastName");
+        }
+
+        [Fact]
+        public void AddressingPropertyValue()
+        {
+            TestGetStatusCodeIs("People(1)/LastName/$value", 200);
+        }
+
+        [Fact]
+        public void AddressingCollectionCount()
+        {
+            TestGetStatusCodeIs("People/$count", 200);
+        }
+
         private void TestGetPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
         {
             var requestMessage = new HttpWebRequestMessage(
@@ -134,6 +152,18 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 var payloadString = r.ReadToEnd();
                 Assert.Contains(expectedSubString, payloadString);
             }
+        }
+
+        private void TestGetStatusCodeIs(string uriStringAfterServiceRoot, int statusCode)
+        {
+            var requestMessage = new HttpWebRequestMessage(
+                new DataServiceClientRequestMessageArgs(
+                    "GET",
+                    new Uri(this.ServiceBaseUri.OriginalString + uriStringAfterServiceRoot, UriKind.Absolute),
+                    useDefaultCredentials: true,
+                    usePostTunneling: false,
+                    headers: new Dictionary<string, string>()));
+            Assert.Equal(statusCode, requestMessage.GetResponse().StatusCode);
         }
 
         private void TestPostPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
@@ -161,8 +191,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>() { { "Content-Length", "0" } }));
-            Assert.Equal(204, requestMessage.GetResponse().StatusCode);
+            Assert.Equal(statusCode, requestMessage.GetResponse().StatusCode);
         }
-
     }
 }
