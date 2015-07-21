@@ -12,5 +12,7 @@ namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
         public string FullName { get; set; }
 
         public Address Addr { get; set; }
+
+        public Universe Universe { get; set; }
     }
 }
