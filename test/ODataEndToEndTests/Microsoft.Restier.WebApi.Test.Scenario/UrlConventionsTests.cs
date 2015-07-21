@@ -27,7 +27,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Fact]
         public void Metadata()
         {
-            TestGetPayloadContains("$metadata", "<edmx:Edmx Version=\"4.0\" xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">");
+            TestGetPayloadContains(
+                "$metadata", "<edmx:Edmx Version=\"4.0\" xmlns:edmx=\"http://docs.oasis-open.org/odata/ns/edmx\">");
         }
 
         [Fact]
@@ -39,67 +40,81 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Fact]
         public void AddressingSingleton()
         {
-            TestGetPayloadContains("Me", "http://localhost:18384/api/Trippin/$metadata#Me");
+            TestGetPayloadContains(
+                "Me", "http://localhost:18384/api/Trippin/$metadata#Me");
         }
 
         [Fact]
         public void AddressingSingleEntity()
         {
-            TestGetPayloadContains("People(1)", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
+            TestGetPayloadContains(
+                "People(1)", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
         }
 
         [Fact]
         public void AddressingSingleEntityWithKeyName()
         {
-            TestGetPayloadContains("People(PersonId=1)", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
+            TestGetPayloadContains(
+                "People(PersonId=1)", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
         }
 
         [Fact]
         public void AddressingNavigationProperty()
         {
-            TestGetPayloadContains("People(1)/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips");
+            TestGetPayloadContains(
+                "People(1)/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips");
         }
 
         [Fact]
         public void AddressingEntityReference()
         {
-            TestGetPayloadContains("People(1)/Trips/$ref", "http://localhost:18384/api/Trippin/$metadata#Collection($ref)");
+            TestGetPayloadContains(
+                "People(1)/Trips/$ref", "http://localhost:18384/api/Trippin/$metadata#Collection($ref)");
         }
 
         [Fact]
         public void AddressingBoundFunction()
         {
-            TestGetPayloadContains("People(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+            TestGetPayloadContains(
+                "People(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends",
+                "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
         }
 
         [Fact]
         public void AddressingFunctionImport()
         {
-            TestGetPayloadContains("GetPersonWithMostFriends", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
+            TestGetPayloadContains(
+                "GetPersonWithMostFriends", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
         }
 
         [Fact]
         public void AddressingFunctionImportWithNamedArgument()
         {
-            TestGetPayloadContains("GetPeopleWithFriendsAtLeast(n=1)", "http://localhost:18384/api/Trippin/$metadata#People");
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeast(n=1)", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
         [Fact]
         public void AddressingFunctionImportUsingParameterAlias()
         {
-            TestGetPayloadContains("GetPeopleWithFriendsAtLeast(n=@n)?@n=1", "http://localhost:18384/api/Trippin/$metadata#People");
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeast(n=@n)?@n=1", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
         [Fact]
         public void AddressingBoundAction()
         {
-            TestPostPayloadContains("Trips(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip", "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
+            TestPostPayloadContains(
+                "Trips(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip",
+                "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
         }
 
         [Fact]
         public void AddressingBoundActionWithParenthesis()
         {
-            TestPostPayloadContains("Trips(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip()", "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
+            TestPostPayloadContains(
+                "Trips(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip()",
+                "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
         }
 
         [Fact]
@@ -117,7 +132,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Fact]
         public void AddressingProperty()
         {
-            TestGetPayloadContains("People(1)/LastName", "http://localhost:18384/api/Trippin/$metadata#People(1)/LastName");
+            TestGetPayloadContains(
+                "People(1)/LastName", "http://localhost:18384/api/Trippin/$metadata#People(1)/LastName");
         }
 
         [Fact]
@@ -131,6 +147,92 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetStatusCodeIs("People/$count", 200);
         }
+
+        [Fact]
+        public void ApplyingFilterFunctions_1()
+        {
+            TestGetPayloadContains(
+                "People?$filter=PersonId gt 2 and not ((PersonId add 1) eq 4 or startswith(UserName, 'mar'))",
+                "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingFilterFunctions_2()
+        {
+            TestGetPayloadContains(
+                "People?$filter=contains(UserName, 'a') or endswith(LastName, 't') and length(FirstName) lt 5",
+                "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingFilterFunctions_3()
+        {
+            TestGetPayloadContains(
+                "People?$filter=toupper(substring(UserName,indexof(trim(UserName),'abc'),3))" +
+                "eq concat(tolower('ABC'),'d')",
+                "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingFilterFunctions_4()
+        {
+            TestGetPayloadContains(
+                "Trips?$filter=year(StartsAt) eq 2015 and month(StartsAt) eq 5 and day(StartsAt) eq 3 and " +
+                "hour(StartsAt) eq 13 and minute(StartsAt) eq 59 and second(StartsAt) eq 59 and " +
+                "fractionalseconds(StartsAt) lt 0.1",
+                "http://localhost:18384/api/Trippin/$metadata#Trips");
+        }
+
+        [Fact]
+        public void ApplyingFilterFunctions_5()
+        {
+            TestGetPayloadContains(
+                "Trips?$filter=date(StartsAt) ne date(EndsAt) and time(StartsAt) eq time(EndsAt)",
+                "http://localhost:18384/api/Trippin/$metadata#Trips");
+        }
+
+        [Fact]
+        public void ApplyingFilterFunctions_6()
+        {
+            TestGetPayloadContains(
+                "Trips?$filter=round(10.5) eq 11.0 and floor(10.5) eq 10.0 and ceiling(10.1) eq 11.0 and " +
+                "cast(10,Edm.Double) eq 10.0",
+                "http://localhost:18384/api/Trippin/$metadata#Trips");
+        }
+
+        [Fact]
+        public void ApplyingFilterPrimitiveLiterals()
+        {
+            TestGetPayloadContains(
+                "Trips?$filter=true eq false or 0.2 gt 0.1e2 or -3 lt -1 or StartsAt eq 2012-12-03T07:16:23Z or " +
+                "TrackGuid eq 01234567-89ab-cdef-0123-456789abcdef or " +
+                "duration'P12DT23H59M59.999999999999S' ne duration'P12DT23H59M58.999999999999S' or " +
+                "['red','green'] ne ['yellow','blue']",
+                "http://localhost:18384/api/Trippin/$metadata#Trips");
+        }
+
+        [Fact]
+        public void ApplyingFilterPathExpression()
+        {
+            TestGetPayloadContains(
+                "Trips(1)/Events?$filter=OccursAt/Address eq 'abc'",
+                "http://localhost:18384/api/Trippin/$metadata#Events");
+        }
+
+        [Fact]
+        public void ApplyingFilterLambdaOperatorsAny()
+        {
+            TestGetPayloadContains(
+                "People?$filter=Trips/any(d:d/TripId gt 1)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingFilterLambdaOperatorsAll()
+        {
+            TestGetPayloadContains(
+                "People?$filter=Trips/all(d:d/TripId gt 1)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
 
         private void TestGetPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
         {
