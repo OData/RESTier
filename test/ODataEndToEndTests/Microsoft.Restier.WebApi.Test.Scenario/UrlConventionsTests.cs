@@ -233,6 +233,33 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 "People?$filter=Trips/all(d:d/TripId gt 1)", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
+        [Fact]
+        public void ApplyingSingleLevelExpand()
+        {
+            TestGetPayloadContains(
+                "People?$expand=Trips", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingMutiLevelExpand()
+        {
+            TestGetPayloadContains(
+                "People?$expand=Friends($levels=2)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingExpandWithNestedQueryOptions()
+        {
+            TestGetPayloadContains(
+                "People?$expand=Trips($filter=StartsAt lt EndsAt)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingExpandOnAllNavigationProperties()
+        {
+            TestGetPayloadContains(
+                "Trips?$expand=*", "http://localhost:18384/api/Trippin/$metadata#Trips");
+        }
 
         private void TestGetPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
         {
