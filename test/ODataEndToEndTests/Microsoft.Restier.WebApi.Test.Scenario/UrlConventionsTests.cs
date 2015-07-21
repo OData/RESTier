@@ -255,10 +255,45 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
-        public void ApplyingExpandOnAllNavigationProperties()
+        public void ApplyingSelect()
         {
             TestGetPayloadContains(
-                "Trips?$expand=*", "http://localhost:18384/api/Trippin/$metadata#Trips");
+                "People?$select=FirstName,LastName", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingSelectWithExpand()
+        {
+            TestGetPayloadContains(
+                "People?$select=FirstName&$expand=Trips", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingSelectStar()
+        {
+            TestGetPayloadContains(
+                "People?$select=*", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingOrderBy()
+        {
+            TestGetPayloadContains(
+                "People?$orderby=FirstName", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingTopAndSkip()
+        {
+            TestGetPayloadContains(
+                "People?$top=3&$skip=3", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingSearch()
+        {
+            TestGetPayloadContains(
+                "People?$search=abc", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
         private void TestGetPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
