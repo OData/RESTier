@@ -1,4 +1,4 @@
-RESTier ver. 0.2-pre
+RESTier ver. 0.3-beta
 Copyright (c) Microsoft Corporation
 All rights reserved.
 MIT License
