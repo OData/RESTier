@@ -13,7 +13,6 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Routing;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Microsoft.Restier.WebApi.Test
 {

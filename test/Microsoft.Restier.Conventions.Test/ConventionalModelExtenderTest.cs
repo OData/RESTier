@@ -10,7 +10,6 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Microsoft.Restier.Conventions.Test
 {
