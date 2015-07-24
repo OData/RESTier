@@ -95,19 +95,19 @@ namespace Microsoft.Restier.Core.Submit
                         currentChangeSetItems = eventsChangeSet.Entries.ToArray();
                     }
 
-                    await this.PerformValidate(context, currentChangeSetItems, cancellationToken);
+                    await PerformValidate(context, currentChangeSetItems, cancellationToken);
 
-                    await this.PerformPreEvent(context, currentChangeSetItems, cancellationToken);
+                    await PerformPreEvent(context, currentChangeSetItems, cancellationToken);
                 }
                 while (eventsChangeSet.AnEntityHasChanged && (innerLoopCount < MaxLoop));
 
                 VerifyNoEntityHasChanged(eventsChangeSet);
 
-                await this.PerformPersist(context, currentChangeSetItems, cancellationToken);
+                await PerformPersist(context, currentChangeSetItems, cancellationToken);
 
                 eventsChangeSet.Entries.Clear();
 
-                await this.PerformPostEvent(context, currentChangeSetItems, cancellationToken);
+                await PerformPostEvent(context, currentChangeSetItems, cancellationToken);
             }
             while (eventsChangeSet.AnEntityHasChanged && (outerLoopCount < MaxLoop));
 
@@ -165,14 +165,14 @@ namespace Microsoft.Restier.Core.Submit
             }
         }
 
-        private async Task PerformValidate(
+        private static async Task PerformValidate(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
-            await this.InvokeAuthorizers(context, changeSetItems, cancellationToken);
+            await InvokeAuthorizers(context, changeSetItems, cancellationToken);
 
-            await this.InvokeValidators(context, changeSetItems, cancellationToken);
+            await InvokeValidators(context, changeSetItems, cancellationToken);
 
             foreach (ChangeSetEntry item in changeSetItems.Where(i => i.HasChanged()))
             {
@@ -187,7 +187,7 @@ namespace Microsoft.Restier.Core.Submit
             }
         }
 
-        private async Task InvokeAuthorizers(
+        private static async Task InvokeAuthorizers(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
@@ -213,7 +213,7 @@ namespace Microsoft.Restier.Core.Submit
             }
         }
 
-        private async Task InvokeValidators(
+        private static async Task InvokeValidators(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
@@ -239,7 +239,7 @@ namespace Microsoft.Restier.Core.Submit
             }
         }
 
-        private async Task PerformPreEvent(
+        private static async Task PerformPreEvent(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
@@ -272,7 +272,7 @@ namespace Microsoft.Restier.Core.Submit
             }
         }
 
-        private async Task PerformPersist(
+        private static async Task PerformPersist(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
@@ -308,7 +308,7 @@ namespace Microsoft.Restier.Core.Submit
             context.Result = await executor.ExecuteSubmitAsync(context, cancellationToken);
         }
 
-        private async Task PerformPostEvent(
+        private static async Task PerformPostEvent(
             SubmitContext context,
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
