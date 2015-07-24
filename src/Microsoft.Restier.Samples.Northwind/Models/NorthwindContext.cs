@@ -98,7 +98,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             var dbPath = SqlLoader.GetDatabaseDirectory(null);
             var loader = new SqlLoader();
-            loader.SetDatabaseEngine("(localdb)\\v11.0");
+            loader.SetDatabaseEngine("(localdb)\\MSSQLLocalDB");
             loader.AddScript("instnwdb.sql");
             loader.AddScriptArgument("SqlSamplesDatabasePath", dbPath);
             loader.Execute(dbPath);
