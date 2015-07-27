@@ -1,7 +1,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="tools\RESTier.tasks.targets"/>
   <UsingTask TaskName="SkipStrongNames.CheckSkipStrongNamesStatus" AssemblyFile="$(SkipStrongNamesExe)" />
-  <UsingTask AssemblyFile=".\packages\xunit.1.9.2\lib\net20\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
+  <UsingTask AssemblyFile=".\packages\xunit.MSBuild.2.0.0.0\tools\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
 
   <ItemGroup>
     <SolutionsToBuild Include="RESTier.sln">
@@ -110,7 +110,7 @@
           Condition=" '%(SolutionsToBuild.Portable)' != 'true' or '$(BuildPortable)' == 'true' "
           Properties="Configuration=$(Configuration);CodeAnalysis=$(CodeAnalysis);StyleCopEnabled=$(StyleCopEnabled);VisualStudioVersion=$(VisualStudioVersion);OutputPath=$(OutputPath)Product;EnableProjectCop=false" />
   </Target>
-  
+
   <Target Name="RunTests">
     <RemoveDir Directories="$(TestResultsDirectory)" />
     <MakeDir Directories="$(TestResultsDirectory)" />
