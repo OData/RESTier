@@ -115,7 +115,7 @@
     <RemoveDir Directories="$(TestResultsDirectory)" />
     <MakeDir Directories="$(TestResultsDirectory)" />
     <Message Text="{Running Test Begin}" Importance="High" />
-    <xunit Assemblies="@(TestAssembiles)" Xml="$(TestResultsDirectory)\$(ResultFileName)"/>
+    <xunit Assemblies="@(TestAssembiles)" Xml="$(TestResultsDirectory)\$(ResultFileName)" ParallelizeTestCollections="false" />
     <Message Text="{Running Test End}" Importance="High" />
     <Message Text="" Importance="High" />
   </Target>
