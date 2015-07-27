@@ -27,7 +27,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         }
 
         /// <summary>
-        /// Get the serializer for the given result type.
+        /// Gets the serializer for the given result type.
         /// </summary>
         /// <param name="model">The EDM model.</param>
         /// <param name="type">The type of result to serialize.</param>

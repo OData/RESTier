@@ -41,7 +41,7 @@ namespace System
             return null;
         }
 
-        internal static MethodInfo GetQualifiedMethod(this Type type, string methodName)
+        public static MethodInfo GetQualifiedMethod(this Type type, string methodName)
         {
             return type.GetMethod(methodName, QualifiedMethodBindingFlags);
         }
