@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
-using Microsoft.OData.Edm.Csdl;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
