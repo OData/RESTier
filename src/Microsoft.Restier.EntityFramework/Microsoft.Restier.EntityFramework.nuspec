@@ -9,7 +9,7 @@
     <description>$description$</description>
     <copyright>Copyright © Microsoft Corporation 2014</copyright>
     <dependencies>
-      <dependency id="Microsoft.Restier.Core" version="[0.3.0-beta,]" />
+      <dependency id="Microsoft.Restier.Core" version="[0.3.0-beta1,]" />
     </dependencies>
   </metadata>
 </package>
