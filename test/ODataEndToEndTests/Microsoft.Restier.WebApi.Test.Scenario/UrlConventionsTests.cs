@@ -4,14 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario
 {
-    public class UrlConventionsTests : E2ETestBase<TrippinModel>
+    public class UrlConventionsTests : E2ETestBase<TrippinModel>, IClassFixture<TrippinServiceFixture>
     {
         public UrlConventionsTests()
             : base(new Uri("http://localhost:18384/api/Trippin/"))

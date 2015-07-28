@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario
 {
-    public class TrippinE2ETestCases : E2ETestBase<TrippinModel>
+    public class TrippinE2ETestCases : E2ETestBase<TrippinModel>, IClassFixture<TrippinServiceFixture>
     {
         public TrippinE2ETestCases()
             : base(new Uri("http://localhost:18384/api/Trippin/"))

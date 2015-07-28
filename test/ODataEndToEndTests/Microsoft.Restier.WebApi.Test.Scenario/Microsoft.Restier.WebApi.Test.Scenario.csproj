@@ -32,6 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BatchTests.cs" />
+    <Compile Include="TrippinServiceFixture.cs" />
+    <Compile Include="ServiceFixture.cs" />
     <Compile Include="E2ETestBase.cs" />
     <Compile Include="ServiceReference\TrippinProxy.cs">
       <AutoGen>True</AutoGen>
