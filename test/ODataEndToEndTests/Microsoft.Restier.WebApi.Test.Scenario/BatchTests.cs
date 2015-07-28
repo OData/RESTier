@@ -2,11 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
-using Microsoft.OData.Core;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
@@ -152,6 +149,11 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 // This should fail for BatchWithIndependentOperations, as the foreign key restriction breaks.
                 this.TestClientContext.AddToFlights(flight);
                 this.TestClientContext.AddToAirlines(airline);
+                this.TestClientContext.SendingRequest2 += (sender, e) =>
+                {
+                    e.RequestMessage.SetHeader("Prefer", "odata.continue-on-error");
+                };
+
                 DataServiceResponse response1 = this.TestClientContext.SaveChanges(option);
 
                 switch (option)
