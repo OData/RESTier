@@ -3,7 +3,9 @@
 
 #if EF7
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
+using Microsoft.Data.Entity.Storage;
 #else
 using System.Data.Entity;
 #endif
@@ -17,18 +19,18 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             try
             {
-                if (!Database.AsRelational().Exists())
+                if (!Database.GetService<IRelationalDatabaseCreator>().Exists())
                 {
                     LoadDataSource();
                 }
             }
             catch
             {
-                ResetDataSource();
+                LoadDataSource();
             }
         }
 
-        protected override void OnConfiguring(EntityOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // Seems for now EF7 can't support named connection string like "name=NorthwindConnection",
@@ -109,14 +111,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ForSqlServer().UseIdentity();
+            modelBuilder.UseSqlServerIdentityColumns();
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // After EF7 adds support for DataAnnotation, some of following configuration could be deprecated.
             modelBuilder.Entity<Alphabetical_list_of_product>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Alphabetical list of products");
-                entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Alphabetical list of products");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
                 entityBuilder.Property(e => e.ProductName).MaxLength(40);
                 entityBuilder.Property(e => e.QuantityPerUnit).MaxLength(40);
                 entityBuilder.Property(e => e.CategoryName).MaxLength(15);
@@ -131,33 +133,33 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Category>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Categories");
+                entityBuilder.ToTable("Categories");
                 entityBuilder.Property(e => e.CategoryName).Required().MaxLength(15);
-                entityBuilder.Property(e => e.Description).ForSqlServer().ColumnType("ntext");
-                entityBuilder.Property(e => e.Picture).ForSqlServer().ColumnType("image");
+                entityBuilder.Property(e => e.Description).HasColumnType("ntext");
+                entityBuilder.Property(e => e.Picture).HasColumnType("image");
                 entityBuilder.Property(e => e.CategoryName).MaxLength(15);
                 entityBuilder.Key(e => e.CategoryID);
             });
 
             modelBuilder.Entity<Category_Sales_for_1997>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Category Sales for 1997");
+                entityBuilder.ToTable("Category Sales for 1997");
                 entityBuilder.Property(e => e.CategoryName).MaxLength(15);
-                entityBuilder.Property(e => e.CategorySales).ForSqlServer().ColumnType("money");
+                entityBuilder.Property(e => e.CategorySales).HasColumnType("money");
                 entityBuilder.Key(e => e.CategoryName);
             });
 
             modelBuilder.Entity<Contact>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Contacts");
-                entityBuilder.Property(e => e.HomePage).ForSqlServer().ColumnType("ntext");
-                entityBuilder.Property(e => e.Photo).ForSqlServer().ColumnType("image");
+                entityBuilder.ToTable("Contacts");
+                entityBuilder.Property(e => e.HomePage).HasColumnType("ntext");
+                entityBuilder.Property(e => e.Photo).HasColumnType("image");
                 //entityBuilder.Key(e => e.ContactID);
             });
 
             modelBuilder.Entity<Current_Product_List>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Current Product List");
+                entityBuilder.ToTable("Current Product List");
                 entityBuilder.Key(e => new
                 {
                     K1 = e.ProductID,
@@ -167,14 +169,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Customer>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Customers");
+                entityBuilder.ToTable("Customers");
                 entityBuilder.Property(e => e.CompanyName).Required().MaxLength(40);
                 entityBuilder.Key(e => e.CustomerID);
             });
 
             modelBuilder.Entity<Customer_and_Suppliers_by_City>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Customer and Suppliers by City");
+                entityBuilder.ToTable("Customer and Suppliers by City");
                 //entityBuilder.Property(e => e.CompanyName).Required().MaxLength(40);
                 entityBuilder.Key(e => new
                 {
@@ -185,7 +187,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Employee>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Employees");
+                entityBuilder.ToTable("Employees");
                 entityBuilder.Property(e => e.LastName).Required().MaxLength(20);
                 entityBuilder.Property(e => e.FirstName).Required().MaxLength(10);
                 entityBuilder.Collection(e => e.Employees1).InverseReference(e => e.Employee1).Required(false).ForeignKey(e => e.ReportsTo);
@@ -193,10 +195,10 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Invoice>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Invoices");
-                entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
-                entityBuilder.Property(e => e.ExtendedPrice).ForSqlServer().ColumnType("money");
-                entityBuilder.Property(e => e.Freight).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Invoices");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
+                entityBuilder.Property(e => e.ExtendedPrice).HasColumnType("money");
+                entityBuilder.Property(e => e.Freight).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K1 = e.CustomerName,
@@ -213,14 +215,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Order>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Orders");
+                entityBuilder.ToTable("Orders");
                 entityBuilder.Collection(e => e.Order_Details).InverseReference(e => e.Order).Required().ForeignKey(e => e.OrderID);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Order Details");
-                entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Order Details");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K1 = e.OrderID,
@@ -230,9 +232,9 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Order_Details_Extended>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Order Details Extended");
-                entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
-                entityBuilder.Property(e => e.ExtendedPrice).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Order Details Extended");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
+                entityBuilder.Property(e => e.ExtendedPrice).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K0 = e.OrderID,
@@ -246,15 +248,15 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Order_Subtotal>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Order Subtotals");
-                entityBuilder.Property(e => e.Subtotal).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Order Subtotals");
+                entityBuilder.Property(e => e.Subtotal).HasColumnType("money");
                 entityBuilder.Key(e => e.OrderID);
             });
 
             modelBuilder.Entity<Orders_Qry>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Order Qry");
-                entityBuilder.Property(e => e.Freight).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Order Qry");
+                entityBuilder.Property(e => e.Freight).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K0 = e.OrderID,
@@ -264,15 +266,15 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Product>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Products");
-                entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Products");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
                 entityBuilder.Collection(e => e.Order_Details).InverseReference(e => e.Product).Required();
             });
 
             modelBuilder.Entity<Product_Sales_for_1997>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Product Sales for 1997");
-                entityBuilder.Property(e => e.ProductSales).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Product Sales for 1997");
+                entityBuilder.Property(e => e.ProductSales).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K0 = e.CategoryName,
@@ -282,14 +284,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Products_Above_Average_Price>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Products Above Average Price");
-                entityBuilder.Property(e => e.UnitPrice).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Products Above Average Price");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
                 entityBuilder.Key(e => e.ProductName);
             });
 
             modelBuilder.Entity<Products_by_Category>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Products by Category");
+                entityBuilder.ToTable("Products by Category");
                 entityBuilder.Key(e => new
                 {
                     K0 = e.CategoryName,
@@ -306,8 +308,8 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Sales_by_Category>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Sales by Category");
-                entityBuilder.Property(e => e.ProductSales).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Sales by Category");
+                entityBuilder.Property(e => e.ProductSales).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K0 = e.CategoryID,
@@ -318,8 +320,8 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Sales_Totals_by_Amount>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Sales Totals by Amount");
-                entityBuilder.Property(e => e.SaleAmount).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Sales Totals by Amount");
+                entityBuilder.Property(e => e.SaleAmount).HasColumnType("money");
                 entityBuilder.Key(e => new
                 {
                     K0 = e.OrderID,
@@ -329,22 +331,22 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Shipper>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Shippers");
+                entityBuilder.ToTable("Shippers");
                 entityBuilder.Collection(e => e.Orders).InverseReference(e => e.Shipper).ForeignKey(e => e.ShipVia).Required(false);
             });
 
             modelBuilder.Entity<Summary_of_Sales_by_Quarter>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Summary of Sales by Quarter");
-                entityBuilder.Property(e => e.Subtotal).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Summary of Sales by Quarter");
+                entityBuilder.Property(e => e.Subtotal).HasColumnType("money");
                 entityBuilder.Property(e => e.OrderID).StoreGeneratedPattern(StoreGeneratedPattern.None);
                 entityBuilder.Key(e => e.OrderID);
             });
 
             modelBuilder.Entity<Summary_of_Sales_by_Year>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Summary of Sales by Year");
-                entityBuilder.Property(e => e.Subtotal).ForSqlServer().ColumnType("money");
+                entityBuilder.ToTable("Summary of Sales by Year");
+                entityBuilder.Property(e => e.Subtotal).HasColumnType("money");
                 entityBuilder.Property(e => e.OrderID).StoreGeneratedPattern(StoreGeneratedPattern.None);
                 entityBuilder.Key(e => e.OrderID);
             });
@@ -361,7 +363,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Territory>(entityBuilder =>
             {
-                entityBuilder.ForSqlServer().Table("Territories");
+                entityBuilder.ToTable("Territories");
             });
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
