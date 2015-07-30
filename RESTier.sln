@@ -39,11 +39,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Services.Trippin", "test\ODataEndToEndTests\Microsoft.Restier.WebApi.Test.Services.Trippin\Microsoft.Restier.WebApi.Test.Services.Trippin.csproj", "{B379640E-9064-438D-8DA5-6F7B394C2C46}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EBBFEC28-7D5C-4870-AD2B-F881EEC5E8A0}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test", "test\Microsoft.Restier.WebApi.Test\Microsoft.Restier.WebApi.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Conventions.Test", "test\Microsoft.Restier.Conventions.Test\Microsoft.Restier.Conventions.Test.csproj", "{1629B189-52CE-4450-8377-7A9503C98C74}"
