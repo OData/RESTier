@@ -193,7 +193,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                         true,
                         out storeGeneratedPattern);
 
-                    if (storeGeneratedPattern != null)
+                    if (storeGeneratedPattern != null && (string)storeGeneratedPattern.Value == "Computed")
                     {
                         SetComputedAnnotation(model, property);
                     }
