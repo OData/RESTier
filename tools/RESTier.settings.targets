@@ -11,19 +11,20 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <OutputPath Condition="'$(OutputPath)' == ''">$(DFRootPath)bin\$(Configuration)\</OutputPath>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
 
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-
+    <StyleCopOverrideSettingsFile>$(DFRootPath)src\Common.Stylecop</StyleCopOverrideSettingsFile>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(SubmitForSigning)' == 'true'">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>$(DFRootPath)\tools\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-
-    <StyleCopOverrideSettingsFile>$(DFRootPath)src\Common.Stylecop</StyleCopOverrideSettingsFile>
   </PropertyGroup>
   
   <ItemGroup>
