@@ -1,6 +1,5 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="tools\RESTier.tasks.targets"/>
-  <UsingTask TaskName="SkipStrongNames.CheckSkipStrongNamesStatus" AssemblyFile="$(SkipStrongNamesExe)" />
   <UsingTask AssemblyFile=".\packages\xunit.MSBuild.2.0.0.0\tools\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
 
   <ItemGroup>
@@ -15,8 +14,6 @@
     <NuGetFolder>.nuget</NuGetFolder>
     <NuGetExe>$(NuGetFolder)\NuGet.exe</NuGetExe>
     <CodeAnalysis Condition=" '$(CodeAnalysis)' == '' and '$(Configuration)' != 'Release' ">true</CodeAnalysis>
-    <SkipStrongNamesExe>$(MSBuildThisFileDirectory)packages\Microsoft.Web.SkipStrongNames.1.0.0\tools\SkipStrongNames.exe</SkipStrongNamesExe>
-    <SkipStrongNamesXml>$(MSBuildThisFileDirectory)tools\SkipStrongNames.xml</SkipStrongNamesXml>
     <AdditionalRestoreProps></AdditionalRestoreProps>
   </PropertyGroup>
 
@@ -35,27 +32,6 @@
     <TestAssembiles Include="test\Microsoft.Restier.EntityFramework.Tests\bin\$(Configuration)\Microsoft.Restier.EntityFramework.Tests.dll" />
     <TestAssembiles Include="test\ODataEndToEndTests\Microsoft.Restier.WebApi.Test.Scenario\bin\$(Configuration)\Microsoft.Restier.WebApi.Test.Scenario.dll" />
   </ItemGroup>
-
-  <Target Name="RestoreSkipStrongNames" DependsOnTargets="DownloadNuGet">
-    <Exec Command='"$(NuGetExe)" restore .nuget\packages.config -PackagesDirectory packages -NonInteractive ^
-          -Verbosity detailed -ConfigFile .nuget\NuGet.Config' />
-  </Target>
-
-  <Target Name="EnableSkipStrongNames" DependsOnTargets="RestoreSkipStrongNames">
-    <Exec Command='"$(SkipStrongNamesExe)" -e "$(SkipStrongNamesXml)"' />
-    <CheckSkipStrongNamesStatus AssembliesFile="$(SkipStrongNamesXml)">
-      <Output TaskParameter="Status" PropertyName="Status" />
-    </CheckSkipStrongNamesStatus>
-    <Message Text="SkipStrongNames: $(Status)" Importance="High" />
-  </Target>
-
-  <Target Name="DisableSkipStrongNames" DependsOnTargets="RestoreSkipStrongNames">
-    <Exec Command='"$(SkipStrongNamesExe)" -d "$(SkipStrongNamesXml)"' />
-    <CheckSkipStrongNamesStatus AssembliesFile="$(SkipStrongNamesXml)">
-      <Output TaskParameter="Status" PropertyName="Status" />
-    </CheckSkipStrongNamesStatus>
-    <Message Text="SkipStrongNames: $(Status)" Importance="High" />
-  </Target>
 
   <Target Name="DownloadNuGet" Condition=" '$(NotDownloadNuget)' != 'true' ">
     <DownloadNuGet Condition="" OutputFileName="$(NuGetExe)" MinimumVersion="2.7.0" />

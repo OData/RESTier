@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<assemblies defaultPublicKeyToken="31bf3856ad364e35">
-  <assembly name="Microsoft.Restier.Core"/>
-  <assembly name="Microsoft.Restier.Conventions"/>
-  <assembly name="Microsoft.Restier.EntityFramework"/>
-  <assembly name="Microsoft.Restier.Security"/>
-  <assembly name="Microsoft.Restier.WebApi"/>
-</assemblies>

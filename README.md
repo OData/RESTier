@@ -10,16 +10,6 @@ Please be noted that currently RESTier is still a preview version.
 
 You can build the project either from command line with ./build.cmd, or from Visual Studio.
 
-If you see strong name validation error when running tests or sample services, you may need to skip strong name validation for RESTier DLLs.
-
-To enable skip strong name validation. please the try following command:
-
-> .\build.cmd EnableSkipStrongNames
-
-To disable it, please try:
-
-> .\build.cmd DisableSkipStrongNames
-
 ## Documentation / Tutorials
 
 Please refer to the [RESTier pages](http://odata.github.io/RESTier/).
