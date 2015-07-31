@@ -60,14 +60,42 @@ namespace Microsoft.Restier.EntityFramework.Model
             if (property != null)
             {
                 var type = property.PropertyType;
-                if (type.IsGenericType &&
-                    type.GetGenericTypeDefinition() == typeof(DbSet<>))
+                var parent = GetGenericParent(type);
+                if (parent != null)
                 {
-                    relevantType = type.GetGenericArguments()[0];
+                    relevantType = parent.GetGenericArguments()[0];
                 }
             }
 
             return relevantType != null;
+        }
+
+        /// <summary>
+        /// Finds the <c>IDbSet</c> interface this type implements.
+        /// </summary>
+        /// <param name="type">
+        /// The type of the entity set.
+        /// </param>
+        /// <returns>
+        /// the type itself if it is defined as DbSet or IDbSet,
+        /// type of IDbSet interface implemented by this type if there is;
+        /// otherwise, null
+        /// </returns>
+        private Type GetGenericParent(Type type)
+        {
+            // Because usage of DbSet very common, first check for it to speed things up
+            if (type.IsGenericType)
+            {
+                var generic = type.GetGenericTypeDefinition();
+                if (generic == typeof(DbSet<>) || generic == typeof(IDbSet<>))
+                {
+                    return type;
+                }
+            }
+
+            return
+                type.GetInterfaces()
+                    .FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof (IDbSet<>));
         }
 
         /// <summary>
