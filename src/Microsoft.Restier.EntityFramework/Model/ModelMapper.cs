@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 #if EF7
 using Microsoft.Data.Entity;
 #else
@@ -81,7 +82,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// type of IDbSet interface implemented by this type if there is;
         /// otherwise, null
         /// </returns>
-        private Type GetGenericParent(Type type)
+        private static Type GetGenericParent(Type type)
         {
             // Because usage of DbSet very common, first check for it to speed things up
             if (type.IsGenericType)
