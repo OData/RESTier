@@ -54,10 +54,16 @@ namespace Microsoft.Restier.WebApi.Test
       <ComplexType Name=""Address"">
         <Property Name=""Zip"" Type=""Edm.Int32"" Nullable=""false"" />
       </ComplexType>
-    </Schema>
-    <Schema Namespace=""Default"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
+      <Function Name=""GetBestProduct"">
+        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Product"" />
+      </Function>
+      <Action Name=""RemoveWorstProduct"">
+        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Product"" />
+      </Action>
       <EntityContainer Name=""Container"">
         <EntitySet Name=""Products"" EntityType=""Microsoft.Restier.WebApi.Test.Product"" />
+        <FunctionImport Name=""GetBestProduct"" Function=""Microsoft.Restier.WebApi.Test.GetBestProduct"" EntitySet=""Products"" IncludeInServiceDocument=""true"" />
+        <ActionImport Name=""RemoveWorstProduct"" Action=""Microsoft.Restier.WebApi.Test.RemoveWorstProduct"" EntitySet=""Products"" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>
@@ -93,6 +99,60 @@ namespace Microsoft.Restier.WebApi.Test
             HttpResponseMessage response = await client.SendAsync(request);
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
+
+        [Fact]
+        public async Task FunctionImportNotInModelShouldReturnNotFound()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/GetBestProduct2");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task FunctionImportNotInControllerShouldReturnNotImplemented()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/GetBestProduct");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task ActionImportNotInModelShouldReturnNotFound()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/RemoveWorstProduct2");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task ActionImportNotInControllerShouldReturnNotImplemented()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/RemoveWorstProduct");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetActionImportShouldReturnNotFound()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/RemoveWorstProduct");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task PostFunctionImportShouldReturnNotFound()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/GetBestProduct");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
     }
 
     public static class StoreModel
@@ -104,7 +164,10 @@ namespace Microsoft.Restier.WebApi.Test
         static StoreModel()
         {
             var builder = new ODataConventionModelBuilder();
+            builder.Namespace = "Microsoft.Restier.WebApi.Test";
             builder.EntitySet<Product>("Products");
+            builder.Function("GetBestProduct").ReturnsFromEntitySet<Product>("Products");
+            builder.Action("RemoveWorstProduct").ReturnsFromEntitySet<Product>("Products");
             Model = (EdmModel)builder.GetEdmModel();
             Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.WebApi.Test.Product");
         }
