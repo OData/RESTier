@@ -43,6 +43,9 @@
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>Shared\EnumerableExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\TypeExtensions.cs">
+      <Link>Shared\TypeExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\SharedResources\SharedResources.EntityFramework.Designer.cs">
       <Link>SharedResources.EntityFramework.Designer.cs</Link>
       <AutoGen>True</AutoGen>

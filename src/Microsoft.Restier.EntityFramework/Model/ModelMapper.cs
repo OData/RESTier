@@ -50,7 +50,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// <c>true</c> if the relevant type was
         /// provided; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryGetRelevantType(
+        public virtual bool TryGetRelevantType(
             DomainContext context,
             string name,
             out Type relevantType)
@@ -61,42 +61,14 @@ namespace Microsoft.Restier.EntityFramework.Model
             if (property != null)
             {
                 var type = property.PropertyType;
-                var parent = GetGenericParent(type);
-                if (parent != null)
+                var genericType = type.FindGenericType(typeof (IDbSet<>));
+                if (genericType != null)
                 {
-                    relevantType = parent.GetGenericArguments()[0];
+                    relevantType = genericType.GetGenericArguments()[0];
                 }
             }
 
             return relevantType != null;
-        }
-
-        /// <summary>
-        /// Finds the <c>IDbSet</c> interface this type implements.
-        /// </summary>
-        /// <param name="type">
-        /// The type of the entity set.
-        /// </param>
-        /// <returns>
-        /// the type itself if it is defined as DbSet or IDbSet,
-        /// type of IDbSet interface implemented by this type if there is;
-        /// otherwise, null
-        /// </returns>
-        private static Type GetGenericParent(Type type)
-        {
-            // Because usage of DbSet very common, first check for it to speed things up
-            if (type.IsGenericType)
-            {
-                var generic = type.GetGenericTypeDefinition();
-                if (generic == typeof(DbSet<>) || generic == typeof(IDbSet<>))
-                {
-                    return type;
-                }
-            }
-
-            return
-                type.GetInterfaces()
-                    .FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof (IDbSet<>));
         }
 
         /// <summary>
