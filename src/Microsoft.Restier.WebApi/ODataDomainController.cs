@@ -284,7 +284,7 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
-                return this.StatusCode(HttpStatusCode.NoContent);
+                return this.StatusCode(HttpStatusCode.NotImplemented);
             }
         }
 
@@ -594,6 +594,13 @@ namespace Microsoft.Restier.WebApi
                         queryArgs = functionImport.Function.Parameters.Select(
                             p => functionSegment.GetParameterValue(p.Name)).ToArray();
                     }
+                }
+                else
+                {
+                    throw new HttpResponseException(
+                        this.Request.CreateErrorResponse(
+                            HttpStatusCode.NotFound,
+                            "Unknown resource requested"));
                 }
             }
 

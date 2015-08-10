@@ -115,7 +115,7 @@ namespace Microsoft.Restier.WebApi.Test
             var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/GetBestProduct");
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
             HttpResponseMessage response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
         [Fact]
@@ -272,8 +272,12 @@ namespace Microsoft.Restier.WebApi.Test
 
             if (!embedded)
             {
-                return Expression.Constant(a.AsQueryable());
+                if (context.VisitedNode.ToString() == "Source(\"Products\", null)")
+                {
+                    return Expression.Constant(a.AsQueryable());
+                }
             }
+
             return context.VisitedNode;
         }
     }
