@@ -600,7 +600,7 @@ namespace Microsoft.Restier.WebApi
                     throw new HttpResponseException(
                         this.Request.CreateErrorResponse(
                             HttpStatusCode.NotFound,
-                            "Unknown resource requested"));
+                            Resources.UnknownResourceRequested));
                 }
             }
 

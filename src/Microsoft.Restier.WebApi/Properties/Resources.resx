@@ -150,6 +150,9 @@
   <data name="MultiKeyValuesExpected" xml:space="preserve">
     <value>Only one key was specified, when multiple were expected.</value>
   </data>
+  <data name="UnknownResourceRequested" xml:space="preserve">
+    <value>Unknown resource requested.</value>
+  </data>
   <data name="UpdateOnlySupportedOnEntitySet" xml:space="preserve">
     <value>Currently only EntitySets can be updated.</value>
   </data>
