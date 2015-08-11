@@ -488,9 +488,17 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
+                var entityResult = new EntityResult(query, typeReference, this.Domain.Context);
+                if (entityResult.Result == null)
+                {
+                    throw new HttpResponseException(
+                        this.Request.CreateErrorResponse(
+                            HttpStatusCode.NotFound,
+                            Resources.ResourceNotFound));
+                }
+
                 // TODO GitHubIssue#43 : support non-Entity ($select/$value) queries
-                return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityResult(query, typeReference, this.Domain.Context));
+                return this.Request.CreateResponse(HttpStatusCode.OK, entityResult);
             }
         }
 
@@ -601,7 +609,7 @@ namespace Microsoft.Restier.WebApi
                     throw new HttpResponseException(
                         this.Request.CreateErrorResponse(
                             HttpStatusCode.NotFound,
-                            Resources.UnknownResourceRequested));
+                            Resources.ResourceNotFound));
                 }
             }
 

@@ -777,5 +777,31 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 "The field LastName must be a string or array type with a minimum length of '1'",
                 clientException.Message);
         }
+
+        [Fact]
+        public void RequestNonExistingEntityShouldReturnNotFound()
+        {
+            var requestMessage = new HttpWebRequestMessage(
+                new DataServiceClientRequestMessageArgs(
+                    "GET",
+                    new Uri(this.ServiceBaseUri.OriginalString + "Airlines('NonExisting')", UriKind.Absolute),
+                    useDefaultCredentials: true,
+                    usePostTunneling: false,
+                    headers: new Dictionary<string, string>()));
+
+            DataServiceTransportException exception = null;
+
+            try
+            {
+                requestMessage.GetResponse();
+            }
+            catch (DataServiceTransportException e)
+            {
+                exception = e;
+            }
+
+            Assert.NotNull(exception);
+            Assert.Equal(404, exception.Response.StatusCode);
+        }
     }
 }

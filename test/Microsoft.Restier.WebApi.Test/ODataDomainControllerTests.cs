@@ -88,6 +88,15 @@ namespace Microsoft.Restier.WebApi.Test
         }
 
         [Fact]
+        public async Task GetNonExistingEntityTest()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/Products(-1)");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
         public async Task PostTest()
         {
             const string payload = "{'Name': 'var1', 'Addr':{'Zip':330}}";

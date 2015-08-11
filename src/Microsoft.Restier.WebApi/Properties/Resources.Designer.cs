@@ -162,9 +162,9 @@ namespace Microsoft.Restier.WebApi.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The resource you requested is not found..
         /// </summary>
-        internal static string UnknownResourceRequested {
+        internal static string ResourceNotFound {
             get {
-                return ResourceManager.GetString("UnknownResourceRequested", resourceCulture);
+                return ResourceManager.GetString("ResourceNotFound", resourceCulture);
             }
         }
         
