@@ -284,6 +284,7 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
+                // TODO: Should also be able to handle 204.
                 return this.StatusCode(HttpStatusCode.NotImplemented);
             }
         }

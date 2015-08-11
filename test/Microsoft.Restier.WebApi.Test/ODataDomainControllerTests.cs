@@ -115,6 +115,7 @@ namespace Microsoft.Restier.WebApi.Test
             var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/GetBestProduct");
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
             HttpResponseMessage response = await client.SendAsync(request);
+            // TODO: Should throw 501 instead of 500.
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 

@@ -151,7 +151,7 @@
     <value>Only one key was specified, when multiple were expected.</value>
   </data>
   <data name="UnknownResourceRequested" xml:space="preserve">
-    <value>Unknown resource requested.</value>
+    <value>The resource you requested is not found.</value>
   </data>
   <data name="UpdateOnlySupportedOnEntitySet" xml:space="preserve">
     <value>Currently only EntitySets can be updated.</value>
