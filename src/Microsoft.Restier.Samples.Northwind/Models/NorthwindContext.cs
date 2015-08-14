@@ -10,11 +10,17 @@ using System.Data.Entity;
 
 namespace Microsoft.Restier.Samples.Northwind.Models
 {
-    public partial class NorthwindContext : DbContext
+    public class NorthwindContext : DbContext
     {
+        static NorthwindContext()
+        {
+            LoadDataSource();
+        }
+
 #if EF7
         public NorthwindContext()
         {
+            // TODO : remove those as we will initialize the db in static ctor.
             try
             {
                 if (!Database.AsRelational().Exists())
@@ -41,10 +47,6 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         public NorthwindContext()
             : base("name=NorthwindConnection")
         {
-            if (!Database.Exists())
-            {
-                LoadDataSource();
-            }
         }
 #endif
 
