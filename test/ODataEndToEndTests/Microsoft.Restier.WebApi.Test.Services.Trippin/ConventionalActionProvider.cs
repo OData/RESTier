@@ -39,7 +39,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
             foreach (ActionMethodInfo actionInfo in this.ActionInfos)
             {
                 var returnTypeReference = ConventionalActionProvider.GetReturnTypeReference(actionInfo.Method.ReturnType);
-                var action = new EdmAction(actionInfo.ActionNamespace, actionInfo.ActionName, returnTypeReference);
+                var action = new EdmAction(entityContainer.Namespace, actionInfo.ActionName, returnTypeReference);
 
                 foreach (ParameterInfo parameter in actionInfo.Method.GetParameters())
                 {
