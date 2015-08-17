@@ -12,12 +12,19 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
     public class E2ETestBase<TDSC> where TDSC : DataServiceContext
     {
         protected Uri ServiceBaseUri { get; set; }
-        public TDSC TestClientContext;
+
+        protected TDSC TestClientContext { get; private set; }
+
         public E2ETestBase(Uri serviceBaseUri)
         {
             this.ServiceBaseUri = serviceBaseUri;
-            TestClientContext = Activator.CreateInstance(typeof(TDSC), this.ServiceBaseUri) as TDSC;
+            TestClientContext = CreateClientContext();
             ResetDataSource();
+        }
+
+        protected TDSC CreateClientContext()
+        {
+            return (TDSC)Activator.CreateInstance(typeof(TDSC), this.ServiceBaseUri);
         }
 
         private void ResetDataSource()

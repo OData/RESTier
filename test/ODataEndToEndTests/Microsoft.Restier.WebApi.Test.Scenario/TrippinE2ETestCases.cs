@@ -12,13 +12,8 @@ using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario
 {
-    public class TrippinE2ETestCases : E2ETestBase<TrippinModel>, IClassFixture<TrippinServiceFixture>
+    public class TrippinE2ETestCases : TrippinE2ETestBase
     {
-        public TrippinE2ETestCases()
-            : base(new Uri("http://localhost:18384/api/Trippin/"))
-        {
-        }
-
         [Fact]
         public void AnnotationComputedOptimisticConcurrency()
         {

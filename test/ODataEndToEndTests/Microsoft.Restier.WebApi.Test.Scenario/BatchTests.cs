@@ -9,13 +9,8 @@ using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario
 {
-    public class BatchTests : E2ETestBase<TrippinModel>, IClassFixture<TrippinServiceFixture>
+    public class BatchTests : TrippinE2ETestBase
     {
-        public BatchTests()
-            : base(new Uri("http://localhost:18384/api/Trippin/"))
-        {
-        }
-
         [Fact]
         public void SingleChangesetShouldBeAtomic()
         {

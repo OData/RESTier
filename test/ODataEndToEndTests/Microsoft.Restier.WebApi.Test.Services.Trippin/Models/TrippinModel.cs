@@ -68,6 +68,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             instance.Airlines.RemoveRange(instance.Airlines);
             instance.Airports.RemoveRange(instance.Airports);
             instance.Trips.RemoveRange(instance.Trips);
+            Instance.Events.RemoveRange(instance.Events);
             // This is to set the People Id from 0
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('People', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Flights', RESEED, 0)");
