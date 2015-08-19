@@ -22,7 +22,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
     {
         public TrippinModel Context { get { return DbContext; } }
 
-        protected IQueryable<Person> PeopleWithFriends
+        private IQueryable<Person> PeopleWithFriends
         {
             get { return Context.People.Include("Friends"); }
         }
