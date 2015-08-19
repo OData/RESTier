@@ -27,6 +27,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         public long Concurrency { get; set; }
 
         [Column("BirthDate", TypeName = "Date")]
-        public DateTime? BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
     }
 }
