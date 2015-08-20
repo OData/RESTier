@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Domain;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
@@ -71,6 +72,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         public string GetPersonLastName([FromODataUri]int key)
         {
             return DbContext.People.Where(c => c.PersonId == key).Select(c => c.LastName).FirstOrDefault();
+        }
+
+        [ODataRoute("People({key})/BirthDate")]
+        [ODataRoute("People({key})/BirthDate/$value")]
+        public Date GetPersonBirthDate([FromODataUri]int key)
+        {
+            return DbContext.People.Where(c => c.PersonId == key).Select(c => c.BirthDate).FirstOrDefault();
         }
 
         [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
