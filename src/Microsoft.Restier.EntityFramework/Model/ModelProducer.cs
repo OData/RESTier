@@ -37,7 +37,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             { PrimitiveTypeKind.Binary, EdmPrimitiveTypeKind.Binary },
             { PrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Boolean },
             { PrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.Byte },
-            ////{ PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.DateTimeOffset },
+            { PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.Date },
             { PrimitiveTypeKind.DateTimeOffset, EdmPrimitiveTypeKind.DateTimeOffset },
             { PrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Decimal },
             { PrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Double },
