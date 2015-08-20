@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Expressions;
@@ -137,12 +138,27 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         }
     }
 
+    public class DateValueConverter : ODataPayloadValueConverter
+    {
+        public override object ConvertToPayloadValue(object value, IEdmTypeReference edmTypeReference)
+        {
+            if (edmTypeReference != null && edmTypeReference.IsDate() && value is DateTimeOffset)
+            {
+                var dateTimeOffsetValue = (DateTimeOffset)value;
+                return new Date(dateTimeOffsetValue.Year, dateTimeOffsetValue.Month, dateTimeOffsetValue.Day);
+            }
+
+            return base.ConvertToPayloadValue(value, edmTypeReference);
+        }
+    }
+
     public class CustomExtender : IModelExtender
     {
         public Task ExtendModelAsync(
             ModelContext context,
             CancellationToken cancellationToken)
         {
+            context.Model.SetPayloadValueConverter(new DateValueConverter());
             var entityContainer = (EdmEntityContainer)context.Model.EntityContainer;
             var personType = (IEdmEntityType)context.Model
                 .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person");
