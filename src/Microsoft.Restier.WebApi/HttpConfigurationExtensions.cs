@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
+using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Batch;
@@ -47,6 +48,7 @@ namespace Microsoft.Restier.WebApi
             using (var domain = domainFactory())
             {
                 var model = await domain.GetModelAsync();
+                model.EnsurePayloadValueConverter();
                 var conventions = CreateODataDomainRoutingConventions<TController>(config, model);
 
                 if (batchHandler != null && batchHandler.DomainFactory == null)
@@ -161,6 +163,16 @@ namespace Microsoft.Restier.WebApi
             }
 
             return routePrefix;
+        }
+
+        private static void EnsurePayloadValueConverter(this IEdmModel model)
+        {
+            var edmModel = model.GetUnderlyingEdmModel();
+            var payloadValueConverter = edmModel.GetPayloadValueConverter();
+            if (payloadValueConverter != null)
+            {
+                model.SetPayloadValueConverter(payloadValueConverter);
+            }
         }
     }
 }
