@@ -128,6 +128,35 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return Ok(name);
         }
 
+        [HttpPut]
+        [ODataRoute("People({key})/BirthDate")]
+        public IHttpActionResult UpdatePersonBirthDate([FromODataUri]int key, [FromBody]string birthDate)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+            entity.BirthDate = Date.Parse(birthDate);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthDate);
+        }
+
         [HttpGet]
         [ODataRoute("People({key})/Trips/$ref")]
         public IHttpActionResult GetRefToTripsFromPeople([FromODataUri]int key)
