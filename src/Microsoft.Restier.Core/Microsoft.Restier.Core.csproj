@@ -53,7 +53,6 @@
     <Compile Include="DomainParticipantAttribute.cs" />
     <Compile Include="EdmLibHelpers.cs" />
     <Compile Include="IDomain.cs" />
-    <Compile Include="IDomainProfiler.cs" />
     <Compile Include="IDomainPolicy.cs" />
     <Compile Include="IExpandableDomain.cs" />
     <Compile Include="InvocationContext.cs" />
