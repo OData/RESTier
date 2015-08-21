@@ -121,52 +121,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void ConfigurationWithProfilerReturnsProfiledHookPoints()
-        {
-            var configuration = new DomainConfiguration();
-            var profiler = new TestDomainProfiler();
-            configuration.AddHookPoint(typeof(IDomainProfiler), profiler);
-
-            // Profilers are not themselves profiled
-            Assert.Same(profiler, configuration
-                .GetHookPoints<IDomainProfiler>().Single());
-
-            var singletonHookPoint = new object();
-            var singletonHookPointProfiled = new object();
-            profiler.RegisterProfiledInstance(
-                singletonHookPoint, singletonHookPointProfiled);
-            configuration.SetHookPoint(typeof(object), singletonHookPoint);
-            Assert.Same(singletonHookPointProfiled,
-                configuration.GetHookPoint<object>());
-
-            var multiCastHookPoint = new object();
-            var multiCastHookPointProfiled = new object();
-            profiler.RegisterProfiledInstance(
-                multiCastHookPoint, multiCastHookPointProfiled);
-            configuration.AddHookPoint(typeof(object), multiCastHookPoint);
-            Assert.True(configuration.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPointProfiled }));
-        }
-
-        private class TestDomainProfiler : IDomainProfiler
-        {
-            IDictionary<object, object> profiledInstances =
-                new Dictionary<object, object>();
-
-            public void RegisterProfiledInstance<T>(
-                T instance, T profiledInstance)
-            {
-                this.profiledInstances.Add(instance, profiledInstance);
-            }
-
-            public T Profile<T>(T instance)
-            {
-                Assert.True(this.profiledInstances.ContainsKey(instance));
-                return (T)this.profiledInstances[instance];
-            }
-        }
-
-        [Fact]
         public void DerivedConfigurationIsConfiguredCorrectly()
         {
             var baseConfig = new DomainConfiguration();

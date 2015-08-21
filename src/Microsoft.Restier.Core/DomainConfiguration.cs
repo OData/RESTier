@@ -264,18 +264,7 @@ namespace Microsoft.Restier.Core
         public T GetHookPoint<T>()
             where T : class
         {
-            T instance = (T)this.GetHookPoint(typeof(T));
-            if (instance != null &&
-                typeof(T) != typeof(IDomainProfiler) &&
-                this.HasHookPoints(typeof(IDomainProfiler)))
-            {
-                foreach (var profiler in this.GetHookPoints<IDomainProfiler>())
-                {
-                    instance = profiler.Profile(instance);
-                }
-            }
-
-            return instance;
+            return (T)this.GetHookPoint(typeof(T));
         }
 
         /// <summary>
@@ -337,26 +326,7 @@ namespace Microsoft.Restier.Core
         public IEnumerable<T> GetHookPoints<T>()
             where T : class
         {
-            IEnumerable<IDomainProfiler> profilers = null;
-            if (typeof(T) != typeof(IDomainProfiler) &&
-                this.HasHookPoints(typeof(IDomainProfiler)))
-            {
-                profilers = this.GetHookPoints<IDomainProfiler>();
-            }
-
-            foreach (T instance in this.GetHookPoints(typeof(T)))
-            {
-                T finalInstance = instance;
-                if (profilers != null)
-                {
-                    foreach (var profiler in profilers)
-                    {
-                        finalInstance = profiler.Profile(finalInstance);
-                    }
-                }
-
-                yield return finalInstance;
-            }
+            return this.GetHookPoints(typeof(T)).Cast<T>();
         }
 
         /// <summary>
