@@ -145,6 +145,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         {
             await base.HandleAsync(context, cancellationToken);
 
+            var model = (EdmModel) context.Model;
             var entityContainer = (EdmEntityContainer)context.Model.EntityContainer;
             var personType = (IEdmEntityType)context.Model
                 .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person");
@@ -161,7 +162,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 entitySetPathExpression: null,
                 isComposable: true);
             getNumberOfFriends.AddParameter("person", personTypeReference);
-            context.Model.AddElement(getNumberOfFriends);
+            model.AddElement(getNumberOfFriends);
 
             var getPersonWithMostFriends = new EdmFunction(
                 "Microsoft.Restier.WebApi.Test.Services.Trippin.Models",
@@ -170,7 +171,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 isBound: false,
                 entitySetPathExpression: null,
                 isComposable: true);
-            context.Model.AddElement(getPersonWithMostFriends);
+            model.AddElement(getPersonWithMostFriends);
             entityContainer.AddFunctionImport(
                 "GetPersonWithMostFriends",
                 getPersonWithMostFriends,
@@ -184,7 +185,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 entitySetPathExpression: null,
                 isComposable: true);
             getPeopleWithFriendsAtLeast.AddParameter("n", EdmCoreModel.Instance.GetInt32(false));
-            context.Model.AddElement(getPeopleWithFriendsAtLeast);
+            model.AddElement(getPeopleWithFriendsAtLeast);
             entityContainer.AddFunctionImport(
                 "GetPeopleWithFriendsAtLeast",
                 getPeopleWithFriendsAtLeast,
@@ -196,7 +197,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 returnType: null,
                 isBound: false,
                 entitySetPathExpression: null);
-            context.Model.AddElement(cleanUpExpiredTrips);
+            model.AddElement(cleanUpExpiredTrips);
             entityContainer.AddActionImport(
                 "CleanUpExpiredTrips",
                 cleanUpExpiredTrips,
@@ -213,7 +214,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 isBound: true,
                 entitySetPathExpression: new EdmPathExpression("trip"));
             endTrip.AddParameter("trip", tripTypeReference);
-            context.Model.AddElement(endTrip);
+            model.AddElement(endTrip);
         }
     }
 }

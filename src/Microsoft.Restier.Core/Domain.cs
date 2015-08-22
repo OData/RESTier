@@ -80,10 +80,14 @@ namespace Microsoft.Restier.Core
             if (model == null)
             {
                 var modelContext = new ModelContext(context);
-                var handler = modelContext.GetHookPoint<IModelHandler>();
-                var result = await handler.GetModelAsync(
-                    modelContext, cancellationToken);
-                configuration.Model = new DomainModel(configuration, result);
+
+                var producer = context.Configuration.GetHookHandler<ModelContext>();
+                if (producer != null)
+                {
+                    await producer.HandleAsync(modelContext, cancellationToken);
+                }
+
+                configuration.Model = new DomainModel(configuration, modelContext.Model);
                 model = configuration.Model;
             }
 

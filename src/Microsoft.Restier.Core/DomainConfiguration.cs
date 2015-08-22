@@ -122,7 +122,6 @@ namespace Microsoft.Restier.Core
 
             if (DomainConfiguration.Global == null)
             {
-                this.SetHookPoint(typeof(IModelHandler), new DefaultModelHandler());
                 this.SetHookPoint(typeof(IQueryHandler), new DefaultQueryHandler());
                 this.SetHookPoint(typeof(ISubmitHandler), new DefaultSubmitHandler());
                 this.EnsureCommitted();
