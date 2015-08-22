@@ -15,7 +15,7 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
-    public class ConventionalActionProvider : HookHandler<ModelContext>
+    public class ConventionalActionProvider : HookHandler<ModelBuilderContext>
     {
         private Type targetType;
 
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
         }
 
         public override async Task HandleAsync(
-            ModelContext context,
+            ModelBuilderContext context,
             CancellationToken cancellationToken)
         {
             await base.HandleAsync(context, cancellationToken);

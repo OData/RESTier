@@ -235,7 +235,7 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    class TestModelProducer : HookHandler<ModelContext>
+    class TestModelProducer : HookHandler<ModelBuilderContext>
     {
         private EdmModel model;
 
@@ -244,7 +244,7 @@ namespace Microsoft.Restier.WebApi.Test
             this.model = model;
         }
 
-        public override Task HandleAsync(ModelContext context, CancellationToken cancellationToken)
+        public override Task HandleAsync(ModelBuilderContext context, CancellationToken cancellationToken)
         {
             context.Model = this.model;
             return Task.FromResult<object>(null);

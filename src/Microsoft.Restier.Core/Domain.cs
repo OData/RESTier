@@ -79,9 +79,9 @@ namespace Microsoft.Restier.Core
             var model = configuration.Model;
             if (model == null)
             {
-                var modelContext = new ModelContext(context);
+                var modelContext = new ModelBuilderContext(context);
 
-                var producer = context.Configuration.GetHookHandler<ModelContext>();
+                var producer = context.Configuration.GetHookHandler<ModelBuilderContext>();
                 if (producer != null)
                 {
                     await producer.HandleAsync(modelContext, cancellationToken);

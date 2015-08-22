@@ -137,10 +137,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         }
     }
 
-    public class CustomExtender : HookHandler<ModelContext>
+    public class CustomExtender : HookHandler<ModelBuilderContext>
     {
         public override async Task HandleAsync(
-            ModelContext context,
+            ModelBuilderContext context,
             CancellationToken cancellationToken)
         {
             await base.HandleAsync(context, cancellationToken);

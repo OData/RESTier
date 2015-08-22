@@ -12,9 +12,9 @@ using Microsoft.Restier.Core.Model;
 namespace Microsoft.Restier.Conventions
 {
     /// <summary>
-    /// The conventional implementation of Hook handler for <see cref="ModelContext"/>.
+    /// The conventional implementation of Hook handler for <see cref="ModelBuilderContext"/>.
     /// </summary>
-    public class ConventionalModelExtender : HookHandler<ModelContext>
+    public class ConventionalModelExtender : HookHandler<ModelBuilderContext>
     {
         private Type targetType;
 
@@ -45,13 +45,13 @@ namespace Microsoft.Restier.Conventions
         /// <param name="context">The context that contains the model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public override async Task HandleAsync(ModelContext context, CancellationToken cancellationToken)
+        public override async Task HandleAsync(ModelBuilderContext context, CancellationToken cancellationToken)
         {
             await base.HandleAsync(context, cancellationToken);
             ExtendModel(context);
         }
 
-        private void ExtendModel(ModelContext context)
+        private void ExtendModel(ModelBuilderContext context)
         {
             var method = this.targetType.GetQualifiedMethod("OnModelExtending");
             var returnType = typeof(EdmModel);

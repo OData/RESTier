@@ -13,10 +13,10 @@ namespace Microsoft.Restier.Core.Tests.Model
 {
     public class DefaultModelHandlerTests
     {
-        private class TestModelProducer : HookHandler<ModelContext>
+        private class TestModelProducer : HookHandler<ModelBuilderContext>
         {
             public override Task HandleAsync(
-                ModelContext context,
+                ModelBuilderContext context,
                 CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        private class TestModelExtender : HookHandler<ModelContext>
+        private class TestModelExtender : HookHandler<ModelBuilderContext>
         {
             private int _index;
 
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
 
             public override async Task HandleAsync(
-                ModelContext context,
+                ModelBuilderContext context,
                 CancellationToken cancellationToken)
             {
                 await base.HandleAsync(context, cancellationToken);
