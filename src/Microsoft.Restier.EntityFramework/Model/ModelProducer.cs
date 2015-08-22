@@ -26,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    public class ModelProducer : HookHandler<ModelContext>
+    public class ModelProducer : HookHandler<ModelBuilderContext>
     {
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// operation whose result is the base model.
         /// </returns>
         public override Task HandleAsync(
-            ModelContext context,
+            ModelBuilderContext context,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(context);

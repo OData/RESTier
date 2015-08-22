@@ -8,15 +8,15 @@ namespace Microsoft.Restier.Core.Model
     /// <summary>
     /// Represents context under which a model flow operates.
     /// </summary>
-    public class ModelContext : InvocationContext
+    public class ModelBuilderContext : InvocationContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelContext" /> class.
+        /// Initializes a new instance of the <see cref="ModelBuilderContext" /> class.
         /// </summary>
         /// <param name="domainContext">
         /// A domain context.
         /// </param>
-        public ModelContext(DomainContext domainContext)
+        public ModelBuilderContext(DomainContext domainContext)
             : base(domainContext)
         {
         }

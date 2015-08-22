@@ -29,7 +29,7 @@ namespace Microsoft.Restier.Conventions.Test
             var domainContext = new DomainContext(domainConfig);
             domainContext.SetProperty(type.AssemblyQualifiedName, domain);
             var model = GetModel();
-            var context = new ModelContext(domainContext) { Model = model };
+            var context = new ModelBuilderContext(domainContext) { Model = model };
 
             // Act
             await extender.HandleAsync(context, new CancellationToken());
@@ -57,7 +57,7 @@ namespace Microsoft.Restier.Conventions.Test
             var domainContext = new DomainContext(domainConfig);
             domainContext.SetProperty(type.AssemblyQualifiedName, domain);
             var model = GetModel();
-            var context = new ModelContext(domainContext) { Model = model };
+            var context = new ModelBuilderContext(domainContext) { Model = model };
 
             // Act
             await extender.HandleAsync(context, new CancellationToken());

@@ -18,13 +18,13 @@ namespace Microsoft.Restier.Core.Tests
 {
     public class DomainTests
     {
-        private class TestModelHandler : HookHandler<ModelContext>
+        private class TestModelHandler : HookHandler<ModelBuilderContext>
         {
             public DomainContext DomainContext { get; set; }
 
             public IEdmModel Model { get; set; }
 
-            public override Task HandleAsync(ModelContext context, CancellationToken cancellationToken)
+            public override Task HandleAsync(ModelBuilderContext context, CancellationToken cancellationToken)
             {
                 Assert.Same(DomainContext, context.DomainContext);
                 context.Model = this.Model;

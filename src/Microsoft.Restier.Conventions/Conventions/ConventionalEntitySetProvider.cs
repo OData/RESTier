@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Conventions
     /// the model space and the object space, and expands a query expression.
     /// </summary>
     public class ConventionalEntitySetProvider :
-        HookHandler<ModelContext>, IModelMapper, IQueryExpressionExpander
+        HookHandler<ModelBuilderContext>, IModelMapper, IQueryExpressionExpander
     {
         private Type targetType;
 
@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Conventions
 
         /// <inheritdoc/>
         public override async Task HandleAsync(
-            ModelContext context,
+            ModelBuilderContext context,
             CancellationToken cancellationToken)
         {
             await base.HandleAsync(context, cancellationToken);
