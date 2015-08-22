@@ -13,9 +13,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 {
     public class DefaultModelHandlerTests
     {
-        private class TestModelProducer : IModelProducer
+        private class TestModelProducer : HookHandler<ModelContext>
         {
-            public Task<EdmModel> ProduceModelAsync(
+            public override Task HandleAsync(
                 ModelContext context,
                 CancellationToken cancellationToken)
             {
@@ -27,11 +27,13 @@ namespace Microsoft.Restier.Core.Tests.Model
                 entityContainer.AddEntitySet("TestEntitySet", entityType);
                 model.AddElement(entityType);
                 model.AddElement(entityContainer);
-                return Task.FromResult(model);
+
+                context.Model = model;
+                return Task.FromResult<object>(null);
             }
         }
 
-        private class TestModelExtender : IModelExtender
+        private class TestModelExtender : HookHandler<ModelContext>
         {
             private int _index;
 
@@ -40,16 +42,17 @@ namespace Microsoft.Restier.Core.Tests.Model
                 _index = index;
             }
 
-            public async Task ExtendModelAsync(
+            public override async Task HandleAsync(
                 ModelContext context,
                 CancellationToken cancellationToken)
             {
+                await base.HandleAsync(context, cancellationToken);
+
                 var entityType = new EdmEntityType(
                     "TestNamespace", "TestName" + _index);
                 context.Model.AddElement(entityType);
                 (context.Model.EntityContainer as EdmEntityContainer)
                     .AddEntitySet("TestEntitySet" + _index, entityType);
-                await Task.Yield();
             }
         }
 
@@ -84,12 +87,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         public async Task GetModelUsingDefaultModelHandler()
         {
             var configuration = new DomainConfiguration();
-            configuration.SetHookPoint(
-                typeof(IModelProducer), new TestModelProducer());
-            configuration.AddHookPoint(
-                typeof(IModelExtender), new TestModelExtender(2));
-            configuration.AddHookPoint(
-                typeof(IModelExtender), new TestModelExtender(3));
+            configuration.AddHookHandler(new TestModelProducer());
+            configuration.AddHookHandler(new TestModelExtender(2));
+            configuration.AddHookHandler(new TestModelExtender(3));
+
             configuration.AddHookPoint(
                 typeof(IModelVisibilityFilter),
                 new TestModelVisibilityFilter());

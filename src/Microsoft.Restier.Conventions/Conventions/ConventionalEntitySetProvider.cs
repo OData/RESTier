@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Conventions
     /// the model space and the object space, and expands a query expression.
     /// </summary>
     public class ConventionalEntitySetProvider :
-        IModelExtender, IModelMapper, IQueryExpressionExpander
+        HookHandler<ModelContext>, IModelMapper, IQueryExpressionExpander
     {
         private Type targetType;
 
@@ -54,16 +54,18 @@ namespace Microsoft.Restier.Conventions
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
             var provider = new ConventionalEntitySetProvider(targetType);
-            configuration.AddHookPoint(typeof(IModelExtender), provider);
+            configuration.AddHookHandler(provider);
             configuration.AddHookPoint(typeof(IModelMapper), provider);
             configuration.AddHookPoint(typeof(IQueryExpressionExpander), provider);
         }
 
         /// <inheritdoc/>
-        public Task ExtendModelAsync(
+        public override async Task HandleAsync(
             ModelContext context,
             CancellationToken cancellationToken)
         {
+            await base.HandleAsync(context, cancellationToken);
+
             Ensure.NotNull(context);
             var model = context.Model;
             foreach (var entitySetProperty in this.AddedEntitySets)
@@ -82,8 +84,6 @@ namespace Microsoft.Restier.Conventions
 
                 container.AddEntitySet(entitySetProperty.Name, entityType);
             }
-
-            return Task.FromResult<object>(null);
         }
 
         /// <inheritdoc/>

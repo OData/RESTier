@@ -192,7 +192,7 @@ namespace Microsoft.Restier.WebApi.Test
         protected override DomainConfiguration CreateDomainConfiguration()
         {
             var configuration = base.CreateDomainConfiguration();
-            configuration.SetHookPoint(typeof(IModelProducer), new TestModelProducer(StoreModel.Model));
+            configuration.AddHookHandler(new TestModelProducer(StoreModel.Model));
             configuration.SetHookPoint(typeof(IModelMapper), new TestModelMapper());
             configuration.SetHookPoint(typeof(IQueryExecutor), new TestQueryExecutor());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new TestQueryExpressionSourcer());
@@ -235,7 +235,7 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    class TestModelProducer : IModelProducer
+    class TestModelProducer : HookHandler<ModelContext>
     {
         private EdmModel model;
 
@@ -244,9 +244,10 @@ namespace Microsoft.Restier.WebApi.Test
             this.model = model;
         }
 
-        public Task<EdmModel> ProduceModelAsync(ModelContext context, CancellationToken cancellationToken)
+        public override Task HandleAsync(ModelContext context, CancellationToken cancellationToken)
         {
-            return Task.FromResult(model);
+            context.Model = this.model;
+            return Task.FromResult<object>(null);
         }
     }
 

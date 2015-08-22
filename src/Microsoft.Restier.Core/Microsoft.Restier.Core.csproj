@@ -52,16 +52,15 @@
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />
     <Compile Include="EdmLibHelpers.cs" />
+    <Compile Include="HookHandlerOfT.cs" />
     <Compile Include="IDomain.cs" />
     <Compile Include="IDomainPolicy.cs" />
     <Compile Include="IExpandableDomain.cs" />
     <Compile Include="InvocationContext.cs" />
     <Compile Include="Model\DefaultModelHandler.cs" />
     <Compile Include="Model\DomainModel.cs" />
-    <Compile Include="Model\IModelExtender.cs" />
     <Compile Include="Model\IModelHandler.cs" />
     <Compile Include="Model\IModelMapper.cs" />
-    <Compile Include="Model\IModelProducer.cs" />
     <Compile Include="Model\IModelVisibilityFilter.cs" />
     <Compile Include="Model\ModelContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

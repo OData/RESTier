@@ -12,9 +12,9 @@ using Microsoft.Restier.Core.Model;
 namespace Microsoft.Restier.Conventions
 {
     /// <summary>
-    /// The conventional implementation of <see cref="IModelExtender" />.
+    /// The conventional implementation of Hook handler for <see cref="ModelContext"/>.
     /// </summary>
-    public class ConventionalModelExtender : IModelExtender
+    public class ConventionalModelExtender : HookHandler<ModelContext>
     {
         private Type targetType;
 
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(typeof(IModelExtender), new ConventionalModelExtender(targetType));
+            configuration.AddHookHandler(new ConventionalModelExtender(targetType));
         }
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace Microsoft.Restier.Conventions
         /// <param name="context">The context that contains the model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public Task ExtendModelAsync(ModelContext context, CancellationToken cancellationToken)
+        public override async Task HandleAsync(ModelContext context, CancellationToken cancellationToken)
         {
+            await base.HandleAsync(context, cancellationToken);
             ExtendModel(context);
-            return Task.WhenAll();
         }
 
         private void ExtendModel(ModelContext context)
