@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.Core.Model
 {
@@ -33,24 +32,10 @@ namespace Microsoft.Restier.Core.Model
         {
             Ensure.NotNull(context, "context");
 
-            // STEP 1: produce model
-            var producer = context.GetHookPoint<IModelProducer>();
+            var producer = context.DomainContext.Configuration.GetHookHandler<ModelContext>();
             if (producer != null)
             {
-                context.Model = await producer.ProduceModelAsync(
-                    context, cancellationToken);
-            }
-
-            if (context.Model == null)
-            {
-                context.Model = new EdmModel();
-            }
-
-            // STEP 2: extend model
-            var extenders = context.GetHookPoints<IModelExtender>();
-            foreach (var extender in extenders)
-            {
-                await extender.ExtendModelAsync(context, cancellationToken);
+                await producer.HandleAsync(context, cancellationToken);
             }
 
             return context.Model;

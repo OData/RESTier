@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
@@ -18,7 +19,7 @@ namespace Microsoft.Restier.Conventions.Test
         [Theory]
         [InlineData(typeof(OneDomain))]
         [InlineData(typeof(OtherDomain))]
-        public void ExtendModelAsync_UpdatesModel_IfHasOnModelCreatingMethod(Type type)
+        public async Task ExtendModelAsync_UpdatesModel_IfHasOnModelCreatingMethod(Type type)
         {
             // Arrange
             var domain = Activator.CreateInstance(type);
@@ -31,7 +32,7 @@ namespace Microsoft.Restier.Conventions.Test
             var context = new ModelContext(domainContext) { Model = model };
 
             // Act
-            extender.ExtendModelAsync(context, new CancellationToken());
+            await extender.HandleAsync(context, new CancellationToken());
 
             // Assert
             Assert.Same(model, context.Model);
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Conventions.Test
         }
 
         [Fact]
-        public void ExtendModelAsync_DoesntUpdatesModel_IfWithoutOnModelCreatingMethod()
+        public async Task ExtendModelAsync_DoesntUpdatesModel_IfWithoutOnModelCreatingMethod()
         {
             // Arrange
             var domain = new AnyDomain();
@@ -59,7 +60,7 @@ namespace Microsoft.Restier.Conventions.Test
             var context = new ModelContext(domainContext) { Model = model };
 
             // Act
-            extender.ExtendModelAsync(context, new CancellationToken());
+            await extender.HandleAsync(context, new CancellationToken());
 
             // Assert
             Assert.Same(model, context.Model);

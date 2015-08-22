@@ -128,7 +128,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         {
             enableConventionsAttribute.Configure(configuration, type);
             ConventionalActionProvider.ApplyTo(configuration, type);
-            configuration.AddHookPoint(typeof(IModelExtender), new CustomExtender());
+            configuration.AddHookHandler(new CustomExtender());
         }
 
         public override void Initialize(DomainContext context, Type type, object instance)
@@ -137,12 +137,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         }
     }
 
-    public class CustomExtender : IModelExtender
+    public class CustomExtender : HookHandler<ModelContext>
     {
-        public Task ExtendModelAsync(
+        public override async Task HandleAsync(
             ModelContext context,
             CancellationToken cancellationToken)
         {
+            await base.HandleAsync(context, cancellationToken);
+
             var entityContainer = (EdmEntityContainer)context.Model.EntityContainer;
             var personType = (IEdmEntityType)context.Model
                 .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person");
@@ -212,8 +214,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 entitySetPathExpression: new EdmPathExpression("trip"));
             endTrip.AddParameter("trip", tripTypeReference);
             context.Model.AddElement(endTrip);
-
-            return Task.FromResult<object>(null);
         }
     }
 }

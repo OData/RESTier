@@ -15,8 +15,8 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Edm.Vocabularies.V1;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.EntityFramework.Properties;
 using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
 using EdmProperty = System.Data.Entity.Core.Metadata.Edm.EdmProperty;
 
@@ -26,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    public class ModelProducer : IModelProducer
+    public class ModelProducer : HookHandler<ModelContext>
     {
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
@@ -94,7 +94,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// A task that represents the asynchronous
         /// operation whose result is the base model.
         /// </returns>
-        public Task<EdmModel> ProduceModelAsync(
+        public override Task HandleAsync(
             ModelContext context,
             CancellationToken cancellationToken)
         {
@@ -157,7 +157,8 @@ namespace Microsoft.Restier.EntityFramework.Model
             // TODO GitHubIssue#36 : support function imports
             model.AddElement(entityContainer);
 
-            return Task.FromResult(model);
+            context.Model = model;
+            return Task.FromResult<object>(null);
         }
 
         private static IEdmEntityType CreateEntityType(

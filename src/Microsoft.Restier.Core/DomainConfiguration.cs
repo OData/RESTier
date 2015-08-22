@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -65,6 +66,8 @@ namespace Microsoft.Restier.Core
 
         private readonly IDictionary<Type, IList<object>> multiCasts =
             new Dictionary<Type, IList<object>>();
+
+        private readonly IDictionary<Type, object> hookHandlers = new ConcurrentDictionary<Type, object>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
@@ -362,6 +365,28 @@ namespace Microsoft.Restier.Core
 
             instances.Add(instance);
         }
+
+        #region HookHandler
+        /// <summary>
+        /// Add an hook handler instance.
+        /// </summary>
+        /// <typeparam name="TContext">The context class.</typeparam>
+        /// <param name="handler">An instance of hook handler for TContext.</param>
+        public void AddHookHandler<TContext>(HookHandler<TContext> handler) where TContext : InvocationContext
+        {
+            Ensure.NotNull(handler, nameof(handler));
+            var nextHandler = this.GetHookHandler<TContext>();
+            handler.InnerHandler = nextHandler;
+            this.hookHandlers[typeof(TContext)] = handler;
+        }
+
+        internal HookHandler<TContext> GetHookHandler<TContext>() where TContext : InvocationContext
+        {
+            object value;
+            this.hookHandlers.TryGetValue(typeof(TContext), out value);
+            return value as HookHandler<TContext>;
+        }
+        #endregion
 
         private object GetHookPoint(Type hookPointType)
         {
