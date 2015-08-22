@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -35,8 +36,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
         {
             await base.HandleAsync(context, cancellationToken);
 
-            var model = context.Model;
+            var model = context.Model as EdmModel;
+            Debug.Assert(model != null);
+
             var entityContainer = model.EntityContainer as EdmEntityContainer;
+            Debug.Assert(entityContainer != null);
 
             foreach (ActionMethodInfo actionInfo in this.ActionInfos)
             {
@@ -106,9 +110,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
                     BindingFlags.Instance);
 
                 return methods
-                    .Select(m => new ActionMethodInfo {
+                    .Select(m => new ActionMethodInfo
+                    {
                         Method = m,
-                        ActionAttribute = m.GetCustomAttributes<ActionAttribute>(true).FirstOrDefault() })
+                        ActionAttribute = m.GetCustomAttributes<ActionAttribute>(true).FirstOrDefault()
+                    })
                     .Where(m => m.ActionAttribute != null);
             }
         }

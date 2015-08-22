@@ -50,8 +50,12 @@ namespace Microsoft.Restier.Core.Tests.Model
 
                 var entityType = new EdmEntityType(
                     "TestNamespace", "TestName" + _index);
-                context.Model.AddElement(entityType);
-                (context.Model.EntityContainer as EdmEntityContainer)
+
+                var model = context.Model as EdmModel;
+                Assert.NotNull(model);
+
+                model.AddElement(entityType);
+                (model.EntityContainer as EdmEntityContainer)
                     .AddEntitySet("TestEntitySet" + _index, entityType);
             }
         }

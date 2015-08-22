@@ -18,18 +18,17 @@ namespace Microsoft.Restier.Core.Tests
 {
     public class DomainTests
     {
-        private class TestModelHandler : IModelHandler
+        private class TestModelHandler : HookHandler<ModelContext>
         {
             public DomainContext DomainContext { get; set; }
 
             public IEdmModel Model { get; set; }
 
-            public Task<IEdmModel> GetModelAsync(
-                ModelContext context,
-                CancellationToken cancellationToken)
+            public override Task HandleAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 Assert.Same(DomainContext, context.DomainContext);
-                return Task.FromResult(Model);
+                context.Model = this.Model;
+                return Task.FromResult<object>(null);
             }
         }
 
@@ -104,8 +103,7 @@ namespace Microsoft.Restier.Core.Tests
                         var modelMapper = new TestModelMapper();
                         var queryHandler = new TestQueryHandler();
                         var submitHandler = new TestSubmitHandler();
-                        configuration.SetHookPoint(
-                            typeof(IModelHandler), modelHandler);
+                        configuration.AddHookHandler(modelHandler);
                         configuration.SetHookPoint(
                             typeof(IModelMapper), modelMapper);
                         configuration.SetHookPoint(
@@ -147,7 +145,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelHandler = new TestModelHandler();
-            configuration.SetHookPoint(typeof(IModelHandler), modelHandler);
+            configuration.AddHookHandler(modelHandler);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             modelHandler.DomainContext = context;
@@ -503,7 +501,7 @@ namespace Microsoft.Restier.Core.Tests
             var modelHandler = new TestModelHandler();
             var modelMapper = new TestModelMapper();
             var queryHandler = new TestQueryHandler();
-            configuration.SetHookPoint(typeof(IModelHandler), modelHandler);
+            configuration.AddHookHandler(modelHandler);
             configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
             configuration.SetHookPoint(typeof(IQueryHandler), queryHandler);
             configuration.EnsureCommitted();
@@ -536,7 +534,7 @@ namespace Microsoft.Restier.Core.Tests
             var modelHandler = new TestModelHandler();
             var modelMapper = new TestModelMapper();
             var submitHandler = new TestSubmitHandler();
-            configuration.SetHookPoint(typeof(IModelHandler), modelHandler);
+            configuration.AddHookHandler(modelHandler);
             configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
             configuration.SetHookPoint(typeof(ISubmitHandler), submitHandler);
             configuration.EnsureCommitted();
