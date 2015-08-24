@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
 #if EF7
 using Microsoft.Data.Entity;
 #else
@@ -50,7 +49,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// <c>true</c> if the relevant type was
         /// provided; otherwise, <c>false</c>.
         /// </returns>
-        public virtual bool TryGetRelevantType(
+        public bool TryGetRelevantType(
             DomainContext context,
             string name,
             out Type relevantType)
@@ -61,7 +60,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             if (property != null)
             {
                 var type = property.PropertyType;
-                var genericType = type.FindGenericType(typeof (IDbSet<>));
+                var genericType = type.FindGenericType(typeof(IDbSet<>));
                 if (genericType != null)
                 {
                     relevantType = genericType.GetGenericArguments()[0];
