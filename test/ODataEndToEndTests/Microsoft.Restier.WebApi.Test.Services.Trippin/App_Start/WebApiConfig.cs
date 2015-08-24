@@ -3,7 +3,7 @@
 
 using System.Web.Http;
 using Microsoft.Restier.WebApi.Batch;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Domain;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
@@ -17,7 +17,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
         public static async void RegisterTrippin(
             HttpConfiguration config, HttpServer server)
         {
-            await config.MapODataDomainRoute<TrippinController>(
+            await config.MapODataDomainRoute<TrippinDomain>(
                 "TrippinApi", "api/Trippin",
                 new ODataDomainBatchHandler(server));
         }

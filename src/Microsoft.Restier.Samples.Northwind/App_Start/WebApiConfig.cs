@@ -3,7 +3,7 @@
 
 using System.Web.Http;
 using System.Web.OData.Extensions;
-using Microsoft.Restier.Samples.Northwind.Controllers;
+using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.Restier.WebApi;
 using Microsoft.Restier.WebApi.Batch;
 
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Samples.Northwind
         public static async void RegisterNorthwind(
             HttpConfiguration config, HttpServer server)
         {
-            await config.MapODataDomainRoute<NorthwindController>(
+            await config.MapODataDomainRoute<NorthwindDomain>(
                 "NorthwindApi", "api/Northwind",
                 new ODataDomainBatchHandler(server));
         }
