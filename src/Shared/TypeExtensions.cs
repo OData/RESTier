@@ -13,29 +13,58 @@ namespace System
                                                                  BindingFlags.IgnoreCase |
                                                                  BindingFlags.DeclaredOnly;
 
+        /// <summary>
+        /// Find a base type or implemented interface which has a generic definition
+        /// represented by the parameter, <c>definition</c>.
+        /// </summary>
+        /// <param name="type">
+        /// The subject type.
+        /// </param>
+        /// <param name="definition">
+        /// The generic definition to check with.
+        /// </param>
+        /// <returns>
+        /// The base type or the interface found; otherwise, <c>null</c>.
+        /// </returns>
         public static Type FindGenericType(this Type type, Type definition)
         {
-            while (type != null && type != typeof(object))
+            if (type == null)
             {
-                if (type.IsGenericType &&
-                    type.GetGenericTypeDefinition() == definition)
-                {
-                    return type;
-                }
+                return null;
+            }
 
-                if (definition.IsInterface)
+            // If the type conforms the given generic definition, no further check required.
+            if (type.HasGenericDefinition(definition))
+            {
+                return type;
+            }
+
+            // If the definition is interface, we only need to check the interfaces implemented by the current type
+            if (definition.IsInterface)
+            {
+                foreach (var interfaceType in type.GetInterfaces())
                 {
-                    foreach (var interfaceType in type.GetInterfaces())
+                    if (interfaceType.HasGenericDefinition(definition))
                     {
-                        var found = interfaceType.FindGenericType(definition);
-                        if (found != null)
-                        {
-                            return found;
-                        }
+                        return interfaceType;
                     }
                 }
+            }
+            else if (!type.IsInterface)
+            {
+                // If the definition is not an interface, then the current type cannot be an interface too.
+                // Otherwise, we should only check the parent class types of the current type.
 
-                type = type.BaseType;
+                // no null check for the type required, as we are sure it is not an interface type
+                while (type != typeof(object))
+                {
+                    if (type.HasGenericDefinition(definition))
+                    {
+                        return type;
+                    }
+
+                    type = type.BaseType;
+                }
             }
 
             return null;
@@ -44,6 +73,12 @@ namespace System
         public static MethodInfo GetQualifiedMethod(this Type type, string methodName)
         {
             return type.GetMethod(methodName, QualifiedMethodBindingFlags);
+        }
+
+        private static bool HasGenericDefinition(this Type type, Type definition)
+        {
+            return type.IsGenericType &&
+                   type.GetGenericTypeDefinition() == definition;
         }
     }
 }
