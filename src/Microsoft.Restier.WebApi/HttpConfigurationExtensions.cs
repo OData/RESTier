@@ -25,29 +25,29 @@ namespace Microsoft.Restier.WebApi
     {
         /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
-        /// Maps the domain routes to the given domain controller.
+        /// Maps the domain routes to the ODataDomainController.
         /// </summary>
-        /// <typeparam name="TController">The domain controller.</typeparam>
+        /// <typeparam name="TDomain">The user domain.</typeparam>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routePrefix">The prefix of the route.</param>
         /// <param name="domainFactory">The callback to create domain instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapODataDomainRoute<TController>(
+        public static async Task<ODataRoute> MapODataDomainRoute<TDomain>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
             Func<IDomain> domainFactory,
             ODataDomainBatchHandler batchHandler = null)
-            where TController : ODataDomainController, new()
+            where TDomain : DomainBase, new()
         {
             Ensure.NotNull(domainFactory, "domainFactory");
 
             using (var domain = domainFactory())
             {
                 var model = await domain.GetModelAsync();
-                var conventions = CreateODataDomainRoutingConventions<TController>(config, model);
+                var conventions = CreateODataDomainRoutingConventions<TDomain>(config, model);
 
                 if (batchHandler != null && batchHandler.DomainFactory == null)
                 {
@@ -100,35 +100,35 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
-        /// Maps the domain routes to the given domain controller.
+        /// Maps the domain routes to the ODataDomainController.
         /// </summary>
-        /// <typeparam name="TController">The domain controller.</typeparam>
+        /// <typeparam name="TDomain">The user domain.</typeparam>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routePrefix">The prefix of the route.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapODataDomainRoute<TController>(
+        public static async Task<ODataRoute> MapODataDomainRoute<TDomain>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
             ODataDomainBatchHandler batchHandler = null)
-            where TController : ODataDomainController, new()
+            where TDomain : DomainBase, new()
         {
-            return await MapODataDomainRoute<TController>(
-                config, routeName, routePrefix, () => new TController().Domain, batchHandler);
+            return await MapODataDomainRoute<TDomain>(
+                config, routeName, routePrefix, () => new TDomain(), batchHandler);
         }
 
         /// <summary>
         /// Creates the default routing conventions.
         /// </summary>
-        /// <typeparam name="TController">The domain controller.</typeparam>
+        /// <typeparam name="TDomain">The user domain.</typeparam>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="model">The EDM model.</param>
         /// <returns>The routing conventions created.</returns>
-        public static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TController>(
+        public static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TDomain>(
             this HttpConfiguration config, IEdmModel model)
-            where TController : ODataDomainController, new()
+            where TDomain : DomainBase, new()
         {
             var conventions = ODataRoutingConventions.CreateDefault();
             var index = 0;
@@ -141,7 +141,7 @@ namespace Microsoft.Restier.WebApi
                 }
             }
 
-            conventions.Insert(index, new DefaultODataRoutingConvention(typeof(TController).Name));
+            conventions.Insert(index, new DefaultODataRoutingConvention("ODataDomainController"));
             conventions.Insert(0, new AttributeRoutingConvention(model, config));
             return conventions;
         }
