@@ -30,7 +30,7 @@ namespace Microsoft.Restier.WebApi.Test
         public ODataDomainControllerTests()
         {
             var configuration = new HttpConfiguration();
-            configuration.MapODataDomainRoute<StoreDomainController>("store", "store").Wait();
+            configuration.MapODataDomainRoute<StoreDomain>("store", "store").Wait();
             client = new HttpClient(new HttpServer(configuration));
         }
 
