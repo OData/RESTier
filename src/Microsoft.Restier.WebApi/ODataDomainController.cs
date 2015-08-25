@@ -247,7 +247,10 @@ namespace Microsoft.Restier.WebApi
         {
             if (disposing)
             {
-                this.domain.Dispose();
+                if (this.domain != null)
+                {
+                    this.domain.Dispose();
+                }
             }
 
             base.Dispose(disposing);
