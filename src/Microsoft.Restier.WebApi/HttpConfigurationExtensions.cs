@@ -92,7 +92,7 @@ namespace Microsoft.Restier.WebApi
                 }
 
                 var routeConstraint =
-                    new DefaultODataPathRouteConstraint(odataPathHandler, model, routeName, conventions, domainFactory);
+                    new ODataDomainPathRouteConstraint(odataPathHandler, model, routeName, conventions, domainFactory);
                 var route = new ODataRoute(routePrefix, routeConstraint);
                 routes.Add(routeName, route);
                 return route;
@@ -126,7 +126,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="model">The EDM model.</param>
         /// <returns>The routing conventions created.</returns>
-        public static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TDomain>(
+        internal static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TDomain>(
             this HttpConfiguration config, IEdmModel model)
             where TDomain : DomainBase
         {
@@ -141,8 +141,8 @@ namespace Microsoft.Restier.WebApi
                 }
             }
 
-            conventions.Insert(index, new DefaultODataRoutingConvention(typeof(ODataDomainController).Name));
-            conventions.Insert(index, new DefaultODataRoutingConvention(typeof(TDomain).Name));
+            conventions.Insert(index, new ODataDomainRoutingConvention(typeof(ODataDomainController).Name));
+            conventions.Insert(index, new ODataDomainRoutingConvention(typeof(TDomain).Name));
             conventions.Insert(0, new AttributeRoutingConvention(model, config));
             return conventions;
         }

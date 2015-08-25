@@ -17,19 +17,19 @@ namespace Microsoft.Restier.WebApi.Routing
     /// <summary>
     /// The default implementation of <see cref="ODataPathRouteConstraint"/>.
     /// </summary>
-    public class DefaultODataPathRouteConstraint : ODataPathRouteConstraint
+    public class ODataDomainPathRouteConstraint : ODataPathRouteConstraint
     {
         private readonly Func<IDomain> domainFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultODataPathRouteConstraint" /> class.
+        /// Initializes a new instance of the <see cref="ODataDomainPathRouteConstraint" /> class.
         /// </summary>
         /// <param name="pathHandler">The path handler.</param>
         /// <param name="model">The EDM model.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routingConventions">The routing convention.</param>
         /// <param name="domainFactory">The domain factory.</param>
-        public DefaultODataPathRouteConstraint(
+        public ODataDomainPathRouteConstraint(
             IODataPathHandler pathHandler,
             IEdmModel model,
             string routeName,

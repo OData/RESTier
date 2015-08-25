@@ -14,7 +14,7 @@ namespace Microsoft.Restier.WebApi
     /// Offers a collection of extension methods to <see cref="HttpRequestMessage"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class HttpRequestMessageExtensions
+    internal static class HttpRequestMessageExtensions
     {
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";
         private const string DomainFactoryKey = "Microsoft.Restier.Core.DomainFactory";
@@ -48,7 +48,7 @@ namespace Microsoft.Restier.WebApi
         /// </summary>
         /// <param name="request">The HTTP request.</param>
         /// <returns>The domain factory.</returns>
-        public static Func<IDomain> GetDomainFactory(this HttpRequestMessage request)
+        internal static Func<IDomain> GetDomainFactory(this HttpRequestMessage request)
         {
             Ensure.NotNull(request, "request");
 
@@ -72,7 +72,7 @@ namespace Microsoft.Restier.WebApi
         /// </summary>
         /// <param name="request">The HTTP request.</param>
         /// <param name="domainFactory">The domain factory.</param>
-        public static void SetDomainFactory(this HttpRequestMessage request, Func<IDomain> domainFactory)
+        internal static void SetDomainFactory(this HttpRequestMessage request, Func<IDomain> domainFactory)
         {
             Ensure.NotNull(request, "request");
             Ensure.NotNull(domainFactory, "domainFactory");

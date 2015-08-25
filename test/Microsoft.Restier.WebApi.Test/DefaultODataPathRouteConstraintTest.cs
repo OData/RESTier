@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Test
             var model = GetEdmModel();
             config.MapHttpAttributeRoutes();
             var conventions = config.CreateODataDomainRoutingConventions<NorthwindDomain>(model);
-            var constraint = new DefaultODataPathRouteConstraint(pathHandler, model, routeName, conventions, () => new NorthwindDomain());
+            var constraint = new ODataDomainPathRouteConstraint(pathHandler, model, routeName, conventions, () => new NorthwindDomain());
             config.EnsureInitialized();
             var values = new Dictionary<string, object>
             {
