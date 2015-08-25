@@ -20,7 +20,7 @@ namespace Microsoft.Restier.WebApi.Test
     {
         [Theory]
         [InlineData("Customers", "Customers")]
-        [InlineData("Northwind", "Products")]
+        [InlineData("ODataDomain", "Products")]
         public void Match_UsesODataDefaultRoutingConventions_IfControllerFound(string expectedControllerName,
             string entitySetName)
         {
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Test
             var model = GetEdmModel();
             config.MapHttpAttributeRoutes();
             var conventions = config.CreateODataDomainRoutingConventions<NorthwindDomain>(model);
-            var constraint = new DefaultODataPathRouteConstraint(pathHandler, model, routeName, conventions);
+            var constraint = new DefaultODataPathRouteConstraint(pathHandler, model, routeName, conventions, () => new NorthwindDomain());
             config.EnsureInitialized();
             var values = new Dictionary<string, object>
             {
@@ -68,14 +68,6 @@ namespace Microsoft.Restier.WebApi.Test
             public IQueryable<Customer> Get()
             {
                 return Enumerable.Empty<Customer>().AsQueryable();
-            }
-        }
-
-        public class NorthwindController : ODataDomainController<NorthwindDomain>
-        {
-            public HttpResponseMessage Get()
-            {
-                return default(HttpResponseMessage);
             }
         }
 

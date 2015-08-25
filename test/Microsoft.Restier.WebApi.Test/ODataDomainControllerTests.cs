@@ -182,11 +182,7 @@ namespace Microsoft.Restier.WebApi.Test
             Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.WebApi.Test.Product");
         }
     }
-
-    public class StoreController : ODataDomainController<StoreDomain>
-    {
-    }
-
+    
     public class StoreDomain : DomainBase
     {
         protected override DomainConfiguration CreateDomainConfiguration()

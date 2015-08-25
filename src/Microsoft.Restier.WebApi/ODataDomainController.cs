@@ -40,16 +40,7 @@ namespace Microsoft.Restier.WebApi
     [ODataDomainExceptionFilter]
     public class ODataDomainController : ODataController
     {
-        private readonly IDomain domain;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainController" /> class.
-        /// </summary>
-        /// <param name="domain">The domain associated with this controller.</param>
-        public ODataDomainController(IDomain domain)
-        {
-            this.domain = domain;
-        }
+        private IDomain domain;
 
         /// <summary>
         /// Gets the domain associated with this controller.
@@ -58,7 +49,12 @@ namespace Microsoft.Restier.WebApi
         {
             get
             {
-                return domain;
+                if (this.domain == null)
+                {
+                    this.domain = this.Request.GetDomainFactory().Invoke();
+                }
+
+                return this.domain;
             }
         }
 
@@ -619,27 +615,17 @@ namespace Microsoft.Restier.WebApi
     /// </summary>
     /// <typeparam name="T">The specified domain class.</typeparam>
     public class ODataDomainController<T> : ODataDomainController
-        where T : class, IDomain
+        where T : DomainBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainController{T}" /> class.
-        /// </summary>
-        public ODataDomainController()
-            : base(CreateDomain())
-        {
-        }
-
         /// <summary>
         /// Gets the domain class of the <see cref="ODataDomainController"/>.
         /// </summary>
         public new T Domain
         {
-            get { return base.Domain as T; }
-        }
-
-        private static T CreateDomain()
-        {
-            return Activator.CreateInstance<T>();
+            get
+            {
+                return base.Domain as T;
+            }
         }
     }
 
