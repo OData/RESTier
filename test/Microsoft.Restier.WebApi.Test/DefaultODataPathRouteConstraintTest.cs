@@ -20,7 +20,7 @@ namespace Microsoft.Restier.WebApi.Test
     {
         [Theory]
         [InlineData("Customers", "Customers")]
-        [InlineData("NorthwindDomain", "Products")]
+        [InlineData("Northwind", "Products")]
         public void Match_UsesODataDefaultRoutingConventions_IfControllerFound(string expectedControllerName,
             string entitySetName)
         {
@@ -71,13 +71,8 @@ namespace Microsoft.Restier.WebApi.Test
             }
         }
 
-        public class NorthwindDomainController : ODataDomainController
+        public class NorthwindController : ODataDomainController<NorthwindDomain>
         {
-            protected override IDomain CreateDomain()
-            {
-                return default(IDomain);
-            }
-
             public HttpResponseMessage Get()
             {
                 return default(HttpResponseMessage);

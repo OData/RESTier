@@ -34,77 +34,31 @@ using Microsoft.Restier.WebApi.Results;
 namespace Microsoft.Restier.WebApi
 {
     /// <summary>
-    /// The base class for all domain controllers.
+    /// The base class for all domain controllers with domain specified.
     /// </summary>
     [ODataDomainFormatting]
     [ODataDomainExceptionFilter]
-    public abstract class ODataDomainController : ODataController
+    public class ODataDomainController : ODataController
     {
-        private IDomain domain;
+        private readonly IDomain domain;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ODataDomainController" /> class.
         /// </summary>
-        protected ODataDomainController()
+        /// <param name="domain">The domain associated with this controller.</param>
+        public ODataDomainController(IDomain domain)
         {
+            this.domain = domain;
         }
 
         /// <summary>
-        /// Gets the domain instance associated with the controller.
+        /// Gets the domain associated with this controller.
         /// </summary>
         public IDomain Domain
         {
             get
             {
-                if (this.domain == null)
-                {
-                    this.domain = this.CreateDomain();
-                }
-
-                return this.domain;
-            }
-        }
-
-        /// <summary>
-        /// Creates a domain instance.
-        /// </summary>
-        /// <returns>The domain instance created.</returns>
-        protected abstract IDomain CreateDomain();
-
-        /// <summary>
-        /// Disposes the domain and the controller.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposing is happening.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.domain != null)
-                {
-                    this.domain.Dispose();
-                    this.domain = null;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-    }
-
-    /// <summary>
-    /// The base class for all domain controllers with domain specified.
-    /// </summary>
-    /// <typeparam name="T">The specified domain class.</typeparam>
-    public class ODataDomainController<T> : ODataDomainController
-        where T : class, IDomain
-    {
-        /// <summary>
-        /// Gets the domain class of the <see cref="ODataDomainController"/>.
-        /// </summary>
-        public new T Domain
-        {
-            get
-            {
-                return base.Domain as T;
+                return domain;
             }
         }
 
@@ -290,12 +244,17 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
-        /// Creates a domain instance of type T.
+        /// Disposes the domain and the controller.
         /// </summary>
-        /// <returns>The domain instance created.</returns>
-        protected override IDomain CreateDomain()
+        /// <param name="disposing">Indicates whether disposing is happening.</param>
+        protected override void Dispose(bool disposing)
         {
-            return Activator.CreateInstance<T>();
+            if (disposing)
+            {
+                this.domain.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         private static IQueryable ApplyKeys(
@@ -652,6 +611,35 @@ namespace Microsoft.Restier.WebApi
             Type genericResultType = resultType.MakeGenericType(result.GetType());
 
             return (IHttpActionResult)Activator.CreateInstance(genericResultType, result, this);
+        }
+    }
+
+    /// <summary>
+    /// The base class for all domain controllers with domain specified.
+    /// </summary>
+    /// <typeparam name="T">The specified domain class.</typeparam>
+    public class ODataDomainController<T> : ODataDomainController
+        where T : class, IDomain
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ODataDomainController{T}" /> class.
+        /// </summary>
+        public ODataDomainController()
+            : base(CreateDomain())
+        {
+        }
+
+        /// <summary>
+        /// Gets the domain class of the <see cref="ODataDomainController"/>.
+        /// </summary>
+        public new T Domain
+        {
+            get { return base.Domain as T; }
+        }
+
+        private static T CreateDomain()
+        {
+            return Activator.CreateInstance<T>();
         }
     }
 

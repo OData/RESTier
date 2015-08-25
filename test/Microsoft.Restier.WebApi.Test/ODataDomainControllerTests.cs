@@ -183,7 +183,7 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    public class StoreDomainController : ODataDomainController<StoreDomain>
+    public class StoreController : ODataDomainController<StoreDomain>
     {
     }
 
