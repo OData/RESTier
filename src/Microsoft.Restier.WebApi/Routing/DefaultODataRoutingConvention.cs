@@ -15,21 +15,21 @@ namespace Microsoft.Restier.WebApi.Routing
     /// </summary>
     public class DefaultODataRoutingConvention : IODataRoutingConvention
     {
-        private readonly string domainName;
+        private readonly string controllerName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultODataRoutingConvention"/> class.
         /// </summary>
-        /// <param name="domainName">The name of the domain.</param>
-        public DefaultODataRoutingConvention(string domainName)
+        /// <param name="controllerName">The name of the controller.</param>
+        public DefaultODataRoutingConvention(string controllerName)
         {
-            Ensure.NotNull(domainName);
-            if (domainName.EndsWith("Domain", StringComparison.Ordinal))
+            Ensure.NotNull(controllerName);
+            if (controllerName.EndsWith("Controller", StringComparison.Ordinal))
             {
-                domainName = domainName.Substring(0, domainName.Length - "Domain".Length);
+                controllerName = controllerName.Substring(0, controllerName.Length - "Controller".Length);
             }
 
-            this.domainName = domainName;
+            this.controllerName = controllerName;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Restier.WebApi.Routing
                 return null;
             }
 
-            return this.domainName;
+            return this.controllerName;
         }
 
         /// <summary>
