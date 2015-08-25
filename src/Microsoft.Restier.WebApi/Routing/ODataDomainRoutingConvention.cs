@@ -13,15 +13,15 @@ namespace Microsoft.Restier.WebApi.Routing
     /// <summary>
     /// The default routing convention implementation.
     /// </summary>
-    public class DefaultODataRoutingConvention : IODataRoutingConvention
+    public class ODataDomainRoutingConvention : IODataRoutingConvention
     {
         private readonly string controllerName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultODataRoutingConvention"/> class.
+        /// Initializes a new instance of the <see cref="ODataDomainRoutingConvention"/> class.
         /// </summary>
         /// <param name="controllerName">The name of the controller.</param>
-        public DefaultODataRoutingConvention(string controllerName)
+        public ODataDomainRoutingConvention(string controllerName)
         {
             Ensure.NotNull(controllerName);
             if (controllerName.EndsWith("Controller", StringComparison.Ordinal))

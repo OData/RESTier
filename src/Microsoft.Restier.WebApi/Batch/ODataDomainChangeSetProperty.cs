@@ -12,7 +12,7 @@ namespace Microsoft.Restier.WebApi.Batch
     /// <summary>
     /// Represents a domain <see cref="ChangeSet"/> property.
     /// </summary>
-    public class ODataDomainChangeSetProperty
+    internal class ODataDomainChangeSetProperty
     {
         private readonly ODataDomainChangeSetRequestItem changeSetRequestItem;
         private readonly TaskCompletionSource<bool> changeSetCompletedTaskSource;
