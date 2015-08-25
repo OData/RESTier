@@ -141,7 +141,7 @@ namespace Microsoft.Restier.WebApi
                 }
             }
 
-            conventions.Insert(index, new DefaultODataRoutingConvention("ODataDomainController"));
+            conventions.Insert(index, new DefaultODataRoutingConvention(typeof(TDomain).Name));
             conventions.Insert(0, new AttributeRoutingConvention(model, config));
             return conventions;
         }
