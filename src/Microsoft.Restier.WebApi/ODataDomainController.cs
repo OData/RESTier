@@ -73,7 +73,7 @@ namespace Microsoft.Restier.WebApi
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
             }
 
-            IQueryable queryable = this.GetQuery(odataProperties);
+            IQueryable queryable = this.GetQuery();
             var result = await Domain.QueryAsync(new QueryRequest(queryable), cancellationToken);
 
             this.Request.Properties["ETagGetter"] = this.Domain.Context.GetProperty("ETagGetter");
@@ -457,7 +457,7 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
-        private IQueryable GetQuery(HttpRequestMessageProperties odataProperties)
+        private IQueryable GetQuery()
         {
             ODataPath path = this.GetPath();
 
