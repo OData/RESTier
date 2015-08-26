@@ -28,19 +28,13 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(request, "request");
 
-            ODataDomainChangeSetProperty changeSetProperty;
             object value;
             if (request.Properties.TryGetValue(ChangeSetKey, out value))
             {
-                changeSetProperty = value as ODataDomainChangeSetProperty;
-                Contract.Assert(changeSetProperty != null);
-            }
-            else
-            {
-                changeSetProperty = null;
+                return value as ODataDomainChangeSetProperty;
             }
 
-            return changeSetProperty;
+            return null;
         }
 
         /// <summary>
@@ -52,19 +46,13 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(request, "request");
 
-            Func<IDomain> domainFactory;
             object value;
             if (request.Properties.TryGetValue(DomainFactoryKey, out value))
             {
-                domainFactory = value as Func<IDomain>;
-                Contract.Assert(domainFactory != null);
-            }
-            else
-            {
-                domainFactory = null;
+                return value as Func<IDomain>;
             }
 
-            return domainFactory;
+            return null;
         }
 
         /// <summary>
