@@ -15,23 +15,6 @@ namespace Microsoft.Restier.WebApi.Routing
     /// </summary>
     public class ODataDomainRoutingConvention : IODataRoutingConvention
     {
-        private readonly string controllerName;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainRoutingConvention"/> class.
-        /// </summary>
-        /// <param name="controllerName">The name of the controller.</param>
-        public ODataDomainRoutingConvention(string controllerName)
-        {
-            Ensure.NotNull(controllerName);
-            if (controllerName.EndsWith("Controller", StringComparison.Ordinal))
-            {
-                controllerName = controllerName.Substring(0, controllerName.Length - "Controller".Length);
-            }
-
-            this.controllerName = controllerName;
-        }
-
         /// <summary>
         /// Selects OData controller based on parsed OData URI
         /// </summary>
@@ -45,7 +28,7 @@ namespace Microsoft.Restier.WebApi.Routing
                 return null;
             }
 
-            return this.controllerName;
+            return "ODataDomain";
         }
 
         /// <summary>

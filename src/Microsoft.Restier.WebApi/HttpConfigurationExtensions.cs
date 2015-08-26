@@ -143,8 +143,7 @@ namespace Microsoft.Restier.WebApi
                 }
             }
 
-            conventions.Insert(index, new ODataDomainRoutingConvention(typeof(ODataDomainController).Name));
-            conventions.Insert(index, new ODataDomainRoutingConvention(typeof(TDomain).Name));
+            conventions.Insert(index, new ODataDomainRoutingConvention());
             conventions.Insert(0, new AttributeRoutingConvention(model, config));
             return conventions;
         }
