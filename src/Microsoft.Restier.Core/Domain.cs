@@ -618,25 +618,13 @@ namespace Microsoft.Restier.Core
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");
-            if (context.IsSubmitting)
-            {
-                throw new InvalidOperationException();
-            }
 
             var submitContext = new SubmitContext(context, changeSet);
-            context.IsSubmitting = true;
-            try
-            {
-                var model = await Domain.GetModelAsync(context);
-                submitContext.Model = model;
-                var handler = submitContext.GetHookPoint<ISubmitHandler>();
-                return await handler.SubmitAsync(
-                    submitContext, cancellationToken);
-            }
-            finally
-            {
-                context.IsSubmitting = false;
-            }
+            var model = await Domain.GetModelAsync(context);
+            submitContext.Model = model;
+            var handler = submitContext.GetHookPoint<ISubmitHandler>();
+            return await handler.SubmitAsync(
+                submitContext, cancellationToken);
         }
 
         #endregion
