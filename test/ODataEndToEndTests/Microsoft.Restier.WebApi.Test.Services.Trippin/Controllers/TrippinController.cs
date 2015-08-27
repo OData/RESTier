@@ -15,8 +15,23 @@ using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
 {
-    public class TrippinController : ODataDomainController<TrippinDomain>
+    public class TrippinController : ODataController
     {
+        private TrippinDomain domain;
+
+        private TrippinDomain Domain
+        {
+            get
+            {
+                if (domain == null)
+                {
+                    domain = new TrippinDomain();
+                }
+
+                return domain;
+            }
+        }
+
         private TrippinModel DbContext
         {
             get

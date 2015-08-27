@@ -613,25 +613,6 @@ namespace Microsoft.Restier.WebApi
         }
     }
 
-    /// <summary>
-    /// The base class for all domain controllers with domain specified.
-    /// </summary>
-    /// <typeparam name="T">The specified domain class.</typeparam>
-    public class ODataDomainController<T> : ODataDomainController
-        where T : DomainBase
-    {
-        /// <summary>
-        /// Gets the domain class of the <see cref="ODataDomainController"/>.
-        /// </summary>
-        public new T Domain
-        {
-            get
-            {
-                return base.Domain as T;
-            }
-        }
-    }
-
     internal static class Extensions
     {
         private static PropertyInfo etagConcurrencyPropertiesProperty =
