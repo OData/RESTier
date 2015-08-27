@@ -16,11 +16,11 @@ namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
             Database.SetInitializer(new TestInitializer());
         }
 
-        public DbSet<Book> Books { get; set; }
+        public IDbSet<Book> Books { get; set; }
 
-        public DbSet<Publisher> Publishers { get; set; }
+        public IDbSet<Publisher> Publishers { get; set; }
 
-        public DbSet<Person> Readers { get; set; }
+        public IDbSet<Person> Readers { get; set; }
     }
 
     class TestInitializer : DropCreateDatabaseAlways<LibraryContext>

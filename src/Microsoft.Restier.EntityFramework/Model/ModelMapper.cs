@@ -60,10 +60,10 @@ namespace Microsoft.Restier.EntityFramework.Model
             if (property != null)
             {
                 var type = property.PropertyType;
-                if (type.IsGenericType &&
-                    type.GetGenericTypeDefinition() == typeof(DbSet<>))
+                var genericType = type.FindGenericType(typeof(IDbSet<>));
+                if (genericType != null)
                 {
-                    relevantType = type.GetGenericArguments()[0];
+                    relevantType = genericType.GetGenericArguments()[0];
                 }
             }
 

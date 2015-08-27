@@ -58,6 +58,9 @@
         <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
         <Property Name="CustomerID" Type="Edm.String" MaxLength="5" />
         <Property Name="EmployeeID" Type="Edm.Int32" />
+        <Property Name="OrderDate" Type="Edm.Date" />
+        <Property Name="RequiredDate" Type="Edm.Date" />
+        <Property Name="ShippedDate" Type="Edm.Date" />
         <Property Name="ShipVia" Type="Edm.Int32" />
         <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
         <Property Name="ShipName" Type="Edm.String" MaxLength="40" />
@@ -112,6 +115,8 @@
         <Property Name="FirstName" Type="Edm.String" Nullable="false" MaxLength="10" />
         <Property Name="Title" Type="Edm.String" MaxLength="30" />
         <Property Name="TitleOfCourtesy" Type="Edm.String" MaxLength="25" />
+        <Property Name="BirthDate" Type="Edm.Date" />
+        <Property Name="HireDate" Type="Edm.Date" />
         <Property Name="Address" Type="Edm.String" MaxLength="60" />
         <Property Name="City" Type="Edm.String" MaxLength="15" />
         <Property Name="Region" Type="Edm.String" MaxLength="15" />

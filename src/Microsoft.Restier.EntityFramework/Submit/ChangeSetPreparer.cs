@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -159,7 +160,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         SetValues(value, type, dic);
                     }
 
-                    propertyEntry.CurrentValue = value;
+                    propertyEntry.CurrentValue = ConvertToEfDateTimeIfValueIsEdmDate(value);
                 }
             }
         }
@@ -169,6 +170,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
                 object value = propertyPair.Value;
+                value = ConvertToEfDateTimeIfValueIsEdmDate(value);
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
                 if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
@@ -185,6 +187,17 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
                 propertyInfo.SetValue(instance, value);
             }
+        }
+
+        private static object ConvertToEfDateTimeIfValueIsEdmDate(object value)
+        {
+            if (value is Date)
+            {
+                var dateValue = (Date)value;
+                return (DateTime)dateValue;
+            }
+
+            return value;
         }
     }
 }

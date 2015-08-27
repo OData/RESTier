@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Domain;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
@@ -88,6 +89,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return DbContext.People.Where(c => c.PersonId == key).Select(c => c.LastName).FirstOrDefault();
         }
 
+        [ODataRoute("People({key})/BirthDate")]
+        [ODataRoute("People({key})/BirthDate/$value")]
+        public Date GetPersonBirthDate([FromODataUri]int key)
+        {
+            return DbContext.People.Where(c => c.PersonId == key).Select(c => c.BirthDate).FirstOrDefault();
+        }
+
         [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {
@@ -133,6 +141,35 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
                 }
             }
             return Ok(name);
+        }
+
+        [HttpPut]
+        [ODataRoute("People({key})/BirthDate")]
+        public IHttpActionResult UpdatePersonBirthDate([FromODataUri]int key, [FromBody]string birthDate)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+            entity.BirthDate = Date.Parse(birthDate);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthDate);
         }
 
         [HttpGet]
