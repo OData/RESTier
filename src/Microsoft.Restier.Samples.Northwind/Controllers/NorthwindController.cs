@@ -13,13 +13,26 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Routing;
 using Microsoft.Restier.Samples.Northwind.Models;
-using Microsoft.Restier.WebApi;
 
 namespace Microsoft.Restier.Samples.Northwind.Controllers
 {
-    public class NorthwindController :
-        ODataDomainController<NorthwindDomain>
+    public class NorthwindController : ODataController
     {
+        private NorthwindDomain domain;
+
+        private NorthwindDomain Domain
+        {
+            get
+            {
+                if (domain == null)
+                {
+                    domain = new NorthwindDomain();
+                }
+
+                return domain;
+            }
+        }
+
         private NorthwindContext DbContext
         {
             get
