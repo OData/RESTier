@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Net.Http;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Batch;
