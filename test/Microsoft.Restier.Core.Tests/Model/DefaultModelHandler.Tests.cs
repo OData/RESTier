@@ -102,15 +102,15 @@ namespace Microsoft.Restier.Core.Tests.Model
             var context = new DomainContext(configuration);
 
             var model = await Domain.GetModelAsync(context);
-            Assert.Equal(3, model.SchemaElements.Count());
-            Assert.Null(model.SchemaElements
+            Assert.Equal(4, model.SchemaElements.Count());
+            Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName2"));
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName3"));
             Assert.NotNull(model.EntityContainer);
-            Assert.Null(model.EntityContainer.Elements
+            Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet"));
             Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet2"));

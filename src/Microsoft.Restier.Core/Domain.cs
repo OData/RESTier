@@ -87,7 +87,7 @@ namespace Microsoft.Restier.Core
                     await producer.HandleAsync(modelContext, cancellationToken);
                 }
 
-                configuration.Model = new DomainModel(configuration, modelContext.Model);
+                configuration.Model = modelContext.Model;
                 model = configuration.Model;
             }
 
@@ -558,8 +558,8 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
             Ensure.NotNull(request, "request");
             var queryContext = new QueryContext(context, request);
-            var model = await Domain.GetModelAsync(context) as DomainModel;
-            queryContext.Model = new DomainModel(queryContext, model.InnerModel);
+            var model = await Domain.GetModelAsync(context);
+            queryContext.Model = model;
             var handler = queryContext.GetHookPoint<IQueryHandler>();
             return await handler.QueryAsync(queryContext, cancellationToken);
         }
@@ -627,9 +627,8 @@ namespace Microsoft.Restier.Core
             context.IsSubmitting = true;
             try
             {
-                var model = await Domain.GetModelAsync(context) as DomainModel;
-                submitContext.Model = new DomainModel(
-                    submitContext, model.InnerModel);
+                var model = await Domain.GetModelAsync(context);
+                submitContext.Model = model;
                 var handler = submitContext.GetHookPoint<ISubmitHandler>();
                 return await handler.SubmitAsync(
                     submitContext, cancellationToken);
