@@ -35,7 +35,7 @@ using Microsoft.Restier.WebApi.Results;
 namespace Microsoft.Restier.WebApi
 {
     /// <summary>
-    /// The base class for all domain controllers with domain specified.
+    /// The all-in-one controller class to handle domain requests.
     /// </summary>
     [ODataDomainFormatting]
     [ODataDomainExceptionFilter]
