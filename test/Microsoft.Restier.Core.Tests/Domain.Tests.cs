@@ -129,37 +129,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public async Task DomainGetModelAsyncForwardsCorrectly()
-        {
-            var domain = new TestDomain();
-            var domainModel = await domain.GetModelAsync();
-            var domainModelType = typeof(Domain).Assembly.GetType(
-                "Microsoft.Restier.Core.Model.DomainModel");
-            Assert.True(domainModelType.IsAssignableFrom(domainModel.GetType()));
-            Assert.Same(domain.Model, domainModelType
-                .GetProperty("InnerModel").GetValue(domainModel));
-        }
-
-        [Fact]
-        public async Task GetModelAsyncCorrectlyUsesModelHandler()
-        {
-            var configuration = new DomainConfiguration();
-            var modelHandler = new TestModelHandler();
-            configuration.AddHookHandler(modelHandler);
-            configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
-            modelHandler.DomainContext = context;
-            modelHandler.Model = new EdmModel();
-
-            var domainModel = await Domain.GetModelAsync(context);
-            var domainModelType = typeof(Domain).Assembly.GetType(
-                "Microsoft.Restier.Core.Model.DomainModel");
-            Assert.True(domainModelType.IsAssignableFrom(domainModel.GetType()));
-            Assert.Same(modelHandler.Model, domainModelType
-                .GetProperty("InnerModel").GetValue(domainModel));
-        }
-
-        [Fact]
         public void DomainSourceOfEntityContainerElementIsCorrect()
         {
             var domain = new TestDomain();

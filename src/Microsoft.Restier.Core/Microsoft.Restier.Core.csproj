@@ -57,7 +57,6 @@
     <Compile Include="IDomainPolicy.cs" />
     <Compile Include="IExpandableDomain.cs" />
     <Compile Include="InvocationContext.cs" />
-    <Compile Include="Model\DomainModel.cs" />
     <Compile Include="Model\IModelMapper.cs" />
     <Compile Include="Model\IModelVisibilityFilter.cs" />
     <Compile Include="Model\ModelBuilderContext.cs" />

@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Microsoft.Restier.Core.Model;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
@@ -143,7 +142,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public bool IsCommitted { get; private set; }
 
-        internal DomainModel Model { get; set; }
+        internal IEdmModel Model { get; set; }
 
         /// <summary>
         /// Gets an existing domain configuration from a key.
