@@ -88,6 +88,15 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is not a supported EDM type..
+        /// </summary>
+        internal static string EdmTypeNotSupported {
+            get {
+                return ResourceManager.GetString("EdmTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to EntitySet is missing during serialization..
         /// </summary>
         internal static string EntitySetMissingForSerialization {

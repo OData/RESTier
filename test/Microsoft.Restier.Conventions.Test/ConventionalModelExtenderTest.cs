@@ -93,8 +93,8 @@ namespace Microsoft.Restier.Conventions.Test
             internal static EdmModel OnModelExtending(EdmModel model)
             {
                 var ns = model.DeclaredNamespaces.First();
-                var product = model.FindDeclaredType(ns + "." + "Product");
-                var products = EdmCoreModel.GetCollection(product.GetEdmTypeReference(isNullable: false));
+                var product = (IEdmEntityType)model.FindDeclaredType(ns + "." + "Product");
+                var products = EdmCoreModel.GetCollection(new EdmEntityTypeReference(product, false));
                 var mostExpensive = new EdmFunction(ns, "MostExpensive",
                     EdmCoreModel.Instance.GetPrimitive(EdmPrimitiveTypeKind.Double, isNullable: false), isBound: true,
                     entitySetPathExpression: null, isComposable: false);
@@ -103,7 +103,7 @@ namespace Microsoft.Restier.Conventions.Test
                 return model;
             }
         }
-        
+
         public class AnyDomain
         {
         }

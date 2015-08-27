@@ -126,6 +126,9 @@
   <data name="DeleteOnlySupportedOnEntitySet" xml:space="preserve">
     <value>Currently only EntitySets can be deleted from.</value>
   </data>
+  <data name="EdmTypeNotSupported" xml:space="preserve">
+    <value>{0} is not a supported EDM type.</value>
+  </data>
   <data name="EntitySetMissingForSerialization" xml:space="preserve">
     <value>EntitySet is missing during serialization.</value>
   </data>
