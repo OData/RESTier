@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Microsoft.OData.Core;
@@ -14,7 +14,6 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Routing;
-using WebApiODataEx = System.Web.OData.Extensions;
 
 namespace Microsoft.Restier.WebApi
 {
@@ -49,55 +48,15 @@ namespace Microsoft.Restier.WebApi
             {
                 var model = await domain.GetModelAsync();
                 model.EnsurePayloadValueConverter();
-                var conventions = CreateODataDomainRoutingConventions<TDomain>(config, model);
+                var conventions = CreateODataDomainRoutingConventions(config, model, domainFactory);
 
                 if (batchHandler != null && batchHandler.DomainFactory == null)
                 {
                     batchHandler.DomainFactory = domainFactory;
                 }
 
-                var routes = config.Routes;
-                routePrefix = RemoveTrailingSlash(routePrefix);
-
-                if (batchHandler != null)
-                {
-                    batchHandler.ODataRouteName = routeName;
-                    var batchTemplate = string.IsNullOrEmpty(routePrefix) ? ODataRouteConstants.Batch
-                        : routePrefix + '/' + ODataRouteConstants.Batch;
-                    routes.MapHttpBatchRoute(routeName + "Batch", batchTemplate, batchHandler);
-                }
-
-                DefaultODataPathHandler odataPathHandler = new DefaultODataPathHandler();
-
-                var getResolverSettings = typeof(WebApiODataEx.HttpConfigurationExtensions)
-                    .GetMethod("GetResolverSettings", BindingFlags.NonPublic | BindingFlags.Static);
-
-                if (getResolverSettings != null)
-                {
-                    var resolveSettings = getResolverSettings.Invoke(null, new object[] { config });
-                    PropertyInfo prop = odataPathHandler
-                        .GetType().GetProperty("ResolverSetttings", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                    if (null != prop && prop.CanWrite)
-                    {
-                        prop.SetValue(odataPathHandler, resolveSettings, null);
-                    }
-
-                    // In case WebAPI OData fix "ResolverSetttings" to "ResolverSettings".
-                    // So we set both "ResolverSetttings" and "ResolverSettings".
-                    prop = odataPathHandler
-                        .GetType().GetProperty("ResolverSettings", BindingFlags.NonPublic | BindingFlags.Instance);
-                    if (null != prop && prop.CanWrite)
-                    {
-                        prop.SetValue(odataPathHandler, resolveSettings, null);
-                    }
-                }
-
-                var routeConstraint =
-                    new ODataDomainPathRouteConstraint(odataPathHandler, model, routeName, conventions, domainFactory);
-                var route = new ODataRoute(routePrefix, routeConstraint);
-                routes.Add(routeName, route);
-                return route;
+                return config.MapODataServiceRoute(
+                    routeName, routePrefix, model, new DefaultODataPathHandler(), conventions, batchHandler);
             }
         }
 
@@ -124,45 +83,26 @@ namespace Microsoft.Restier.WebApi
         /// <summary>
         /// Creates the default routing conventions.
         /// </summary>
-        /// <typeparam name="TDomain">The user domain.</typeparam>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="model">The EDM model.</param>
+        /// <param name="domainFactory">The domain factory.</param>
         /// <returns>The routing conventions created.</returns>
-        internal static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions<TDomain>(
-            this HttpConfiguration config, IEdmModel model)
-            where TDomain : DomainBase
+        private static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions(
+            this HttpConfiguration config, IEdmModel model, Func<IDomain> domainFactory)
         {
-            var conventions = ODataRoutingConventions.CreateDefault();
+            var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
             var index = 0;
             for (; index < conventions.Count; index++)
             {
-                var unmapped = conventions[index] as UnmappedRequestRoutingConvention;
-                if (unmapped != null)
+                var attributeRouting = conventions[index] as AttributeRoutingConvention;
+                if (attributeRouting != null)
                 {
                     break;
                 }
             }
 
-            conventions.Insert(index, new ODataDomainRoutingConvention());
-            conventions.Insert(0, new AttributeRoutingConvention(model, config));
+            conventions.Insert(index + 1, new ODataDomainRoutingConvention(domainFactory));
             return conventions;
-        }
-
-        private static string RemoveTrailingSlash(string routePrefix)
-        {
-            if (string.IsNullOrEmpty(routePrefix))
-            {
-                return routePrefix;
-            }
-
-            var prefixLastIndex = routePrefix.Length - 1;
-            if (routePrefix[prefixLastIndex] == '/')
-            {
-                // Remove the last trailing slash if it has one.
-                routePrefix = routePrefix.Substring(0, routePrefix.Length - 1);
-            }
-
-            return routePrefix;
         }
 
         private static void EnsurePayloadValueConverter(this IEdmModel model)

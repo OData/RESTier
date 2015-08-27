@@ -89,7 +89,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="DefaultODataPathRouteConstraintTest.cs" />
+    <Compile Include="FallbackTests.cs" />
     <Compile Include="ODataDomainControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
