@@ -9,7 +9,6 @@ using System.Security;
 using System.Threading;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Security.Properties;
 
@@ -18,8 +17,7 @@ namespace Microsoft.Restier.Security
     /// <summary>
     /// Represents a role-based authorization system.
     /// </summary>
-    public class RoleBasedAuthorization :
-        IModelVisibilityFilter, IQueryExpressionInspector
+    public class RoleBasedAuthorization : IQueryExpressionInspector
     {
         private const string Permissions = "Microsoft.Restier.Security.Permissions";
 
@@ -39,79 +37,6 @@ namespace Microsoft.Restier.Security
         /// uses the current security principal to determine role membership.
         /// </summary>
         public static RoleBasedAuthorization Default { get; private set; }
-
-        /// <summary>
-        /// Indicates if a schema element is currently visible.
-        /// </summary>
-        /// <param name="configuration">
-        /// A domain configuration.
-        /// </param>
-        /// <param name="context">
-        /// An optional invocation context.
-        /// </param>
-        /// <param name="model">
-        /// A model.
-        /// </param>
-        /// <param name="element">
-        /// A schema element.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the element is currently
-        /// visible; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsVisible(
-            DomainConfiguration configuration,
-            InvocationContext context,
-            IEdmModel model,
-            IEdmSchemaElement element)
-        {
-            Ensure.NotNull(element);
-
-            // TODO GitHubIssue#34 : Filter out proper visible types
-            if (element is IEdmType || element is IEdmOperation)
-            {
-                return true;
-            }
-
-            return this.IsVisible(
-                configuration,
-                context,
-                element.Namespace,
-                element.Name);
-        }
-
-        /// <summary>
-        /// Indicates if an entity container element is currently visible.
-        /// </summary>
-        /// <param name="configuration">
-        /// A domain configuration.
-        /// </param>
-        /// <param name="context">
-        /// An optional invocation context.
-        /// </param>
-        /// <param name="model">
-        /// A model.
-        /// </param>
-        /// <param name="element">
-        /// An entity container element.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the element is currently
-        /// visible; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsVisible(
-            DomainConfiguration configuration,
-            InvocationContext context,
-            IEdmModel model,
-            IEdmEntityContainerElement element)
-        {
-            Ensure.NotNull(element);
-            return this.IsVisible(
-                configuration,
-                context,
-                null,
-                element.Name);
-        }
 
         /// <summary>
         /// Inspects an expression.
@@ -183,39 +108,6 @@ namespace Microsoft.Restier.Security
         protected virtual bool IsInRole(string role)
         {
             return Thread.CurrentPrincipal.IsInRole(role);
-        }
-
-        private bool IsVisible(
-            DomainConfiguration configuration,
-            InvocationContext context,
-            string namespaceName,
-            string securableName)
-        {
-            List<string> assertedRoles = null;
-            if (context != null)
-            {
-                assertedRoles = context.GetProperty<List<string>>(AssertedRoles);
-            }
-
-            var permissions = configuration.GetProperty<IEnumerable<DomainPermission>>(Permissions);
-            if (permissions == null)
-            {
-                return false;
-            }
-
-            permissions = permissions.Where(p => (
-                p.PermissionType == DomainPermissionType.All ||
-                p.PermissionType == DomainPermissionType.Inspect) && (
-                (p.NamespaceName == null && p.SecurableName == null) ||
-                (p.NamespaceName == namespaceName && p.SecurableName == securableName)) &&
-                p.ChildName == null && (p.Role == null || this.IsInRole(p.Role) ||
-                (assertedRoles != null && assertedRoles.Contains(p.Role))));
-            if (!permissions.Any() || permissions.Any(p => p.IsDeny))
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }

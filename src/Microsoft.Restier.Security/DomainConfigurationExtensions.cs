@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Security
@@ -36,9 +35,6 @@ namespace Microsoft.Restier.Security
             this DomainConfiguration configuration)
         {
             Ensure.NotNull(configuration, "configuration");
-            configuration.AddHookPoint(
-                typeof(IModelVisibilityFilter),
-                RoleBasedAuthorization.Default);
             configuration.AddHookPoint(
                 typeof(IQueryExpressionInspector),
                 RoleBasedAuthorization.Default);
