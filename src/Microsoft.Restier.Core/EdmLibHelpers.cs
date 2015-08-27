@@ -4,7 +4,6 @@
 using System;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
@@ -41,18 +40,6 @@ namespace Microsoft.Restier.Core
                 default:
                     throw Error.NotSupported(Resources.EdmTypeNotSupported, edmType.ToTraceString());
             }
-        }
-
-        /// <summary>
-        /// Gets the underlying EdmModel so that hooks like ODataPayloadValueConverter
-        /// can be retrieved.
-        /// </summary>
-        /// <param name="model">The domain model.</param>
-        /// <returns>The underlying EdmModel.</returns>
-        public static IEdmModel GetUnderlyingEdmModel(this IEdmModel model)
-        {
-            var domainModel = model as DomainModel;
-            return domainModel == null ? model : domainModel.InnerModel;
         }
     }
 }

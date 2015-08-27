@@ -167,19 +167,12 @@ namespace Microsoft.Restier.WebApi
 
         private static void EnsurePayloadValueConverter(this IEdmModel model)
         {
-            var edmModel = model.GetUnderlyingEdmModel();
-            var payloadValueConverter = edmModel.GetPayloadValueConverter();
+            var payloadValueConverter = model.GetPayloadValueConverter();
             if (payloadValueConverter.GetType() == typeof(ODataPayloadValueConverter))
             {
                 // User has not specified custom payload value converter
                 // so use RESTier's default converter.
                 model.SetPayloadValueConverter(ODataDomainPayloadValueConverter.Default);
-            }
-            else
-            {
-                // User has specified custom payload value converter
-                // so use his converter.
-                model.SetPayloadValueConverter(payloadValueConverter);
             }
         }
     }
