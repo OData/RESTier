@@ -8,12 +8,16 @@ using System.Data.Entity;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
-    public partial class TrippinModel : DbContext
+    public class TrippinModel : DbContext
     {
+        static TrippinModel()
+        {
+            Database.SetInitializer(new TrippinDatabaseInitializer());
+        }
+
         public TrippinModel()
             : base("name=TrippinModel")
         {
-            Database.SetInitializer(new TrippinDatabaseInitializer());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

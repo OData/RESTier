@@ -12,9 +12,17 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 {
     public class NorthwindContext : DbContext
     {
+        private class NorthwindInitializer : IDatabaseInitializer<NorthwindContext>
+        {
+            public void InitializeDatabase(NorthwindContext context)
+            {
+                LoadDataSource();
+            }
+        }
+
         static NorthwindContext()
         {
-            LoadDataSource();
+            Database.SetInitializer(new NorthwindInitializer());
         }
 
 #if EF7
