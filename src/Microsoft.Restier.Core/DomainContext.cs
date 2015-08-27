@@ -37,11 +37,5 @@ namespace Microsoft.Restier.Core
         /// Gets the domain configuration.
         /// </summary>
         public DomainConfiguration Configuration { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this domain
-        /// context is current submitting changes.
-        /// </summary>
-        public bool IsSubmitting { get; internal set; }
     }
 }
