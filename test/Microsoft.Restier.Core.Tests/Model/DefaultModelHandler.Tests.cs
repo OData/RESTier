@@ -60,33 +60,6 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        private class TestModelVisibilityFilter : IModelVisibilityFilter
-        {
-            public bool IsVisible(
-                DomainConfiguration configuration,
-                InvocationContext context,
-                IEdmModel model, IEdmSchemaElement element)
-            {
-                if (element.Name == "TestName")
-                {
-                    return false;
-                }
-                return true;
-            }
-
-            public bool IsVisible(
-                DomainConfiguration configuration,
-                InvocationContext context,
-                IEdmModel model, IEdmEntityContainerElement element)
-            {
-                if (element.Name == "TestEntitySet")
-                {
-                    return false;
-                }
-                return true;
-            }
-        }
-
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
@@ -95,9 +68,6 @@ namespace Microsoft.Restier.Core.Tests.Model
             configuration.AddHookHandler(new TestModelExtender(2));
             configuration.AddHookHandler(new TestModelExtender(3));
 
-            configuration.AddHookPoint(
-                typeof(IModelVisibilityFilter),
-                new TestModelVisibilityFilter());
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
 
