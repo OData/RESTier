@@ -126,9 +126,6 @@
   <data name="DataModificationRequiresEntityKey" xml:space="preserve">
     <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
   </data>
-  <data name="EdmTypeNotSupported" xml:space="preserve">
-    <value>{0} is not a supported EDM type.</value>
-  </data>
   <data name="ErrorInVerifyingNoEntityHasChanged" xml:space="preserve">
     <value>Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.</value>
   </data>

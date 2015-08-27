@@ -23,6 +23,7 @@ using System.Web.OData.Routing;
 using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -378,9 +379,28 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
-        private static IEdmTypeReference GetTypeReference(IEdmType type)
+        private static IEdmTypeReference GetTypeReference(IEdmType edmType)
         {
-            return type.GetEdmTypeReference(isNullable: false);
+            Ensure.NotNull(edmType, "edmType");
+
+            var isNullable = false;
+            switch (edmType.TypeKind)
+            {
+                case EdmTypeKind.Collection:
+                    return new EdmCollectionTypeReference(edmType as IEdmCollectionType);
+                case EdmTypeKind.Complex:
+                    return new EdmComplexTypeReference(edmType as IEdmComplexType, isNullable);
+                case EdmTypeKind.Entity:
+                    return new EdmEntityTypeReference(edmType as IEdmEntityType, isNullable);
+                case EdmTypeKind.EntityReference:
+                    return new EdmEntityReferenceTypeReference(edmType as IEdmEntityReferenceType, isNullable);
+                case EdmTypeKind.Enum:
+                    return new EdmEnumTypeReference(edmType as IEdmEnumType, isNullable);
+                case EdmTypeKind.Primitive:
+                    return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
+                default:
+                    throw Error.NotSupported(Resources.EdmTypeNotSupported, edmType.ToTraceString());
+            }
         }
 
         private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)

@@ -57,6 +57,9 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\Error.cs">
+      <Link>Shared\Error.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>Shared\EnumerableExtensions.cs</Link>
     </Compile>
