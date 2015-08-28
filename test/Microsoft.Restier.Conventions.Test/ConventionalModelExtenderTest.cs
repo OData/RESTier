@@ -9,6 +9,7 @@ using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Model;
 using Xunit;
 

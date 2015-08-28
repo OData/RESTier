@@ -98,10 +98,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
-      <Project>{5A10C8BB-5CA0-4D41-A731-45CD29A30D34}</Project>
-      <Name>Microsoft.Restier.Conventions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</Project>
       <Name>Microsoft.Restier.Core</Name>

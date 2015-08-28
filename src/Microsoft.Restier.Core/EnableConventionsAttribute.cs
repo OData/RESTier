@@ -2,9 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Specifies that code-based conventions will be enabled for a domain.

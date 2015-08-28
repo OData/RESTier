@@ -19,6 +19,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -41,13 +42,21 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
+    <Compile Include="Conventions\ConventionalChangeSetAuthorizer.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetEntryFilter.cs" />
+    <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />
+    <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
+    <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
+    <Compile Include="Conventions\ConventionalModelExtender.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Domain.OfT.cs" />
     <Compile Include="DomainBase.cs" />
     <Compile Include="DomainConfiguration.cs" />
+    <Compile Include="DomainConfigurationExtensions.cs" />
     <Compile Include="DomainContext.cs" />
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />
+    <Compile Include="EnableConventionsAttribute.cs" />
     <Compile Include="HookHandlerOfT.cs" />
     <Compile Include="IDomain.cs" />
     <Compile Include="IDomainPolicy.cs" />

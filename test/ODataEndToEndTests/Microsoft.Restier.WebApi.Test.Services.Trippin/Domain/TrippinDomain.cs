@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Expressions;
-using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;

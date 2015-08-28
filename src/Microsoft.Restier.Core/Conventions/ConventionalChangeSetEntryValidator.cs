@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,7 @@ using Microsoft.Restier.Core.Submit;
 using DataAnnotations = System.ComponentModel.DataAnnotations;
 using ValidationResult = Microsoft.Restier.Core.Submit.ValidationResult;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
     /// A conventional change set entry validator.
@@ -49,18 +48,18 @@ namespace Microsoft.Restier.Conventions
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 PropertyDescriptorCollection properties =
-                    new AssociatedMetadataTypeTypeDescriptionProvider(entity.GetType())
+                    new DataAnnotations.AssociatedMetadataTypeTypeDescriptionProvider(entity.GetType())
                     .GetTypeDescriptor(entity).GetProperties();
 
-                ValidationContext validationContext = new ValidationContext(entity);
+                DataAnnotations.ValidationContext validationContext = new DataAnnotations.ValidationContext(entity);
 
                 foreach (PropertyDescriptor property in properties)
                 {
                     validationContext.MemberName = property.Name;
 
-                    IEnumerable<ValidationAttribute> validationAttributes =
-                        property.Attributes.OfType<ValidationAttribute>();
-                    foreach (ValidationAttribute validationAttribute in validationAttributes)
+                    IEnumerable<DataAnnotations.ValidationAttribute> validationAttributes =
+                        property.Attributes.OfType<DataAnnotations.ValidationAttribute>();
+                    foreach (DataAnnotations.ValidationAttribute validationAttribute in validationAttributes)
                     {
                         object value = property.GetValue(entity);
                         DataAnnotations.ValidationResult validationResult =
