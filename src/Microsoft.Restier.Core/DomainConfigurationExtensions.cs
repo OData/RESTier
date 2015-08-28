@@ -3,10 +3,10 @@
 
 using System;
 using System.ComponentModel;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic)
@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Conventions
     /// <see cref="DomainConfiguration"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class DomainConfigurationExtensions
+    internal static class DomainConfigurationExtensions
     {
         /// <summary>
         /// Enables code-based conventions for a domain.

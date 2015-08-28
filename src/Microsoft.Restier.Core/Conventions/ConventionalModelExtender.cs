@@ -2,19 +2,17 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
     /// The conventional implementation of Hook handler for <see cref="ModelBuilderContext"/>.
     /// </summary>
-    public class ConventionalModelExtender : HookHandler<ModelBuilderContext>
+    internal class ConventionalModelExtender : HookHandler<ModelBuilderContext>
     {
         private Type targetType;
 

@@ -10,17 +10,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
     /// A conventional entity set provider that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    public class ConventionalEntitySetProvider :
+    internal class ConventionalEntitySetProvider :
         HookHandler<ModelBuilderContext>, IModelMapper, IQueryExpressionExpander
     {
         private Type targetType;

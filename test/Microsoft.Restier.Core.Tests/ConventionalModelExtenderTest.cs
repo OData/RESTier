@@ -5,14 +5,13 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Model;
 using Xunit;
 
-namespace Microsoft.Restier.Conventions.Test
+namespace Microsoft.Restier.Core.Tests
 {
     public class ConventionalModelExtenderTest
     {
@@ -69,10 +68,10 @@ namespace Microsoft.Restier.Conventions.Test
 
         private static EdmModel GetModel()
         {
-            const string ns = "ns";
-            var builder = new ODataConventionModelBuilder { Namespace = ns };
-            builder.EntityType<Product>().Namespace = ns;
-            return (EdmModel)builder.GetEdmModel();
+            var model = new EdmModel();
+            var productType = new EdmEntityType("ns", "Product");
+            model.AddElement(productType);
+            return model;
         }
 
         public class Product

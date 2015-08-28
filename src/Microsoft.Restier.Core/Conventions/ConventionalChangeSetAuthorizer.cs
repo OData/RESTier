@@ -6,16 +6,15 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Conventions.Properties;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
     /// A conventional change set entry authorizer.
     /// </summary>
-    public class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
+    internal class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
     {
         private Type targetType;
 

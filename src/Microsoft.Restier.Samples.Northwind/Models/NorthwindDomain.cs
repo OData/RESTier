@@ -5,14 +5,12 @@ using System;
 using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Security;
 
 namespace Microsoft.Restier.Samples.Northwind.Models
 {
-    [EnableConventions]
     [EnableRoleBasedSecurity]
     [Grant(DomainPermissionType.All, On = "Customers")]
     [Grant(DomainPermissionType.All, On = "Products")]

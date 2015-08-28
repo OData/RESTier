@@ -4,17 +4,15 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Conventions
+namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
     /// A conventional query expression filter on entity set.
     /// </summary>
-    public class ConventionalEntitySetFilter : IQueryExpressionFilter
+    internal class ConventionalEntitySetFilter : IQueryExpressionFilter
     {
         private Type targetType;
 
