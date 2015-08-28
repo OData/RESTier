@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 #if EF7
 using Microsoft.Data.Entity;
 #endif
-using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Samples.Northwind.Models;
@@ -16,7 +15,6 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class SaveTests : TestBase
     {
-        [EnableConventions]
         private class TestEntityFilterReturnsTaskDomain : NorthwindDomain
         {
             private async Task OnInsertingCustomers(Customer customer)

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Expressions;
-using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
@@ -120,20 +119,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
 
     public class TestAttribute : DomainParticipantAttribute
     {
-        private EnableConventionsAttribute enableConventionsAttribute = new EnableConventionsAttribute();
-
         public override void Configure(
             DomainConfiguration configuration,
             Type type)
         {
-            enableConventionsAttribute.Configure(configuration, type);
             ConventionalActionProvider.ApplyTo(configuration, type);
             configuration.AddHookHandler(new CustomExtender());
-        }
-
-        public override void Initialize(DomainContext context, Type type, object instance)
-        {
-            enableConventionsAttribute.Initialize(context, type, instance);
         }
     }
 
