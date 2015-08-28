@@ -119,20 +119,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
 
     public class TestAttribute : DomainParticipantAttribute
     {
-        private EnableConventionsAttribute enableConventionsAttribute = new EnableConventionsAttribute();
-
         public override void Configure(
             DomainConfiguration configuration,
             Type type)
         {
-            enableConventionsAttribute.Configure(configuration, type);
             ConventionalActionProvider.ApplyTo(configuration, type);
             configuration.AddHookHandler(new CustomExtender());
-        }
-
-        public override void Initialize(DomainContext context, Type type, object instance)
-        {
-            enableConventionsAttribute.Initialize(context, type, instance);
         }
     }
 

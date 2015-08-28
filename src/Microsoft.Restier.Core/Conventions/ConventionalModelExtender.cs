@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// <summary>
     /// The conventional implementation of Hook handler for <see cref="ModelBuilderContext"/>.
     /// </summary>
-    public class ConventionalModelExtender : HookHandler<ModelBuilderContext>
+    internal class ConventionalModelExtender : HookHandler<ModelBuilderContext>
     {
         private Type targetType;
 

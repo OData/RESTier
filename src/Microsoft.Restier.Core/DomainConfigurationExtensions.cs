@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core
     /// <see cref="DomainConfiguration"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class DomainConfigurationExtensions
+    internal static class DomainConfigurationExtensions
     {
         /// <summary>
         /// Enables code-based conventions for a domain.

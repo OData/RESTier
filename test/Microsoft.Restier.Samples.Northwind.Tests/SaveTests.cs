@@ -15,7 +15,6 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class SaveTests : TestBase
     {
-        [EnableConventions]
         private class TestEntityFilterReturnsTaskDomain : NorthwindDomain
         {
             private async Task OnInsertingCustomers(Customer customer)

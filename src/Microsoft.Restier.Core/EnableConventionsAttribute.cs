@@ -10,7 +10,7 @@ namespace Microsoft.Restier.Core
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class EnableConventionsAttribute : DomainParticipantAttribute
+    internal sealed class EnableConventionsAttribute : DomainParticipantAttribute
     {
         /// <inheritdoc/>
         public override void Configure(

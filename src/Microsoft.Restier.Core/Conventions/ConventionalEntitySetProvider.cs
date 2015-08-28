@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// A conventional entity set provider that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    public class ConventionalEntitySetProvider :
+    internal class ConventionalEntitySetProvider :
         HookHandler<ModelBuilderContext>, IModelMapper, IQueryExpressionExpander
     {
         private Type targetType;

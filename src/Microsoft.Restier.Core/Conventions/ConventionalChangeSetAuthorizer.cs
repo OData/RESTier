@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// <summary>
     /// A conventional change set entry authorizer.
     /// </summary>
-    public class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
+    internal class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
     {
         private Type targetType;
 

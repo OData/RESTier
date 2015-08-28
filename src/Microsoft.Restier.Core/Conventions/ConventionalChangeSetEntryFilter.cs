@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// <summary>
     /// A conventional change set entry filter.
     /// </summary>
-    public class ConventionalChangeSetEntryFilter : IChangeSetEntryFilter
+    internal class ConventionalChangeSetEntryFilter : IChangeSetEntryFilter
     {
         private Type targetType;
 

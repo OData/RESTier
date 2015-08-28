@@ -8,6 +8,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a base class for a domain.
     /// </summary>
+    [EnableConventions]
     public abstract class DomainBase : IExpandableDomain
     {
         private DomainConfiguration domainConfiguration;

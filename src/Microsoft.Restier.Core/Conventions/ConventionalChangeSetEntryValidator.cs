@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// <summary>
     /// A conventional change set entry validator.
     /// </summary>
-    public class ConventionalChangeSetEntryValidator :
+    internal class ConventionalChangeSetEntryValidator :
         IChangeSetEntryValidator
     {
         static ConventionalChangeSetEntryValidator()

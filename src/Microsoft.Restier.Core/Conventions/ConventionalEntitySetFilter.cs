@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// <summary>
     /// A conventional query expression filter on entity set.
     /// </summary>
-    public class ConventionalEntitySetFilter : IQueryExpressionFilter
+    internal class ConventionalEntitySetFilter : IQueryExpressionFilter
     {
         private Type targetType;
 

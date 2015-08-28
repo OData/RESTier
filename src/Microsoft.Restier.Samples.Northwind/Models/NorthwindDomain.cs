@@ -11,7 +11,6 @@ using Microsoft.Restier.Security;
 
 namespace Microsoft.Restier.Samples.Northwind.Models
 {
-    [EnableConventions]
     [EnableRoleBasedSecurity]
     [Grant(DomainPermissionType.All, On = "Customers")]
     [Grant(DomainPermissionType.All, On = "Products")]
