@@ -8,7 +8,6 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a base class for a domain.
     /// </summary>
-    [EnableConventions]
     public abstract class DomainBase : IExpandableDomain
     {
         private DomainConfiguration domainConfiguration;
@@ -104,6 +103,7 @@ namespace Microsoft.Restier.Core
                     if (configuration == null)
                     {
                         configuration = this.CreateDomainConfiguration();
+                        configuration.EnableConventions(this.GetType());
                         DomainParticipantAttribute.ApplyConfiguration(
                             this.GetType(), configuration);
                     }
@@ -138,6 +138,7 @@ namespace Microsoft.Restier.Core
                 {
                     this.domainContext = this.CreateDomainContext(
                         this.DomainConfiguration);
+                    this.domainContext.SetProperty(this.GetType().AssemblyQualifiedName, this);
                     DomainParticipantAttribute.ApplyInitialization(
                         this.GetType(), this, this.domainContext);
                 }

@@ -56,7 +56,6 @@
     <Compile Include="DomainContext.cs" />
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />
-    <Compile Include="EnableConventionsAttribute.cs" />
     <Compile Include="HookHandlerOfT.cs" />
     <Compile Include="IDomain.cs" />
     <Compile Include="IDomainPolicy.cs" />
