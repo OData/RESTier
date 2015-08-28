@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Model;
 using Xunit;
 
-namespace Microsoft.Restier.Conventions.Test
+namespace Microsoft.Restier.Core.Tests
 {
     public class ConventionalModelExtenderTest
     {
