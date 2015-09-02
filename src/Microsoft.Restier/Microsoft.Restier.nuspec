@@ -12,7 +12,6 @@
     <dependencies>
       <dependency id="Microsoft.Restier.Core" version="[0.3.0-beta1,]" />
       <dependency id="Microsoft.Restier.Conventions" version="[0.3.0-beta1,]" />
-      <dependency id="Microsoft.Restier.Security" version="[0.3.0-beta1,]" />
       <dependency id="Microsoft.Restier.EntityFramework" version="[0.3.0-beta1,]" />
       <dependency id="Microsoft.Restier.WebApi" version="[0.3.0-beta1,]" />
     </dependencies>
