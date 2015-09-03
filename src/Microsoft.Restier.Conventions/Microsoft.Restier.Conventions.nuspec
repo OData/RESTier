@@ -7,7 +7,9 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <description>$description$</description>
-    <copyright>Copyright © Microsoft Corporation 2014</copyright>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <copyright></copyright>
     <dependencies>
       <dependency id="Microsoft.Restier.Core" version="[0.3.0-beta2,]" />
     </dependencies>
