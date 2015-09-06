@@ -372,7 +372,7 @@ namespace Microsoft.Restier.Core
         /// <param name="handler">An instance of hook handler for TContext.</param>
         public void AddHookHandler<TContext>(HookHandler<TContext> handler) where TContext : InvocationContext
         {
-            Ensure.NotNull(handler, nameof(handler));
+            Ensure.NotNull(handler, "handler");
             var nextHandler = this.GetHookHandler<TContext>();
             handler.InnerHandler = nextHandler;
             this.hookHandlers[typeof(TContext)] = handler;

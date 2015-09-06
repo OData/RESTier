@@ -25,7 +25,6 @@
 
   <!-- Test assemblies -->
   <ItemGroup>
-    <TestAssembiles Include="test\Microsoft.Restier.Conventions.Test\bin\$(Configuration)\Microsoft.Restier.Conventions.Test.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.Core.Tests\bin\$(Configuration)\Microsoft.Restier.Core.Tests.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.Samples.Northwind.Tests\bin\$(Configuration)\Microsoft.Restier.Samples.Northwind.Tests.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.WebApi.Test\bin\$(Configuration)\Microsoft.Restier.WebApi.Test.dll" />
