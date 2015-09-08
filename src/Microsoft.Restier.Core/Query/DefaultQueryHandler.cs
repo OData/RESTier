@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents the default query handler.
     /// </summary>
-    public class DefaultQueryHandler : IQueryHandler
+    public static class DefaultQueryHandler
     {
         /// <summary>
         /// Asynchronously executes the query flow.
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Core.Query
         /// A task that represents the asynchronous
         /// operation whose result is a query result.
         /// </returns>
-        public async Task<QueryResult> QueryAsync(
+        public static async Task<QueryResult> QueryAsync(
             QueryContext context,
             CancellationToken cancellationToken)
         {

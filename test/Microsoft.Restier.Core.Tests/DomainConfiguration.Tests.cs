@@ -23,7 +23,6 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(configuration.BaseConfiguration.IsCommitted);
             Assert.False(configuration.IsCommitted);
 
-            Assert.True(configuration.GetHookPoint<IQueryHandler>() is DefaultQueryHandler);
             Assert.True(configuration.GetHookPoint<ISubmitHandler>() is DefaultSubmitHandler);
         }
 

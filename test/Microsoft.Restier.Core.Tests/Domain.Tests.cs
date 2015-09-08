@@ -18,6 +18,22 @@ namespace Microsoft.Restier.Core.Tests
 {
     public class DomainTests
     {
+        private class TestModelBuilder : IDelegateHookHandler<IModelBuilder>, IModelBuilder
+        {
+            public IModelBuilder InnerHandler { get; set; }
+
+            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                var model = new EdmModel();
+                var dummyType = new EdmEntityType("NS", "Dummy");
+                model.AddElement(dummyType);
+                var container = new EdmEntityContainer("NS", "DefaultContainer");
+                container.AddEntitySet("Test", dummyType);
+                model.AddElement(container);
+                return Task.FromResult((IEdmModel)model);
+            }
+        }
+
         private class TestModelMapper : IModelMapper
         {
             public bool TryGetRelevantType(
@@ -38,18 +54,24 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private class TestQueryHandler : IQueryHandler
+        private class TestQueryExecutor : IQueryExecutor
         {
-            public DomainContext DomainContext { get; set; }
-
-            public IEnumerable Results { get; set; }
-
-            public Task<QueryResult> QueryAsync(
-                QueryContext context,
-                CancellationToken cancellationToken)
+            public Task<QueryResult> ExecuteQueryAsync<TElement>(QueryContext context, IQueryable<TElement> query, CancellationToken cancellationToken)
             {
-                Assert.Same(DomainContext, context.DomainContext);
-                return Task.FromResult(new QueryResult(Results));
+                return Task.FromResult(new QueryResult(query));
+            }
+
+            public Task<QueryResult> ExecuteSingleAsync<TResult>(QueryContext context, IQueryable query, Expression expression, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new QueryResult(query));
+            }
+        }
+
+        private class TestQuerySourcer : IQueryExpressionSourcer
+        {
+            public Expression Source(QueryExpressionContext context, bool embedded)
+            {
+                return Expression.Constant(new[] {"Test"}.AsQueryable());
             }
         }
 
@@ -71,11 +93,7 @@ namespace Microsoft.Restier.Core.Tests
         private class TestDomain : IDomain
         {
             private DomainContext _context;
-
-            public IEdmModel Model { get; private set; }
-
-            public IEnumerable Results { get; private set; }
-
+            
             public ChangeSet ChangeSet { get; private set; }
 
             public DomainContext Context
@@ -85,21 +103,25 @@ namespace Microsoft.Restier.Core.Tests
                     if (_context == null)
                     {
                         var configuration = new DomainConfiguration();
+                        var modelBuilder = new TestModelBuilder();
                         var modelMapper = new TestModelMapper();
-                        var queryHandler = new TestQueryHandler();
+                        var queryExecutor = new TestQueryExecutor();
+                        var querySourcer = new TestQuerySourcer();
                         var submitHandler = new TestSubmitHandler();
+                        configuration.AddHookHandler<IModelBuilder>(modelBuilder);
                         configuration.AddHookHandler<IModelMapper>(modelMapper);
                         configuration.SetHookPoint(
-                            typeof(IQueryHandler), queryHandler);
+                            typeof(IQueryExecutor), queryExecutor);
+                        configuration.SetHookPoint(
+                            typeof(IQueryExpressionSourcer), querySourcer);
                         configuration.SetHookPoint(
                             typeof(ISubmitHandler), submitHandler);
                         configuration.EnsureCommitted();
                         _context = new DomainContext(configuration);
-                        queryHandler.DomainContext = _context;
-                        Results = queryHandler.Results = new string[] { "Test" };
                         submitHandler.DomainContext = _context;
                         ChangeSet = submitHandler.ChangeSet = new ChangeSet();
                     }
+
                     return _context;
                 }
             }
@@ -440,26 +462,6 @@ namespace Microsoft.Restier.Core.Tests
             var queryRequest = new QueryRequest(
                 domain.Source<string>("Test"), true);
             var queryResult = await domain.QueryAsync(queryRequest);
-            Assert.True(queryResult.Results.Cast<string>()
-                .SequenceEqual(new string[] { "Test" }));
-        }
-
-        [Fact]
-        public async Task QueryAsyncCorrectlyUsesQueryHandler()
-        {
-            var configuration = new DomainConfiguration();
-            var modelMapper = new TestModelMapper();
-            var queryHandler = new TestQueryHandler();
-            configuration.AddHookHandler<IModelMapper>(modelMapper);
-            configuration.SetHookPoint(typeof(IQueryHandler), queryHandler);
-            configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
-            queryHandler.DomainContext = context;
-            queryHandler.Results = new string[] { "Test" };
-
-            var queryRequest = new QueryRequest(
-                Domain.Source<string>(context, "Test"), true);
-            var queryResult = await Domain.QueryAsync(context, queryRequest);
             Assert.True(queryResult.Results.Cast<string>()
                 .SequenceEqual(new string[] { "Test" }));
         }

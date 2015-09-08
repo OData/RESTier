@@ -79,7 +79,6 @@
     <Compile Include="Query\IQueryExpressionNormalizer.cs" />
     <Compile Include="Query\IQueryExpressionSourcer.cs" />
     <Compile Include="Query\IQueryFilter.cs" />
-    <Compile Include="Query\IQueryHandler.cs" />
     <Compile Include="Query\QueryContext.cs" />
     <Compile Include="Query\QueryExpressionContext.cs" />
     <Compile Include="Query\QueryModelReference.cs" />

@@ -554,8 +554,7 @@ namespace Microsoft.Restier.Core
             var queryContext = new QueryContext(context, request);
             var model = await Domain.GetModelAsync(context);
             queryContext.Model = model;
-            var handler = queryContext.GetHookPoint<IQueryHandler>();
-            return await handler.QueryAsync(queryContext, cancellationToken);
+            return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
         }
 
         #endregion
