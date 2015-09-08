@@ -13,11 +13,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 {
     public class DefaultModelHandlerTests
     {
-        private class TestModelProducer : HookHandler<ModelBuilderContext>
+        private class TestModelProducer : IModelBuilder
         {
-            public override Task HandleAsync(
-                ModelBuilderContext context,
-                CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
                 var entityType = new EdmEntityType(
@@ -28,12 +26,11 @@ namespace Microsoft.Restier.Core.Tests.Model
                 model.AddElement(entityType);
                 model.AddElement(entityContainer);
 
-                context.Model = model;
-                return Task.FromResult<object>(null);
+                return Task.FromResult<IEdmModel>(model);
             }
         }
 
-        private class TestModelExtender : HookHandler<ModelBuilderContext>
+        private class TestModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
         {
             private int _index;
 
@@ -42,21 +39,27 @@ namespace Microsoft.Restier.Core.Tests.Model
                 _index = index;
             }
 
-            public override async Task HandleAsync(
-                ModelBuilderContext context,
-                CancellationToken cancellationToken)
+            public IModelBuilder InnerHandler { get; set; }
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
             {
-                await base.HandleAsync(context, cancellationToken);
+                IEdmModel innerModel = null;
+                if (this.InnerHandler != null)
+                {
+                    innerModel = await this.InnerHandler.GetModelAsync(context, cancellationToken);
+                }
 
                 var entityType = new EdmEntityType(
-                    "TestNamespace", "TestName" + _index);
+                     "TestNamespace", "TestName" + _index);
 
-                var model = context.Model as EdmModel;
+                var model = innerModel as EdmModel;
                 Assert.NotNull(model);
 
                 model.AddElement(entityType);
                 (model.EntityContainer as EdmEntityContainer)
                     .AddEntitySet("TestEntitySet" + _index, entityType);
+
+                return model;
             }
         }
 
@@ -64,9 +67,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         public async Task GetModelUsingDefaultModelHandler()
         {
             var configuration = new DomainConfiguration();
-            configuration.AddHookHandler(new TestModelProducer());
-            configuration.AddHookHandler(new TestModelExtender(2));
-            configuration.AddHookHandler(new TestModelExtender(3));
+            configuration.AddHookHandler<IModelBuilder>(new TestModelProducer());
+            configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(2));
+            configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(3));
 
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);

@@ -56,14 +56,13 @@
     <Compile Include="DomainContext.cs" />
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />
-    <Compile Include="HookHandlerOfT.cs" />
     <Compile Include="IDelegateHookHandler.cs" />
     <Compile Include="IDomain.cs" />
     <Compile Include="IExpandableDomain.cs" />
     <Compile Include="IHookHandler.cs" />
     <Compile Include="InvocationContext.cs" />
+    <Compile Include="Model\IModelBuilder.cs" />
     <Compile Include="Model\IModelMapper.cs" />
-    <Compile Include="Model\ModelBuilderContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

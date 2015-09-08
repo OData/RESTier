@@ -4,15 +4,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// The conventional implementation of Hook handler for <see cref="ModelBuilderContext"/>.
+    /// The conventional implementation of Hook handler for <see cref="IModelBuilder"/>.
     /// </summary>
-    internal class ConventionalModelExtender : HookHandler<ModelBuilderContext>
+    internal class ConventionalModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
     {
         private Type targetType;
 
@@ -25,6 +26,8 @@ namespace Microsoft.Restier.Core.Conventions
             this.targetType = targetType;
         }
 
+        public IModelBuilder InnerHandler { get; set; }
+
         /// <summary>
         /// Apply a <see cref="ConventionalModelExtender"/> instance to the <see cref="DomainConfiguration"/>.
         /// </summary>
@@ -34,7 +37,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler(new ConventionalModelExtender(targetType));
+            configuration.AddHookHandler<IModelBuilder>(new ConventionalModelExtender(targetType));
         }
 
         /// <summary>
@@ -43,13 +46,20 @@ namespace Microsoft.Restier.Core.Conventions
         /// <param name="context">The context that contains the model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public override async Task HandleAsync(ModelBuilderContext context, CancellationToken cancellationToken)
+        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
-            await base.HandleAsync(context, cancellationToken);
-            ExtendModel(context);
+            IEdmModel model = null;
+            if (this.InnerHandler != null)
+            {
+                model = await this.InnerHandler.GetModelAsync(context, cancellationToken);
+            }
+
+            ExtendModel(context, ref model);
+
+            return model;
         }
 
-        private void ExtendModel(ModelBuilderContext context)
+        private void ExtendModel(InvocationContext context, ref IEdmModel model)
         {
             var method = this.targetType.GetQualifiedMethod("OnModelExtending");
             var returnType = typeof(EdmModel);
@@ -75,12 +85,7 @@ namespace Microsoft.Restier.Core.Conventions
                 return;
             }
 
-            var model = context.Model;
-            var result = (EdmModel)method.Invoke(target, new object[] { model });
-            if (result != null && result != model)
-            {
-                context.Model = result;
-            }
+            model = (EdmModel)method.Invoke(target, new object[] { model });
         }
     }
 }

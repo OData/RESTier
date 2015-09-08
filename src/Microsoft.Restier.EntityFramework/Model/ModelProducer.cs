@@ -26,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    public class ModelProducer : HookHandler<ModelBuilderContext>
+    public class ModelProducer : IModelBuilder
     {
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
@@ -81,22 +81,8 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// </summary>
         public static ModelProducer Instance { get; private set; }
 
-        /// <summary>
-        /// Asynchronously produces a base model.
-        /// </summary>
-        /// <param name="context">
-        /// The model context.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// A cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is the base model.
-        /// </returns>
-        public override Task HandleAsync(
-            ModelBuilderContext context,
-            CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context);
             var model = new EdmModel();
@@ -157,8 +143,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             // TODO GitHubIssue#36 : support function imports
             model.AddElement(entityContainer);
 
-            context.Model = model;
-            return Task.FromResult<object>(null);
+            return Task.FromResult<IEdmModel>(model);
         }
 
         private static IEdmEntityType CreateEntityType(

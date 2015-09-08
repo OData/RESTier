@@ -98,8 +98,8 @@ namespace Microsoft.Restier.WebApi.Test
         protected override DomainConfiguration CreateDomainConfiguration()
         {
             var configuration = base.CreateDomainConfiguration();
-            configuration.AddHookHandler(new TestModelProducer(FallbackModel.Model));
-            configuration.AddHookHandler1<IModelMapper>(new FallbackModelMapper());
+            configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
+            configuration.AddHookHandler<IModelMapper>(new FallbackModelMapper());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new FallbackQueryExpressionSourcer());
             configuration.SetHookPoint(typeof(IQueryExecutor), new FalllbackQueryExecutor());
             return configuration;

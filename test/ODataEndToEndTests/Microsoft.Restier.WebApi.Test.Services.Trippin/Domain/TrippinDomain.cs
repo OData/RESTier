@@ -124,21 +124,24 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
             Type type)
         {
             ConventionalActionProvider.ApplyTo(configuration, type);
-            configuration.AddHookHandler(new CustomExtender());
+            configuration.AddHookHandler<IModelBuilder>(new CustomExtender());
         }
     }
 
-    public class CustomExtender : HookHandler<ModelBuilderContext>
+    public class CustomExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
     {
-        public override async Task HandleAsync(
-            ModelBuilderContext context,
-            CancellationToken cancellationToken)
-        {
-            await base.HandleAsync(context, cancellationToken);
+        public IModelBuilder InnerHandler { get; set; }
 
-            var model = (EdmModel) context.Model;
-            var entityContainer = (EdmEntityContainer)context.Model.EntityContainer;
-            var personType = (IEdmEntityType)context.Model
+        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+        {
+            EdmModel model = null;
+            if (this.InnerHandler != null)
+            {
+                model = await this.InnerHandler.GetModelAsync(context, cancellationToken)as EdmModel;
+            }
+
+            var entityContainer = (EdmEntityContainer)model.EntityContainer;
+            var personType = (IEdmEntityType)model
                 .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person");
             var personTypeReference = new EdmEntityTypeReference(personType, false);
             entityContainer.AddSingleton("Me", personType);
@@ -194,7 +197,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 cleanUpExpiredTrips,
                 null);
 
-            var tripType = (IEdmEntityType)context.Model
+            var tripType = (IEdmEntityType)model
                 .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip");
             var tripTypeReference = new EdmEntityTypeReference(tripType, false);
 
@@ -206,6 +209,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 entitySetPathExpression: new EdmPathExpression("trip"));
             endTrip.AddParameter("trip", tripTypeReference);
             model.AddElement(endTrip);
+
+            return model;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// the model space and the object space, and expands a query expression.
     /// </summary>
     internal class ConventionalEntitySetProvider :
-        HookHandler<ModelBuilderContext>,
+        IModelBuilder, IDelegateHookHandler<IModelBuilder>,
         IModelMapper, IDelegateHookHandler<IModelMapper>,
         IQueryExpressionExpander
     {
@@ -30,6 +30,8 @@ namespace Microsoft.Restier.Core.Conventions
         {
             this.targetType = targetType;
         }
+
+        IModelBuilder IDelegateHookHandler<IModelBuilder>.InnerHandler { get; set; }
 
         IModelMapper IDelegateHookHandler<IModelMapper>.InnerHandler { get; set; }
 
@@ -57,36 +59,44 @@ namespace Microsoft.Restier.Core.Conventions
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
             var provider = new ConventionalEntitySetProvider(targetType);
-            configuration.AddHookHandler(provider);
-            configuration.AddHookHandler1<IModelMapper>(provider);
+            configuration.AddHookHandler<IModelBuilder>(provider);
+            configuration.AddHookHandler<IModelMapper>(provider);
             configuration.AddHookPoint(typeof(IQueryExpressionExpander), provider);
         }
 
         /// <inheritdoc/>
-        public override async Task HandleAsync(
-            ModelBuilderContext context,
-            CancellationToken cancellationToken)
+        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
-            await base.HandleAsync(context, cancellationToken);
-
             Ensure.NotNull(context);
-            var model = context.Model;
-            foreach (var entitySetProperty in this.AddedEntitySets)
-            {
-                var container = model.EntityContainer as EdmEntityContainer;
-                var elementType = entitySetProperty
-                    .PropertyType.GetGenericArguments()[0];
-                var entityType = context.Model.SchemaElements
-                    .OfType<IEdmEntityType>()
-                    .SingleOrDefault(se => se.Name == elementType.Name);
-                if (entityType == null)
-                {
-                    // TODO GitHubIssue#33 : Add new entity type representing entity shape
-                    continue;
-                }
 
-                container.AddEntitySet(entitySetProperty.Name, entityType);
+            IEdmModel model = null;
+            var innerHandler = ((IDelegateHookHandler<IModelBuilder>)this).InnerHandler;
+            if (innerHandler != null)
+            {
+                model = await innerHandler.GetModelAsync(context, cancellationToken);
             }
+
+            if (model != null)
+            {
+                foreach (var entitySetProperty in this.AddedEntitySets)
+                {
+                    var container = model.EntityContainer as EdmEntityContainer;
+                    var elementType = entitySetProperty
+                        .PropertyType.GetGenericArguments()[0];
+                    var entityType = model.SchemaElements
+                        .OfType<IEdmEntityType>()
+                        .SingleOrDefault(se => se.Name == elementType.Name);
+                    if (entityType == null)
+                    {
+                        // TODO GitHubIssue#33 : Add new entity type representing entity shape
+                        continue;
+                    }
+
+                    container.AddEntitySet(entitySetProperty.Name, entityType);
+                }
+            }
+
+            return model;
         }
 
         /// <inheritdoc/>

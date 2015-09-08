@@ -54,8 +54,8 @@ namespace Microsoft.Restier.EntityFramework
         protected override DomainConfiguration CreateDomainConfiguration()
         {
             var configuration = base.CreateDomainConfiguration();
-            configuration.AddHookHandler<ModelBuilderContext>(ModelProducer.Instance);
-            configuration.AddHookHandler1<IModelMapper>(new ModelMapper(typeof(T)));
+            configuration.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
+            configuration.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
             configuration.SetHookPoint(
                 typeof(IQueryExpressionSourcer),
                 QueryExpressionSourcer.Instance);

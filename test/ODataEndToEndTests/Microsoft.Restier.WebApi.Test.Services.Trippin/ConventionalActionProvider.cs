@@ -15,7 +15,7 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin
 {
-    public class ConventionalActionProvider : HookHandler<ModelBuilderContext>
+    public class ConventionalActionProvider :IModelBuilder, IDelegateHookHandler<IModelBuilder>
     {
         private Type targetType;
 
@@ -24,19 +24,22 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
             this.targetType = targetType;
         }
 
+        public IModelBuilder InnerHandler { get; set; }
+
         public static void ApplyTo(DomainConfiguration configuration, Type targetType)
         {
             ConventionalActionProvider provider = new ConventionalActionProvider(targetType);
-            configuration.AddHookHandler(provider);
+            configuration.AddHookHandler<IModelBuilder>(provider);
         }
 
-        public override async Task HandleAsync(
-            ModelBuilderContext context,
-            CancellationToken cancellationToken)
+        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
-            await base.HandleAsync(context, cancellationToken);
+            EdmModel model = null;
+            if (this.InnerHandler != null)
+            {
+                model = await this.InnerHandler.GetModelAsync(context, cancellationToken) as EdmModel;
+            }
 
-            var model = context.Model as EdmModel;
             Debug.Assert(model != null);
 
             var entityContainer = model.EntityContainer as EdmEntityContainer;
@@ -65,6 +68,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
                     entityContainer.AddElement(actionImport);
                 }
             }
+
+            return model;
         }
 
         private static EdmTypeReference GetReturnTypeReference(Type type)

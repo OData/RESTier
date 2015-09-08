@@ -22,19 +22,18 @@ namespace Microsoft.Restier.Core.Tests
         {
             // Arrange
             var domain = Activator.CreateInstance(type);
-            var extender = new ConventionalModelExtender(type);
+            var model = GetModel();
+            var extender = new ConventionalModelExtender(type) { InnerHandler = new TestModelProducer(model) };
             var domainConfig = new DomainConfiguration();
             domainConfig.EnsureCommitted();
             var domainContext = new DomainContext(domainConfig);
             domainContext.SetProperty(typeof(Domain).AssemblyQualifiedName, domain);
-            var model = GetModel();
-            var context = new ModelBuilderContext(domainContext) { Model = model };
 
             // Act
-            await extender.HandleAsync(context, new CancellationToken());
+            var result = await extender.GetModelAsync(new InvocationContext(domainContext), new CancellationToken());
 
             // Assert
-            Assert.Same(model, context.Model);
+            Assert.Same(model, result);
             var operations = model.SchemaElements.OfType<IEdmOperation>();
             Assert.Single(operations);
             var operation = operations.Single();
@@ -50,19 +49,18 @@ namespace Microsoft.Restier.Core.Tests
             // Arrange
             var domain = new AnyDomain();
             var type = domain.GetType();
-            var extender = new ConventionalModelExtender(type);
+            var model = GetModel();
+            var extender = new ConventionalModelExtender(type) {InnerHandler = new TestModelProducer(model)};
             var domainConfig = new DomainConfiguration();
             domainConfig.EnsureCommitted();
             var domainContext = new DomainContext(domainConfig);
             domainContext.SetProperty(type.AssemblyQualifiedName, domain);
-            var model = GetModel();
-            var context = new ModelBuilderContext(domainContext) { Model = model };
 
             // Act
-            await extender.HandleAsync(context, new CancellationToken());
+            var result = await extender.GetModelAsync(new InvocationContext(domainContext), new CancellationToken());
 
             // Assert
-            Assert.Same(model, context.Model);
+            Assert.Same(model, result);
             Assert.Empty(model.SchemaElements.OfType<IEdmOperation>());
         }
 
@@ -105,6 +103,21 @@ namespace Microsoft.Restier.Core.Tests
 
         public class AnyDomain
         {
+        }
+
+        public class TestModelProducer : IModelBuilder
+        {
+            public IEdmModel Model { get; set; }
+
+            public TestModelProducer(IEdmModel model)
+            {
+                this.Model = model;
+            }
+
+            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(this.Model);
+            }
         }
     }
 }

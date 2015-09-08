@@ -75,23 +75,17 @@ namespace Microsoft.Restier.Core
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");
-            var configuration = context.Configuration;
-            var model = configuration.Model;
-            if (model == null)
+            var config = context.Configuration;
+            if (config.Model == null)
             {
-                var modelContext = new ModelBuilderContext(context);
-
-                var producer = context.Configuration.GetHookHandler<ModelBuilderContext>();
-                if (producer != null)
+                var builder = context.Configuration.GetHookHandler<IModelBuilder>();
+                if (builder != null)
                 {
-                    await producer.HandleAsync(modelContext, cancellationToken);
+                    config.Model = await builder.GetModelAsync(new InvocationContext(context), cancellationToken);
                 }
-
-                configuration.Model = modelContext.Model;
-                model = configuration.Model;
             }
 
-            return model;
+            return config.Model;
         }
 
         #endregion
@@ -683,7 +677,7 @@ namespace Microsoft.Restier.Core
         {
             Type elementType = null;
 
-            var mapper = context.Configuration.GetHookHandler1<IModelMapper>();
+            var mapper = context.Configuration.GetHookHandler<IModelMapper>();
             if (mapper != null)
             {
                 if (namespaceName == null)
