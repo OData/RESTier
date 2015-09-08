@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents the default query handler.
     /// </summary>
-    public static class DefaultQueryHandler
+    internal static class DefaultQueryHandler
     {
         /// <summary>
         /// Asynchronously executes the query flow.
