@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-namespace Microsoft.Restier.Core
+using Microsoft.Restier.Core;
+
+namespace Microsoft.Restier.Security
 {
     /// <summary>
     /// Represents a policy applicable to a domain that can be

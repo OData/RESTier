@@ -59,7 +59,6 @@
     <Compile Include="HookHandlerOfT.cs" />
     <Compile Include="IDelegateHookHandler.cs" />
     <Compile Include="IDomain.cs" />
-    <Compile Include="IDomainPolicy.cs" />
     <Compile Include="IExpandableDomain.cs" />
     <Compile Include="IHookHandler.cs" />
     <Compile Include="InvocationContext.cs" />

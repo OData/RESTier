@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core.Tests
             var domainConfig = new DomainConfiguration();
             domainConfig.EnsureCommitted();
             var domainContext = new DomainContext(domainConfig);
-            domainContext.SetProperty(type.AssemblyQualifiedName, domain);
+            domainContext.SetProperty(typeof(Domain).AssemblyQualifiedName, domain);
             var model = GetModel();
             var context = new ModelBuilderContext(domainContext) { Model = model };
 

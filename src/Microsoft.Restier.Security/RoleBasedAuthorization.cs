@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Security;
 using System.Threading;
 using Microsoft.OData.Edm;
@@ -17,7 +19,7 @@ namespace Microsoft.Restier.Security
     /// <summary>
     /// Represents a role-based authorization system.
     /// </summary>
-    public class RoleBasedAuthorization : IQueryExpressionInspector
+    public class RoleBasedAuthorization : IQueryExpressionInspector, IQueryExpressionExpander
     {
         private const string Permissions = "Microsoft.Restier.Security.Permissions";
 
@@ -37,6 +39,62 @@ namespace Microsoft.Restier.Security
         /// uses the current security principal to determine role membership.
         /// </summary>
         public static RoleBasedAuthorization Default { get; private set; }
+
+        /// <summary>
+        /// Expands an expression.
+        /// </summary>
+        /// <param name="context">
+        /// The query expression context.
+        /// </param>
+        /// <returns>
+        /// An expanded expression of the same type as the visited node, or
+        /// if expansion did not apply, the visited node or <c>null</c>.
+        /// </returns>
+        public Expression Expand(QueryExpressionContext context)
+        {
+            Ensure.NotNull(context);
+            if (context.ModelReference == null)
+            {
+                return null;
+            }
+
+            var domainDataReference = context.ModelReference as DomainDataReference;
+            if (domainDataReference == null)
+            {
+                return null;
+            }
+
+            var entitySet = domainDataReference.Element as IEdmEntitySet;
+            if (entitySet == null)
+            {
+                return null;
+            }
+
+            var target = context.QueryContext.DomainContext.GetProperty(
+                typeof(Domain).AssemblyQualifiedName);
+            var entitySetProperty = target.GetType().GetProperties(BindingFlags.Public)
+                .SingleOrDefault(p => p.Name == entitySet.Name);
+            if (entitySetProperty != null)
+            {
+                var policies = entitySetProperty.GetCustomAttributes()
+                        .OfType<IDomainPolicy>();
+
+                foreach (var policy in policies)
+                {
+                    policy.Activate(context.QueryContext);
+                }
+
+                context.AfterNestedVisitCallback = () =>
+                {
+                    foreach (var policy in policies.Reverse())
+                    {
+                        policy.Deactivate(context.QueryContext);
+                    }
+                };
+            }
+
+            return context.VisitedNode;
+        }
 
         /// <summary>
         /// Inspects an expression.

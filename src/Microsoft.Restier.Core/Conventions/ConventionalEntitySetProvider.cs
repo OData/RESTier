@@ -151,7 +151,7 @@ namespace Microsoft.Restier.Core.Conventions
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
                     target = context.QueryContext.DomainContext.GetProperty(
-                        this.targetType.AssemblyQualifiedName);
+                        typeof(Domain).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -162,21 +162,6 @@ namespace Microsoft.Restier.Core.Conventions
                 var result = entitySetProperty.GetValue(target) as IQueryable;
                 if (result != null)
                 {
-                    var policies = entitySetProperty.GetCustomAttributes()
-                        .OfType<IDomainPolicy>();
-                    foreach (var policy in policies)
-                    {
-                        policy.Activate(context.QueryContext);
-                    }
-
-                    context.AfterNestedVisitCallback = () =>
-                    {
-                        foreach (var policy in policies.Reverse())
-                        {
-                            policy.Deactivate(context.QueryContext);
-                        }
-                    };
-
                     return result.Expression;
                 }
             }

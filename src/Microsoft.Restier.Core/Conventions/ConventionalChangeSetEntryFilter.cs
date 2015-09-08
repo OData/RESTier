@@ -129,7 +129,7 @@ namespace Microsoft.Restier.Core.Conventions
                 if (!method.IsStatic)
                 {
                     target = context.DomainContext.GetProperty(
-                        this.targetType.AssemblyQualifiedName);
+                        typeof(Domain).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {

@@ -138,7 +138,7 @@ namespace Microsoft.Restier.Core
                 {
                     this.domainContext = this.CreateDomainContext(
                         this.DomainConfiguration);
-                    this.domainContext.SetProperty(this.GetType().AssemblyQualifiedName, this);
+                    this.domainContext.SetProperty(typeof(Domain).AssemblyQualifiedName, this);
                     DomainParticipantAttribute.ApplyInitialization(
                         this.GetType(), this, this.domainContext);
                 }
