@@ -67,7 +67,7 @@ namespace Microsoft.Restier.WebApi.Test
             Assert.Equal(234, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
         }
 
-        [Fact(Skip = "#217 Investigate FallbackConventionalProviderTest case")] 
+        [Fact]
         public async Task FallbackConventionalProviderTest()
         {
             // Should be routed to ODataDomainController.
@@ -75,7 +75,7 @@ namespace Microsoft.Restier.WebApi.Test
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
             HttpResponseMessage response = await client.SendAsync(request);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(235, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
+            Assert.Equal(234, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
         }
     }
 
@@ -157,7 +157,7 @@ namespace Microsoft.Restier.WebApi.Test
 
             if (!embedded)
             {
-                if (context.VisitedNode.ToString() == "Source(\"Orders\", null)")
+                if (context.VisitedNode.ToString().StartsWith("Source(\"Orders\""))
                 {
                     return Expression.Constant(orders.AsQueryable());
                 }
