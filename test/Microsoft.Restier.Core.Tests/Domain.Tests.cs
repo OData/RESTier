@@ -104,8 +104,7 @@ namespace Microsoft.Restier.Core.Tests
                         var queryHandler = new TestQueryHandler();
                         var submitHandler = new TestSubmitHandler();
                         configuration.AddHookHandler(modelHandler);
-                        configuration.SetHookPoint(
-                            typeof(IModelMapper), modelMapper);
+                        configuration.AddHookHandler1<IModelMapper>(modelMapper);
                         configuration.SetHookPoint(
                             typeof(IQueryHandler), queryHandler);
                         configuration.SetHookPoint(
@@ -166,7 +165,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.AddHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             var arguments = new object[0];
@@ -227,7 +226,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.AddHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             var arguments = new object[0];
@@ -278,7 +277,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             var arguments = new object[0];
@@ -291,7 +290,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             var arguments = new object[0];
@@ -342,7 +341,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             var arguments = new object[0];
@@ -355,7 +354,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
             var arguments = new object[0];
@@ -384,7 +383,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
 
@@ -397,7 +396,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
 
@@ -410,7 +409,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
 
@@ -423,7 +422,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
             var modelMapper = new TestModelMapper();
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
 
@@ -471,7 +470,7 @@ namespace Microsoft.Restier.Core.Tests
             var modelMapper = new TestModelMapper();
             var queryHandler = new TestQueryHandler();
             configuration.AddHookHandler(modelHandler);
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.SetHookPoint(typeof(IQueryHandler), queryHandler);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);
@@ -504,7 +503,7 @@ namespace Microsoft.Restier.Core.Tests
             var modelMapper = new TestModelMapper();
             var submitHandler = new TestSubmitHandler();
             configuration.AddHookHandler(modelHandler);
-            configuration.SetHookPoint(typeof(IModelMapper), modelMapper);
+            configuration.AddHookHandler1<IModelMapper>(modelMapper);
             configuration.SetHookPoint(typeof(ISubmitHandler), submitHandler);
             configuration.EnsureCommitted();
             var context = new DomainContext(configuration);

@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Model
     /// instances are used in reverse order of registration. When in use,
     /// the multi-cast hook points are used before the singleton hook point.
     /// </remarks>
-    public interface IModelMapper
+    public interface IModelMapper : IHookHandler
     {
         /// <summary>
         /// Tries to get the relevant type of an entity

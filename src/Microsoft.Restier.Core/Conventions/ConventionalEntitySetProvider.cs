@@ -20,7 +20,9 @@ namespace Microsoft.Restier.Core.Conventions
     /// the model space and the object space, and expands a query expression.
     /// </summary>
     internal class ConventionalEntitySetProvider :
-        HookHandler<ModelBuilderContext>, IModelMapper, IQueryExpressionExpander
+        HookHandler<ModelBuilderContext>,
+        IModelMapper, IDelegateHookHandler<IModelMapper>,
+        IQueryExpressionExpander
     {
         private Type targetType;
 
@@ -28,6 +30,8 @@ namespace Microsoft.Restier.Core.Conventions
         {
             this.targetType = targetType;
         }
+
+        IModelMapper IDelegateHookHandler<IModelMapper>.InnerHandler { get; set; }
 
         private IEnumerable<PropertyInfo> AddedEntitySets
         {
@@ -54,7 +58,7 @@ namespace Microsoft.Restier.Core.Conventions
             Ensure.NotNull(targetType, "targetType");
             var provider = new ConventionalEntitySetProvider(targetType);
             configuration.AddHookHandler(provider);
-            configuration.AddHookPoint(typeof(IModelMapper), provider);
+            configuration.AddHookHandler1<IModelMapper>(provider);
             configuration.AddHookPoint(typeof(IQueryExpressionExpander), provider);
         }
 
@@ -92,15 +96,19 @@ namespace Microsoft.Restier.Core.Conventions
             out Type relevantType)
         {
             relevantType = null;
-            var entitySetProperty = this.AddedEntitySets
-                .SingleOrDefault(p => p.Name == name);
+            var entitySetProperty = this.AddedEntitySets.SingleOrDefault(p => p.Name == name);
             if (entitySetProperty != null)
             {
-                relevantType = entitySetProperty
-                    .PropertyType.GetGenericArguments()[0];
+                relevantType = entitySetProperty.PropertyType.GetGenericArguments()[0];
             }
 
-            return relevantType != null;
+            if (relevantType != null)
+            {
+                return true;
+            }
+
+            var innerHandler = ((IDelegateHookHandler<IModelMapper>)this).InnerHandler;
+            return innerHandler != null && innerHandler.TryGetRelevantType(context, name, out relevantType);
         }
 
         /// <inheritdoc/>

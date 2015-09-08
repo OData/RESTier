@@ -66,6 +66,17 @@ namespace Microsoft.Restier.WebApi.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(234, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
         }
+
+        [Fact(Skip = "#217 Investigate FallbackConventionalProviderTest case")] 
+        public async Task FallbackConventionalProviderTest()
+        {
+            // Should be routed to ODataDomainController.
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/PreservedOrders");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(235, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
+        }
     }
 
     public static class FallbackModel
@@ -81,17 +92,22 @@ namespace Microsoft.Restier.WebApi.Test
             Model = (EdmModel)builder.GetEdmModel();
         }
     }
-    
-    public class FallbackDomain : DomainBase
+
+    internal class FallbackDomain : DomainBase
     {
         protected override DomainConfiguration CreateDomainConfiguration()
         {
             var configuration = base.CreateDomainConfiguration();
             configuration.AddHookHandler(new TestModelProducer(FallbackModel.Model));
-            configuration.SetHookPoint(typeof(IModelMapper), new FallbackModelMapper());
+            configuration.AddHookHandler1<IModelMapper>(new FallbackModelMapper());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new FallbackQueryExpressionSourcer());
             configuration.SetHookPoint(typeof(IQueryExecutor), new FalllbackQueryExecutor());
             return configuration;
+        }
+
+        protected IQueryable<Order> PreservedOrders
+        {
+            get { return this.Source<Order>("Orders").Where(o => o.Id > 123); }
         }
     }
 
@@ -106,12 +122,12 @@ namespace Microsoft.Restier.WebApi.Test
 
             return Ok(people);
         }
-        
+
         public IHttpActionResult GetOrders(int key)
         {
             var orders = new[]
             {
-                new Order {Id = 123}
+                new Order {Id = 123},
             };
 
             return Ok(orders);
@@ -121,7 +137,7 @@ namespace Microsoft.Restier.WebApi.Test
     class Person
     {
         public int Id { get; set; }
-        
+
         public IEnumerable<Order> Orders { get; set; }
     }
 

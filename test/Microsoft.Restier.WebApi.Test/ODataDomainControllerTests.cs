@@ -183,13 +183,13 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
     
-    public class StoreDomain : DomainBase
+    internal class StoreDomain : DomainBase
     {
         protected override DomainConfiguration CreateDomainConfiguration()
         {
             var configuration = base.CreateDomainConfiguration();
             configuration.AddHookHandler(new TestModelProducer(StoreModel.Model));
-            configuration.SetHookPoint(typeof(IModelMapper), new TestModelMapper());
+            configuration.AddHookHandler1<IModelMapper>(new TestModelMapper());
             configuration.SetHookPoint(typeof(IQueryExecutor), new TestQueryExecutor());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new TestQueryExpressionSourcer());
             configuration.SetHookPoint(typeof(ISubmitHandler), new TestSubmitHandler());

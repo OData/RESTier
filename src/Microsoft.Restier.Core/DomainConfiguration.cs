@@ -378,11 +378,40 @@ namespace Microsoft.Restier.Core
             this.hookHandlers[typeof(TContext)] = handler;
         }
 
+        /// <summary>
+        /// Add an hook handler instance.
+        /// </summary>
+        /// <typeparam name="T">The context class.</typeparam>
+        /// <param name="handler">An instance of hook handler for TContext.</param>
+        public void AddHookHandler1<T>(T handler) where T : class, IHookHandler
+        {
+            Ensure.NotNull(handler, "handler");
+            if (!typeof(T).IsInterface)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var delegateHandler = handler as IDelegateHookHandler<T>;
+            if (delegateHandler != null)
+            {
+                delegateHandler.InnerHandler = this.GetHookHandler1<T>();
+            }
+
+            this.hookHandlers[typeof(T)] = handler;
+        }
+
         internal HookHandler<TContext> GetHookHandler<TContext>() where TContext : InvocationContext
         {
             object value;
             this.hookHandlers.TryGetValue(typeof(TContext), out value);
             return value as HookHandler<TContext>;
+        }
+
+        internal T GetHookHandler1<T>() where T : class, IHookHandler
+        {
+            object value;
+            this.hookHandlers.TryGetValue(typeof(T), out value);
+            return value as T;
         }
         #endregion
 

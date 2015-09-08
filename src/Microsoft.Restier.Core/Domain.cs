@@ -682,40 +682,17 @@ namespace Microsoft.Restier.Core
             string name)
         {
             Type elementType = null;
-            bool hasElementType = false;
-            var mappers = context.Configuration.GetHookPoints<IModelMapper>();
-            foreach (var mapper in mappers.Reverse())
+
+            var mapper = context.Configuration.GetHookHandler1<IModelMapper>();
+            if (mapper != null)
             {
                 if (namespaceName == null)
                 {
-                    hasElementType = mapper.TryGetRelevantType(
-                        context, name, out elementType);
+                    mapper.TryGetRelevantType(context, name, out elementType);
                 }
                 else
                 {
-                    hasElementType = mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
-                }
-
-                if (hasElementType)
-                {
-                    break;
-                }
-            }
-
-            if (!hasElementType)
-            {
-                var mapper = context.Configuration.GetHookPoint<IModelMapper>();
-                if (mapper != null)
-                {
-                    if (namespaceName == null)
-                    {
-                        hasElementType = mapper.TryGetRelevantType(
-                            context, name, out elementType);
-                    }
-                    else
-                    {
-                        hasElementType = mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
-                    }
+                     mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
                 }
             }
 
