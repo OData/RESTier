@@ -36,23 +36,12 @@ namespace Microsoft.Restier.Core.Query
         {
             Ensure.NotNull(context, "context");
 
-            // STEP 1: pre-filter
-            var filters = context.GetHookPoints<IQueryFilter>();
-            foreach (var filter in filters.Reverse())
-            {
-                await filter.FilterRequestAsync(context, cancellationToken);
-                if (context.Result != null)
-                {
-                    return context.Result;
-                }
-            }
-
-            // STEP 2: process query expression
+            // process query expression
             var expression = context.Request.Expression;
             var visitor = new QueryExpressionVisitor(context);
             expression = visitor.Visit(expression);
 
-            // STEP 3: execute query
+            // execute query
             QueryResult result = null;
             var executor = context.GetHookPoint<IQueryExecutor>();
             if (executor == null)
@@ -94,13 +83,6 @@ namespace Microsoft.Restier.Core.Query
             }
 
             context.Result = result;
-
-            // STEP 4: post-filter
-            foreach (var filter in filters)
-            {
-                await filter.FilterResultAsync(context, cancellationToken);
-            }
-
             return context.Result;
         }
 
