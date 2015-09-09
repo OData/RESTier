@@ -121,7 +121,6 @@ namespace Microsoft.Restier.Core
 
             if (DomainConfiguration.Global == null)
             {
-                this.SetHookPoint(typeof(ISubmitHandler), new DefaultSubmitHandler());
                 this.EnsureCommitted();
             }
         }

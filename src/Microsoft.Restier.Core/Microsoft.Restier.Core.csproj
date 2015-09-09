@@ -93,7 +93,6 @@
     <Compile Include="Submit\ISubmitAuthorizer.cs" />
     <Compile Include="Submit\ISubmitExecutor.cs" />
     <Compile Include="Submit\ISubmitFilter.cs" />
-    <Compile Include="Submit\ISubmitHandler.cs" />
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />
     <Compile Include="Submit\ValidationException.cs" />

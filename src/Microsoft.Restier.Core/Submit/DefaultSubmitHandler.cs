@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents the default submit handler.
     /// </summary>
-    public class DefaultSubmitHandler : ISubmitHandler
+    internal static class DefaultSubmitHandler
     {
         /// <summary>
         /// The maximum numbers of loops for the pre-persisting events save loop
@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Submit
         /// A task that represents the asynchronous
         /// operation whose result is a submit result.
         /// </returns>
-        public async Task<SubmitResult> SubmitAsync(
+        public static async Task<SubmitResult> SubmitAsync(
             SubmitContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, "context");

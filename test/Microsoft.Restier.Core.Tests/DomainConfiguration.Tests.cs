@@ -22,8 +22,6 @@ namespace Microsoft.Restier.Core.Tests
             Assert.Null(configuration.BaseConfiguration.BaseConfiguration);
             Assert.True(configuration.BaseConfiguration.IsCommitted);
             Assert.False(configuration.IsCommitted);
-
-            Assert.True(configuration.GetHookPoint<ISubmitHandler>() is DefaultSubmitHandler);
         }
 
         [Fact]

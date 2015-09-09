@@ -615,8 +615,7 @@ namespace Microsoft.Restier.Core
             var submitContext = new SubmitContext(context, changeSet);
             var model = await Domain.GetModelAsync(context);
             submitContext.Model = model;
-            var handler = submitContext.GetHookPoint<ISubmitHandler>();
-            return await handler.SubmitAsync(
+            return await DefaultSubmitHandler.SubmitAsync(
                 submitContext, cancellationToken);
         }
 

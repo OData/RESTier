@@ -2,6 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -192,7 +194,8 @@ namespace Microsoft.Restier.WebApi.Test
             configuration.AddHookHandler<IModelMapper>(new TestModelMapper());
             configuration.SetHookPoint(typeof(IQueryExecutor), new TestQueryExecutor());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new TestQueryExpressionSourcer());
-            configuration.SetHookPoint(typeof(ISubmitHandler), new TestSubmitHandler());
+            configuration.SetHookPoint(typeof(IChangeSetPreparer), new TestChangeSetPreparer());
+            configuration.SetHookPoint(typeof(ISubmitExecutor), new TestSubmitExecutor());
             return configuration;
         }
     }
@@ -288,26 +291,34 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    class TestSubmitHandler : ISubmitHandler
+    class TestChangeSetPreparer : IChangeSetPreparer
     {
-        public Task<SubmitResult> SubmitAsync(SubmitContext context, CancellationToken cancellationToken)
+        public Task PrepareAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
-            {
-                if (entry.LocalValues.All(l => l.Key != "Addr"))
-                {
-                    throw new Exception("Addr is required.");
-                }
+            var changeSetEntry = context.ChangeSet.Entries.Single();
 
-                entry.Entity = new Product
+            var dataModificationEntry = changeSetEntry as DataModificationEntry;
+            if (dataModificationEntry != null)
+            {
+                dataModificationEntry.Entity = new Product()
                 {
-                    Id = 1,
-                    Addr = new Address { Zip = 0001 },
-                    Addr2 = new Address { Zip = 0002 }
+                    Name = "var1",
+                    Addr = new Address()
+                    {
+                        Zip = 330
+                    }
                 };
             }
 
-            return Task.FromResult(new SubmitResult(new ChangeSet()));
+            return Task.FromResult<object>(null);
+        }
+    }
+
+    class TestSubmitExecutor : ISubmitExecutor
+    {
+        public Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new SubmitResult(context.ChangeSet));
         }
     }
 }

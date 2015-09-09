@@ -75,18 +75,20 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private class TestSubmitHandler : ISubmitHandler
+        private class TestChangeSetPreparer : IChangeSetPreparer
         {
-            public DomainContext DomainContext { get; set; }
-
-            public ChangeSet ChangeSet { get; set; }
-
-            public Task<SubmitResult> SubmitAsync(
-                SubmitContext context,
-                CancellationToken cancellationToken)
+            public Task PrepareAsync(SubmitContext context, CancellationToken cancellationToken)
             {
-                Assert.Same(DomainContext, context.DomainContext);
-                return Task.FromResult(new SubmitResult(ChangeSet));
+                context.ChangeSet = new ChangeSet();
+                return Task.FromResult<object>(null);
+            }
+        }
+
+        private class TestSubmitExecutor : ISubmitExecutor
+        {
+            public Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new SubmitResult(context.ChangeSet));
             }
         }
 
@@ -94,8 +96,6 @@ namespace Microsoft.Restier.Core.Tests
         {
             private DomainContext _context;
             
-            public ChangeSet ChangeSet { get; private set; }
-
             public DomainContext Context
             {
                 get
@@ -107,7 +107,8 @@ namespace Microsoft.Restier.Core.Tests
                         var modelMapper = new TestModelMapper();
                         var queryExecutor = new TestQueryExecutor();
                         var querySourcer = new TestQuerySourcer();
-                        var submitHandler = new TestSubmitHandler();
+                        var changeSetPreparer = new TestChangeSetPreparer();
+                        var submitExecutor = new TestSubmitExecutor();
                         configuration.AddHookHandler<IModelBuilder>(modelBuilder);
                         configuration.AddHookHandler<IModelMapper>(modelMapper);
                         configuration.SetHookPoint(
@@ -115,11 +116,11 @@ namespace Microsoft.Restier.Core.Tests
                         configuration.SetHookPoint(
                             typeof(IQueryExpressionSourcer), querySourcer);
                         configuration.SetHookPoint(
-                            typeof(ISubmitHandler), submitHandler);
+                            typeof(IChangeSetPreparer), changeSetPreparer);
+                        configuration.SetHookPoint(
+                            typeof(ISubmitExecutor), submitExecutor);
                         configuration.EnsureCommitted();
                         _context = new DomainContext(configuration);
-                        submitHandler.DomainContext = _context;
-                        ChangeSet = submitHandler.ChangeSet = new ChangeSet();
                     }
 
                     return _context;
@@ -472,25 +473,7 @@ namespace Microsoft.Restier.Core.Tests
             var domain = new TestDomain();
 
             var submitResult = await domain.SubmitAsync();
-            Assert.Same(domain.ChangeSet, submitResult.CompletedChangeSet);
-        }
-
-        [Fact]
-        public async Task SubmitAsyncCorrectlyUsesSubmitHandler()
-        {
-            var configuration = new DomainConfiguration();
-            var modelMapper = new TestModelMapper();
-            var submitHandler = new TestSubmitHandler();
-            configuration.AddHookHandler<IModelMapper>(modelMapper);
-            configuration.SetHookPoint(typeof(ISubmitHandler), submitHandler);
-            configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
-            submitHandler.DomainContext = context;
-            submitHandler.ChangeSet = new ChangeSet();
-
-            var submitResult = await Domain.SubmitAsync(context);
-            Assert.Same(submitHandler.ChangeSet,
-                submitResult.CompletedChangeSet);
+            Assert.NotNull(submitResult.CompletedChangeSet);
         }
     }
 }
