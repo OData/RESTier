@@ -47,7 +47,6 @@
     <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />
     <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
     <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
-    <Compile Include="Conventions\ConventionalModelExtender.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Domain.OfT.cs" />
     <Compile Include="DomainBase.cs" />

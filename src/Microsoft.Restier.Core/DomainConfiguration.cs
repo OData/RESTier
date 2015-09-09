@@ -369,12 +369,13 @@ namespace Microsoft.Restier.Core
         /// </summary>
         /// <typeparam name="T">The context class.</typeparam>
         /// <param name="handler">An instance of hook handler for TContext.</param>
-        public void AddHookHandler<T>(T handler) where T : class, IHookHandler
+        /// <returns>Current <see cref="DomainConfiguration"/></returns>
+        public DomainConfiguration AddHookHandler<T>(T handler) where T : class, IHookHandler
         {
             Ensure.NotNull(handler, "handler");
             if (!typeof(T).IsInterface)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Should specify an interface type T for the handler.");
             }
 
             var delegateHandler = handler as IDelegateHookHandler<T>;
@@ -384,6 +385,7 @@ namespace Microsoft.Restier.Core
             }
 
             this.hookHandlers[typeof(T)] = handler;
+            return this;
         }
 
         internal T GetHookHandler<T>() where T : class, IHookHandler

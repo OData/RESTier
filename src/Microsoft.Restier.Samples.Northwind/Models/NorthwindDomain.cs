@@ -2,10 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Security;
 
@@ -24,29 +28,47 @@ namespace Microsoft.Restier.Samples.Northwind.Models
     [Grant(DomainPermissionType.All, On = "ResetDataSource")]
     public class NorthwindDomain : DbDomain<NorthwindContext>
     {
+        private class ModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+        {
+            public IModelBuilder InnerHandler { get; set; }
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                Debug.Assert(this.InnerHandler != null);
+                var model = await this.InnerHandler.GetModelAsync(context, cancellationToken) as EdmModel;
+                Debug.Assert(model!=null);
+                return OnModelExtending(model);
+            }
+
+            private EdmModel OnModelExtending(EdmModel model)
+            {
+                var ns = model.DeclaredNamespaces.First();
+                var product = (IEdmEntityType)model.FindDeclaredType(ns + "." + "Product");
+                var products = EdmCoreModel.GetCollection(new EdmEntityTypeReference(product, false));
+                var mostExpensive = new EdmFunction(ns, "MostExpensive",
+                    EdmCoreModel.Instance.GetPrimitive(EdmPrimitiveTypeKind.Double, isNullable: false), isBound: true,
+                    entitySetPathExpression: null, isComposable: false);
+                mostExpensive.AddParameter("bindingParameter", products);
+                model.AddElement(mostExpensive);
+
+                var increasePrice = new EdmAction(ns, "IncreasePrice", null, true, null);
+                increasePrice.AddParameter("bindingParameter", new EdmEntityTypeReference(product as IEdmEntityType, false));
+                increasePrice.AddParameter("diff", EdmCoreModel.Instance.GetInt32(false));
+                model.AddElement(increasePrice);
+
+                var resetDataSource = new EdmAction(ns, "ResetDataSource", null, false, null);
+                model.AddElement(resetDataSource);
+                var entityContainer = (EdmEntityContainer)model.EntityContainer;
+                entityContainer.AddActionImport("ResetDataSource", resetDataSource);
+                return model;
+            }
+        }
+
         public NorthwindContext Context { get { return DbContext; } }
 
-        protected EdmModel OnModelExtending(EdmModel model)
+        protected override DomainConfiguration CreateDomainConfiguration()
         {
-            var ns = model.DeclaredNamespaces.First();
-            var product = (IEdmEntityType)model.FindDeclaredType(ns + "." + "Product");
-            var products = EdmCoreModel.GetCollection(new EdmEntityTypeReference(product, false));
-            var mostExpensive = new EdmFunction(ns, "MostExpensive",
-                EdmCoreModel.Instance.GetPrimitive(EdmPrimitiveTypeKind.Double, isNullable: false), isBound: true,
-                entitySetPathExpression: null, isComposable: false);
-            mostExpensive.AddParameter("bindingParameter", products);
-            model.AddElement(mostExpensive);
-
-            var increasePrice = new EdmAction(ns, "IncreasePrice", null, true, null);
-            increasePrice.AddParameter("bindingParameter", new EdmEntityTypeReference(product as IEdmEntityType, false));
-            increasePrice.AddParameter("diff", EdmCoreModel.Instance.GetInt32(false));
-            model.AddElement(increasePrice);
-
-            var resetDataSource = new EdmAction(ns, "ResetDataSource", null, false, null);
-            model.AddElement(resetDataSource);
-            var entityContainer = (EdmEntityContainer)model.EntityContainer;
-            entityContainer.AddActionImport("ResetDataSource", resetDataSource);
-            return model;
+            return base.CreateDomainConfiguration().AddHookHandler<IModelBuilder>(new ModelExtender());
         }
 
         // Imperative views. Currently CUD operations not supported

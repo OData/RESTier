@@ -258,9 +258,9 @@
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>
         <EntitySet Name="Contacts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Contact" />
+        <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />
         <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product" />
         <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order" />
-        <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>
