@@ -90,7 +90,6 @@ namespace Microsoft.Restier.Core.Query
         {
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
-            private IEnumerable<IQueryExpressionNormalizer> normalizers;
             private IEnumerable<IQueryExpressionInspector> inspectors;
             private IEnumerable<IQueryExpressionExpander> expanders;
             private IEnumerable<IQueryExpressionFilter> filters;
@@ -126,15 +125,6 @@ namespace Microsoft.Restier.Core.Query
                 }
                 else
                 {
-                    // Normalize visited node
-                    node = this.Normalize(visited);
-                    if (node != visited)
-                    {
-                        // Update the visited node
-                        visited = node;
-                        this.context.ReplaceVisitedNode(visited);
-                    }
-
                     // Only visit the visited node's children if
                     // the visited node represents domain data
                     if (!(this.context.ModelReference is DomainDataReference))
@@ -176,33 +166,6 @@ namespace Microsoft.Restier.Core.Query
                 }
 
                 return node;
-            }
-
-            private Expression Normalize(Expression visited)
-            {
-                if (this.normalizers == null)
-                {
-                    this.normalizers = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionNormalizer>().Reverse();
-                }
-
-                foreach (var normalizer in this.normalizers)
-                {
-                    var normalized = normalizer.Normalize(this.context);
-                    if (normalized != null && normalized != visited)
-                    {
-                        if (!visited.Type.IsAssignableFrom(normalized.Type))
-                        {
-                            // Normalizer cannot change expression type
-                            // TODO GitHubIssue#24 : error message
-                            throw new InvalidOperationException();
-                        }
-
-                        return normalized;
-                    }
-                }
-
-                return visited;
             }
 
             private void Inspect()
