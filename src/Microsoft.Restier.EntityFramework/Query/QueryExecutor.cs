@@ -64,7 +64,7 @@ namespace Microsoft.Restier.EntityFramework.Query
             long? totalCount = null;
             if (context.Request.IncludeTotalCount == true)
             {
-                var countQuery = QueryExecutor.StripPagingOperators(query);
+                var countQuery = DefaultQueryExecutor.StripPagingOperators(query);
                 totalCount = await countQuery.LongCountAsync(cancellationToken);
             }
 
@@ -110,34 +110,6 @@ namespace Microsoft.Restier.EntityFramework.Query
             var result = await provider.ExecuteAsync<TResult>(
                 expression, cancellationToken);
             return new QueryResult(new TResult[] { result });
-        }
-
-        private static IQueryable<TElement> StripPagingOperators<TElement>(
-            IQueryable<TElement> query)
-        {
-            var expression = query.Expression;
-            expression = QueryExecutor.StripQueryMethod(expression, "Take");
-            expression = QueryExecutor.StripQueryMethod(expression, "Skip");
-            if (expression != query.Expression)
-            {
-                query = query.Provider.CreateQuery<TElement>(expression);
-            }
-
-            return query;
-        }
-
-        private static Expression StripQueryMethod(
-            Expression expression, string methodName)
-        {
-            var methodCall = expression as MethodCallExpression;
-            if (methodCall != null &&
-                methodCall.Method.DeclaringType == typeof(Queryable) &&
-                methodCall.Method.Name.Equals(methodName, StringComparison.Ordinal))
-            {
-                expression = methodCall.Arguments[0];
-            }
-
-            return expression;
         }
     }
 }

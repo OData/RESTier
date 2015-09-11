@@ -9,7 +9,6 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
@@ -101,7 +100,6 @@ namespace Microsoft.Restier.WebApi.Test
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
             configuration.AddHookHandler<IModelMapper>(new FallbackModelMapper());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new FallbackQueryExpressionSourcer());
-            configuration.SetHookPoint(typeof(IQueryExecutor), new FalllbackQueryExecutor());
             return configuration;
         }
 
@@ -179,25 +177,6 @@ namespace Microsoft.Restier.WebApi.Test
         public bool TryGetRelevantType(DomainContext context, string namespaceName, string name, out Type relevantType)
         {
             return TryGetRelevantType(context, name, out relevantType);
-        }
-    }
-
-    class FalllbackQueryExecutor : IQueryExecutor
-    {
-        public Task<QueryResult> ExecuteQueryAsync<TElement>(
-            QueryContext context,
-            IQueryable<TElement> query,
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult(new QueryResult(query.ToList()));
-        }
-
-        public Task<QueryResult> ExecuteSingleAsync<TResult>(QueryContext context,
-            IQueryable query,
-            Expression expression,
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult(new QueryResult(new[] { query.Provider.Execute(expression) }));
         }
     }
 }

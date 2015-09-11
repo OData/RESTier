@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="PropertyBag.cs" />
     <Compile Include="QueryableSource.cs" />
+    <Compile Include="Query\DefaultQueryExecutor.cs" />
     <Compile Include="Query\DefaultQueryHandler.cs" />
     <Compile Include="Query\IQueryExecutor.cs" />
     <Compile Include="Query\IQueryExpressionExpander.cs" />

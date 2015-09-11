@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Restier.Core.Conventions;
+using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
@@ -211,7 +212,9 @@ namespace Microsoft.Restier.Core
         /// </returns>
         protected virtual DomainConfiguration CreateDomainConfiguration()
         {
-            return new DomainConfiguration(this.DomainConfigurationKey);
+            var config = new DomainConfiguration(this.DomainConfigurationKey);
+            AddDefaultHooks(config);
+            return config;
         }
 
         /// <summary>
@@ -273,6 +276,11 @@ namespace Microsoft.Restier.Core
             configuration.AddHookPoint(typeof(IChangeSetEntryValidator), ConventionalChangeSetEntryValidator.Instance);
             ConventionalEntitySetProvider.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
+        }
+
+        private static void AddDefaultHooks(DomainConfiguration configuration)
+        {
+            configuration.SetHookPoint(typeof(IQueryExecutor), DefaultQueryExecutor.Instance);
         }
     }
 }
