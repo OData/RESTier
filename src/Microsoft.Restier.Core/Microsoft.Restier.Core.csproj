@@ -51,7 +51,6 @@
     <Compile Include="Domain.OfT.cs" />
     <Compile Include="DomainBase.cs" />
     <Compile Include="DomainConfiguration.cs" />
-    <Compile Include="DomainConfigurationExtensions.cs" />
     <Compile Include="DomainContext.cs" />
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />
