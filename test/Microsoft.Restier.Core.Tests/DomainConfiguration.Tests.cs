@@ -3,8 +3,10 @@
 
 using System;
 using System.Linq;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Model;
 using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
@@ -65,6 +67,16 @@ namespace Microsoft.Restier.Core.Tests
             configuration.EnsureCommitted();
 
             Assert.Throws<InvalidOperationException>(() => configuration.AddHookPoint(typeof(object), new object()));
+        }
+
+        [Fact]
+        public void CommittedConfigurationCannotAddHookHandler()
+        {
+            var configuration = new DomainConfiguration();
+            configuration.EnsureCommitted();
+
+            Assert.Throws<InvalidOperationException>(
+                () => configuration.AddHookHandler<IHookHandler>(new TestModelBuilder()));
         }
 
         [Fact]
@@ -182,6 +194,14 @@ namespace Microsoft.Restier.Core.Tests
             var derivedConfig = new DomainConfiguration(baseConfig);
 
             Assert.Throws<InvalidOperationException>(() => derivedConfig.EnsureCommitted());
+        }
+
+        private class TestModelBuilder : IModelBuilder
+        {
+            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

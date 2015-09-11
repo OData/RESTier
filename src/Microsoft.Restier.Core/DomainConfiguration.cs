@@ -372,6 +372,12 @@ namespace Microsoft.Restier.Core
         public DomainConfiguration AddHookHandler<T>(T handler) where T : class, IHookHandler
         {
             Ensure.NotNull(handler, "handler");
+
+            if (this.IsCommitted)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (!typeof(T).IsInterface)
             {
                 throw new InvalidOperationException("Should specify an interface type T for the handler.");
