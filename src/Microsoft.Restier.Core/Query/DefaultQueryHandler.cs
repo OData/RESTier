@@ -82,8 +82,7 @@ namespace Microsoft.Restier.Core.Query
                 result.ResultsSource = visitor.EntitySet;
             }
 
-            context.Result = result;
-            return context.Result;
+            return result;
         }
 
         private class QueryExpressionVisitor : ExpressionVisitor

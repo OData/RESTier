@@ -11,9 +11,6 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryContext : InvocationContext
     {
-        private QueryRequest request;
-        private QueryResult result;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext" /> class.
         /// </summary>
@@ -36,45 +33,11 @@ namespace Microsoft.Restier.Core.Query
         public IEdmModel Model { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the query request.
+        /// Gets the query request.
         /// </summary>
         /// <remarks>
         /// The query request cannot be set if there is already a result.
         /// </remarks>
-        public QueryRequest Request
-        {
-            get
-            {
-                return this.request;
-            }
-
-            set
-            {
-                if (this.Result != null)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                Ensure.NotNull(value, "value");
-                this.request = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the query result.
-        /// </summary>
-        public QueryResult Result
-        {
-            get
-            {
-                return this.result;
-            }
-
-            set
-            {
-                Ensure.NotNull(value, "value");
-                this.result = value;
-            }
-        }
+        public QueryRequest Request { get; private set; }
     }
 }
