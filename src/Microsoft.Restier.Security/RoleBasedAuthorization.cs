@@ -72,7 +72,9 @@ namespace Microsoft.Restier.Security
 
             var target = context.QueryContext.DomainContext.GetProperty(
                 typeof(Domain).AssemblyQualifiedName);
-            var entitySetProperty = target.GetType().GetProperties(BindingFlags.Public)
+            var entitySetProperty = target.GetType().GetProperties(
+                BindingFlags.Public | BindingFlags.Instance |
+                BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .SingleOrDefault(p => p.Name == entitySet.Name);
             if (entitySetProperty != null)
             {
