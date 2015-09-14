@@ -32,7 +32,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         /// Implements an action import.
         /// TODO: This method is only for building the model.
         /// </summary>
-        [Action]
+        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public void ResetDataSource()
         {
             TrippinModel.ResetDataSource();
@@ -41,6 +41,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         /// <summary>
         /// Action import - clean up all the expired trips.
         /// </summary>
+        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public void CleanUpExpiredTrips()
         {
             // DO NOT ACTUALLY REMOVE THE TRIPS.
@@ -51,10 +52,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         /// </summary>
         /// <param name="key">The trip to update.</param>
         /// <returns>The trip updated.</returns>
-        public Trip EndTrip(int key)
+        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        public Trip EndTrip(Trip trip)
         {
             // DO NOT ACTUALLY UPDATE THE TRIP.
-            return Context.Trips.Find(key);
+            return trip;
         }
 
         /// <summary>
@@ -125,7 +127,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
             DomainConfiguration configuration,
             Type type)
         {
-            ConventionalActionProvider.ApplyTo(configuration, type);
             configuration.AddHookHandler<IModelBuilder>(new CustomExtender());
         }
     }
@@ -184,31 +185,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 "GetPeopleWithFriendsAtLeast",
                 getPeopleWithFriendsAtLeast,
                 new EdmEntitySetReferenceExpression(people));
-
-            var cleanUpExpiredTrips = new EdmAction(
-                "Microsoft.Restier.WebApi.Test.Services.Trippin.Models",
-                "CleanUpExpiredTrips",
-                returnType: null,
-                isBound: false,
-                entitySetPathExpression: null);
-            model.AddElement(cleanUpExpiredTrips);
-            entityContainer.AddActionImport(
-                "CleanUpExpiredTrips",
-                cleanUpExpiredTrips,
-                null);
-
-            var tripType = (IEdmEntityType)model
-                .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip");
-            var tripTypeReference = new EdmEntityTypeReference(tripType, false);
-
-            var endTrip = new EdmAction(
-                "Microsoft.Restier.WebApi.Test.Services.Trippin.Models",
-                "EndTrip",
-                tripTypeReference,
-                isBound: true,
-                entitySetPathExpression: new EdmPathExpression("trip"));
-            endTrip.AddParameter("trip", tripTypeReference);
-            model.AddElement(endTrip);
 
             return model;
         }

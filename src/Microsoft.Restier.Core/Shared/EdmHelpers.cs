@@ -4,7 +4,7 @@
 using System;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin
+namespace Microsoft.Restier.Core.Shared
 {
     internal static class EdmHelpers
     {
@@ -20,71 +20,72 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
             {
                 return EdmPrimitiveTypeKind.String;
             }
-            if (type == typeof(byte[]))
+            else if (type == typeof(byte[]))
             {
                 return EdmPrimitiveTypeKind.Binary;
             }
-            if (type == typeof(bool))
+            else if (type == typeof(bool))
             {
                 return EdmPrimitiveTypeKind.Boolean;
             }
-            if (type == typeof(byte))
+            else if (type == typeof(byte))
             {
                 return EdmPrimitiveTypeKind.Byte;
             }
-            if (type == typeof(DateTime))
+            else if (type == typeof(DateTime))
             {
                 // TODO GitHubIssue#49 : how to map DateTime's in OData v4?  there is no Edm.DateTime type anymore
                 return null;
             }
-            if (type == typeof(DateTimeOffset))
+            else if (type == typeof(DateTimeOffset))
             {
                 return EdmPrimitiveTypeKind.DateTimeOffset;
             }
-            if (type == typeof(Decimal))
+            else if (type == typeof(decimal))
             {
                 return EdmPrimitiveTypeKind.Decimal;
             }
-            if (type == typeof(Double))
+            else if (type == typeof(double))
             {
                 return EdmPrimitiveTypeKind.Double;
             }
-            if (type == typeof(Guid))
+            else if (type == typeof(Guid))
             {
                 return EdmPrimitiveTypeKind.Guid;
             }
-            if (type == typeof(short))
+            else if (type == typeof(short))
             {
                 return EdmPrimitiveTypeKind.Int16;
             }
-            if (type == typeof(int))
+            else if (type == typeof(int))
             {
                 return EdmPrimitiveTypeKind.Int32;
             }
-            if (type == typeof(long))
+            else if (type == typeof(long))
             {
                 return EdmPrimitiveTypeKind.Int64;
             }
-            if (type == typeof(sbyte))
+            else if (type == typeof(sbyte))
             {
                 return EdmPrimitiveTypeKind.SByte;
             }
-            if (type == typeof(float))
+            else if (type == typeof(float))
             {
                 return EdmPrimitiveTypeKind.Single;
             }
-            if (type == typeof(TimeSpan))
+            else if (type == typeof(TimeSpan))
             {
+                // TODO GitHubIssue#49 : this should really be TimeOfDay,
+                // but EdmPrimitiveTypeKind doesn't support that type.
+                ////return EdmPrimitiveTypeKind.TimeOfDay;
                 return EdmPrimitiveTypeKind.Duration;
-                // TODO GitHubIssue#49 : this should really be TimeOfDay, but EdmPrimitiveTypeKind doesn't support that type
-                // return EdmPrimitiveTypeKind.TimeOfDay;
             }
-            if (type == typeof(void))
+            else if (type == typeof(void))
             {
                 return null;
             }
 
-            throw new Exception("not supported type: " + type.FullName);
+            throw new NotSupportedException("not supported type: " + type.FullName);
         }
     }
 }

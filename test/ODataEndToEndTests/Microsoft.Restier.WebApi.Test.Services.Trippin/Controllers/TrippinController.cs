@@ -58,7 +58,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         [ODataRoute("Trips({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip")]
         public IHttpActionResult EndTrip(int key)
         {
-            return Ok(Domain.EndTrip(key));
+            var trip = DbContext.Trips.SingleOrDefault(t => t.TripId == key);
+            return Ok(Domain.EndTrip(trip));
         }
 
         private bool PeopleExists(int key)

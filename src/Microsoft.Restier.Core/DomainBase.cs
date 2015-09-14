@@ -205,6 +205,7 @@ namespace Microsoft.Restier.Core
             ConventionalChangeSetEntryFilter.ApplyTo(configuration, targetType);
             configuration.AddHookPoint(typeof(IChangeSetEntryValidator), ConventionalChangeSetEntryValidator.Instance);
             ConventionalDomainModelBuilder.ApplyTo(configuration, targetType);
+            ConventionalActionProvider.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
         }
 

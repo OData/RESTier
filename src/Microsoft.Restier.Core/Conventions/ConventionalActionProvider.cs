@@ -3,19 +3,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
+using Microsoft.OData.Edm.Library.Expressions;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Shared;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin
+namespace Microsoft.Restier.Core.Conventions
 {
-    public class ConventionalActionProvider :IModelBuilder, IDelegateHookHandler<IModelBuilder>
+    internal class ConventionalActionProvider : IModelBuilder, IDelegateHookHandler<IModelBuilder>
     {
         private Type targetType;
 
@@ -25,6 +25,26 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
         }
 
         public IModelBuilder InnerHandler { get; set; }
+
+        private IEnumerable<ActionMethodInfo> ActionInfos
+        {
+            get
+            {
+                MethodInfo[] methods = this.targetType.GetMethods(
+                    BindingFlags.NonPublic |
+                    BindingFlags.Public |
+                    BindingFlags.Static |
+                    BindingFlags.Instance);
+
+                return methods
+                    .Select(m => new ActionMethodInfo
+                    {
+                        Method = m,
+                        ActionAttribute = m.GetCustomAttributes<ActionAttribute>(true).FirstOrDefault()
+                    })
+                    .Where(m => m.ActionAttribute != null);
+            }
+        }
 
         public static void ApplyTo(DomainConfiguration configuration, Type targetType)
         {
@@ -40,22 +60,63 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
                 model = await this.InnerHandler.GetModelAsync(context, cancellationToken) as EdmModel;
             }
 
-            Debug.Assert(model != null);
+            Ensure.NotNull(model, "model");
 
-            var entityContainer = model.EntityContainer as EdmEntityContainer;
-            Debug.Assert(entityContainer != null);
-
+            var entityContainer = (EdmEntityContainer)model.EntityContainer;
             foreach (ActionMethodInfo actionInfo in this.ActionInfos)
             {
-                var returnTypeReference = ConventionalActionProvider.GetReturnTypeReference(actionInfo.Method.ReturnType);
-                var action = new EdmAction(entityContainer.Namespace, actionInfo.ActionName, returnTypeReference);
-
-                foreach (ParameterInfo parameter in actionInfo.Method.GetParameters())
+                EdmTypeReference returnTypeReference = null;
+                var returnType = model.FindDeclaredType(actionInfo.Method.ReturnType.FullName);
+                var entityReturnType = returnType as IEdmEntityType;
+                if (entityReturnType != null)
                 {
+                    returnTypeReference = new EdmEntityTypeReference(entityReturnType, true);
+                }
+                else
+                {
+                    returnTypeReference =
+                        ConventionalActionProvider.GetReturnTypeReference(actionInfo.Method.ReturnType);
+                }
+
+                var parameters = actionInfo.Method.GetParameters();
+
+                bool isBound = false;
+                var firstParameter = parameters.FirstOrDefault();
+                if (firstParameter != null)
+                {
+                    var parameterType = model.FindDeclaredType(firstParameter.ParameterType.FullName);
+                    var entityParameterType = parameterType as IEdmEntityType;
+                    if (entityParameterType != null)
+                    {
+                        isBound = true;
+                    }
+                }
+
+                var action = new EdmAction(
+                    actionInfo.ActionNamespace,
+                    actionInfo.ActionName,
+                    returnTypeReference,
+                    isBound,
+                    entityReturnType != null ? new EdmPathExpression(firstParameter.Name) : null);
+
+                foreach (ParameterInfo parameter in parameters)
+                {
+                    EdmTypeReference parameterTypeReference = null;
+                    var parameterType = model.FindDeclaredType(parameter.ParameterType.FullName);
+                    var entityParameterType = parameterType as IEdmEntityType;
+                    if (entityParameterType != null)
+                    {
+                        parameterTypeReference = new EdmEntityTypeReference(entityParameterType, false);
+                    }
+                    else
+                    {
+                        parameterTypeReference = ConventionalActionProvider.GetTypeReference(parameter.ParameterType);
+                    }
+
                     EdmOperationParameter actionParam = new EdmOperationParameter(
                         action,
                         parameter.Name,
-                        ConventionalActionProvider.GetTypeReference(parameter.ParameterType));
+                        parameterTypeReference);
 
                     action.AddParameter(actionParam);
                 }
@@ -104,29 +165,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin
                 isNullable);
         }
 
-        private IEnumerable<ActionMethodInfo> ActionInfos
-        {
-            get
-            {
-                MethodInfo[] methods = this.targetType.GetMethods(
-                    BindingFlags.NonPublic |
-                    BindingFlags.Public |
-                    BindingFlags.Static |
-                    BindingFlags.Instance);
-
-                return methods
-                    .Select(m => new ActionMethodInfo
-                    {
-                        Method = m,
-                        ActionAttribute = m.GetCustomAttributes<ActionAttribute>(true).FirstOrDefault()
-                    })
-                    .Where(m => m.ActionAttribute != null);
-            }
-        }
-
         private class ActionMethodInfo
         {
             public MethodInfo Method { get; set; }
+
             public ActionAttribute ActionAttribute { get; set; }
 
             public string ActionName

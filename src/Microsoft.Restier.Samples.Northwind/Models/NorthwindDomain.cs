@@ -50,16 +50,6 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                     entitySetPathExpression: null, isComposable: false);
                 mostExpensive.AddParameter("bindingParameter", products);
                 model.AddElement(mostExpensive);
-
-                var increasePrice = new EdmAction(ns, "IncreasePrice", null, true, null);
-                increasePrice.AddParameter("bindingParameter", new EdmEntityTypeReference(product as IEdmEntityType, false));
-                increasePrice.AddParameter("diff", EdmCoreModel.Instance.GetInt32(false));
-                model.AddElement(increasePrice);
-
-                var resetDataSource = new EdmAction(ns, "ResetDataSource", null, false, null);
-                model.AddElement(resetDataSource);
-                var entityContainer = (EdmEntityContainer)model.EntityContainer;
-                entityContainer.AddActionImport("ResetDataSource", resetDataSource);
                 return model;
             }
         }
@@ -88,6 +78,16 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                 return this.Source<Order>("Orders")
                     .Where(o => o.ShippedDate == null);
             }
+        }
+
+        [Action]
+        public void IncreasePrice(Product bindingParameter, int diff)
+        {
+        }
+
+        [Action]
+        public void ResetDataSource()
+        {
         }
 
         // Entity set filter
