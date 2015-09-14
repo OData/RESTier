@@ -21,6 +21,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
     {
         public TrippinModel Context { get { return DbContext; } }
 
+        public Person Me { get; }
+
         private IQueryable<Person> PeopleWithFriends
         {
             get { return Context.People.Include("Friends"); }
@@ -144,8 +146,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
             var personType = (IEdmEntityType)model
                 .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person");
             var personTypeReference = new EdmEntityTypeReference(personType, false);
-            entityContainer.AddSingleton("Me", personType);
-
             var people = entityContainer.FindEntitySet("People");
 
             var getNumberOfFriends = new EdmFunction(

@@ -25,6 +25,8 @@ namespace Microsoft.Restier.Core.Conventions
         IQueryExpressionExpander
     {
         private Type targetType;
+        private ICollection<PropertyInfo> entitySetProperties = new List<PropertyInfo>();
+        private ICollection<PropertyInfo> singletonProperties = new List<PropertyInfo>();
 
         private ConventionalDomainModelBuilder(Type targetType)
         {
@@ -35,19 +37,33 @@ namespace Microsoft.Restier.Core.Conventions
 
         IModelMapper IDelegateHookHandler<IModelMapper>.InnerHandler { get; set; }
 
-        private IEnumerable<PropertyInfo> AddedEntitySets
+        private IEnumerable<PropertyInfo> PublicPropertiesOnTargetType
         {
             get
             {
-                var properties = this.targetType.GetProperties(
-                    BindingFlags.NonPublic |
-                    BindingFlags.Static |
-                    BindingFlags.Instance |
-                    BindingFlags.DeclaredOnly);
-                return properties.Where(p =>
-                    !p.CanWrite && !p.GetMethod.IsPrivate &&
-                    p.PropertyType.IsGenericType &&
-                    p.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>)).ToArray();
+                var publicPropertiesOnTargetType = new HashSet<PropertyInfo>();
+                var currentType = this.targetType;
+                while (currentType != null && currentType != typeof(DomainBase))
+                {
+                    var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
+                        BindingFlags.Public |
+                        BindingFlags.Static |
+                        BindingFlags.Instance |
+                        BindingFlags.DeclaredOnly);
+
+                    foreach (var property in publicPropertiesDeclaredOnCurrentType)
+                    {
+                        if (property.CanRead &&
+                            publicPropertiesOnTargetType.All(p => p.Name != property.Name))
+                        {
+                            publicPropertiesOnTargetType.Add(property);
+                        }
+                    }
+
+                    currentType = currentType.BaseType;
+                }
+
+                return publicPropertiesOnTargetType;
             }
         }
 
@@ -58,6 +74,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
+
             var provider = new ConventionalDomainModelBuilder(targetType);
             configuration.AddHookHandler<IModelBuilder>(provider);
             configuration.AddHookHandler<IModelMapper>(provider);
@@ -69,34 +86,22 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(context);
 
-            IEdmModel model = null;
-            var innerHandler = ((IDelegateHookHandler<IModelBuilder>)this).InnerHandler;
-            if (innerHandler != null)
+            IEdmModel modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
+            if (modelReturned == null)
             {
-                model = await innerHandler.GetModelAsync(context, cancellationToken);
+                // There is no model returned so return an empty model.
+                return new EdmModel();
             }
 
-            if (model != null)
+            EdmModel edmModel = modelReturned as EdmModel;
+            if (edmModel == null)
             {
-                foreach (var entitySetProperty in this.AddedEntitySets)
-                {
-                    var container = model.EntityContainer as EdmEntityContainer;
-                    var elementType = entitySetProperty
-                        .PropertyType.GetGenericArguments()[0];
-                    var entityType = model.SchemaElements
-                        .OfType<IEdmEntityType>()
-                        .SingleOrDefault(se => se.Name == elementType.Name);
-                    if (entityType == null)
-                    {
-                        // TODO GitHubIssue#33 : Add new entity type representing entity shape
-                        continue;
-                    }
-
-                    container.AddEntitySet(entitySetProperty.Name, entityType);
-                }
+                // The model returned is not an EDM model.
+                return modelReturned;
             }
 
-            return model;
+            this.BuildEntitySetsAndSingletons(context, edmModel);
+            return edmModel;
         }
 
         /// <inheritdoc/>
@@ -106,7 +111,7 @@ namespace Microsoft.Restier.Core.Conventions
             out Type relevantType)
         {
             relevantType = null;
-            var entitySetProperty = this.AddedEntitySets.SingleOrDefault(p => p.Name == name);
+            var entitySetProperty = this.entitySetProperties.SingleOrDefault(p => p.Name == name);
             if (entitySetProperty != null)
             {
                 relevantType = entitySetProperty.PropertyType.GetGenericArguments()[0];
@@ -153,15 +158,14 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
 
-            var entitySetProperty = this.AddedEntitySets
+            var entitySetProperty = this.entitySetProperties
                 .SingleOrDefault(p => p.Name == entitySet.Name);
             if (entitySetProperty != null)
             {
                 object target = null;
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
-                    target = context.QueryContext.DomainContext.GetProperty(
-                        typeof(Domain).AssemblyQualifiedName);
+                    target = GetDomainInstance(context.QueryContext.DomainContext);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -177,6 +181,101 @@ namespace Microsoft.Restier.Core.Conventions
             }
 
             return null;
+        }
+
+        private static object GetDomainInstance(DomainContext context)
+        {
+            return context.GetProperty(typeof(Domain).AssemblyQualifiedName);
+        }
+
+        private static bool IsEntitySetProperty(PropertyInfo property)
+        {
+            return property.PropertyType.IsGenericType &&
+                   property.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>) &&
+                   property.PropertyType.GetGenericArguments()[0].IsClass;
+        }
+
+        private static bool IsSingletonProperty(PropertyInfo property)
+        {
+            return !property.PropertyType.IsGenericType && property.PropertyType.IsClass;
+        }
+
+        private static EdmEntityContainer EnsureEntityContainer(InvocationContext context, EdmModel model)
+        {
+            var container = (EdmEntityContainer)model.EntityContainer;
+            if (container == null)
+            {
+                var domainInstance = GetDomainInstance(context.DomainContext);
+                var domainNamespace = domainInstance.GetType().Namespace;
+                container = new EdmEntityContainer(domainNamespace, "DefaultContainer");
+                model.AddElement(container);
+            }
+
+            return container;
+        }
+
+        private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(
+            InvocationContext context, CancellationToken cancellationToken)
+        {
+            var innerHandler = ((IDelegateHookHandler<IModelBuilder>)this).InnerHandler;
+            if (innerHandler != null)
+            {
+                return await innerHandler.GetModelAsync(context, cancellationToken);
+            }
+
+            return null;
+        }
+
+        private void BuildEntitySetsAndSingletons(InvocationContext context, EdmModel model)
+        {
+            var configuration = context.DomainContext.Configuration;
+            foreach (var property in this.PublicPropertiesOnTargetType)
+            {
+                if (configuration.IsPropertyIgnored(property.Name))
+                {
+                    continue;
+                }
+
+                var isEntitySet = IsEntitySetProperty(property);
+                if (!isEntitySet)
+                {
+                    if (!IsSingletonProperty(property))
+                    {
+                        continue;
+                    }
+                }
+
+                var entityType = property.PropertyType;
+                if (isEntitySet)
+                {
+                    entityType = entityType.GetGenericArguments()[0];
+                }
+
+                var edmEntityType = model.FindDeclaredType(entityType.FullName) as IEdmEntityType;
+                if (edmEntityType == null)
+                {
+                    // Skip property whose entity type has not been declared yet.
+                    continue;
+                }
+
+                var container = EnsureEntityContainer(context, model);
+                if (isEntitySet)
+                {
+                    if (container.FindEntitySet(property.Name) == null)
+                    {
+                        this.entitySetProperties.Add(property);
+                        container.AddEntitySet(property.Name, edmEntityType);
+                    }
+                }
+                else
+                {
+                    if (container.FindSingleton(property.Name) == null)
+                    {
+                        this.singletonProperties.Add(property);
+                        container.AddSingleton(property.Name, edmEntityType);
+                    }
+                }
+            }
         }
     }
 }

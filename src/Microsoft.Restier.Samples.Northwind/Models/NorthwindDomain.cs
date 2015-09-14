@@ -72,7 +72,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         }
 
         // Imperative views. Currently CUD operations not supported
-        protected IQueryable<Product> ExpensiveProducts
+        public IQueryable<Product> ExpensiveProducts
         {
             get
             {
@@ -81,7 +81,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             }
         }
 
-        protected IQueryable<Order> CurrentOrders
+        public IQueryable<Order> CurrentOrders
         {
             get
             {
