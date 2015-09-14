@@ -16,17 +16,17 @@ using Microsoft.Restier.Core.Query;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A conventional entity set provider that extends a model, maps between
+    /// A conventional domain model builder that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    internal class ConventionalEntitySetProvider :
+    internal class ConventionalDomainModelBuilder :
         IModelBuilder, IDelegateHookHandler<IModelBuilder>,
         IModelMapper, IDelegateHookHandler<IModelMapper>,
         IQueryExpressionExpander
     {
         private Type targetType;
 
-        private ConventionalEntitySetProvider(Type targetType)
+        private ConventionalDomainModelBuilder(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            var provider = new ConventionalEntitySetProvider(targetType);
+            var provider = new ConventionalDomainModelBuilder(targetType);
             configuration.AddHookHandler<IModelBuilder>(provider);
             configuration.AddHookHandler<IModelMapper>(provider);
             configuration.AddHookPoint(typeof(IQueryExpressionExpander), provider);
