@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             Ensure.NotNull(context, "context");
 
-            var preparer = context.GetHookPoint<IChangeSetPreparer>();
+            var preparer = context.GetHookHandler<IChangeSetPreparer>();
             if (preparer == null)
             {
                 throw new NotSupportedException();
