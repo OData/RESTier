@@ -48,7 +48,6 @@
     <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
     <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
     <Compile Include="Domain.cs" />
-    <Compile Include="Domain.OfT.cs" />
     <Compile Include="DomainBase.cs" />
     <Compile Include="DomainConfiguration.cs" />
     <Compile Include="DomainContext.cs" />

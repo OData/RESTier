@@ -67,7 +67,6 @@
     <Compile Include="DomainData.Tests.cs" />
     <Compile Include="Domain.Tests.cs" />
     <Compile Include="DomainBase.Tests.cs" />
-    <Compile Include="Domain.OfT.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
