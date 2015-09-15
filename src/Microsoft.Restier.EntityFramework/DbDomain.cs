@@ -56,9 +56,7 @@ namespace Microsoft.Restier.EntityFramework
             var configuration = base.CreateDomainConfiguration();
             configuration.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
             configuration.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
-            configuration.SetHookPoint(
-                typeof(IQueryExpressionSourcer),
-                QueryExpressionSourcer.Instance);
+            configuration.AddHookHandler<IQueryExpressionSourcer>(QueryExpressionSourcer.Instance);
             configuration.AddHookHandler<IQueryExecutor>(QueryExecutor.Instance);
             configuration.SetHookPoint(
                 typeof(IChangeSetPreparer),

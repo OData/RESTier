@@ -112,8 +112,7 @@ namespace Microsoft.Restier.Core.Tests
                         configuration.AddHookHandler<IModelBuilder>(modelBuilder);
                         configuration.AddHookHandler<IModelMapper>(modelMapper);
                         configuration.AddHookHandler<IQueryExecutor>(queryExecutor);
-                        configuration.SetHookPoint(
-                            typeof(IQueryExpressionSourcer), querySourcer);
+                        configuration.AddHookHandler<IQueryExpressionSourcer>(querySourcer);
                         configuration.SetHookPoint(
                             typeof(IChangeSetPreparer), changeSetPreparer);
                         configuration.SetHookPoint(

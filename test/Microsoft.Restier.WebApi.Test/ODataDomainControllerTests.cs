@@ -193,7 +193,7 @@ namespace Microsoft.Restier.WebApi.Test
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
             configuration.AddHookHandler<IModelMapper>(new TestModelMapper());
             configuration.AddHookHandler<IQueryExecutor>(new TestQueryExecutor());
-            configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new TestQueryExpressionSourcer());
+            configuration.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
             configuration.SetHookPoint(typeof(IChangeSetPreparer), new TestChangeSetPreparer());
             configuration.SetHookPoint(typeof(ISubmitExecutor), new TestSubmitExecutor());
             return configuration;

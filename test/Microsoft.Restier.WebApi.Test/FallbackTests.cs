@@ -99,7 +99,7 @@ namespace Microsoft.Restier.WebApi.Test
             var configuration = base.CreateDomainConfiguration();
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
             configuration.AddHookHandler<IModelMapper>(new FallbackModelMapper());
-            configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new FallbackQueryExpressionSourcer());
+            configuration.AddHookHandler<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
             return configuration;
         }
 

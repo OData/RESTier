@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core.Query
     /// implemented by an underlying data provider.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionSourcer
+    public interface IQueryExpressionSourcer : IHookHandler
     {
         /// <summary>
         /// Sources an expression.

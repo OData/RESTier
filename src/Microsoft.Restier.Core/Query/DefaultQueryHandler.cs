@@ -267,7 +267,7 @@ namespace Microsoft.Restier.Core.Query
                 if (this.sourcer == null)
                 {
                     this.sourcer = this.context.QueryContext
-                        .GetHookPoint<IQueryExpressionSourcer>();
+                        .GetHookHandler<IQueryExpressionSourcer>();
                 }
 
                 if (this.sourcer == null)
