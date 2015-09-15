@@ -22,99 +22,14 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void DefaultDomainBaseIsConfiguredCorrectly()
-        {
-            using (var domain = new TestDomain())
-            {
-                var expandableDomain = domain as IExpandableDomain;
-                Assert.NotNull(expandableDomain.Configuration);
-                Assert.False(expandableDomain.IsInitialized);
-                Assert.NotNull(expandableDomain.Context);
-                Assert.True(expandableDomain.IsInitialized);
-                Assert.Same(expandableDomain.Configuration,
-                    expandableDomain.Context.Configuration);
-            }
-        }
-
-        [Fact]
-        public void DisposedDomainBaseCannotAccessConfiguration()
-        {
-            var domain = new TestDomain();
-            domain.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { var configuration = ((IExpandableDomain)domain).Configuration; });
-        }
-
-        [Fact]
-        public void DisposedDomainBaseCannotAccessIsInitialized()
-        {
-            var domain = new TestDomain();
-            domain.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { var configuration = ((IExpandableDomain)domain).IsInitialized; });
-        }
-
-        [Fact]
-        public void DisposedDomainBaseCannotAccessContext()
-        {
-            var domain = new TestDomain();
-            domain.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { var configuration = ((IExpandableDomain)domain).Context; });
-        }
-
-        [Fact]
-        public void DisposedDomainBaseCannotBeInitialized()
-        {
-            var domain = new TestDomain();
-            var expandableDomain = domain as IExpandableDomain;
-            var derivedConfig = new DomainConfiguration(
-                expandableDomain.Configuration);
-            domain.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => expandableDomain.Initialize(derivedConfig));
-        }
-
-        [Fact]
-        public void DomainBaseCannotBeInitializedIfAlreadyInitialized()
-        {
-            var domain = new TestDomain();
-            var expandableDomain = domain as IExpandableDomain;
-            var derivedConfig = new DomainConfiguration(
-                expandableDomain.Configuration);
-            var context = expandableDomain.Context;
-            Assert.Throws<InvalidOperationException>(() => expandableDomain.Initialize(derivedConfig));
-        }
-
-        [Fact]
-        public void DomainBaseCannotBeInitializedWithUnrelatedConfiguration()
-        {
-            var domain = new TestDomain();
-            var expandableDomain = domain as IExpandableDomain;
-            var otherConfig = new DomainConfiguration();
-            Assert.Throws<ArgumentException>(() => expandableDomain.Initialize(otherConfig));
-        }
-
-        [Fact]
-        public void ExpandedDomainBaseIsInitializedCorrectly()
-        {
-            var domain = new TestDomain();
-            var expandableDomain = domain as IExpandableDomain;
-            var derivedConfig = new DomainConfiguration(
-                expandableDomain.Configuration);
-            derivedConfig.EnsureCommitted();
-
-            expandableDomain.Initialize(derivedConfig);
-            Assert.True(expandableDomain.IsInitialized);
-            Assert.Same(derivedConfig,
-                expandableDomain.Context.Configuration);
-        }
-
-        [Fact]
         public void AllTestDomainsHaveSameConfigurationUntilInvalidated()
         {
-            IExpandableDomain domain1 = new TestDomain();
-            IExpandableDomain domain2 = new TestDomain();
-            Assert.Same(domain2.Configuration, domain1.Configuration);
+            IDomain domain1 = new TestDomain();
+            IDomain domain2 = new TestDomain();
+            Assert.Same(domain2.Context.Configuration, domain1.Context.Configuration);
             DomainConfiguration.Invalidate(domain1.GetType());
-            IExpandableDomain domain3 = new TestDomain();
-            Assert.NotSame(domain3.Configuration, domain2.Configuration);
+            IDomain domain3 = new TestDomain();
+            Assert.NotSame(domain3.Context.Configuration, domain2.Context.Configuration);
         }
 
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
@@ -166,9 +81,9 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void TestDomainAppliesDomainParticipantsCorrectly()
         {
-            IExpandableDomain domain = new TestDomainWithParticipants();
+            IDomain domain = new TestDomainWithParticipants();
 
-            var configuration = domain.Configuration;
+            var configuration = domain.Context.Configuration;
             Assert.True(configuration.GetProperty<bool>("Test1"));
             Assert.True(configuration.GetProperty<bool>("Test2"));
 

@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a base class for a domain.
     /// </summary>
-    public abstract class DomainBase : IExpandableDomain
+    public abstract class DomainBase : IDomain
     {
         private DomainConfiguration domainConfiguration;
         private DomainContext domainContext;
@@ -29,32 +29,6 @@ namespace Microsoft.Restier.Core
         ~DomainBase()
         {
             this.Dispose(false);
-        }
-
-        DomainConfiguration IExpandableDomain.Configuration
-        {
-            get
-            {
-                if (this.IsDisposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
-
-                return this.DomainConfiguration;
-            }
-        }
-
-        bool IExpandableDomain.IsInitialized
-        {
-            get
-            {
-                if (this.IsDisposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
-
-                return this.HasDomainContext;
-            }
         }
 
         DomainContext IDomain.Context
@@ -120,17 +94,6 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether this domain has created its domain context.
-        /// </summary>
-        protected bool HasDomainContext
-        {
-            get
-            {
-                return this.domainContext != null;
-            }
-        }
-
-        /// <summary>
         /// Gets the domain context for this domain.
         /// </summary>
         protected DomainContext DomainContext
@@ -169,39 +132,6 @@ namespace Microsoft.Restier.Core
 
             this.Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        void IExpandableDomain.Initialize(
-            DomainConfiguration derivedConfiguration)
-        {
-            if (this.IsDisposed)
-            {
-                throw new ObjectDisposedException(this.GetType().FullName);
-            }
-
-            if (this.domainContext != null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            Ensure.NotNull(derivedConfiguration, "derivedConfiguration");
-            var baseConfiguration = this.DomainConfiguration;
-            var candidate = derivedConfiguration;
-            while (candidate != baseConfiguration)
-            {
-                if (candidate.BaseConfiguration == null)
-                {
-                    // TODO GitHubIssue#24 : error message
-                    throw new ArgumentException();
-                }
-
-                candidate = candidate.BaseConfiguration;
-            }
-
-            this.domainConfiguration = derivedConfiguration;
-            this.domainContext = this.CreateDomainContext(derivedConfiguration);
-            DomainParticipantAttribute.ApplyInitialization(
-                this.GetType(), this, this.domainContext);
         }
 
         /// <summary>

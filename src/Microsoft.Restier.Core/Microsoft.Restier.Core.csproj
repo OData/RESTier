@@ -55,7 +55,6 @@
     <Compile Include="DomainParticipantAttribute.cs" />
     <Compile Include="IDelegateHookHandler.cs" />
     <Compile Include="IDomain.cs" />
-    <Compile Include="IExpandableDomain.cs" />
     <Compile Include="IHookHandler.cs" />
     <Compile Include="InvocationContext.cs" />
     <Compile Include="Model\IModelBuilder.cs" />
