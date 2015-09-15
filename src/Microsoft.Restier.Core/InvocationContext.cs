@@ -34,23 +34,6 @@ namespace Microsoft.Restier.Core
         public DomainContext DomainContext { get; private set; }
 
         /// <summary>
-        /// Gets the single instance of a type of singleton hook point.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the singleton hook point.
-        /// </typeparam>
-        /// <returns>
-        /// The single instance of the specified type of singleton hook
-        /// point, or <c>null</c> if the domain configuration does not
-        /// have an instance of the specified type of singleton hook point.
-        /// </returns>
-        public T GetHookPoint<T>()
-            where T : class
-        {
-            return this.DomainContext.Configuration.GetHookPoint<T>();
-        }
-
-        /// <summary>
         /// Gets all instances of a type of multi-cast hook point.
         /// </summary>
         /// <typeparam name="T">

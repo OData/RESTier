@@ -44,9 +44,6 @@ namespace Microsoft.Restier.Core
         private static readonly IDictionary<object, DomainConfiguration> Configurations =
             new ConcurrentDictionary<object, DomainConfiguration>();
 
-        private readonly IDictionary<Type, object> singletons =
-            new Dictionary<Type, object>();
-
         private readonly IDictionary<Type, IList<object>> multiCasts =
             new Dictionary<Type, IList<object>>();
 
@@ -124,71 +121,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public void EnsureCommitted()
         {
-            if (!this.IsCommitted)
-            {
-                this.IsCommitted = true;
-            }
-        }
-
-        /// <summary>
-        /// Indicates if this domain configuration has
-        /// an instance of a type of singleton hook point.
-        /// </summary>
-        /// <param name="hookPointType">
-        /// The type of a singleton hook point.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if this domain configuration has an instance of the
-        /// specified type of singleton hook point; otherwise, <c>false</c>.
-        /// </returns>
-        public bool HasHookPoint(Type hookPointType)
-        {
-            Ensure.NotNull(hookPointType, "hookPointType");
-            return this.singletons.ContainsKey(hookPointType);
-        }
-
-        /// <summary>
-        /// Gets the single instance of a type of singleton hook point.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the singleton hook point.
-        /// </typeparam>
-        /// <returns>
-        /// The single instance of the specified type of singleton hook
-        /// point, or <c>null</c> if this domain configuration does not
-        /// have an instance of the specified type of singleton hook point.
-        /// </returns>
-        public T GetHookPoint<T>()
-            where T : class
-        {
-            return (T)this.GetHookPoint(typeof(T));
-        }
-
-        /// <summary>
-        /// Sets the single instance of a type a singleton hook point.
-        /// </summary>
-        /// <param name="hookPointType">
-        /// The type of a singleton hook point.
-        /// </param>
-        /// <param name="instance">
-        /// The single instance of the specified type of singleton hook point.
-        /// </param>
-        public void SetHookPoint(Type hookPointType, object instance)
-        {
-            if (this.IsCommitted)
-            {
-                throw new InvalidOperationException();
-            }
-
-            Ensure.NotNull(hookPointType, "hookPointType");
-            Ensure.NotNull(instance, "instance");
-            if (!hookPointType.IsAssignableFrom(instance.GetType()))
-            {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
-            }
-
-            this.singletons[hookPointType] = instance;
+            this.IsCommitted = true;
         }
 
         /// <summary>
@@ -296,13 +229,6 @@ namespace Microsoft.Restier.Core
             return value as T;
         }
         #endregion
-
-        private object GetHookPoint(Type hookPointType)
-        {
-            object instance = null;
-            this.singletons.TryGetValue(hookPointType, out instance);
-            return instance;
-        }
 
         private IEnumerable<object> GetHookPoints(Type hookPointType)
         {

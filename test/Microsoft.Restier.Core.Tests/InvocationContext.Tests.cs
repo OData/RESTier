@@ -21,19 +21,20 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void InvocationContextGetsHookPointsCorrectly()
         {
-            var configuration = new DomainConfiguration();
-            var singletonHookPoint = new object();
-            configuration.SetHookPoint(typeof(object), singletonHookPoint);
-            var multiCastHookPoint = new object();
-            configuration.AddHookPoint(typeof(object), multiCastHookPoint);
+            var hook = new HookA();
+            var configuration = new DomainConfiguration().AddHookHandler<IHookA>(hook);
             configuration.EnsureCommitted();
-
             var domainContext = new DomainContext(configuration);
             var context = new InvocationContext(domainContext);
+            Assert.Same(hook, context.GetHookHandler<IHookA>());
+        }
 
-            Assert.Same(singletonHookPoint, context.GetHookPoint<object>());
-            Assert.True(context.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint }));
+        private interface IHookA : IHookHandler
+        {
+        }
+
+        private class HookA : IHookA
+        {
         }
     }
 }

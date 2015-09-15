@@ -48,15 +48,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void CommittedConfigurationCannotSetHookPoint()
-        {
-            var configuration = new DomainConfiguration();
-            configuration.EnsureCommitted();
-
-            Assert.Throws<InvalidOperationException>(() => configuration.SetHookPoint(typeof(object), new object()));
-        }
-
-        [Fact]
         public void CommittedConfigurationCannotAddHookPoint()
         {
             var configuration = new DomainConfiguration();
@@ -76,10 +67,11 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void ConfigurationCannotSetHookPointOfWrongType()
+        public void ConfigurationCannotAddHookHandlerOfWrongType()
         {
             var configuration = new DomainConfiguration();
-            Assert.Throws<ArgumentException>(() => configuration.SetHookPoint(typeof(IDisposable), new object()));
+            Assert.Throws<InvalidOperationException>(
+                () => configuration.AddHookHandler<TestModelBuilder>(new TestModelBuilder()));
         }
 
         [Fact]
@@ -94,23 +86,19 @@ namespace Microsoft.Restier.Core.Tests
         {
             var configuration = new DomainConfiguration();
 
-            Assert.False(configuration.HasHookPoint(typeof(object)));
-            Assert.Null(configuration.GetHookPoint<object>());
+            Assert.Null(configuration.GetHookHandler<IHookA>());
             Assert.False(configuration.HasHookPoints(typeof(object)));
             Assert.False(configuration.GetHookPoints<object>().Any());
 
-            var singletonHookPoint = new object();
-            configuration.SetHookPoint(typeof(object), singletonHookPoint);
-            Assert.True(configuration.HasHookPoint(typeof(object)));
-            Assert.Same(singletonHookPoint,
-                configuration.GetHookPoint<object>());
+            var singletonHookPoint = new HookA();
+            configuration.AddHookHandler<IHookA>(singletonHookPoint);
+            Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
             Assert.False(configuration.HasHookPoints(typeof(object)));
             Assert.False(configuration.GetHookPoints<object>().Any());
 
             var multiCastHookPoint1 = new object();
             configuration.AddHookPoint(typeof(object), multiCastHookPoint1);
-            Assert.Same(singletonHookPoint,
-                configuration.GetHookPoint<object>());
+            Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
             Assert.True(configuration.HasHookPoints(typeof(object)));
             Assert.True(configuration.GetHookPoints<object>()
                 .SequenceEqual(new object[] { multiCastHookPoint1 }));
@@ -128,6 +116,14 @@ namespace Microsoft.Restier.Core.Tests
             {
                 throw new NotImplementedException();
             }
+        }
+
+        private interface IHookA : IHookHandler
+        {
+        }
+
+        private class HookA : IHookA
+        {
         }
     }
 }
