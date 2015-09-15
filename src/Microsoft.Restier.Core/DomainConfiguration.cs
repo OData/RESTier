@@ -6,8 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -40,23 +38,9 @@ namespace Microsoft.Restier.Core
     /// produced as a result of a particular configuration is cached under
     /// the same key to avoid re-computing it on each invocation.
     /// </para>
-    /// <para>
-    /// A domain configuration can be based on an existing configuration, in
-    /// which case all properties and hook points from the base are initially
-    /// inherited. Singleton hook points can be replaced. Multi-cast hook
-    /// points cannot be replaced, but additional instances of such hook points
-    /// can be registered, and depending on the semantics of the hook point, it
-    /// may be possible to circumvent the existing behavior.
-    /// </para>
-    /// <para>
-    /// All domain configurations are ultimately based on a global domain
-    /// configuration that registers the default top-level hook points for
-    /// handling the model, query and submit domain flows.
-    /// </para>
     /// </remarks>
     public class DomainConfiguration : PropertyBag
     {
-        private static readonly DomainConfiguration Global = new DomainConfiguration();
         private static readonly IDictionary<object, DomainConfiguration> Configurations =
             new ConcurrentDictionary<object, DomainConfiguration>();
 
@@ -72,56 +56,23 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
         /// </summary>
         public DomainConfiguration()
-            : this(null, null)
+            : this(null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
+        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class
+        /// that is based on an existing configuration.
         /// </summary>
         /// <param name="key">
         /// A domain configuration key.
         /// </param>
         public DomainConfiguration(object key)
-            : this(key, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class
-        /// that is based on an existing configuration.
-        /// </summary>
-        /// <param name="baseConfiguration">
-        /// An existing domain configuration.
-        /// </param>
-        public DomainConfiguration(DomainConfiguration baseConfiguration)
-            : this(null, baseConfiguration)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class
-        /// that is based on an existing configuration.
-        /// </summary>
-        /// <param name="key">
-        /// A domain configuration key.
-        /// </param>
-        /// <param name="baseConfiguration">
-        /// An existing domain configuration.
-        /// </param>
-        public DomainConfiguration(object key, DomainConfiguration baseConfiguration)
         {
             this.Key = key;
-            this.BaseConfiguration = baseConfiguration ??
-                DomainConfiguration.Global;
             if (key != null)
             {
                 DomainConfiguration.Configurations[key] = this;
-            }
-
-            if (DomainConfiguration.Global == null)
-            {
-                this.EnsureCommitted();
             }
         }
 
@@ -129,11 +80,6 @@ namespace Microsoft.Restier.Core
         /// Gets the domain configuration key, if any.
         /// </summary>
         public object Key { get; private set; }
-
-        /// <summary>
-        /// Gets the base domain configuration.
-        /// </summary>
-        public DomainConfiguration BaseConfiguration { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether this domain configuration has been committed.
@@ -180,54 +126,8 @@ namespace Microsoft.Restier.Core
         {
             if (!this.IsCommitted)
             {
-                if (this.BaseConfiguration != null &&
-                    !this.BaseConfiguration.IsCommitted)
-                {
-                    throw new InvalidOperationException();
-                }
-
                 this.IsCommitted = true;
             }
-        }
-
-        /// <summary>
-        /// Indicates if this object has a property.
-        /// </summary>
-        /// <param name="name">
-        /// The name of a property.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if this object has the
-        /// property; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool HasProperty(string name)
-        {
-            return base.HasProperty(name) || (
-                this.BaseConfiguration != null &&
-                this.BaseConfiguration.HasProperty(name));
-        }
-
-        /// <summary>
-        /// Gets a property.
-        /// </summary>
-        /// <param name="name">
-        /// The name of a property.
-        /// </param>
-        /// <returns>
-        /// The value of the property.
-        /// </returns>
-        public override object GetProperty(string name)
-        {
-            if (base.HasProperty(name))
-            {
-                return base.GetProperty(name);
-            }
-            else if (this.BaseConfiguration != null)
-            {
-                return this.BaseConfiguration.GetProperty(name);
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -244,9 +144,7 @@ namespace Microsoft.Restier.Core
         public bool HasHookPoint(Type hookPointType)
         {
             Ensure.NotNull(hookPointType, "hookPointType");
-            return this.singletons.ContainsKey(hookPointType) || (
-                this.BaseConfiguration != null &&
-                this.BaseConfiguration.HasHookPoint(hookPointType));
+            return this.singletons.ContainsKey(hookPointType);
         }
 
         /// <summary>
@@ -307,9 +205,7 @@ namespace Microsoft.Restier.Core
         public bool HasHookPoints(Type hookPointType)
         {
             Ensure.NotNull(hookPointType, "hookPointType");
-            return this.multiCasts.ContainsKey(hookPointType) || (
-                this.BaseConfiguration != null &&
-                this.BaseConfiguration.HasHookPoints(hookPointType));
+            return this.multiCasts.ContainsKey(hookPointType);
         }
 
         /// <summary>
@@ -404,30 +300,15 @@ namespace Microsoft.Restier.Core
         private object GetHookPoint(Type hookPointType)
         {
             object instance = null;
-            if (!this.singletons.TryGetValue(hookPointType, out instance) &&
-                this.BaseConfiguration != null)
-            {
-                instance = this.BaseConfiguration.GetHookPoint(hookPointType);
-            }
-
+            this.singletons.TryGetValue(hookPointType, out instance);
             return instance;
         }
 
         private IEnumerable<object> GetHookPoints(Type hookPointType)
         {
-            IEnumerable<object> instances = Enumerable.Empty<object>();
-            if (this.BaseConfiguration != null)
-            {
-                instances = this.BaseConfiguration.GetHookPoints(hookPointType);
-            }
-
-            IList<object> list = null;
-            if (this.multiCasts.TryGetValue(hookPointType, out list))
-            {
-                instances = instances.Concat(list);
-            }
-
-            return instances;
+            IList<object> list;
+            this.multiCasts.TryGetValue(hookPointType, out list);
+            return list ?? Enumerable.Empty<object>();
         }
     }
 }

@@ -19,10 +19,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new DomainConfiguration();
 
             Assert.Null(configuration.Key);
-            Assert.NotNull(configuration.BaseConfiguration);
-            Assert.Null(configuration.BaseConfiguration.Key);
-            Assert.Null(configuration.BaseConfiguration.BaseConfiguration);
-            Assert.True(configuration.BaseConfiguration.IsCommitted);
             Assert.False(configuration.IsCommitted);
         }
 
@@ -124,76 +120,6 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(configuration.HasHookPoints(typeof(object)));
             Assert.True(configuration.GetHookPoints<object>()
                 .SequenceEqual(new object[] { multiCastHookPoint1, multiCastHookPoint2 }));
-        }
-
-        [Fact]
-        public void DerivedConfigurationIsConfiguredCorrectly()
-        {
-            var baseConfig = new DomainConfiguration();
-            var derivedConfig = new DomainConfiguration(baseConfig);
-
-            Assert.Same(baseConfig, derivedConfig.BaseConfiguration);
-
-            Assert.False(derivedConfig.HasProperty("Test"));
-            Assert.Null(derivedConfig.GetProperty<string>("Test"));
-
-            baseConfig.SetProperty("Test", "Test");
-            Assert.True(derivedConfig.HasProperty("Test"));
-            Assert.Equal("Test", derivedConfig.GetProperty<string>("Test"));
-
-            derivedConfig.SetProperty("Test", "Test2");
-            Assert.True(derivedConfig.HasProperty("Test"));
-            Assert.Equal("Test2", derivedConfig.GetProperty<string>("Test"));
-            Assert.Equal("Test", baseConfig.GetProperty<string>("Test"));
-
-            derivedConfig.ClearProperty("Test");
-            Assert.True(derivedConfig.HasProperty("Test"));
-            Assert.Equal("Test", derivedConfig.GetProperty<string>("Test"));
-
-            var singletonHookPoint = new object();
-            baseConfig.SetHookPoint(typeof(object), singletonHookPoint);
-            Assert.True(derivedConfig.HasHookPoint(typeof(object)));
-            Assert.Same(singletonHookPoint,
-                derivedConfig.GetHookPoint<object>());
-
-            var derivedSingletonHookPoint = new object();
-            derivedConfig.SetHookPoint(typeof(object), derivedSingletonHookPoint);
-            Assert.True(derivedConfig.HasHookPoint(typeof(object)));
-            Assert.Same(derivedSingletonHookPoint,
-                derivedConfig.GetHookPoint<object>());
-            Assert.Same(singletonHookPoint,
-                baseConfig.GetHookPoint<object>());
-
-            var multiCastHookPoint1 = new object();
-            baseConfig.AddHookPoint(typeof(object), multiCastHookPoint1);
-            Assert.True(derivedConfig.HasHookPoints(typeof(object)));
-            Assert.True(derivedConfig.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint1 }));
-
-            var multiCastHookPoint2 = new object();
-            derivedConfig.AddHookPoint(typeof(object), multiCastHookPoint2);
-            Assert.True(derivedConfig.HasHookPoints(typeof(object)));
-            Assert.True(derivedConfig.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint1, multiCastHookPoint2 }));
-            Assert.True(baseConfig.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint1 }));
-
-            var multiCastHookPoint3 = new object();
-            baseConfig.AddHookPoint(typeof(object), multiCastHookPoint3);
-            Assert.True(derivedConfig.HasHookPoints(typeof(object)));
-            Assert.True(derivedConfig.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint1, multiCastHookPoint3, multiCastHookPoint2 }));
-            Assert.True(baseConfig.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint1, multiCastHookPoint3 }));
-        }
-
-        [Fact]
-        public void DerivedConfigurationCannotCommitWithUncommittedBase()
-        {
-            var baseConfig = new DomainConfiguration();
-            var derivedConfig = new DomainConfiguration(baseConfig);
-
-            Assert.Throws<InvalidOperationException>(() => derivedConfig.EnsureCommitted());
         }
 
         private class TestModelBuilder : IModelBuilder
