@@ -38,9 +38,7 @@ namespace Microsoft.Restier.Security
             configuration.AddHookPoint(
                 typeof(IQueryExpressionInspector),
                 RoleBasedAuthorization.Default);
-            configuration.AddHookPoint(
-                typeof(IQueryExpressionExpander),
-                RoleBasedAuthorization.Default);
+            configuration.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
         }
 
         /// <summary>

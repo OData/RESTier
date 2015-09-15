@@ -19,7 +19,8 @@ namespace Microsoft.Restier.Security
     /// <summary>
     /// Represents a role-based authorization system.
     /// </summary>
-    public class RoleBasedAuthorization : IQueryExpressionInspector, IQueryExpressionExpander
+    public class RoleBasedAuthorization : IQueryExpressionInspector,
+        IQueryExpressionExpander, IDelegateHookHandler<IQueryExpressionExpander>
     {
         private const string Permissions = "Microsoft.Restier.Security.Permissions";
 
@@ -40,6 +41,9 @@ namespace Microsoft.Restier.Security
         /// </summary>
         public static RoleBasedAuthorization Default { get; private set; }
 
+        /// <inheritdoc/>
+        public IQueryExpressionExpander InnerHandler { get; set; }
+
         /// <summary>
         /// Expands an expression.
         /// </summary>
@@ -53,6 +57,16 @@ namespace Microsoft.Restier.Security
         public Expression Expand(QueryExpressionContext context)
         {
             Ensure.NotNull(context);
+
+            if (this.InnerHandler != null)
+            {
+                var result = this.InnerHandler.Expand(context);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
             if (context.ModelReference == null)
             {
                 return null;

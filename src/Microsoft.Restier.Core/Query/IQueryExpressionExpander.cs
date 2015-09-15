@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core.Query
     /// are used in the reverse order of registration.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionExpander
+    public interface IQueryExpressionExpander : IHookHandler
     {
         /// <summary>
         /// Expands an expression.

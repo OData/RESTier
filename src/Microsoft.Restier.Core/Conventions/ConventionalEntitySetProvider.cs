@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Core.Conventions
     internal class ConventionalEntitySetProvider :
         IModelBuilder, IDelegateHookHandler<IModelBuilder>,
         IModelMapper, IDelegateHookHandler<IModelMapper>,
-        IQueryExpressionExpander
+        IQueryExpressionExpander, IDelegateHookHandler<IQueryExpressionExpander>
     {
         private Type targetType;
 
@@ -34,6 +34,8 @@ namespace Microsoft.Restier.Core.Conventions
         IModelBuilder IDelegateHookHandler<IModelBuilder>.InnerHandler { get; set; }
 
         IModelMapper IDelegateHookHandler<IModelMapper>.InnerHandler { get; set; }
+
+        IQueryExpressionExpander IDelegateHookHandler<IQueryExpressionExpander>.InnerHandler { get; set; }
 
         private IEnumerable<PropertyInfo> AddedEntitySets
         {
@@ -61,7 +63,7 @@ namespace Microsoft.Restier.Core.Conventions
             var provider = new ConventionalEntitySetProvider(targetType);
             configuration.AddHookHandler<IModelBuilder>(provider);
             configuration.AddHookHandler<IModelMapper>(provider);
-            configuration.AddHookPoint(typeof(IQueryExpressionExpander), provider);
+            configuration.AddHookHandler<IQueryExpressionExpander>(provider);
         }
 
         /// <inheritdoc/>
@@ -136,6 +138,17 @@ namespace Microsoft.Restier.Core.Conventions
         public Expression Expand(QueryExpressionContext context)
         {
             Ensure.NotNull(context);
+
+            var innerHandler = ((IDelegateHookHandler<IQueryExpressionExpander>)this).InnerHandler;
+            if (innerHandler != null)
+            {
+                var result = innerHandler.Expand(context);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
             if (context.ModelReference == null)
             {
                 return null;

@@ -90,7 +90,7 @@ namespace Microsoft.Restier.Core.Query
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
             private IEnumerable<IQueryExpressionInspector> inspectors;
-            private IEnumerable<IQueryExpressionExpander> expanders;
+            private IQueryExpressionExpander expander;
             private IEnumerable<IQueryExpressionFilter> filters;
             private IQueryExpressionSourcer sourcer;
 
@@ -183,36 +183,38 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Expand(Expression visited)
             {
-                if (this.expanders == null)
+                if (this.expander == null)
                 {
-                    this.expanders = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionExpander>().Reverse();
+                    this.expander = this.context.QueryContext
+                        .GetHookHandler<IQueryExpressionExpander>();
                 }
 
-                foreach (var expander in this.expanders)
+                if (expander == null)
                 {
-                    var expanded = expander.Expand(this.context);
-                    var callback = this.context.AfterNestedVisitCallback;
-                    this.context.AfterNestedVisitCallback = null;
-                    if (expanded != null && expanded != visited)
+                    return visited;
+                }
+
+                var expanded = expander.Expand(this.context);
+                var callback = this.context.AfterNestedVisitCallback;
+                this.context.AfterNestedVisitCallback = null;
+                if (expanded != null && expanded != visited)
+                {
+                    if (!visited.Type.IsAssignableFrom(expanded.Type))
                     {
-                        if (!visited.Type.IsAssignableFrom(expanded.Type))
-                        {
-                            // Expander cannot change expression type
-                            // TODO GitHubIssue#24 : error message
-                            throw new InvalidOperationException();
-                        }
-
-                        this.context.PushVisitedNode(null);
-                        expanded = this.Visit(expanded);
-                        this.context.PopVisitedNode();
-                        if (callback != null)
-                        {
-                            callback();
-                        }
-
-                        return expanded;
+                        // Expander cannot change expression type
+                        // TODO GitHubIssue#24 : error message
+                        throw new InvalidOperationException();
                     }
+
+                    this.context.PushVisitedNode(null);
+                    expanded = this.Visit(expanded);
+                    this.context.PopVisitedNode();
+                    if (callback != null)
+                    {
+                        callback();
+                    }
+
+                    return expanded;
                 }
 
                 return visited;
