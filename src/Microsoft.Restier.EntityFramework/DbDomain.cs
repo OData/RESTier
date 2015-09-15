@@ -59,7 +59,7 @@ namespace Microsoft.Restier.EntityFramework
             configuration.SetHookPoint(
                 typeof(IQueryExpressionSourcer),
                 QueryExpressionSourcer.Instance);
-            configuration.SetHookPoint(typeof(IQueryExecutor), QueryExecutor.Instance);
+            configuration.AddHookHandler<IQueryExecutor>(QueryExecutor.Instance);
             configuration.SetHookPoint(
                 typeof(IChangeSetPreparer),
                 ChangeSetPreparer.Instance);

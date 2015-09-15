@@ -111,8 +111,7 @@ namespace Microsoft.Restier.Core.Tests
                         var submitExecutor = new TestSubmitExecutor();
                         configuration.AddHookHandler<IModelBuilder>(modelBuilder);
                         configuration.AddHookHandler<IModelMapper>(modelMapper);
-                        configuration.SetHookPoint(
-                            typeof(IQueryExecutor), queryExecutor);
+                        configuration.AddHookHandler<IQueryExecutor>(queryExecutor);
                         configuration.SetHookPoint(
                             typeof(IQueryExpressionSourcer), querySourcer);
                         configuration.SetHookPoint(

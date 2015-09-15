@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core.Query
 
             // execute query
             QueryResult result = null;
-            var executor = context.GetHookPoint<IQueryExecutor>();
+            var executor = context.GetHookHandler<IQueryExecutor>();
             if (executor == null)
             {
                 throw new NotSupportedException();

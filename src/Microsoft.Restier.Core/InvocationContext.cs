@@ -65,5 +65,10 @@ namespace Microsoft.Restier.Core
         {
             return this.DomainContext.Configuration.GetHookPoints<T>();
         }
+
+        internal T GetHookHandler<T>() where T : class, IHookHandler
+        {
+            return this.DomainContext.Configuration.GetHookHandler<T>();
+        }
     }
 }

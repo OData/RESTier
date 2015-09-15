@@ -210,7 +210,7 @@ namespace Microsoft.Restier.Core
 
         private static void AddDefaultHooks(DomainConfiguration configuration)
         {
-            configuration.SetHookPoint(typeof(IQueryExecutor), DefaultQueryExecutor.Instance);
+            configuration.AddHookHandler<IQueryExecutor>(DefaultQueryExecutor.Instance);
         }
     }
 }

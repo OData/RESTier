@@ -184,7 +184,7 @@ namespace Microsoft.Restier.WebApi.Test
             Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.WebApi.Test.Product");
         }
     }
-    
+
     internal class StoreDomain : DomainBase
     {
         protected override DomainConfiguration CreateDomainConfiguration()
@@ -192,7 +192,7 @@ namespace Microsoft.Restier.WebApi.Test
             var configuration = base.CreateDomainConfiguration();
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
             configuration.AddHookHandler<IModelMapper>(new TestModelMapper());
-            configuration.SetHookPoint(typeof(IQueryExecutor), new TestQueryExecutor());
+            configuration.AddHookHandler<IQueryExecutor>(new TestQueryExecutor());
             configuration.SetHookPoint(typeof(IQueryExpressionSourcer), new TestQueryExpressionSourcer());
             configuration.SetHookPoint(typeof(IChangeSetPreparer), new TestChangeSetPreparer());
             configuration.SetHookPoint(typeof(ISubmitExecutor), new TestSubmitExecutor());
