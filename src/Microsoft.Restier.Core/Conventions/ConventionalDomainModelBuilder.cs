@@ -90,7 +90,9 @@ namespace Microsoft.Restier.Core.Conventions
             if (modelReturned == null)
             {
                 // There is no model returned so return an empty model.
-                return new EdmModel();
+                var emptyModel = new EdmModel();
+                EnsureEntityContainer(context, emptyModel);
+                return emptyModel;
             }
 
             EdmModel edmModel = modelReturned as EdmModel;

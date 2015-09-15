@@ -1,22 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Edm.Library.Expressions;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
 {
-    [Test]
     public class TrippinDomain : DbDomain<TrippinModel>
     {
         public TrippinModel Context { get { return DbContext; } }
@@ -50,7 +42,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         /// <summary>
         /// Bound action - set the end-up time of a trip.
         /// </summary>
-        /// <param name="key">The trip to update.</param>
+        /// <param name="trip">The trip to update.</param>
         /// <returns>The trip updated.</returns>
         [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public Trip EndTrip(Trip trip)
@@ -62,18 +54,25 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         /// <summary>
         /// Bound function - gets the number of friends of a person.
         /// </summary>
-        /// <param name="key">The key of the binding person.</param>
+        /// <param name="person">The key of the binding person.</param>
         /// <returns>The number of friends of the person.</returns>
-        public int GetNumberOfFriends(int key)
+        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        public int GetNumberOfFriends(Person person)
         {
-            var person = PeopleWithFriends.Single(p => p.PersonId == key);
-            return person.Friends == null ? 0 : person.Friends.Count;
+            if (person == null)
+            {
+                return 0;
+            }
+
+            var personWithFriends = PeopleWithFriends.Single(p => p.PersonId == person.PersonId);
+            return personWithFriends.Friends == null ? 0 : personWithFriends.Friends.Count;
         }
 
         /// <summary>
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
+        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public Person GetPersonWithMostFriends()
         {
             Person result = null;
@@ -104,6 +103,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
         /// <returns>People with at least n friends.</returns>
+        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n)
         {
             foreach (var person in PeopleWithFriends)
@@ -118,75 +118,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                     yield return person;
                 }
             }
-        }
-    }
-
-    public class TestAttribute : DomainParticipantAttribute
-    {
-        public override void Configure(
-            DomainConfiguration configuration,
-            Type type)
-        {
-            configuration.AddHookHandler<IModelBuilder>(new CustomExtender());
-        }
-    }
-
-    public class CustomExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
-    {
-        public IModelBuilder InnerHandler { get; set; }
-
-        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
-        {
-            EdmModel model = null;
-            if (this.InnerHandler != null)
-            {
-                model = await this.InnerHandler.GetModelAsync(context, cancellationToken)as EdmModel;
-            }
-
-            var entityContainer = (EdmEntityContainer)model.EntityContainer;
-            var personType = (IEdmEntityType)model
-                .FindDeclaredType("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person");
-            var personTypeReference = new EdmEntityTypeReference(personType, false);
-            var people = entityContainer.FindEntitySet("People");
-
-            var getNumberOfFriends = new EdmFunction(
-                "Microsoft.Restier.WebApi.Test.Services.Trippin.Models",
-                "GetNumberOfFriends",
-                EdmCoreModel.Instance.GetInt32(false),
-                isBound: true,
-                entitySetPathExpression: null,
-                isComposable: true);
-            getNumberOfFriends.AddParameter("person", personTypeReference);
-            model.AddElement(getNumberOfFriends);
-
-            var getPersonWithMostFriends = new EdmFunction(
-                "Microsoft.Restier.WebApi.Test.Services.Trippin.Models",
-                "GetPersonWithMostFriends",
-                personTypeReference,
-                isBound: false,
-                entitySetPathExpression: null,
-                isComposable: true);
-            model.AddElement(getPersonWithMostFriends);
-            entityContainer.AddFunctionImport(
-                "GetPersonWithMostFriends",
-                getPersonWithMostFriends,
-                new EdmEntitySetReferenceExpression(people));
-
-            var getPeopleWithFriendsAtLeast = new EdmFunction(
-                "Microsoft.Restier.WebApi.Test.Services.Trippin.Models",
-                "GetPeopleWithFriendsAtLeast",
-                EdmCoreModel.GetCollection(personTypeReference),
-                isBound: false,
-                entitySetPathExpression: null,
-                isComposable: true);
-            getPeopleWithFriendsAtLeast.AddParameter("n", EdmCoreModel.Instance.GetInt32(false));
-            model.AddElement(getPeopleWithFriendsAtLeast);
-            entityContainer.AddFunctionImport(
-                "GetPeopleWithFriendsAtLeast",
-                getPeopleWithFriendsAtLeast,
-                new EdmEntitySetReferenceExpression(people));
-
-            return model;
         }
     }
 }

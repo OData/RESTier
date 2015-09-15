@@ -42,8 +42,9 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="ActionAttribute.cs" />
-    <Compile Include="Conventions\ConventionalActionProvider.cs" />
+    <Compile Include="Model\FunctionAttribute.cs" />
+    <Compile Include="Model\ActionAttribute.cs" />
+    <Compile Include="Conventions\ConventionalOperationProvider.cs" />
     <Compile Include="Conventions\ConventionalChangeSetAuthorizer.cs" />
     <Compile Include="Conventions\ConventionalChangeSetEntryFilter.cs" />
     <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />

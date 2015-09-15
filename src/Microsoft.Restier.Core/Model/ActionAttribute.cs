@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Restier.Core
+namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
     /// Attribute that indicates a method is an OData action.
@@ -20,5 +20,10 @@ namespace Microsoft.Restier.Core
         /// Gets or sets the namespace of the action.
         /// </summary>
         public string Namespace { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entity set associated with the action result.
+        /// </summary>
+        public string EntitySet { get; set; }
     }
 }

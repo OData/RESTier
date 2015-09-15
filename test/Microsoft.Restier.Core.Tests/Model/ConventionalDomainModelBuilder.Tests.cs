@@ -15,8 +15,8 @@ namespace Microsoft.Restier.Core.Tests.Model
         public async Task ConventionalDomainModelBuilderShouldProduceEmptyModelForEmptyDomain()
         {
             var model = await this.GetModelAsync<EmptyDomain>();
-            Assert.Empty(model.SchemaElements);
-            Assert.Null(model.EntityContainer);
+            Assert.Single(model.SchemaElements);
+            Assert.Empty(model.EntityContainer.Elements);
         }
 
         [Fact]

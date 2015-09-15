@@ -100,7 +100,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {
-            return Ok(Domain.GetNumberOfFriends(key));
+            var person = DbContext.People.SingleOrDefault(p => p.PersonId == key);
+            return Ok(Domain.GetNumberOfFriends(person));
         }
 
         [ODataRoute("GetPersonWithMostFriends")]
