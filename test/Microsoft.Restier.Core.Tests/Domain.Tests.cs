@@ -114,8 +114,7 @@ namespace Microsoft.Restier.Core.Tests
                         configuration.AddHookHandler<IQueryExecutor>(queryExecutor);
                         configuration.AddHookHandler<IQueryExpressionSourcer>(querySourcer);
                         configuration.AddHookHandler<IChangeSetPreparer>(changeSetPreparer);
-                        configuration.SetHookPoint(
-                            typeof(ISubmitExecutor), submitExecutor);
+                        configuration.AddHookHandler<ISubmitExecutor>(submitExecutor);
                         configuration.EnsureCommitted();
                         _context = new DomainContext(configuration);
                     }

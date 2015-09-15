@@ -195,7 +195,7 @@ namespace Microsoft.Restier.WebApi.Test
             configuration.AddHookHandler<IQueryExecutor>(new TestQueryExecutor());
             configuration.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
             configuration.AddHookHandler<IChangeSetPreparer>(new TestChangeSetPreparer());
-            configuration.SetHookPoint(typeof(ISubmitExecutor), new TestSubmitExecutor());
+            configuration.AddHookHandler<ISubmitExecutor>(new TestSubmitExecutor());
             return configuration;
         }
     }

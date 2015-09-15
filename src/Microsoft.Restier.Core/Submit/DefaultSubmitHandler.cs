@@ -299,7 +299,7 @@ namespace Microsoft.Restier.Core.Submit
                 }
             }
 
-            var executor = context.GetHookPoint<ISubmitExecutor>();
+            var executor = context.GetHookHandler<ISubmitExecutor>();
             if (executor == null)
             {
                 throw new NotSupportedException();
