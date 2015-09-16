@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core.Submit
     /// This is a multi-cast hook point whose instances
     /// are used in the reverse order of registration.
     /// </remarks>
-    public interface IChangeSetEntryValidator
+    public interface IChangeSetEntryValidator : IHookHandler
     {
         /// <summary>
         /// Asynchronously validates a change set entry.

@@ -203,7 +203,7 @@ namespace Microsoft.Restier.Core
 
             ConventionalChangeSetAuthorizer.ApplyTo(configuration, targetType);
             ConventionalChangeSetEntryFilter.ApplyTo(configuration, targetType);
-            configuration.AddHookPoint(typeof(IChangeSetEntryValidator), ConventionalChangeSetEntryValidator.Instance);
+            configuration.AddHookHandler<IChangeSetEntryValidator>(ConventionalChangeSetEntryValidator.Instance);
             ConventionalEntitySetProvider.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
         }

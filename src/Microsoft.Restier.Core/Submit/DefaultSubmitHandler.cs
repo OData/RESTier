@@ -213,15 +213,17 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
+            var validator = context.GetHookHandler<IChangeSetEntryValidator>();
+            if (validator == null)
+            {
+                return;
+            }
+
             ValidationResults validationResults = new ValidationResults();
 
             foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
             {
-                foreach (var validator in context
-                    .GetHookPoints<IChangeSetEntryValidator>().Reverse())
-                {
-                    await validator.ValidateEntityAsync(context, entry, validationResults, cancellationToken);
-                }
+                await validator.ValidateEntityAsync(context, entry, validationResults, cancellationToken);
             }
 
             if (validationResults.HasErrors)
