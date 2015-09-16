@@ -245,8 +245,8 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     entry.ChangeSetEntityState = DynamicChangeSetEntityState.PreEventing;
 
-                    foreach (var filter in context
-                        .GetHookPoints<IChangeSetEntryFilter>().Reverse())
+                    var filter = context.GetHookHandler<IChangeSetEntryFilter>();
+                    if (filter != null)
                     {
                         await filter.OnExecutingEntryAsync(context, entry, cancellationToken);
                     }
@@ -310,7 +310,8 @@ namespace Microsoft.Restier.Core.Submit
         {
             foreach (ChangeSetEntry entry in changeSetItems)
             {
-                foreach (var filter in context.GetHookPoints<IChangeSetEntryFilter>())
+                var filter = context.GetHookHandler<IChangeSetEntryFilter>();
+                if (filter != null)
                 {
                     await filter.OnExecutedEntryAsync(context, entry, cancellationToken);
                 }

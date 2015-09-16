@@ -32,9 +32,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(
-                typeof(IChangeSetEntryFilter),
-                new ConventionalChangeSetEntryFilter(targetType));
+            configuration.AddHookHandler<IChangeSetEntryFilter>(new ConventionalChangeSetEntryFilter(targetType));
         }
 
         /// <inheritdoc/>
