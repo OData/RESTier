@@ -35,9 +35,7 @@ namespace Microsoft.Restier.Security
             this DomainConfiguration configuration)
         {
             Ensure.NotNull(configuration, "configuration");
-            configuration.AddHookPoint(
-                typeof(IQueryExpressionInspector),
-                RoleBasedAuthorization.Default);
+            configuration.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
             configuration.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
         }
 

@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Core.Query
         {
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
-            private IEnumerable<IQueryExpressionInspector> inspectors;
+            private IQueryExpressionInspector inspector;
             private IQueryExpressionExpander expander;
             private IQueryExpressionFilter filter;
             private IQueryExpressionSourcer sourcer;
@@ -169,13 +169,12 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                if (this.inspectors == null)
+                if (this.inspector == null)
                 {
-                    this.inspectors = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionInspector>().Reverse();
+                    this.inspector = this.context.QueryContext.GetHookHandler<IQueryExpressionInspector>();
                 }
 
-                if (this.inspectors.Any(i => !i.Inspect(this.context)))
+                if (this.inspector != null && !this.inspector.Inspect(this.context))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }

@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core.Query
     /// are used in the reverse order of registration.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionInspector
+    public interface IQueryExpressionInspector : IHookHandler
     {
         /// <summary>
         /// Inspects an expression.
