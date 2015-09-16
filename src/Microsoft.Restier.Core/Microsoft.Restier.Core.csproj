@@ -86,7 +86,6 @@
     <Compile Include="Submit\IChangeSetEntryFilter.cs" />
     <Compile Include="Submit\IChangeSetEntryValidator.cs" />
     <Compile Include="Submit\IChangeSetPreparer.cs" />
-    <Compile Include="Submit\ISubmitAuthorizer.cs" />
     <Compile Include="Submit\ISubmitExecutor.cs" />
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />

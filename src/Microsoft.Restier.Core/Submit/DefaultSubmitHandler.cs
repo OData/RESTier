@@ -50,25 +50,6 @@ namespace Microsoft.Restier.Core.Submit
 
             await preparer.PrepareAsync(context, cancellationToken);
 
-            // authorize
-            var authorized = true;
-            foreach (var authorizer in context
-                .GetHookPoints<ISubmitAuthorizer>().Reverse())
-            {
-                authorized = await authorizer.AuthorizeAsync(
-                    context, cancellationToken);
-                if (!authorized || context.Result != null)
-                {
-                    break;
-                }
-            }
-
-            if (!authorized)
-            {
-                // TODO GitHubIssue#32 : Figure out a more appropriate exception
-                throw new SecurityException();
-            }
-
             if (context.Result != null)
             {
                 return context.Result;
