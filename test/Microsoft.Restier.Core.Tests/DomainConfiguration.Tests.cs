@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
@@ -93,6 +94,19 @@ namespace Microsoft.Restier.Core.Tests
             Assert.Equal(multiCastHookPoint1, delegateHandler.InnerHandler);
         }
 
+        [Fact]
+        public void hookHandlerChainTest()
+        {
+            var q1 = new HookB("q1Pre", "q1Post");
+            var q2 = new HookB("q2Pre", "q2Post");
+            var configuration = new DomainConfiguration()
+                .AddHookHandler<IHookB>(q1)
+                .AddHookHandler<IHookB>(q2);
+
+            var handler = configuration.GetHookHandler<IHookB>();
+            Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
+        }
+
         private class TestModelBuilder : IModelBuilder
         {
             public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
@@ -111,11 +125,38 @@ namespace Microsoft.Restier.Core.Tests
 
         private interface IHookB : IHookHandler
         {
+            string GetStr();
         }
 
         private class HookB : IHookB, IDelegateHookHandler<IHookB>
         {
             public IHookB InnerHandler { get; set; }
+
+            private readonly string preStr;
+
+            private readonly string postStr;
+
+            public HookB(string preStr = "DefaultPre", string postStr = "DefaultPost")
+            {
+                this.preStr = preStr;
+                this.postStr = postStr;
+            }
+
+            public string GetStr()
+            {
+                var builder = new StringBuilder();
+                builder.Append(this.preStr);
+                builder.Append("_");
+
+                if (this.InnerHandler != null)
+                {
+                    builder.Append(this.InnerHandler.GetStr());
+                }
+
+                builder.Append(this.postStr);
+                builder.Append("_");
+                return builder.ToString();
+            }
         }
     }
 }

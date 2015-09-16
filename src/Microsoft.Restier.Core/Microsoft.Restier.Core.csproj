@@ -30,6 +30,9 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="..\Shared\EdmHelpers.cs">
+      <Link>Shared\EdmHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
@@ -42,14 +45,18 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
+    <Compile Include="Model\FunctionAttribute.cs" />
+    <Compile Include="Model\ActionAttribute.cs" />
+    <Compile Include="Conventions\ConventionalOperationProvider.cs" />
     <Compile Include="Conventions\ConventionalChangeSetAuthorizer.cs" />
     <Compile Include="Conventions\ConventionalChangeSetEntryFilter.cs" />
     <Compile Include="Conventions\ConventionalChangeSetEntryValidator.cs" />
     <Compile Include="Conventions\ConventionalEntitySetFilter.cs" />
-    <Compile Include="Conventions\ConventionalEntitySetProvider.cs" />
+    <Compile Include="Conventions\ConventionalDomainModelBuilder.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="DomainBase.cs" />
     <Compile Include="DomainConfiguration.cs" />
+    <Compile Include="DomainConfigurationExtensions.cs" />
     <Compile Include="DomainContext.cs" />
     <Compile Include="DomainData.cs" />
     <Compile Include="DomainParticipantAttribute.cs" />

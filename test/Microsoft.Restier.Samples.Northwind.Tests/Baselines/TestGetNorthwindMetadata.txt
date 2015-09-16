@@ -204,11 +204,11 @@
         <Property Name="Photo" Type="Edm.Binary" MaxLength="max" />
       </EntityType>
       <Function Name="MostExpensive" IsBound="true">
-        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" Nullable="false" />
+        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" />
         <ReturnType Type="Edm.Double" Nullable="false" />
       </Function>
       <Action Name="IncreasePrice" IsBound="true">
-        <Parameter Name="bindingParameter" Type="Microsoft.Restier.Samples.Northwind.Models.Product" Nullable="false" />
+        <Parameter Name="bindingParameter" Type="Microsoft.Restier.Samples.Northwind.Models.Product" />
         <Parameter Name="diff" Type="Edm.Int32" Nullable="false" />
       </Action>
       <Action Name="ResetDataSource" />
@@ -258,9 +258,9 @@
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>
         <EntitySet Name="Contacts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Contact" />
-        <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />
         <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product" />
         <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order" />
+        <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>

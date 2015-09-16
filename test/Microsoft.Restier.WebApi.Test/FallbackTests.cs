@@ -103,7 +103,7 @@ namespace Microsoft.Restier.WebApi.Test
             return configuration;
         }
 
-        protected IQueryable<Order> PreservedOrders
+        public IQueryable<Order> PreservedOrders
         {
             get { return this.Source<Order>("Orders").Where(o => o.Id > 123); }
         }

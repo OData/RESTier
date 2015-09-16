@@ -204,7 +204,8 @@ namespace Microsoft.Restier.Core
             ConventionalChangeSetAuthorizer.ApplyTo(configuration, targetType);
             ConventionalChangeSetEntryFilter.ApplyTo(configuration, targetType);
             configuration.AddHookHandler<IChangeSetEntryValidator>(ConventionalChangeSetEntryValidator.Instance);
-            ConventionalEntitySetProvider.ApplyTo(configuration, targetType);
+            ConventionalDomainModelBuilder.ApplyTo(configuration, targetType);
+            ConventionalOperationProvider.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
         }
 
