@@ -799,5 +799,18 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.NotNull(exception);
             Assert.Equal(404, exception.Response.StatusCode);
         }
+
+        [Fact]
+        public void ConventionalChangeSetAuthorizerTest()
+        {
+            var trip = this.TestClientContext.Trips.First();
+            this.TestClientContext.DeleteObject(trip);
+            var ex = Assert.Throws<DataServiceRequestException>(() => this.TestClientContext.SaveChanges());
+            var clientException = Assert.IsAssignableFrom<DataServiceClientException>(ex.InnerException);
+            Assert.Equal(403, clientException.StatusCode);
+            Assert.Contains(
+                "The current user does not have permission to delete entities from the EntitySet 'Trips'.",
+                clientException.Message);
+        }
     }
 }

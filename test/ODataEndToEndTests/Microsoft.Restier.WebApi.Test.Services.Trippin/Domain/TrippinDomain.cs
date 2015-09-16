@@ -119,5 +119,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
                 }
             }
         }
+
+        private bool CanDeleteTrips()
+        {
+            return false;
+        }
     }
 }

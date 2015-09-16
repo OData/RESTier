@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -115,7 +116,15 @@ namespace Microsoft.Restier.WebApi
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(postEntry);
 
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                try
+                {
+                    SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                }
+                catch (SecurityException ex)
+                {
+                    throw new HttpResponseException(
+                        this.Request.CreateErrorResponse(HttpStatusCode.Forbidden, ex));
+                }
             }
             else
             {
@@ -140,7 +149,19 @@ namespace Microsoft.Restier.WebApi
                 return BadRequest(this.ModelState);
             }
 
-            return await this.Update(edmEntityObject, true, cancellationToken);
+            IHttpActionResult result = null;
+
+            try
+            {
+                result = await this.Update(edmEntityObject, true, cancellationToken);
+            }
+            catch (SecurityException ex)
+            {
+                throw new HttpResponseException(
+                    this.Request.CreateErrorResponse(HttpStatusCode.Forbidden, ex));
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -186,7 +207,15 @@ namespace Microsoft.Restier.WebApi
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteEntry);
 
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                try
+                {
+                    SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                }
+                catch (SecurityException ex)
+                {
+                    throw new HttpResponseException(
+                        this.Request.CreateErrorResponse(HttpStatusCode.Forbidden, ex));
+                }
             }
             else
             {
