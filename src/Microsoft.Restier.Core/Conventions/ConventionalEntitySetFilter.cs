@@ -28,9 +28,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(
-                typeof(IQueryExpressionFilter),
-                new ConventionalEntitySetFilter(targetType));
+            configuration.AddHookHandler<IQueryExpressionFilter>(new ConventionalEntitySetFilter(targetType));
         }
 
         /// <inheritdoc/>

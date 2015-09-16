@@ -28,7 +28,7 @@ namespace Microsoft.Restier.Core.Query
     /// are used in the original order of registration.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionFilter
+    public interface IQueryExpressionFilter : IHookHandler
     {
         /// <summary>
         /// Filters an expression.

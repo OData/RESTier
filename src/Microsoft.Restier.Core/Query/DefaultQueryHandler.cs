@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Core.Query
             private readonly IDictionary<Expression, Expression> processedExpressions;
             private IEnumerable<IQueryExpressionInspector> inspectors;
             private IQueryExpressionExpander expander;
-            private IEnumerable<IQueryExpressionFilter> filters;
+            private IQueryExpressionFilter filter;
             private IQueryExpressionSourcer sourcer;
 
             public QueryExpressionVisitor(QueryContext context)
@@ -222,13 +222,12 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Filter(Expression visited, Expression processed)
             {
-                if (this.filters == null)
+                if (this.filter == null)
                 {
-                    this.filters = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionFilter>();
+                    this.filter = this.context.QueryContext.GetHookHandler<IQueryExpressionFilter>();
                 }
 
-                foreach (var filter in this.filters)
+                if (this.filter != null)
                 {
                     var filtered = filter.Filter(this.context);
                     var callback = this.context.AfterNestedVisitCallback;
