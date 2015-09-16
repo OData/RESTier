@@ -120,40 +120,40 @@ namespace Microsoft.Restier.Core.Submit
         {
             switch (entry.Type)
             {
-            case ChangeSetEntryType.DataModification:
-                DataModificationEntry dataModification = (DataModificationEntry)entry;
-                string message = null;
-                if (dataModification.IsNew)
-                {
-                    message = Resources.NoPermissionToInsertEntity;
-                }
-                else if (dataModification.IsUpdate)
-                {
-                    message = Resources.NoPermissionToUpdateEntity;
-                }
-                else if (dataModification.IsDelete)
-                {
-                    message = Resources.NoPermissionToDeleteEntity;
-                }
-                else
-                {
-                    throw new NotSupportedException(Resources.DataModificationMustBeCUD);
-                }
+                case ChangeSetEntryType.DataModification:
+                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                    string message = null;
+                    if (dataModification.IsNew)
+                    {
+                        message = Resources.NoPermissionToInsertEntity;
+                    }
+                    else if (dataModification.IsUpdate)
+                    {
+                        message = Resources.NoPermissionToUpdateEntity;
+                    }
+                    else if (dataModification.IsDelete)
+                    {
+                        message = Resources.NoPermissionToDeleteEntity;
+                    }
+                    else
+                    {
+                        throw new NotSupportedException(Resources.DataModificationMustBeCUD);
+                    }
 
-                return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
+                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
 
-            case ChangeSetEntryType.ActionInvocation:
-                ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
-                return string.Format(
-                    CultureInfo.InvariantCulture,
-                    Resources.NoPermissionToInvokeAction,
-                    actionInvocation.ActionName);
+                case ChangeSetEntryType.ActionInvocation:
+                    ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
+                    return string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.NoPermissionToInvokeAction,
+                        actionInvocation.ActionName);
 
-            default:
-                throw new InvalidOperationException(string.Format(
-                    CultureInfo.InvariantCulture,
-                    Resources.InvalidChangeSetEntryType,
-                    entry.Type));
+                default:
+                    throw new InvalidOperationException(string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.InvalidChangeSetEntryType,
+                        entry.Type));
             }
         }
 
@@ -192,22 +192,17 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
+            var authorizer = context.GetHookHandler<IChangeSetEntryAuthorizer>();
+            if (authorizer == null)
+            {
+                return;
+            }
+
             foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
             {
-                string message = null;
-
-                foreach (var authorizer in context
-                    .GetHookPoints<IChangeSetEntryAuthorizer>().Reverse())
+                if (!await authorizer.AuthorizeAsync(context, entry, cancellationToken))
                 {
-                    if (!await authorizer.AuthorizeAsync(context, entry, cancellationToken))
-                    {
-                        message = DefaultSubmitHandler.GetAuthorizeFailedMessage(entry);
-                        break;
-                    }
-                }
-
-                if (message != null)
-                {
+                    var message = DefaultSubmitHandler.GetAuthorizeFailedMessage(entry);
                     throw new SecurityException(message);
                 }
             }

@@ -31,9 +31,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookPoint(
-                typeof(IChangeSetEntryAuthorizer),
-                new ConventionalChangeSetAuthorizer(targetType));
+            configuration.AddHookHandler<IChangeSetEntryAuthorizer>(new ConventionalChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
