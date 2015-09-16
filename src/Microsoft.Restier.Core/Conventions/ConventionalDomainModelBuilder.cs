@@ -24,9 +24,10 @@ namespace Microsoft.Restier.Core.Conventions
         IModelMapper, IDelegateHookHandler<IModelMapper>,
         IQueryExpressionExpander
     {
-        private Type targetType;
-        private ICollection<PropertyInfo> entitySetProperties = new List<PropertyInfo>();
-        private ICollection<PropertyInfo> singletonProperties = new List<PropertyInfo>();
+        private readonly Type targetType;
+        private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
+        private readonly ICollection<PropertyInfo> entitySetProperties = new List<PropertyInfo>();
+        private readonly ICollection<PropertyInfo> singletonProperties = new List<PropertyInfo>();
 
         private ConventionalDomainModelBuilder(Type targetType)
         {
@@ -36,36 +37,6 @@ namespace Microsoft.Restier.Core.Conventions
         IModelBuilder IDelegateHookHandler<IModelBuilder>.InnerHandler { get; set; }
 
         IModelMapper IDelegateHookHandler<IModelMapper>.InnerHandler { get; set; }
-
-        private IEnumerable<PropertyInfo> PublicPropertiesOnTargetType
-        {
-            get
-            {
-                var publicPropertiesOnTargetType = new HashSet<PropertyInfo>();
-                var currentType = this.targetType;
-                while (currentType != null && currentType != typeof(DomainBase))
-                {
-                    var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
-                        BindingFlags.Public |
-                        BindingFlags.Static |
-                        BindingFlags.Instance |
-                        BindingFlags.DeclaredOnly);
-
-                    foreach (var property in publicPropertiesDeclaredOnCurrentType)
-                    {
-                        if (property.CanRead &&
-                            publicPropertiesOnTargetType.All(p => p.Name != property.Name))
-                        {
-                            publicPropertiesOnTargetType.Add(property);
-                        }
-                    }
-
-                    currentType = currentType.BaseType;
-                }
-
-                return publicPropertiesOnTargetType;
-            }
-        }
 
         /// <inheritdoc/>
         public static void ApplyTo(
@@ -91,7 +62,7 @@ namespace Microsoft.Restier.Core.Conventions
             {
                 // There is no model returned so return an empty model.
                 var emptyModel = new EdmModel();
-                EnsureEntityContainer(context, emptyModel);
+                emptyModel.EnsureEntityContainer(this.targetType);
                 return emptyModel;
             }
 
@@ -102,6 +73,7 @@ namespace Microsoft.Restier.Core.Conventions
                 return modelReturned;
             }
 
+            this.ScanForDeclaredPublicProperties();
             this.BuildEntitySetsAndSingletons(context, edmModel);
             return edmModel;
         }
@@ -167,7 +139,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
-                    target = GetDomainInstance(context.QueryContext.DomainContext);
+                    target = context.QueryContext.DomainContext
+                        .GetProperty(typeof(Domain).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -185,11 +158,6 @@ namespace Microsoft.Restier.Core.Conventions
             return null;
         }
 
-        private static object GetDomainInstance(DomainContext context)
-        {
-            return context.GetProperty(typeof(Domain).AssemblyQualifiedName);
-        }
-
         private static bool IsEntitySetProperty(PropertyInfo property)
         {
             return property.PropertyType.IsGenericType &&
@@ -200,20 +168,6 @@ namespace Microsoft.Restier.Core.Conventions
         private static bool IsSingletonProperty(PropertyInfo property)
         {
             return !property.PropertyType.IsGenericType && property.PropertyType.IsClass;
-        }
-
-        private static EdmEntityContainer EnsureEntityContainer(InvocationContext context, EdmModel model)
-        {
-            var container = (EdmEntityContainer)model.EntityContainer;
-            if (container == null)
-            {
-                var domainInstance = GetDomainInstance(context.DomainContext);
-                var domainNamespace = domainInstance.GetType().Namespace;
-                container = new EdmEntityContainer(domainNamespace, "DefaultContainer");
-                model.AddElement(container);
-            }
-
-            return container;
         }
 
         private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(
@@ -228,10 +182,34 @@ namespace Microsoft.Restier.Core.Conventions
             return null;
         }
 
+        private void ScanForDeclaredPublicProperties()
+        {
+            var currentType = this.targetType;
+            while (currentType != null && currentType != typeof(DomainBase))
+            {
+                var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
+                    BindingFlags.Public |
+                    BindingFlags.Static |
+                    BindingFlags.Instance |
+                    BindingFlags.DeclaredOnly);
+
+                foreach (var property in publicPropertiesDeclaredOnCurrentType)
+                {
+                    if (property.CanRead &&
+                        publicProperties.All(p => p.Name != property.Name))
+                    {
+                        publicProperties.Add(property);
+                    }
+                }
+
+                currentType = currentType.BaseType;
+            }
+        }
+
         private void BuildEntitySetsAndSingletons(InvocationContext context, EdmModel model)
         {
             var configuration = context.DomainContext.Configuration;
-            foreach (var property in this.PublicPropertiesOnTargetType)
+            foreach (var property in this.publicProperties)
             {
                 if (configuration.IsPropertyIgnored(property.Name))
                 {
@@ -247,26 +225,26 @@ namespace Microsoft.Restier.Core.Conventions
                     }
                 }
 
-                var entityType = property.PropertyType;
+                var propertyType = property.PropertyType;
                 if (isEntitySet)
                 {
-                    entityType = entityType.GetGenericArguments()[0];
+                    propertyType = propertyType.GetGenericArguments()[0];
                 }
 
-                var edmEntityType = model.FindDeclaredType(entityType.FullName) as IEdmEntityType;
-                if (edmEntityType == null)
+                var entityType = model.FindDeclaredType(propertyType.FullName) as IEdmEntityType;
+                if (entityType == null)
                 {
                     // Skip property whose entity type has not been declared yet.
                     continue;
                 }
 
-                var container = EnsureEntityContainer(context, model);
+                var container = model.EnsureEntityContainer(this.targetType);
                 if (isEntitySet)
                 {
                     if (container.FindEntitySet(property.Name) == null)
                     {
                         this.entitySetProperties.Add(property);
-                        container.AddEntitySet(property.Name, edmEntityType);
+                        container.AddEntitySet(property.Name, entityType);
                     }
                 }
                 else
@@ -274,7 +252,7 @@ namespace Microsoft.Restier.Core.Conventions
                     if (container.FindSingleton(property.Name) == null)
                     {
                         this.singletonProperties.Add(property);
-                        container.AddSingleton(property.Name, edmEntityType);
+                        container.AddSingleton(property.Name, entityType);
                     }
                 }
             }

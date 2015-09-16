@@ -121,10 +121,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         protected override DomainConfiguration CreateDomainConfiguration()
         {
-            var configuration = base.CreateDomainConfiguration();
-            configuration.IgnoreProperty("DomainConfiguration");
-            configuration.IgnoreProperty("DomainContext");
-            return configuration;
+            return base.CreateDomainConfiguration()
+                .IgnoreProperty("DomainConfiguration")
+                .IgnoreProperty("DomainContext");
         }
     }
 

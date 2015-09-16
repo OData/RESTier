@@ -30,6 +30,9 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="..\Shared\EdmHelpers.cs">
+      <Link>Shared\EdmHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
@@ -83,7 +86,6 @@
     <Compile Include="Query\QueryModelReference.cs" />
     <Compile Include="Query\QueryRequest.cs" />
     <Compile Include="Query\QueryResult.cs" />
-    <Compile Include="Shared\EdmHelpers.cs" />
     <Compile Include="Submit\ChangeSet.cs" />
     <Compile Include="Submit\ChangeSetEntry.cs" />
     <Compile Include="Submit\DefaultSubmitHandler.cs" />

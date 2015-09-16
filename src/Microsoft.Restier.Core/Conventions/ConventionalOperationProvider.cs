@@ -5,14 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Expressions;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Shared;
 
 namespace Microsoft.Restier.Core.Conventions
 {
@@ -43,11 +41,23 @@ namespace Microsoft.Restier.Core.Conventions
                 model = await this.InnerHandler.GetModelAsync(context, cancellationToken) as EdmModel;
             }
 
-            Ensure.NotNull(model, "model");
+            if (model == null)
+            {
+                // We don't plan to extend an empty model with operations.
+                return null;
+            }
+
             this.ScanForOperations();
-            this.BuildFunctions(context, model);
-            this.BuildActions(context, model);
+            this.BuildFunctions(model);
+            this.BuildActions(model);
             return model;
+        }
+
+        private static bool TryGetEntityType(IEdmModel model, Type type, out IEdmEntityType entityType)
+        {
+            var edmType = model.FindDeclaredType(type.FullName);
+            entityType = edmType as IEdmEntityType;
+            return entityType != null;
         }
 
         private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
@@ -64,20 +74,6 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        private static bool TryGetElementType(Type type, out Type elementType)
-        {
-            elementType = null;
-            if (type.IsGenericType &&
-                (type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ||
-                type.GetGenericTypeDefinition() == typeof(IQueryable<>)))
-            {
-                elementType = type.GetGenericArguments()[0];
-                return true;
-            }
-
-            return false;
-        }
-
         private static bool TryGetBindingParameter(
             MethodInfo method, IEdmModel model, out ParameterInfo bindingParameter)
         {
@@ -89,14 +85,12 @@ namespace Microsoft.Restier.Core.Conventions
             }
 
             Type parameterType;
-            if (!TryGetElementType(firstParameter.ParameterType, out parameterType))
+            if (!firstParameter.ParameterType.TryGetElementType(out parameterType))
             {
                 parameterType = firstParameter.ParameterType;
             }
 
-            var edmType = model.FindDeclaredType(parameterType.FullName);
-            var entityType = edmType as IEdmEntityType;
-            if (entityType == null)
+            if (!GetTypeReference(parameterType, model).IsEntity())
             {
                 return false;
             }
@@ -124,35 +118,18 @@ namespace Microsoft.Restier.Core.Conventions
         private static IEdmTypeReference GetTypeReference(Type type, IEdmModel model)
         {
             Type elementType;
-            if (TryGetElementType(type, out elementType))
+            if (type.TryGetElementType(out elementType))
             {
                 return EdmCoreModel.GetCollection(GetTypeReference(elementType, model));
             }
 
-            var edmType = model.FindDeclaredType(type.FullName);
-            var entityType = edmType as IEdmEntityType;
-            if (entityType != null)
+            IEdmEntityType entityType;
+            if (TryGetEntityType(model, type, out entityType))
             {
                 return new EdmEntityTypeReference(entityType, true);
             }
 
-            return GetPrimitiveTypeReference(type);
-        }
-
-        private static EdmTypeReference GetPrimitiveTypeReference(Type type)
-        {
-            // Only handle primitive type right now
-            bool isNullable;
-            EdmPrimitiveTypeKind? primitiveTypeKind = EdmHelpers.GetPrimitiveTypeKind(type, out isNullable);
-
-            if (!primitiveTypeKind.HasValue)
-            {
-                return null;
-            }
-
-            return new EdmPrimitiveTypeReference(
-                EdmCoreModel.Instance.GetPrimitiveType(primitiveTypeKind.Value),
-                isNullable);
+            return type.GetPrimitiveTypeReference();
         }
 
         private static EdmPathExpression BuildEntitySetPathExpression(
@@ -179,13 +156,7 @@ namespace Microsoft.Restier.Core.Conventions
 
             if (entitySet == null && returnTypeReference != null)
             {
-                if (returnTypeReference.IsCollection())
-                {
-                    returnTypeReference = returnTypeReference.AsCollection().ElementType();
-                }
-
-                entitySet = model.EntityContainer.EntitySets()
-                    .SingleOrDefault(e => e.EntityType().FullTypeName() == returnTypeReference.FullName());
+                entitySet = model.FindDeclaredEntitySetByTypeReference(returnTypeReference);
             }
 
             if (entitySet != null)
@@ -194,25 +165,6 @@ namespace Microsoft.Restier.Core.Conventions
             }
 
             return null;
-        }
-
-        private static object GetDomainInstance(DomainContext context)
-        {
-            return context.GetProperty(typeof(Domain).AssemblyQualifiedName);
-        }
-
-        private static EdmEntityContainer EnsureEntityContainer(InvocationContext context, EdmModel model)
-        {
-            var container = (EdmEntityContainer)model.EntityContainer;
-            if (container == null)
-            {
-                var domainInstance = GetDomainInstance(context.DomainContext);
-                var domainNamespace = domainInstance.GetType().Namespace;
-                container = new EdmEntityContainer(domainNamespace, "DefaultContainer");
-                model.AddElement(container);
-            }
-
-            return container;
         }
 
         private void ScanForOperations()
@@ -247,7 +199,7 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        private void BuildActions(InvocationContext context, EdmModel model)
+        private void BuildActions(EdmModel model)
         {
             foreach (ActionMethodInfo actionInfo in this.actionInfos)
             {
@@ -269,14 +221,14 @@ namespace Microsoft.Restier.Core.Conventions
                 {
                     var entitySetReferenceExpression = BuildEntitySetReferenceExpression(
                         model, actionInfo.EntitySet, returnTypeReference);
-                    var entityContainer = EnsureEntityContainer(context, model);
+                    var entityContainer = model.EnsureEntityContainer(this.targetType);
                     entityContainer.AddActionImport(
                         action.Name, action, entitySetReferenceExpression);
                 }
             }
         }
 
-        private void BuildFunctions(InvocationContext context, EdmModel model)
+        private void BuildFunctions(EdmModel model)
         {
             foreach (FunctionMethodInfo functionInfo in this.functionInfos)
             {
@@ -299,8 +251,9 @@ namespace Microsoft.Restier.Core.Conventions
                 {
                     var entitySetReferenceExpression = BuildEntitySetReferenceExpression(
                         model, functionInfo.EntitySet, returnTypeReference);
-                    var entityContainer = EnsureEntityContainer(context, model);
-                    entityContainer.AddFunctionImport(function.Name, function, entitySetReferenceExpression);
+                    var entityContainer = model.EnsureEntityContainer(this.targetType);
+                    entityContainer.AddFunctionImport(
+                        function.Name, function, entitySetReferenceExpression);
                 }
             }
         }
