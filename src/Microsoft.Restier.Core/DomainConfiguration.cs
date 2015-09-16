@@ -44,9 +44,6 @@ namespace Microsoft.Restier.Core
         private static readonly IDictionary<object, DomainConfiguration> Configurations =
             new ConcurrentDictionary<object, DomainConfiguration>();
 
-        private readonly IDictionary<Type, IList<object>> multiCasts =
-            new Dictionary<Type, IList<object>>();
-
         private readonly IDictionary<Type, object> hookHandlers = new ConcurrentDictionary<Type, object>();
 
         /// <summary>
@@ -124,73 +121,6 @@ namespace Microsoft.Restier.Core
             this.IsCommitted = true;
         }
 
-        /// <summary>
-        /// Indicates if this domain configuration has any
-        /// instances of a type of multi-cast hook point.
-        /// </summary>
-        /// <param name="hookPointType">
-        /// The type of a multi-cast hook point.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if this domain configuration has any instances of the
-        /// specified type of multi-cast hook point; otherwise, <c>false</c>.
-        /// </returns>
-        public bool HasHookPoints(Type hookPointType)
-        {
-            Ensure.NotNull(hookPointType, "hookPointType");
-            return this.multiCasts.ContainsKey(hookPointType);
-        }
-
-        /// <summary>
-        /// Gets all instances of a type of multi-cast hook point.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the multi-cast hook point.
-        /// </typeparam>
-        /// <returns>
-        /// All instances of the specified type of multi-cast
-        /// hook point in the original order of registration.
-        /// </returns>
-        public IEnumerable<T> GetHookPoints<T>()
-            where T : class
-        {
-            return this.GetHookPoints(typeof(T)).Cast<T>();
-        }
-
-        /// <summary>
-        /// Adds an instance of a type of multi-cast hook point.
-        /// </summary>
-        /// <param name="hookPointType">
-        /// The type of a multi-cast hook point.
-        /// </param>
-        /// <param name="instance">
-        /// An instance of the type of multi-cast hook point.
-        /// </param>
-        public void AddHookPoint(Type hookPointType, object instance)
-        {
-            if (this.IsCommitted)
-            {
-                throw new InvalidOperationException();
-            }
-
-            Ensure.NotNull(hookPointType, "hookPointType");
-            Ensure.NotNull(instance, "instance");
-            if (!hookPointType.IsAssignableFrom(instance.GetType()))
-            {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
-            }
-
-            IList<object> instances = null;
-            if (!this.multiCasts.TryGetValue(hookPointType, out instances))
-            {
-                instances = new List<object>();
-                this.multiCasts.Add(hookPointType, instances);
-            }
-
-            instances.Add(instance);
-        }
-
         #region HookHandler
         /// <summary>
         /// Add an hook handler instance.
@@ -229,12 +159,5 @@ namespace Microsoft.Restier.Core
             return value as T;
         }
         #endregion
-
-        private IEnumerable<object> GetHookPoints(Type hookPointType)
-        {
-            IList<object> list;
-            this.multiCasts.TryGetValue(hookPointType, out list);
-            return list ?? Enumerable.Empty<object>();
-        }
     }
 }

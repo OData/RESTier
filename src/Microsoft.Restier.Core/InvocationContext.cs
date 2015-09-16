@@ -33,22 +33,6 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public DomainContext DomainContext { get; private set; }
 
-        /// <summary>
-        /// Gets all instances of a type of multi-cast hook point.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the multi-cast hook point.
-        /// </typeparam>
-        /// <returns>
-        /// All instances of the specified type of multi-cast
-        /// hook point in the original order of registration.
-        /// </returns>
-        public IEnumerable<T> GetHookPoints<T>()
-            where T : class
-        {
-            return this.DomainContext.Configuration.GetHookPoints<T>();
-        }
-
         internal T GetHookHandler<T>() where T : class, IHookHandler
         {
             return this.DomainContext.Configuration.GetHookHandler<T>();
