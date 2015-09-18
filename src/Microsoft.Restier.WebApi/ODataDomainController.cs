@@ -10,7 +10,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -116,15 +115,7 @@ namespace Microsoft.Restier.WebApi
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(postEntry);
 
-                try
-                {
-                    SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
-                }
-                catch (SecurityException ex)
-                {
-                    throw new HttpResponseException(
-                        this.Request.CreateErrorResponse(HttpStatusCode.Forbidden, ex));
-                }
+                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -149,19 +140,7 @@ namespace Microsoft.Restier.WebApi
                 return BadRequest(this.ModelState);
             }
 
-            IHttpActionResult result = null;
-
-            try
-            {
-                result = await this.Update(edmEntityObject, true, cancellationToken);
-            }
-            catch (SecurityException ex)
-            {
-                throw new HttpResponseException(
-                    this.Request.CreateErrorResponse(HttpStatusCode.Forbidden, ex));
-            }
-
-            return result;
+            return await this.Update(edmEntityObject, true, cancellationToken);
         }
 
         /// <summary>
@@ -207,15 +186,7 @@ namespace Microsoft.Restier.WebApi
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteEntry);
 
-                try
-                {
-                    SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
-                }
-                catch (SecurityException ex)
-                {
-                    throw new HttpResponseException(
-                        this.Request.CreateErrorResponse(HttpStatusCode.Forbidden, ex));
-                }
+                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {

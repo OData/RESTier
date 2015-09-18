@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -21,6 +23,16 @@ namespace Microsoft.Restier.WebApi.Filters
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public sealed class ODataDomainExceptionFilterAttribute : ExceptionFilterAttribute
     {
+        private static readonly List<ExceptionHandlerDelegate> Handlers = new List<ExceptionHandlerDelegate>
+            {
+                Handler400,
+                Handler403
+            };
+
+        private delegate Task<HttpResponseMessage> ExceptionHandlerDelegate(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken);
+
         /// <summary>
         /// The callback to execute when exception occurs.
         /// </summary>
@@ -31,23 +43,48 @@ namespace Microsoft.Restier.WebApi.Filters
             HttpActionExecutedContext actionExecutedContext,
             CancellationToken cancellationToken)
         {
-            IHttpActionResult exceptionResult = null;
+            foreach (var handler in Handlers)
+            {
+                var result = await handler.Invoke(actionExecutedContext, cancellationToken);
 
-            ValidationException validationException = actionExecutedContext.Exception as ValidationException;
+                if (result != null)
+                {
+                    actionExecutedContext.Response = result;
+                    return;
+                }
+            }
+        }
+
+        private static async Task<HttpResponseMessage> Handler400(
+           HttpActionExecutedContext context,
+           CancellationToken cancellationToken)
+        {
+            ValidationException validationException = context.Exception as ValidationException;
             if (validationException != null)
             {
-                exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(
+                var exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(
                     HttpStatusCode.BadRequest,
                     validationException.ValidationResults.Select(r => new ValidationResultDto(r)),
-                    actionExecutedContext.ActionContext.RequestContext.Configuration.Services.GetContentNegotiator(),
-                    actionExecutedContext.Request,
+                    context.ActionContext.RequestContext.Configuration.Services.GetContentNegotiator(),
+                    context.Request,
                     new MediaTypeFormatterCollection());
+                return await exceptionResult.ExecuteAsync(cancellationToken);
             }
 
-            if (exceptionResult != null)
+            return null;
+        }
+
+        private static Task<HttpResponseMessage> Handler403(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            if (context.Exception is SecurityException)
             {
-                actionExecutedContext.Response = await exceptionResult.ExecuteAsync(cancellationToken);
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.Forbidden, context.Exception));
             }
+
+            return null;
         }
     }
 }
