@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
+using Microsoft.OData.Core;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.WebApi.Filters
@@ -71,6 +72,12 @@ namespace Microsoft.Restier.WebApi.Filters
                 return await exceptionResult.ExecuteAsync(cancellationToken);
             }
 
+            var odataException = context.Exception as ODataException;
+            if (odataException != null)
+            {
+                return context.Request.CreateErrorResponse(HttpStatusCode.BadRequest, context.Exception);
+            }
+
             return null;
         }
 
@@ -84,7 +91,7 @@ namespace Microsoft.Restier.WebApi.Filters
                     context.Request.CreateErrorResponse(HttpStatusCode.Forbidden, context.Exception));
             }
 
-            return null;
+            return Task.FromResult<HttpResponseMessage>(null);
         }
     }
 }

@@ -90,6 +90,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="FallbackTests.cs" />
+    <Compile Include="ExceptionHandlerTests.cs" />
     <Compile Include="ODataDomainControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
