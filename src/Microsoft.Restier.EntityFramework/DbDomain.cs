@@ -41,7 +41,7 @@ namespace Microsoft.Restier.EntityFramework
         {
             get
             {
-                return this.DomainContext.GetProperty<T>("DbContext");
+                return this.DomainContext.GetProperty<T>(DbDomainConstants.DbContextKey);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Microsoft.Restier.EntityFramework
 #else
             dbContext.Configuration.ProxyCreationEnabled = false;
 #endif
-            context.SetProperty("DbContext", dbContext);
+            context.SetProperty(DbDomainConstants.DbContextKey, dbContext);
             return context;
         }
 
@@ -110,7 +110,7 @@ namespace Microsoft.Restier.EntityFramework
             if (disposing)
             {
                 var dbContext = this.DomainContext
-                    .GetProperty<DbContext>("DbContext");
+                    .GetProperty<DbContext>(DbDomainConstants.DbContextKey);
                 if (dbContext != null)
                 {
                     dbContext.Dispose();

@@ -16,6 +16,8 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryExpressionContext
     {
+        private const string MethodNameOfDomainDataValue = "Value";
+
         private Stack<Expression> visitedNodes = new Stack<Expression>();
         private IDictionary<Expression, QueryModelReference> modelReferences =
             new Dictionary<Expression, QueryModelReference>();
@@ -176,7 +178,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 var method = methodCall.Method;
                 if (method.DeclaringType == typeof(DomainData) &&
-                    method.Name != "Value")
+                    method.Name != MethodNameOfDomainDataValue)
                 {
                     modelReference = ComputeDomainDataReference(methodCall);
                 }

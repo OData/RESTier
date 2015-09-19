@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Core.Conventions
         /// <inheritdoc/>
         public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
 
             IEdmModel modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
             if (modelReturned == null)
@@ -114,7 +114,7 @@ namespace Microsoft.Restier.Core.Conventions
         /// <inheritdoc/>
         public Expression Expand(QueryExpressionContext context)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
             if (context.ModelReference == null)
             {
                 return null;

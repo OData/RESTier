@@ -24,7 +24,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="controllerDescriptor">The controller descriptor.</param>
         public void Initialize(HttpControllerSettings controllerSettings, HttpControllerDescriptor controllerDescriptor)
         {
-            Ensure.NotNull(controllerSettings);
+            Ensure.NotNull(controllerSettings, "controllerSettings");
             var controllerFormatters = controllerSettings.Formatters;
             IList<ODataMediaTypeFormatter> odataFormatters =
                 controllerFormatters.OfType<ODataMediaTypeFormatter>().ToList();

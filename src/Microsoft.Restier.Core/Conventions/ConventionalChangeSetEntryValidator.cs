@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core.Conventions
             ValidationResults validationResults,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(validationResults);
+            Ensure.NotNull(validationResults, "validationResults");
             DataModificationEntry dataModificationEntry = entry as DataModificationEntry;
             if (dataModificationEntry != null)
             {

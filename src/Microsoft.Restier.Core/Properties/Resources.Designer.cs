@@ -151,6 +151,15 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not supported type: {0}..
+        /// </summary>
+        internal static string NotSupportedType {
+            get {
+                return ResourceManager.GetString("NotSupportedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information..
         /// </summary>
         internal static string ValidationFailsTheOperation {

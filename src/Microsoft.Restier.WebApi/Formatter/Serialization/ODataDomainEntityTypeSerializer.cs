@@ -52,7 +52,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         /// <returns>The ETag created.</returns>
         public override string CreateETag(EntityInstanceContext entityInstanceContext)
         {
-            Ensure.NotNull(entityInstanceContext);
+            Ensure.NotNull(entityInstanceContext, "entityInstanceContext");
             string etag = null;
             object etagGetterObject;
             if (entityInstanceContext.Request.Properties.TryGetValue("ETagGetter", out etagGetterObject))

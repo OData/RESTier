@@ -69,7 +69,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
 
             string message = string.Format(
                 CultureInfo.InvariantCulture,
-                "{0} cannot write an object of type '{1}'.",
+                Resources.CannotWriteObjectType,
                 typeof(ODataDomainFeedSerializer).Name,
                 feedType.FullName());
             throw new SerializationException(message);

@@ -41,7 +41,8 @@ namespace Microsoft.Restier.Core.Conventions
             ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
-            return this.InvokeFilterMethodAsync(context, entry, "ing");
+            return this.InvokeFilterMethodAsync(
+                context, entry, ConventionalChangeSetConstants.FilterMethodNamePreFilterSuffix);
         }
 
         /// <inheritdoc/>
@@ -50,7 +51,8 @@ namespace Microsoft.Restier.Core.Conventions
             ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
-            return this.InvokeFilterMethodAsync(context, entry, "ed");
+            return this.InvokeFilterMethodAsync(
+                context, entry, ConventionalChangeSetConstants.FilterMethodNamePostFilterSuffix);
         }
 
         private static string GetMethodName(ChangeSetEntry entry, string suffix)
@@ -62,22 +64,25 @@ namespace Microsoft.Restier.Core.Conventions
                 string operationName = null;
                 if (dataModification.IsNew)
                 {
-                    operationName = "Insert";
+                    operationName = ConventionalChangeSetConstants.FilterMethodDataModificationInsert;
                 }
                 else if (dataModification.IsUpdate)
                 {
-                    operationName = "Updat";
+                        operationName = ConventionalChangeSetConstants.FilterMethodDataModificationUpdate;
                 }
                 else if (dataModification.IsDelete)
                 {
-                    operationName = "Delet";
+                        operationName = ConventionalChangeSetConstants.FilterMethodDataModificationDelete;
                 }
 
-                return "On" + operationName + suffix + dataModification.EntitySetName;
+                return ConventionalChangeSetConstants.FilterMethodNamePrefix +
+                        operationName + suffix + dataModification.EntitySetName;
 
             case ChangeSetEntryType.ActionInvocation:
                 ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                return "OnExecut" + suffix + actionEntry.ActionName;
+                return ConventionalChangeSetConstants.FilterMethodNamePrefix +
+                       ConventionalChangeSetConstants.FilterMethodActionInvocationExecute +
+                       suffix + actionEntry.ActionName;
 
             default:
                 throw new InvalidOperationException(string.Format(

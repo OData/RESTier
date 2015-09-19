@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Core.Conventions
         /// <inheritdoc/>
         public Expression Filter(QueryExpressionContext context)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
             if (context.ModelReference == null)
             {
                 return null;
@@ -55,7 +55,9 @@ namespace Microsoft.Restier.Core.Conventions
             var returnType = context.VisitedNode.Type
                 .FindGenericType(typeof(IQueryable<>));
             var elementType = returnType.GetGenericArguments()[0];
-            var method = this.targetType.GetQualifiedMethod("OnFilter" + entitySet.Name);
+            var methodName = ConventionalChangeSetConstants.FilterMethodNamePrefix +
+                ConventionalChangeSetConstants.FilterMethodEntitySetFilter + entitySet.Name;
+            var method = this.targetType.GetQualifiedMethod(methodName);
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)
             {

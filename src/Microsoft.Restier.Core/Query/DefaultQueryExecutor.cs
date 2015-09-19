@@ -14,6 +14,10 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class DefaultQueryExecutor : IQueryExecutor
     {
+        private const string MethodNameOfQueryTake = "Take";
+
+        private const string MethodNameOfQuerySkip = "Skip";
+
         static DefaultQueryExecutor()
         {
             Instance = new DefaultQueryExecutor();
@@ -39,8 +43,8 @@ namespace Microsoft.Restier.Core.Query
         {
             Ensure.NotNull(query, "query");
             var expression = query.Expression;
-            expression = StripQueryMethod(expression, "Take");
-            expression = StripQueryMethod(expression, "Skip");
+            expression = StripQueryMethod(expression, MethodNameOfQueryTake);
+            expression = StripQueryMethod(expression, MethodNameOfQuerySkip);
             if (expression != query.Expression)
             {
                 query = query.Provider.CreateQuery<TElement>(expression);

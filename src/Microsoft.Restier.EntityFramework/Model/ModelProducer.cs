@@ -31,6 +31,9 @@ namespace Microsoft.Restier.EntityFramework.Model
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
+        private const string StoreGeneratedPatternKey = ":StoreGeneratedPattern";
+        private const string StoreGeneratedPatternValueComputed = "Computed";
+
         private static IDictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
             primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
         {
@@ -84,10 +87,10 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// <inheritdoc/>
         public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
             var model = new EdmModel();
             var domainContext = context.DomainContext;
-            var dbContext = domainContext.GetProperty<DbContext>("DbContext");
+            var dbContext = domainContext.GetProperty<DbContext>(DbDomainConstants.DbContextKey);
             var elementMap = new Dictionary<MetadataItem, IEdmElement>();
             var efModel = (dbContext as IObjectContextAdapter)
                 .ObjectContext.MetadataWorkspace;
@@ -175,11 +178,12 @@ namespace Microsoft.Restier.EntityFramework.Model
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
                     MetadataProperty storeGeneratedPattern = null;
                     efProperty.MetadataProperties.TryGetValue(
-                        AnnotationSchema + ":StoreGeneratedPattern",
+                        AnnotationSchema + StoreGeneratedPatternKey,
                         true,
                         out storeGeneratedPattern);
 
-                    if (storeGeneratedPattern != null && (string)storeGeneratedPattern.Value == "Computed")
+                    if (storeGeneratedPattern != null &&
+                        (string)storeGeneratedPattern.Value == StoreGeneratedPatternValueComputed)
                     {
                         SetComputedAnnotation(model, property);
                     }

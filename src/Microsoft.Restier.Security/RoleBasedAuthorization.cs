@@ -56,7 +56,7 @@ namespace Microsoft.Restier.Security
         /// </returns>
         public Expression Expand(QueryExpressionContext context)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
 
             if (this.InnerHandler != null)
             {
@@ -123,7 +123,7 @@ namespace Microsoft.Restier.Security
         /// </returns>
         public bool Inspect(QueryExpressionContext context)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
 
             // TODO GitHubIssue#35 : Support Inspect more elements in authorization
             if (context.ModelReference == null)

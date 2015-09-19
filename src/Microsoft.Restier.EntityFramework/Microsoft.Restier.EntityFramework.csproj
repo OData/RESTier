@@ -53,6 +53,7 @@
       <DependentUpon>SharedResources.resx</DependentUpon>
     </Compile>
     <Compile Include="DbDomain.cs" />
+    <Compile Include="DbDomainConstants.cs" />
     <Compile Include="Model\ModelMapper.cs" />
     <Compile Include="Model\ModelProducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

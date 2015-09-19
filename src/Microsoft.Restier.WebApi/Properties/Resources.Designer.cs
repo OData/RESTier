@@ -70,6 +70,15 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} cannot write an object of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string CannotWriteObjectType {
+            get {
+                return ResourceManager.GetString("CannotWriteObjectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Controller cannot have null path..
         /// </summary>
         internal static string ControllerRequiresPath {
@@ -165,6 +174,15 @@ namespace Microsoft.Restier.WebApi.Properties {
         internal static string MultiKeyValuesExpected {
             get {
                 return ResourceManager.GetString("MultiKeyValuesExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path segment not supported: {0}.
+        /// </summary>
+        internal static string PathSegmentNotSupported {
+            get {
+                return ResourceManager.GetString("PathSegmentNotSupported", resourceCulture);
             }
         }
         

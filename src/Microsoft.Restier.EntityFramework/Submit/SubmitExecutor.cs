@@ -40,7 +40,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
         public async Task<SubmitResult> ExecuteSubmitAsync(
             SubmitContext context, CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.DomainContext.GetProperty<DbContext>("DbContext");
+            DbContext dbContext = context.DomainContext.GetProperty<DbContext>(DbDomainConstants.DbContextKey);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 

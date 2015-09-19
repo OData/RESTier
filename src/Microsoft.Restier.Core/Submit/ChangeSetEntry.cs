@@ -281,7 +281,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public IQueryable ApplyTo(IQueryable query)
         {
-            Ensure.NotNull(query);
+            Ensure.NotNull(query, "query");
             if (this.IsNew)
             {
                 throw new InvalidOperationException(Resources.DataModificationNotSupportCreateEntity);

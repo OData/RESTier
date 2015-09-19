@@ -41,6 +41,14 @@ namespace Microsoft.Restier.WebApi
     [ODataDomainExceptionFilter]
     public class ODataDomainController : ODataController
     {
+        private const string ETagGetterKey = "ETagGetter";
+        private const string ETagHeaderKey = "@etag";
+        private const string DefaultNameOfParameterExpression = "currentValue";
+        private const string PathTemplateForEntitySetWithKey = "~/entityset/key";
+        private const string PathTemplateForEntitySetWithKeyAndCast = "~/entityset/key/cast";
+        private const char EntityKeySeperator = ',';
+        private const char EntityKeyNameValueSeperator = '=';
+
         private IDomain domain;
 
         /// <summary>
@@ -77,7 +85,7 @@ namespace Microsoft.Restier.WebApi
             IQueryable queryable = this.GetQuery();
             var result = await Domain.QueryAsync(new QueryRequest(queryable), cancellationToken);
 
-            this.Request.Properties["ETagGetter"] = this.Domain.Context.GetProperty("ETagGetter");
+            this.Request.Properties[ETagGetterKey] = this.Domain.Context.GetProperty(ETagGetterKey);
 
             return this.CreateQueryResponse(result.Results.AsQueryable(), path.EdmType);
         }
@@ -265,7 +273,7 @@ namespace Microsoft.Restier.WebApi
         {
             BinaryExpression keyFilter = null;
 
-            ParameterExpression parameterExpression = Expression.Parameter(type, "currentValue");
+            ParameterExpression parameterExpression = Expression.Parameter(type, DefaultNameOfParameterExpression);
             IReadOnlyDictionary<string, object> keyValues = GetPathKeyValues(keySegment, entityType);
 
             foreach (KeyValuePair<string, object> keyValuePair in keyValues)
@@ -290,13 +298,13 @@ namespace Microsoft.Restier.WebApi
             // this parsing implementation does not allow key values to contain commas
             // Depending on the WebAPI to make KeyValuePathSegment.Values collection public
             // (or have the parsing logic public).
-            string[] values = keySegment.Value.Split(',');
+            string[] values = keySegment.Value.Split(EntityKeySeperator);
             if (values.Length > 1)
             {
                 foreach (string value in values)
                 {
                     // Split key name and key value
-                    string[] keyValues = value.Split('=');
+                    string[] keyValues = value.Split(EntityKeyNameValueSeperator);
                     if (keyValues.Length != 2)
                     {
                         throw new InvalidOperationException(Resources.IncorrectKeyFormat);
@@ -405,8 +413,8 @@ namespace Microsoft.Restier.WebApi
 
         private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
         {
-            if (path.PathTemplate == "~/entityset/key" ||
-                path.PathTemplate == "~/entityset/key/cast")
+            if (path.PathTemplate == PathTemplateForEntitySetWithKey ||
+                path.PathTemplate == PathTemplateForEntitySetWithKeyAndCast)
             {
                 KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
                 return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
@@ -414,7 +422,9 @@ namespace Microsoft.Restier.WebApi
             else
             {
                 throw new InvalidOperationException(string.Format(
-                    CultureInfo.InvariantCulture, Resources.InvalidPathTemplateInRequest, "~/entityset/key"));
+                    CultureInfo.InvariantCulture,
+                    Resources.InvalidPathTemplateInRequest,
+                    PathTemplateForEntitySetWithKey));
             }
         }
 
@@ -509,10 +519,9 @@ namespace Microsoft.Restier.WebApi
                     }
                     else
                     {
-                        throw new HttpResponseException(
-                            this.Request.CreateErrorResponse(
-                                HttpStatusCode.NotFound,
-                                "Path segment not supported: " + segment));
+                        throw new HttpResponseException(this.Request.CreateErrorResponse(
+                            HttpStatusCode.NotFound,
+                            string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment)));
                     }
                 }
             }
@@ -604,7 +613,7 @@ namespace Microsoft.Restier.WebApi
                 ETag etag = this.Request.GetETag(etagHeaderValue);
                 etag.ApplyTo(originalValues);
 
-                originalValues.Add("@etag", etagHeaderValue.Tag);
+                originalValues.Add(ETagHeaderKey, etagHeaderValue.Tag);
             }
 
             return originalValues;
@@ -635,8 +644,10 @@ namespace Microsoft.Restier.WebApi
 
     internal static class Extensions
     {
-        private static PropertyInfo etagConcurrencyPropertiesProperty =
-            typeof(ETag).GetProperty("ConcurrencyProperties", BindingFlags.NonPublic | BindingFlags.Instance);
+        private const string PropertyNameOfConcurrencyProperties = "ConcurrencyProperties";
+
+        private static PropertyInfo etagConcurrencyPropertiesProperty = typeof(ETag).GetProperty(
+            PropertyNameOfConcurrencyProperties, BindingFlags.NonPublic | BindingFlags.Instance);
 
         public static void ApplyTo(this ETag etag, IDictionary<string, object> propertyValues)
         {

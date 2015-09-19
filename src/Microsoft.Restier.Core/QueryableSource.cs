@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(
             Expression expression)
         {
-            Ensure.NotNull(expression);
+            Ensure.NotNull(expression, "expression");
             if (!typeof(IQueryable<TElement>).IsAssignableFrom(expression.Type))
             {
                 // TODO GitHubIssue#24 : error message
@@ -49,7 +49,7 @@ namespace Microsoft.Restier.Core
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
-            Ensure.NotNull(expression);
+            Ensure.NotNull(expression, "expression");
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
             if (type == null)
             {

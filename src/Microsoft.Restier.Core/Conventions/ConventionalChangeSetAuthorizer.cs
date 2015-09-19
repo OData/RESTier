@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core.Conventions
             ChangeSetEntry entry,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
             bool result = true;
 
             Type returnType = typeof(bool);
@@ -81,22 +81,24 @@ namespace Microsoft.Restier.Core.Conventions
                     string operationName = null;
                     if (dataModification.IsNew)
                     {
-                        operationName = "Insert";
+                        operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationInsert;
                     }
                     else if (dataModification.IsUpdate)
                     {
-                        operationName = "Update";
+                        operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationUpdate;
                     }
                     else if (dataModification.IsDelete)
                     {
-                        operationName = "Delete";
+                        operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
-                    return "Can" + operationName + dataModification.EntitySetName;
+                    return ConventionalChangeSetConstants.AuthorizeMethodNamePrefix +
+                        operationName + dataModification.EntitySetName;
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                    return "CanExecute" + actionEntry.ActionName;
+                    return ConventionalChangeSetConstants.AuthorizeMethodNamePrefix +
+                        ConventionalChangeSetConstants.AuthorizeMethodActionInvocationExecute + actionEntry.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(

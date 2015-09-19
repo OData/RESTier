@@ -18,6 +18,12 @@ namespace Microsoft.Restier.WebApi.Routing
     /// </summary>
     internal class ODataDomainRoutingConvention : IODataRoutingConvention
     {
+        private const string ODataDomainControllerName = "ODataDomain";
+        private const string MethodNameOfGet = "Get";
+        private const string MethodNameOfPostAction = "PostAction";
+        private const string PathTemplateForServiceRoot = "~";
+        private const string PathTemplateForMetadata = "~/$metadata";
+
         private readonly Func<IDomain> domainFactory;
 
         /// <summary>
@@ -38,7 +44,7 @@ namespace Microsoft.Restier.WebApi.Routing
         public string SelectController(ODataPath odataPath, HttpRequestMessage request)
         {
             Ensure.NotNull(odataPath, "odataPath");
-            Ensure.NotNull(request);
+            Ensure.NotNull(request, "request");
 
             if (IsMetadataPath(odataPath))
             {
@@ -54,7 +60,7 @@ namespace Microsoft.Restier.WebApi.Routing
             }
 
             request.SetDomainFactory(domainFactory);
-            return "ODataDomain";
+            return ODataDomainControllerName;
         }
 
         /// <summary>
@@ -84,13 +90,13 @@ namespace Microsoft.Restier.WebApi.Routing
 
             if (method == HttpMethod.Get && !IsMetadataPath(odataPath))
             {
-                return "Get";
+                return MethodNameOfGet;
             }
 
             ODataPathSegment lastSegment = odataPath.Segments.LastOrDefault();
             if (lastSegment != null && lastSegment.SegmentKind == ODataSegmentKinds.UnboundAction)
             {
-                return "PostAction";
+                return MethodNameOfPostAction;
             }
 
             // Let WebAPI select default action
@@ -99,8 +105,8 @@ namespace Microsoft.Restier.WebApi.Routing
 
         private static bool IsMetadataPath(ODataPath odataPath)
         {
-            return odataPath.PathTemplate == "~" ||
-                odataPath.PathTemplate == "~/$metadata";
+            return odataPath.PathTemplate == PathTemplateForServiceRoot ||
+                odataPath.PathTemplate == PathTemplateForMetadata;
         }
 
         private static bool HasControllerForEntitySetOrSingleton(

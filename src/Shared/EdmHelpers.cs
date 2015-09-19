@@ -2,20 +2,23 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.OData.Edm
 {
     internal static class EdmHelpers
     {
+        private const string DefaultEntityContainerName = "DefaultContainer";
+
         public static EdmEntityContainer EnsureEntityContainer(this EdmModel model, Type domainType)
         {
             var container = (EdmEntityContainer)model.EntityContainer;
             if (container == null)
             {
-                container = new EdmEntityContainer(domainType.Namespace, "DefaultContainer");
+                container = new EdmEntityContainer(domainType.Namespace, DefaultEntityContainerName);
                 model.AddElement(container);
             }
 
@@ -161,7 +164,8 @@ namespace Microsoft.OData.Edm
                 return null;
             }
 
-            throw new NotSupportedException("not supported type: " + type.FullName);
+            throw new NotSupportedException(string.Format(
+                CultureInfo.InvariantCulture, Resources.NotSupportedType, type.FullName));
         }
     }
 }

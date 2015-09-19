@@ -46,9 +46,9 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// </returns>
         public Expression Source(QueryExpressionContext context, bool embedded)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
             var dbContext = context.QueryContext
-                .DomainContext.GetProperty<DbContext>("DbContext");
+                .DomainContext.GetProperty<DbContext>(DbDomainConstants.DbContextKey);
             var dbSetProperty = dbContext.GetType().GetProperties()
                 .First(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (!embedded)
