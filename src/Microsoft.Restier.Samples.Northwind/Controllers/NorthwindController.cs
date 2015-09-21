@@ -128,5 +128,22 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
             DbContext.ResetDataSource();
             return StatusCode(HttpStatusCode.NoContent);
         }
+
+        /// <summary>
+        /// Disposes the domain and the controller.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposing is happening.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.domain != null)
+                {
+                    this.domain.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }
