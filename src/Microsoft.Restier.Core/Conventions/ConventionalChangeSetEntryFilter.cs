@@ -75,13 +75,11 @@ namespace Microsoft.Restier.Core.Conventions
                         operationName = ConventionalChangeSetConstants.FilterMethodDataModificationDelete;
                 }
 
-                return ConventionalChangeSetConstants.FilterMethodNamePrefix +
-                        operationName + suffix + dataModification.EntitySetName;
+                return operationName + suffix + dataModification.EntitySetName;
 
             case ChangeSetEntryType.ActionInvocation:
                 ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                return ConventionalChangeSetConstants.FilterMethodNamePrefix +
-                       ConventionalChangeSetConstants.FilterMethodActionInvocationExecute +
+                return ConventionalChangeSetConstants.FilterMethodActionInvocationExecute +
                        suffix + actionEntry.ActionName;
 
             default:

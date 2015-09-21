@@ -55,8 +55,7 @@ namespace Microsoft.Restier.Core.Conventions
             var returnType = context.VisitedNode.Type
                 .FindGenericType(typeof(IQueryable<>));
             var elementType = returnType.GetGenericArguments()[0];
-            var methodName = ConventionalChangeSetConstants.FilterMethodNamePrefix +
-                ConventionalChangeSetConstants.FilterMethodEntitySetFilter + entitySet.Name;
+            var methodName = ConventionalChangeSetConstants.FilterMethodEntitySetFilter + entitySet.Name;
             var method = this.targetType.GetQualifiedMethod(methodName);
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)

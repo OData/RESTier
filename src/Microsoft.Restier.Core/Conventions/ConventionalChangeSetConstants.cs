@@ -6,29 +6,25 @@ namespace Microsoft.Restier.Core.Conventions
     internal static class ConventionalChangeSetConstants
     {
 #region Authorizing method constants
-        public const string AuthorizeMethodNamePrefix = "Can";
+        public const string AuthorizeMethodDataModificationInsert = "CanInsert";
 
-        public const string AuthorizeMethodDataModificationInsert = "Insert";
+        public const string AuthorizeMethodDataModificationUpdate = "CanUpdate";
 
-        public const string AuthorizeMethodDataModificationUpdate = "Update";
+        public const string AuthorizeMethodDataModificationDelete = "CanDelete";
 
-        public const string AuthorizeMethodDataModificationDelete = "Delete";
-
-        public const string AuthorizeMethodActionInvocationExecute = "Execute";
+        public const string AuthorizeMethodActionInvocationExecute = "CanExecute";
 #endregion
 
 #region Filtering method constants
-        public const string FilterMethodNamePrefix = "On";
+        public const string FilterMethodDataModificationInsert = "OnInsert";
 
-        public const string FilterMethodDataModificationInsert = "Insert";
+        public const string FilterMethodDataModificationUpdate = "OnUpdat";
 
-        public const string FilterMethodDataModificationUpdate = "Updat";
+        public const string FilterMethodDataModificationDelete = "OnDelet";
 
-        public const string FilterMethodDataModificationDelete = "Delet";
+        public const string FilterMethodActionInvocationExecute = "OnExecut";
 
-        public const string FilterMethodActionInvocationExecute = "Execut";
-
-        public const string FilterMethodEntitySetFilter = "Filter";
+        public const string FilterMethodEntitySetFilter = "OnFilter";
 
         public const string FilterMethodNamePreFilterSuffix = "ing";
 

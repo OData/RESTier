@@ -92,13 +92,12 @@ namespace Microsoft.Restier.Core.Conventions
                         operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
-                    return ConventionalChangeSetConstants.AuthorizeMethodNamePrefix +
-                        operationName + dataModification.EntitySetName;
+                    return operationName + dataModification.EntitySetName;
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                    return ConventionalChangeSetConstants.AuthorizeMethodNamePrefix +
-                        ConventionalChangeSetConstants.AuthorizeMethodActionInvocationExecute + actionEntry.ActionName;
+                    return ConventionalChangeSetConstants.AuthorizeMethodActionInvocationExecute +
+                        actionEntry.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(

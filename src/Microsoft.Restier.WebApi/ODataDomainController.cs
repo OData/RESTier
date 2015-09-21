@@ -44,10 +44,8 @@ namespace Microsoft.Restier.WebApi
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
         private const string DefaultNameOfParameterExpression = "currentValue";
-        private const string PathTemplateForEntitySetWithKey = "~/entityset/key";
-        private const string PathTemplateForEntitySetWithKeyAndCast = "~/entityset/key/cast";
-        private const char EntityKeySeperator = ',';
-        private const char EntityKeyNameValueSeperator = '=';
+        private const char EntityKeySeparator = ',';
+        private const char EntityKeyNameValueSeparator = '=';
 
         private IDomain domain;
 
@@ -298,13 +296,13 @@ namespace Microsoft.Restier.WebApi
             // this parsing implementation does not allow key values to contain commas
             // Depending on the WebAPI to make KeyValuePathSegment.Values collection public
             // (or have the parsing logic public).
-            string[] values = keySegment.Value.Split(EntityKeySeperator);
+            string[] values = keySegment.Value.Split(EntityKeySeparator);
             if (values.Length > 1)
             {
                 foreach (string value in values)
                 {
                     // Split key name and key value
-                    string[] keyValues = value.Split(EntityKeyNameValueSeperator);
+                    string[] keyValues = value.Split(EntityKeyNameValueSeparator);
                     if (keyValues.Length != 2)
                     {
                         throw new InvalidOperationException(Resources.IncorrectKeyFormat);
@@ -413,8 +411,8 @@ namespace Microsoft.Restier.WebApi
 
         private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
         {
-            if (path.PathTemplate == PathTemplateForEntitySetWithKey ||
-                path.PathTemplate == PathTemplateForEntitySetWithKeyAndCast)
+            if (path.PathTemplate == "~/entityset/key" ||
+                path.PathTemplate == "~/entityset/key/cast")
             {
                 KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
                 return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
@@ -424,7 +422,7 @@ namespace Microsoft.Restier.WebApi
                 throw new InvalidOperationException(string.Format(
                     CultureInfo.InvariantCulture,
                     Resources.InvalidPathTemplateInRequest,
-                    PathTemplateForEntitySetWithKey));
+                    "~/entityset/key"));
             }
         }
 

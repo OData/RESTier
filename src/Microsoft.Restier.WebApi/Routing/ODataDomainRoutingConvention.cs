@@ -21,8 +21,6 @@ namespace Microsoft.Restier.WebApi.Routing
         private const string ODataDomainControllerName = "ODataDomain";
         private const string MethodNameOfGet = "Get";
         private const string MethodNameOfPostAction = "PostAction";
-        private const string PathTemplateForServiceRoot = "~";
-        private const string PathTemplateForMetadata = "~/$metadata";
 
         private readonly Func<IDomain> domainFactory;
 
@@ -105,8 +103,8 @@ namespace Microsoft.Restier.WebApi.Routing
 
         private static bool IsMetadataPath(ODataPath odataPath)
         {
-            return odataPath.PathTemplate == PathTemplateForServiceRoot ||
-                odataPath.PathTemplate == PathTemplateForMetadata;
+            return odataPath.PathTemplate == "~" ||
+                odataPath.PathTemplate == "~/$metadata";
         }
 
         private static bool HasControllerForEntitySetOrSingleton(
