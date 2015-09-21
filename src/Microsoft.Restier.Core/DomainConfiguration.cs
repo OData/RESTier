@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core
 {
@@ -35,6 +36,14 @@ namespace Microsoft.Restier.Core
     {
         private readonly IDictionary<Type, IHookHandler> hookHandlers =
             new ConcurrentDictionary<Type, IHookHandler>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
+        /// </summary>
+        public DomainConfiguration()
+        {
+            this.AddDefaultHookHandlers();
+        }
 
         /// <summary>
         /// Gets a value indicating whether this domain configuration has been committed.
@@ -89,5 +98,10 @@ namespace Microsoft.Restier.Core
             return value as T;
         }
         #endregion
+
+        private void AddDefaultHookHandlers()
+        {
+            this.AddHookHandler<IQueryExecutor>(DefaultQueryExecutor.Instance);
+        }
     }
 }

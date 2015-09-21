@@ -39,7 +39,6 @@ namespace Microsoft.Restier.WebApi.Test
             var configuration = base.CreateDomainConfiguration();
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
             configuration.AddHookHandler<IModelMapper>(new TestModelMapper());
-            configuration.AddHookHandler<IQueryExecutor>(new TestQueryExecutor());
             configuration.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
             configuration.AddHookHandler<IChangeSetPreparer>(new TestChangeSetPreparer());
             configuration.AddHookHandler<ISubmitExecutor>(new TestSubmitExecutor());
@@ -93,25 +92,6 @@ namespace Microsoft.Restier.WebApi.Test
         public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
             return Task.FromResult<IEdmModel>(model);
-        }
-    }
-
-    class TestQueryExecutor : IQueryExecutor
-    {
-        public Task<QueryResult> ExecuteQueryAsync<TElement>(
-            QueryContext context,
-            IQueryable<TElement> query,
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult(new QueryResult(query.ToList()));
-        }
-
-        public Task<QueryResult> ExecuteSingleAsync<TResult>(QueryContext context,
-            IQueryable query,
-            Expression expression,
-            CancellationToken cancellationToken)
-        {
-            return Task.FromResult(new QueryResult(new[] { query.Provider.Execute(expression) }));
         }
     }
 

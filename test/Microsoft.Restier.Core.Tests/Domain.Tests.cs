@@ -54,19 +54,6 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private class TestQueryExecutor : IQueryExecutor
-        {
-            public Task<QueryResult> ExecuteQueryAsync<TElement>(QueryContext context, IQueryable<TElement> query, CancellationToken cancellationToken)
-            {
-                return Task.FromResult(new QueryResult(query));
-            }
-
-            public Task<QueryResult> ExecuteSingleAsync<TResult>(QueryContext context, IQueryable query, Expression expression, CancellationToken cancellationToken)
-            {
-                return Task.FromResult(new QueryResult(query));
-            }
-        }
-
         private class TestQuerySourcer : IQueryExpressionSourcer
         {
             public Expression Source(QueryExpressionContext context, bool embedded)
@@ -105,13 +92,11 @@ namespace Microsoft.Restier.Core.Tests
                         var configuration = new DomainConfiguration();
                         var modelBuilder = new TestModelBuilder();
                         var modelMapper = new TestModelMapper();
-                        var queryExecutor = new TestQueryExecutor();
                         var querySourcer = new TestQuerySourcer();
                         var changeSetPreparer = new TestChangeSetPreparer();
                         var submitExecutor = new TestSubmitExecutor();
                         configuration.AddHookHandler<IModelBuilder>(modelBuilder);
                         configuration.AddHookHandler<IModelMapper>(modelMapper);
-                        configuration.AddHookHandler<IQueryExecutor>(queryExecutor);
                         configuration.AddHookHandler<IQueryExpressionSourcer>(querySourcer);
                         configuration.AddHookHandler<IChangeSetPreparer>(changeSetPreparer);
                         configuration.AddHookHandler<ISubmitExecutor>(submitExecutor);

@@ -128,9 +128,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         protected virtual DomainConfiguration CreateDomainConfiguration()
         {
-            var config = new DomainConfiguration();
-            AddDefaultHooks(config);
-            return config;
+            return new DomainConfiguration();
         }
 
         /// <summary>
@@ -193,11 +191,6 @@ namespace Microsoft.Restier.Core
             ConventionalDomainModelBuilder.ApplyTo(configuration, targetType);
             ConventionalOperationProvider.ApplyTo(configuration, targetType);
             ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
-        }
-
-        private static void AddDefaultHooks(DomainConfiguration configuration)
-        {
-            configuration.AddHookHandler<IQueryExecutor>(DefaultQueryExecutor.Instance);
         }
     }
 }
