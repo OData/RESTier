@@ -21,17 +21,6 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [Fact]
-        public void AllTestDomainsHaveSameConfigurationUntilInvalidated()
-        {
-            IDomain domain1 = new TestDomain();
-            IDomain domain2 = new TestDomain();
-            Assert.Same(domain2.Context.Configuration, domain1.Context.Configuration);
-            DomainConfiguration.Invalidate(domain1.GetType());
-            IDomain domain3 = new TestDomain();
-            Assert.NotSame(domain3.Context.Configuration, domain2.Context.Configuration);
-        }
-
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
         private class TestDomainParticipantAttribute :
             DomainParticipantAttribute

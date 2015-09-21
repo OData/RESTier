@@ -2,6 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -11,17 +13,22 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a base class for a domain.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A domain configuration is intended to be long-lived, and can be
+    /// statically cached according to a domain type specified when the
+    /// configuration is created. Additionally, the domain model produced
+    /// as a result of a particular configuration is cached under the same
+    /// domain type to avoid re-computing it on each invocation.
+    /// </para>
+    /// </remarks>
     public abstract class DomainBase : IDomain
     {
+        private static readonly IDictionary<Type, DomainConfiguration> Configurations =
+            new ConcurrentDictionary<Type, DomainConfiguration>();
+
         private DomainConfiguration domainConfiguration;
         private DomainContext domainContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DomainBase"/> class.
-        /// </summary>
-        protected DomainBase()
-        {
-        }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="DomainBase"/> class.
@@ -45,23 +52,6 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets the initial domain configuration key.
-        /// </summary>
-        /// <remarks>
-        /// The domain configuration key specifies data that uniquely
-        /// identifies the initial configuration. If multiple domain
-        /// instances return the same key, the configuration is created
-        /// once and all instances will re-use the same configuration.
-        /// </remarks>
-        protected virtual object DomainConfigurationKey
-        {
-            get
-            {
-                return this.GetType();
-            }
-        }
-
-        /// <summary>
         /// Gets the domain configuration for this domain.
         /// </summary>
         protected DomainConfiguration DomainConfiguration
@@ -70,19 +60,15 @@ namespace Microsoft.Restier.Core
             {
                 if (this.domainConfiguration == null)
                 {
-                    DomainConfiguration configuration = null;
-                    var key = this.DomainConfigurationKey;
-                    if (key != null)
-                    {
-                        configuration = DomainConfiguration.FromKey(key);
-                    }
-
-                    if (configuration == null)
+                    var domainType = this.GetType();
+                    DomainConfiguration configuration;
+                    if (!Configurations.TryGetValue(domainType, out configuration))
                     {
                         configuration = this.CreateDomainConfiguration();
-                        EnableConventions(configuration, this.GetType());
+                        EnableConventions(configuration, domainType);
                         DomainParticipantAttribute.ApplyConfiguration(
-                            this.GetType(), configuration);
+                            domainType, configuration);
+                        Configurations[domainType] = configuration;
                     }
 
                     configuration.EnsureCommitted();
@@ -142,7 +128,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         protected virtual DomainConfiguration CreateDomainConfiguration()
         {
-            var config = new DomainConfiguration(this.DomainConfigurationKey);
+            var config = new DomainConfiguration();
             AddDefaultHooks(config);
             return config;
         }

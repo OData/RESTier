@@ -18,22 +18,18 @@ namespace Microsoft.Restier.Core.Tests
         public void EmptyConfigurationIsConfiguredCorrectly()
         {
             var configuration = new DomainConfiguration();
-
-            Assert.Null(configuration.Key);
             Assert.False(configuration.IsCommitted);
         }
 
         [Fact]
         public void CachedConfigurationIsCachedCorrectly()
         {
-            var key = Guid.NewGuid().ToString();
-            var configuration = new DomainConfiguration(key);
+            IDomain domain = new TestDomain();
+            var configuration = domain.Context.Configuration;
 
-            var cached = DomainConfiguration.FromKey(key);
+            IDomain anotherDomain = new TestDomain();
+            var cached = anotherDomain.Context.Configuration;
             Assert.Same(configuration, cached);
-
-            DomainConfiguration.Invalidate(key);
-            Assert.Null(DomainConfiguration.FromKey(key));
         }
 
         [Fact]
@@ -105,6 +101,10 @@ namespace Microsoft.Restier.Core.Tests
 
             var handler = configuration.GetHookHandler<IHookB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
+        }
+
+        private class TestDomain : DomainBase
+        {
         }
 
         private class TestModelBuilder : IModelBuilder
