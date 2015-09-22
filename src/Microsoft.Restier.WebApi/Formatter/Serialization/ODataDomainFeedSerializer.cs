@@ -2,12 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Globalization;
-using System.Runtime.Serialization;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.WebApi.Properties;
 using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi.Formatter.Serialization
@@ -39,40 +35,13 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            Ensure.NotNull(messageWriter, "messageWriter");
-            Ensure.NotNull(writeContext, "writeContext");
-
-            IEdmEntitySetBase entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
-            if (entitySet == null)
+            EntityCollectionResult collectionResult = graph as EntityCollectionResult;
+            if (collectionResult != null)
             {
-                throw new SerializationException(Resources.EntitySetMissingForSerialization);
+                graph = collectionResult.Query;
             }
 
-            EntityCollectionResult collectionResult = (EntityCollectionResult)graph;
-            IEdmTypeReference feedType = collectionResult.EdmType;
-
-            IEdmEntityTypeReference entityType = GetEntityType(feedType);
-            ODataWriter writer = messageWriter.CreateODataFeedWriter(entitySet, entityType.EntityDefinition());
-            this.WriteObjectInline(collectionResult.Query, feedType, writer, writeContext);
-        }
-
-        private static IEdmEntityTypeReference GetEntityType(IEdmTypeReference feedType)
-        {
-            if (feedType.IsCollection())
-            {
-                IEdmTypeReference elementType = feedType.AsCollection().ElementType();
-                if (elementType.IsEntity())
-                {
-                    return elementType.AsEntity();
-                }
-            }
-
-            string message = string.Format(
-                CultureInfo.InvariantCulture,
-                Resources.CannotWriteObjectType,
-                typeof(ODataDomainFeedSerializer).Name,
-                feedType.FullName());
-            throw new SerializationException(message);
+            base.WriteObject(graph, type, messageWriter, writeContext);
         }
     }
 }
