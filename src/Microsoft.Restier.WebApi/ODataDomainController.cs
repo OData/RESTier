@@ -497,6 +497,12 @@ namespace Microsoft.Restier.WebApi
                     HttpStatusCode.OK, new PrimitiveResult(query, typeReference, this.Domain.Context));
             }
 
+            if (typeReference.IsComplex())
+            {
+                return this.Request.CreateResponse(
+                    HttpStatusCode.OK, new ComplexResult(query, typeReference, this.Domain.Context));
+            }
+
             if (typeReference.IsCollection())
             {
                 return this.Request.CreateResponse(

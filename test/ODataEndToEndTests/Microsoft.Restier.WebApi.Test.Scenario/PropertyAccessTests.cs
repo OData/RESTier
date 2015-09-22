@@ -1,6 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.OData.Client;
 using Xunit;
 
@@ -65,6 +69,40 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             TestPayloadString("People(1)/BirthDate/$value", payloadStr =>
             {
                 Assert.Equal("1980-10-15", payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryComplexPropertyOfSingleEntity()
+        {
+            var firstEvent = this.TestClientContext.Events.First();
+            TestPayloadString("Events(" + firstEvent.Id + ")/OccursAt", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#Events(" + firstEvent.Id + ")/OccursAt\"," +
+                    "\"Address\":\"Address1\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryPrimitivePropertyUnderComplexPropertyOfSingleEntity()
+        {
+            var firstEvent = this.TestClientContext.Events.First();
+            TestPayloadString("Events(" + firstEvent.Id + ")/OccursAt/Address", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#Events(" + firstEvent.Id + ")/OccursAt/Address\"," +
+                    "\"value\":\"Address1\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryRawPrimitivePropertyUnderComplexPropertyOfSingleEntity()
+        {
+            var firstEvent = this.TestClientContext.Events.First();
+            TestPayloadString("Events(" + firstEvent.Id + ")/OccursAt/Address/$value", payloadStr =>
+            {
+                Assert.Equal("Address1", payloadStr, StringComparer.Ordinal);
             });
         }
 
