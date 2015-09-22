@@ -9,15 +9,15 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// The result of an OData query.
     /// </summary>
-    public abstract class EntityQueryResult
+    public abstract class ODataQueryResult
     {
         private IEdmTypeReference edmType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityQueryResult" /> class.
+        /// Initializes a new instance of the <see cref="ODataQueryResult" /> class.
         /// </summary>
-        /// <param name="edmType">The EDM type reference of the entity result.</param>
-        protected EntityQueryResult(IEdmTypeReference edmType)
+        /// <param name="edmType">The EDM type reference of the OData result.</param>
+        protected ODataQueryResult(IEdmTypeReference edmType)
         {
             Ensure.NotNull(edmType, "edmType");
 
@@ -25,7 +25,7 @@ namespace Microsoft.Restier.WebApi.Results
         }
 
         /// <summary>
-        /// Gets the EDM type reference of the entity result.
+        /// Gets the EDM type reference of the OData result.
         /// </summary>
         public IEdmTypeReference EdmType
         {

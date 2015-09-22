@@ -12,7 +12,7 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a single entity instance being returned from an action.
     /// </summary>
-    public class EntityResult : EntityQueryResult
+    public class EntityResult : ODataQueryResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityResult" /> class.

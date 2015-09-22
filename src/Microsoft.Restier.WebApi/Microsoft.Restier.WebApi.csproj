@@ -91,7 +91,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Results\EntityCollectionResult.cs" />
-    <Compile Include="Results\EntityQueryResult.cs" />
+    <Compile Include="Results\ODataQueryResult.cs" />
     <Compile Include="Results\EntityResult.cs" />
     <Compile Include="Routing\ODataDomainRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />

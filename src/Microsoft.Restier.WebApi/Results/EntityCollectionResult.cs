@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a collection of entity instances being returned from an action.
     /// </summary>
-    public class EntityCollectionResult : EntityQueryResult
+    public class EntityCollectionResult : ODataQueryResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCollectionResult" /> class.
