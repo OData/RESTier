@@ -90,7 +90,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Results\CollectionQueryResult.cs" />
     <Compile Include="Results\EntityCollectionResult.cs" />
+    <Compile Include="Results\SingleQueryResult.cs" />
     <Compile Include="Results\ODataQueryResult.cs" />
     <Compile Include="Results\EntityResult.cs" />
     <Compile Include="Routing\ODataDomainRoutingConvention.cs" />
