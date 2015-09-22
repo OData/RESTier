@@ -48,6 +48,7 @@ namespace Microsoft.Restier.WebApi
         private const char EntityKeyNameValueSeparator = '=';
 
         private IDomain domain;
+        private bool shouldWriteRawValue;
 
         /// <summary>
         /// Gets the domain associated with this controller.
@@ -385,6 +386,22 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
+        private static IQueryable ApplyProperty(
+            IQueryable queryable,
+            PropertyAccessPathSegment propertySegment,
+            ref IEdmEntityType currentEntityType,
+            ref Type currentType)
+        {
+            // Produces new query like 'queryable.Select(param => param.PropertyName)'.
+            ParameterExpression entityParameterExpression = Expression.Parameter(currentType);
+            Expression structuralPropertyExpression =
+                Expression.Property(entityParameterExpression, propertySegment.PropertyName);
+            currentType = structuralPropertyExpression.Type;
+            LambdaExpression selectBody =
+                    Expression.Lambda(structuralPropertyExpression, entityParameterExpression);
+            return ExpressionHelpers.Select(queryable, selectBody);
+        }
+
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
         {
             Ensure.NotNull(edmType, "edmType");
@@ -467,25 +484,36 @@ namespace Microsoft.Restier.WebApi
         private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType)
         {
             IEdmTypeReference typeReference = GetTypeReference(edmType);
+
+            if (typeReference.IsPrimitive())
+            {
+                if (this.shouldWriteRawValue)
+                {
+                    return this.Request.CreateResponse(
+                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Domain.Context));
+                }
+
+                return this.Request.CreateResponse(
+                    HttpStatusCode.OK, new PrimitiveResult(query, typeReference, this.Domain.Context));
+            }
+
             if (typeReference.IsCollection())
             {
                 return this.Request.CreateResponse(
                     HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Domain.Context));
             }
-            else
-            {
-                var entityResult = new EntityResult(query, typeReference, this.Domain.Context);
-                if (entityResult.Result == null)
-                {
-                    throw new HttpResponseException(
-                        this.Request.CreateErrorResponse(
-                            HttpStatusCode.NotFound,
-                            Resources.ResourceNotFound));
-                }
 
-                // TODO GitHubIssue#43 : support non-Entity ($select/$value) queries
-                return this.Request.CreateResponse(HttpStatusCode.OK, entityResult);
+            var entityResult = new EntityResult(query, typeReference, this.Domain.Context);
+            if (entityResult.Result == null)
+            {
+                throw new HttpResponseException(
+                    this.Request.CreateErrorResponse(
+                        HttpStatusCode.NotFound,
+                        Resources.ResourceNotFound));
             }
+
+            // TODO GitHubIssue#43 : support non-Entity ($select/$value) queries
+            return this.Request.CreateResponse(HttpStatusCode.OK, entityResult);
         }
 
         private IQueryable GetQuery()
@@ -499,29 +527,45 @@ namespace Microsoft.Restier.WebApi
             Type currentType = queryable.ElementType;
             foreach (ODataPathSegment segment in path.Segments.Skip(1))
             {
+                ValuePathSegment valueSegment = segment as ValuePathSegment;
+                if (valueSegment != null)
+                {
+                    this.shouldWriteRawValue = true;
+                    continue;
+                }
+
                 KeyValuePathSegment keySegment = segment as KeyValuePathSegment;
                 if (keySegment != null)
                 {
                     queryable = ApplyKeys(queryable, keySegment, currentEntityType, currentType);
+                    continue;
                 }
-                else
+
+                NavigationPathSegment navigationSegment = segment as NavigationPathSegment;
+                if (navigationSegment != null)
                 {
-                    NavigationPathSegment navigationSegment = segment as NavigationPathSegment;
-                    if (navigationSegment != null)
-                    {
-                        queryable = ApplyNavigation(
-                            queryable,
-                            navigationSegment,
-                            ref currentEntityType,
-                            ref currentType);
-                    }
-                    else
-                    {
-                        throw new HttpResponseException(this.Request.CreateErrorResponse(
-                            HttpStatusCode.NotFound,
-                            string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment)));
-                    }
+                    queryable = ApplyNavigation(
+                        queryable,
+                        navigationSegment,
+                        ref currentEntityType,
+                        ref currentType);
+                    continue;
                 }
+
+                PropertyAccessPathSegment propertySegment = segment as PropertyAccessPathSegment;
+                if (propertySegment != null)
+                {
+                    queryable = ApplyProperty(
+                        queryable,
+                        propertySegment,
+                        ref currentEntityType,
+                        ref currentType);
+                    continue;
+                }
+
+                throw new HttpResponseException(this.Request.CreateErrorResponse(
+                    HttpStatusCode.NotFound,
+                    string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment)));
             }
 
             ODataQueryContext queryContext =

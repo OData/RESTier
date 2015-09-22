@@ -76,6 +76,8 @@
     <Compile Include="Batch\ODataDomainChangeSetProperty.cs" />
     <Compile Include="Batch\ODataDomainChangeSetRequestItem.cs" />
     <Compile Include="Formatter\Serialization\DefaultODataDomainSerializerProvider.cs" />
+    <Compile Include="Formatter\Serialization\ODataDomainRawSerializer.cs" />
+    <Compile Include="Formatter\Serialization\ODataDomainPrimitiveSerializer.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainEntityTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainFeedSerializer.cs" />
     <Compile Include="HttpConfigurationExtensions.cs" />
@@ -92,6 +94,7 @@
     </Compile>
     <Compile Include="Results\CollectionQueryResult.cs" />
     <Compile Include="Results\EntityCollectionResult.cs" />
+    <Compile Include="Results\RawResult.cs" />
     <Compile Include="Results\PrimitiveResult.cs" />
     <Compile Include="Results\SingleQueryResult.cs" />
     <Compile Include="Results\ODataQueryResult.cs" />

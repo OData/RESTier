@@ -42,13 +42,6 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         }
 
         // OData Attribute Routing
-        [ODataRoute("Customers({key})/CompanyName")]
-        [ODataRoute("Customers({key})/CompanyName/$value")]
-        public string GetCustomerCompanyName([FromODataUri]string key)
-        {
-            return DbContext.Customers.Where(c => c.CustomerID == key).Select(c => c.CompanyName).FirstOrDefault();
-        }
-
         [ODataRoute("Products/$count")]
         public IHttpActionResult GetProductsCount()
         {

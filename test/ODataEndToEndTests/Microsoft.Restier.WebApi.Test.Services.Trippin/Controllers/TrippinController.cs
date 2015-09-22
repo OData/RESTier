@@ -83,20 +83,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return Ok(DbContext.People.Count());
         }
 
-        [ODataRoute("People({key})/LastName")]
-        [ODataRoute("People({key})/LastName/$value")]
-        public string GetPersonLastName([FromODataUri]int key)
-        {
-            return DbContext.People.Where(c => c.PersonId == key).Select(c => c.LastName).FirstOrDefault();
-        }
-
-        [ODataRoute("People({key})/BirthDate")]
-        [ODataRoute("People({key})/BirthDate/$value")]
-        public Date GetPersonBirthDate([FromODataUri]int key)
-        {
-            return DbContext.People.Where(c => c.PersonId == key).Select(c => c.BirthDate).FirstOrDefault();
-        }
-
         [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {

@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="BatchTests.cs" />
     <Compile Include="HttpResponseCodeTests.cs" />
+    <Compile Include="PropertyAccessTests.cs" />
     <Compile Include="TrippinE2ETestBase.cs" />
     <Compile Include="DateTests.cs" />
     <Compile Include="TrippinServiceFixture.cs" />

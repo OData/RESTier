@@ -29,6 +29,13 @@ namespace Microsoft.Restier.WebApi
         /// </remarks>
         public override object ConvertToPayloadValue(object value, IEdmTypeReference edmTypeReference)
         {
+            if (value is DateTime)
+            {
+                // System.DateTime is considered as the only mapped type for Edm.Date.
+                var dateTimeValue = (DateTime)value;
+                return new Date(dateTimeValue.Year, dateTimeValue.Month, dateTimeValue.Day);
+            }
+
             if (edmTypeReference != null && edmTypeReference.IsDate() && value is DateTimeOffset)
             {
                 var dateTimeOffsetValue = (DateTimeOffset)value;
