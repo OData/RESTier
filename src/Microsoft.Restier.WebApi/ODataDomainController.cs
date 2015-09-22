@@ -389,7 +389,6 @@ namespace Microsoft.Restier.WebApi
         private static IQueryable ApplyProperty(
             IQueryable queryable,
             PropertyAccessPathSegment propertySegment,
-            ref IEdmEntityType currentEntityType,
             ref Type currentType)
         {
             // Produces new query like 'queryable.Select(param => param.PropertyName)'.
@@ -564,7 +563,6 @@ namespace Microsoft.Restier.WebApi
                     queryable = ApplyProperty(
                         queryable,
                         propertySegment,
-                        ref currentEntityType,
                         ref currentType);
                     continue;
                 }

@@ -32,7 +32,11 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
                 graph = rawResult.Result;
             }
 
-            graph = ODataDomainPrimitiveSerializer.ConvertToPayloadValue(writeContext.Model, graph);
+            if (writeContext != null)
+            {
+                graph = ODataDomainPrimitiveSerializer.ConvertToPayloadValue(writeContext.Model, graph);
+            }
+
             base.WriteObject(graph, type, messageWriter, writeContext);
         }
     }

@@ -33,7 +33,11 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
                 graph = primitiveResult.Result;
             }
 
-            graph = ConvertToPayloadValue(writeContext.Model, graph);
+            if (writeContext != null)
+            {
+                graph = ConvertToPayloadValue(writeContext.Model, graph);
+            }
+
             base.WriteObject(graph, type, messageWriter, writeContext);
         }
 
