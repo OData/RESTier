@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.WebApi.Results
 {
@@ -11,17 +12,20 @@ namespace Microsoft.Restier.WebApi.Results
     /// </summary>
     public abstract class ODataQueryResult
     {
-        private IEdmTypeReference edmType;
+        private readonly IEdmTypeReference edmType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ODataQueryResult" /> class.
         /// </summary>
         /// <param name="edmType">The EDM type reference of the OData result.</param>
-        protected ODataQueryResult(IEdmTypeReference edmType)
+        /// <param name="context">The context where the action is executed.</param>
+        protected ODataQueryResult(IEdmTypeReference edmType, DomainContext context)
         {
             Ensure.NotNull(edmType, "edmType");
+            Ensure.NotNull(context, "context");
 
             this.edmType = edmType;
+            this.Context = context;
         }
 
         /// <summary>
@@ -34,5 +38,10 @@ namespace Microsoft.Restier.WebApi.Results
                 return this.edmType;
             }
         }
+
+        /// <summary>
+        /// Gets the context where the action is executed.
+        /// </summary>
+        public DomainContext Context { get; private set; }
     }
 }

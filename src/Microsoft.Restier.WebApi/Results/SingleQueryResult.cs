@@ -21,12 +21,9 @@ namespace Microsoft.Restier.WebApi.Results
         /// <param name="edmType">The EDM type reference of the object.</param>
         /// <param name="context">The context where the action is executed.</param>
         protected SingleQueryResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
-            : base(edmType)
+            : base(edmType, context)
         {
             Ensure.NotNull(query, "query");
-            Ensure.NotNull(context, "context");
-
-            this.Context = context;
 
             this.Result = query.SingleOrDefault();
         }
@@ -35,10 +32,5 @@ namespace Microsoft.Restier.WebApi.Results
         /// Gets the result object.
         /// </summary>
         public object Result { get; private set; }
-
-        /// <summary>
-        /// Gets the context where the action is executed.
-        /// </summary>
-        public DomainContext Context { get; private set; }
     }
 }
