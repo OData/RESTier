@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Microsoft.Restier.WebApi.Batch;
 
 namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory

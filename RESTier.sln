@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.EntityFra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.TestCommon", "test\Microsoft.Restier.TestCommon\Microsoft.Restier.TestCommon.csproj", "{C2CC463B-9F69-401E-89B3-FA1F9A44E253}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory", "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory\Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.csproj", "{B263C1E5-0184-4A1D-B438-8233559FD76B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory", "test\ODataEndToEndTests\Microsoft.Restier.WebApi.Test.Services.TrippinInMemory\Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.csproj", "{B263C1E5-0184-4A1D-B438-8233559FD76B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
