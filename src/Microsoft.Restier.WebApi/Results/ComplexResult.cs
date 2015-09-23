@@ -10,7 +10,7 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a single complex value being returned from an action.
     /// </summary>
-    public class ComplexResult : SingleQueryResult
+    internal class ComplexResult : BaseSingleResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ComplexResult" /> class.

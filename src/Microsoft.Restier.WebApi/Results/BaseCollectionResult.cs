@@ -11,15 +11,15 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a collection of objects being returned from an action.
     /// </summary>
-    public abstract class CollectionQueryResult : ODataQueryResult
+    internal abstract class BaseCollectionResult : BaseResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionQueryResult" /> class.
+        /// Initializes a new instance of the <see cref="BaseCollectionResult" /> class.
         /// </summary>
         /// <param name="query">The query that returns a collection of objects.</param>
         /// <param name="edmType">The EDM type reference of the objects.</param>
         /// <param name="context">The context where the action is executed.</param>
-        protected CollectionQueryResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
+        protected BaseCollectionResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
             : base(edmType, context)
         {
             Ensure.NotNull(query, "query");

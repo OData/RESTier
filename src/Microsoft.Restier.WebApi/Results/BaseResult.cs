@@ -8,18 +8,18 @@ using Microsoft.Restier.Core;
 namespace Microsoft.Restier.WebApi.Results
 {
     /// <summary>
-    /// The result of an OData query.
+    /// Represents the result of an OData query.
     /// </summary>
-    public abstract class ODataQueryResult
+    internal abstract class BaseResult
     {
         private readonly IEdmTypeReference edmType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataQueryResult" /> class.
+        /// Initializes a new instance of the <see cref="BaseResult" /> class.
         /// </summary>
         /// <param name="edmType">The EDM type reference of the OData result.</param>
         /// <param name="context">The context where the action is executed.</param>
-        protected ODataQueryResult(IEdmTypeReference edmType, DomainContext context)
+        protected BaseResult(IEdmTypeReference edmType, DomainContext context)
         {
             Ensure.NotNull(edmType, "edmType");
             Ensure.NotNull(context, "context");

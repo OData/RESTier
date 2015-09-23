@@ -12,15 +12,15 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a single object being returned from an action.
     /// </summary>
-    public abstract class SingleQueryResult : ODataQueryResult
+    internal abstract class BaseSingleResult : BaseResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SingleQueryResult" /> class.
+        /// Initializes a new instance of the <see cref="BaseSingleResult" /> class.
         /// </summary>
         /// <param name="query">The query that returns an object.</param>
         /// <param name="edmType">The EDM type reference of the object.</param>
         /// <param name="context">The context where the action is executed.</param>
-        protected SingleQueryResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
+        protected BaseSingleResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
             : base(edmType, context)
         {
             Ensure.NotNull(query, "query");

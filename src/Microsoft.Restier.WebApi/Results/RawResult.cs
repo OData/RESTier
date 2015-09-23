@@ -10,7 +10,7 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a raw value being returned from an action.
     /// </summary>
-    public class RawResult : SingleQueryResult
+    internal class RawResult : BaseSingleResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RawResult" /> class.

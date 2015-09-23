@@ -294,7 +294,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "GET",
-                    new Uri(this.ServiceBaseUri.OriginalString + uriStringAfterServiceRoot, UriKind.Absolute),
+                    new Uri(this.ServiceBaseUri, uriStringAfterServiceRoot),
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>()));
@@ -310,7 +310,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "GET",
-                    new Uri(this.ServiceBaseUri.OriginalString + uriStringAfterServiceRoot, UriKind.Absolute),
+                    new Uri(this.ServiceBaseUri, uriStringAfterServiceRoot),
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>()));
@@ -322,7 +322,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "POST",
-                    new Uri(this.ServiceBaseUri.OriginalString + uriStringAfterServiceRoot, UriKind.Absolute),
+                    new Uri(this.ServiceBaseUri, uriStringAfterServiceRoot),
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>() { { "Content-Length", "0" } }));
@@ -338,7 +338,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "POST",
-                    new Uri(this.ServiceBaseUri.OriginalString + uriStringAfterServiceRoot, UriKind.Absolute),
+                    new Uri(this.ServiceBaseUri, uriStringAfterServiceRoot),
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>() { { "Content-Length", "0" } }));

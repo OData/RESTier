@@ -111,7 +111,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "GET",
-                    new Uri(this.ServiceBaseUri.OriginalString + uriAfterServiceRoot, UriKind.Absolute),
+                    new Uri(this.ServiceBaseUri, uriAfterServiceRoot),
                     true,
                     false,
                     new Dictionary<string, string>()));

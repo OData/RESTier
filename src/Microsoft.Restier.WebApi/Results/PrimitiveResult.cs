@@ -10,7 +10,7 @@ namespace Microsoft.Restier.WebApi.Results
     /// <summary>
     /// Represents a single primitive value being returned from an action.
     /// </summary>
-    public class PrimitiveResult : SingleQueryResult
+    internal class PrimitiveResult : BaseSingleResult
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PrimitiveResult" /> class.
