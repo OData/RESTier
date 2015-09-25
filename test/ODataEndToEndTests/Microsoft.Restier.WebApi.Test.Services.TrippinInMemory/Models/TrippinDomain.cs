@@ -13,7 +13,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
     {
         private static readonly List<Person> people = new List<Person> { new Person { PersonId = 1, UserName = "u2" } };
 
-        protected IQueryable<Person> People
+        public IQueryable<Person> People
         {
             get { return people.AsQueryable(); }
         }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -11,32 +12,24 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
     {
         private const string EigenString = "ODataEndToEndTests";
 
-        private const string ServiceName = "Microsoft.Restier.WebApi.Test.Services.Trippin";
-
         private const string IISExpressProcessName = "iisexpress";
 
-        private const int TrippinPort = 18384;
+        private static readonly string IISExpressPath =
+            Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\IIS Express\iisexpress.exe");
 
-        private static readonly string TrippinWebRoot = GetTrippinWebRoot();
-
-        private static readonly string IISExpressPath = GetIISExpressPath();
+        private static readonly Dictionary<string, int> Services = new Dictionary<string, int>
+        {
+            {"Microsoft.Restier.WebApi.Test.Services.Trippin"           , 18384 },
+            {"Microsoft.Restier.WebApi.Test.Services.TrippinInMemory"   , 21248 }
+        };
 
         static TrippinServiceFixture()
         {
             KillServices();
-            StartService();
-        }
-
-        private static string GetTrippinWebRoot()
-        {
-            var codeBase = new Uri(typeof(TrippinServiceFixture).Assembly.CodeBase).LocalPath;
-            var parentPathLength = codeBase.IndexOf(EigenString) + EigenString.Length;
-            return Path.Combine(codeBase.Substring(0, parentPathLength), ServiceName);
-        }
-
-        private static string GetIISExpressPath()
-        {
-            return Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\IIS Express\iisexpress.exe");
+            foreach (var service in Services)
+            {
+                StartService(service.Key, service.Value);
+            }
         }
 
         private static void KillServices()
@@ -49,21 +42,29 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             }
         }
 
-        private static void StartService()
+        private static void StartService(string serviceName, int port)
         {
+            string root = GetTrippinWebRoot(serviceName);
             var startInfo = new ProcessStartInfo
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 FileName = IISExpressPath,
-                Arguments = string.Format("/path:\"{0}\" /port:{1}", TrippinWebRoot, TrippinPort)
+                Arguments = string.Format("/path:\"{0}\" /port:{1}", root, port)
             };
 
             var process = Process.Start(startInfo);
             if (process == null)
             {
-                throw new InvalidOperationException("Failed to start Trippin service");
+                throw new InvalidOperationException("Failed to start service:" + serviceName);
             }
+        }
+
+        private static string GetTrippinWebRoot(string serviceName)
+        {
+            var codeBase = new Uri(typeof(TrippinServiceFixture).Assembly.CodeBase).LocalPath;
+            var parentPathLength = codeBase.IndexOf(EigenString) + EigenString.Length;
+            return Path.Combine(codeBase.Substring(0, parentPathLength), serviceName);
         }
     }
 }
