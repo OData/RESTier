@@ -22,7 +22,8 @@ namespace Microsoft.Restier.Core.Conventions
     internal class ConventionalDomainModelBuilder :
         IModelBuilder, IDelegateHookHandler<IModelBuilder>,
         IModelMapper, IDelegateHookHandler<IModelMapper>,
-        IQueryExpressionExpander
+        IQueryExpressionExpander,
+        IQueryExpressionSourcer, IDelegateHookHandler<IQueryExpressionSourcer>
     {
         private readonly Type targetType;
         private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
@@ -38,6 +39,8 @@ namespace Microsoft.Restier.Core.Conventions
 
         IModelMapper IDelegateHookHandler<IModelMapper>.InnerHandler { get; set; }
 
+        IQueryExpressionSourcer IDelegateHookHandler<IQueryExpressionSourcer>.InnerHandler { get; set; }
+
         /// <inheritdoc/>
         public static void ApplyTo(
             DomainConfiguration configuration,
@@ -50,6 +53,7 @@ namespace Microsoft.Restier.Core.Conventions
             configuration.AddHookHandler<IModelBuilder>(provider);
             configuration.AddHookHandler<IModelMapper>(provider);
             configuration.AddHookHandler<IQueryExpressionExpander>(provider);
+            configuration.AddHookHandler<IQueryExpressionSourcer>(provider);
         }
 
         /// <inheritdoc/>
@@ -114,6 +118,67 @@ namespace Microsoft.Restier.Core.Conventions
         /// <inheritdoc/>
         public Expression Expand(QueryExpressionContext context)
         {
+            IQueryable result = GetEntitySetQuery(context);
+
+            if (result != null)
+            {
+                // Only Expand to expression of method call on DomainData class
+                var methodCall = result.Expression as MethodCallExpression;
+                if (methodCall != null)
+                {
+                    var method = methodCall.Method;
+                    if (method.DeclaringType == typeof(DomainData) && method.Name != "Value")
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return result.Expression;
+                    }
+                }
+
+                return null;
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public Expression Source(QueryExpressionContext context, bool embedded)
+        {
+            var innerHandler = ((IDelegateHookHandler<IQueryExpressionSourcer>)this).InnerHandler;
+            if (innerHandler != null)
+            {
+                var result = innerHandler.Source(context, embedded);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            var query = GetEntitySetQuery(context);
+            if (query != null)
+            {
+                return Expression.Constant(query);
+            }
+
+            return null;
+        }
+
+        private static bool IsEntitySetProperty(PropertyInfo property)
+        {
+            return property.PropertyType.IsGenericType &&
+                   property.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>) &&
+                   property.PropertyType.GetGenericArguments()[0].IsClass;
+        }
+
+        private static bool IsSingletonProperty(PropertyInfo property)
+        {
+            return !property.PropertyType.IsGenericType && property.PropertyType.IsClass;
+        }
+
+        private IQueryable GetEntitySetQuery(QueryExpressionContext context)
+        {
             Ensure.NotNull(context, "context");
             if (context.ModelReference == null)
             {
@@ -148,26 +213,10 @@ namespace Microsoft.Restier.Core.Conventions
                     }
                 }
 
-                var result = entitySetProperty.GetValue(target) as IQueryable;
-                if (result != null)
-                {
-                    return result.Expression;
-                }
+                return entitySetProperty.GetValue(target) as IQueryable;
             }
 
             return null;
-        }
-
-        private static bool IsEntitySetProperty(PropertyInfo property)
-        {
-            return property.PropertyType.IsGenericType &&
-                   property.PropertyType.GetGenericTypeDefinition() == typeof(IQueryable<>) &&
-                   property.PropertyType.GetGenericArguments()[0].IsClass;
-        }
-
-        private static bool IsSingletonProperty(PropertyInfo property)
-        {
-            return !property.PropertyType.IsGenericType && property.PropertyType.IsClass;
         }
 
         private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(

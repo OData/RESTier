@@ -21,10 +21,16 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             TestGetPayloadContains("$metadata", "<EntitySet Name=\"People\"");
         }
 
-        [Fact(Skip = "source issue")]
+        [Fact]
         public void TestEntitySet()
         {
             TestGetPayloadContains("People", "FirstName");
+        }
+
+        [Fact]
+        public void TestImperativeViewEntitySet()
+        {
+            TestGetPayloadContains("NewComePeople", "FirstName");
         }
     }
 }

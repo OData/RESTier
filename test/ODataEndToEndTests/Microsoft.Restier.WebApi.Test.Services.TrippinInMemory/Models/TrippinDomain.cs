@@ -11,11 +11,21 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 {
     public class TrippinDomain : DomainBase
     {
-        private static readonly List<Person> people = new List<Person> { new Person { PersonId = 1, UserName = "u2" } };
+        private static readonly List<Person> people = new List<Person>
+        {
+            new Person { PersonId = 1, FirstName = "u1" },
+            new Person { PersonId = 2, FirstName = "u2" },
+            new Person { PersonId = 3, FirstName = "u3" },
+        };
 
         public IQueryable<Person> People
         {
             get { return people.AsQueryable(); }
+        }
+
+        public IQueryable<Person> NewComePeople
+        {
+            get { return this.Source<Person>("People").Where(p => p.PersonId >= 2); }
         }
 
         protected override DomainConfiguration CreateDomainConfiguration()
