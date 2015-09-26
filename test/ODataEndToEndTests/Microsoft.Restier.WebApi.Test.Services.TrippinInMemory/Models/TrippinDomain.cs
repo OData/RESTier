@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,9 +14,46 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
     {
         private static readonly List<Person> people = new List<Person>
         {
-            new Person { PersonId = 1, FirstName = "u1" },
-            new Person { PersonId = 2, FirstName = "u2" },
-            new Person { PersonId = 3, FirstName = "u3" },
+            new Person
+            {
+                PersonId = 1,
+                FirstName = "u1",
+                Emails = new Collection<string>
+                {
+                    "u1@trippin.com",
+                    "u1@odata.org"
+                }
+            },
+            new Person
+            {
+                PersonId = 2,
+                FirstName = "u2",
+                Emails = new Collection<string>
+                {
+                    "u2@trippin.com",
+                    "u2@odata.org"
+                }
+            },
+            new Person
+            {
+                PersonId = 3,
+                FirstName = "u3",
+                Emails = new Collection<string>
+                {
+                    "u3@trippin.com",
+                    "u3@odata.org"
+                }
+            },
+            new Person
+            {
+                PersonId = 4,
+                FirstName = "u4",
+                Emails = new Collection<string>
+                {
+                    "u4@trippin.com",
+                    "u4@odata.org"
+                }
+            }
         };
 
         public IQueryable<Person> People

@@ -29,7 +29,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             return (TDSC)Activator.CreateInstance(typeof(TDSC), this.ServiceBaseUri);
         }
 
-        #region Help Methods
+        #region Helper Methods
         protected void TestGetPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
         {
             var requestMessage = new HttpWebRequestMessage(

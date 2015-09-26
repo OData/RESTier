@@ -26,5 +26,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 
         [Column("BirthDate", TypeName = "Date")]
         public DateTime BirthDate { get; set; }
+
+        public virtual ICollection<string> Emails { get; set; }
     }
 }
