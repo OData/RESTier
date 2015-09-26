@@ -32,6 +32,18 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         #region Helper Methods
         protected void TestGetPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
         {
+            this.TestGetPayload(uriStringAfterServiceRoot,
+                payloadString => Assert.Contains(expectedSubString, payloadString));
+        }
+
+        protected void TestGetPayloadIs(string uriStringAfterServiceRoot, string expectedString)
+        {
+            this.TestGetPayload(uriStringAfterServiceRoot,
+                payloadString => Assert.Equal(expectedString, payloadString));
+        }
+
+        protected void TestGetPayload(string uriStringAfterServiceRoot, Action<string> testMethod)
+        {
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "GET",
@@ -42,7 +54,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
             {
                 var payloadString = r.ReadToEnd();
-                Assert.Contains(expectedSubString, payloadString);
+                testMethod(payloadString);
             }
         }
 
