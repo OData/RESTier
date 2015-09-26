@@ -18,6 +18,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             {
                 PersonId = 1,
                 FirstName = "u1",
+                FavoriteColor = Color.Red,
                 Emails = new Collection<string>
                 {
                     "u1@trippin.com",
@@ -27,12 +28,18 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     new Location { Address = "a1" },
                     new Location { Address = "b1" }
+                },
+                Colors = new Collection<Color>
+                {
+                    Color.Red,
+                    Color.Green
                 }
             },
             new Person
             {
                 PersonId = 2,
                 FirstName = "u2",
+                FavoriteColor = Color.Green,
                 Emails = new Collection<string>
                 {
                     "u2@trippin.com",
@@ -42,12 +49,18 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     new Location { Address = "a2" },
                     new Location { Address = "b2" }
+                },
+                Colors = new Collection<Color>
+                {
+                    Color.Green,
+                    Color.Blue
                 }
             },
             new Person
             {
                 PersonId = 3,
                 FirstName = "u3",
+                FavoriteColor = Color.Blue,
                 Emails = new Collection<string>
                 {
                     "u3@trippin.com",
@@ -57,12 +70,18 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     new Location { Address = "a3" },
                     new Location { Address = "b3" }
+                },
+                Colors = new Collection<Color>
+                {
+                    Color.Blue,
+                    Color.Yellow
                 }
             },
             new Person
             {
                 PersonId = 4,
                 FirstName = "u4",
+                FavoriteColor = Color.Yellow,
                 Emails = new Collection<string>
                 {
                     "u4@trippin.com",
@@ -72,6 +91,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     new Location { Address = "a4" },
                     new Location { Address = "b4" }
+                },
+                Colors = new Collection<Color>
+                {
+                    Color.Yellow,
+                    Color.Red
                 }
             }
         };

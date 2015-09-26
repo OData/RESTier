@@ -27,8 +27,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
         [Column("BirthDate", TypeName = "Date")]
         public DateTime BirthDate { get; set; }
 
+        public Color FavoriteColor { get; set; }
+
         public virtual ICollection<string> Emails { get; set; }
 
         public virtual ICollection<Location> Locations { get; set; } 
+
+        public virtual ICollection<Color> Colors { get; set; } 
     }
 }
