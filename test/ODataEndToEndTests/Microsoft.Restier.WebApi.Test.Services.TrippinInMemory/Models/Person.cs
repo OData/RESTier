@@ -28,5 +28,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
         public DateTime BirthDate { get; set; }
 
         public virtual ICollection<string> Emails { get; set; }
+
+        public virtual ICollection<Location> Locations { get; set; } 
     }
 }

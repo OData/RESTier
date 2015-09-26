@@ -22,6 +22,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     "u1@trippin.com",
                     "u1@odata.org"
+                },
+                Locations = new Collection<Location>
+                {
+                    new Location { Address = "a1" },
+                    new Location { Address = "b1" }
                 }
             },
             new Person
@@ -32,6 +37,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     "u2@trippin.com",
                     "u2@odata.org"
+                },
+                Locations = new Collection<Location>
+                {
+                    new Location { Address = "a2" },
+                    new Location { Address = "b2" }
                 }
             },
             new Person
@@ -42,6 +52,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     "u3@trippin.com",
                     "u3@odata.org"
+                },
+                Locations = new Collection<Location>
+                {
+                    new Location { Address = "a3" },
+                    new Location { Address = "b3" }
                 }
             },
             new Person
@@ -52,6 +67,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     "u4@trippin.com",
                     "u4@odata.org"
+                },
+                Locations = new Collection<Location>
+                {
+                    new Location { Address = "a4" },
+                    new Location { Address = "b4" }
                 }
             }
         };
