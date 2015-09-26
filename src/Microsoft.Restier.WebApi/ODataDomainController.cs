@@ -519,10 +519,22 @@ namespace Microsoft.Restier.WebApi
                     HttpStatusCode.OK, new ComplexResult(query, typeReference, this.Domain.Context));
             }
 
+            if (typeReference.IsEnum())
+            {
+                if (this.shouldWriteRawValue)
+                {
+                    return this.Request.CreateResponse(
+                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Domain.Context));
+                }
+
+                return this.Request.CreateResponse(
+                    HttpStatusCode.OK, new EnumResult(query, typeReference, this.Domain.Context));
+            }
+
             if (typeReference.IsCollection())
             {
                 var elementType = typeReference.AsCollection().ElementType();
-                if (elementType.IsPrimitive() || elementType.IsComplex())
+                if (elementType.IsPrimitive() || elementType.IsComplex() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
                         HttpStatusCode.OK, new ValueCollectionResult(query, typeReference, this.Domain.Context));
