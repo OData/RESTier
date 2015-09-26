@@ -76,6 +76,7 @@
     <Compile Include="Batch\ODataDomainChangeSetProperty.cs" />
     <Compile Include="Batch\ODataDomainChangeSetRequestItem.cs" />
     <Compile Include="Formatter\Serialization\DefaultODataDomainSerializerProvider.cs" />
+    <Compile Include="Formatter\Serialization\ODataDomainCollectionSerializer.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainComplexTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainRawSerializer.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainPrimitiveSerializer.cs" />
@@ -94,6 +95,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Results\BaseCollectionResult.cs" />
+    <Compile Include="Results\ValueCollectionResult.cs" />
     <Compile Include="Results\EntityCollectionResult.cs" />
     <Compile Include="Results\ComplexResult.cs" />
     <Compile Include="Results\RawResult.cs" />

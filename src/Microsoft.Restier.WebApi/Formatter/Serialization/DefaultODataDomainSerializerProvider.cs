@@ -19,6 +19,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         private ODataDomainPrimitiveSerializer primitiveSerializer;
         private ODataDomainRawSerializer rawSerializer;
         private ODataDomainComplexTypeSerializer complexTypeSerializer;
+        private ODataDomainCollectionSerializer collectionSerializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultODataDomainSerializerProvider" /> class.
@@ -30,6 +31,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             this.primitiveSerializer = new ODataDomainPrimitiveSerializer();
             this.rawSerializer = new ODataDomainRawSerializer();
             this.complexTypeSerializer = new ODataDomainComplexTypeSerializer(this);
+            this.collectionSerializer = new ODataDomainCollectionSerializer(this);
         }
 
         /// <summary>
@@ -67,6 +69,10 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
                 else if (type == typeof(ComplexResult))
                 {
                     serializer = this.complexTypeSerializer;
+                }
+                else if (type == typeof(ValueCollectionResult))
+                {
+                    serializer = this.collectionSerializer;
                 }
             }
 

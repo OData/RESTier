@@ -391,14 +391,31 @@ namespace Microsoft.Restier.WebApi
             PropertyAccessPathSegment propertySegment,
             ref Type currentType)
         {
-            // Produces new query like 'queryable.Select(param => param.PropertyName)'.
             ParameterExpression entityParameterExpression = Expression.Parameter(currentType);
             Expression structuralPropertyExpression =
                 Expression.Property(entityParameterExpression, propertySegment.PropertyName);
-            currentType = structuralPropertyExpression.Type;
-            LambdaExpression selectBody =
+
+            if (propertySegment.Property.Type.IsCollection())
+            {
+                // Produces new query like 'queryable.SelectMany(param => param.PropertyName)'.
+                // Suppose 'param.PropertyName' is of type 'IEnumerable<T>', the type of the
+                // resulting query would be 'IEnumerable<T>' too.
+                currentType = structuralPropertyExpression.Type.GetEnumerableItemType();
+                Type delegateType = typeof(Func<,>).MakeGenericType(
+                    queryable.ElementType,
+                    typeof(IEnumerable<>).MakeGenericType(currentType));
+                LambdaExpression selectBody =
+                    Expression.Lambda(delegateType, structuralPropertyExpression, entityParameterExpression);
+                return ExpressionHelpers.SelectMany(queryable, selectBody, currentType);
+            }
+            else
+            {
+                // Produces new query like 'queryable.Select(param => param.PropertyName)'.
+                currentType = structuralPropertyExpression.Type;
+                LambdaExpression selectBody =
                     Expression.Lambda(structuralPropertyExpression, entityParameterExpression);
-            return ExpressionHelpers.Select(queryable, selectBody);
+                return ExpressionHelpers.Select(queryable, selectBody);
+            }
         }
 
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
@@ -504,6 +521,13 @@ namespace Microsoft.Restier.WebApi
 
             if (typeReference.IsCollection())
             {
+                var elementType = typeReference.AsCollection().ElementType();
+                if (elementType.IsPrimitive() || elementType.IsComplex())
+                {
+                    return this.Request.CreateResponse(
+                        HttpStatusCode.OK, new ValueCollectionResult(query, typeReference, this.Domain.Context));
+                }
+
                 return this.Request.CreateResponse(
                     HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Domain.Context));
             }
