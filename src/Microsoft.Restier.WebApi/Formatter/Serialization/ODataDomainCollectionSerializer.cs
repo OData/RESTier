@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for collection result.
     /// </summary>
-    public class ODataDomainCollectionSerializer : ODataCollectionSerializer
+    internal class ODataDomainCollectionSerializer : ODataCollectionSerializer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ODataDomainCollectionSerializer" /> class.

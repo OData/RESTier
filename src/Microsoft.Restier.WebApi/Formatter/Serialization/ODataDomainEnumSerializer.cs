@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for enum result.
     /// </summary>
-    public class ODataDomainEnumSerializer : ODataEnumSerializer
+    internal class ODataDomainEnumSerializer : ODataEnumSerializer
     {
         /// <summary>
         /// Writes the enum result to the response message.

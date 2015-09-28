@@ -12,7 +12,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for primitive result.
     /// </summary>
-    public class ODataDomainPrimitiveSerializer : ODataPrimitiveSerializer
+    internal class ODataDomainPrimitiveSerializer : ODataPrimitiveSerializer
     {
         /// <summary>
         /// Writes the entity result to the response message.
