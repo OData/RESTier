@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -224,6 +225,10 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 return GetComplexTypeReference(efProperty, model, elementMap);
             }
+            else if (efProperty.IsEnumType)
+            {
+                return GetEnumTypeReference(efProperty, model, elementMap);
+            }
 
             // TODO GitHubIssue#103 : Choose property error message for unknown type
             return null;
@@ -259,6 +264,35 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
 
             return new EdmComplexTypeReference(complexType, efProperty.Nullable);
+        }
+
+        private static IEdmEnumTypeReference GetEnumTypeReference(
+            EdmProperty efProperty,
+            EdmModel model,
+            IDictionary<MetadataItem, IEdmElement> elementMap)
+        {
+            var efEnumType = efProperty.EnumType;
+            EdmEnumType enumType;
+            IEdmElement element;
+
+            if (elementMap.TryGetValue(efEnumType, out element))
+            {
+                enumType = (EdmEnumType)element;
+            }
+            else
+            {
+                enumType = new EdmEnumType(efEnumType.NamespaceName, efEnumType.Name);
+                elementMap.Add(efEnumType, enumType);
+                model.AddElement(enumType);
+
+                foreach (var member in efEnumType.Members)
+                {
+                    var longValue = Convert.ToInt64(member.Value, CultureInfo.InvariantCulture);
+                    enumType.AddMember(member.Name, new EdmIntegerConstant(longValue));
+                }
+            }
+
+            return new EdmEnumTypeReference(enumType, efProperty.Nullable);
         }
 
         private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(EdmProperty efProperty)

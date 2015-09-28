@@ -106,6 +106,26 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             });
         }
 
+        [Fact]
+        public void QueryEnumPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/FavoriteFeature", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(1)/FavoriteFeature\"," +
+                    "\"value\":\"Feature1\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryRawEnumPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/FavoriteFeature/$value", payloadStr =>
+            {
+                Assert.Equal("Feature1", payloadStr, StringComparer.Ordinal);
+            });
+        }
+
         private void TestPayloadString(string uriAfterServiceRoot, Action<string> testMethod)
         {
             var requestMessage = new HttpWebRequestMessage(

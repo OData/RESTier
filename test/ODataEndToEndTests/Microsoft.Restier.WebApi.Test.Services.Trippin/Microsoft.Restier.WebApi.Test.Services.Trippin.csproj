@@ -55,6 +55,7 @@
     <Compile Include="Models\Airline.cs" />
     <Compile Include="Models\Airport.cs" />
     <Compile Include="Models\Event.cs" />
+    <Compile Include="Models\Feature.cs" />
     <Compile Include="Models\Flight.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Person.cs" />

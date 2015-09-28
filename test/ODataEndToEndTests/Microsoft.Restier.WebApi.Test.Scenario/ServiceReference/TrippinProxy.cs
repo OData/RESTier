@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generation date: 8/20/2015 5:32:21 PM
+// Generation date: 9/28/2015 3:50:52 PM
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
     /// <summary>
@@ -301,6 +301,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
           <ReferentialConstraint Property=""ToId"" ReferencedProperty=""IcaoCode"" />
         </NavigationProperty>
       </EntityType>
+      <EnumType Name=""Feature"">
+        <Member Name=""Feature1"" Value=""0"" />
+        <Member Name=""Feature2"" Value=""1"" />
+        <Member Name=""Feature3"" Value=""2"" />
+        <Member Name=""Feature4"" Value=""3"" />
+      </EnumType>
       <EntityType Name=""Person"">
         <Key>
           <PropertyRef Name=""PersonId"" />
@@ -311,6 +317,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""LastName"" Type=""Edm.String"" MaxLength=""26"" />
         <Property Name=""Concurrency"" Type=""Edm.Int64"" Nullable=""false"" />
         <Property Name=""BirthDate"" Type=""Edm.Date"" Nullable=""false"" />
+        <Property Name=""FavoriteFeature"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" Nullable=""false"" />
         <NavigationProperty Name=""Friends"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
         <NavigationProperty Name=""Trips"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip)"" />
       </EntityType>
@@ -333,22 +340,22 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <NavigationProperty Name=""Events"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event)"" />
         <NavigationProperty Name=""Flights"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight)"" />
       </EntityType>
-      <Action Name=""ResetDataSource"" />
-      <Function Name=""GetNumberOfFriends"" IsBound=""true"" IsComposable=""true"">
-        <Parameter Name=""person"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" Nullable=""false"" />
+      <Function Name=""GetNumberOfFriends"" IsBound=""true"">
+        <Parameter Name=""person"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
         <ReturnType Type=""Edm.Int32"" Nullable=""false"" />
       </Function>
-      <Function Name=""GetPersonWithMostFriends"" IsComposable=""true"">
-        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" Nullable=""false"" />
+      <Function Name=""GetPersonWithMostFriends"">
+        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
       </Function>
-      <Function Name=""GetPeopleWithFriendsAtLeast"" IsComposable=""true"">
+      <Function Name=""GetPeopleWithFriendsAtLeast"">
         <Parameter Name=""n"" Type=""Edm.Int32"" Nullable=""false"" />
-        <ReturnType Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" Nullable=""false"" />
+        <ReturnType Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
       </Function>
+      <Action Name=""ResetDataSource"" />
       <Action Name=""CleanUpExpiredTrips"" />
       <Action Name=""EndTrip"" IsBound=""true"" EntitySetPath=""trip"">
-        <Parameter Name=""trip"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" Nullable=""false"" />
-        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" Nullable=""false"" />
+        <Parameter Name=""trip"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" />
+        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" />
       </Action>
       <EntityContainer Name=""TrippinModel"">
         <EntitySet Name=""Airlines"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline"">
@@ -378,10 +385,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             </Collection>
           </Annotation>
         </EntitySet>
-        <ActionImport Name=""ResetDataSource"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.ResetDataSource"" />
         <Singleton Name=""Me"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
         <FunctionImport Name=""GetPersonWithMostFriends"" Function=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetPersonWithMostFriends"" EntitySet=""People"" />
         <FunctionImport Name=""GetPeopleWithFriendsAtLeast"" Function=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetPeopleWithFriendsAtLeast"" EntitySet=""People"" />
+        <ActionImport Name=""ResetDataSource"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.ResetDataSource"" />
         <ActionImport Name=""CleanUpExpiredTrips"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.CleanUpExpiredTrips"" />
       </EntityContainer>
     </Schema>
@@ -417,7 +424,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetPersonWithMostFriends")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle GetPersonWithMostFriends()
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(this.CreateFunctionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPersonWithMostFriends", true));
+            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(this.CreateFunctionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPersonWithMostFriends", false));
         }
         /// <summary>
         /// There are no comments for GetPeopleWithFriendsAtLeast in the schema.
@@ -425,7 +432,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetPeopleWithFriendsAtLeast")]
         public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> GetPeopleWithFriendsAtLeast(int n)
         {
-            return this.CreateFunctionQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPeopleWithFriendsAtLeast", true, new global::Microsoft.OData.Client.UriOperationParameter("n", n));
+            return this.CreateFunctionQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPeopleWithFriendsAtLeast", false, new global::Microsoft.OData.Client.UriOperationParameter("n", n));
         }
         /// <summary>
         /// There are no comments for ResetDataSource in the schema.
@@ -1438,14 +1445,16 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="firstName">Initial value of FirstName.</param>
         /// <param name="concurrency">Initial value of Concurrency.</param>
         /// <param name="birthDate">Initial value of BirthDate.</param>
+        /// <param name="favoriteFeature">Initial value of FavoriteFeature.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
-        public static Person CreatePerson(int personId, string firstName, long concurrency, global::Microsoft.OData.Edm.Library.Date birthDate)
+        public static Person CreatePerson(int personId, string firstName, long concurrency, global::Microsoft.OData.Edm.Library.Date birthDate, global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature favoriteFeature)
         {
             Person person = new Person();
             person.PersonId = personId;
             person.FirstName = firstName;
             person.Concurrency = concurrency;
             person.BirthDate = birthDate;
+            person.FavoriteFeature = favoriteFeature;
             return person;
         }
         /// <summary>
@@ -1587,6 +1596,29 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         partial void OnBirthDateChanging(global::Microsoft.OData.Edm.Library.Date value);
         partial void OnBirthDateChanged();
         /// <summary>
+        /// There are no comments for Property FavoriteFeature in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("FavoriteFeature")]
+        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature FavoriteFeature
+        {
+            get
+            {
+                return this._FavoriteFeature;
+            }
+            set
+            {
+                this.OnFavoriteFeatureChanging(value);
+                this._FavoriteFeature = value;
+                this.OnFavoriteFeatureChanged();
+                this.OnPropertyChanged("FavoriteFeature");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature _FavoriteFeature;
+        partial void OnFavoriteFeatureChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature value);
+        partial void OnFavoriteFeatureChanged();
+        /// <summary>
         /// There are no comments for Property Friends in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
@@ -1658,7 +1690,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             global::System.Uri requestUri;
             Context.TryGetUri(this, out requestUri);
 
-            return this.Context.CreateFunctionQuerySingle<int>(string.Join("/", global::System.Linq.Enumerable.Select(global::System.Linq.Enumerable.Skip(requestUri.Segments, this.Context.BaseUri.Segments.Length), s => s.Trim('/'))), "Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", true);
+            return this.Context.CreateFunctionQuerySingle<int>(string.Join("/", global::System.Linq.Enumerable.Select(global::System.Linq.Enumerable.Skip(requestUri.Segments, this.Context.BaseUri.Segments.Length), s => s.Trim('/'))), "Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", false);
         }
     }
     /// <summary>
@@ -2079,6 +2111,21 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         }
     }
     /// <summary>
+    /// There are no comments for Feature in the schema.
+    /// </summary>
+    [global::Microsoft.OData.Client.OriginalNameAttribute("Feature")]
+    public enum Feature
+    {
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature1")]
+        Feature1 = 0,
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature2")]
+        Feature2 = 1,
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature3")]
+        Feature3 = 2,
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature4")]
+        Feature4 = 3
+    }
+    /// <summary>
     /// Class containing all extension methods
     /// </summary>
     public static class ExtensionMethods
@@ -2232,7 +2279,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 throw new global::System.NotSupportedException("The previous function is not composable.");
             }
 
-            return source.CreateFunctionQuerySingle<int>("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", true);
+            return source.CreateFunctionQuerySingle<int>("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", false);
         }
         /// <summary>
         /// There are no comments for EndTrip in the schema.
