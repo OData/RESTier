@@ -72,7 +72,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
                 {
                     serializer = this.complexTypeSerializer;
                 }
-                else if (type == typeof(ValueCollectionResult))
+                else if (type == typeof(NonEntityCollectionResult))
                 {
                     serializer = this.collectionSerializer;
                 }

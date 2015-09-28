@@ -51,22 +51,22 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Fact]
         public void TestCollectionOfEnumPropertyAccess()
         {
-            TestGetPayloadContains("People(1)/Colors",
+            TestGetPayloadContains("People(1)/Features",
                 "\"@odata.context\":\"http://localhost:21248/api/Trippin/$metadata#Collection(" +
-                "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.Color)\"");
+                "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.Feature)\"");
         }
 
         [Fact]
         public void TestEnumPropertyAccess()
         {
-            TestGetPayloadContains("People(1)/FavoriteColor",
-                "\"@odata.context\":\"http://localhost:21248/api/Trippin/$metadata#People(1)/FavoriteColor");
+            TestGetPayloadContains("People(1)/FavoriteFeature",
+                "\"@odata.context\":\"http://localhost:21248/api/Trippin/$metadata#People(1)/FavoriteFeature");
         }
 
         [Fact]
         public void TestRawValuedEnumPropertyAccess()
         {
-            TestGetPayloadIs("People(1)/FavoriteColor/$value", "Red");
+            TestGetPayloadIs("People(1)/FavoriteFeature/$value", "Feature1");
         }
     }
 }

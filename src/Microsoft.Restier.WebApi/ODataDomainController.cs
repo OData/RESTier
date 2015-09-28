@@ -537,7 +537,7 @@ namespace Microsoft.Restier.WebApi
                 if (elementType.IsPrimitive() || elementType.IsComplex() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new ValueCollectionResult(query, typeReference, this.Domain.Context));
+                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Domain.Context));
                 }
 
                 return this.Request.CreateResponse(

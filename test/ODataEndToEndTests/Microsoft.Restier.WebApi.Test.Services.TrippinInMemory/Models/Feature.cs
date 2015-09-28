@@ -3,11 +3,11 @@
 
 namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 {
-    public enum Color
+    public enum Feature
     {
-        Red,
-        Blue,
-        Green,
-        Yellow
+        Feature1,
+        Feature2,
+        Feature3,
+        Feature4
     }
 }

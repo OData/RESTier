@@ -35,7 +35,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            ValueCollectionResult collectionResult = graph as ValueCollectionResult;
+            NonEntityCollectionResult collectionResult = graph as NonEntityCollectionResult;
             if (collectionResult != null)
             {
                 graph = collectionResult.Query;
