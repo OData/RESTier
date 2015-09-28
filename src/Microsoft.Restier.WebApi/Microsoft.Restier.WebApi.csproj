@@ -75,6 +75,8 @@
     <Compile Include="Batch\ODataDomainBatchHandler.cs" />
     <Compile Include="Batch\ODataDomainChangeSetProperty.cs" />
     <Compile Include="Batch\ODataDomainChangeSetRequestItem.cs" />
+    <Compile Include="Formatter\Deserialization\DefaultODataDomainDeserializerProvider.cs" />
+    <Compile Include="Formatter\Deserialization\ODataDomainEnumDeserializer.cs" />
     <Compile Include="Formatter\Serialization\DefaultODataDomainSerializerProvider.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainCollectionSerializer.cs" />
     <Compile Include="Formatter\Serialization\ODataDomainEnumSerializer.cs" />

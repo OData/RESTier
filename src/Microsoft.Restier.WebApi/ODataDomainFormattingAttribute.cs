@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web.Http.Controllers;
 using System.Web.OData.Formatter;
 using System.Web.OData.Formatter.Deserialization;
+using Microsoft.Restier.WebApi.Formatter.Deserialization;
 using Microsoft.Restier.WebApi.Formatter.Serialization;
 
 namespace Microsoft.Restier.WebApi
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.WebApi
 
             odataFormatters = ODataMediaTypeFormatters.Create(
                 new DefaultODataDomainSerializerProvider(),
-                new DefaultODataDeserializerProvider());
+                new DefaultODataDomainDeserializerProvider());
             controllerFormatters.InsertRange(0, odataFormatters);
         }
     }

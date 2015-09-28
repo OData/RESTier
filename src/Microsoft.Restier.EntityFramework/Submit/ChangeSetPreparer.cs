@@ -144,6 +144,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
                 {
                     DbPropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
+                    Type type = propertyEntry.CurrentValue.GetType();
                     object value = propertyPair.Value;
 
                     if (propertyEntry is DbComplexPropertyEntry)
@@ -155,12 +156,11 @@ namespace Microsoft.Restier.EntityFramework.Submit
                             throw new NotSupportedException("Unsupported type for property:" + propertyPair.Key);
                         }
 
-                        var type = propertyEntry.CurrentValue.GetType();
                         value = Activator.CreateInstance(type);
                         SetValues(value, type, dic);
                     }
 
-                    propertyEntry.CurrentValue = ConvertToEfDateTimeIfValueIsEdmDate(value);
+                    propertyEntry.CurrentValue = ConvertIfNecessary(type, value);
                 }
             }
         }
@@ -170,8 +170,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
                 object value = propertyPair.Value;
-                value = ConvertToEfDateTimeIfValueIsEdmDate(value);
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
+                value = ConvertIfNecessary(propertyInfo.PropertyType, value);
                 if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
                     var dic = value as IReadOnlyDictionary<string, object>;
@@ -189,8 +189,15 @@ namespace Microsoft.Restier.EntityFramework.Submit
             }
         }
 
-        private static object ConvertToEfDateTimeIfValueIsEdmDate(object value)
+        private static object ConvertIfNecessary(Type type, object value)
         {
+            // Convert to System.Enum from name or value STRING provided by ODL.
+            if (type.IsEnum)
+            {
+                return Enum.Parse(type, (string)value);
+            }
+
+            // Convert to System.DateTime supported by EF from Edm.Date.
             if (value is Date)
             {
                 var dateValue = (Date)value;
