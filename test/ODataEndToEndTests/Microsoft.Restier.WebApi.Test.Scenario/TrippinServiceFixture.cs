@@ -29,6 +29,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             foreach (var service in Services)
             {
                 StartService(service.Key, service.Value);
+                System.Threading.Thread.Sleep(2000);
             }
         }
 
