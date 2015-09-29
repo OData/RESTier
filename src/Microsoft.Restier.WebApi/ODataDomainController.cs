@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -20,8 +18,6 @@ using System.Web.OData.Formatter;
 using System.Web.OData.Query;
 using System.Web.OData.Results;
 using System.Web.OData.Routing;
-using Microsoft.OData.Core;
-using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
@@ -43,9 +39,6 @@ namespace Microsoft.Restier.WebApi
     {
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
-        private const string DefaultNameOfParameterExpression = "currentValue";
-        private const char EntityKeySeparator = ',';
-        private const char EntityKeyNameValueSeparator = '=';
 
         private IDomain domain;
         private bool shouldWriteRawValue;
@@ -183,7 +176,7 @@ namespace Microsoft.Restier.WebApi
             DataModificationEntry deleteEntry = new DataModificationEntry(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
-                GetPathKeyValues(path),
+                ODataDomainQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 null);
 
@@ -264,160 +257,6 @@ namespace Microsoft.Restier.WebApi
             base.Dispose(disposing);
         }
 
-        private static IQueryable ApplyKeys(
-            IQueryable queryable,
-            KeyValuePathSegment keySegment,
-            IEdmEntityType entityType,
-            Type type)
-        {
-            BinaryExpression keyFilter = null;
-
-            ParameterExpression parameterExpression = Expression.Parameter(type, DefaultNameOfParameterExpression);
-            IReadOnlyDictionary<string, object> keyValues = GetPathKeyValues(keySegment, entityType);
-
-            foreach (KeyValuePair<string, object> keyValuePair in keyValues)
-            {
-                BinaryExpression equalsExpression =
-                    CreateEqualsExpression(parameterExpression, keyValuePair.Key, keyValuePair.Value);
-                keyFilter = keyFilter == null ? equalsExpression : Expression.And(keyFilter, equalsExpression);
-            }
-
-            LambdaExpression whereExpression = Expression.Lambda(keyFilter, parameterExpression);
-            return ExpressionHelpers.Where(queryable, whereExpression, type);
-        }
-
-        private static IReadOnlyDictionary<string, object> GetPathKeyValues(
-            KeyValuePathSegment keySegment,
-            IEdmEntityType entityType)
-        {
-            Dictionary<string, object> result = new Dictionary<string, object>();
-            IEnumerable<IEdmStructuralProperty> keys = entityType.Key();
-
-            // TODO GitHubIssue#42 : Improve key parsing logic
-            // this parsing implementation does not allow key values to contain commas
-            // Depending on the WebAPI to make KeyValuePathSegment.Values collection public
-            // (or have the parsing logic public).
-            string[] values = keySegment.Value.Split(EntityKeySeparator);
-            if (values.Length > 1)
-            {
-                foreach (string value in values)
-                {
-                    // Split key name and key value
-                    string[] keyValues = value.Split(EntityKeyNameValueSeparator);
-                    if (keyValues.Length != 2)
-                    {
-                        throw new InvalidOperationException(Resources.IncorrectKeyFormat);
-                    }
-
-                    // Validate the key name
-                    if (!keys.Select(k => k.Name).Contains(keyValues[0]))
-                    {
-                        throw new InvalidOperationException(
-                            string.Format(
-                            CultureInfo.InvariantCulture,
-                            Resources.KeyNotValidForEntityType,
-                            keyValues[0],
-                            entityType.Name));
-                    }
-
-                    result.Add(keyValues[0], ODataUriUtils.ConvertFromUriLiteral(keyValues[1], ODataVersion.V4));
-                }
-            }
-            else
-            {
-                // We just have the single key value
-                // Validate it has exactly one key
-                if (keys.Count() > 1)
-                {
-                    throw new InvalidOperationException(Resources.MultiKeyValuesExpected);
-                }
-
-                string keyName = keys.First().Name;
-                result.Add(keyName, ODataUriUtils.ConvertFromUriLiteral(keySegment.Value, ODataVersion.V4));
-            }
-
-            return result;
-        }
-
-        private static BinaryExpression CreateEqualsExpression(
-            ParameterExpression parameterExpression,
-            string propertyName,
-            object propertyValue)
-        {
-            MemberExpression property = Expression.Property(parameterExpression, propertyName);
-            ConstantExpression constant = Expression.Constant(propertyValue);
-
-            return Expression.Equal(property, constant);
-        }
-
-        private static IQueryable ApplyNavigation(
-            IQueryable queryable,
-            NavigationPathSegment navigationSegment,
-            ref IEdmEntityType currentEntityType,
-            ref Type currentType)
-        {
-            ParameterExpression entityParameterExpression = Expression.Parameter(currentType);
-            Expression navigationPropertyExpression =
-                Expression.Property(entityParameterExpression, navigationSegment.NavigationPropertyName);
-
-            currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
-
-            if (navigationSegment.NavigationProperty.TargetMultiplicity() == EdmMultiplicity.Many)
-            {
-                // get the element type of the target
-                // (the type should be an EntityCollection<T> for navigation queries).
-                currentType = navigationPropertyExpression.Type.GetEnumerableItemType();
-
-                // need to explicitly define the delegate type as IEnumerable<T>
-                Type delegateType = typeof(Func<,>).MakeGenericType(
-                    queryable.ElementType,
-                    typeof(IEnumerable<>).MakeGenericType(currentType));
-                LambdaExpression selectBody =
-                    Expression.Lambda(delegateType, navigationPropertyExpression, entityParameterExpression);
-
-                return ExpressionHelpers.SelectMany(queryable, selectBody, currentType);
-            }
-            else
-            {
-                currentType = navigationPropertyExpression.Type;
-                LambdaExpression selectBody =
-                    Expression.Lambda(navigationPropertyExpression, entityParameterExpression);
-                return ExpressionHelpers.Select(queryable, selectBody);
-            }
-        }
-
-        private static IQueryable ApplyProperty(
-            IQueryable queryable,
-            PropertyAccessPathSegment propertySegment,
-            ref Type currentType)
-        {
-            ParameterExpression entityParameterExpression = Expression.Parameter(currentType);
-            Expression structuralPropertyExpression =
-                Expression.Property(entityParameterExpression, propertySegment.PropertyName);
-
-            if (propertySegment.Property.Type.IsCollection())
-            {
-                // Produces new query like 'queryable.SelectMany(param => param.PropertyName)'.
-                // Suppose 'param.PropertyName' is of type 'IEnumerable<T>', the type of the
-                // resulting query would be 'IEnumerable<T>' too.
-                currentType = structuralPropertyExpression.Type.GetEnumerableItemType();
-                Type delegateType = typeof(Func<,>).MakeGenericType(
-                    queryable.ElementType,
-                    typeof(IEnumerable<>).MakeGenericType(currentType));
-                LambdaExpression selectBody =
-                    Expression.Lambda(delegateType, structuralPropertyExpression, entityParameterExpression);
-                return ExpressionHelpers.SelectMany(queryable, selectBody, currentType);
-            }
-            else
-            {
-                // Produces new query like 'queryable.Select(param => param.PropertyName)'.
-                currentType = structuralPropertyExpression.Type;
-                LambdaExpression selectBody =
-                    Expression.Lambda(structuralPropertyExpression, entityParameterExpression);
-                return ExpressionHelpers.Select(queryable, selectBody);
-            }
-        }
-
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
         {
             Ensure.NotNull(edmType, "edmType");
@@ -442,23 +281,6 @@ namespace Microsoft.Restier.WebApi
             }
         }
 
-        private static IReadOnlyDictionary<string, object> GetPathKeyValues(ODataPath path)
-        {
-            if (path.PathTemplate == "~/entityset/key" ||
-                path.PathTemplate == "~/entityset/key/cast")
-            {
-                KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
-                return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
-            }
-            else
-            {
-                throw new InvalidOperationException(string.Format(
-                    CultureInfo.InvariantCulture,
-                    Resources.InvalidPathTemplateInRequest,
-                    "~/entityset/key"));
-            }
-        }
-
         private async Task<IHttpActionResult> Update(
             EdmEntityObject edmEntityObject,
             bool isFullReplaceUpdate,
@@ -474,7 +296,7 @@ namespace Microsoft.Restier.WebApi
             DataModificationEntry updateEntry = new DataModificationEntry(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
-                GetPathKeyValues(path),
+                ODataDomainQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 edmEntityObject.CreatePropertyDictionary());
             updateEntry.IsFullReplaceUpdate = isFullReplaceUpdate;
@@ -561,51 +383,15 @@ namespace Microsoft.Restier.WebApi
         {
             ODataPath path = this.GetPath();
 
-            IEdmEntityType currentEntityType;
-            IQueryable queryable = this.GetSource(path, out currentEntityType);
-
-            // Apply segments to queryable
-            Type currentType = queryable.ElementType;
-            foreach (ODataPathSegment segment in path.Segments.Skip(1))
+            ODataDomainQueryBuilder builder = new ODataDomainQueryBuilder(this.Domain, path);
+            IQueryable queryable = builder.BuildQuery();
+            this.shouldWriteRawValue = builder.IsValuePathSegmentPresent;
+            if (queryable == null)
             {
-                ValuePathSegment valueSegment = segment as ValuePathSegment;
-                if (valueSegment != null)
-                {
-                    this.shouldWriteRawValue = true;
-                    continue;
-                }
-
-                KeyValuePathSegment keySegment = segment as KeyValuePathSegment;
-                if (keySegment != null)
-                {
-                    queryable = ApplyKeys(queryable, keySegment, currentEntityType, currentType);
-                    continue;
-                }
-
-                NavigationPathSegment navigationSegment = segment as NavigationPathSegment;
-                if (navigationSegment != null)
-                {
-                    queryable = ApplyNavigation(
-                        queryable,
-                        navigationSegment,
-                        ref currentEntityType,
-                        ref currentType);
-                    continue;
-                }
-
-                PropertyAccessPathSegment propertySegment = segment as PropertyAccessPathSegment;
-                if (propertySegment != null)
-                {
-                    queryable = ApplyProperty(
-                        queryable,
-                        propertySegment,
-                        ref currentType);
-                    continue;
-                }
-
-                throw new HttpResponseException(this.Request.CreateErrorResponse(
-                    HttpStatusCode.NotFound,
-                    string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment)));
+                throw new HttpResponseException(
+                    this.Request.CreateErrorResponse(
+                        HttpStatusCode.NotFound,
+                        Resources.ResourceNotFound));
             }
 
             ODataQueryContext queryContext =
@@ -641,48 +427,6 @@ namespace Microsoft.Restier.WebApi
             }
 
             return path;
-        }
-
-        private IQueryable GetSource(ODataPath path, out IEdmEntityType rootEntityType)
-        {
-            IEdmNamedElement querySource = null;
-            object[] queryArgs = null;
-            ODataPathSegment firstPathSegment = path.Segments.FirstOrDefault();
-            rootEntityType = null;
-            var entitySetPathSegment = firstPathSegment as EntitySetPathSegment;
-            if (entitySetPathSegment != null)
-            {
-                IEdmEntitySetBase entitySet = entitySetPathSegment.EntitySetBase;
-                querySource = entitySet;
-                rootEntityType = entitySet.EntityType();
-            }
-            else
-            {
-                var unboundFunctionPathSegment = firstPathSegment as UnboundFunctionPathSegment;
-                if (unboundFunctionPathSegment != null)
-                {
-                    UnboundFunctionPathSegment functionSegment = unboundFunctionPathSegment;
-                    IEdmFunctionImport functionImport = functionSegment.Function;
-                    querySource = functionImport;
-                    IEdmEntityTypeReference entityTypeRef = functionImport.Function.ReturnType.AsEntity();
-                    rootEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
-
-                    if (functionImport.Function.Parameters.Any())
-                    {
-                        queryArgs = functionImport.Function.Parameters.Select(
-                            p => functionSegment.GetParameterValue(p.Name)).ToArray();
-                    }
-                }
-                else
-                {
-                    throw new HttpResponseException(
-                        this.Request.CreateErrorResponse(
-                            HttpStatusCode.NotFound,
-                            Resources.ResourceNotFound));
-                }
-            }
-
-            return Domain.Source(querySource.Name, queryArgs);
         }
 
         private IReadOnlyDictionary<string, object> GetOriginalValues()

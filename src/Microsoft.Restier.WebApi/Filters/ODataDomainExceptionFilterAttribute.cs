@@ -27,7 +27,8 @@ namespace Microsoft.Restier.WebApi.Filters
         private static readonly List<ExceptionHandlerDelegate> Handlers = new List<ExceptionHandlerDelegate>
             {
                 Handler400,
-                Handler403
+                Handler403,
+                Handler404
             };
 
         private delegate Task<HttpResponseMessage> ExceptionHandlerDelegate(
@@ -89,6 +90,24 @@ namespace Microsoft.Restier.WebApi.Filters
             {
                 return Task.FromResult(
                     context.Request.CreateErrorResponse(HttpStatusCode.Forbidden, context.Exception));
+            }
+
+            return Task.FromResult<HttpResponseMessage>(null);
+        }
+
+        private static Task<HttpResponseMessage> Handler404(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            var notSupportedException = context.Exception as NotSupportedException;
+            if (notSupportedException != null)
+            {
+                if (notSupportedException.TargetSite.DeclaringType == typeof(ODataDomainQueryBuilder))
+                {
+                    throw new HttpResponseException(context.Request.CreateErrorResponse(
+                        HttpStatusCode.NotFound,
+                        notSupportedException.Message));
+                }
             }
 
             return Task.FromResult<HttpResponseMessage>(null);
