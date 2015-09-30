@@ -62,7 +62,7 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     /// <remarks>
     /// This is required because during the post-CUD events, the EntityState has been lost.
-    /// This enum allows the ApiService to remember which pre-CUD event was raised for the Entity.
+    /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
     /// </remarks>
     public enum AddAction
     {

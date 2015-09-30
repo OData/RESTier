@@ -69,10 +69,7 @@ using System.Diagnostics.CodeAnalysis;
 #endregion
 
 #region CA1033 Explicit interface implementation
-[assembly: SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Scope = "member", Target = "Microsoft.Restier.Core.ApiBase.#Microsoft.Restier.Core.IExpandableApi.Configuration")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Scope = "member", Target = "Microsoft.Restier.Core.ApiBase.#Microsoft.Restier.Core.IExpandableApi.IsInitialized")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Scope = "member", Target = "Microsoft.Restier.Core.ApiBase.#Microsoft.Restier.Core.IApi.Context")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Scope = "member", Target = "Microsoft.Restier.Core.ApiBase.#Microsoft.Restier.Core.IExpandableApi.Initialize(Microsoft.Restier.Core.ApiConfiguration)")]
 #endregion
 
 #region CA1704 Identifiers spelling
@@ -102,7 +99,6 @@ using System.Diagnostics.CodeAnalysis;
 #region CA2208 Add string message for exception
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.Api.#Source`1(Microsoft.Restier.Core.ApiContext,System.String,System.Object[])")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.Api.#Source`1(Microsoft.Restier.Core.ApiContext,System.String,System.String,System.Object[])")]
-[assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.ApiBase.#Microsoft.Restier.Core.IExpandableApi.Initialize(Microsoft.Restier.Core.ApiConfiguration)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.ApiConfiguration.#SetHookPoint(System.Type,System.Object)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.ApiConfiguration.#AddHookPoint(System.Type,System.Object)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.ApiContext.#.ctor(Microsoft.Restier.Core.ApiConfiguration)")]

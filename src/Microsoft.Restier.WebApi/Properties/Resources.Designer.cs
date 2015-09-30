@@ -61,7 +61,7 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RestierBatchHandler was called without a ApiContext Factory..
+        ///   Looks up a localized string similar to RestierBatchHandler was called without an ApiContext Factory..
         /// </summary>
         internal static string BatchHandlerRequiresApiContextFactory {
             get {
