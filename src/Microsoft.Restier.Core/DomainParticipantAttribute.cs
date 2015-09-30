@@ -12,17 +12,17 @@ namespace Microsoft.Restier.Core
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public abstract class ApiParticipantAttribute : Attribute
+    public abstract class ApiConfiguratorAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiParticipantAttribute" /> class.
+        /// Initializes a new instance of the <see cref="ApiConfiguratorAttribute" /> class.
         /// </summary>
-        protected ApiParticipantAttribute()
+        protected ApiConfiguratorAttribute()
         {
         }
 
         /// <summary>
-        /// Applies configuration from any API participant attributes
+        /// Applies configuration from any API configurator attributes
         /// specified on an API type to an API configuration.
         /// </summary>
         /// <param name="type">
@@ -38,20 +38,20 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(configuration, "configuration");
             if (type.BaseType != null)
             {
-                ApiParticipantAttribute.ApplyConfiguration(
+                ApiConfiguratorAttribute.ApplyConfiguration(
                     type.BaseType, configuration);
             }
 
             var attributes = type.GetCustomAttributes(
-                typeof(ApiParticipantAttribute), false);
-            foreach (ApiParticipantAttribute attribute in attributes)
+                typeof(ApiConfiguratorAttribute), false);
+            foreach (ApiConfiguratorAttribute attribute in attributes)
             {
                 attribute.Configure(configuration, type);
             }
         }
 
         /// <summary>
-        /// Applies initialization routines from any API participant
+        /// Applies initialization routines from any API configurator
         /// attributes specified on an API type to an API context.
         /// </summary>
         /// <param name="type">
@@ -70,20 +70,20 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
             if (type.BaseType != null)
             {
-                ApiParticipantAttribute.ApplyInitialization(
+                ApiConfiguratorAttribute.ApplyInitialization(
                     type.BaseType, instance, context);
             }
 
             var attributes = type.GetCustomAttributes(
-                typeof(ApiParticipantAttribute), false);
-            foreach (ApiParticipantAttribute attribute in attributes)
+                typeof(ApiConfiguratorAttribute), false);
+            foreach (ApiConfiguratorAttribute attribute in attributes)
             {
                 attribute.Initialize(context, type, instance);
             }
         }
 
         /// <summary>
-        /// Applies disposal routines from any API participant
+        /// Applies disposal routines from any API configurator
         /// attributes specified on an API type to an API context.
         /// </summary>
         /// <param name="type">
@@ -101,15 +101,15 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(type, "type");
             Ensure.NotNull(context, "context");
             var attributes = type.GetCustomAttributes(
-                typeof(ApiParticipantAttribute), false);
-            foreach (ApiParticipantAttribute attribute in attributes.Reverse())
+                typeof(ApiConfiguratorAttribute), false);
+            foreach (ApiConfiguratorAttribute attribute in attributes.Reverse())
             {
                 attribute.Dispose(context, type, instance);
             }
 
             if (type.BaseType != null)
             {
-                ApiParticipantAttribute.ApplyDisposal(
+                ApiConfiguratorAttribute.ApplyDisposal(
                     type.BaseType, instance, context);
             }
         }

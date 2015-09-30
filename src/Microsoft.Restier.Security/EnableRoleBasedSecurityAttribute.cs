@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class EnableRoleBasedSecurityAttribute : ApiParticipantAttribute
+    public sealed class EnableRoleBasedSecurityAttribute : ApiConfiguratorAttribute
     {
         /// <summary>
         /// Configures an API configuration.

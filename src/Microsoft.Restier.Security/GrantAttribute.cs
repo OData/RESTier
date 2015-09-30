@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public sealed class GrantAttribute : ApiParticipantAttribute
+    public sealed class GrantAttribute : ApiConfiguratorAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GrantAttribute" /> class.

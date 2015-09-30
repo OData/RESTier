@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public sealed class DenyAttribute : ApiParticipantAttribute
+    public sealed class DenyAttribute : ApiConfiguratorAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DenyAttribute" /> class.

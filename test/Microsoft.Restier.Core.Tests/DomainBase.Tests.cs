@@ -22,10 +22,10 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-        private class TestApiParticipantAttribute :
-            ApiParticipantAttribute
+        private class TestApiConfiguratorAttribute :
+            ApiConfiguratorAttribute
         {
-            public TestApiParticipantAttribute(string value)
+            public TestApiConfiguratorAttribute(string value)
             {
                 this.Value = value;
             }
@@ -61,8 +61,8 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [TestApiParticipant("Test1")]
-        [TestApiParticipant("Test2")]
+        [TestApiConfigurator("Test1")]
+        [TestApiConfigurator("Test2")]
         private class TestApiWithParticipants : ApiBase
         {
         }

@@ -66,7 +66,7 @@ namespace Microsoft.Restier.Core
                     {
                         configuration = this.CreateApiConfiguration();
                         EnableConventions(configuration, apiType);
-                        ApiParticipantAttribute.ApplyConfiguration(
+                        ApiConfiguratorAttribute.ApplyConfiguration(
                             apiType, configuration);
                         Configurations[apiType] = configuration;
                     }
@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Core
                     this.apiContext = this.CreateApiContext(
                         this.ApiConfiguration);
                     this.apiContext.SetProperty(typeof(Api).AssemblyQualifiedName, this);
-                    ApiParticipantAttribute.ApplyInitialization(
+                    ApiConfiguratorAttribute.ApplyInitialization(
                         this.GetType(), this, this.apiContext);
                 }
 
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.Core
         {
             if (!this.IsDisposed && this.apiContext != null)
             {
-                ApiParticipantAttribute.ApplyDisposal(
+                ApiConfiguratorAttribute.ApplyDisposal(
                     this.GetType(), this, this.apiContext);
             }
 
