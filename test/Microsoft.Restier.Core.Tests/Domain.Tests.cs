@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    public class DomainTests
+    public class ApiTests
     {
         private class TestModelBuilder : IDelegateHookHandler<IModelBuilder>, IModelBuilder
         {
@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Tests
         private class TestModelMapper : IModelMapper
         {
             public bool TryGetRelevantType(
-                DomainContext context,
+                ApiContext context,
                 string name, out Type relevantType)
             {
                 relevantType = typeof(string);
@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core.Tests
             }
 
             public bool TryGetRelevantType(
-                DomainContext context,
+                ApiContext context,
                 string namespaceName, string name,
                 out Type relevantType)
             {
@@ -79,17 +79,17 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private class TestDomain : IDomain
+        private class TestApi : IApi
         {
-            private DomainContext _context;
+            private ApiContext _context;
             
-            public DomainContext Context
+            public ApiContext Context
             {
                 get
                 {
                     if (_context == null)
                     {
-                        var configuration = new DomainConfiguration();
+                        var configuration = new ApiConfiguration();
                         var modelBuilder = new TestModelBuilder();
                         var modelMapper = new TestModelMapper();
                         var querySourcer = new TestQuerySourcer();
@@ -101,7 +101,7 @@ namespace Microsoft.Restier.Core.Tests
                         configuration.AddHookHandler<IChangeSetPreparer>(changeSetPreparer);
                         configuration.AddHookHandler<ISubmitExecutor>(submitExecutor);
                         configuration.EnsureCommitted();
-                        _context = new DomainContext(configuration);
+                        _context = new ApiContext(configuration);
                     }
 
                     return _context;
@@ -114,17 +114,17 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void DomainSourceOfEntityContainerElementIsCorrect()
+        public void ApiSourceOfEntityContainerElementIsCorrect()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
             var arguments = new object[0];
 
-            var source = domain.Source("Test", arguments);
+            var source = api.Source("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -138,30 +138,30 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => Domain.Source(context, "Test", arguments));
+            Assert.Throws<NotSupportedException>(() => Api.Source(context, "Test", arguments));
         }
 
         [Fact]
         public void SourceOfEntityContainerElementIsCorrect()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Domain.Source(context, "Test", arguments);
+            var source = Api.Source(context, "Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -173,17 +173,17 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void DomainSourceOfComposableFunctionIsCorrect()
+        public void ApiSourceOfComposableFunctionIsCorrect()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
             var arguments = new object[0];
 
-            var source = domain.Source("Namespace", "Function", arguments);
+            var source = api.Source("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -199,31 +199,31 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => Domain.Source(context, "Namespace", "Function", arguments));
+            Assert.Throws<NotSupportedException>(() => Api.Source(context, "Namespace", "Function", arguments));
         }
 
         [Fact]
         public void SourceOfComposableFunctionIsCorrect()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Domain.Source(context,
+            var source = Api.Source(context,
                 "Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -237,17 +237,17 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void GenericDomainSourceOfEntityContainerElementIsCorrect()
+        public void GenericApiSourceOfEntityContainerElementIsCorrect()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
             var arguments = new object[0];
 
-            var source = domain.Source<string>("Test", arguments);
+            var source = api.Source<string>("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -261,32 +261,32 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfEntityContainerElementThrowsIfWrongType()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => Domain.Source<object>(context, "Test", arguments));
+            Assert.Throws<ArgumentException>(() => Api.Source<object>(context, "Test", arguments));
         }
 
         [Fact]
         public void GenericSourceOfEntityContainerElementIsCorrect()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Domain.Source<string>(context, "Test", arguments);
+            var source = Api.Source<string>(context, "Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -298,18 +298,18 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void GenericDomainSourceOfComposableFunctionIsCorrect()
+        public void GenericApiSourceOfComposableFunctionIsCorrect()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
             var arguments = new object[0];
 
-            var source = domain.Source<DateTime>(
+            var source = api.Source<DateTime>(
                 "Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -325,33 +325,33 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfComposableFunctionThrowsIfWrongType()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => Domain.Source<object>(context, "Namespace", "Function", arguments));
+            Assert.Throws<ArgumentException>(() => Api.Source<object>(context, "Namespace", "Function", arguments));
         }
 
         [Fact]
         public void GenericSourceOfComposableFunctionIsCorrect()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Domain.Source<DateTime>(context,
+            var source = Api.Source<DateTime>(context,
                 "Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(DomainData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -367,93 +367,93 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceQueryableCannotGenericEnumerate()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
 
-            var source = Domain.Source<string>(context, "Test");
+            var source = Api.Source<string>(context, "Test");
             Assert.Throws<NotSupportedException>(() => source.GetEnumerator());
         }
 
         [Fact]
         public void SourceQueryableCannotEnumerate()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
 
-            var source = Domain.Source<string>(context, "Test");
+            var source = Api.Source<string>(context, "Test");
             Assert.Throws<NotSupportedException>(() => (source as IEnumerable).GetEnumerator());
         }
 
         [Fact]
         public void SourceQueryProviderCannotGenericExecute()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
 
-            var source = Domain.Source<string>(context, "Test");
+            var source = Api.Source<string>(context, "Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute<string>(null));
         }
 
         [Fact]
         public void SourceQueryProviderCannotExecute()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             var modelMapper = new TestModelMapper();
             configuration.AddHookHandler<IModelMapper>(modelMapper);
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
 
-            var source = Domain.Source<string>(context, "Test");
+            var source = Api.Source<string>(context, "Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute(null));
         }
 
         [Fact]
-        public async Task DomainQueryAsyncWithQueryReturnsResults()
+        public async Task ApiQueryAsyncWithQueryReturnsResults()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
 
-            var results = await domain.QueryAsync(
-                domain.Source<string>("Test"));
+            var results = await api.QueryAsync(
+                api.Source<string>("Test"));
             Assert.True(results.SequenceEqual(new string[] { "Test" }));
         }
 
         [Fact]
-        public async Task DomainQueryAsyncWithSingletonQueryReturnsResult()
+        public async Task ApiQueryAsyncWithSingletonQueryReturnsResult()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
 
-            var result = await domain.QueryAsync(
-                domain.Source<string>("Test"), q => q.Single());
+            var result = await api.QueryAsync(
+                api.Source<string>("Test"), q => q.Single());
             Assert.Equal("Test", result);
         }
 
         [Fact]
-        public async Task DomainQueryAsyncCorrectlyForwardsCall()
+        public async Task ApiQueryAsyncCorrectlyForwardsCall()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
 
             var queryRequest = new QueryRequest(
-                domain.Source<string>("Test"), true);
-            var queryResult = await domain.QueryAsync(queryRequest);
+                api.Source<string>("Test"), true);
+            var queryResult = await api.QueryAsync(queryRequest);
             Assert.True(queryResult.Results.Cast<string>()
                 .SequenceEqual(new string[] { "Test" }));
         }
 
         [Fact]
-        public async Task DomainSubmitAsyncCorrectlyForwardsCall()
+        public async Task ApiSubmitAsyncCorrectlyForwardsCall()
         {
-            var domain = new TestDomain();
+            var api = new TestApi();
 
-            var submitResult = await domain.SubmitAsync();
+            var submitResult = await api.SubmitAsync();
             Assert.NotNull(submitResult.CompletedChangeSet);
         }
     }

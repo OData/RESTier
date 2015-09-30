@@ -25,34 +25,34 @@ namespace Microsoft.Restier.WebApi
     {
         /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
-        /// Maps the domain routes to the ODataDomainController.
+        /// Maps the API routes to the RestierController.
         /// </summary>
-        /// <typeparam name="TDomain">The user domain.</typeparam>
+        /// <typeparam name="TApi">The user API.</typeparam>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routePrefix">The prefix of the route.</param>
-        /// <param name="domainFactory">The callback to create domain instances.</param>
+        /// <param name="apiFactory">The callback to create API instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapODataDomainRoute<TDomain>(
+        public static async Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            Func<IDomain> domainFactory,
-            ODataDomainBatchHandler batchHandler = null)
-            where TDomain : DomainBase
+            Func<IApi> apiFactory,
+            RestierBatchHandler batchHandler = null)
+            where TApi : ApiBase
         {
-            Ensure.NotNull(domainFactory, "domainFactory");
+            Ensure.NotNull(apiFactory, "apiFactory");
 
-            using (var domain = domainFactory())
+            using (var api = apiFactory())
             {
-                var model = await domain.GetModelAsync();
+                var model = await api.GetModelAsync();
                 model.EnsurePayloadValueConverter();
-                var conventions = CreateODataDomainRoutingConventions(config, model, domainFactory);
+                var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
 
-                if (batchHandler != null && batchHandler.DomainFactory == null)
+                if (batchHandler != null && batchHandler.ApiFactory == null)
                 {
-                    batchHandler.DomainFactory = domainFactory;
+                    batchHandler.ApiFactory = apiFactory;
                 }
 
                 return config.MapODataServiceRoute(
@@ -61,23 +61,23 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
-        /// Maps the domain routes to the ODataDomainController.
+        /// Maps the API routes to the RestierController.
         /// </summary>
-        /// <typeparam name="TDomain">The user domain.</typeparam>
+        /// <typeparam name="TApi">The user API.</typeparam>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routePrefix">The prefix of the route.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapODataDomainRoute<TDomain>(
+        public static async Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            ODataDomainBatchHandler batchHandler = null)
-            where TDomain : DomainBase, new()
+            RestierBatchHandler batchHandler = null)
+            where TApi : ApiBase, new()
         {
-            return await MapODataDomainRoute<TDomain>(
-                config, routeName, routePrefix, () => new TDomain(), batchHandler);
+            return await MapRestierRoute<TApi>(
+                config, routeName, routePrefix, () => new TApi(), batchHandler);
         }
 
         /// <summary>
@@ -85,10 +85,10 @@ namespace Microsoft.Restier.WebApi
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="model">The EDM model.</param>
-        /// <param name="domainFactory">The domain factory.</param>
+        /// <param name="apiFactory">The API factory.</param>
         /// <returns>The routing conventions created.</returns>
-        private static IList<IODataRoutingConvention> CreateODataDomainRoutingConventions(
-            this HttpConfiguration config, IEdmModel model, Func<IDomain> domainFactory)
+        private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
+            this HttpConfiguration config, IEdmModel model, Func<IApi> apiFactory)
         {
             var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
             var index = 0;
@@ -101,7 +101,7 @@ namespace Microsoft.Restier.WebApi
                 }
             }
 
-            conventions.Insert(index + 1, new ODataDomainRoutingConvention(domainFactory));
+            conventions.Insert(index + 1, new RestierRoutingConvention(apiFactory));
             return conventions;
         }
 
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.WebApi
             {
                 // User has not specified custom payload value converter
                 // so use RESTier's default converter.
-                model.SetPayloadValueConverter(ODataDomainPayloadValueConverter.Default);
+                model.SetPayloadValueConverter(RestierPayloadValueConverter.Default);
             }
         }
     }

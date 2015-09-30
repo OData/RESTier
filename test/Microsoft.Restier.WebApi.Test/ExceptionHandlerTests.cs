@@ -17,7 +17,7 @@ namespace Microsoft.Restier.WebApi.Test
         public ExceptionHandlerTests()
         {
             var configuration = new HttpConfiguration();
-            configuration.MapODataDomainRoute<ExcDomain>("Exc", "Exc").Wait();
+            configuration.MapRestierRoute<ExcApi>("Exc", "Exc").Wait();
             client = new HttpClient(new HttpServer(configuration));
         }
 
@@ -29,11 +29,11 @@ namespace Microsoft.Restier.WebApi.Test
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        private class ExcDomain : StoreDomain
+        private class ExcApi : StoreApi
         {
-            protected override DomainConfiguration CreateDomainConfiguration()
+            protected override ApiConfiguration CreateApiConfiguration()
             {
-                return base.CreateDomainConfiguration()
+                return base.CreateApiConfiguration()
                     .AddHookHandler<IQueryExpressionSourcer>(new FakeSourcer());
             }
         }

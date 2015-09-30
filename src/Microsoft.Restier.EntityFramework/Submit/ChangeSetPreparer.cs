@@ -47,7 +47,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             SubmitContext context,
             CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.DomainContext.GetProperty<DbContext>(DbDomainConstants.DbContextKey);
+            DbContext dbContext = context.ApiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
             {
@@ -91,11 +91,11 @@ namespace Microsoft.Restier.EntityFramework.Submit
             DataModificationEntry entry,
             CancellationToken cancellationToken)
         {
-            IQueryable query = Domain.Source(context.DomainContext, entry.EntitySetName);
+            IQueryable query = Api.Source(context.ApiContext, entry.EntitySetName);
             query = entry.ApplyTo(query);
 
-            QueryResult result = await Domain.QueryAsync(
-                context.DomainContext,
+            QueryResult result = await Api.QueryAsync(
+                context.ApiContext,
                 new QueryRequest(query),
                 cancellationToken);
 

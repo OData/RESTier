@@ -7,10 +7,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapODataDomainRoute<TrippinDomain>(
+            config.MapRestierRoute<TrippinApi>(
                 "TrippinApi",
                 "api/Trippin",
-                new ODataDomainBatchHandler(GlobalConfiguration.DefaultServer)).Wait();
+                new RestierBatchHandler(GlobalConfiguration.DefaultServer)).Wait();
         }
     }
 }

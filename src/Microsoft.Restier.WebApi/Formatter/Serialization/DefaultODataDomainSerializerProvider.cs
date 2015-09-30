@@ -12,28 +12,28 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The default serializer provider.
     /// </summary>
-    internal class DefaultODataDomainSerializerProvider : DefaultODataSerializerProvider
+    internal class DefaultRestierSerializerProvider : DefaultODataSerializerProvider
     {
-        private ODataDomainFeedSerializer feedSerializer;
-        private ODataDomainEntityTypeSerializer entityTypeSerializer;
-        private ODataDomainPrimitiveSerializer primitiveSerializer;
-        private ODataDomainRawSerializer rawSerializer;
-        private ODataDomainComplexTypeSerializer complexTypeSerializer;
-        private ODataDomainCollectionSerializer collectionSerializer;
-        private ODataDomainEnumSerializer enumSerializer;
+        private RestierFeedSerializer feedSerializer;
+        private RestierEntityTypeSerializer entityTypeSerializer;
+        private RestierPrimitiveSerializer primitiveSerializer;
+        private RestierRawSerializer rawSerializer;
+        private RestierComplexTypeSerializer complexTypeSerializer;
+        private RestierCollectionSerializer collectionSerializer;
+        private RestierEnumSerializer enumSerializer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultODataDomainSerializerProvider" /> class.
+        /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
         /// </summary>
-        public DefaultODataDomainSerializerProvider()
+        public DefaultRestierSerializerProvider()
         {
-            this.feedSerializer = new ODataDomainFeedSerializer(this);
-            this.entityTypeSerializer = new ODataDomainEntityTypeSerializer(this);
-            this.primitiveSerializer = new ODataDomainPrimitiveSerializer();
-            this.rawSerializer = new ODataDomainRawSerializer();
-            this.complexTypeSerializer = new ODataDomainComplexTypeSerializer(this);
-            this.collectionSerializer = new ODataDomainCollectionSerializer(this);
-            this.enumSerializer = new ODataDomainEnumSerializer();
+            this.feedSerializer = new RestierFeedSerializer(this);
+            this.entityTypeSerializer = new RestierEntityTypeSerializer(this);
+            this.primitiveSerializer = new RestierPrimitiveSerializer();
+            this.rawSerializer = new RestierRawSerializer();
+            this.complexTypeSerializer = new RestierComplexTypeSerializer(this);
+            this.collectionSerializer = new RestierCollectionSerializer(this);
+            this.enumSerializer = new RestierEnumSerializer();
         }
 
         /// <summary>

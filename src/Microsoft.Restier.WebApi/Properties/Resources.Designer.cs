@@ -61,11 +61,11 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ODataDomainBatchHandler was called without a DomainContext Factory..
+        ///   Looks up a localized string similar to RestierBatchHandler was called without a ApiContext Factory..
         /// </summary>
-        internal static string BatchHandlerRequiresDomainContextFactory {
+        internal static string BatchHandlerRequiresApiContextFactory {
             get {
-                return ResourceManager.GetString("BatchHandlerRequiresDomainContextFactory", resourceCulture);
+                return ResourceManager.GetString("BatchHandlerRequiresApiContextFactory", resourceCulture);
             }
         }
         

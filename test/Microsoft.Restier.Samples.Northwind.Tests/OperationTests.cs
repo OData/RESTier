@@ -16,11 +16,11 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class OperationTests : TestBase
     {
-        private NorthwindDomain domain = new NorthwindDomain();
+        private NorthwindApi api = new NorthwindApi();
 
         private IQueryable<Product> ProductsQuery
         {
-            get { return this.domain.Source<Product>("Products"); }
+            get { return this.api.Source<Product>("Products"); }
         }
 
         [Fact]
@@ -68,8 +68,8 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 
         private async Task ActionCall(bool isqualified, Action<HttpConfiguration, HttpServer> registerOData)
         {
-            var query = this.domain.Source<Product>("Products").OrderBy(p => p.ProductID).Take(1);
-            QueryResult result = await this.domain.QueryAsync(
+            var query = this.api.Source<Product>("Products").OrderBy(p => p.ProductID).Take(1);
+            QueryResult result = await this.api.QueryAsync(
                    new QueryRequest(query, true));
 
             var product = result.Results.OfType<Product>().First();

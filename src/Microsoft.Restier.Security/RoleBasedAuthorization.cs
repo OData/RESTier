@@ -72,20 +72,20 @@ namespace Microsoft.Restier.Security
                 return null;
             }
 
-            var domainDataReference = context.ModelReference as DomainDataReference;
-            if (domainDataReference == null)
+            var apiDataReference = context.ModelReference as ApiDataReference;
+            if (apiDataReference == null)
             {
                 return null;
             }
 
-            var entitySet = domainDataReference.Element as IEdmEntitySet;
+            var entitySet = apiDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;
             }
 
-            var target = context.QueryContext.DomainContext.GetProperty(
-                typeof(Domain).AssemblyQualifiedName);
+            var target = context.QueryContext.ApiContext.GetProperty(
+                typeof(Api).AssemblyQualifiedName);
             var entitySetProperty = target.GetType().GetProperties(
                 BindingFlags.Public | BindingFlags.Instance |
                 BindingFlags.Static | BindingFlags.DeclaredOnly)
@@ -93,7 +93,7 @@ namespace Microsoft.Restier.Security
             if (entitySetProperty != null)
             {
                 var policies = entitySetProperty.GetCustomAttributes()
-                        .OfType<IDomainPolicy>();
+                        .OfType<IApiPolicy>();
 
                 foreach (var policy in policies)
                 {
@@ -131,13 +131,13 @@ namespace Microsoft.Restier.Security
                 return true;
             }
 
-            var domainDataReference = context.ModelReference as DomainDataReference;
-            if (domainDataReference == null)
+            var apiDataReference = context.ModelReference as ApiDataReference;
+            if (apiDataReference == null)
             {
                 return true;
             }
 
-            var entitySet = domainDataReference.Element as IEdmEntitySet;
+            var entitySet = apiDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return true;
@@ -145,8 +145,8 @@ namespace Microsoft.Restier.Security
 
             var assertedRoles = context.QueryContext
                 .GetProperty<List<string>>(AssertedRoles);
-            var permissions = context.QueryContext.DomainContext.Configuration
-                .GetProperty<IEnumerable<DomainPermission>>(Permissions);
+            var permissions = context.QueryContext.ApiContext.Configuration
+                .GetProperty<IEnumerable<ApiPermission>>(Permissions);
             if (permissions == null)
             {
                 throw new SecurityException(
@@ -154,8 +154,8 @@ namespace Microsoft.Restier.Security
             }
 
             permissions = permissions.Where(p => (
-                p.PermissionType == DomainPermissionType.All ||
-                p.PermissionType == DomainPermissionType.Read) && (
+                p.PermissionType == ApiPermissionType.All ||
+                p.PermissionType == ApiPermissionType.Read) && (
                 (p.NamespaceName == null && p.SecurableName == null) ||
                 (p.NamespaceName == null && p.SecurableName == entitySet.Name)) &&
                 p.ChildName == null && (p.Role == null || this.IsInRole(p.Role) ||

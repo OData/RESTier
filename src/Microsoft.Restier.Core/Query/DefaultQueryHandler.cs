@@ -125,8 +125,8 @@ namespace Microsoft.Restier.Core.Query
                 else
                 {
                     // Only visit the visited node's children if
-                    // the visited node represents domain data
-                    if (!(this.context.ModelReference is DomainDataReference))
+                    // the visited node represents API data
+                    if (!(this.context.ModelReference is ApiDataReference))
                     {
                         // Visit visited node's children
                         node = base.Visit(visited);
@@ -136,8 +136,8 @@ namespace Microsoft.Restier.Core.Query
                     this.Inspect();
 
                     // Try to expand the visited node
-                    // if it represents domain data
-                    if (this.context.ModelReference is DomainDataReference)
+                    // if it represents API data
+                    if (this.context.ModelReference is ApiDataReference)
                     {
                         node = this.Expand(visited);
                     }
@@ -147,15 +147,15 @@ namespace Microsoft.Restier.Core.Query
                 }
 
                 // If no processing occurred on the visited node
-                // and it represents domain data, then it must be
+                // and it represents API data, then it must be
                 // in its most primitive form, so source the node
                 if (visited == node &&
-                    this.context.ModelReference is DomainDataReference)
+                    this.context.ModelReference is ApiDataReference)
                 {
                     node = this.Source(node);
                 }
 
-                // TODO GitHubIssue#28 : Support transformation between domain types and data source proxy types
+                // TODO GitHubIssue#28 : Support transformation between API types and data source proxy types
                 this.context.PopVisitedNode();
 
                 if (this.context.VisitedNode != null)

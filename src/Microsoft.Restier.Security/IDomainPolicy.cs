@@ -6,13 +6,13 @@ using Microsoft.Restier.Core;
 namespace Microsoft.Restier.Security
 {
     /// <summary>
-    /// Represents a policy applicable to a domain that can be
-    /// activated during a domain flow then later deactivated.
+    /// Represents a policy applicable to an API that can be
+    /// activated during an API flow then later deactivated.
     /// </summary>
-    public interface IDomainPolicy
+    public interface IApiPolicy
     {
         /// <summary>
-        /// Activates this domain policy.
+        /// Activates this API policy.
         /// </summary>
         /// <param name="context">
         /// An invocation context.
@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Security
         void Activate(InvocationContext context);
 
         /// <summary>
-        /// Deactivates this domain policy.
+        /// Deactivates this API policy.
         /// </summary>
         /// <param name="context">
         /// An invocation context.

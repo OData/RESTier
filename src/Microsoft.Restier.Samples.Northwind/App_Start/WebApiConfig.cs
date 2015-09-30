@@ -31,9 +31,9 @@ namespace Microsoft.Restier.Samples.Northwind
         public static async void RegisterNorthwind(
             HttpConfiguration config, HttpServer server)
         {
-            await config.MapODataDomainRoute<NorthwindDomain>(
+            await config.MapRestierRoute<NorthwindApi>(
                 "NorthwindApi", "api/Northwind",
-                new ODataDomainBatchHandler(server));
+                new RestierBatchHandler(server));
         }
     }
 }

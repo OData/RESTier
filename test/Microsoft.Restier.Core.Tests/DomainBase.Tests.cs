@@ -6,26 +6,26 @@ using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    public class DomainBaseTests
+    public class ApiBaseTests
     {
-        private class TestDomain : DomainBase
+        private class TestApi : ApiBase
         {
         }
 
         [Fact]
-        public void DefaultDomainBaseCanBeCreatedAndDisposed()
+        public void DefaultApiBaseCanBeCreatedAndDisposed()
         {
-            using (var domain = new TestDomain())
+            using (var api = new TestApi())
             {
-                domain.Dispose();
+                api.Dispose();
             }
         }
 
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-        private class TestDomainParticipantAttribute :
-            DomainParticipantAttribute
+        private class TestApiParticipantAttribute :
+            ApiParticipantAttribute
         {
-            public TestDomainParticipantAttribute(string value)
+            public TestApiParticipantAttribute(string value)
             {
                 this.Value = value;
             }
@@ -33,56 +33,56 @@ namespace Microsoft.Restier.Core.Tests
             public string Value { get; private set; }
 
             public override void Configure(
-                DomainConfiguration configuration,
+                ApiConfiguration configuration,
                 Type type)
             {
                 base.Configure(configuration, type);
-                Assert.Same(typeof(TestDomainWithParticipants), type);
+                Assert.Same(typeof(TestApiWithParticipants), type);
                 configuration.SetProperty(this.Value, true);
             }
 
             public override void Initialize(
-                DomainContext context,
+                ApiContext context,
                 Type type, object instance)
             {
                 base.Initialize(context, type, instance);
-                Assert.Same(typeof(TestDomainWithParticipants), type);
+                Assert.Same(typeof(TestApiWithParticipants), type);
                 context.SetProperty(this.Value + ".Self", instance);
                 context.SetProperty(this.Value, true);
             }
 
             public override void Dispose(
-                DomainContext context,
+                ApiContext context,
                 Type type, object instance)
             {
-                Assert.Same(typeof(TestDomainWithParticipants), type);
+                Assert.Same(typeof(TestApiWithParticipants), type);
                 context.SetProperty(this.Value, false);
                 base.Dispose(context, type, instance);
             }
         }
 
-        [TestDomainParticipant("Test1")]
-        [TestDomainParticipant("Test2")]
-        private class TestDomainWithParticipants : DomainBase
+        [TestApiParticipant("Test1")]
+        [TestApiParticipant("Test2")]
+        private class TestApiWithParticipants : ApiBase
         {
         }
 
         [Fact]
-        public void TestDomainAppliesDomainParticipantsCorrectly()
+        public void TestApiAppliesApiParticipantsCorrectly()
         {
-            IDomain domain = new TestDomainWithParticipants();
+            IApi api = new TestApiWithParticipants();
 
-            var configuration = domain.Context.Configuration;
+            var configuration = api.Context.Configuration;
             Assert.True(configuration.GetProperty<bool>("Test1"));
             Assert.True(configuration.GetProperty<bool>("Test2"));
 
-            var context = domain.Context;
+            var context = api.Context;
             Assert.True(context.GetProperty<bool>("Test1"));
-            Assert.Same(domain, context.GetProperty("Test1.Self"));
+            Assert.Same(api, context.GetProperty("Test1.Self"));
             Assert.True(context.GetProperty<bool>("Test2"));
-            Assert.Same(domain, context.GetProperty("Test2.Self"));
+            Assert.Same(api, context.GetProperty("Test2.Self"));
 
-            (domain as IDisposable).Dispose();
+            (api as IDisposable).Dispose();
             Assert.False(context.GetProperty<bool>("Test2"));
             Assert.False(context.GetProperty<bool>("Test1"));
         }

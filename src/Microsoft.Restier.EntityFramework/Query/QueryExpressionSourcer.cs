@@ -48,12 +48,12 @@ namespace Microsoft.Restier.EntityFramework.Query
         {
             Ensure.NotNull(context, "context");
             var dbContext = context.QueryContext
-                .DomainContext.GetProperty<DbContext>(DbDomainConstants.DbContextKey);
+                .ApiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
             var dbSetProperty = dbContext.GetType().GetProperties()
                 .First(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (!embedded)
             {
-                // TODO GitHubIssue#37 : Add domain entity manager for tracking entities
+                // TODO GitHubIssue#37 : Add API entity manager for tracking entities
                 // the underlying DbContext shouldn't track the entities
                 var dbSet = dbSetProperty.GetValue(dbContext);
 

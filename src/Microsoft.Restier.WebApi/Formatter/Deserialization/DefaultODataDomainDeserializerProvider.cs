@@ -13,16 +13,16 @@ namespace Microsoft.Restier.WebApi.Formatter.Deserialization
     /// <summary>
     /// The default serializer provider.
     /// </summary>
-    internal class DefaultODataDomainDeserializerProvider : DefaultODataDeserializerProvider
+    internal class DefaultRestierDeserializerProvider : DefaultODataDeserializerProvider
     {
-        private ODataDomainEnumDeserializer enumDeserializer;
+        private RestierEnumDeserializer enumDeserializer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultODataDomainDeserializerProvider" /> class.
+        /// Initializes a new instance of the <see cref="DefaultRestierDeserializerProvider" /> class.
         /// </summary>
-        public DefaultODataDomainDeserializerProvider()
+        public DefaultRestierDeserializerProvider()
         {
-            this.enumDeserializer = new ODataDomainEnumDeserializer();
+            this.enumDeserializer = new RestierEnumDeserializer();
         }
 
         public override ODataEdmTypeDeserializer GetEdmTypeDeserializer(IEdmTypeReference edmType)

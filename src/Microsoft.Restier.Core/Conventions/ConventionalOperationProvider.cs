@@ -14,22 +14,22 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Core.Conventions
 {
-    internal class ConventionalOperationProvider : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+    internal class ConventionBasedOperationProvider : IModelBuilder, IDelegateHookHandler<IModelBuilder>
     {
         private readonly Type targetType;
         private readonly ICollection<ActionMethodInfo> actionInfos = new List<ActionMethodInfo>();
         private readonly ICollection<FunctionMethodInfo> functionInfos = new List<FunctionMethodInfo>();
 
-        private ConventionalOperationProvider(Type targetType)
+        private ConventionBasedOperationProvider(Type targetType)
         {
             this.targetType = targetType;
         }
 
         public IModelBuilder InnerHandler { get; set; }
 
-        public static void ApplyTo(DomainConfiguration configuration, Type targetType)
+        public static void ApplyTo(ApiConfiguration configuration, Type targetType)
         {
-            ConventionalOperationProvider provider = new ConventionalOperationProvider(targetType);
+            ConventionBasedOperationProvider provider = new ConventionBasedOperationProvider(targetType);
             configuration.AddHookHandler<IModelBuilder>(provider);
         }
 

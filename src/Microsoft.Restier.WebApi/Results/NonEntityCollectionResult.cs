@@ -18,7 +18,7 @@ namespace Microsoft.Restier.WebApi.Results
         /// <param name="query">The query that returns a collection of non-entity values.</param>
         /// <param name="edmType">The EDM type reference of the values.</param>
         /// <param name="context">The context where the action is executed.</param>
-        public NonEntityCollectionResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
+        public NonEntityCollectionResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
             : base(query, edmType, context)
         {
         }

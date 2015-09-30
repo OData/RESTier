@@ -16,21 +16,21 @@ namespace Microsoft.Restier.WebApi.Routing
     /// <summary>
     /// The default routing convention implementation.
     /// </summary>
-    internal class ODataDomainRoutingConvention : IODataRoutingConvention
+    internal class RestierRoutingConvention : IODataRoutingConvention
     {
-        private const string ODataDomainControllerName = "ODataDomain";
+        private const string RestierControllerName = "Restier";
         private const string MethodNameOfGet = "Get";
         private const string MethodNameOfPostAction = "PostAction";
 
-        private readonly Func<IDomain> domainFactory;
+        private readonly Func<IApi> apiFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainRoutingConvention" /> class.
+        /// Initializes a new instance of the <see cref="RestierRoutingConvention" /> class.
         /// </summary>
-        /// <param name="domainFactory">The domain factory method.</param>
-        public ODataDomainRoutingConvention(Func<IDomain> domainFactory)
+        /// <param name="apiFactory">The API factory method.</param>
+        public RestierRoutingConvention(Func<IApi> apiFactory)
         {
-            this.domainFactory = domainFactory;
+            this.apiFactory = apiFactory;
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Microsoft.Restier.WebApi.Routing
                 return null;
             }
 
-            request.SetDomainFactory(domainFactory);
-            return ODataDomainControllerName;
+            request.SetApiFactory(apiFactory);
+            return RestierControllerName;
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace Microsoft.Restier.WebApi.Routing
             Ensure.NotNull(controllerContext, "controllerContext");
             Ensure.NotNull(actionMap, "actionMap");
 
-            if (!(controllerContext.Controller is ODataDomainController))
+            if (!(controllerContext.Controller is RestierController))
             {
-                // RESTier cannot select action on controller which is not ODataDomainController.
+                // RESTier cannot select action on controller which is not RestierController.
                 return null;
             }
 

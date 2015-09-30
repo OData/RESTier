@@ -11,34 +11,34 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents a base class for a domain.
+    /// Represents a base class for an API.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A domain configuration is intended to be long-lived, and can be
-    /// statically cached according to a domain type specified when the
-    /// configuration is created. Additionally, the domain model produced
+    /// An API configuration is intended to be long-lived, and can be
+    /// statically cached according to an API type specified when the
+    /// configuration is created. Additionally, the API model produced
     /// as a result of a particular configuration is cached under the same
-    /// domain type to avoid re-computing it on each invocation.
+    /// API type to avoid re-computing it on each invocation.
     /// </para>
     /// </remarks>
-    public abstract class DomainBase : IDomain
+    public abstract class ApiBase : IApi
     {
-        private static readonly IDictionary<Type, DomainConfiguration> Configurations =
-            new ConcurrentDictionary<Type, DomainConfiguration>();
+        private static readonly IDictionary<Type, ApiConfiguration> Configurations =
+            new ConcurrentDictionary<Type, ApiConfiguration>();
 
-        private DomainConfiguration domainConfiguration;
-        private DomainContext domainContext;
+        private ApiConfiguration apiConfiguration;
+        private ApiContext apiContext;
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="DomainBase"/> class.
+        /// Finalizes an instance of the <see cref="ApiBase"/> class.
         /// </summary>
-        ~DomainBase()
+        ~ApiBase()
         {
             this.Dispose(false);
         }
 
-        DomainContext IDomain.Context
+        ApiContext IApi.Context
         {
             get
             {
@@ -47,60 +47,60 @@ namespace Microsoft.Restier.Core
                     throw new ObjectDisposedException(this.GetType().FullName);
                 }
 
-                return this.DomainContext;
+                return this.ApiContext;
             }
         }
 
         /// <summary>
-        /// Gets the domain configuration for this domain.
+        /// Gets the API configuration for this API.
         /// </summary>
-        protected DomainConfiguration DomainConfiguration
+        protected ApiConfiguration ApiConfiguration
         {
             get
             {
-                if (this.domainConfiguration == null)
+                if (this.apiConfiguration == null)
                 {
-                    var domainType = this.GetType();
-                    DomainConfiguration configuration;
-                    if (!Configurations.TryGetValue(domainType, out configuration))
+                    var apiType = this.GetType();
+                    ApiConfiguration configuration;
+                    if (!Configurations.TryGetValue(apiType, out configuration))
                     {
-                        configuration = this.CreateDomainConfiguration();
-                        EnableConventions(configuration, domainType);
-                        DomainParticipantAttribute.ApplyConfiguration(
-                            domainType, configuration);
-                        Configurations[domainType] = configuration;
+                        configuration = this.CreateApiConfiguration();
+                        EnableConventions(configuration, apiType);
+                        ApiParticipantAttribute.ApplyConfiguration(
+                            apiType, configuration);
+                        Configurations[apiType] = configuration;
                     }
 
                     configuration.EnsureCommitted();
-                    this.domainConfiguration = configuration;
+                    this.apiConfiguration = configuration;
                 }
 
-                return this.domainConfiguration;
+                return this.apiConfiguration;
             }
         }
 
         /// <summary>
-        /// Gets the domain context for this domain.
+        /// Gets the API context for this API.
         /// </summary>
-        protected DomainContext DomainContext
+        protected ApiContext ApiContext
         {
             get
             {
-                if (this.domainContext == null)
+                if (this.apiContext == null)
                 {
-                    this.domainContext = this.CreateDomainContext(
-                        this.DomainConfiguration);
-                    this.domainContext.SetProperty(typeof(Domain).AssemblyQualifiedName, this);
-                    DomainParticipantAttribute.ApplyInitialization(
-                        this.GetType(), this, this.domainContext);
+                    this.apiContext = this.CreateApiContext(
+                        this.ApiConfiguration);
+                    this.apiContext.SetProperty(typeof(Api).AssemblyQualifiedName, this);
+                    ApiParticipantAttribute.ApplyInitialization(
+                        this.GetType(), this, this.apiContext);
                 }
 
-                return this.domainContext;
+                return this.apiContext;
             }
         }
 
         /// <summary>
-        /// Gets a value indicating whether this domain has been disposed.
+        /// Gets a value indicating whether this API has been disposed.
         /// </summary>
         protected bool IsDisposed { get; private set; }
 
@@ -110,10 +110,10 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public void Dispose()
         {
-            if (!this.IsDisposed && this.domainContext != null)
+            if (!this.IsDisposed && this.apiContext != null)
             {
-                DomainParticipantAttribute.ApplyDisposal(
-                    this.GetType(), this, this.domainContext);
+                ApiParticipantAttribute.ApplyDisposal(
+                    this.GetType(), this, this.apiContext);
             }
 
             this.Dispose(true);
@@ -121,29 +121,29 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Creates the domain configuration for this domain.
+        /// Creates the API configuration for this API.
         /// </summary>
         /// <returns>
-        /// The domain configuration for this domain.
+        /// The API configuration for this API.
         /// </returns>
-        protected virtual DomainConfiguration CreateDomainConfiguration()
+        protected virtual ApiConfiguration CreateApiConfiguration()
         {
-            return new DomainConfiguration();
+            return new ApiConfiguration();
         }
 
         /// <summary>
-        /// Creates the domain context for this domain.
+        /// Creates the API context for this API.
         /// </summary>
         /// <param name="configuration">
-        /// The domain configuration to use.
+        /// The API configuration to use.
         /// </param>
         /// <returns>
-        /// The domain context for this domain.
+        /// The API context for this API.
         /// </returns>
-        protected virtual DomainContext CreateDomainContext(
-            DomainConfiguration configuration)
+        protected virtual ApiContext CreateApiContext(
+            ApiConfiguration configuration)
         {
-            return new DomainContext(configuration);
+            return new ApiContext(configuration);
         }
 
         /// <summary>
@@ -158,39 +158,39 @@ namespace Microsoft.Restier.Core
         {
             if (disposing)
             {
-                this.domainContext = null;
+                this.apiContext = null;
                 this.IsDisposed = true;
             }
         }
 
         /// <summary>
-        /// Enables code-based conventions for a domain.
+        /// Enables code-based conventions for an API.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         /// <param name="targetType">
         /// The type of a class on which code-based conventions are used.
         /// </param>
         /// <remarks>
-        /// This method adds hook points to the domain configuration that
+        /// This method adds hook points to the API configuration that
         /// inspect a target type for a variety of code-based conventions
         /// such as usage of specific attributes or members that follow
         /// certain naming conventions.
         /// </remarks>
         private static void EnableConventions(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type targetType)
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
 
-            ConventionalChangeSetAuthorizer.ApplyTo(configuration, targetType);
-            ConventionalChangeSetEntryFilter.ApplyTo(configuration, targetType);
-            configuration.AddHookHandler<IChangeSetEntryValidator>(ConventionalChangeSetEntryValidator.Instance);
-            ConventionalDomainModelBuilder.ApplyTo(configuration, targetType);
-            ConventionalOperationProvider.ApplyTo(configuration, targetType);
-            ConventionalEntitySetFilter.ApplyTo(configuration, targetType);
+            ConventionBasedChangeSetAuthorizer.ApplyTo(configuration, targetType);
+            ConventionBasedChangeSetEntryFilter.ApplyTo(configuration, targetType);
+            configuration.AddHookHandler<IChangeSetEntryValidator>(ConventionBasedChangeSetEntryValidator.Instance);
+            ConventionBasedApiModelBuilder.ApplyTo(configuration, targetType);
+            ConventionBasedOperationProvider.ApplyTo(configuration, targetType);
+            ConventionBasedEntitySetFilter.ApplyTo(configuration, targetType);
         }
     }
 }

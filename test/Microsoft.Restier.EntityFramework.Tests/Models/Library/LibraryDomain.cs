@@ -5,11 +5,11 @@ using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
 {
-    class LibraryDomain : DbDomain<LibraryContext>
+    class LibraryApi : DbApi<LibraryContext>
     {
-        internal DomainContext Context
+        internal ApiContext Context
         {
-            get { return this.DomainContext; }
+            get { return this.ApiContext; }
         }
     }
 }

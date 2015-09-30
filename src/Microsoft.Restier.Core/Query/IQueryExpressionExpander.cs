@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core.Query
     /// <remarks>
     /// <para>
     /// Query expression expansion converts an expression that represents
-    /// normalized domain data into an expression using more primitive nodes.
+    /// normalized API data into an expression using more primitive nodes.
     /// </para>
     /// <para>
     /// Expansion is the second step that occurs when processing a query

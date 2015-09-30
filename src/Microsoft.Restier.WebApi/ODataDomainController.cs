@@ -31,31 +31,31 @@ using Microsoft.Restier.WebApi.Results;
 namespace Microsoft.Restier.WebApi
 {
     /// <summary>
-    /// The all-in-one controller class to handle domain requests.
+    /// The all-in-one controller class to handle API requests.
     /// </summary>
-    [ODataDomainFormatting]
-    [ODataDomainExceptionFilter]
-    public class ODataDomainController : ODataController
+    [RestierFormatting]
+    [RestierExceptionFilter]
+    public class RestierController : ODataController
     {
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
 
-        private IDomain domain;
+        private IApi api;
         private bool shouldWriteRawValue;
 
         /// <summary>
-        /// Gets the domain associated with this controller.
+        /// Gets the API associated with this controller.
         /// </summary>
-        public IDomain Domain
+        public IApi Api
         {
             get
             {
-                if (this.domain == null)
+                if (this.api == null)
                 {
-                    this.domain = this.Request.GetDomainFactory().Invoke();
+                    this.api = this.Request.GetApiFactory().Invoke();
                 }
 
-                return this.domain;
+                return this.api;
             }
         }
 
@@ -75,9 +75,9 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            var result = await Domain.QueryAsync(new QueryRequest(queryable), cancellationToken);
+            var result = await Api.QueryAsync(new QueryRequest(queryable), cancellationToken);
 
-            this.Request.Properties[ETagGetterKey] = this.Domain.Context.GetProperty(ETagGetterKey);
+            this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
 
             return this.CreateQueryResponse(result.Results.AsQueryable(), path.EdmType);
         }
@@ -109,13 +109,13 @@ namespace Microsoft.Restier.WebApi
                 null,
                 edmEntityObject.CreatePropertyDictionary());
 
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(postEntry);
 
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -180,13 +180,13 @@ namespace Microsoft.Restier.WebApi
                 this.GetOriginalValues(),
                 null);
 
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteEntry);
 
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -214,13 +214,13 @@ namespace Microsoft.Restier.WebApi
 
             ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);
 
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(entry);
 
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -241,16 +241,16 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
-        /// Disposes the domain and the controller.
+        /// Disposes the API and the controller.
         /// </summary>
         /// <param name="disposing">Indicates whether disposing is happening.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (this.domain != null)
+                if (this.api != null)
                 {
-                    this.domain.Dispose();
+                    this.api.Dispose();
                 }
             }
 
@@ -301,13 +301,13 @@ namespace Microsoft.Restier.WebApi
                 edmEntityObject.CreatePropertyDictionary());
             updateEntry.IsFullReplaceUpdate = isFullReplaceUpdate;
 
-            ODataDomainChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
+            RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(updateEntry);
 
-                SubmitResult result = await Domain.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -328,17 +328,17 @@ namespace Microsoft.Restier.WebApi
                 if (this.shouldWriteRawValue)
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Domain.Context));
+                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Api.Context));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new PrimitiveResult(query, typeReference, this.Domain.Context));
+                    HttpStatusCode.OK, new PrimitiveResult(query, typeReference, this.Api.Context));
             }
 
             if (typeReference.IsComplex())
             {
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new ComplexResult(query, typeReference, this.Domain.Context));
+                    HttpStatusCode.OK, new ComplexResult(query, typeReference, this.Api.Context));
             }
 
             if (typeReference.IsEnum())
@@ -346,11 +346,11 @@ namespace Microsoft.Restier.WebApi
                 if (this.shouldWriteRawValue)
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Domain.Context));
+                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Api.Context));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EnumResult(query, typeReference, this.Domain.Context));
+                    HttpStatusCode.OK, new EnumResult(query, typeReference, this.Api.Context));
             }
 
             if (typeReference.IsCollection())
@@ -359,14 +359,14 @@ namespace Microsoft.Restier.WebApi
                 if (elementType.IsPrimitive() || elementType.IsComplex() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Domain.Context));
+                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Api.Context));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Domain.Context));
+                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Api.Context));
             }
 
-            var entityResult = new EntityResult(query, typeReference, this.Domain.Context);
+            var entityResult = new EntityResult(query, typeReference, this.Api.Context);
             if (entityResult.Result == null)
             {
                 throw new HttpResponseException(
@@ -383,7 +383,7 @@ namespace Microsoft.Restier.WebApi
         {
             ODataPath path = this.GetPath();
 
-            ODataDomainQueryBuilder builder = new ODataDomainQueryBuilder(this.Domain, path);
+            ODataDomainQueryBuilder builder = new ODataDomainQueryBuilder(this.Api, path);
             IQueryable queryable = builder.BuildQuery();
             this.shouldWriteRawValue = builder.IsValuePathSegmentPresent;
             if (queryable == null)

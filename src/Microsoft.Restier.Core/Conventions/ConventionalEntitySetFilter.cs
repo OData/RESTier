@@ -10,25 +10,25 @@ using Microsoft.Restier.Core.Query;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A conventional query expression filter on entity set.
+    /// A convention-based query expression filter on entity set.
     /// </summary>
-    internal class ConventionalEntitySetFilter : IQueryExpressionFilter
+    internal class ConventionBasedEntitySetFilter : IQueryExpressionFilter
     {
         private Type targetType;
 
-        private ConventionalEntitySetFilter(Type targetType)
+        private ConventionBasedEntitySetFilter(Type targetType)
         {
             this.targetType = targetType;
         }
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type targetType)
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler<IQueryExpressionFilter>(new ConventionalEntitySetFilter(targetType));
+            configuration.AddHookHandler<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
         }
 
         /// <inheritdoc/>
@@ -40,13 +40,13 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
 
-            var domainDataReference = context.ModelReference as DomainDataReference;
-            if (domainDataReference == null)
+            var apiDataReference = context.ModelReference as ApiDataReference;
+            if (apiDataReference == null)
             {
                 return null;
             }
 
-            var entitySet = domainDataReference.Element as IEdmEntitySet;
+            var entitySet = apiDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;
@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Core.Conventions
             var returnType = context.VisitedNode.Type
                 .FindGenericType(typeof(IQueryable<>));
             var elementType = returnType.GetGenericArguments()[0];
-            var methodName = ConventionalChangeSetConstants.FilterMethodEntitySetFilter + entitySet.Name;
+            var methodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entitySet.Name;
             var method = this.targetType.GetQualifiedMethod(methodName);
             if (method != null && method.IsPrivate &&
                 method.ReturnType == returnType)
@@ -63,8 +63,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.QueryContext.DomainContext.GetProperty(
-                        typeof(Domain).AssemblyQualifiedName);
+                    target = context.QueryContext.ApiContext.GetProperty(
+                        typeof(Api).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {

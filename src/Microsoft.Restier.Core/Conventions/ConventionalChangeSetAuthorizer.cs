@@ -12,13 +12,13 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A conventional change set entry authorizer.
+    /// A convention-based change set entry authorizer.
     /// </summary>
-    internal class ConventionalChangeSetAuthorizer : IChangeSetEntryAuthorizer
+    internal class ConventionBasedChangeSetAuthorizer : IChangeSetEntryAuthorizer
     {
         private Type targetType;
 
-        private ConventionalChangeSetAuthorizer(Type targetType)
+        private ConventionBasedChangeSetAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
             this.targetType = targetType;
@@ -26,12 +26,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type targetType)
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler<IChangeSetEntryAuthorizer>(new ConventionalChangeSetAuthorizer(targetType));
+            configuration.AddHookHandler<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Core.Conventions
             bool result = true;
 
             Type returnType = typeof(bool);
-            string methodName = ConventionalChangeSetAuthorizer.GetAuthorizeMethodName(entry);
+            string methodName = ConventionBasedChangeSetAuthorizer.GetAuthorizeMethodName(entry);
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsPrivate &&
@@ -53,8 +53,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.DomainContext.GetProperty(
-                        typeof(Domain).AssemblyQualifiedName);
+                    target = context.ApiContext.GetProperty(
+                        typeof(Api).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -81,22 +81,22 @@ namespace Microsoft.Restier.Core.Conventions
                     string operationName = null;
                     if (dataModification.IsNew)
                     {
-                        operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationInsert;
+                        operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationInsert;
                     }
                     else if (dataModification.IsUpdate)
                     {
-                        operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationUpdate;
+                        operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationUpdate;
                     }
                     else if (dataModification.IsDelete)
                     {
-                        operationName = ConventionalChangeSetConstants.AuthorizeMethodDataModificationDelete;
+                        operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
                     return operationName + dataModification.EntitySetName;
 
                 case ChangeSetEntryType.ActionInvocation:
                     ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                    return ConventionalChangeSetConstants.AuthorizeMethodActionInvocationExecute +
+                    return ConventionBasedChangeSetConstants.AuthorizeMethodActionInvocationExecute +
                         actionEntry.ActionName;
 
                 default:

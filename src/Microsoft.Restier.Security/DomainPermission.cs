@@ -6,9 +6,9 @@ using System;
 namespace Microsoft.Restier.Security
 {
     /// <summary>
-    /// Represents a set of built-in domain permission types.
+    /// Represents a set of built-in API permission types.
     /// </summary>
-    public static class DomainPermissionType
+    public static class ApiPermissionType
     {
         /// <summary>
         /// Allows inspecting the model definition of a securable element.
@@ -50,19 +50,19 @@ namespace Microsoft.Restier.Security
     /// Represents a role-based security statement that grants or
     /// denies permission on a securable element to a specific role.
     /// </summary>
-    public class DomainPermission
+    public class ApiPermission
     {
-        private DomainPermission()
+        private ApiPermission()
         {
         }
 
         /// <summary>
-        /// Gets a value indicating whether this domain permission grants access.
+        /// Gets a value indicating whether this API permission grants access.
         /// </summary>
         public bool IsGrant { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether this domain permission denies access.
+        /// Gets a value indicating whether this API permission denies access.
         /// </summary>
         public bool IsDeny { get; private set; }
 
@@ -87,7 +87,7 @@ namespace Microsoft.Restier.Security
         public string ChildName { get; private set; }
 
         /// <summary>
-        /// Gets the role to which this domain permission applies.
+        /// Gets the role to which this API permission applies.
         /// </summary>
         public string Role { get; private set; }
 
@@ -110,7 +110,7 @@ namespace Microsoft.Restier.Security
         /// The name of a child of a securable element.
         /// </param>
         /// <returns>
-        /// A new domain permission.
+        /// A new API permission.
         /// </returns>
         /// <remarks>
         /// If no securable element is identified, the permission is granted
@@ -118,7 +118,7 @@ namespace Microsoft.Restier.Security
         /// the securable name identifies an element in the modeled entity
         /// container, otherwise it identifies an element in a modeled schema.
         /// </remarks>
-        public static DomainPermission CreateGrant(
+        public static ApiPermission CreateGrant(
             string permissionType,
             string role = null,
             string namespaceName = null,
@@ -126,7 +126,7 @@ namespace Microsoft.Restier.Security
             string childName = null)
         {
             Ensure.NotNull(permissionType, "permissionType");
-            return new DomainPermission()
+            return new ApiPermission()
             {
                 IsGrant = true, IsDeny = false,
                 PermissionType = permissionType,
@@ -156,7 +156,7 @@ namespace Microsoft.Restier.Security
         /// The name of a child of a securable element.
         /// </param>
         /// <returns>
-        /// A new domain permission.
+        /// A new API permission.
         /// </returns>
         /// <remarks>
         /// If no securable element is identified, the permission is denied
@@ -164,7 +164,7 @@ namespace Microsoft.Restier.Security
         /// the securable name identifies an element in the modeled entity
         /// container, otherwise it identifies an element in a modeled schema.
         /// </remarks>
-        public static DomainPermission CreateDeny(
+        public static ApiPermission CreateDeny(
             string permissionType,
             string role = null,
             string namespaceName = null,
@@ -172,7 +172,7 @@ namespace Microsoft.Restier.Security
             string childName = null)
         {
             Ensure.NotNull(permissionType, "permissionType");
-            return new DomainPermission()
+            return new ApiPermission()
             {
                 IsGrant = false, IsDeny = true,
                 PermissionType = permissionType,

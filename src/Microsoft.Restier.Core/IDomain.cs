@@ -4,17 +4,17 @@
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents a domain.
+    /// Represents an API.
     /// </summary>
     /// <remarks>
-    /// A domain composes a domain configuration with semantics
-    /// around the creation and disposal of a domain context.
+    /// An API composes an API configuration with semantics
+    /// around the creation and disposal of an API context.
     /// </remarks>
-    public interface IDomain : System.IDisposable
+    public interface IApi : System.IDisposable
     {
         /// <summary>
-        /// Gets the context for this domain.
+        /// Gets the context for this API.
         /// </summary>
-        DomainContext Context { get; }
+        ApiContext Context { get; }
     }
 }

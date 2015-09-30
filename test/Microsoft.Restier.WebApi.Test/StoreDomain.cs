@@ -32,11 +32,11 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    internal class StoreDomain : DomainBase
+    internal class StoreApi : ApiBase
     {
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            var configuration = base.CreateDomainConfiguration();
+            var configuration = base.CreateApiConfiguration();
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
             configuration.AddHookHandler<IModelMapper>(new TestModelMapper());
             configuration.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
@@ -67,13 +67,13 @@ namespace Microsoft.Restier.WebApi.Test
 
     class TestModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(DomainContext context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
         {
             relevantType = typeof(Product);
             return true;
         }
 
-        public bool TryGetRelevantType(DomainContext context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiContext context, string namespaceName, string name, out Type relevantType)
         {
             relevantType = typeof(Product);
             return true;

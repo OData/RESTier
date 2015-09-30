@@ -10,25 +10,25 @@ using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Domain;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Api;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
 {
     public class TrippinController : ODataController
     {
-        private TrippinDomain domain;
+        private TrippinApi api;
 
-        private TrippinDomain Domain
+        private TrippinApi Api
         {
             get
             {
-                if (domain == null)
+                if (api == null)
                 {
-                    domain = new TrippinDomain();
+                    api = new TrippinApi();
                 }
 
-                return domain;
+                return api;
             }
         }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         {
             get
             {
-                return Domain.Context;
+                return Api.Context;
             }
         }
 
@@ -52,14 +52,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         [ODataRoute("CleanUpExpiredTrips")]
         public void CleanUpExpiredTrips()
         {
-            Domain.CleanUpExpiredTrips();
+            Api.CleanUpExpiredTrips();
         }
 
         [ODataRoute("Trips({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip")]
         public IHttpActionResult EndTrip(int key)
         {
             var trip = DbContext.Trips.SingleOrDefault(t => t.TripId == key);
-            return Ok(Domain.EndTrip(trip));
+            return Ok(Api.EndTrip(trip));
         }
 
         private bool PeopleExists(int key)
@@ -87,19 +87,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {
             var person = DbContext.People.SingleOrDefault(p => p.PersonId == key);
-            return Ok(Domain.GetNumberOfFriends(person));
+            return Ok(Api.GetNumberOfFriends(person));
         }
 
         [ODataRoute("GetPersonWithMostFriends")]
         public IHttpActionResult GetPersonWithMostFriends()
         {
-            return Ok(Domain.GetPersonWithMostFriends());
+            return Ok(Api.GetPersonWithMostFriends());
         }
 
         [ODataRoute("GetPeopleWithFriendsAtLeast(n={n})")]
         public IHttpActionResult GetPeopleWithFriendsAtLeast(int n)
         {
-            return Ok(Domain.GetPeopleWithFriendsAtLeast(n));
+            return Ok(Api.GetPeopleWithFriendsAtLeast(n));
         }
 
         [HttpPut]
@@ -331,16 +331,16 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         }
 
         /// <summary>
-        /// Disposes the domain and the controller.
+        /// Disposes the API and the controller.
         /// </summary>
         /// <param name="disposing">Indicates whether disposing is happening.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (this.domain != null)
+                if (this.api != null)
                 {
-                    this.domain.Dispose();
+                    this.api.Dispose();
                 }
             }
 

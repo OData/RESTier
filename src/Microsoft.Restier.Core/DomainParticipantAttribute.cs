@@ -8,160 +8,160 @@ namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Specifies a set of methods that can participate in the
-    /// configuration, initialization and disposal of a domain.
+    /// configuration, initialization and disposal of an API.
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public abstract class DomainParticipantAttribute : Attribute
+    public abstract class ApiParticipantAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainParticipantAttribute" /> class.
+        /// Initializes a new instance of the <see cref="ApiParticipantAttribute" /> class.
         /// </summary>
-        protected DomainParticipantAttribute()
+        protected ApiParticipantAttribute()
         {
         }
 
         /// <summary>
-        /// Applies configuration from any domain participant attributes
-        /// specified on a domain type to a domain configuration.
+        /// Applies configuration from any API participant attributes
+        /// specified on an API type to an API configuration.
         /// </summary>
         /// <param name="type">
-        /// A domain type.
+        /// An API type.
         /// </param>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         public static void ApplyConfiguration(
-            Type type, DomainConfiguration configuration)
+            Type type, ApiConfiguration configuration)
         {
             Ensure.NotNull(type, "type");
             Ensure.NotNull(configuration, "configuration");
             if (type.BaseType != null)
             {
-                DomainParticipantAttribute.ApplyConfiguration(
+                ApiParticipantAttribute.ApplyConfiguration(
                     type.BaseType, configuration);
             }
 
             var attributes = type.GetCustomAttributes(
-                typeof(DomainParticipantAttribute), false);
-            foreach (DomainParticipantAttribute attribute in attributes)
+                typeof(ApiParticipantAttribute), false);
+            foreach (ApiParticipantAttribute attribute in attributes)
             {
                 attribute.Configure(configuration, type);
             }
         }
 
         /// <summary>
-        /// Applies initialization routines from any domain participant
-        /// attributes specified on a domain type to a domain context.
+        /// Applies initialization routines from any API participant
+        /// attributes specified on an API type to an API context.
         /// </summary>
         /// <param name="type">
-        /// A domain type.
+        /// An API type.
         /// </param>
         /// <param name="instance">
-        /// A domain instance, if applicable.
+        /// An API instance, if applicable.
         /// </param>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         public static void ApplyInitialization(
-            Type type, object instance, DomainContext context)
+            Type type, object instance, ApiContext context)
         {
             Ensure.NotNull(type, "type");
             Ensure.NotNull(context, "context");
             if (type.BaseType != null)
             {
-                DomainParticipantAttribute.ApplyInitialization(
+                ApiParticipantAttribute.ApplyInitialization(
                     type.BaseType, instance, context);
             }
 
             var attributes = type.GetCustomAttributes(
-                typeof(DomainParticipantAttribute), false);
-            foreach (DomainParticipantAttribute attribute in attributes)
+                typeof(ApiParticipantAttribute), false);
+            foreach (ApiParticipantAttribute attribute in attributes)
             {
                 attribute.Initialize(context, type, instance);
             }
         }
 
         /// <summary>
-        /// Applies disposal routines from any domain participant
-        /// attributes specified on a domain type to a domain context.
+        /// Applies disposal routines from any API participant
+        /// attributes specified on an API type to an API context.
         /// </summary>
         /// <param name="type">
-        /// A domain type.
+        /// An API type.
         /// </param>
         /// <param name="instance">
-        /// A domain instance, if applicable.
+        /// An API instance, if applicable.
         /// </param>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         public static void ApplyDisposal(
-            Type type, object instance, DomainContext context)
+            Type type, object instance, ApiContext context)
         {
             Ensure.NotNull(type, "type");
             Ensure.NotNull(context, "context");
             var attributes = type.GetCustomAttributes(
-                typeof(DomainParticipantAttribute), false);
-            foreach (DomainParticipantAttribute attribute in attributes.Reverse())
+                typeof(ApiParticipantAttribute), false);
+            foreach (ApiParticipantAttribute attribute in attributes.Reverse())
             {
                 attribute.Dispose(context, type, instance);
             }
 
             if (type.BaseType != null)
             {
-                DomainParticipantAttribute.ApplyDisposal(
+                ApiParticipantAttribute.ApplyDisposal(
                     type.BaseType, instance, context);
             }
         }
 
         /// <summary>
-        /// Configures a domain configuration.
+        /// Configures an API configuration.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         /// <param name="type">
-        /// The domain type on which this attribute was placed.
+        /// The API type on which this attribute was placed.
         /// </param>
         public virtual void Configure(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type type)
         {
         }
 
         /// <summary>
-        /// Initializes a domain context.
+        /// Initializes an API context.
         /// </summary>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         /// <param name="type">
-        /// The domain type on which this attribute was placed.
+        /// The API type on which this attribute was placed.
         /// </param>
         /// <param name="instance">
-        /// A domain instance, if applicable.
+        /// An API instance, if applicable.
         /// </param>
         public virtual void Initialize(
-            DomainContext context,
+            ApiContext context,
             Type type,
             object instance)
         {
         }
 
         /// <summary>
-        /// Disposes a domain context.
+        /// Disposes an API context.
         /// </summary>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         /// <param name="type">
-        /// The domain type on which this attribute was placed.
+        /// The API type on which this attribute was placed.
         /// </param>
         /// <param name="instance">
-        /// A domain instance, if applicable.
+        /// An API instance, if applicable.
         /// </param>
         public virtual void Dispose(
-            DomainContext context,
+            ApiContext context,
             Type type,
             object instance)
         {

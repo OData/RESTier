@@ -12,17 +12,17 @@ using Microsoft.Restier.Security;
 namespace Microsoft.Restier.Samples.Northwind.Models
 {
     [EnableRoleBasedSecurity]
-    [Grant(DomainPermissionType.All, On = "Customers")]
-    [Grant(DomainPermissionType.All, On = "Products")]
-    [Grant(DomainPermissionType.All, On = "CurrentOrders")]
-    [Grant(DomainPermissionType.All, On = "ExpensiveProducts")]
-    [Grant(DomainPermissionType.All, On = "Orders")]
-    [Grant(DomainPermissionType.All, On = "Employees")]
-    [Grant(DomainPermissionType.All, On = "Regions")]
-    [Grant(DomainPermissionType.Inspect, On = "Suppliers")]
-    [Grant(DomainPermissionType.Read, On = "Suppliers")]
-    [Grant(DomainPermissionType.All, On = "ResetDataSource")]
-    public class NorthwindDomain : DbDomain<NorthwindContext>
+    [Grant(ApiPermissionType.All, On = "Customers")]
+    [Grant(ApiPermissionType.All, On = "Products")]
+    [Grant(ApiPermissionType.All, On = "CurrentOrders")]
+    [Grant(ApiPermissionType.All, On = "ExpensiveProducts")]
+    [Grant(ApiPermissionType.All, On = "Orders")]
+    [Grant(ApiPermissionType.All, On = "Employees")]
+    [Grant(ApiPermissionType.All, On = "Regions")]
+    [Grant(ApiPermissionType.Inspect, On = "Suppliers")]
+    [Grant(ApiPermissionType.Read, On = "Suppliers")]
+    [Grant(ApiPermissionType.All, On = "ResetDataSource")]
+    public class NorthwindApi : DbApi<NorthwindContext>
     {
         public NorthwindContext Context { get { return DbContext; } }
 

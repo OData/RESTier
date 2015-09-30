@@ -8,14 +8,14 @@ using System.Linq;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents methods that identify domain data.
+    /// Represents methods that identify API data.
     /// </summary>
     /// <remarks>
-    /// The methods in this class are placeholders that identify domain data
+    /// The methods in this class are placeholders that identify API data
     /// in a normalized manner inside a query expression. This enables query
-    /// hook points to identify and reason about the referenced domain data.
+    /// hook points to identify and reason about the referenced API data.
     /// </remarks>
-    public static class DomainData
+    public static class ApiData
     {
         /// <summary>
         /// Identifies an entity set, singleton or queryable data

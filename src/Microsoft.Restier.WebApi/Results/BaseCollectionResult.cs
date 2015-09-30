@@ -19,7 +19,7 @@ namespace Microsoft.Restier.WebApi.Results
         /// <param name="query">The query that returns a collection of objects.</param>
         /// <param name="edmType">The EDM type reference of the objects.</param>
         /// <param name="context">The context where the action is executed.</param>
-        protected BaseCollectionResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
+        protected BaseCollectionResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
             : base(edmType, context)
         {
             Ensure.NotNull(query, "query");

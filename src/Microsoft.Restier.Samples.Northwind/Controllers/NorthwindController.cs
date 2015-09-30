@@ -18,18 +18,18 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
 {
     public class NorthwindController : ODataController
     {
-        private NorthwindDomain domain;
+        private NorthwindApi api;
 
-        private NorthwindDomain Domain
+        private NorthwindApi Api
         {
             get
             {
-                if (domain == null)
+                if (api == null)
                 {
-                    domain = new NorthwindDomain();
+                    api = new NorthwindApi();
                 }
 
-                return domain;
+                return api;
             }
         }
 
@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         {
             get
             {
-                return Domain.Context;
+                return Api.Context;
             }
         }
 
@@ -123,16 +123,16 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         }
 
         /// <summary>
-        /// Disposes the domain and the controller.
+        /// Disposes the API and the controller.
         /// </summary>
         /// <param name="disposing">Indicates whether disposing is happening.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (this.domain != null)
+                if (this.api != null)
                 {
-                    this.domain.Dispose();
+                    this.api.Dispose();
                 }
             }
 

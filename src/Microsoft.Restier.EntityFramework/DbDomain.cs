@@ -18,42 +18,42 @@ using Microsoft.Restier.EntityFramework.Submit;
 namespace Microsoft.Restier.EntityFramework
 {
     /// <summary>
-    /// Represents a domain over a DbContext.
+    /// Represents an API over a DbContext.
     /// </summary>
     /// <typeparam name="T">The DbContext type.</typeparam>
 #if EF7
     [CLSCompliant(false)]
 #endif
-    public class DbDomain<T> : DomainBase
+    public class DbApi<T> : ApiBase
         where T : DbContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbDomain{T}" /> class.
+        /// Initializes a new instance of the <see cref="DbApi{T}" /> class.
         /// </summary>
-        public DbDomain()
+        public DbApi()
         {
         }
 
         /// <summary>
-        /// Gets the underlying DbContext for this domain.
+        /// Gets the underlying DbContext for this API.
         /// </summary>
         protected T DbContext
         {
             get
             {
-                return this.DomainContext.GetProperty<T>(DbDomainConstants.DbContextKey);
+                return this.ApiContext.GetProperty<T>(DbApiConstants.DbContextKey);
             }
         }
 
         /// <summary>
-        /// Creates the domain configuration for this domain.
+        /// Creates the API configuration for this API.
         /// </summary>
         /// <returns>
-        /// The domain configuration for this domain.
+        /// The API configuration for this API.
         /// </returns>
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            var configuration = base.CreateDomainConfiguration();
+            var configuration = base.CreateApiConfiguration();
             configuration.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
             configuration.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
             configuration.AddHookHandler<IQueryExpressionSourcer>(QueryExpressionSourcer.Instance);
@@ -64,33 +64,33 @@ namespace Microsoft.Restier.EntityFramework
         }
 
         /// <summary>
-        /// Creates the domain context for this domain.
+        /// Creates the API context for this API.
         /// </summary>
         /// <param name="configuration">
-        /// The domain configuration to use.
+        /// The API configuration to use.
         /// </param>
         /// <returns>
-        /// The domain context for this domain.
+        /// The API context for this API.
         /// </returns>
-        protected override DomainContext CreateDomainContext(
-            DomainConfiguration configuration)
+        protected override ApiContext CreateApiContext(
+            ApiConfiguration configuration)
         {
-            var context = base.CreateDomainContext(configuration);
+            var context = base.CreateApiContext(configuration);
             var dbContext = this.CreateDbContext();
 #if EF7
             // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
 #else
             dbContext.Configuration.ProxyCreationEnabled = false;
 #endif
-            context.SetProperty(DbDomainConstants.DbContextKey, dbContext);
+            context.SetProperty(DbApiConstants.DbContextKey, dbContext);
             return context;
         }
 
         /// <summary>
-        /// Creates the underlying DbContext used by this domain.
+        /// Creates the underlying DbContext used by this API.
         /// </summary>
         /// <returns>
-        /// The underlying DbContext used by this domain.
+        /// The underlying DbContext used by this API.
         /// </returns>
         protected virtual T CreateDbContext()
         {
@@ -109,8 +109,8 @@ namespace Microsoft.Restier.EntityFramework
         {
             if (disposing)
             {
-                var dbContext = this.DomainContext
-                    .GetProperty<DbContext>(DbDomainConstants.DbContextKey);
+                var dbContext = this.ApiContext
+                    .GetProperty<DbContext>(DbApiConstants.DbContextKey);
                 if (dbContext != null)
                 {
                     dbContext.Dispose();

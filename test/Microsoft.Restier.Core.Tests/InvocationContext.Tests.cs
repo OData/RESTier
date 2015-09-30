@@ -11,21 +11,21 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NewInvocationContextIsConfiguredCorrectly()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.EnsureCommitted();
-            var domainContext = new DomainContext(configuration);
-            var context = new InvocationContext(domainContext);
-            Assert.Same(domainContext, context.DomainContext);
+            var apiContext = new ApiContext(configuration);
+            var context = new InvocationContext(apiContext);
+            Assert.Same(apiContext, context.ApiContext);
         }
 
         [Fact]
         public void InvocationContextGetsHookPointsCorrectly()
         {
             var hook = new HookA();
-            var configuration = new DomainConfiguration().AddHookHandler<IHookA>(hook);
+            var configuration = new ApiConfiguration().AddHookHandler<IHookA>(hook);
             configuration.EnsureCommitted();
-            var domainContext = new DomainContext(configuration);
-            var context = new InvocationContext(domainContext);
+            var apiContext = new ApiContext(configuration);
+            var context = new InvocationContext(apiContext);
             Assert.Same(hook, context.GetHookHandler<IHookA>());
         }
 

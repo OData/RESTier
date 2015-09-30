@@ -10,11 +10,11 @@ using Microsoft.Restier.Core.Query;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents a configuration that defines a domain.
+    /// Represents a configuration that defines an API.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A domain configuration defines the model and behavior of a domain
+    /// An API configuration defines the model and behavior of an API
     /// through a set of registered hook points. It also maintains a set of
     /// properties that can be used to share static data between hook points.
     /// </para>
@@ -26,34 +26,34 @@ namespace Microsoft.Restier.Core
     /// are normally used in the original or reverse order of registration.
     /// </para>
     /// <para>
-    /// In order to use a domain configuration, it must first be committed.
+    /// In order to use an API configuration, it must first be committed.
     /// This fixes the configuration so that its set of hook points are
     /// immutable, ensuring that any active use of the configuration sees a
-    /// consistent set of hook points throughout a particular domain flow.
+    /// consistent set of hook points throughout a particular API flow.
     /// </para>
     /// </remarks>
-    public class DomainConfiguration : PropertyBag
+    public class ApiConfiguration : PropertyBag
     {
         private readonly IDictionary<Type, IHookHandler> hookHandlers =
             new ConcurrentDictionary<Type, IHookHandler>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainConfiguration" /> class.
+        /// Initializes a new instance of the <see cref="ApiConfiguration" /> class.
         /// </summary>
-        public DomainConfiguration()
+        public ApiConfiguration()
         {
             this.AddDefaultHookHandlers();
         }
 
         /// <summary>
-        /// Gets a value indicating whether this domain configuration has been committed.
+        /// Gets a value indicating whether this API configuration has been committed.
         /// </summary>
         public bool IsCommitted { get; private set; }
 
         internal IEdmModel Model { get; set; }
 
         /// <summary>
-        /// Ensures this domain configuration has been committed.
+        /// Ensures this API configuration has been committed.
         /// </summary>
         public void EnsureCommitted()
         {
@@ -66,8 +66,8 @@ namespace Microsoft.Restier.Core
         /// </summary>
         /// <typeparam name="T">The context class.</typeparam>
         /// <param name="handler">An instance of hook handler for TContext.</param>
-        /// <returns>Current <see cref="DomainConfiguration"/></returns>
-        public DomainConfiguration AddHookHandler<T>(T handler) where T : class, IHookHandler
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public ApiConfiguration AddHookHandler<T>(T handler) where T : class, IHookHandler
         {
             Ensure.NotNull(handler, "handler");
 

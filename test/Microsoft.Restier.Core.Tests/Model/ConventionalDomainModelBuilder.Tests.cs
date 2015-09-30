@@ -9,33 +9,33 @@ using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.Core.Tests.Model
 {
-    public class ConventionalDomainModelBuilderTests
+    public class ConventionBasedApiModelBuilderTests
     {
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldProduceEmptyModelForEmptyDomain()
+        public async Task ConventionBasedApiModelBuilderShouldProduceEmptyModelForEmptyApi()
         {
-            var model = await this.GetModelAsync<EmptyDomain>();
+            var model = await this.GetModelAsync<EmptyApi>();
             Assert.Single(model.SchemaElements);
             Assert.Empty(model.EntityContainer.Elements);
         }
 
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldProduceCorrectModelForBasicScenario()
+        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForBasicScenario()
         {
-            var model = await this.GetModelAsync<DomainA>();
-            Assert.DoesNotContain("DomainConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("DomainContext", model.EntityContainer.Elements.Select(e => e.Name));
+            var model = await this.GetModelAsync<ApiA>();
+            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
+            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
             Assert.NotNull(model.EntityContainer.FindSingleton("Me"));
         }
 
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldProduceCorrectModelForDerivedDomain()
+        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForDerivedApi()
         {
-            var model = await this.GetModelAsync<DomainB>();
-            Assert.DoesNotContain("DomainConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("DomainContext", model.EntityContainer.Elements.Select(e => e.Name));
+            var model = await this.GetModelAsync<ApiB>();
+            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
+            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
             Assert.NotNull(model.EntityContainer.FindEntitySet("Customers"));
@@ -43,11 +43,11 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldProduceCorrectModelForOverridingProperty()
+        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForOverridingProperty()
         {
-            var model = await this.GetModelAsync<DomainC>();
-            Assert.DoesNotContain("DomainConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("DomainContext", model.EntityContainer.Elements.Select(e => e.Name));
+            var model = await this.GetModelAsync<ApiC>();
+            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
+            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
             Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
@@ -55,11 +55,11 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldProduceCorrectModelForIgnoringInheritedProperty()
+        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForIgnoringInheritedProperty()
         {
-            var model = await this.GetModelAsync<DomainD>();
-            Assert.DoesNotContain("DomainConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("DomainContext", model.EntityContainer.Elements.Select(e => e.Name));
+            var model = await this.GetModelAsync<ApiD>();
+            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
+            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("People", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
@@ -67,24 +67,24 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldSkipEntitySetWithUndeclaredType()
+        public async Task ConventionBasedApiModelBuilderShouldSkipEntitySetWithUndeclaredType()
         {
-            var model = await this.GetModelAsync<DomainE>();
+            var model = await this.GetModelAsync<ApiE>();
             Assert.Equal("Person", model.EntityContainer.FindEntitySet("People").EntityType().Name);
             Assert.DoesNotContain("Orders", model.EntityContainer.Elements.Select(e => e.Name));
         }
 
         [Fact]
-        public async Task ConventionalDomainModelBuilderShouldSkipExistingEntitySet()
+        public async Task ConventionBasedApiModelBuilderShouldSkipExistingEntitySet()
         {
-            var model = await this.GetModelAsync<DomainF>();
+            var model = await this.GetModelAsync<ApiF>();
             Assert.Equal("Person", model.EntityContainer.FindEntitySet("VipCustomers").EntityType().Name);
         }
 
-        private async Task<IEdmModel> GetModelAsync<T>() where T : BaseDomain, new()
+        private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi, new()
         {
-            var domain = (BaseDomain)Activator.CreateInstance<T>();
-            return await Domain.GetModelAsync(domain.DomainContext);
+            var api = (BaseApi)Activator.CreateInstance<T>();
+            return await Api.GetModelAsync(api.ApiContext);
         }
     }
 
@@ -107,27 +107,27 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
     }
 
-    public class BaseDomain : DomainBase
+    public class BaseApi : ApiBase
     {
-        public new DomainConfiguration DomainConfiguration
+        public new ApiConfiguration ApiConfiguration
         {
-            get { return base.DomainConfiguration; }
+            get { return base.ApiConfiguration; }
         }
 
-        public new DomainContext DomainContext
+        public new ApiContext ApiContext
         {
-            get { return base.DomainContext; }
+            get { return base.ApiContext; }
         }
 
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            return base.CreateDomainConfiguration()
-                .IgnoreProperty("DomainConfiguration")
-                .IgnoreProperty("DomainContext");
+            return base.CreateApiConfiguration()
+                .IgnoreProperty("ApiConfiguration")
+                .IgnoreProperty("ApiContext");
         }
     }
 
-    public class EmptyDomain : BaseDomain
+    public class EmptyApi : BaseApi
     {
     }
 
@@ -136,21 +136,21 @@ namespace Microsoft.Restier.Core.Tests.Model
         public int PersonId { get; set; }
     }
 
-    public class DomainA : BaseDomain
+    public class ApiA : BaseApi
     {
         public IQueryable<Person> People { get; }
         public Person Me { get; }
         public IQueryable<Person> Invisible { get; }
 
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            return base.CreateDomainConfiguration()
+            return base.CreateApiConfiguration()
                 .AddHookHandler<IModelBuilder>(new TestModelBuilder())
                 .IgnoreProperty("Invisible");
         }
     }
 
-    public class DomainB : DomainA
+    public class ApiB : ApiA
     {
         public IQueryable<Person> Customers { get; }
     }
@@ -160,17 +160,17 @@ namespace Microsoft.Restier.Core.Tests.Model
         public int CustomerId { get; set; }
     }
 
-    public class DomainC : DomainB
+    public class ApiC : ApiB
     {
         public new IQueryable<Customer> Customers { get; }
         public new Customer Me { get; }
     }
 
-    public class DomainD : DomainC
+    public class ApiD : ApiC
     {
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            return base.CreateDomainConfiguration().IgnoreProperty("People");
+            return base.CreateApiConfiguration().IgnoreProperty("People");
         }
     }
 
@@ -179,25 +179,25 @@ namespace Microsoft.Restier.Core.Tests.Model
         public int OrderId { get; set; }
     }
 
-    public class DomainE : BaseDomain
+    public class ApiE : BaseApi
     {
         public IQueryable<Person> People { get; }
         public IQueryable<Order> Orders { get; }
 
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            return base.CreateDomainConfiguration()
+            return base.CreateApiConfiguration()
                 .AddHookHandler<IModelBuilder>(new TestModelBuilder());
         }
     }
 
-    public class DomainF : BaseDomain
+    public class ApiF : BaseApi
     {
         public IQueryable<Customer> VipCustomers { get; }
 
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            return base.CreateDomainConfiguration()
+            return base.CreateApiConfiguration()
                 .AddHookHandler<IModelBuilder>(new TestModelBuilder());
         }
     }

@@ -13,10 +13,10 @@ using Microsoft.Restier.WebApi.Formatter.Serialization;
 namespace Microsoft.Restier.WebApi
 {
     /// <summary>
-    /// Specifies the serializer and deserializer provider for the domain controller.
+    /// Specifies the serializer and deserializer provider for the API controller.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public sealed class ODataDomainFormattingAttribute : Attribute, IControllerConfiguration
+    public sealed class RestierFormattingAttribute : Attribute, IControllerConfiguration
     {
         /// <summary>
         /// Inserts the RESTier specific formatters to the controller.
@@ -38,8 +38,8 @@ namespace Microsoft.Restier.WebApi
             }
 
             odataFormatters = ODataMediaTypeFormatters.Create(
-                new DefaultODataDomainSerializerProvider(),
-                new DefaultODataDomainDeserializerProvider());
+                new DefaultRestierSerializerProvider(),
+                new DefaultRestierDeserializerProvider());
             controllerFormatters.InsertRange(0, odataFormatters);
         }
     }

@@ -12,11 +12,11 @@ namespace Microsoft.Restier.WebApi.Formatter.Deserialization
     /// <summary>
     /// The serializer for enum result.
     /// </summary>
-    internal class ODataDomainEnumDeserializer : ODataEdmTypeDeserializer
+    internal class RestierEnumDeserializer : ODataEdmTypeDeserializer
     {
         private ODataEnumDeserializer enumDeserializer = new ODataEnumDeserializer();
 
-        public ODataDomainEnumDeserializer()
+        public RestierEnumDeserializer()
             : base(ODataPayloadKind.Property)
         {
         }

@@ -3,7 +3,7 @@
 
 namespace Microsoft.Restier.Core.Conventions
 {
-    internal static class ConventionalChangeSetConstants
+    internal static class ConventionBasedChangeSetConstants
     {
 #region Authorizing method constants
         public const string AuthorizeMethodDataModificationInsert = "CanInsert";

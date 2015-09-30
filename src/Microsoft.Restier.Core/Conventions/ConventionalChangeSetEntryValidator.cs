@@ -14,24 +14,24 @@ using ValidationResult = Microsoft.Restier.Core.Submit.ValidationResult;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A conventional change set entry validator.
+    /// A convention-based change set entry validator.
     /// </summary>
-    internal class ConventionalChangeSetEntryValidator :
+    internal class ConventionBasedChangeSetEntryValidator :
         IChangeSetEntryValidator
     {
-        static ConventionalChangeSetEntryValidator()
+        static ConventionBasedChangeSetEntryValidator()
         {
-            Instance = new ConventionalChangeSetEntryValidator();
+            Instance = new ConventionBasedChangeSetEntryValidator();
         }
 
-        private ConventionalChangeSetEntryValidator()
+        private ConventionBasedChangeSetEntryValidator()
         {
         }
 
         /// <summary>
-        /// Gets a static instance of conventional change set entry validator.
+        /// Gets a static instance of convention-based change set entry validator.
         /// </summary>
-        public static ConventionalChangeSetEntryValidator Instance { get; private set; }
+        public static ConventionBasedChangeSetEntryValidator Instance { get; private set; }
 
         /// <inheritdoc/>
         public Task ValidateEntityAsync(

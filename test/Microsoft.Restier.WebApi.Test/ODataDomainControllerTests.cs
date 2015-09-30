@@ -11,14 +11,14 @@ using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test
 {
-    public class ODataDomainControllerTests
+    public class RestierControllerTests
     {
         private HttpClient client;
 
-        public ODataDomainControllerTests()
+        public RestierControllerTests()
         {
             var configuration = new HttpConfiguration();
-            configuration.MapODataDomainRoute<StoreDomain>("store", "store").Wait();
+            configuration.MapRestierRoute<StoreApi>("store", "store").Wait();
             client = new HttpClient(new HttpServer(configuration));
         }
 

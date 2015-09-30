@@ -10,19 +10,19 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.WebApi.Batch
 {
     /// <summary>
-    /// Represents a domain <see cref="ChangeSet"/> property.
+    /// Represents an API <see cref="ChangeSet"/> property.
     /// </summary>
-    internal class ODataDomainChangeSetProperty
+    internal class RestierChangeSetProperty
     {
-        private readonly ODataDomainChangeSetRequestItem changeSetRequestItem;
+        private readonly RestierChangeSetRequestItem changeSetRequestItem;
         private readonly TaskCompletionSource<bool> changeSetCompletedTaskSource;
         private int subRequestCount;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainChangeSetProperty" /> class.
+        /// Initializes a new instance of the <see cref="RestierChangeSetProperty" /> class.
         /// </summary>
         /// <param name="changeSetRequestItem">The changeset request item.</param>
-        public ODataDomainChangeSetProperty(ODataDomainChangeSetRequestItem changeSetRequestItem)
+        public RestierChangeSetProperty(RestierChangeSetRequestItem changeSetRequestItem)
         {
             this.changeSetRequestItem = changeSetRequestItem;
             this.changeSetCompletedTaskSource = new TaskCompletionSource<bool>();

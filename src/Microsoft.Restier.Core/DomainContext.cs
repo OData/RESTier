@@ -6,22 +6,22 @@ using System;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents context under which a domain operates.
+    /// Represents context under which an API operates.
     /// </summary>
     /// <remarks>
-    /// A domain context is an instantiation of a domain configuration. It
+    /// An API context is an instantiation of an API configuration. It
     /// maintains a set of properties that can be used to share instance
     /// data between hook points.
     /// </remarks>
-    public class DomainContext : PropertyBag
+    public class ApiContext : PropertyBag
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainContext" /> class.
+        /// Initializes a new instance of the <see cref="ApiContext" /> class.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
-        public DomainContext(DomainConfiguration configuration)
+        public ApiContext(ApiConfiguration configuration)
         {
             Ensure.NotNull(configuration, "configuration");
             if (!configuration.IsCommitted)
@@ -34,8 +34,8 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets the domain configuration.
+        /// Gets the API configuration.
         /// </summary>
-        public DomainConfiguration Configuration { get; private set; }
+        public ApiConfiguration Configuration { get; private set; }
     }
 }

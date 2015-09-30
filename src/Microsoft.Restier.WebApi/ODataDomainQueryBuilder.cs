@@ -21,7 +21,7 @@ namespace Microsoft.Restier.WebApi
         private const char EntityKeySeparator = ',';
         private const char EntityKeyNameValueSeparator = '=';
 
-        private readonly IDomain domain;
+        private readonly IApi domain;
         private readonly ODataPath path;
         private readonly IDictionary<string, Action<ODataPathSegment>> handlers =
             new Dictionary<string, Action<ODataPathSegment>>();
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.WebApi
         private IEdmEntityType currentEntityType;
         private Type currentType;
 
-        public ODataDomainQueryBuilder(IDomain domain, ODataPath path)
+        public ODataDomainQueryBuilder(IApi domain, ODataPath path)
         {
             Ensure.NotNull(domain, "domain");
             Ensure.NotNull(path, "path");

@@ -66,15 +66,15 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer());
             configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(2));
             configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(3));
 
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
 
-            var model = await Domain.GetModelAsync(context);
+            var model = await Api.GetModelAsync(context);
             Assert.Equal(4, model.SchemaElements.Count());
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));

@@ -10,7 +10,7 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 {
-    public class TrippinDomain : DomainBase
+    public class TrippinApi : ApiBase
     {
         private static readonly List<Person> people = new List<Person>
         {
@@ -110,9 +110,9 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             get { return this.Source<Person>("People").Where(p => p.PersonId >= 2); }
         }
 
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            return base.CreateDomainConfiguration()
+            return base.CreateApiConfiguration()
                 .AddHookHandler<IModelBuilder>(new ModelBuilder());
         }
 

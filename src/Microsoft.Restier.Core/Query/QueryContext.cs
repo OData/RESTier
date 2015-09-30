@@ -14,14 +14,14 @@ namespace Microsoft.Restier.Core.Query
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryContext" /> class.
         /// </summary>
-        /// <param name="domainContext">
-        /// A domain context.
+        /// <param name="apiContext">
+        /// An API context.
         /// </param>
         /// <param name="request">
         /// A query request.
         /// </param>
-        public QueryContext(DomainContext domainContext, QueryRequest request)
-            : base(domainContext)
+        public QueryContext(ApiContext apiContext, QueryRequest request)
+            : base(apiContext)
         {
             Ensure.NotNull(request, "request");
             this.Request = request;

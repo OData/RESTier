@@ -18,7 +18,7 @@ namespace Microsoft.Restier.WebApi.Results
         /// <param name="query">The query that returns an entity.</param>
         /// <param name="edmType">The EDM type reference of the entity.</param>
         /// <param name="context">The context where the action is executed.</param>
-        public EntityResult(IQueryable query, IEdmTypeReference edmType, DomainContext context)
+        public EntityResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
             : base(query, edmType, context)
         {
         }

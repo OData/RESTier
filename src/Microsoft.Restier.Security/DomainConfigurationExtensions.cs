@@ -12,27 +12,27 @@ namespace Microsoft.Restier.Security
     /// <summary>
     /// Provides a set of static (Shared in Visual Basic)
     /// methods for interacting with objects that implement
-    /// <see cref="DomainConfiguration"/>.
+    /// <see cref="ApiConfiguration"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class DomainConfigurationExtensions
+    public static class ApiConfigurationExtensions
     {
         private const string Permissions =
             "Microsoft.Restier.Security.Permissions";
 
         /// <summary>
-        /// Enables principal-supplied role-based security for a domain.
+        /// Enables principal-supplied role-based security for an API.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         /// <remarks>
-        /// This method adds hook points to the domain configuration that
+        /// This method adds hook points to the API configuration that
         /// authorize according to roles assigned to the current principal
-        /// along with any that have been asserted during a domain flow.
+        /// along with any that have been asserted during an API flow.
         /// </remarks>
         public static void EnableRoleBasedSecurity(
-            this DomainConfiguration configuration)
+            this ApiConfiguration configuration)
         {
             Ensure.NotNull(configuration, "configuration");
             configuration.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
@@ -40,24 +40,24 @@ namespace Microsoft.Restier.Security
         }
 
         /// <summary>
-        /// Adds a domain permission to a domain configuration.
+        /// Adds an API permission to an API configuration.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         /// <param name="permission">
-        /// A domain permission.
+        /// An API permission.
         /// </param>
         public static void AddPermission(
-            this DomainConfiguration configuration,
-            DomainPermission permission)
+            this ApiConfiguration configuration,
+            ApiPermission permission)
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(permission, "permission");
-            var permissions = configuration.GetProperty<List<DomainPermission>>(Permissions);
+            var permissions = configuration.GetProperty<List<ApiPermission>>(Permissions);
             if (permissions == null)
             {
-                permissions = new List<DomainPermission>();
+                permissions = new List<ApiPermission>();
                 configuration.SetProperty(Permissions, permissions);
             }
 

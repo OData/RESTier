@@ -11,13 +11,13 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for complex result.
     /// </summary>
-    internal class ODataDomainComplexTypeSerializer : ODataComplexTypeSerializer
+    internal class RestierComplexTypeSerializer : ODataComplexTypeSerializer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainComplexTypeSerializer" /> class.
+        /// Initializes a new instance of the <see cref="RestierComplexTypeSerializer" /> class.
         /// </summary>
         /// <param name="provider">The serializer provider.</param>
-        public ODataDomainComplexTypeSerializer(ODataSerializerProvider provider)
+        public RestierComplexTypeSerializer(ODataSerializerProvider provider)
             : base(provider)
         {
         }

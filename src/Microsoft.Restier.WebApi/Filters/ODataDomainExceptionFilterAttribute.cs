@@ -22,7 +22,7 @@ namespace Microsoft.Restier.WebApi.Filters
     /// An ExceptionFilter that is capable of serializing well-known exceptions to the client.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public sealed class ODataDomainExceptionFilterAttribute : ExceptionFilterAttribute
+    public sealed class RestierExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private static readonly List<ExceptionHandlerDelegate> Handlers = new List<ExceptionHandlerDelegate>
             {

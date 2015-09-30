@@ -13,12 +13,12 @@ namespace Microsoft.OData.Edm
     {
         private const string DefaultEntityContainerName = "DefaultContainer";
 
-        public static EdmEntityContainer EnsureEntityContainer(this EdmModel model, Type domainType)
+        public static EdmEntityContainer EnsureEntityContainer(this EdmModel model, Type apiType)
         {
             var container = (EdmEntityContainer)model.EntityContainer;
             if (container == null)
             {
-                container = new EdmEntityContainer(domainType.Namespace, DefaultEntityContainerName);
+                container = new EdmEntityContainer(apiType.Namespace, DefaultEntityContainerName);
                 model.AddElement(container);
             }
 

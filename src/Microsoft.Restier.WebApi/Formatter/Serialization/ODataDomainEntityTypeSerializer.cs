@@ -12,13 +12,13 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for entity result.
     /// </summary>
-    internal class ODataDomainEntityTypeSerializer : ODataEntityTypeSerializer
+    internal class RestierEntityTypeSerializer : ODataEntityTypeSerializer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainEntityTypeSerializer" /> class.
+        /// Initializes a new instance of the <see cref="RestierEntityTypeSerializer" /> class.
         /// </summary>
         /// <param name="provider">The serializer provider.</param>
-        public ODataDomainEntityTypeSerializer(ODataSerializerProvider provider)
+        public RestierEntityTypeSerializer(ODataSerializerProvider provider)
             : base(provider)
         {
         }

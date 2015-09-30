@@ -29,7 +29,7 @@ namespace Microsoft.Restier.WebApi.Test
         public FallbackTests()
         {
             var configuration = new HttpConfiguration();
-            configuration.MapODataDomainRoute<FallbackDomain>("fallback", "fallback").Wait();
+            configuration.MapRestierRoute<FallbackApi>("fallback", "fallback").Wait();
             client = new HttpClient(new HttpServer(configuration));
         }
 
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.WebApi.Test
         [Fact]
         public async Task NonFallbackTest()
         {
-            // Should be routed to ODataDomainController.
+            // Should be routed to RestierController.
             var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/Orders");
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
             HttpResponseMessage response = await client.SendAsync(request);
@@ -67,9 +67,9 @@ namespace Microsoft.Restier.WebApi.Test
         }
 
         [Fact]
-        public async Task FallbackConventionalProviderTest()
+        public async Task FallbackConventionBasedProviderTest()
         {
-            // Should be routed to ODataDomainController.
+            // Should be routed to RestierController.
             var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/PreservedOrders");
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
             HttpResponseMessage response = await client.SendAsync(request);
@@ -92,11 +92,11 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    internal class FallbackDomain : DomainBase
+    internal class FallbackApi : ApiBase
     {
-        protected override DomainConfiguration CreateDomainConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration()
         {
-            var configuration = base.CreateDomainConfiguration();
+            var configuration = base.CreateApiConfiguration();
             configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
             configuration.AddHookHandler<IModelMapper>(new FallbackModelMapper());
             configuration.AddHookHandler<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
@@ -167,14 +167,14 @@ namespace Microsoft.Restier.WebApi.Test
 
     class FallbackModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(DomainContext context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
         {
             relevantType = name == "Person" ? typeof(Person) : typeof(Order);
 
             return true;
         }
 
-        public bool TryGetRelevantType(DomainContext context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiContext context, string namespaceName, string name, out Type relevantType)
         {
             return TryGetRelevantType(context, name, out relevantType);
         }

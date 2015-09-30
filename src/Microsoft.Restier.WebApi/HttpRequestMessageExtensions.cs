@@ -16,55 +16,55 @@ namespace Microsoft.Restier.WebApi
     internal static class HttpRequestMessageExtensions
     {
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";
-        private const string DomainFactoryKey = "Microsoft.Restier.Core.DomainFactory";
+        private const string ApiFactoryKey = "Microsoft.Restier.Core.ApiFactory";
 
         /// <summary>
-        /// Gets the <see cref="ODataDomainChangeSetProperty"/> from the <see cref="HttpRequestMessage"/>.
+        /// Gets the <see cref="RestierChangeSetProperty"/> from the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>
-        /// <returns>The <see cref="ODataDomainChangeSetProperty"/>.</returns>
-        public static ODataDomainChangeSetProperty GetChangeSet(this HttpRequestMessage request)
+        /// <returns>The <see cref="RestierChangeSetProperty"/>.</returns>
+        public static RestierChangeSetProperty GetChangeSet(this HttpRequestMessage request)
         {
             Ensure.NotNull(request, "request");
 
             object value;
             if (request.Properties.TryGetValue(ChangeSetKey, out value))
             {
-                return value as ODataDomainChangeSetProperty;
+                return value as RestierChangeSetProperty;
             }
 
             return null;
         }
 
         /// <summary>
-        /// Gets the domain factory from the <see cref="HttpRequestMessage"/>.
+        /// Gets the API factory from the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>
-        /// <returns>The domain factory.</returns>
-        internal static Func<IDomain> GetDomainFactory(this HttpRequestMessage request)
+        /// <returns>The API factory.</returns>
+        internal static Func<IApi> GetApiFactory(this HttpRequestMessage request)
         {
             Ensure.NotNull(request, "request");
 
             object value;
-            if (request.Properties.TryGetValue(DomainFactoryKey, out value))
+            if (request.Properties.TryGetValue(ApiFactoryKey, out value))
             {
-                return value as Func<IDomain>;
+                return value as Func<IApi>;
             }
 
             return null;
         }
 
         /// <summary>
-        /// Sets the domain factory to the <see cref="HttpRequestMessage"/>.
+        /// Sets the API factory to the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>
-        /// <param name="domainFactory">The domain factory.</param>
-        internal static void SetDomainFactory(this HttpRequestMessage request, Func<IDomain> domainFactory)
+        /// <param name="apiFactory">The API factory.</param>
+        internal static void SetApiFactory(this HttpRequestMessage request, Func<IApi> apiFactory)
         {
             Ensure.NotNull(request, "request");
-            Ensure.NotNull(domainFactory, "domainFactory");
+            Ensure.NotNull(apiFactory, "apiFactory");
 
-            request.Properties[DomainFactoryKey] = domainFactory;
+            request.Properties[ApiFactoryKey] = apiFactory;
         }
     }
 }

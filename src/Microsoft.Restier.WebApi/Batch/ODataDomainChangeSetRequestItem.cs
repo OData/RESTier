@@ -13,23 +13,23 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.WebApi.Batch
 {
     /// <summary>
-    /// Represents a domain <see cref="ChangeSet"/> request.
+    /// Represents an API <see cref="ChangeSet"/> request.
     /// </summary>
-    public class ODataDomainChangeSetRequestItem : ChangeSetRequestItem
+    public class RestierChangeSetRequestItem : ChangeSetRequestItem
     {
-        private Func<IDomain> domainFactory;
+        private Func<IApi> apiFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainChangeSetRequestItem" /> class.
+        /// Initializes a new instance of the <see cref="RestierChangeSetRequestItem" /> class.
         /// </summary>
         /// <param name="requests">The request messages.</param>
-        /// <param name="domainFactory">Gets or sets the callback to create domain.</param>
-        public ODataDomainChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<IDomain> domainFactory)
+        /// <param name="apiFactory">Gets or sets the callback to create API.</param>
+        public RestierChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<IApi> apiFactory)
             : base(requests)
         {
-            Ensure.NotNull(domainFactory, "domainFactory");
+            Ensure.NotNull(apiFactory, "apiFactory");
 
-            this.domainFactory = domainFactory;
+            this.apiFactory = apiFactory;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.WebApi.Batch
         {
             Ensure.NotNull(invoker, "invoker");
 
-            ODataDomainChangeSetProperty changeSetProperty = new ODataDomainChangeSetProperty(this);
+            RestierChangeSetProperty changeSetProperty = new RestierChangeSetProperty(this);
             changeSetProperty.ChangeSet = new ChangeSet();
             this.SetChangeSetProperty(changeSetProperty);
 
@@ -91,9 +91,9 @@ namespace Microsoft.Restier.WebApi.Batch
 
         internal async Task SubmitChangeSet(ChangeSet changeSet)
         {
-            using (var domain = this.domainFactory())
+            using (var api = this.apiFactory())
             {
-                SubmitResult submitResults = await domain.SubmitAsync(changeSet);
+                SubmitResult submitResults = await api.SubmitAsync(changeSet);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.WebApi.Batch
             }
         }
 
-        private void SetChangeSetProperty(ODataDomainChangeSetProperty changeSetProperty)
+        private void SetChangeSetProperty(RestierChangeSetProperty changeSetProperty)
         {
             foreach (HttpRequestMessage request in this.Requests)
             {

@@ -7,12 +7,12 @@ using Microsoft.Restier.Core;
 namespace Microsoft.Restier.Security
 {
     /// <summary>
-    /// Specifies a role-based security statement for a domain that
+    /// Specifies a role-based security statement for an API that
     /// denies permission on a securable element to a specific role.
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public sealed class DenyAttribute : DomainParticipantAttribute
+    public sealed class DenyAttribute : ApiParticipantAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DenyAttribute" /> class.
@@ -48,24 +48,24 @@ namespace Microsoft.Restier.Security
         public string OnChild { get; set; }
 
         /// <summary>
-        /// Gets or sets the role to which this domain permission applies.
+        /// Gets or sets the role to which this API permission applies.
         /// </summary>
         public string To { get; set; }
 
         /// <summary>
-        /// Configures a domain configuration.
+        /// Configures an API configuration.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         /// <param name="type">
-        /// The domain type on which this attribute was placed.
+        /// The API type on which this attribute was placed.
         /// </param>
         public override void Configure(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type type)
         {
-            var permission = DomainPermission.CreateDeny(
+            var permission = ApiPermission.CreateDeny(
                 this.PermissionType,
                 this.To,
                 this.OnNamespace,

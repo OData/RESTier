@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RESTier Core")]
-[assembly: AssemblyDescription("A framework for authoring rich domain data and logic over a data source proxy.")]
+[assembly: AssemblyDescription("A framework for authoring rich api data and logic over a data source proxy.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft.Restier.Core")]

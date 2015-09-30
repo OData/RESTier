@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for raw result.
     /// </summary>
-    internal class ODataDomainRawSerializer : ODataRawValueSerializer
+    internal class RestierRawSerializer : ODataRawValueSerializer
     {
         /// <summary>
         /// Writes the entity result to the response message.
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
 
             if (writeContext != null)
             {
-                graph = ODataDomainPrimitiveSerializer.ConvertToPayloadValue(writeContext.Model, graph);
+                graph = RestierPrimitiveSerializer.ConvertToPayloadValue(writeContext.Model, graph);
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);

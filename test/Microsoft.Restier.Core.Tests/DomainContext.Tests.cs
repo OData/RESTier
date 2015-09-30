@@ -6,21 +6,21 @@ using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    public class DomainContextTests
+    public class ApiContextTests
     {
         [Fact]
-        public void DomainContextOnlyAcceptsCommittedConfiguration()
+        public void ApiContextOnlyAcceptsCommittedConfiguration()
         {
-            var configuration = new DomainConfiguration();
-            Assert.Throws<ArgumentException>(() => new DomainContext(configuration));
+            var configuration = new ApiConfiguration();
+            Assert.Throws<ArgumentException>(() => new ApiContext(configuration));
         }
 
         [Fact]
-        public void NewDomainContextIsConfiguredCorrectly()
+        public void NewApiContextIsConfiguredCorrectly()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var context = new ApiContext(configuration);
             Assert.Same(configuration, context.Configuration);
         }
     }

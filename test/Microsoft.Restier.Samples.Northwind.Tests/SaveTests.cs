@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class SaveTests : TestBase
     {
-        private class TestEntityFilterReturnsTaskDomain : NorthwindDomain
+        private class TestEntityFilterReturnsTaskApi : NorthwindApi
         {
             private async Task OnInsertingCustomers(Customer customer)
             {
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestEntityFilterReturnsTask()
         {
-            TestEntityFilterReturnsTaskDomain domain = new TestEntityFilterReturnsTaskDomain();
+            TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
             DataModificationEntry<Customer> createCustomer = new DataModificationEntry<Customer>(
                 "Customers",
                 "Customer",
@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
                     {"CompanyName", "New Cust"},
                 });
 
-            await domain.SubmitAsync(new ChangeSet(new ChangeSetEntry[] { createCustomer }));
+            await api.SubmitAsync(new ChangeSet(new ChangeSetEntry[] { createCustomer }));
 
             NorthwindContext ctx = new NorthwindContext();
 

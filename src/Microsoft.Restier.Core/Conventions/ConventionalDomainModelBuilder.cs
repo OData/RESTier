@@ -16,10 +16,10 @@ using Microsoft.Restier.Core.Query;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A conventional domain model builder that extends a model, maps between
+    /// A convention-based API model builder that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    internal class ConventionalDomainModelBuilder :
+    internal class ConventionBasedApiModelBuilder :
         IModelBuilder, IDelegateHookHandler<IModelBuilder>,
         IModelMapper, IDelegateHookHandler<IModelMapper>,
         IQueryExpressionExpander,
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Core.Conventions
         private readonly ICollection<PropertyInfo> entitySetProperties = new List<PropertyInfo>();
         private readonly ICollection<PropertyInfo> singletonProperties = new List<PropertyInfo>();
 
-        private ConventionalDomainModelBuilder(Type targetType)
+        private ConventionBasedApiModelBuilder(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -43,13 +43,13 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type targetType)
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
 
-            var provider = new ConventionalDomainModelBuilder(targetType);
+            var provider = new ConventionBasedApiModelBuilder(targetType);
             configuration.AddHookHandler<IModelBuilder>(provider);
             configuration.AddHookHandler<IModelMapper>(provider);
             configuration.AddHookHandler<IQueryExpressionExpander>(provider);
@@ -84,7 +84,7 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public bool TryGetRelevantType(
-            DomainContext context,
+            ApiContext context,
             string name,
             out Type relevantType)
         {
@@ -106,7 +106,7 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public bool TryGetRelevantType(
-            DomainContext context,
+            ApiContext context,
             string namespaceName,
             string name,
             out Type relevantType)
@@ -122,12 +122,12 @@ namespace Microsoft.Restier.Core.Conventions
 
             if (result != null)
             {
-                // Only Expand to expression of method call on DomainData class
+                // Only Expand to expression of method call on ApiData class
                 var methodCall = result.Expression as MethodCallExpression;
                 if (methodCall != null)
                 {
                     var method = methodCall.Method;
-                    if (method.DeclaringType == typeof(DomainData) && method.Name != "Value")
+                    if (method.DeclaringType == typeof(ApiData) && method.Name != "Value")
                     {
                         return null;
                     }
@@ -185,13 +185,13 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
 
-            var domainDataReference = context.ModelReference as DomainDataReference;
-            if (domainDataReference == null)
+            var apiDataReference = context.ModelReference as ApiDataReference;
+            if (apiDataReference == null)
             {
                 return null;
             }
 
-            var entitySet = domainDataReference.Element as IEdmEntitySet;
+            var entitySet = apiDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;
@@ -204,8 +204,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
-                    target = context.QueryContext.DomainContext
-                        .GetProperty(typeof(Domain).AssemblyQualifiedName);
+                    target = context.QueryContext.ApiContext
+                        .GetProperty(typeof(Api).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -234,7 +234,7 @@ namespace Microsoft.Restier.Core.Conventions
         private void ScanForDeclaredPublicProperties()
         {
             var currentType = this.targetType;
-            while (currentType != null && currentType != typeof(DomainBase))
+            while (currentType != null && currentType != typeof(ApiBase))
             {
                 var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
                     BindingFlags.Public |
@@ -257,7 +257,7 @@ namespace Microsoft.Restier.Core.Conventions
 
         private void BuildEntitySetsAndSingletons(InvocationContext context, EdmModel model)
         {
-            var configuration = context.DomainContext.Configuration;
+            var configuration = context.ApiContext.Configuration;
             foreach (var property in this.publicProperties)
             {
                 if (configuration.IsPropertyIgnored(property.Name))

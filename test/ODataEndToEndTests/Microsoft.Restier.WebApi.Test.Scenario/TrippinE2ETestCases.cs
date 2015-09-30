@@ -824,7 +824,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
-        public void ConventionalChangeSetAuthorizerTest()
+        public void ConventionBasedChangeSetAuthorizerTest()
         {
             var trip = this.TestClientContext.Trips.First();
             this.TestClientContext.DeleteObject(trip);

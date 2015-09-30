@@ -19,7 +19,7 @@ namespace Microsoft.Restier.WebApi.Results
         /// </summary>
         /// <param name="edmType">The EDM type reference of the OData result.</param>
         /// <param name="context">The context where the action is executed.</param>
-        protected BaseResult(IEdmTypeReference edmType, DomainContext context)
+        protected BaseResult(IEdmTypeReference edmType, ApiContext context)
         {
             Ensure.NotNull(edmType, "edmType");
             Ensure.NotNull(context, "context");
@@ -42,6 +42,6 @@ namespace Microsoft.Restier.WebApi.Results
         /// <summary>
         /// Gets the context where the action is executed.
         /// </summary>
-        public DomainContext Context { get; private set; }
+        public ApiContext Context { get; private set; }
     }
 }

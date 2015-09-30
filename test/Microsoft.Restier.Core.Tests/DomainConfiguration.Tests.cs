@@ -12,30 +12,30 @@ using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    public class DomainConfigurationTests
+    public class ApiConfigurationTests
     {
         [Fact]
         public void EmptyConfigurationIsConfiguredCorrectly()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             Assert.False(configuration.IsCommitted);
         }
 
         [Fact]
         public void CachedConfigurationIsCachedCorrectly()
         {
-            IDomain domain = new TestDomain();
-            var configuration = domain.Context.Configuration;
+            IApi api = new TestApi();
+            var configuration = api.Context.Configuration;
 
-            IDomain anotherDomain = new TestDomain();
-            var cached = anotherDomain.Context.Configuration;
+            IApi anotherApi = new TestApi();
+            var cached = anotherApi.Context.Configuration;
             Assert.Same(configuration, cached);
         }
 
         [Fact]
         public void CommittedConfigurationIsConfiguredCorrectly()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
 
             configuration.EnsureCommitted();
             Assert.True(configuration.IsCommitted);
@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void CommittedConfigurationCannotAddHookHandler()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.EnsureCommitted();
 
             Assert.Throws<InvalidOperationException>(
@@ -57,7 +57,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ConfigurationCannotAddHookHandlerOfWrongType()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             Assert.Throws<InvalidOperationException>(
                 () => configuration.AddHookHandler<TestModelBuilder>(new TestModelBuilder()));
         }
@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ConfigurationRegistersHookPointsCorrectly()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
 
             Assert.Null(configuration.GetHookHandler<IHookA>());
             Assert.Null(configuration.GetHookHandler<IHookB>());
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var q1 = new HookB("q1Pre", "q1Post");
             var q2 = new HookB("q2Pre", "q2Post");
-            var configuration = new DomainConfiguration()
+            var configuration = new ApiConfiguration()
                 .AddHookHandler<IHookB>(q1)
                 .AddHookHandler<IHookB>(q2);
 
@@ -103,7 +103,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
         }
 
-        private class TestDomain : DomainBase
+        private class TestApi : ApiBase
         {
         }
 

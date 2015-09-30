@@ -3,7 +3,7 @@
 
 namespace Microsoft.Restier.EntityFramework
 {
-    internal static class DbDomainConstants
+    internal static class DbApiConstants
     {
         public const string DbContextKey = "Microsoft.Restier.EntityFramework.DbContext";
     }

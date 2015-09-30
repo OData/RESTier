@@ -7,9 +7,9 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Domain
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 {
-    public class TrippinDomain : DbDomain<TrippinModel>
+    public class TrippinApi : DbApi<TrippinModel>
     {
         public TrippinModel Context { get { return DbContext; } }
 

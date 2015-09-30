@@ -13,13 +13,13 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A conventional change set entry filter.
+    /// A convention-based change set entry filter.
     /// </summary>
-    internal class ConventionalChangeSetEntryFilter : IChangeSetEntryFilter
+    internal class ConventionBasedChangeSetEntryFilter : IChangeSetEntryFilter
     {
         private Type targetType;
 
-        private ConventionalChangeSetEntryFilter(Type targetType)
+        private ConventionBasedChangeSetEntryFilter(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
             this.targetType = targetType;
@@ -27,12 +27,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type targetType)
         {
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler<IChangeSetEntryFilter>(new ConventionalChangeSetEntryFilter(targetType));
+            configuration.AddHookHandler<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
         }
 
         /// <inheritdoc/>
@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Core.Conventions
             CancellationToken cancellationToken)
         {
             return this.InvokeFilterMethodAsync(
-                context, entry, ConventionalChangeSetConstants.FilterMethodNamePreFilterSuffix);
+                context, entry, ConventionBasedChangeSetConstants.FilterMethodNamePreFilterSuffix);
         }
 
         /// <inheritdoc/>
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core.Conventions
             CancellationToken cancellationToken)
         {
             return this.InvokeFilterMethodAsync(
-                context, entry, ConventionalChangeSetConstants.FilterMethodNamePostFilterSuffix);
+                context, entry, ConventionBasedChangeSetConstants.FilterMethodNamePostFilterSuffix);
         }
 
         private static string GetMethodName(ChangeSetEntry entry, string suffix)
@@ -64,22 +64,22 @@ namespace Microsoft.Restier.Core.Conventions
                 string operationName = null;
                 if (dataModification.IsNew)
                 {
-                    operationName = ConventionalChangeSetConstants.FilterMethodDataModificationInsert;
+                    operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
                 }
                 else if (dataModification.IsUpdate)
                 {
-                        operationName = ConventionalChangeSetConstants.FilterMethodDataModificationUpdate;
+                        operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
                 }
                 else if (dataModification.IsDelete)
                 {
-                        operationName = ConventionalChangeSetConstants.FilterMethodDataModificationDelete;
+                        operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
                 }
 
                 return operationName + suffix + dataModification.EntitySetName;
 
             case ChangeSetEntryType.ActionInvocation:
                 ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                return ConventionalChangeSetConstants.FilterMethodActionInvocationExecute +
+                return ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
                        suffix + actionEntry.ActionName;
 
             default:
@@ -117,8 +117,8 @@ namespace Microsoft.Restier.Core.Conventions
             ChangeSetEntry entry,
             string methodNameSuffix)
         {
-            string methodName = ConventionalChangeSetEntryFilter.GetMethodName(entry, methodNameSuffix);
-            object[] parameters = ConventionalChangeSetEntryFilter.GetParameters(entry);
+            string methodName = ConventionBasedChangeSetEntryFilter.GetMethodName(entry, methodNameSuffix);
+            object[] parameters = ConventionBasedChangeSetEntryFilter.GetParameters(entry);
 
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
@@ -129,8 +129,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.DomainContext.GetProperty(
-                        typeof(Domain).AssemblyQualifiedName);
+                    target = context.ApiContext.GetProperty(
+                        typeof(Api).AssemblyQualifiedName);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -139,7 +139,7 @@ namespace Microsoft.Restier.Core.Conventions
                 }
 
                 ParameterInfo[] methodParameters = method.GetParameters();
-                if (ConventionalChangeSetEntryFilter.ParametersMatch(methodParameters, parameters))
+                if (ConventionBasedChangeSetEntryFilter.ParametersMatch(methodParameters, parameters))
                 {
                     object result = method.Invoke(target, parameters);
                     Task resultTask = result as Task;

@@ -18,23 +18,23 @@ namespace Microsoft.Restier.WebApi.Batch
     /// <summary>
     /// Default implementation of <see cref="ODataBatchHandler"/> in RESTier.
     /// </summary>
-    public class ODataDomainBatchHandler : DefaultODataBatchHandler
+    public class RestierBatchHandler : DefaultODataBatchHandler
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ODataDomainBatchHandler" /> class.
+        /// Initializes a new instance of the <see cref="RestierBatchHandler" /> class.
         /// </summary>
         /// <param name="httpServer">The HTTP server instance.</param>
-        /// <param name="domainFactory">Gets or sets the callback to create domain.</param>
-        public ODataDomainBatchHandler(HttpServer httpServer, Func<IDomain> domainFactory = null)
+        /// <param name="apiFactory">Gets or sets the callback to create API.</param>
+        public RestierBatchHandler(HttpServer httpServer, Func<IApi> apiFactory = null)
             : base(httpServer)
         {
-            this.DomainFactory = domainFactory;
+            this.ApiFactory = apiFactory;
         }
 
         /// <summary>
-        /// Gets or sets the callback to create domain.
+        /// Gets or sets the callback to create API.
         /// </summary>
-        public Func<IDomain> DomainFactory { get; set; }
+        public Func<IApi> ApiFactory { get; set; }
 
         /// <summary>
         /// Asynchronously parses the batch requests.
@@ -46,9 +46,9 @@ namespace Microsoft.Restier.WebApi.Batch
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (this.DomainFactory == null)
+            if (this.ApiFactory == null)
             {
-                throw new InvalidOperationException(Resources.BatchHandlerRequiresDomainContextFactory);
+                throw new InvalidOperationException(Resources.BatchHandlerRequiresApiContextFactory);
             }
 
             Ensure.NotNull(request, "request");
@@ -95,13 +95,13 @@ namespace Microsoft.Restier.WebApi.Batch
         }
 
         /// <summary>
-        /// Creates the <see cref="ODataDomainChangeSetRequestItem"/> instance.
+        /// Creates the <see cref="RestierChangeSetRequestItem"/> instance.
         /// </summary>
         /// <param name="changeSetRequests">The list of changeset requests.</param>
-        /// <returns>The created <see cref="ODataDomainChangeSetRequestItem"/> instance.</returns>
+        /// <returns>The created <see cref="RestierChangeSetRequestItem"/> instance.</returns>
         protected virtual ChangeSetRequestItem CreateChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests)
         {
-            return new ODataDomainChangeSetRequestItem(changeSetRequests, this.DomainFactory);
+            return new RestierChangeSetRequestItem(changeSetRequests, this.ApiFactory);
         }
     }
 }

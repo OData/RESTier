@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core.Model
     public interface IModelBuilder : IHookHandler
     {
         /// <summary>
-        /// Asynchronously gets a domain model for a domain.
+        /// Asynchronously gets an API model for an API.
         /// </summary>
         /// <param name="context">
         /// The context for processing
@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core.Model
         /// </param>
         /// <returns>
         /// A task that represents the asynchronous
-        /// operation whose result is the domain model.
+        /// operation whose result is the API model.
         /// </returns>
         Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken);
     }
