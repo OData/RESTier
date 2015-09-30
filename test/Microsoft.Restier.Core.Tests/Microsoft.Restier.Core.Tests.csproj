@@ -58,16 +58,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\ConventionalDomainModelBuilder.Tests.cs" />
+    <Compile Include="Model\ConventionBasedApiModelBuilder.Tests.cs" />
     <Compile Include="Model\DefaultModelHandler.Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DomainConfiguration.Tests.cs" />
+    <Compile Include="ApiConfiguration.Tests.cs" />
     <Compile Include="PropertyBag.Tests.cs" />
-    <Compile Include="DomainContext.Tests.cs" />
+    <Compile Include="ApiContext.Tests.cs" />
     <Compile Include="InvocationContext.Tests.cs" />
-    <Compile Include="DomainData.Tests.cs" />
-    <Compile Include="Domain.Tests.cs" />
-    <Compile Include="DomainBase.Tests.cs" />
+    <Compile Include="ApiData.Tests.cs" />
+    <Compile Include="Api.Tests.cs" />
+    <Compile Include="ApiBase.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">

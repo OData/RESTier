@@ -72,32 +72,33 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="Batch\ODataDomainBatchHandler.cs" />
-    <Compile Include="Batch\ODataDomainChangeSetProperty.cs" />
-    <Compile Include="Batch\ODataDomainChangeSetRequestItem.cs" />
-    <Compile Include="Formatter\Deserialization\DefaultODataDomainDeserializerProvider.cs" />
-    <Compile Include="Formatter\Deserialization\ODataDomainEnumDeserializer.cs" />
-    <Compile Include="Formatter\Serialization\DefaultODataDomainSerializerProvider.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainCollectionSerializer.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainEnumSerializer.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainComplexTypeSerializer.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainRawSerializer.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainPrimitiveSerializer.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainEntityTypeSerializer.cs" />
-    <Compile Include="Formatter\Serialization\ODataDomainFeedSerializer.cs" />
+    <Compile Include="Batch\RestierBatchHandler.cs" />
+    <Compile Include="Batch\RestierChangeSetProperty.cs" />
+    <Compile Include="Batch\RestierChangeSetRequestItem.cs" />
+    <Compile Include="Formatter\Deserialization\DefaultRestierDeserializerProvider.cs" />
+    <Compile Include="Formatter\Deserialization\RestierEnumDeserializer.cs" />
+    <Compile Include="Formatter\Serialization\DefaultRestierSerializerProvider.cs" />
+    <Compile Include="Formatter\Serialization\RestierCollectionSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierEnumSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierComplexTypeSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierRawSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierPrimitiveSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierEntityTypeSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
     <Compile Include="HttpConfigurationExtensions.cs" />
     <Compile Include="HttpRequestMessageExtensions.cs" />
-    <Compile Include="ODataDomainController.cs" />
-    <Compile Include="ODataDomainFormattingAttribute.cs" />
-    <Compile Include="Filters\ODataDomainExceptionFilterAttribute.cs" />
-    <Compile Include="ODataDomainPayloadValueConverter.cs" />
-    <Compile Include="ODataDomainQueryBuilder.cs" />
+    <Compile Include="RestierQueryBuilder.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="RestierFormattingAttribute.cs" />
+    <Compile Include="Filters\RestierExceptionFilterAttribute.cs" />
+    <Compile Include="RestierPayloadValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RestierController.cs" />
     <Compile Include="Results\BaseCollectionResult.cs" />
     <Compile Include="Results\EnumResult.cs" />
     <Compile Include="Results\NonEntityCollectionResult.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Results\BaseSingleResult.cs" />
     <Compile Include="Results\BaseResult.cs" />
     <Compile Include="Results\EntityResult.cs" />
-    <Compile Include="Routing\ODataDomainRoutingConvention.cs" />
+    <Compile Include="Routing\RestierRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
     <Compile Include="..\Shared\SharedResources\SharedResources.WebApi.Designer.cs">
       <AutoGen>True</AutoGen>

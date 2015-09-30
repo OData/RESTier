@@ -135,6 +135,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.RestierController.#GetSource(System.Web.OData.Routing.ODataPath,Microsoft.OData.Edm.IEdmEntityType&)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.RestierController.#GetQuery()")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.Filters.RestierExceptionFilterAttribute.#Handler403(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
+[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.Filters.RestierExceptionFilterAttribute.#Handler404(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 #endregion
 
 #region CA1800 Unnecessary casts

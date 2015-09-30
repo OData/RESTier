@@ -118,7 +118,7 @@
     <Compile Include="Models\CustomerDemographic.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\NorthwindContext.cs" />
-    <Compile Include="Models\NorthwindDomain.cs" />
+    <Compile Include="Models\NorthwindApi.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Order_Detail.cs" />
     <Compile Include="Models\Product.cs" />

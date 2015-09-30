@@ -15,13 +15,13 @@ using Microsoft.Restier.WebApi.Properties;
 
 namespace Microsoft.Restier.WebApi
 {
-    internal class ODataDomainQueryBuilder
+    internal class RestierQueryBuilder
     {
         private const string DefaultNameOfParameterExpression = "currentValue";
         private const char EntityKeySeparator = ',';
         private const char EntityKeyNameValueSeparator = '=';
 
-        private readonly IApi domain;
+        private readonly IApi api;
         private readonly ODataPath path;
         private readonly IDictionary<string, Action<ODataPathSegment>> handlers =
             new Dictionary<string, Action<ODataPathSegment>>();
@@ -30,11 +30,11 @@ namespace Microsoft.Restier.WebApi
         private IEdmEntityType currentEntityType;
         private Type currentType;
 
-        public ODataDomainQueryBuilder(IApi domain, ODataPath path)
+        public RestierQueryBuilder(IApi api, ODataPath path)
         {
-            Ensure.NotNull(domain, "domain");
+            Ensure.NotNull(api, "api");
             Ensure.NotNull(path, "path");
-            this.domain = domain;
+            this.api = api;
             this.path = path;
 
             this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
@@ -155,7 +155,7 @@ namespace Microsoft.Restier.WebApi
             var entitySetPathSegment = (EntitySetPathSegment)segment;
             var entitySet = entitySetPathSegment.EntitySetBase;
             this.currentEntityType = entitySet.EntityType();
-            this.queryable = this.domain.Source(entitySet.Name, (object[])null);
+            this.queryable = this.api.Source(entitySet.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 
@@ -173,7 +173,7 @@ namespace Microsoft.Restier.WebApi
                     p => unboundFunctionPathSegment.GetParameterValue(p.Name)).ToArray();
             }
 
-            this.queryable = this.domain.Source(functionImport.Name, queryArgs);
+            this.queryable = this.api.Source(functionImport.Name, queryArgs);
             this.currentType = queryable.ElementType;
         }
 

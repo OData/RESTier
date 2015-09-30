@@ -102,7 +102,7 @@ namespace Microsoft.Restier.WebApi.Filters
             var notSupportedException = context.Exception as NotSupportedException;
             if (notSupportedException != null)
             {
-                if (notSupportedException.TargetSite.DeclaringType == typeof(ODataDomainQueryBuilder))
+                if (notSupportedException.TargetSite.DeclaringType == typeof(RestierQueryBuilder))
                 {
                     throw new HttpResponseException(context.Request.CreateErrorResponse(
                         HttpStatusCode.NotFound,

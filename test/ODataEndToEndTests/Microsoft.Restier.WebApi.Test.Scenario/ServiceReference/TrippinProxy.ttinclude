@@ -2436,7 +2436,7 @@ public abstract class TemplateBase
             }
         }
         /// <summary>
-        /// This is called from the compile/run appapi to convert objects within an expression block to a string
+        /// This is called from the compile/run appdomain to convert objects within an expression block to a string
         /// </summary>
         public string ToStringWithCulture(object objectToConvert)
         {
@@ -2840,7 +2840,7 @@ internal static class Utils
             else
             {
                 constructorParameters = "()";
-            }
+            
 
             string clrTypeName = GetClrTypeName(edmTypeReference, useDataServiceCollection, clientTemplate, context);
             return clientTemplate.NewModifier + clrTypeName + constructorParameters;
