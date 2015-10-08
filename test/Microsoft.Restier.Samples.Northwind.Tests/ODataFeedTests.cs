@@ -40,6 +40,13 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         }
 
         [Fact]
+        public async Task TestCustomersEntitySetCountQuery()
+        {
+            // The count should NOT include the entities that have been filtered out.
+            await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Customers/$count");
+        }
+
+        [Fact]
         public async Task TestBatch()
         {
             int id = ODataFeedTests.InsertTestProduct();

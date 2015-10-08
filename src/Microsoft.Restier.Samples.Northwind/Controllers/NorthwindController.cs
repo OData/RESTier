@@ -42,12 +42,6 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         }
 
         // OData Attribute Routing
-        [ODataRoute("Products/$count")]
-        public IHttpActionResult GetProductsCount()
-        {
-            return Ok(DbContext.Products.Count());
-        }
-
         [HttpPut]
         [ODataRoute("Products({key})/UnitPrice")]
         public IHttpActionResult UpdateProductUnitPrice(int key, [FromBody]decimal price)
