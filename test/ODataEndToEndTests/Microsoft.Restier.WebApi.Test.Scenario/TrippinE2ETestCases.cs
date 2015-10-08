@@ -835,5 +835,13 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 "The current user does not have permission to delete entities from the EntitySet 'Trips'.",
                 clientException.Message);
         }
+
+        [Fact]
+        public void TestCountEntities()
+        {
+            this.TestGetPayloadIs("People/$count", "13");
+            this.TestGetPayloadIs("People(1)/Friends/$count", "1");
+            this.TestGetPayloadIs("Flights/$count", "4");
+        }
     }
 }

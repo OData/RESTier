@@ -39,11 +39,14 @@ namespace Microsoft.Restier.WebApi
 
             this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
             this.handlers[ODataSegmentKinds.UnboundFunction] = this.HandleUnboundFunctionPathSegment;
+            this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
             this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
             this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;
             this.handlers[ODataSegmentKinds.Navigation] = this.HandleNavigationPathSegment;
             this.handlers[ODataSegmentKinds.Property] = this.HandlePropertyAccessPathSegment;
         }
+
+        public bool IsCountPathSegmentPresent { get; private set; }
 
         public bool IsValuePathSegmentPresent { get; private set; }
 
@@ -177,6 +180,11 @@ namespace Microsoft.Restier.WebApi
             this.currentType = queryable.ElementType;
         }
 
+        private void HandleCountPathSegment(ODataPathSegment segment)
+        {
+            this.IsCountPathSegmentPresent = true;
+        }
+
         private void HandleValuePathSegment(ODataPathSegment segment)
         {
             this.IsValuePathSegmentPresent = true;
@@ -248,7 +256,7 @@ namespace Microsoft.Restier.WebApi
                 // resulting query would be 'IEnumerable<T>' too.
                 this.currentType = structuralPropertyExpression.Type.GetEnumerableItemType();
                 var delegateType = typeof(Func<,>).MakeGenericType(
-                    queryable.ElementType,
+                    this.queryable.ElementType,
                     typeof(IEnumerable<>).MakeGenericType(this.currentType));
                 var selectBody =
                     Expression.Lambda(delegateType, structuralPropertyExpression, entityParameterExpression);

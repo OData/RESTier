@@ -68,5 +68,13 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetPayloadIs("People(1)/FavoriteFeature/$value", "Feature1");
         }
+
+        [Fact]
+        public void TestCountCollectionOfStructuralProperty()
+        {
+            TestGetPayloadIs("People(1)/Emails/$count", "2");
+            TestGetPayloadIs("People(1)/Locations/$count", "2");
+            TestGetPayloadIs("People(1)/Features/$count", "2");
+        }
     }
 }

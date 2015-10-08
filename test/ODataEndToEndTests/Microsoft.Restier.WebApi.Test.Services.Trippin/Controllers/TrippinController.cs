@@ -77,12 +77,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return serviceRootUri;
         }
 
-        [ODataRoute("People/$count")]
-        public IHttpActionResult GetPeopleCount()
-        {
-            return Ok(DbContext.People.Count());
-        }
-
         [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {

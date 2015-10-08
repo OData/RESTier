@@ -40,6 +40,7 @@ namespace Microsoft.Restier.WebApi
         private const string ETagHeaderKey = "@etag";
 
         private IApi api;
+        private bool shouldReturnCount;
         private bool shouldWriteRawValue;
 
         /// <summary>
@@ -74,11 +75,12 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            var result = await Api.QueryAsync(new QueryRequest(queryable), cancellationToken);
+            QueryRequest queryRequest = new QueryRequest(queryable) { ShouldReturnCount = this.shouldReturnCount };
+            QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
 
             this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
 
-            return this.CreateQueryResponse(result.Results.AsQueryable(), path.EdmType);
+            return this.CreateQueryResponse(queryResult.Results.AsQueryable(), path.EdmType);
         }
 
         /// <summary>
@@ -324,7 +326,7 @@ namespace Microsoft.Restier.WebApi
 
             if (typeReference.IsPrimitive())
             {
-                if (this.shouldWriteRawValue)
+                if (this.shouldReturnCount || this.shouldWriteRawValue)
                 {
                     return this.Request.CreateResponse(
                         HttpStatusCode.OK, new RawResult(query, typeReference, this.Api.Context));
@@ -384,6 +386,7 @@ namespace Microsoft.Restier.WebApi
 
             RestierQueryBuilder builder = new RestierQueryBuilder(this.Api, path);
             IQueryable queryable = builder.BuildQuery();
+            this.shouldReturnCount = builder.IsCountPathSegmentPresent;
             this.shouldWriteRawValue = builder.IsValuePathSegmentPresent;
             if (queryable == null)
             {
@@ -391,6 +394,12 @@ namespace Microsoft.Restier.WebApi
                     this.Request.CreateErrorResponse(
                         HttpStatusCode.NotFound,
                         Resources.ResourceNotFound));
+            }
+
+            if (this.shouldReturnCount || this.shouldWriteRawValue)
+            {
+                // Query options don't apply to $count or $value.
+                return queryable;
             }
 
             ODataQueryContext queryContext =

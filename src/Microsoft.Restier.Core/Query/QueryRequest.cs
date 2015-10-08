@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core.Query
         public Expression Expression { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating if the total
+        /// Gets or sets a value indicating whether the total
         /// number of items should be retrieved when the
         /// result has been filtered using paging operators.
         /// </summary>
@@ -49,6 +49,13 @@ namespace Microsoft.Restier.Core.Query
         /// the data provider may need to execute two independent queries.
         /// </remarks>
         public bool? IncludeTotalCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the number
+        /// of the items should be returned instead of the
+        /// items themselves.
+        /// </summary>
+        public bool ShouldReturnCount { get; set; }
 
         /// <summary>
         /// Creates a new singular query request with

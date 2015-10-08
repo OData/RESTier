@@ -41,22 +41,35 @@ namespace Microsoft.Restier.Core.Query
             var visitor = new QueryExpressionVisitor(context);
             expression = visitor.Visit(expression);
 
+            // get element type
+            Type elementType = null;
+            var queryType = expression.Type.FindGenericType(typeof(IQueryable<>));
+            if (queryType != null)
+            {
+                elementType = queryType.GetGenericArguments()[0];
+            }
+
+            // append count expression if requested
+            if (elementType != null && context.Request.ShouldReturnCount)
+            {
+                expression = ExpressionHelpers.Count(expression, elementType);
+                elementType = null; // now return type is single int
+            }
+
             // execute query
-            QueryResult result = null;
+            QueryResult result;
             var executor = context.GetHookHandler<IQueryExecutor>();
             if (executor == null)
             {
                 throw new NotSupportedException();
             }
 
-            var queryType = expression.Type
-                .FindGenericType(typeof(IQueryable<>));
-            if (queryType != null)
+            if (elementType != null)
             {
                 var query = visitor.BaseQuery.Provider.CreateQuery(expression);
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteQueryAsync")
-                    .MakeGenericMethod(queryType.GetGenericArguments()[0]);
+                    .MakeGenericMethod(elementType);
                 var parameters = new object[]
                 {
                     context, query, cancellationToken
