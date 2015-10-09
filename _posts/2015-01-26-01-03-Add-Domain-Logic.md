@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "1.3 Add Domain Logic to an OData service"
+title: "1.3 Add Domain Logic to an OData service [<=0.3.0-beta2]"
 description: ""
 permalink: /Getting-Started-Part-2/
 category: "1. Getting Started"

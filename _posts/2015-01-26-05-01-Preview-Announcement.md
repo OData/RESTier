@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "5.1 Features supported in RESTier preview"
+title: "5.1 Release notes for RESTier 0.2.0-preview"
 description: ""
 category: "5. Announcements"
 ---
 
-Below are the features supported in the RESTier preview, as well as the limitations of the current version.
+Below are the features supported in the RESTier 0.2.0-preview, as well as the limitations of the current version.
 
 ### Easily build an OData V4 service
 

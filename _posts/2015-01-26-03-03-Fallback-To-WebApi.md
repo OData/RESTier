@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "3.3 Fallback to Web API for OData"
+title: "3.3 Fallback to Web API for OData [<=0.3.0-beta2]"
 description: ""
 category: "3. Extensions"
 ---

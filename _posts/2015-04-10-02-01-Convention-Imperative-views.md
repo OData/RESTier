@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.1 Imperative Views"
+title: "2.1 Imperative Views [<=0.3.0-beta2]"
 description: ""
 category: "2. Conventions"
 ---

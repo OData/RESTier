@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.2 Entity Set Filters"
+title: "2.2 Entity Set Filters [<=0.3.0-beta2]"
 description: ""
 category: "2. Conventions"
 ---

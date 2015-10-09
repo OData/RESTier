@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "3.2 Enable Multiple Controllers in RESTier"
+title: "3.2 Enable Multiple Controllers in RESTier [<=0.3.0-beta2]"
 description: ""
 category: "3. Extensions"
 ---
