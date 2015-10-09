@@ -16,4 +16,4 @@ Please refer to the [RESTier pages](http://odata.github.io/RESTier/).
 
 ## Call to action
 
-RESTier is fully open sourced (the source code will be opened pretty soon), please following the [contribution guide](https://github.com/OData/RESTier/wiki/Contribute-to-RESTier) to contribute / provide feedback to RESTier. 
+RESTier is fully open sourced, please following the [contribution guide](https://github.com/OData/RESTier/wiki/Contribute-to-RESTier) to contribute / provide feedback to RESTier. 
