@@ -43,6 +43,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         public async Task TestCustomersEntitySetCountQuery()
         {
             // The count should NOT include the entities that have been filtered out.
+            // In this case, only count of French customers should be returned.
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Customers/$count");
         }
 

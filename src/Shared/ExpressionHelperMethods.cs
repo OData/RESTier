@@ -18,7 +18,7 @@ namespace System.Linq.Expressions
             GenericMethodOf(_ => Queryable.Where(default(IQueryable<int>), default(Expression<Func<int, bool>>)));
 
         private static MethodInfo countMethod =
-            GenericMethodOf(_ => Queryable.Count(default(IQueryable<int>)));
+            GenericMethodOf(_ => Queryable.LongCount(default(IQueryable<int>)));
 
         public static MethodInfo QueryableSelectGeneric
         {
