@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -27,7 +28,8 @@ namespace Microsoft.Restier.Core.Query
             Ensure.NotNull(query, "query");
             if (!(query is QueryableSource))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(
+                    Resources.QueryableSourceCannotBeUsedAsQuery);
             }
 
             this.Expression = query.Expression;

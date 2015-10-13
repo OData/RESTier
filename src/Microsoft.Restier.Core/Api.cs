@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -10,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
@@ -324,8 +326,7 @@ namespace Microsoft.Restier.Core
             var elementType = Api.EnsureElementType(context, null, name);
             if (typeof(TElement) != elementType)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ElementTypeNotMatch);
             }
 
             return Api.SourceCore<TElement>(null, name, arguments);
@@ -418,8 +419,7 @@ namespace Microsoft.Restier.Core
             var elementType = Api.EnsureElementType(context, namespaceName, name);
             if (typeof(TElement) != elementType)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ElementTypeNotMatch);
             }
 
             return Api.SourceCore<TElement>(namespaceName, name, arguments);
@@ -690,8 +690,10 @@ namespace Microsoft.Restier.Core
 
             if (elementType == null)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new NotSupportedException();
+                throw new NotSupportedException(string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.ElementTypeNotFound,
+                    name));
             }
 
             return elementType;

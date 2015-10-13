@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -152,8 +153,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         var dic = value as IReadOnlyDictionary<string, object>;
                         if (dic == null)
                         {
-                            // TODO GitHubIssue#103 : Choose property error message for unknown type
-                            throw new NotSupportedException("Unsupported type for property:" + propertyPair.Key);
+                            throw new NotSupportedException(string.Format(
+                                CultureInfo.InvariantCulture,
+                                Resources.UnsupportedPropertyType,
+                                propertyPair.Key));
                         }
 
                         value = Activator.CreateInstance(type);
@@ -177,8 +180,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
                     var dic = value as IReadOnlyDictionary<string, object>;
                     if (dic == null)
                     {
-                        // TODO GitHubIssue#103 : Choose property error message for unknown type
-                        throw new NotSupportedException("Unsupported type for property:" + propertyPair.Key);
+                        throw new NotSupportedException(string.Format(
+                            CultureInfo.InvariantCulture,
+                            Resources.UnsupportedPropertyType,
+                            propertyPair.Key));
                     }
 
                     value = Activator.CreateInstance(propertyInfo.PropertyType);

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -51,7 +52,8 @@ namespace Microsoft.Restier.Core.Submit
             {
                 if (this.Result != null)
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(
+                        Resources.CannotSetChangeSetIfThereIsResult);
                 }
 
                 this.changeSet = value;

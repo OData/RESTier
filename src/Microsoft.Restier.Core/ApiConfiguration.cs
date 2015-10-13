@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core
@@ -73,12 +74,12 @@ namespace Microsoft.Restier.Core
 
             if (this.IsCommitted)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(Resources.ApiConfigurationIsCommitted);
             }
 
             if (!typeof(T).IsInterface)
             {
-                throw new InvalidOperationException("Should specify an interface type T for the handler.");
+                throw new InvalidOperationException(Resources.ShouldBeInterfaceType);
             }
 
             var delegateHandler = handler as IDelegateHookHandler<T>;

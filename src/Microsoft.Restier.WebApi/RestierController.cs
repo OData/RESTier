@@ -210,7 +210,7 @@ namespace Microsoft.Restier.WebApi
             UnboundActionPathSegment actionPathSegment = path.Segments.Last() as UnboundActionPathSegment;
             if (actionPathSegment == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(Resources.PostUnboundActionNotSupported);
             }
 
             ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);

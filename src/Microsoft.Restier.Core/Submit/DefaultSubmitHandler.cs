@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core.Submit
             var preparer = context.GetHookHandler<IChangeSetPreparer>();
             if (preparer == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
             }
 
             await preparer.PrepareAsync(context, cancellationToken);
@@ -280,7 +280,7 @@ namespace Microsoft.Restier.Core.Submit
             var executor = context.GetHookHandler<ISubmitExecutor>();
             if (executor == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(Resources.SubmitExecutorMissing);
             }
 
             context.Result = await executor.ExecuteSubmitAsync(context, cancellationToken);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
@@ -40,8 +41,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(expression, "expression");
             if (!typeof(IQueryable<TElement>).IsAssignableFrom(expression.Type))
             {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ExpressionMustBeQueryable);
             }
 
             return new QueryableSource<TElement>(expression);
@@ -53,8 +53,7 @@ namespace Microsoft.Restier.Core
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
             if (type == null)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ExpressionMustBeQueryable);
             }
 
             type = typeof(QueryableSource<>).MakeGenericType(
@@ -69,17 +68,17 @@ namespace Microsoft.Restier.Core
 
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
         }
 
         object IQueryProvider.Execute(Expression expression)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
         }
     }
 
@@ -100,7 +99,7 @@ namespace Microsoft.Restier.Core
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
@@ -26,8 +27,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(configuration, "configuration");
             if (!configuration.IsCommitted)
             {
-                // TODO GitHubIssue#24 : error message
-                throw new ArgumentException();
+                throw new ArgumentException(Resources.ApiConfigurationShouldBeCommitted);
             }
 
             this.Configuration = configuration;

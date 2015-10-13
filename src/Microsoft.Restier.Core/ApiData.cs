@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.Core
         public static IQueryable<TElement> Source<TElement>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace Microsoft.Restier.Core
         public static IQueryable<TElement> Source<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace Microsoft.Restier.Core
         public static IEnumerable<TElement> Results<TElement>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
 
         /// <summary>
@@ -111,7 +112,7 @@ namespace Microsoft.Restier.Core
         public static TResult Result<TResult>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
 
         /// <summary>
@@ -135,7 +136,7 @@ namespace Microsoft.Restier.Core
         public static IEnumerable<TElement> Results<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
 
         /// <summary>
@@ -159,7 +160,7 @@ namespace Microsoft.Restier.Core
         public static TResult Result<TResult>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
 
         /// <summary>
@@ -181,7 +182,7 @@ namespace Microsoft.Restier.Core
         public static TResult Value<TResult>(
             object source, string propertyName)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
         }
     }
 }

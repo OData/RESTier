@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Core.Query
             var executor = context.GetHookHandler<IQueryExecutor>();
             if (executor == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(Resources.QueryExecutorMissing);
             }
 
             if (elementType != null)
@@ -213,9 +213,8 @@ namespace Microsoft.Restier.Core.Query
                 {
                     if (!visited.Type.IsAssignableFrom(expanded.Type))
                     {
-                        // Expander cannot change expression type
-                        // TODO GitHubIssue#24 : error message
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException(
+                            Resources.ExpanderCannotChangeExpressionType);
                     }
 
                     this.context.PushVisitedNode(null);
@@ -248,9 +247,8 @@ namespace Microsoft.Restier.Core.Query
                     {
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
-                            // Filter cannot change expression type
-                            // TODO GitHubIssue#24 : error message
-                            throw new InvalidOperationException();
+                            throw new InvalidOperationException(
+                                Resources.FilterCannotChangeExpressionType);
                         }
 
                         this.processedExpressions.Add(visited, processed);
@@ -286,14 +284,14 @@ namespace Microsoft.Restier.Core.Query
                 if (this.sourcer == null)
                 {
                     // Missing sourcer
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(Resources.QuerySourcerMissing);
                 }
 
                 node = this.sourcer.Source(this.context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(Resources.SourceExpressionMissing);
                 }
 
                 if (this.BaseQuery == null)
@@ -305,13 +303,13 @@ namespace Microsoft.Restier.Core.Query
                     var constant = node as ConstantExpression;
                     if (constant == null)
                     {
-                        throw new NotSupportedException();
+                        throw new NotSupportedException(Resources.OriginalExpressionShouldBeConstant);
                     }
 
                     this.BaseQuery = constant.Value as IQueryable;
                     if (this.BaseQuery == null)
                     {
-                        throw new NotSupportedException();
+                        throw new NotSupportedException(Resources.OriginalExpressionShouldBeQueryable);
                     }
 
                     node = this.BaseQuery.Expression;
