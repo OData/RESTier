@@ -159,8 +159,8 @@
   <data name="PathSegmentNotSupported" xml:space="preserve">
     <value>Path segment not supported: {0}</value>
   </data>
-  <data name="PostUnboundActionNotSupported" xml:space="preserve">
-    <value>Post unbound action is not supported by `RestierController`.</value>
+  <data name="PostToUnboundActionNotSupported" xml:space="preserve">
+    <value>Post to unbound action is not supported by `RestierController`.</value>
   </data>
   <data name="ResourceNotFound" xml:space="preserve">
     <value>The resource you requested is not found.</value>

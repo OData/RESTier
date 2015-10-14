@@ -129,8 +129,8 @@
   <data name="CannotSetChangeSetIfThereIsResult" xml:space="preserve">
     <value>The change set cannot be set if there is already a result.</value>
   </data>
-  <data name="CannotSetResultsSourceIfThereIsError" xml:space="preserve">
-    <value>The results source cannot be set if there is error.</value>
+  <data name="CannotSetResultsSourceIfThereIsAnyError" xml:space="preserve">
+    <value>The results source cannot be set if there is any error.</value>
   </data>
   <data name="CannotSetTotalCountIfThereIsNoResult" xml:space="preserve">
     <value>The total count cannot be set if there is no result yet.</value>

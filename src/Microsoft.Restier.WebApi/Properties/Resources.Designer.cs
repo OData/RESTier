@@ -187,11 +187,11 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Post unbound action is not supported by `RestierController`..
+        ///   Looks up a localized string similar to Post to unbound action is not supported by `RestierController`..
         /// </summary>
-        internal static string PostUnboundActionNotSupported {
+        internal static string PostToUnboundActionNotSupported {
             get {
-                return ResourceManager.GetString("PostUnboundActionNotSupported", resourceCulture);
+                return ResourceManager.GetString("PostToUnboundActionNotSupported", resourceCulture);
             }
         }
         

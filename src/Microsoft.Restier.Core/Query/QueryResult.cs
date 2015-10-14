@@ -92,7 +92,7 @@ namespace Microsoft.Restier.Core.Query
                 if (this.error != null)
                 {
                     throw new InvalidOperationException(
-                        Resources.CannotSetResultsSourceIfThereIsError);
+                        Resources.CannotSetResultsSourceIfThereIsAnyError);
                 }
 
                 this.resultsSource = value;

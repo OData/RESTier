@@ -97,11 +97,11 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The results source cannot be set if there is error..
+        ///   Looks up a localized string similar to The results source cannot be set if there is any error..
         /// </summary>
-        internal static string CannotSetResultsSourceIfThereIsError {
+        internal static string CannotSetResultsSourceIfThereIsAnyError {
             get {
-                return ResourceManager.GetString("CannotSetResultsSourceIfThereIsError", resourceCulture);
+                return ResourceManager.GetString("CannotSetResultsSourceIfThereIsAnyError", resourceCulture);
             }
         }
         
