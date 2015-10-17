@@ -1,7 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Metadata;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
@@ -10,13 +16,7 @@ using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
-using Microsoft.Data.Entity.Infrastructure;
 
 namespace Microsoft.Restier.EntityFramework.Model
 {
@@ -53,9 +53,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// A task that represents the asynchronous
         /// operation whose result is the base model.
         /// </returns>
-        public Task<EdmModel> ProduceModelAsync(
-            ModelContext context,
-            CancellationToken cancellationToken)
+        public Task<EdmModel> ProduceModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             var model = new EdmModel();
             var domainContext = context.DomainContext;
@@ -81,8 +79,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
 
             var entityTypes = efModel.EntityTypes;
-            var entityContainer = new EdmEntityContainer(
-                namespaceName, "Container");
+            var entityContainer = new EdmEntityContainer(namespaceName, "Container");
 
             var dbSetProperties = dbContext.GetType().
                 GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).
@@ -97,8 +94,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     continue;
                 }
                 List<EdmStructuralProperty> concurrencyProperties;
-                var entityType = ModelProducer.CreateEntityType(
-                    efModel, efEntityType, model, out concurrencyProperties);
+                var entityType = ModelProducer.CreateEntityType(efModel, efEntityType, model, out concurrencyProperties);
                 model.AddElement(entityType);
                 elementMap.Add(efEntityType, entityType);
 
@@ -117,10 +113,8 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 foreach (var navi in efEntityType.GetNavigations())
                 {
-                    ModelProducer.AddNavigationProperties(
-                        efModel, navi, model, elementMap);
-                    ModelProducer.AddNavigationPropertyBindings(
-                        efModel, navi, entityContainer, elementMap);
+                    ModelProducer.AddNavigationProperties(efModel, navi, model, elementMap);
+                    ModelProducer.AddNavigationPropertyBindings(efModel, navi, entityContainer, elementMap);
                 }
             }
 
@@ -135,8 +129,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             EdmModel model, out List<EdmStructuralProperty> concurrencyProperties)
         {
             // TODO GitHubIssue#36 : support complex and entity inheritance
-            var entityType = new EdmEntityType(
-                efEntityType.ClrType.Namespace, efEntityType.ClrType.Name);
+            var entityType = new EdmEntityType(efEntityType.ClrType.Namespace, efEntityType.ClrType.Name);
             concurrencyProperties = null;
             foreach (var efProperty in efEntityType.GetProperties())
             {
@@ -144,17 +137,16 @@ namespace Microsoft.Restier.EntityFramework.Model
                 if (type != null)
                 {
                     string defaultValue = null;
-                    if (efProperty.Relational().DefaultValue != null)
+                    if (efProperty.SqlServer().DefaultValue != null)
                     {
-                        defaultValue = efProperty.Relational().DefaultExpression;
+						defaultValue = efProperty.SqlServer().DefaultValue.ToString();
                     }
                     var property = entityType.AddStructuralProperty(
                         efProperty.Name, type, defaultValue,
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
 
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-                    if (efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Computed ||
-                        efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Identity)
+                    if (efProperty.StoreGeneratedAlways)
                     {
                         SetComputedAnnotation(model, property);
                     }
@@ -186,8 +178,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             model.SetVocabularyAnnotation(annotation);
         }
 
-        private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(
-            IProperty efProperty)
+        private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(IProperty efProperty)
         {
             var kind = EdmPrimitiveTypeKind.None;
             var propertyType = efProperty.ClrType;
@@ -281,7 +272,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 var efEnd = naviPair[i];
                 if (efEnd == null) continue;
 
-                var efEntityType = efEnd.EntityType;
+                var efEntityType = efEnd.DeclaringEntityType;
                 if (!elementMap.ContainsKey(efEntityType))
                 {
                     continue;
@@ -326,7 +317,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
             if (navPropertyInfos[0] != null && navPropertyInfos[1] == null)
             {
-                var efEntityType = navi.EntityType;
+                var efEntityType = navi.DeclaringEntityType;
                 var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[0].Name) == null)
                 {
@@ -335,7 +326,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
             if (navPropertyInfos[0] != null && navPropertyInfos[1] != null)
             {
-                var efEntityType = navi.EntityType;
+                var efEntityType = navi.DeclaringEntityType;
                 var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[0].Name) == null)
                 {
@@ -358,7 +349,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 if (naviPair[i] == null) continue;
 
-                var efEntityType = naviPair[i].EntityType;
+                var efEntityType = naviPair[i].DeclaringEntityType;
                 if (!elementMap.ContainsKey(efEntityType))
                 {
                     continue;
@@ -378,8 +369,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
         }
 
-        private static EdmMultiplicity GetEdmMultiplicity(
-            INavigation navi)
+        private static EdmMultiplicity GetEdmMultiplicity(INavigation navi)
         {
             if (navi.IsCollection())
             {
