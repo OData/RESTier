@@ -60,7 +60,11 @@ namespace Microsoft.Restier.EntityFramework.Model
             if (property != null)
             {
                 var type = property.PropertyType;
+#if EF7
+                var genericType = type.FindGenericType(typeof(DbSet<>));
+#else
                 var genericType = type.FindGenericType(typeof(IDbSet<>));
+#endif
                 if (genericType != null)
                 {
                     relevantType = genericType.GetGenericArguments()[0];
