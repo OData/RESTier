@@ -146,20 +146,17 @@ namespace Microsoft.Restier.EntityFramework.Model
                 {
                     string defaultValue = null;
 
-                    // TODO GitHubIssue#245: Fix EF7 project related issues
-                    /*
-                    if (efProperty.Relational().DefaultValue != null)
+                    if (efProperty.SqlServer().DefaultValue != null)
                     {
-                        defaultValue = efProperty.Relational().DefaultExpression;
+                        defaultValue = efProperty.SqlServer().DefaultValue.ToString();
                     }
-                    */
+
                     var property = entityType.AddStructuralProperty(
                         efProperty.Name, type, defaultValue,
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
-                    /*
+
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-                    if (efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Computed ||
-                        efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Identity)
+                    if (efProperty.StoreGeneratedAlways)
                     {
                         SetComputedAnnotation(model, property);
                     }
@@ -169,7 +166,6 @@ namespace Microsoft.Restier.EntityFramework.Model
                         concurrencyProperties = concurrencyProperties ?? new List<EdmStructuralProperty>();
                         concurrencyProperties.Add(property);
                     }
-                    */
                 }
             }
 

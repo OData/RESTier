@@ -86,7 +86,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Category>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Categories");
+                entityBuilder.ToTable("Categories");
                 entityBuilder.Property(e => e.CategoryName).IsRequired().HasMaxLength(15);
                 entityBuilder.Property(e => e.Description).HasSqlServerColumnType("ntext");
                 entityBuilder.Property(e => e.Picture).HasSqlServerColumnType("image");
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Contact>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Contacts");
+                entityBuilder.ToTable("Contacts");
                 entityBuilder.Property(e => e.HomePage).HasSqlServerColumnType("ntext");
                 entityBuilder.Property(e => e.Photo).HasSqlServerColumnType("image");
                 //entityBuilder.Key(e => e.ContactID);
@@ -105,14 +105,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Customer>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Customers");
+                entityBuilder.ToTable("Customers");
                 entityBuilder.Property(e => e.CompanyName).IsRequired().HasMaxLength(40);
                 entityBuilder.HasKey(e => e.CustomerID);
             });
 
             modelBuilder.Entity<Employee>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Employees");
+                entityBuilder.ToTable("Employees");
                 entityBuilder.Property(e => e.LastName).IsRequired().HasMaxLength(20);
                 entityBuilder.Property(e => e.FirstName).IsRequired().HasMaxLength(10);
                 entityBuilder.HasMany(e=>e.Employees1).WithOne(e=>e.Employee1).Required(false).ForeignKey(e=>e.ReportsTo);
@@ -120,13 +120,13 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Order>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Orders");
+                entityBuilder.ToTable("Orders");
                 entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Order Details");
+                entityBuilder.ToTable("Order Details");
                 entityBuilder.Property(e => e.UnitPrice).HasSqlServerColumnType("money");
                 entityBuilder.HasKey(e => new
                 {
@@ -137,7 +137,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Product>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Products");
+                entityBuilder.ToTable("Products");
                 entityBuilder.Property(e => e.UnitPrice).HasSqlServerColumnType("money");
                 entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Product).Required();
             });
@@ -150,7 +150,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Shipper>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Shippers");
+                entityBuilder.ToTable("Shippers");
                 entityBuilder.HasMany(e => e.Orders).WithOne(e => e.Shipper).ForeignKey(e => e.ShipVia).Required(false);
             });
 
@@ -160,7 +160,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
             modelBuilder.Entity<Territory>(entityBuilder =>
             {
-                entityBuilder.ToSqlServerTable("Territories");
+                entityBuilder.ToTable("Territories");
             });
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
