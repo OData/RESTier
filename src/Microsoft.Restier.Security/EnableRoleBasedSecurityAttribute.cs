@@ -8,23 +8,23 @@ namespace Microsoft.Restier.Security
 {
     /// <summary>
     /// Specifies that principal-supplied role-based
-    /// security should be enabled for a domain.
+    /// security should be enabled for an API.
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class EnableRoleBasedSecurityAttribute : DomainParticipantAttribute
+    public sealed class EnableRoleBasedSecurityAttribute : ApiConfiguratorAttribute
     {
         /// <summary>
-        /// Configures a domain configuration.
+        /// Configures an API configuration.
         /// </summary>
         /// <param name="configuration">
-        /// A domain configuration.
+        /// An API configuration.
         /// </param>
         /// <param name="type">
-        /// The domain type on which this attribute was placed.
+        /// The API type on which this attribute was placed.
         /// </param>
         public override void Configure(
-            DomainConfiguration configuration,
+            ApiConfiguration configuration,
             Type type)
         {
             configuration.EnableRoleBasedSecurity();

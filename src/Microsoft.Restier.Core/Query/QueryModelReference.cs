@@ -28,16 +28,16 @@ namespace Microsoft.Restier.Core.Query
     }
 
     /// <summary>
-    /// Represents a reference to domain data in terms of a model.
+    /// Represents a reference to API data in terms of a model.
     /// </summary>
-    public class DomainDataReference : QueryModelReference
+    public class ApiDataReference : QueryModelReference
     {
         private readonly QueryContext context;
         private readonly string namespaceName;
         private readonly string name;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainDataReference" /> class.
+        /// Initializes a new instance of the <see cref="ApiDataReference" /> class.
         /// </summary>
         /// <param name="context">
         /// A query context.
@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of an entity set, singleton or function import.
         /// </param>
-        public DomainDataReference(QueryContext context, string name)
+        public ApiDataReference(QueryContext context, string name)
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(name, "name");
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DomainDataReference" /> class referring to a function.
+        /// Initializes a new instance of the <see cref="ApiDataReference" /> class referring to a function.
         /// </summary>
         /// <param name="context">
         /// A query context.
@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of a function.
         /// </param>
-        public DomainDataReference(
+        public ApiDataReference(
             QueryContext context,
             string namespaceName,
             string name)
@@ -131,7 +131,7 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
-        /// Gets the element representing the domain data.
+        /// Gets the element representing the API data.
         /// </summary>
         public IEdmElement Element
         {

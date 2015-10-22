@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -90,7 +91,8 @@ namespace Microsoft.Restier.Core.Query
             {
                 if (this.error != null)
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(
+                        Resources.CannotSetResultsSourceIfThereIsAnyError);
                 }
 
                 this.resultsSource = value;
@@ -139,7 +141,8 @@ namespace Microsoft.Restier.Core.Query
             {
                 if (this.results == null)
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(
+                        Resources.CannotSetTotalCountIfThereIsNoResult);
                 }
 
                 Ensure.NotNull(value, "value");

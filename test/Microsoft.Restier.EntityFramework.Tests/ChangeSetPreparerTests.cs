@@ -18,7 +18,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
         public async Task ComplexTypeUpdate()
         {
             // Arrange
-            var libraryDomain = new LibraryDomain();
+            var libraryApi = new LibraryApi();
             var entry = new DataModificationEntry(
                 "Readers",
                 "Person",
@@ -26,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
                 new Dictionary<string, object>(),
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });
             var changeSet = new ChangeSet(new[] { entry });
-            var sc = new SubmitContext(libraryDomain.Context, changeSet);
+            var sc = new SubmitContext(libraryApi.Context, changeSet);
 
             // Act
             await ChangeSetPreparer.Instance.PrepareAsync(sc, CancellationToken.None);

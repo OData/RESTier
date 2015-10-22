@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace System
@@ -34,7 +37,7 @@ namespace System
             }
 
             // If the type conforms the given generic definition, no further check required.
-            if (type.HasGenericDefinition(definition))
+            if (type.IsGenericDefinition(definition))
             {
                 return type;
             }
@@ -44,7 +47,7 @@ namespace System
             {
                 foreach (var interfaceType in type.GetInterfaces())
                 {
-                    if (interfaceType.HasGenericDefinition(definition))
+                    if (interfaceType.IsGenericDefinition(definition))
                     {
                         return interfaceType;
                     }
@@ -58,7 +61,7 @@ namespace System
                 // no null check for the type required, as we are sure it is not an interface type
                 while (type != typeof(object))
                 {
-                    if (type.HasGenericDefinition(definition))
+                    if (type.IsGenericDefinition(definition))
                     {
                         return type;
                     }
@@ -75,7 +78,20 @@ namespace System
             return type.GetMethod(methodName, QualifiedMethodBindingFlags);
         }
 
-        private static bool HasGenericDefinition(this Type type, Type definition)
+        public static bool TryGetElementType(this Type type, out Type elementType)
+        {
+            var interfaceType = type.FindGenericType(typeof(IEnumerable<>));
+            if (interfaceType != null)
+            {
+                elementType = interfaceType.GetGenericArguments()[0];
+                return true;
+            }
+
+            elementType = null;
+            return false;
+        }
+
+        private static bool IsGenericDefinition(this Type type, Type definition)
         {
             return type.IsGenericType &&
                    type.GetGenericTypeDefinition() == definition;

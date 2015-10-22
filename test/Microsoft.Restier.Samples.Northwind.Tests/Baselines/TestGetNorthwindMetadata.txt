@@ -2,25 +2,6 @@
 <edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
   <edmx:DataServices>
     <Schema Namespace="Microsoft.Restier.Samples.Northwind.Models" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-      <EntityType Name="Alphabetical_list_of_product">
-        <Key>
-          <PropertyRef Name="ProductID" />
-          <PropertyRef Name="ProductName" />
-          <PropertyRef Name="Discontinued" />
-          <PropertyRef Name="CategoryName" />
-        </Key>
-        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="Discontinued" Type="Edm.Boolean" Nullable="false" />
-        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
-        <Property Name="SupplierID" Type="Edm.Int32" />
-        <Property Name="CategoryID" Type="Edm.Int32" />
-        <Property Name="QuantityPerUnit" Type="Edm.String" MaxLength="20" />
-        <Property Name="UnitPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
-        <Property Name="UnitsInStock" Type="Edm.Int16" />
-        <Property Name="UnitsOnOrder" Type="Edm.Int16" />
-        <Property Name="ReorderLevel" Type="Edm.Int16" />
-      </EntityType>
       <EntityType Name="Category">
         <Key>
           <PropertyRef Name="CategoryID" />
@@ -201,13 +182,6 @@
         <Property Name="HomePage" Type="Edm.String" MaxLength="max" />
         <NavigationProperty Name="Products" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" Partner="Supplier" />
       </EntityType>
-      <EntityType Name="Category_Sales_for_1997">
-        <Key>
-          <PropertyRef Name="CategoryName" />
-        </Key>
-        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
-        <Property Name="CategorySales" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
       <EntityType Name="Contact">
         <Key>
           <PropertyRef Name="ContactID" />
@@ -229,202 +203,27 @@
         <Property Name="PhotoPath" Type="Edm.String" MaxLength="255" />
         <Property Name="Photo" Type="Edm.Binary" MaxLength="max" />
       </EntityType>
-      <EntityType Name="Current_Product_List">
-        <Key>
-          <PropertyRef Name="ProductID" />
-          <PropertyRef Name="ProductName" />
-        </Key>
-        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-      </EntityType>
-      <EntityType Name="Customer_and_Suppliers_by_City">
-        <Key>
-          <PropertyRef Name="CompanyName" />
-          <PropertyRef Name="Relationship" />
-        </Key>
-        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="Relationship" Type="Edm.String" Nullable="false" MaxLength="9" Unicode="false" />
-        <Property Name="City" Type="Edm.String" MaxLength="15" />
-        <Property Name="ContactName" Type="Edm.String" MaxLength="30" />
-      </EntityType>
-      <EntityType Name="Invoice">
-        <Key>
-          <PropertyRef Name="CustomerName" />
-          <PropertyRef Name="Salesperson" />
-          <PropertyRef Name="OrderID" />
-          <PropertyRef Name="ShipperName" />
-          <PropertyRef Name="ProductID" />
-          <PropertyRef Name="ProductName" />
-          <PropertyRef Name="UnitPrice" />
-          <PropertyRef Name="Quantity" />
-          <PropertyRef Name="Discount" />
-        </Key>
-        <Property Name="CustomerName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="Salesperson" Type="Edm.String" Nullable="false" MaxLength="31" />
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ShipperName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="UnitPrice" Type="Edm.Decimal" Nullable="false" Precision="19" Scale="4" />
-        <Property Name="Quantity" Type="Edm.Int16" Nullable="false" />
-        <Property Name="Discount" Type="Edm.Single" Nullable="false" />
-        <Property Name="ShipName" Type="Edm.String" MaxLength="40" />
-        <Property Name="ShipAddress" Type="Edm.String" MaxLength="60" />
-        <Property Name="ShipCity" Type="Edm.String" MaxLength="15" />
-        <Property Name="ShipRegion" Type="Edm.String" MaxLength="15" />
-        <Property Name="ShipPostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="ShipCountry" Type="Edm.String" MaxLength="15" />
-        <Property Name="CustomerID" Type="Edm.String" MaxLength="5" />
-        <Property Name="Address" Type="Edm.String" MaxLength="60" />
-        <Property Name="City" Type="Edm.String" MaxLength="15" />
-        <Property Name="Region" Type="Edm.String" MaxLength="15" />
-        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
-        <Property Name="OrderDate" Type="Edm.Date" />
-        <Property Name="RequiredDate" Type="Edm.Date" />
-        <Property Name="ShippedDate" Type="Edm.Date" />
-        <Property Name="ExtendedPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
-        <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Order_Details_Extended">
-        <Key>
-          <PropertyRef Name="OrderID" />
-          <PropertyRef Name="ProductID" />
-          <PropertyRef Name="ProductName" />
-          <PropertyRef Name="UnitPrice" />
-          <PropertyRef Name="Quantity" />
-          <PropertyRef Name="Discount" />
-        </Key>
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ProductID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="UnitPrice" Type="Edm.Decimal" Nullable="false" Precision="19" Scale="4" />
-        <Property Name="Quantity" Type="Edm.Int16" Nullable="false" />
-        <Property Name="Discount" Type="Edm.Single" Nullable="false" />
-        <Property Name="ExtendedPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Order_Subtotal">
-        <Key>
-          <PropertyRef Name="OrderID" />
-        </Key>
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="Subtotal" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Orders_Qry">
-        <Key>
-          <PropertyRef Name="OrderID" />
-          <PropertyRef Name="CompanyName" />
-        </Key>
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="CustomerID" Type="Edm.String" MaxLength="5" />
-        <Property Name="EmployeeID" Type="Edm.Int32" />
-        <Property Name="OrderDate" Type="Edm.Date" />
-        <Property Name="RequiredDate" Type="Edm.Date" />
-        <Property Name="ShippedDate" Type="Edm.Date" />
-        <Property Name="ShipVia" Type="Edm.Int32" />
-        <Property Name="Freight" Type="Edm.Decimal" Precision="19" Scale="4" />
-        <Property Name="ShipName" Type="Edm.String" MaxLength="40" />
-        <Property Name="ShipAddress" Type="Edm.String" MaxLength="60" />
-        <Property Name="ShipCity" Type="Edm.String" MaxLength="15" />
-        <Property Name="ShipRegion" Type="Edm.String" MaxLength="15" />
-        <Property Name="ShipPostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="ShipCountry" Type="Edm.String" MaxLength="15" />
-        <Property Name="Address" Type="Edm.String" MaxLength="60" />
-        <Property Name="City" Type="Edm.String" MaxLength="15" />
-        <Property Name="Region" Type="Edm.String" MaxLength="15" />
-        <Property Name="PostalCode" Type="Edm.String" MaxLength="10" />
-        <Property Name="CountryRegion" Type="Edm.String" MaxLength="15" />
-      </EntityType>
-      <EntityType Name="Product_Sales_for_1997">
-        <Key>
-          <PropertyRef Name="CategoryName" />
-          <PropertyRef Name="ProductName" />
-        </Key>
-        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="ProductSales" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Products_Above_Average_Price">
-        <Key>
-          <PropertyRef Name="ProductName" />
-        </Key>
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="UnitPrice" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Products_by_Category">
-        <Key>
-          <PropertyRef Name="CategoryName" />
-          <PropertyRef Name="ProductName" />
-          <PropertyRef Name="Discontinued" />
-        </Key>
-        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="Discontinued" Type="Edm.Boolean" Nullable="false" />
-        <Property Name="QuantityPerUnit" Type="Edm.String" MaxLength="20" />
-        <Property Name="UnitsInStock" Type="Edm.Int16" />
-      </EntityType>
-      <EntityType Name="Sales_by_Category">
-        <Key>
-          <PropertyRef Name="CategoryID" />
-          <PropertyRef Name="CategoryName" />
-          <PropertyRef Name="ProductName" />
-        </Key>
-        <Property Name="CategoryID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="CategoryName" Type="Edm.String" Nullable="false" MaxLength="15" />
-        <Property Name="ProductName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="ProductSales" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Sales_Totals_by_Amount">
-        <Key>
-          <PropertyRef Name="OrderID" />
-          <PropertyRef Name="CompanyName" />
-        </Key>
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="CompanyName" Type="Edm.String" Nullable="false" MaxLength="40" />
-        <Property Name="SaleAmount" Type="Edm.Decimal" Precision="19" Scale="4" />
-        <Property Name="ShippedDate" Type="Edm.Date" />
-      </EntityType>
-      <EntityType Name="Summary_of_Sales_by_Quarter">
-        <Key>
-          <PropertyRef Name="OrderID" />
-        </Key>
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ShippedDate" Type="Edm.Date" />
-        <Property Name="Subtotal" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="Summary_of_Sales_by_Year">
-        <Key>
-          <PropertyRef Name="OrderID" />
-        </Key>
-        <Property Name="OrderID" Type="Edm.Int32" Nullable="false" />
-        <Property Name="ShippedDate" Type="Edm.Date" />
-        <Property Name="Subtotal" Type="Edm.Decimal" Precision="19" Scale="4" />
-      </EntityType>
-      <EntityType Name="sysdiagram">
-        <Key>
-          <PropertyRef Name="diagram_id" />
-        </Key>
-        <Property Name="diagram_id" Type="Edm.Int32" Nullable="false" />
-        <Property Name="name" Type="Edm.String" Nullable="false" MaxLength="128" />
-        <Property Name="principal_id" Type="Edm.Int32" Nullable="false" />
-        <Property Name="version" Type="Edm.Int32" />
-        <Property Name="definition" Type="Edm.Binary" MaxLength="max" />
-      </EntityType>
       <Function Name="MostExpensive" IsBound="true">
-        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" Nullable="false" />
+        <Parameter Name="bindingParameter" Type="Collection(Microsoft.Restier.Samples.Northwind.Models.Product)" />
         <ReturnType Type="Edm.Double" Nullable="false" />
       </Function>
       <Action Name="IncreasePrice" IsBound="true">
-        <Parameter Name="bindingParameter" Type="Microsoft.Restier.Samples.Northwind.Models.Product" Nullable="false" />
+        <Parameter Name="bindingParameter" Type="Microsoft.Restier.Samples.Northwind.Models.Product" />
         <Parameter Name="diff" Type="Edm.Int32" Nullable="false" />
       </Action>
       <Action Name="ResetDataSource" />
       <EntityContainer Name="NorthwindContext">
+        <EntitySet Name="Categories" EntityType="Microsoft.Restier.Samples.Northwind.Models.Category">
+          <NavigationPropertyBinding Path="Products" Target="Products" />
+        </EntitySet>
         <EntitySet Name="Products" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product">
           <NavigationPropertyBinding Path="Category" Target="Categories" />
           <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
           <NavigationPropertyBinding Path="Supplier" Target="Suppliers" />
+        </EntitySet>
+        <EntitySet Name="Order_Details" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order_Detail">
+          <NavigationPropertyBinding Path="Order" Target="Orders" />
+          <NavigationPropertyBinding Path="Product" Target="Products" />
         </EntitySet>
         <EntitySet Name="Orders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order">
           <NavigationPropertyBinding Path="Customer" Target="Customers" />
@@ -436,18 +235,29 @@
           <NavigationPropertyBinding Path="CustomerDemographics" Target="CustomerDemographics" />
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
         </EntitySet>
+        <EntitySet Name="CustomerDemographics" EntityType="Microsoft.Restier.Samples.Northwind.Models.CustomerDemographic">
+          <NavigationPropertyBinding Path="Customers" Target="Customers" />
+        </EntitySet>
         <EntitySet Name="Employees" EntityType="Microsoft.Restier.Samples.Northwind.Models.Employee">
           <NavigationPropertyBinding Path="Employees1" Target="Employees" />
           <NavigationPropertyBinding Path="Employee1" Target="Employees" />
           <NavigationPropertyBinding Path="Orders" Target="Orders" />
           <NavigationPropertyBinding Path="Territories" Target="Territories" />
         </EntitySet>
+        <EntitySet Name="Territories" EntityType="Microsoft.Restier.Samples.Northwind.Models.Territory">
+          <NavigationPropertyBinding Path="Region" Target="Regions" />
+          <NavigationPropertyBinding Path="Employees" Target="Employees" />
+        </EntitySet>
         <EntitySet Name="Regions" EntityType="Microsoft.Restier.Samples.Northwind.Models.Region">
           <NavigationPropertyBinding Path="Territories" Target="Territories" />
+        </EntitySet>
+        <EntitySet Name="Shippers" EntityType="Microsoft.Restier.Samples.Northwind.Models.Shipper">
+          <NavigationPropertyBinding Path="Orders" Target="Orders" />
         </EntitySet>
         <EntitySet Name="Suppliers" EntityType="Microsoft.Restier.Samples.Northwind.Models.Supplier">
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>
+        <EntitySet Name="Contacts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Contact" />
         <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product" />
         <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order" />
         <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />

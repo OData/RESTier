@@ -117,6 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ApiConfigurationIsCommitted" xml:space="preserve">
+    <value>The specified `ApiConfiguration` is committed thus cannot be modified.</value>
+  </data>
+  <data name="ApiConfigurationShouldBeCommitted" xml:space="preserve">
+    <value>The specified `ApiConfiguration` should already be committed.</value>
+  </data>
+  <data name="CallQueryableSourceNotSupported" xml:space="preserve">
+    <value>Calling the methods in 'QueryableSource' or 'QueryableSource&lt;T&gt;' is not supported.</value>
+  </data>
+  <data name="CannotSetChangeSetIfThereIsResult" xml:space="preserve">
+    <value>The change set cannot be set if there is already a result.</value>
+  </data>
+  <data name="CannotSetResultsSourceIfThereIsAnyError" xml:space="preserve">
+    <value>The results source cannot be set if there is any error.</value>
+  </data>
+  <data name="CannotSetTotalCountIfThereIsNoResult" xml:space="preserve">
+    <value>The total count cannot be set if there is no result yet.</value>
+  </data>
+  <data name="ChangeSetPreparerMissing" xml:space="preserve">
+    <value>Change set preparer is missing.</value>
+  </data>
   <data name="DataModificationMustBeCUD" xml:space="preserve">
     <value>A DataModification must be either: IsNew, IsUpdate, or IsDelete.</value>
   </data>
@@ -126,11 +147,26 @@
   <data name="DataModificationRequiresEntityKey" xml:space="preserve">
     <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
   </data>
-  <data name="EdmTypeNotSupported" xml:space="preserve">
-    <value>{0} is not a supported EDM type.</value>
+  <data name="DoNotCallApiDataDirectly" xml:space="preserve">
+    <value>Do not call the methods in 'ApiData' directly.</value>
+  </data>
+  <data name="ElementTypeNotFound" xml:space="preserve">
+    <value>Element type cannot be found for '{0}'.</value>
+  </data>
+  <data name="ElementTypeNotMatch" xml:space="preserve">
+    <value>Element type not match.</value>
   </data>
   <data name="ErrorInVerifyingNoEntityHasChanged" xml:space="preserve">
     <value>Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.</value>
+  </data>
+  <data name="ExpanderCannotChangeExpressionType" xml:space="preserve">
+    <value>Expander cannot change the expression type.</value>
+  </data>
+  <data name="ExpressionMustBeQueryable" xml:space="preserve">
+    <value>Expression must be queryable.</value>
+  </data>
+  <data name="FilterCannotChangeExpressionType" xml:space="preserve">
+    <value>Filter cannot change the expression type.</value>
   </data>
   <data name="InspectionFailed" xml:space="preserve">
     <value>Inspection failed.</value>
@@ -149,6 +185,33 @@
   </data>
   <data name="NoPermissionToUpdateEntity" xml:space="preserve">
     <value>The current user does not have permission to update entities in the EntitySet '{0}'.</value>
+  </data>
+  <data name="NotSupportedType" xml:space="preserve">
+    <value>Not supported type: {0}.</value>
+  </data>
+  <data name="OriginalExpressionShouldBeConstant" xml:space="preserve">
+    <value>Original query expression should be constant expression.</value>
+  </data>
+  <data name="OriginalExpressionShouldBeQueryable" xml:space="preserve">
+    <value>Original query expression should contain a value which is queryable.</value>
+  </data>
+  <data name="QueryableSourceCannotBeUsedAsQuery" xml:space="preserve">
+    <value>'QueryableSource' cannot be used as query.</value>
+  </data>
+  <data name="QueryExecutorMissing" xml:space="preserve">
+    <value>Query executor is missing.</value>
+  </data>
+  <data name="QuerySourcerMissing" xml:space="preserve">
+    <value>Query expression sourcer is missing.</value>
+  </data>
+  <data name="ShouldBeInterfaceType" xml:space="preserve">
+    <value>Should specify an interface type T for the handler.</value>
+  </data>
+  <data name="SourceExpressionMissing" xml:space="preserve">
+    <value>Expression returned by sourcer is missing.</value>
+  </data>
+  <data name="SubmitExecutorMissing" xml:space="preserve">
+    <value>Submit executor is missing.</value>
   </data>
   <data name="ValidationFailsTheOperation" xml:space="preserve">
     <value>The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information.</value>

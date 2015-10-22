@@ -32,6 +32,13 @@ namespace System.Linq.Expressions
             return whereMethod.Invoke(null, new object[] { query, where }) as IQueryable;
         }
 
+        public static Expression Count(Expression queryExpression, Type elementType)
+        {
+            MethodInfo countMethod =
+                ExpressionHelperMethods.QueryableCountGeneric.MakeGenericMethod(elementType);
+            return Expression.Call(countMethod, queryExpression);
+        }
+
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
             Type type = enumerableType.FindGenericType(typeof(IEnumerable<>));

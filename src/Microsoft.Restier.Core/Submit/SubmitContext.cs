@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -17,14 +18,14 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Initializes a new instance of the <see cref="SubmitContext" /> class.
         /// </summary>
-        /// <param name="domainContext">
-        /// A domain context.
+        /// <param name="apiContext">
+        /// An API context.
         /// </param>
         /// <param name="changeSet">
         /// A change set.
         /// </param>
-        public SubmitContext(DomainContext domainContext, ChangeSet changeSet)
-            : base(domainContext)
+        public SubmitContext(ApiContext apiContext, ChangeSet changeSet)
+            : base(apiContext)
         {
             this.ChangeSet = changeSet;
         }
@@ -51,7 +52,8 @@ namespace Microsoft.Restier.Core.Submit
             {
                 if (this.Result != null)
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(
+                        Resources.CannotSetChangeSetIfThereIsResult);
                 }
 
                 this.changeSet = value;

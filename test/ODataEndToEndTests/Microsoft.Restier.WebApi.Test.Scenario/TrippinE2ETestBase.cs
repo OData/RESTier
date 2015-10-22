@@ -12,6 +12,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         protected TrippinE2ETestBase()
             : base(new Uri("http://localhost:18384/api/Trippin/"))
         {
+            this.ResetDataSource();
         }
     }
 }

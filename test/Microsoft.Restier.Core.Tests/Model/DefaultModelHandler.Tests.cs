@@ -13,11 +13,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 {
     public class DefaultModelHandlerTests
     {
-        private class TestModelProducer : IModelProducer
+        private class TestModelProducer : IModelBuilder
         {
-            public Task<EdmModel> ProduceModelAsync(
-                ModelContext context,
-                CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
                 var entityType = new EdmEntityType(
@@ -27,11 +25,12 @@ namespace Microsoft.Restier.Core.Tests.Model
                 entityContainer.AddEntitySet("TestEntitySet", entityType);
                 model.AddElement(entityType);
                 model.AddElement(entityContainer);
-                return Task.FromResult(model);
+
+                return Task.FromResult<IEdmModel>(model);
             }
         }
 
-        private class TestModelExtender : IModelExtender
+        private class TestModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
         {
             private int _index;
 
@@ -40,72 +39,51 @@ namespace Microsoft.Restier.Core.Tests.Model
                 _index = index;
             }
 
-            public async Task ExtendModelAsync(
-                ModelContext context,
-                CancellationToken cancellationToken)
+            public IModelBuilder InnerHandler { get; set; }
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
             {
+                IEdmModel innerModel = null;
+                if (this.InnerHandler != null)
+                {
+                    innerModel = await this.InnerHandler.GetModelAsync(context, cancellationToken);
+                }
+
                 var entityType = new EdmEntityType(
-                    "TestNamespace", "TestName" + _index);
-                context.Model.AddElement(entityType);
-                (context.Model.EntityContainer as EdmEntityContainer)
+                     "TestNamespace", "TestName" + _index);
+
+                var model = innerModel as EdmModel;
+                Assert.NotNull(model);
+
+                model.AddElement(entityType);
+                (model.EntityContainer as EdmEntityContainer)
                     .AddEntitySet("TestEntitySet" + _index, entityType);
-                await Task.Yield();
-            }
-        }
 
-        private class TestModelVisibilityFilter : IModelVisibilityFilter
-        {
-            public bool IsVisible(
-                DomainConfiguration configuration,
-                InvocationContext context,
-                IEdmModel model, IEdmSchemaElement element)
-            {
-                if (element.Name == "TestName")
-                {
-                    return false;
-                }
-                return true;
-            }
-
-            public bool IsVisible(
-                DomainConfiguration configuration,
-                InvocationContext context,
-                IEdmModel model, IEdmEntityContainerElement element)
-            {
-                if (element.Name == "TestEntitySet")
-                {
-                    return false;
-                }
-                return true;
+                return model;
             }
         }
 
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var configuration = new DomainConfiguration();
-            configuration.SetHookPoint(
-                typeof(IModelProducer), new TestModelProducer());
-            configuration.AddHookPoint(
-                typeof(IModelExtender), new TestModelExtender(2));
-            configuration.AddHookPoint(
-                typeof(IModelExtender), new TestModelExtender(3));
-            configuration.AddHookPoint(
-                typeof(IModelVisibilityFilter),
-                new TestModelVisibilityFilter());
-            configuration.EnsureCommitted();
-            var context = new DomainContext(configuration);
+            var configuration = new ApiConfiguration();
+            configuration.AddHookHandler<IModelBuilder>(new TestModelProducer());
+            configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(2));
+            configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(3));
 
-            var model = await Domain.GetModelAsync(context);
-            Assert.Equal(3, model.SchemaElements.Count());
-            Assert.Null(model.SchemaElements
+            configuration.EnsureCommitted();
+            var context = new ApiContext(configuration);
+
+            var model = await Api.GetModelAsync(context);
+            Assert.Equal(4, model.SchemaElements.Count());
+            Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName2"));
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName3"));
             Assert.NotNull(model.EntityContainer);
-            Assert.Null(model.EntityContainer.Elements
+            Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet"));
             Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet2"));

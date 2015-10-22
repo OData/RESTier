@@ -28,5 +28,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
         [Column("BirthDate", TypeName = "Date")]
         public DateTime BirthDate { get; set; }
+
+        public Feature FavoriteFeature { get; set; }
     }
 }

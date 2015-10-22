@@ -108,10 +108,6 @@
     <Compile Include="SaveTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
-      <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
-      <Name>Microsoft.Restier.Conventions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
       <Name>Microsoft.Restier.EntityFramework</Name>
@@ -142,6 +138,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Baselines\TestBatch.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Baselines\TestCustomersEntitySetCountQuery.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Baselines\TestCustomersEntitySetQuery.txt">

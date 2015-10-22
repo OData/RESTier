@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core.Submit
     /// used in the reverse order of registration and whose executed
     /// filter is used in the original order of registration.
     /// </remarks>
-    public interface IChangeSetEntryFilter
+    public interface IChangeSetEntryFilter : IHookHandler
     {
         /// <summary>
         /// Asynchronously applies logic before a change set entry is executed.

@@ -40,7 +40,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             SubmitContext context,
             CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.DomainContext.GetProperty<DbContext>("DbContext");
+            DbContext dbContext = context.ApiContext.GetProperty<DbContext>("DbContext");
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
             {
@@ -91,10 +91,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
         private static async Task<object> FindEntity(SubmitContext context, DataModificationEntry entry, CancellationToken cancellationToken)
         {
-            IQueryable query = Domain.Source(context.DomainContext, entry.EntitySetName);
+            IQueryable query = Api.Source(context.ApiContext, entry.EntitySetName);
             query = entry.ApplyTo(query);
 
-            QueryResult result = await Domain.QueryAsync(context.DomainContext, new QueryRequest(query), cancellationToken);
+            QueryResult result = await Api.QueryAsync(context.ApiContext, new QueryRequest(query), cancellationToken);
 
             object entity = result.Results.SingleOrDefault();
             if (entity == null)

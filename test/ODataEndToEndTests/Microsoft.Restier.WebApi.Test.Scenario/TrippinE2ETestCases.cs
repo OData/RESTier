@@ -68,6 +68,29 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
+        public void MetadataShouldContainEnumProperty()
+        {
+            var requestMessage = new HttpWebRequestMessage(
+                new DataServiceClientRequestMessageArgs(
+                    "GET",
+                    new Uri(this.ServiceBaseUri.OriginalString + "$metadata", UriKind.Absolute),
+                    true,
+                    false,
+                    new Dictionary<string, string>()));
+            using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
+            {
+                var modelStr = r.ReadToEnd();
+
+                Assert.Contains("<EnumType Name=\"Feature\">", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<Member Name=\"Feature1\" Value=\"0\" />", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<Member Name=\"Feature2\" Value=\"1\" />", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<Member Name=\"Feature3\" Value=\"2\" />", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<Member Name=\"Feature4\" Value=\"3\" />", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<Property Name=\"FavoriteFeature\"", modelStr, StringComparison.Ordinal);
+            }
+        }
+
+        [Fact]
         public void CURDEntity()
         {
             this.TestClientContext.MergeOption = Microsoft.OData.Client.MergeOption.OverwriteChanges;
@@ -798,6 +821,27 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             Assert.NotNull(exception);
             Assert.Equal(404, exception.Response.StatusCode);
+        }
+
+        [Fact]
+        public void ConventionBasedChangeSetAuthorizerTest()
+        {
+            var trip = this.TestClientContext.Trips.First();
+            this.TestClientContext.DeleteObject(trip);
+            var ex = Assert.Throws<DataServiceRequestException>(() => this.TestClientContext.SaveChanges());
+            var clientException = Assert.IsAssignableFrom<DataServiceClientException>(ex.InnerException);
+            Assert.Equal(403, clientException.StatusCode);
+            Assert.Contains(
+                "The current user does not have permission to delete entities from the EntitySet 'Trips'.",
+                clientException.Message);
+        }
+
+        [Fact]
+        public void TestCountEntities()
+        {
+            this.TestGetPayloadIs("People/$count", "13");
+            this.TestGetPayloadIs("People(1)/Friends/$count", "1");
+            this.TestGetPayloadIs("Flights/$count", "4");
         }
     }
 }

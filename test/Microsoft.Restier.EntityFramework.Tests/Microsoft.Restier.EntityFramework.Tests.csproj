@@ -69,7 +69,7 @@
     <Compile Include="Models\Library\Book.cs" />
     <Compile Include="Models\Library\Address.cs" />
     <Compile Include="Models\Library\LibraryContext.cs" />
-    <Compile Include="Models\Library\LibraryDomain.cs" />
+    <Compile Include="Models\Library\LibraryApi.cs" />
     <Compile Include="Models\Library\Person.cs" />
     <Compile Include="Models\Library\Publisher.cs" />
     <Compile Include="ModelTests.cs" />

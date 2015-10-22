@@ -19,6 +19,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -29,11 +30,11 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="..\Shared\EdmHelpers.cs">
+      <Link>Shared\EdmHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\Error.cs">
-      <Link>Shared\Error.cs</Link>
     </Compile>
     <Compile Include="..\Shared\ExpressionHelperMethods.cs">
       <Link>Shared\ExpressionHelperMethods.cs</Link>
@@ -44,27 +45,28 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="Domain.cs" />
-    <Compile Include="Domain.OfT.cs" />
-    <Compile Include="DomainBase.cs" />
-    <Compile Include="DomainConfiguration.cs" />
-    <Compile Include="DomainContext.cs" />
-    <Compile Include="DomainData.cs" />
-    <Compile Include="DomainParticipantAttribute.cs" />
-    <Compile Include="EdmLibHelpers.cs" />
-    <Compile Include="IDomain.cs" />
-    <Compile Include="IDomainProfiler.cs" />
-    <Compile Include="IDomainPolicy.cs" />
-    <Compile Include="IExpandableDomain.cs" />
+    <Compile Include="Model\FunctionAttribute.cs" />
+    <Compile Include="Model\ActionAttribute.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetAuthorizer.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetConstants.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetEntryFilter.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetEntryValidator.cs" />
+    <Compile Include="Conventions\ConventionBasedApiModelBuilder.cs" />
+    <Compile Include="Conventions\ConventionBasedEntitySetFilter.cs" />
+    <Compile Include="Conventions\ConventionBasedOperationProvider.cs" />
+    <Compile Include="Api.cs" />
+    <Compile Include="ApiBase.cs" />
+    <Compile Include="ApiConfiguration.cs" />
+    <Compile Include="ApiConfigurationExtensions.cs" />
+    <Compile Include="ApiContext.cs" />
+    <Compile Include="ApiData.cs" />
+    <Compile Include="ApiConfiguratorAttribute.cs" />
+    <Compile Include="IDelegateHookHandler.cs" />
+    <Compile Include="IApi.cs" />
+    <Compile Include="IHookHandler.cs" />
     <Compile Include="InvocationContext.cs" />
-    <Compile Include="Model\DefaultModelHandler.cs" />
-    <Compile Include="Model\DomainModel.cs" />
-    <Compile Include="Model\IModelExtender.cs" />
-    <Compile Include="Model\IModelHandler.cs" />
+    <Compile Include="Model\IModelBuilder.cs" />
     <Compile Include="Model\IModelMapper.cs" />
-    <Compile Include="Model\IModelProducer.cs" />
-    <Compile Include="Model\IModelVisibilityFilter.cs" />
-    <Compile Include="Model\ModelContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -73,15 +75,13 @@
     </Compile>
     <Compile Include="PropertyBag.cs" />
     <Compile Include="QueryableSource.cs" />
+    <Compile Include="Query\DefaultQueryExecutor.cs" />
     <Compile Include="Query\DefaultQueryHandler.cs" />
     <Compile Include="Query\IQueryExecutor.cs" />
     <Compile Include="Query\IQueryExpressionExpander.cs" />
     <Compile Include="Query\IQueryExpressionFilter.cs" />
     <Compile Include="Query\IQueryExpressionInspector.cs" />
-    <Compile Include="Query\IQueryExpressionNormalizer.cs" />
     <Compile Include="Query\IQueryExpressionSourcer.cs" />
-    <Compile Include="Query\IQueryFilter.cs" />
-    <Compile Include="Query\IQueryHandler.cs" />
     <Compile Include="Query\QueryContext.cs" />
     <Compile Include="Query\QueryExpressionContext.cs" />
     <Compile Include="Query\QueryModelReference.cs" />
@@ -94,10 +94,7 @@
     <Compile Include="Submit\IChangeSetEntryFilter.cs" />
     <Compile Include="Submit\IChangeSetEntryValidator.cs" />
     <Compile Include="Submit\IChangeSetPreparer.cs" />
-    <Compile Include="Submit\ISubmitAuthorizer.cs" />
     <Compile Include="Submit\ISubmitExecutor.cs" />
-    <Compile Include="Submit\ISubmitFilter.cs" />
-    <Compile Include="Submit\ISubmitHandler.cs" />
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />
     <Compile Include="Submit\ValidationException.cs" />

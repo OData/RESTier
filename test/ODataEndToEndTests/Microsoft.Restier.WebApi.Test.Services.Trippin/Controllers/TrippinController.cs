@@ -10,18 +10,33 @@ using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Domain;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Api;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
 {
-    public class TrippinController : ODataDomainController<TrippinDomain>
+    public class TrippinController : ODataController
     {
+        private TrippinApi api;
+
+        private TrippinApi Api
+        {
+            get
+            {
+                if (api == null)
+                {
+                    api = new TrippinApi();
+                }
+
+                return api;
+            }
+        }
+
         private TrippinModel DbContext
         {
             get
             {
-                return Domain.Context;
+                return Api.Context;
             }
         }
 
@@ -37,13 +52,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         [ODataRoute("CleanUpExpiredTrips")]
         public void CleanUpExpiredTrips()
         {
-            Domain.CleanUpExpiredTrips();
+            Api.CleanUpExpiredTrips();
         }
 
         [ODataRoute("Trips({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip")]
         public IHttpActionResult EndTrip(int key)
         {
-            return Ok(Domain.EndTrip(key));
+            var trip = DbContext.Trips.SingleOrDefault(t => t.TripId == key);
+            return Ok(Api.EndTrip(trip));
         }
 
         private bool PeopleExists(int key)
@@ -61,42 +77,23 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return serviceRootUri;
         }
 
-        [ODataRoute("People/$count")]
-        public IHttpActionResult GetPeopleCount()
-        {
-            return Ok(DbContext.People.Count());
-        }
-
-        [ODataRoute("People({key})/LastName")]
-        [ODataRoute("People({key})/LastName/$value")]
-        public string GetPersonLastName([FromODataUri]int key)
-        {
-            return DbContext.People.Where(c => c.PersonId == key).Select(c => c.LastName).FirstOrDefault();
-        }
-
-        [ODataRoute("People({key})/BirthDate")]
-        [ODataRoute("People({key})/BirthDate/$value")]
-        public Date GetPersonBirthDate([FromODataUri]int key)
-        {
-            return DbContext.People.Where(c => c.PersonId == key).Select(c => c.BirthDate).FirstOrDefault();
-        }
-
         [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {
-            return Ok(Domain.GetNumberOfFriends(key));
+            var person = DbContext.People.SingleOrDefault(p => p.PersonId == key);
+            return Ok(Api.GetNumberOfFriends(person));
         }
 
         [ODataRoute("GetPersonWithMostFriends")]
         public IHttpActionResult GetPersonWithMostFriends()
         {
-            return Ok(Domain.GetPersonWithMostFriends());
+            return Ok(Api.GetPersonWithMostFriends());
         }
 
         [ODataRoute("GetPeopleWithFriendsAtLeast(n={n})")]
         public IHttpActionResult GetPeopleWithFriendsAtLeast(int n)
         {
-            return Ok(Domain.GetPeopleWithFriendsAtLeast(n));
+            return Ok(Api.GetPeopleWithFriendsAtLeast(n));
         }
 
         [HttpPut]
@@ -325,6 +322,23 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         public IHttpActionResult Me()
         {
             return Ok(DbContext.People.Find(1));
+        }
+
+        /// <summary>
+        /// Disposes the API and the controller.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposing is happening.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.api != null)
+                {
+                    this.api.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

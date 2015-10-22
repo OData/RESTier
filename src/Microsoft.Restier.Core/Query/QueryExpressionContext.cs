@@ -16,6 +16,8 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryExpressionContext
     {
+        private const string MethodNameOfApiDataValue = "Value";
+
         private Stack<Expression> visitedNodes = new Stack<Expression>();
         private IDictionary<Expression, QueryModelReference> modelReferences =
             new Dictionary<Expression, QueryModelReference>();
@@ -175,10 +177,10 @@ namespace Microsoft.Restier.Core.Query
             if (methodCall != null)
             {
                 var method = methodCall.Method;
-                if (method.DeclaringType == typeof(DomainData) &&
-                    method.Name != "Value")
+                if (method.DeclaringType == typeof(ApiData) &&
+                    method.Name != MethodNameOfApiDataValue)
                 {
-                    modelReference = ComputeDomainDataReference(methodCall);
+                    modelReference = ComputeApiDataReference(methodCall);
                 }
                 else if (method.GetCustomAttributes<ExtensionAttribute>().Any())
                 {
@@ -236,10 +238,10 @@ namespace Microsoft.Restier.Core.Query
             return modelReference;
         }
 
-        private DomainDataReference ComputeDomainDataReference(
+        private ApiDataReference ComputeApiDataReference(
             MethodCallExpression methodCall)
         {
-            DomainDataReference modelReference = null;
+            ApiDataReference modelReference = null;
             ConstantExpression namespaceName = null;
             ConstantExpression name = null;
             var argumentIndex = 0;
@@ -256,12 +258,12 @@ namespace Microsoft.Restier.Core.Query
                 {
                     if (namespaceName == null)
                     {
-                        modelReference = new DomainDataReference(
+                        modelReference = new ApiDataReference(
                             this.QueryContext, nameValue);
                     }
                     else
                     {
-                        modelReference = new DomainDataReference(
+                        modelReference = new ApiDataReference(
                             this.QueryContext,
                             namespaceName.Value as string,
                             nameValue);
