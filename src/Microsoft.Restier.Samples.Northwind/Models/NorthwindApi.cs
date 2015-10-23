@@ -62,7 +62,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         }
 
         // Entity set filter
-        private IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
+        protected IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
         {
             return customers.Where(c => c.CountryRegion == "France");
         }

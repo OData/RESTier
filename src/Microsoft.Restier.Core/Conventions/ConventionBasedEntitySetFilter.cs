@@ -57,7 +57,7 @@ namespace Microsoft.Restier.Core.Conventions
             var elementType = returnType.GetGenericArguments()[0];
             var methodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entitySet.Name;
             var method = this.targetType.GetQualifiedMethod(methodName);
-            if (method != null && method.IsPrivate &&
+            if (method != null && method.IsFamily &&
                 method.ReturnType == returnType)
             {
                 object target = null;
