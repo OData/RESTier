@@ -120,7 +120,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
             }
         }
 
-        private bool CanDeleteTrips()
+        protected bool CanDeleteTrips()
         {
             return false;
         }

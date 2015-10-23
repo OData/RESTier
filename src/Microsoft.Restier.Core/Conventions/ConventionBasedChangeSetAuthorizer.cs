@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Core.Conventions
             string methodName = ConventionBasedChangeSetAuthorizer.GetAuthorizeMethodName(entry);
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
-            if (method != null && method.IsPrivate &&
+            if (method != null && method.IsFamily &&
                 method.ReturnType == returnType)
             {
                 object target = null;
