@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
     {
         private class TestEntityFilterReturnsTaskApi : NorthwindApi
         {
-            private async Task OnInsertingCustomers(Customer customer)
+            protected async Task OnInsertingCustomers(Customer customer)
             {
                 await Task.Delay(10);
                 customer.CompanyName += "OnInserting";

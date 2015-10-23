@@ -68,12 +68,12 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         }
 
         // Submit logic
-        private void OnUpdatingProducts(Product product)
+        protected void OnUpdatingProducts(Product product)
         {
             WriteLog(DateTime.Now.ToString() + product.ProductID + " is being updated");
         }
 
-        private void OnInsertedProducts(Product product)
+        protected void OnInsertedProducts(Product product)
         {
             WriteLog(DateTime.Now.ToString() + product.ProductID + " has been inserted");
         }
