@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.4 Submit Logic"
+title: "2.4 Submit Logic [>=0.4.0-rc]"
 description: ""
 category: "2. Conventions"
 ---
