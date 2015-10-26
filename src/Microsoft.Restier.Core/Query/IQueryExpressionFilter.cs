@@ -23,10 +23,6 @@ namespace Microsoft.Restier.Core.Query
     /// appropriate normalization, inspection, expansion, filtering and
     /// sourcing occurs.
     /// </para>
-    /// <para>
-    /// This is a multi-cast hook point whose instances
-    /// are used in the original order of registration.
-    /// </para>
     /// </remarks>
     public interface IQueryExpressionFilter : IHookHandler
     {

@@ -18,10 +18,6 @@ namespace Microsoft.Restier.Core.Query
     /// has a chance to take place before the node is altered in any way (with
     /// the exception of normalization of expressions identifying API data).
     /// </para>
-    /// <para>
-    /// This is a multi-cast hook point whose instances
-    /// are used in the reverse order of registration.
-    /// </para>
     /// </remarks>
     public interface IQueryExpressionInspector : IHookHandler
     {

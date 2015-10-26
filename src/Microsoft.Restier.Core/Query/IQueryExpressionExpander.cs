@@ -21,10 +21,6 @@ namespace Microsoft.Restier.Core.Query
     /// expression is recursively processed to ensure that all appropriate
     /// normalization, inspection, expansion, filtering and sourcing occurs.
     /// </para>
-    /// <para>
-    /// This is a multi-cast hook point whose instances
-    /// are used in the reverse order of registration.
-    /// </para>
     /// </remarks>
     public interface IQueryExpressionExpander : IHookHandler
     {

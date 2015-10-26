@@ -9,12 +9,6 @@ namespace Microsoft.Restier.Core.Model
     /// Represents a hook point that maps between
     /// the model space and the object space.
     /// </summary>
-    /// <remarks>
-    /// This is both a singleton hook point that should be implemented by an
-    /// underlying data provider as well as a multi-cast hook point whose
-    /// instances are used in reverse order of registration. When in use,
-    /// the multi-cast hook points are used before the singleton hook point.
-    /// </remarks>
     public interface IModelMapper : IHookHandler
     {
         /// <summary>

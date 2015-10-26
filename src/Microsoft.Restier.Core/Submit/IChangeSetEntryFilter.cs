@@ -9,11 +9,6 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry filter.
     /// </summary>
-    /// <remarks>
-    /// This is a multi-cast hook point whose executing filter is
-    /// used in the reverse order of registration and whose executed
-    /// filter is used in the original order of registration.
-    /// </remarks>
     public interface IChangeSetEntryFilter : IHookHandler
     {
         /// <summary>

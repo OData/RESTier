@@ -9,10 +9,6 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a hook point that executes a submission.
     /// </summary>
-    /// <remarks>
-    /// This is a singleton hook point that should be
-    /// implemented by an underlying data provider.
-    /// </remarks>
     public interface ISubmitExecutor : IHookHandler
     {
         /// <summary>

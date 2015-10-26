@@ -19,10 +19,6 @@ namespace Microsoft.Restier.Core.Query
     /// expression, and only happens on expressions that represent API
     /// data that cannot be expanded into any more primitive of an expression.
     /// </para>
-    /// <para>
-    /// This is a singleton hook point that should be
-    /// implemented by an underlying data provider.
-    /// </para>
     /// </remarks>
     public interface IQueryExpressionSourcer : IHookHandler
     {

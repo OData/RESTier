@@ -9,10 +9,6 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry validator.
     /// </summary>
-    /// <remarks>
-    /// This is a multi-cast hook point whose instances
-    /// are used in the reverse order of registration.
-    /// </remarks>
     public interface IChangeSetEntryValidator : IHookHandler
     {
         /// <summary>
