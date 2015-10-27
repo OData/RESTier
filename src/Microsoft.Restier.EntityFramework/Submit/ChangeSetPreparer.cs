@@ -22,7 +22,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
     /// </summary>
-    public class ChangeSetPreparer : IChangeSetPreparer
+    internal class ChangeSetPreparer : IChangeSetPreparer
     {
         static ChangeSetPreparer()
         {

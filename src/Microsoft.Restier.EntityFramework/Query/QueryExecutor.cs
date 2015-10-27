@@ -21,7 +21,7 @@ namespace Microsoft.Restier.EntityFramework.Query
     /// <summary>
     /// Represents a query executor that uses Entity Framework methods.
     /// </summary>
-    public class QueryExecutor : IQueryExecutor
+    internal class QueryExecutor : IQueryExecutor
     {
         static QueryExecutor()
         {
@@ -64,7 +64,7 @@ namespace Microsoft.Restier.EntityFramework.Query
             long? totalCount = null;
             if (context.Request.IncludeTotalCount == true)
             {
-                var countQuery = DefaultQueryExecutor.StripPagingOperators(query);
+                var countQuery = ExpressionHelpers.StripPagingOperators(query);
                 totalCount = await countQuery.LongCountAsync(cancellationToken);
             }
 

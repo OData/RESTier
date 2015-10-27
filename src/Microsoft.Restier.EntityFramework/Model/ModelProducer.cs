@@ -27,7 +27,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    public class ModelProducer : IModelBuilder
+    internal class ModelProducer : IModelBuilder
     {
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";

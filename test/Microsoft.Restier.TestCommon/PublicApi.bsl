@@ -249,15 +249,6 @@ public class Microsoft.Restier.WebApi.RestierPayloadValueConverter : Microsoft.O
 	public virtual object ConvertToPayloadValue (object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
 }
 
-[
-AttributeUsageAttribute(),
-]
-public sealed class Microsoft.Restier.WebApi.RestierFormattingAttribute : System.Attribute, _Attribute, IControllerConfiguration {
-	public RestierFormattingAttribute ()
-
-	public virtual void Initialize (System.Web.Http.Controllers.HttpControllerSettings controllerSettings, System.Web.Http.Controllers.HttpControllerDescriptor controllerDescriptor)
-}
-
 public interface Microsoft.Restier.Core.Model.IModelBuilder : IHookHandler {
 	System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.InvocationContext context, System.Threading.CancellationToken cancellationToken)
 }
@@ -329,14 +320,6 @@ public class Microsoft.Restier.Core.Query.CollectionElementReference : Microsoft
 	public CollectionElementReference (Microsoft.Restier.Core.Query.QueryModelReference source)
 
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
-}
-
-public class Microsoft.Restier.Core.Query.DefaultQueryExecutor : IHookHandler, IQueryExecutor {
-	Microsoft.Restier.Core.Query.DefaultQueryExecutor Instance  { [CompilerGeneratedAttribute(),]public static get; }
-
-	public virtual System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteQueryAsync (Microsoft.Restier.Core.Query.QueryContext context, IQueryable`1 query, System.Threading.CancellationToken cancellationToken)
-	public virtual System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteSingleAsync (Microsoft.Restier.Core.Query.QueryContext context, System.Linq.IQueryable query, System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
-	public static IQueryable`1 StripPagingOperators (IQueryable`1 query)
 }
 
 public class Microsoft.Restier.Core.Query.DerivedDataReference : Microsoft.Restier.Core.Query.QueryModelReference {
@@ -534,61 +517,6 @@ public class Microsoft.Restier.Core.Submit.ValidationResults : System.Collection
 	bool HasErrors  { public get; }
 }
 
-public class Microsoft.Restier.EntityFramework.Model.ModelMapper : IHookHandler, IModelMapper {
-	public ModelMapper (System.Type dbContextType)
-
-	public virtual bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string name, out System.Type& relevantType)
-	public virtual bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, out System.Type& relevantType)
-}
-
-public class Microsoft.Restier.EntityFramework.Model.ModelProducer : IHookHandler, IModelBuilder {
-	Microsoft.Restier.EntityFramework.Model.ModelProducer Instance  { [CompilerGeneratedAttribute(),]public static get; }
-
-	public virtual System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.InvocationContext context, System.Threading.CancellationToken cancellationToken)
-}
-
-public class Microsoft.Restier.EntityFramework.Query.QueryExecutor : IHookHandler, IQueryExecutor {
-	Microsoft.Restier.EntityFramework.Query.QueryExecutor Instance  { [CompilerGeneratedAttribute(),]public static get; }
-
-	[
-	DebuggerStepThroughAttribute(),
-	AsyncStateMachineAttribute(),
-	]
-	public virtual System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteQueryAsync (Microsoft.Restier.Core.Query.QueryContext context, IQueryable`1 query, System.Threading.CancellationToken cancellationToken)
-
-	[
-	DebuggerStepThroughAttribute(),
-	AsyncStateMachineAttribute(),
-	]
-	public virtual System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteSingleAsync (Microsoft.Restier.Core.Query.QueryContext context, System.Linq.IQueryable query, System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
-}
-
-public class Microsoft.Restier.EntityFramework.Query.QueryExpressionSourcer : IHookHandler, IQueryExpressionSourcer {
-	Microsoft.Restier.EntityFramework.Query.QueryExpressionSourcer Instance  { [CompilerGeneratedAttribute(),]public static get; }
-
-	public virtual System.Linq.Expressions.Expression Source (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
-}
-
-public class Microsoft.Restier.EntityFramework.Submit.ChangeSetPreparer : IHookHandler, IChangeSetPreparer {
-	Microsoft.Restier.EntityFramework.Submit.ChangeSetPreparer Instance  { [CompilerGeneratedAttribute(),]public static get; }
-
-	[
-	DebuggerStepThroughAttribute(),
-	AsyncStateMachineAttribute(),
-	]
-	public virtual System.Threading.Tasks.Task PrepareAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
-}
-
-public class Microsoft.Restier.EntityFramework.Submit.SubmitExecutor : IHookHandler, ISubmitExecutor {
-	Microsoft.Restier.EntityFramework.Submit.SubmitExecutor Instance  { [CompilerGeneratedAttribute(),]public static get; }
-
-	[
-	DebuggerStepThroughAttribute(),
-	AsyncStateMachineAttribute(),
-	]
-	public virtual System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] ExecuteSubmitAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
-}
-
 public class Microsoft.Restier.WebApi.Batch.RestierBatchHandler : System.Web.OData.Batch.DefaultODataBatchHandler, IDisposable {
 	public RestierBatchHandler (System.Web.Http.HttpServer httpServer, params System.Func`1[[Microsoft.Restier.Core.IApi]] apiFactory)
 
@@ -610,27 +538,5 @@ public class Microsoft.Restier.WebApi.Batch.RestierChangeSetRequestItem : System
 	AsyncStateMachineAttribute(),
 	]
 	public virtual System.Threading.Tasks.Task`1[[System.Web.OData.Batch.ODataBatchResponseItem]] SendRequestAsync (System.Net.Http.HttpMessageInvoker invoker, System.Threading.CancellationToken cancellationToken)
-}
-
-public class Microsoft.Restier.WebApi.Filters.ValidationResultDto {
-	public ValidationResultDto (Microsoft.Restier.Core.Submit.ValidationResult result)
-
-	string Id  { public get; }
-	string Message  { public get; }
-	string PropertyName  { public get; }
-	string Severity  { public get; }
-}
-
-[
-AttributeUsageAttribute(),
-]
-public sealed class Microsoft.Restier.WebApi.Filters.RestierExceptionFilterAttribute : System.Web.Http.Filters.ExceptionFilterAttribute, _Attribute, IExceptionFilter, IFilter {
-	public RestierExceptionFilterAttribute ()
-
-	[
-	DebuggerStepThroughAttribute(),
-	AsyncStateMachineAttribute(),
-	]
-	public virtual System.Threading.Tasks.Task OnExceptionAsync (System.Web.Http.Filters.HttpActionExecutedContext actionExecutedContext, System.Threading.CancellationToken cancellationToken)
 }
 

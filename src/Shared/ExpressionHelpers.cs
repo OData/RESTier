@@ -8,6 +8,9 @@ namespace System.Linq.Expressions
 {
     internal static class ExpressionHelpers
     {
+        private const string MethodNameOfQueryTake = "Take";
+        private const string MethodNameOfQuerySkip = "Skip";
+
         public static IQueryable Select(IQueryable query, LambdaExpression select)
         {
             MethodInfo selectMethod =
@@ -39,6 +42,27 @@ namespace System.Linq.Expressions
             return Expression.Call(countMethod, queryExpression);
         }
 
+        /// <summary>
+        /// Remove paging methods for given IQueryable
+        /// </summary>
+        /// <typeparam name="TElement">The type parameter for IQueryable</typeparam>
+        /// <param name="query">The input query.</param>
+        /// <returns>The proceed query.</returns>
+        public static IQueryable<TElement> StripPagingOperators<TElement>(
+           IQueryable<TElement> query)
+        {
+            Ensure.NotNull(query, "query");
+            var expression = query.Expression;
+            expression = StripQueryMethod(expression, MethodNameOfQueryTake);
+            expression = StripQueryMethod(expression, MethodNameOfQuerySkip);
+            if (expression != query.Expression)
+            {
+                query = query.Provider.CreateQuery<TElement>(expression);
+            }
+
+            return query;
+        }
+
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
             Type type = enumerableType.FindGenericType(typeof(IEnumerable<>));
@@ -48,6 +72,19 @@ namespace System.Linq.Expressions
             }
 
             return enumerableType;
+        }
+
+        private static Expression StripQueryMethod(Expression expression, string methodName)
+        {
+            var methodCall = expression as MethodCallExpression;
+            if (methodCall != null &&
+                methodCall.Method.DeclaringType == typeof(Queryable) &&
+                methodCall.Method.Name.Equals(methodName, StringComparison.Ordinal))
+            {
+                expression = methodCall.Arguments[0];
+            }
+
+            return expression;
         }
     }
 }

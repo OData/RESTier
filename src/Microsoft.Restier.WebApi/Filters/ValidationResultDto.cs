@@ -9,7 +9,7 @@ namespace Microsoft.Restier.WebApi.Filters
     /// <summary>
     /// A data transfer object that is used to serialize ValidationResult instances to the client.
     /// </summary>
-    public class ValidationResultDto
+    internal class ValidationResultDto
     {
         private ValidationResult result;
 

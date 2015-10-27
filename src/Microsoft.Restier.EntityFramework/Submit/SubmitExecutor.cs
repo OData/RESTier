@@ -15,7 +15,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// <summary>
     /// To execute submission of changes to database.
     /// </summary>
-    public class SubmitExecutor : ISubmitExecutor
+    internal class SubmitExecutor : ISubmitExecutor
     {
         static SubmitExecutor()
         {

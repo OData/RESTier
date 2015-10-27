@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Controllers;
 using System.Web.OData.Formatter;
-using System.Web.OData.Formatter.Deserialization;
 using Microsoft.Restier.WebApi.Formatter.Deserialization;
 using Microsoft.Restier.WebApi.Formatter.Serialization;
 
@@ -16,7 +15,7 @@ namespace Microsoft.Restier.WebApi
     /// Specifies the serializer and deserializer provider for the API controller.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public sealed class RestierFormattingAttribute : Attribute, IControllerConfiguration
+    internal sealed class RestierFormattingAttribute : Attribute, IControllerConfiguration
     {
         /// <summary>
         /// Inserts the RESTier specific formatters to the controller.

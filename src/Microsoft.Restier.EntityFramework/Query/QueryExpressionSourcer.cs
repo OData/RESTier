@@ -16,7 +16,7 @@ namespace Microsoft.Restier.EntityFramework.Query
     /// <summary>
     /// Represents a query expression sourcer that uses a DbContext.
     /// </summary>
-    public class QueryExpressionSourcer : IQueryExpressionSourcer
+    internal class QueryExpressionSourcer : IQueryExpressionSourcer
     {
         static QueryExpressionSourcer()
         {
