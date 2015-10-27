@@ -40,6 +40,12 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\ExpressionHelperMethods.cs">
+      <Link>Shared\ExpressionHelperMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared\ExpressionHelpers.cs">
+      <Link>Shared\ExpressionHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\EnumerableExtensions.cs">
       <Link>Shared\EnumerableExtensions.cs</Link>
     </Compile>
@@ -52,7 +58,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SharedResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="DbDomain.cs" />
+    <Compile Include="DbApi.cs" />
+    <Compile Include="DbApiConstants.cs" />
     <Compile Include="Model\ModelMapper.cs" />
     <Compile Include="Model\ModelProducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

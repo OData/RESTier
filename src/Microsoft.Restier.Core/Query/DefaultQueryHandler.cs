@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents the default query handler.
     /// </summary>
-    public class DefaultQueryHandler : IQueryHandler
+    internal static class DefaultQueryHandler
     {
         /// <summary>
         /// Asynchronously executes the query flow.
@@ -30,44 +30,46 @@ namespace Microsoft.Restier.Core.Query
         /// A task that represents the asynchronous
         /// operation whose result is a query result.
         /// </returns>
-        public async Task<QueryResult> QueryAsync(
+        public static async Task<QueryResult> QueryAsync(
             QueryContext context,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, "context");
 
-            // STEP 1: pre-filter
-            var filters = context.GetHookPoints<IQueryFilter>();
-            foreach (var filter in filters.Reverse())
-            {
-                await filter.FilterRequestAsync(context, cancellationToken);
-                if (context.Result != null)
-                {
-                    return context.Result;
-                }
-            }
-
-            // STEP 2: process query expression
+            // process query expression
             var expression = context.Request.Expression;
             var visitor = new QueryExpressionVisitor(context);
             expression = visitor.Visit(expression);
 
-            // STEP 3: execute query
-            QueryResult result = null;
-            var executor = context.GetHookPoint<IQueryExecutor>();
-            if (executor == null)
+            // get element type
+            Type elementType = null;
+            var queryType = expression.Type.FindGenericType(typeof(IQueryable<>));
+            if (queryType != null)
             {
-                throw new NotSupportedException();
+                elementType = queryType.GetGenericArguments()[0];
             }
 
-            var queryType = expression.Type
-                .FindGenericType(typeof(IQueryable<>));
-            if (queryType != null)
+            // append count expression if requested
+            if (elementType != null && context.Request.ShouldReturnCount)
+            {
+                expression = ExpressionHelpers.Count(expression, elementType);
+                elementType = null; // now return type is single int
+            }
+
+            // execute query
+            QueryResult result;
+            var executor = context.GetHookHandler<IQueryExecutor>();
+            if (executor == null)
+            {
+                throw new NotSupportedException(Resources.QueryExecutorMissing);
+            }
+
+            if (elementType != null)
             {
                 var query = visitor.BaseQuery.Provider.CreateQuery(expression);
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteQueryAsync")
-                    .MakeGenericMethod(queryType.GetGenericArguments()[0]);
+                    .MakeGenericMethod(elementType);
                 var parameters = new object[]
                 {
                     context, query, cancellationToken
@@ -93,25 +95,16 @@ namespace Microsoft.Restier.Core.Query
                 result.ResultsSource = visitor.EntitySet;
             }
 
-            context.Result = result;
-
-            // STEP 4: post-filter
-            foreach (var filter in filters)
-            {
-                await filter.FilterResultAsync(context, cancellationToken);
-            }
-
-            return context.Result;
+            return result;
         }
 
         private class QueryExpressionVisitor : ExpressionVisitor
         {
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
-            private IEnumerable<IQueryExpressionNormalizer> normalizers;
-            private IEnumerable<IQueryExpressionInspector> inspectors;
-            private IEnumerable<IQueryExpressionExpander> expanders;
-            private IEnumerable<IQueryExpressionFilter> filters;
+            private IQueryExpressionInspector inspector;
+            private IQueryExpressionExpander expander;
+            private IQueryExpressionFilter filter;
             private IQueryExpressionSourcer sourcer;
 
             public QueryExpressionVisitor(QueryContext context)
@@ -144,18 +137,9 @@ namespace Microsoft.Restier.Core.Query
                 }
                 else
                 {
-                    // Normalize visited node
-                    node = this.Normalize(visited);
-                    if (node != visited)
-                    {
-                        // Update the visited node
-                        visited = node;
-                        this.context.ReplaceVisitedNode(visited);
-                    }
-
                     // Only visit the visited node's children if
-                    // the visited node represents domain data
-                    if (!(this.context.ModelReference is DomainDataReference))
+                    // the visited node represents API data
+                    if (!(this.context.ModelReference is ApiDataReference))
                     {
                         // Visit visited node's children
                         node = base.Visit(visited);
@@ -165,8 +149,8 @@ namespace Microsoft.Restier.Core.Query
                     this.Inspect();
 
                     // Try to expand the visited node
-                    // if it represents domain data
-                    if (this.context.ModelReference is DomainDataReference)
+                    // if it represents API data
+                    if (this.context.ModelReference is ApiDataReference)
                     {
                         node = this.Expand(visited);
                     }
@@ -176,15 +160,15 @@ namespace Microsoft.Restier.Core.Query
                 }
 
                 // If no processing occurred on the visited node
-                // and it represents domain data, then it must be
+                // and it represents API data, then it must be
                 // in its most primitive form, so source the node
                 if (visited == node &&
-                    this.context.ModelReference is DomainDataReference)
+                    this.context.ModelReference is ApiDataReference)
                 {
                     node = this.Source(node);
                 }
 
-                // TODO GitHubIssue#28 : Support transformation between domain types and data source proxy types
+                // TODO GitHubIssue#28 : Support transformation between API types and data source proxy types
                 this.context.PopVisitedNode();
 
                 if (this.context.VisitedNode != null)
@@ -196,42 +180,14 @@ namespace Microsoft.Restier.Core.Query
                 return node;
             }
 
-            private Expression Normalize(Expression visited)
-            {
-                if (this.normalizers == null)
-                {
-                    this.normalizers = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionNormalizer>().Reverse();
-                }
-
-                foreach (var normalizer in this.normalizers)
-                {
-                    var normalized = normalizer.Normalize(this.context);
-                    if (normalized != null && normalized != visited)
-                    {
-                        if (!visited.Type.IsAssignableFrom(normalized.Type))
-                        {
-                            // Normalizer cannot change expression type
-                            // TODO GitHubIssue#24 : error message
-                            throw new InvalidOperationException();
-                        }
-
-                        return normalized;
-                    }
-                }
-
-                return visited;
-            }
-
             private void Inspect()
             {
-                if (this.inspectors == null)
+                if (this.inspector == null)
                 {
-                    this.inspectors = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionInspector>().Reverse();
+                    this.inspector = this.context.QueryContext.GetHookHandler<IQueryExpressionInspector>();
                 }
 
-                if (this.inspectors.Any(i => !i.Inspect(this.context)))
+                if (this.inspector != null && !this.inspector.Inspect(this.context))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }
@@ -239,36 +195,37 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Expand(Expression visited)
             {
-                if (this.expanders == null)
+                if (this.expander == null)
                 {
-                    this.expanders = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionExpander>().Reverse();
+                    this.expander = this.context.QueryContext
+                        .GetHookHandler<IQueryExpressionExpander>();
                 }
 
-                foreach (var expander in this.expanders)
+                if (expander == null)
                 {
-                    var expanded = expander.Expand(this.context);
-                    var callback = this.context.AfterNestedVisitCallback;
-                    this.context.AfterNestedVisitCallback = null;
-                    if (expanded != null && expanded != visited)
+                    return visited;
+                }
+
+                var expanded = expander.Expand(this.context);
+                var callback = this.context.AfterNestedVisitCallback;
+                this.context.AfterNestedVisitCallback = null;
+                if (expanded != null && expanded != visited)
+                {
+                    if (!visited.Type.IsAssignableFrom(expanded.Type))
                     {
-                        if (!visited.Type.IsAssignableFrom(expanded.Type))
-                        {
-                            // Expander cannot change expression type
-                            // TODO GitHubIssue#24 : error message
-                            throw new InvalidOperationException();
-                        }
-
-                        this.context.PushVisitedNode(null);
-                        expanded = this.Visit(expanded);
-                        this.context.PopVisitedNode();
-                        if (callback != null)
-                        {
-                            callback();
-                        }
-
-                        return expanded;
+                        throw new InvalidOperationException(
+                            Resources.ExpanderCannotChangeExpressionType);
                     }
+
+                    this.context.PushVisitedNode(null);
+                    expanded = this.Visit(expanded);
+                    this.context.PopVisitedNode();
+                    if (callback != null)
+                    {
+                        callback();
+                    }
+
+                    return expanded;
                 }
 
                 return visited;
@@ -276,13 +233,12 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Filter(Expression visited, Expression processed)
             {
-                if (this.filters == null)
+                if (this.filter == null)
                 {
-                    this.filters = this.context.QueryContext
-                        .GetHookPoints<IQueryExpressionFilter>();
+                    this.filter = this.context.QueryContext.GetHookHandler<IQueryExpressionFilter>();
                 }
 
-                foreach (var filter in this.filters)
+                if (this.filter != null)
                 {
                     var filtered = filter.Filter(this.context);
                     var callback = this.context.AfterNestedVisitCallback;
@@ -291,9 +247,8 @@ namespace Microsoft.Restier.Core.Query
                     {
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
-                            // Filter cannot change expression type
-                            // TODO GitHubIssue#24 : error message
-                            throw new InvalidOperationException();
+                            throw new InvalidOperationException(
+                                Resources.FilterCannotChangeExpressionType);
                         }
 
                         this.processedExpressions.Add(visited, processed);
@@ -323,20 +278,20 @@ namespace Microsoft.Restier.Core.Query
                 if (this.sourcer == null)
                 {
                     this.sourcer = this.context.QueryContext
-                        .GetHookPoint<IQueryExpressionSourcer>();
+                        .GetHookHandler<IQueryExpressionSourcer>();
                 }
 
                 if (this.sourcer == null)
                 {
                     // Missing sourcer
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(Resources.QuerySourcerMissing);
                 }
 
                 node = this.sourcer.Source(this.context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(Resources.SourceExpressionMissing);
                 }
 
                 if (this.BaseQuery == null)
@@ -348,13 +303,13 @@ namespace Microsoft.Restier.Core.Query
                     var constant = node as ConstantExpression;
                     if (constant == null)
                     {
-                        throw new NotSupportedException();
+                        throw new NotSupportedException(Resources.OriginalExpressionShouldBeConstant);
                     }
 
                     this.BaseQuery = constant.Value as IQueryable;
                     if (this.BaseQuery == null)
                     {
-                        throw new NotSupportedException();
+                        throw new NotSupportedException(Resources.OriginalExpressionShouldBeQueryable);
                     }
 
                     node = this.BaseQuery.Expression;

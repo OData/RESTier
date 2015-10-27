@@ -24,3 +24,6 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("457b881a-45f7-4a11-bcc9-3ba0019c89ba")]
+
+// All the internal classes are visible to the test project.
+[assembly: InternalsVisibleTo("Microsoft.Restier.EntityFramework.Tests")]

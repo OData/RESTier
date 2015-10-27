@@ -11,29 +11,30 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NewInvocationContextIsConfiguredCorrectly()
         {
-            var configuration = new DomainConfiguration();
+            var configuration = new ApiConfiguration();
             configuration.EnsureCommitted();
-            var domainContext = new DomainContext(configuration);
-            var context = new InvocationContext(domainContext);
-            Assert.Same(domainContext, context.DomainContext);
+            var apiContext = new ApiContext(configuration);
+            var context = new InvocationContext(apiContext);
+            Assert.Same(apiContext, context.ApiContext);
         }
 
         [Fact]
         public void InvocationContextGetsHookPointsCorrectly()
         {
-            var configuration = new DomainConfiguration();
-            var singletonHookPoint = new object();
-            configuration.SetHookPoint(typeof(object), singletonHookPoint);
-            var multiCastHookPoint = new object();
-            configuration.AddHookPoint(typeof(object), multiCastHookPoint);
+            var hook = new HookA();
+            var configuration = new ApiConfiguration().AddHookHandler<IHookA>(hook);
             configuration.EnsureCommitted();
+            var apiContext = new ApiContext(configuration);
+            var context = new InvocationContext(apiContext);
+            Assert.Same(hook, context.GetHookHandler<IHookA>());
+        }
 
-            var domainContext = new DomainContext(configuration);
-            var context = new InvocationContext(domainContext);
+        private interface IHookA : IHookHandler
+        {
+        }
 
-            Assert.Same(singletonHookPoint, context.GetHookPoint<object>());
-            Assert.True(context.GetHookPoints<object>()
-                .SequenceEqual(new object[] { multiCastHookPoint }));
+        private class HookA : IHookA
+        {
         }
     }
 }

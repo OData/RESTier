@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core.Query
     /// <remarks>
     /// <para>
     /// Query expression expansion converts an expression that represents
-    /// normalized domain data into an expression using more primitive nodes.
+    /// normalized API data into an expression using more primitive nodes.
     /// </para>
     /// <para>
     /// Expansion is the second step that occurs when processing a query
@@ -21,12 +21,8 @@ namespace Microsoft.Restier.Core.Query
     /// expression is recursively processed to ensure that all appropriate
     /// normalization, inspection, expansion, filtering and sourcing occurs.
     /// </para>
-    /// <para>
-    /// This is a multi-cast hook point whose instances
-    /// are used in the reverse order of registration.
-    /// </para>
     /// </remarks>
-    public interface IQueryExpressionExpander
+    public interface IQueryExpressionExpander : IHookHandler
     {
         /// <summary>
         /// Expands an expression.

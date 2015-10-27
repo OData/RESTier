@@ -9,21 +9,17 @@ namespace Microsoft.Restier.Core.Query
     /// <remarks>
     /// <para>
     /// Query expression inspection evaluates an expression to determine
-    /// if it is valid according to domain logic such as authorization rules.
+    /// if it is valid according to API logic such as authorization rules.
     /// </para>
     /// <para>
     /// Inspection is the first step that occurs when processing a query
     /// expression after its children have been visited, so it occurs during
     /// upward traversal of the query expression. This ensures that inspection
     /// has a chance to take place before the node is altered in any way (with
-    /// the exception of normalization of expressions identifying domain data).
-    /// </para>
-    /// <para>
-    /// This is a multi-cast hook point whose instances
-    /// are used in the reverse order of registration.
+    /// the exception of normalization of expressions identifying API data).
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionInspector
+    public interface IQueryExpressionInspector : IHookHandler
     {
         /// <summary>
         /// Inspects an expression.

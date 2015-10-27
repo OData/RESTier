@@ -9,11 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a service that can prepare a change set.
     /// </summary>
-    /// <remarks>
-    /// This is a singleton hook point that should be
-    /// implemented by an underlying data provider.
-    /// </remarks>
-    public interface IChangeSetPreparer
+    public interface IChangeSetPreparer : IHookHandler
     {
         /// <summary>
         /// Asynchronously prepares a change set for submission.

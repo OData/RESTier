@@ -3,8 +3,8 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Net.Http;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Batch;
 
 namespace Microsoft.Restier.WebApi
@@ -13,32 +13,58 @@ namespace Microsoft.Restier.WebApi
     /// Offers a collection of extension methods to <see cref="HttpRequestMessage"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class HttpRequestMessageExtensions
+    internal static class HttpRequestMessageExtensions
     {
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";
+        private const string ApiFactoryKey = "Microsoft.Restier.Core.ApiFactory";
 
         /// <summary>
-        /// Gets the <see cref="ODataDomainChangeSetProperty"/> from the <see cref="HttpRequestMessage"/>.
+        /// Gets the <see cref="RestierChangeSetProperty"/> from the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>
-        /// <returns>The <see cref="ODataDomainChangeSetProperty"/>.</returns>
-        public static ODataDomainChangeSetProperty GetChangeSet(this HttpRequestMessage request)
+        /// <returns>The <see cref="RestierChangeSetProperty"/>.</returns>
+        public static RestierChangeSetProperty GetChangeSet(this HttpRequestMessage request)
         {
             Ensure.NotNull(request, "request");
 
-            ODataDomainChangeSetProperty changeSetProperty;
             object value;
             if (request.Properties.TryGetValue(ChangeSetKey, out value))
             {
-                changeSetProperty = value as ODataDomainChangeSetProperty;
-                Contract.Assert(changeSetProperty != null);
-            }
-            else
-            {
-                changeSetProperty = null;
+                return value as RestierChangeSetProperty;
             }
 
-            return changeSetProperty;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the API factory from the <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <returns>The API factory.</returns>
+        internal static Func<IApi> GetApiFactory(this HttpRequestMessage request)
+        {
+            Ensure.NotNull(request, "request");
+
+            object value;
+            if (request.Properties.TryGetValue(ApiFactoryKey, out value))
+            {
+                return value as Func<IApi>;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Sets the API factory to the <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="apiFactory">The API factory.</param>
+        internal static void SetApiFactory(this HttpRequestMessage request, Func<IApi> apiFactory)
+        {
+            Ensure.NotNull(request, "request");
+            Ensure.NotNull(apiFactory, "apiFactory");
+
+            request.Properties[ApiFactoryKey] = apiFactory;
         }
     }
 }

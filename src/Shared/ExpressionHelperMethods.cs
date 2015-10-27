@@ -17,6 +17,9 @@ namespace System.Linq.Expressions
         private static MethodInfo whereMethod =
             GenericMethodOf(_ => Queryable.Where(default(IQueryable<int>), default(Expression<Func<int, bool>>)));
 
+        private static MethodInfo countMethod =
+            GenericMethodOf(_ => Queryable.LongCount(default(IQueryable<int>)));
+
         public static MethodInfo QueryableSelectGeneric
         {
             get { return selectMethod; }
@@ -30,6 +33,11 @@ namespace System.Linq.Expressions
         public static MethodInfo QueryableWhereGeneric
         {
             get { return whereMethod; }
+        }
+
+        public static MethodInfo QueryableCountGeneric
+        {
+            get { return countMethod; }
         }
 
         private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression)

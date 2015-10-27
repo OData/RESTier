@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 #if EF7
 using Microsoft.Data.Entity;
 #endif
-using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Samples.Northwind.Models;
@@ -16,10 +15,9 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class SaveTests : TestBase
     {
-        [EnableConventions]
-        private class TestEntityFilterReturnsTaskDomain : NorthwindDomain
+        private class TestEntityFilterReturnsTaskApi : NorthwindApi
         {
-            private async Task OnInsertingCustomers(Customer customer)
+            protected async Task OnInsertingCustomers(Customer customer)
             {
                 await Task.Delay(10);
                 customer.CompanyName += "OnInserting";
@@ -32,7 +30,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestEntityFilterReturnsTask()
         {
-            TestEntityFilterReturnsTaskDomain domain = new TestEntityFilterReturnsTaskDomain();
+            TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
             DataModificationEntry<Customer> createCustomer = new DataModificationEntry<Customer>(
                 "Customers",
                 "Customer",
@@ -44,7 +42,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
                     {"CompanyName", "New Cust"},
                 });
 
-            await domain.SubmitAsync(new ChangeSet(new ChangeSetEntry[] { createCustomer }));
+            await api.SubmitAsync(new ChangeSet(new ChangeSetEntry[] { createCustomer }));
 
             NorthwindContext ctx = new NorthwindContext();
 

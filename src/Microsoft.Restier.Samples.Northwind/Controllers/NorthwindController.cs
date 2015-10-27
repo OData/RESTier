@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 #if EF7
+using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Infrastructure;
 using Microsoft.Data.Entity.Update;
 #else
@@ -13,35 +14,35 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Routing;
 using Microsoft.Restier.Samples.Northwind.Models;
-using Microsoft.Restier.WebApi;
 
 namespace Microsoft.Restier.Samples.Northwind.Controllers
 {
-    public class NorthwindController :
-        ODataDomainController<NorthwindDomain>
+    public class NorthwindController : ODataController
     {
+        private NorthwindApi api;
+
+        private NorthwindApi Api
+        {
+            get
+            {
+                if (api == null)
+                {
+                    api = new NorthwindApi();
+                }
+
+                return api;
+            }
+        }
+
         private NorthwindContext DbContext
         {
             get
             {
-                return Domain.Context;
+                return Api.Context;
             }
         }
 
         // OData Attribute Routing
-        [ODataRoute("Customers({key})/CompanyName")]
-        [ODataRoute("Customers({key})/CompanyName/$value")]
-        public string GetCustomerCompanyName([FromODataUri]string key)
-        {
-            return DbContext.Customers.Where(c => c.CustomerID == key).Select(c => c.CompanyName).FirstOrDefault();
-        }
-
-        [ODataRoute("Products/$count")]
-        public IHttpActionResult GetProductsCount()
-        {
-            return Ok(DbContext.Products.Count());
-        }
-
         [HttpPut]
         [ODataRoute("Products({key})/UnitPrice")]
         public IHttpActionResult UpdateProductUnitPrice(int key, [FromBody]decimal price)
@@ -114,6 +115,23 @@ namespace Microsoft.Restier.Samples.Northwind.Controllers
         {
             DbContext.ResetDataSource();
             return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Disposes the API and the controller.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposing is happening.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.api != null)
+                {
+                    this.api.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

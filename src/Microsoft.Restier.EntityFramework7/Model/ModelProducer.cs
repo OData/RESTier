@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
 using Microsoft.Data.Entity.Infrastructure;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.EntityFramework.Model
 {
@@ -24,7 +25,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    public class ModelProducer : IModelProducer
+    public class ModelProducer : IModelBuilder
     {
         private const string c_annotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
@@ -53,13 +54,13 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// A task that represents the asynchronous
         /// operation whose result is the base model.
         /// </returns>
-        public Task<EdmModel> ProduceModelAsync(
-            ModelContext context,
+        public Task<IEdmModel> GetModelAsync(
+            InvocationContext context,
             CancellationToken cancellationToken)
         {
             var model = new EdmModel();
-            var domainContext = context.DomainContext;
-            var dbContext = domainContext.GetProperty<DbContext>("DbContext");
+            var domainContext = context.ApiContext;
+            var dbContext = domainContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
             var elementMap = new Dictionary<IAnnotatable, IEdmElement>();
             var efModel = dbContext.Model;
             var namespaceName = efModel.EntityTypes
@@ -127,7 +128,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             // TODO GitHubIssue#36 : support function imports
             model.AddElement(entityContainer);
 
-            return Task.FromResult(model);
+            return Task.FromResult<IEdmModel>(model);
         }
 
         private static IEdmEntityType CreateEntityType(
@@ -144,17 +145,18 @@ namespace Microsoft.Restier.EntityFramework.Model
                 if (type != null)
                 {
                     string defaultValue = null;
-                    if (efProperty.Relational().DefaultValue != null)
+
+                    if (efProperty.SqlServer().DefaultValue != null)
                     {
-                        defaultValue = efProperty.Relational().DefaultExpression;
+                        defaultValue = efProperty.SqlServer().DefaultValue.ToString();
                     }
+
                     var property = entityType.AddStructuralProperty(
                         efProperty.Name, type, defaultValue,
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
 
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-                    if (efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Computed ||
-                        efProperty.StoreGeneratedPattern == StoreGeneratedPattern.Identity)
+                    if (efProperty.StoreGeneratedAlways)
                     {
                         SetComputedAnnotation(model, property);
                     }
@@ -281,7 +283,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 var efEnd = naviPair[i];
                 if (efEnd == null) continue;
 
-                var efEntityType = efEnd.EntityType;
+                var efEntityType = efEnd.DeclaringEntityType;
                 if (!elementMap.ContainsKey(efEntityType))
                 {
                     continue;
@@ -326,7 +328,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
             if (navPropertyInfos[0] != null && navPropertyInfos[1] == null)
             {
-                var efEntityType = navi.EntityType;
+                var efEntityType = navi.DeclaringEntityType;
                 var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[0].Name) == null)
                 {
@@ -335,7 +337,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
             if (navPropertyInfos[0] != null && navPropertyInfos[1] != null)
             {
-                var efEntityType = navi.EntityType;
+                var efEntityType = navi.DeclaringEntityType;
                 var entityType = elementMap[efEntityType] as EdmEntityType;
                 if (entityType.FindProperty(navPropertyInfos[0].Name) == null)
                 {
@@ -358,7 +360,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 if (naviPair[i] == null) continue;
 
-                var efEntityType = naviPair[i].EntityType;
+                var efEntityType = naviPair[i].DeclaringEntityType;
                 if (!elementMap.ContainsKey(efEntityType))
                 {
                     continue;

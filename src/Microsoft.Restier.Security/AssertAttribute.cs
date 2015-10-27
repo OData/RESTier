@@ -7,12 +7,12 @@ using Microsoft.Restier.Core;
 namespace Microsoft.Restier.Security
 {
     /// <summary>
-    /// Specifies a domain security policy that asserts a role should be
+    /// Specifies an API security policy that asserts a role should be
     /// present for the current principal on the target type or member.
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public sealed class AssertAttribute : Attribute, IDomainPolicy
+    public sealed class AssertAttribute : Attribute, IApiPolicy
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AssertAttribute" /> class.
@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Security
         public string Role { get; private set; }
 
         /// <summary>
-        /// Activates this domain policy.
+        /// Activates this API policy.
         /// </summary>
         /// <param name="context">
         /// An invocation context.
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Security
         }
 
         /// <summary>
-        /// Deactivates this domain policy.
+        /// Deactivates this API policy.
         /// </summary>
         /// <param name="context">
         /// An invocation context.

@@ -117,14 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BatchHandlerRequiresDomainContextFactory" xml:space="preserve">
-    <value>ODataDomainBatchHandler was called without a DomainContext Factory.</value>
+  <data name="BatchHandlerRequiresApiContextFactory" xml:space="preserve">
+    <value>RestierBatchHandler was called without an ApiContext Factory.</value>
+  </data>
+  <data name="CannotWriteObjectType" xml:space="preserve">
+    <value>{0} cannot write an object of type '{1}'.</value>
   </data>
   <data name="ControllerRequiresPath" xml:space="preserve">
     <value>Controller cannot have null path.</value>
   </data>
   <data name="DeleteOnlySupportedOnEntitySet" xml:space="preserve">
     <value>Currently only EntitySets can be deleted from.</value>
+  </data>
+  <data name="EdmTypeNotSupported" xml:space="preserve">
+    <value>{0} is not a supported EDM type.</value>
   </data>
   <data name="EntitySetMissingForSerialization" xml:space="preserve">
     <value>EntitySet is missing during serialization.</value>
@@ -149,6 +155,12 @@
   </data>
   <data name="MultiKeyValuesExpected" xml:space="preserve">
     <value>Only one key was specified, when multiple were expected.</value>
+  </data>
+  <data name="PathSegmentNotSupported" xml:space="preserve">
+    <value>Path segment not supported: {0}</value>
+  </data>
+  <data name="PostToUnboundActionNotSupported" xml:space="preserve">
+    <value>Post to unbound action is not supported by `RestierController`.</value>
   </data>
   <data name="ResourceNotFound" xml:space="preserve">
     <value>The resource you requested is not found.</value>

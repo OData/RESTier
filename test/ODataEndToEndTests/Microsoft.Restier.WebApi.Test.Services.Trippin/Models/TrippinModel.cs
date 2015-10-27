@@ -286,6 +286,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 LastName = "Whyte",
                 UserName = "russellwhyte",
                 BirthDate = new DateTime(1980, 10, 15),
+                FavoriteFeature = Feature.Feature1,
             };
 
             var person2 = new Person
@@ -295,6 +296,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 LastName = "Ketchum",
                 UserName = "scottketchum",
                 BirthDate = new DateTime(1983, 11, 12),
+                FavoriteFeature = Feature.Feature2,
                 Friends = new Collection<Person> { person1 }
             };
 
@@ -305,6 +307,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 LastName = "Mundy",
                 UserName = "ronaldmundy",
                 BirthDate = new DateTime(1984, 12, 11),
+                FavoriteFeature = Feature.Feature3,
                 Friends = new Collection<Person> { person1, person2 }
             };
 
@@ -323,7 +326,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Javier",
                     LastName = "Alfred",
                     UserName = "javieralfred",
-                    BirthDate = new DateTime(1985, 1, 10)
+                    BirthDate = new DateTime(1985, 1, 10),
+                    FavoriteFeature = Feature.Feature4,
                 },
                 new Person
                 {
@@ -331,7 +335,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Willie",
                     LastName = "Ashmore",
                     UserName = "willieashmore",
-                    BirthDate = new DateTime(1986, 2, 9)
+                    BirthDate = new DateTime(1986, 2, 9),
+                    FavoriteFeature = Feature.Feature1,
                 },
                 new Person
                 {
@@ -339,7 +344,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Vincent",
                     LastName = "Calabrese",
                     UserName = "vincentcalabrese",
-                    BirthDate = new DateTime(1987, 3, 8)
+                    BirthDate = new DateTime(1987, 3, 8),
+                    FavoriteFeature = Feature.Feature2,
                 },
                 new Person
                 {
@@ -347,7 +353,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Clyde",
                     LastName = "Guess",
                     UserName = "clydeguess",
-                    BirthDate = new DateTime(1988, 4, 7)
+                    BirthDate = new DateTime(1988, 4, 7),
+                    FavoriteFeature = Feature.Feature3,
                 },
                 new Person
                 {
@@ -355,7 +362,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Keith",
                     LastName = "Pinckney",
                     UserName = "keithpinckney",
-                    BirthDate = new DateTime(1989, 5, 6)
+                    BirthDate = new DateTime(1989, 5, 6),
+                    FavoriteFeature = Feature.Feature4,
                 },
                 new Person
                 {
@@ -363,7 +371,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Marshall",
                     LastName = "Garay",
                     UserName = "marshallgaray",
-                    BirthDate = new DateTime(1990, 6, 5)
+                    BirthDate = new DateTime(1990, 6, 5),
+                    FavoriteFeature = Feature.Feature1,
                 },
                 new Person
                 {
@@ -371,7 +380,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Ryan",
                     LastName = "Theriault",
                     UserName = "ryantheriault",
-                    BirthDate = new DateTime(1991, 7, 4)
+                    BirthDate = new DateTime(1991, 7, 4),
+                    FavoriteFeature = Feature.Feature2,
                 },
                 new Person
                 {
@@ -379,7 +389,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Elaine",
                     LastName = "Stewart",
                     UserName = "elainestewart",
-                    BirthDate = new DateTime(1992, 8, 3)
+                    BirthDate = new DateTime(1992, 8, 3),
+                    FavoriteFeature = Feature.Feature3,
                 },
                 new Person
                 {
@@ -387,7 +398,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Sallie",
                     LastName = "Sampson",
                     UserName = "salliesampson",
-                    BirthDate = new DateTime(1993, 9, 2)
+                    BirthDate = new DateTime(1993, 9, 2),
+                    FavoriteFeature = Feature.Feature4,
                 },
                 new Person
                 {
@@ -395,7 +407,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FirstName = "Joni",
                     LastName = "Rosales",
                     UserName = "jonirosales",
-                    BirthDate = new DateTime(1994, 10, 1)
+                    BirthDate = new DateTime(1994, 10, 1),
+                    FavoriteFeature = Feature.Feature1,
                 }
             });
             

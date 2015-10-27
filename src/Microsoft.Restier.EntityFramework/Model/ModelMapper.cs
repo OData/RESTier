@@ -15,7 +15,7 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    public class ModelMapper : IModelMapper
+    internal class ModelMapper : IModelMapper
     {
         private readonly Type dbContextType;
 
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// set, singleton, or composable function import.
         /// </summary>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -50,7 +50,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            DomainContext context,
+            ApiContext context,
             string name,
             out Type relevantType)
         {
@@ -60,7 +60,11 @@ namespace Microsoft.Restier.EntityFramework.Model
             if (property != null)
             {
                 var type = property.PropertyType;
+#if EF7
+                var genericType = type.FindGenericType(typeof(DbSet<>));
+#else
                 var genericType = type.FindGenericType(typeof(IDbSet<>));
+#endif
                 if (genericType != null)
                 {
                     relevantType = genericType.GetGenericArguments()[0];
@@ -74,7 +78,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// Tries to get the relevant type of a composable function.
         /// </summary>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -91,7 +95,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            DomainContext context,
+            ApiContext context,
             string namespaceName,
             string name,
             out Type relevantType)

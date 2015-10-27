@@ -17,14 +17,6 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
         /// </summary>
-        public ValidationException()
-            : base()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationException"/> class.
-        /// </summary>
         /// <param name="message">Message of the exception.</param>
         public ValidationException(string message)
             : base(message)

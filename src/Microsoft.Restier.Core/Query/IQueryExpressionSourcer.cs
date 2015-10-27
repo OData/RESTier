@@ -11,20 +11,16 @@ namespace Microsoft.Restier.Core.Query
     /// <remarks>
     /// <para>
     /// Query expression sourcing converts an expression that identifies
-    /// domain data in a normalized manner to an equivalent representation
+    /// API data in a normalized manner to an equivalent representation
     /// in terms of the underlying data source proxy.
     /// </para>
     /// <para>
     /// Sourcing is the last step that occurs when processing a query
-    /// expression, and only happens on expressions that represent domain
+    /// expression, and only happens on expressions that represent API
     /// data that cannot be expanded into any more primitive of an expression.
     /// </para>
-    /// <para>
-    /// This is a singleton hook point that should be
-    /// implemented by an underlying data provider.
-    /// </para>
     /// </remarks>
-    public interface IQueryExpressionSourcer
+    public interface IQueryExpressionSourcer : IHookHandler
     {
         /// <summary>
         /// Sources an expression.
@@ -46,7 +42,7 @@ namespace Microsoft.Restier.Core.Query
         /// </para>
         /// <para>
         /// When <paramref name="embedded"/> is <c>true</c>, this method should
-        /// return an expression that represents the domain data identified by
+        /// return an expression that represents the API data identified by
         /// the visited node in terms of the underlying data source proxy.
         /// </para>
         /// <para>

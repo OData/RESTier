@@ -9,20 +9,14 @@ namespace Microsoft.Restier.Core.Model
     /// Represents a hook point that maps between
     /// the model space and the object space.
     /// </summary>
-    /// <remarks>
-    /// This is both a singleton hook point that should be implemented by an
-    /// underlying data provider as well as a multi-cast hook point whose
-    /// instances are used in reverse order of registration. When in use,
-    /// the multi-cast hook points are used before the singleton hook point.
-    /// </remarks>
-    public interface IModelMapper
+    public interface IModelMapper : IHookHandler
     {
         /// <summary>
         /// Tries to get the relevant type of an entity
         /// set, singleton, or composable function import.
         /// </summary>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -54,7 +48,7 @@ namespace Microsoft.Restier.Core.Model
         /// </para>
         /// </remarks>
         bool TryGetRelevantType(
-            DomainContext context,
+            ApiContext context,
             string name,
             out Type relevantType);
 
@@ -62,7 +56,7 @@ namespace Microsoft.Restier.Core.Model
         /// Tries to get the relevant type of a composable function.
         /// </summary>
         /// <param name="context">
-        /// A domain context.
+        /// An API context.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -91,7 +85,7 @@ namespace Microsoft.Restier.Core.Model
         /// </para>
         /// </remarks>
         bool TryGetRelevantType(
-            DomainContext context,
+            ApiContext context,
             string namespaceName,
             string name,
             out Type relevantType);

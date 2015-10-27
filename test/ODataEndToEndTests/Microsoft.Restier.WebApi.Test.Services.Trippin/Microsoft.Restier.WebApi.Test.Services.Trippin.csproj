@@ -46,11 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="ActionAttribute.cs" />
-    <Compile Include="ConventionalActionProvider.cs" />
-    <Compile Include="EdmHelpers.cs" />
     <Compile Include="Controllers\TrippinController.cs" />
-    <Compile Include="Domain\TrippinDomain.cs" />
+    <Compile Include="Api\TrippinApi.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -58,6 +55,7 @@
     <Compile Include="Models\Airline.cs" />
     <Compile Include="Models\Airport.cs" />
     <Compile Include="Models\Event.cs" />
+    <Compile Include="Models\Feature.cs" />
     <Compile Include="Models\Flight.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Person.cs" />
@@ -78,10 +76,6 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Conventions\Microsoft.Restier.Conventions.csproj">
-      <Project>{5a10c8bb-5ca0-4d41-a731-45cd29a30d34}</Project>
-      <Name>Microsoft.Restier.Conventions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
       <Name>Microsoft.Restier.EntityFramework</Name>

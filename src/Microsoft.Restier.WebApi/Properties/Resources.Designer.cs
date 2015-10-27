@@ -61,11 +61,20 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ODataDomainBatchHandler was called without a DomainContext Factory..
+        ///   Looks up a localized string similar to RestierBatchHandler was called without an ApiContext Factory..
         /// </summary>
-        internal static string BatchHandlerRequiresDomainContextFactory {
+        internal static string BatchHandlerRequiresApiContextFactory {
             get {
-                return ResourceManager.GetString("BatchHandlerRequiresDomainContextFactory", resourceCulture);
+                return ResourceManager.GetString("BatchHandlerRequiresApiContextFactory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} cannot write an object of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string CannotWriteObjectType {
+            get {
+                return ResourceManager.GetString("CannotWriteObjectType", resourceCulture);
             }
         }
         
@@ -84,6 +93,15 @@ namespace Microsoft.Restier.WebApi.Properties {
         internal static string DeleteOnlySupportedOnEntitySet {
             get {
                 return ResourceManager.GetString("DeleteOnlySupportedOnEntitySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a supported EDM type..
+        /// </summary>
+        internal static string EdmTypeNotSupported {
+            get {
+                return ResourceManager.GetString("EdmTypeNotSupported", resourceCulture);
             }
         }
         
@@ -156,6 +174,24 @@ namespace Microsoft.Restier.WebApi.Properties {
         internal static string MultiKeyValuesExpected {
             get {
                 return ResourceManager.GetString("MultiKeyValuesExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path segment not supported: {0}.
+        /// </summary>
+        internal static string PathSegmentNotSupported {
+            get {
+                return ResourceManager.GetString("PathSegmentNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Post to unbound action is not supported by `RestierController`..
+        /// </summary>
+        internal static string PostToUnboundActionNotSupported {
+            get {
+                return ResourceManager.GetString("PostToUnboundActionNotSupported", resourceCulture);
             }
         }
         

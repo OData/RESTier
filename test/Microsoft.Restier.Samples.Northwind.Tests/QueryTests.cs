@@ -12,17 +12,17 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class QueryTests : TestBase
     {
-        private NorthwindDomain domain = new NorthwindDomain();
+        private NorthwindApi api = new NorthwindApi();
 
         private IQueryable<Order> OrdersQuery
         {
-            get { return this.domain.Source<Order>("Orders"); }
+            get { return this.api.Source<Order>("Orders"); }
         }
 
         [Fact]
         public async Task TestTakeIncludeTotalCount()
         {
-            QueryResult result = await this.domain.QueryAsync(
+            QueryResult result = await this.api.QueryAsync(
                 new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10), true));
 
             Assert.Equal(830, result.TotalCount);
@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestSkipIncludeTotalCount()
         {
-            QueryResult result = await this.domain.QueryAsync(
+            QueryResult result = await this.api.QueryAsync(
                 new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10), true));
 
             Assert.Equal(830, result.TotalCount);
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestSkipTakeIncludeTotalCount()
         {
-            QueryResult result = await this.domain.QueryAsync(
+            QueryResult result = await this.api.QueryAsync(
                 new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10).Take(25), true));
 
             Assert.Equal(830, result.TotalCount);
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestTakeNotStrippedIncludeTotalCount()
         {
-            QueryResult result = await this.domain.QueryAsync(
+            QueryResult result = await this.api.QueryAsync(
                 new QueryRequest(this.OrdersQuery.Take(10).OrderBy(o => o.OrderDate), true));
 
             Assert.Equal(10, result.TotalCount);

@@ -17,7 +17,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
         [Fact]
         public void ComplexTypeShoudWork()
         {
-            var model = Domain.GetModelAsync(new LibraryDomain().Context).Result;
+            var model = Api.GetModelAsync(new LibraryApi().Context).Result;
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
         [Fact]
         public void PrimitiveTypesShouldWork()
         {
-            var model = Domain.GetModelAsync(new LibraryDomain().Context).Result;
+            var model = Api.GetModelAsync(new LibraryApi().Context).Result;
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);

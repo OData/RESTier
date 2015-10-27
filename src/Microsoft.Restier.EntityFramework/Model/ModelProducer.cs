@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +16,8 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Edm.Vocabularies.V1;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.EntityFramework.Properties;
 using EdmModel = Microsoft.OData.Edm.Library.EdmModel;
 using EdmProperty = System.Data.Entity.Core.Metadata.Edm.EdmProperty;
 
@@ -26,10 +27,13 @@ namespace Microsoft.Restier.EntityFramework.Model
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    public class ModelProducer : IModelProducer
+    internal class ModelProducer : IModelBuilder
     {
         private const string AnnotationSchema =
             "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
+
+        private const string StoreGeneratedPatternKey = ":StoreGeneratedPattern";
+        private const string StoreGeneratedPatternValueComputed = "Computed";
 
         private static IDictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
             primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
@@ -81,27 +85,13 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// </summary>
         public static ModelProducer Instance { get; private set; }
 
-        /// <summary>
-        /// Asynchronously produces a base model.
-        /// </summary>
-        /// <param name="context">
-        /// The model context.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// A cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is the base model.
-        /// </returns>
-        public Task<EdmModel> ProduceModelAsync(
-            ModelContext context,
-            CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context);
+            Ensure.NotNull(context, "context");
             var model = new EdmModel();
-            var domainContext = context.DomainContext;
-            var dbContext = domainContext.GetProperty<DbContext>("DbContext");
+            var apiContext = context.ApiContext;
+            var dbContext = apiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
             var elementMap = new Dictionary<MetadataItem, IEdmElement>();
             var efModel = (dbContext as IObjectContextAdapter)
                 .ObjectContext.MetadataWorkspace;
@@ -157,7 +147,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             // TODO GitHubIssue#36 : support function imports
             model.AddElement(entityContainer);
 
-            return Task.FromResult(model);
+            return Task.FromResult<IEdmModel>(model);
         }
 
         private static IEdmEntityType CreateEntityType(
@@ -189,11 +179,12 @@ namespace Microsoft.Restier.EntityFramework.Model
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
                     MetadataProperty storeGeneratedPattern = null;
                     efProperty.MetadataProperties.TryGetValue(
-                        AnnotationSchema + ":StoreGeneratedPattern",
+                        AnnotationSchema + StoreGeneratedPatternKey,
                         true,
                         out storeGeneratedPattern);
 
-                    if (storeGeneratedPattern != null && (string)storeGeneratedPattern.Value == "Computed")
+                    if (storeGeneratedPattern != null &&
+                        (string)storeGeneratedPattern.Value == StoreGeneratedPatternValueComputed)
                     {
                         SetComputedAnnotation(model, property);
                     }
@@ -234,6 +225,10 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 return GetComplexTypeReference(efProperty, model, elementMap);
             }
+            else if (efProperty.IsEnumType)
+            {
+                return GetEnumTypeReference(efProperty, model, elementMap);
+            }
 
             // TODO GitHubIssue#103 : Choose property error message for unknown type
             return null;
@@ -269,6 +264,35 @@ namespace Microsoft.Restier.EntityFramework.Model
             }
 
             return new EdmComplexTypeReference(complexType, efProperty.Nullable);
+        }
+
+        private static IEdmEnumTypeReference GetEnumTypeReference(
+            EdmProperty efProperty,
+            EdmModel model,
+            IDictionary<MetadataItem, IEdmElement> elementMap)
+        {
+            var efEnumType = efProperty.EnumType;
+            EdmEnumType enumType;
+            IEdmElement element;
+
+            if (elementMap.TryGetValue(efEnumType, out element))
+            {
+                enumType = (EdmEnumType)element;
+            }
+            else
+            {
+                enumType = new EdmEnumType(efEnumType.NamespaceName, efEnumType.Name);
+                elementMap.Add(efEnumType, enumType);
+                model.AddElement(enumType);
+
+                foreach (var member in efEnumType.Members)
+                {
+                    var longValue = Convert.ToInt64(member.Value, CultureInfo.InvariantCulture);
+                    enumType.AddMember(member.Name, new EdmIntegerConstant(longValue));
+                }
+            }
+
+            return new EdmEnumTypeReference(enumType, efProperty.Nullable);
         }
 
         private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(EdmProperty efProperty)

@@ -7,11 +7,11 @@ using System.Collections.Generic;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents context under which a domain flow operates.
+    /// Represents context under which an API flow operates.
     /// </summary>
     /// <remarks>
-    /// An invocation context is created each time a domain is invoked and
-    /// is used for a specific domain flow. It maintains a set of properties
+    /// An invocation context is created each time an API is invoked and
+    /// is used for a specific API flow. It maintains a set of properties
     /// that can store data that lives for the lifetime of the flow.
     /// </remarks>
     public class InvocationContext : PropertyBag
@@ -19,51 +19,23 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
-        /// <param name="domainContext">
-        /// A domain context.
+        /// <param name="apiContext">
+        /// An API context.
         /// </param>
-        public InvocationContext(DomainContext domainContext)
+        public InvocationContext(ApiContext apiContext)
         {
-            Ensure.NotNull(domainContext, "domainContext");
-            this.DomainContext = domainContext;
+            Ensure.NotNull(apiContext, "apiContext");
+            this.ApiContext = apiContext;
         }
 
         /// <summary>
-        /// Gets the domain context.
+        /// Gets the API context.
         /// </summary>
-        public DomainContext DomainContext { get; private set; }
+        public ApiContext ApiContext { get; private set; }
 
-        /// <summary>
-        /// Gets the single instance of a type of singleton hook point.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the singleton hook point.
-        /// </typeparam>
-        /// <returns>
-        /// The single instance of the specified type of singleton hook
-        /// point, or <c>null</c> if the domain configuration does not
-        /// have an instance of the specified type of singleton hook point.
-        /// </returns>
-        public T GetHookPoint<T>()
-            where T : class
+        internal T GetHookHandler<T>() where T : class, IHookHandler
         {
-            return this.DomainContext.Configuration.GetHookPoint<T>();
-        }
-
-        /// <summary>
-        /// Gets all instances of a type of multi-cast hook point.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of the multi-cast hook point.
-        /// </typeparam>
-        /// <returns>
-        /// All instances of the specified type of multi-cast
-        /// hook point in the original order of registration.
-        /// </returns>
-        public IEnumerable<T> GetHookPoints<T>()
-            where T : class
-        {
-            return this.DomainContext.Configuration.GetHookPoints<T>();
+            return this.ApiContext.Configuration.GetHookHandler<T>();
         }
     }
 }

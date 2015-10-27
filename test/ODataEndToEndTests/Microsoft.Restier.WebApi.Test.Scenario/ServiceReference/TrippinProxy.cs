@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generation date: 8/20/2015 5:32:21 PM
+// Generation date: 9/30/2015 4:15:40 PM
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
     /// <summary>
@@ -20,8 +20,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// Initialize a new TrippinModel object.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
-        public TrippinModel(global::System.Uri serviceRoot) :
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        public TrippinModel(global::System.Uri serviceRoot) : 
                 base(serviceRoot, global::Microsoft.OData.Client.ODataProtocolVersion.V4)
         {
             this.ResolveName = new global::System.Func<global::System.Type, string>(this.ResolveNameFromType);
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// in Visual Studio is different from the one indicated in the
         /// server schema, use type-mappers to map between the two.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected global::System.Type ResolveTypeFromName(string typeName)
         {
             global::System.Type resolvedType = this.DefaultResolveType(typeName, "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", "Microsoft.Restier.WebApi.Test.Services.Trippin.Models");
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// in Visual Studio is different from the one indicated in the
         /// server schema, use type-mappers to map between the two.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected string ResolveNameFromType(global::System.Type clientType)
         {
             global::Microsoft.OData.Client.OriginalNameAttribute originalNameAttribute = (global::Microsoft.OData.Client.OriginalNameAttribute)global::System.Linq.Enumerable.SingleOrDefault(global::Microsoft.OData.Client.Utility.GetCustomAttributes(clientType, typeof(global::Microsoft.OData.Client.OriginalNameAttribute), true));
@@ -68,7 +68,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Airlines in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Airlines")]
         public global::Microsoft.OData.Client.DataServiceQuery<Airline> Airlines
         {
@@ -81,12 +81,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Airlines;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<Airline> _Airlines;
         /// <summary>
         /// There are no comments for Airports in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Airports")]
         public global::Microsoft.OData.Client.DataServiceQuery<Airport> Airports
         {
@@ -99,12 +99,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Airports;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<Airport> _Airports;
         /// <summary>
         /// There are no comments for Events in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Events")]
         public global::Microsoft.OData.Client.DataServiceQuery<Event> Events
         {
@@ -117,12 +117,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Events;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<Event> _Events;
         /// <summary>
         /// There are no comments for Flights in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Flights")]
         public global::Microsoft.OData.Client.DataServiceQuery<Flight> Flights
         {
@@ -135,12 +135,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Flights;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<Flight> _Flights;
         /// <summary>
         /// There are no comments for People in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("People")]
         public global::Microsoft.OData.Client.DataServiceQuery<Person> People
         {
@@ -153,12 +153,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._People;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<Person> _People;
         /// <summary>
         /// There are no comments for Trips in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Trips")]
         public global::Microsoft.OData.Client.DataServiceQuery<Trip> Trips
         {
@@ -171,12 +171,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Trips;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<Trip> _Trips;
         /// <summary>
         /// There are no comments for Airlines in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public void AddToAirlines(Airline airline)
         {
             base.AddObject("Airlines", airline);
@@ -184,7 +184,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Airports in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public void AddToAirports(Airport airport)
         {
             base.AddObject("Airports", airport);
@@ -192,7 +192,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Events in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public void AddToEvents(Event @event)
         {
             base.AddObject("Events", @event);
@@ -200,7 +200,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Flights in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public void AddToFlights(Flight flight)
         {
             base.AddObject("Flights", flight);
@@ -208,7 +208,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for People in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public void AddToPeople(Person person)
         {
             base.AddObject("People", person);
@@ -216,7 +216,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Trips in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public void AddToTrips(Trip trip)
         {
             base.AddObject("Trips", trip);
@@ -224,7 +224,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Me in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Me")]
         public PersonSingle Me
         {
@@ -237,14 +237,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Me;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private PersonSingle _Me;
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private abstract class GeneratedEdmModel
         {
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
             private static global::Microsoft.OData.Edm.IEdmModel ParsedModel = LoadModelFromString();
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
             private const string Edmx = @"<edmx:Edmx Version=""4.0"" xmlns:edmx=""http://docs.oasis-open.org/odata/ns/edmx"">
   <edmx:DataServices>
     <Schema Namespace=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
@@ -301,6 +301,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
           <ReferentialConstraint Property=""ToId"" ReferencedProperty=""IcaoCode"" />
         </NavigationProperty>
       </EntityType>
+      <EnumType Name=""Feature"">
+        <Member Name=""Feature1"" Value=""0"" />
+        <Member Name=""Feature2"" Value=""1"" />
+        <Member Name=""Feature3"" Value=""2"" />
+        <Member Name=""Feature4"" Value=""3"" />
+      </EnumType>
       <EntityType Name=""Person"">
         <Key>
           <PropertyRef Name=""PersonId"" />
@@ -311,6 +317,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""LastName"" Type=""Edm.String"" MaxLength=""26"" />
         <Property Name=""Concurrency"" Type=""Edm.Int64"" Nullable=""false"" />
         <Property Name=""BirthDate"" Type=""Edm.Date"" Nullable=""false"" />
+        <Property Name=""FavoriteFeature"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" Nullable=""false"" />
         <NavigationProperty Name=""Friends"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
         <NavigationProperty Name=""Trips"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip)"" />
       </EntityType>
@@ -333,22 +340,22 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <NavigationProperty Name=""Events"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event)"" />
         <NavigationProperty Name=""Flights"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight)"" />
       </EntityType>
-      <Action Name=""ResetDataSource"" />
-      <Function Name=""GetNumberOfFriends"" IsBound=""true"" IsComposable=""true"">
-        <Parameter Name=""person"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" Nullable=""false"" />
+      <Function Name=""GetNumberOfFriends"" IsBound=""true"">
+        <Parameter Name=""person"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
         <ReturnType Type=""Edm.Int32"" Nullable=""false"" />
       </Function>
-      <Function Name=""GetPersonWithMostFriends"" IsComposable=""true"">
-        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" Nullable=""false"" />
+      <Function Name=""GetPersonWithMostFriends"">
+        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
       </Function>
-      <Function Name=""GetPeopleWithFriendsAtLeast"" IsComposable=""true"">
+      <Function Name=""GetPeopleWithFriendsAtLeast"">
         <Parameter Name=""n"" Type=""Edm.Int32"" Nullable=""false"" />
-        <ReturnType Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" Nullable=""false"" />
+        <ReturnType Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
       </Function>
+      <Action Name=""ResetDataSource"" />
       <Action Name=""CleanUpExpiredTrips"" />
       <Action Name=""EndTrip"" IsBound=""true"" EntitySetPath=""trip"">
-        <Parameter Name=""trip"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" Nullable=""false"" />
-        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" Nullable=""false"" />
+        <Parameter Name=""trip"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" />
+        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" />
       </Action>
       <EntityContainer Name=""TrippinModel"">
         <EntitySet Name=""Airlines"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline"">
@@ -378,21 +385,21 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             </Collection>
           </Annotation>
         </EntitySet>
-        <ActionImport Name=""ResetDataSource"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.ResetDataSource"" />
         <Singleton Name=""Me"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
         <FunctionImport Name=""GetPersonWithMostFriends"" Function=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetPersonWithMostFriends"" EntitySet=""People"" />
         <FunctionImport Name=""GetPeopleWithFriendsAtLeast"" Function=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetPeopleWithFriendsAtLeast"" EntitySet=""People"" />
+        <ActionImport Name=""ResetDataSource"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.ResetDataSource"" />
         <ActionImport Name=""CleanUpExpiredTrips"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.CleanUpExpiredTrips"" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>
 </edmx:Edmx>";
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
             public static global::Microsoft.OData.Edm.IEdmModel GetInstance()
             {
                 return ParsedModel;
             }
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
             private static global::Microsoft.OData.Edm.IEdmModel LoadModelFromString()
             {
                 global::System.Xml.XmlReader reader = CreateXmlReader(Edmx);
@@ -405,7 +412,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     ((global::System.IDisposable)(reader)).Dispose();
                 }
             }
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
             private static global::System.Xml.XmlReader CreateXmlReader(string edmxToParse)
             {
                 return global::System.Xml.XmlReader.Create(new global::System.IO.StringReader(edmxToParse));
@@ -417,7 +424,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetPersonWithMostFriends")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle GetPersonWithMostFriends()
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(this.CreateFunctionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPersonWithMostFriends", true));
+            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(this.CreateFunctionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPersonWithMostFriends", false));
         }
         /// <summary>
         /// There are no comments for GetPeopleWithFriendsAtLeast in the schema.
@@ -425,7 +432,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetPeopleWithFriendsAtLeast")]
         public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> GetPeopleWithFriendsAtLeast(int n)
         {
-            return this.CreateFunctionQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPeopleWithFriendsAtLeast", true, new global::Microsoft.OData.Client.UriOperationParameter("n", n));
+            return this.CreateFunctionQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPeopleWithFriendsAtLeast", false, new global::Microsoft.OData.Client.UriOperationParameter("n", n));
         }
         /// <summary>
         /// There are no comments for ResetDataSource in the schema.
@@ -454,22 +461,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new AirlineSingle object.
         /// </summary>
         public AirlineSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new AirlineSingle object.
         /// </summary>
         public AirlineSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new AirlineSingle object.
         /// </summary>
         public AirlineSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Airline> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -488,7 +492,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         /// <param name="airlineCode">Initial value of AirlineCode.</param>
         /// <param name="timeStampValue">Initial value of TimeStampValue.</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public static Airline CreateAirline(string airlineCode, byte[] timeStampValue)
         {
             Airline airline = new Airline();
@@ -499,7 +503,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Property AirlineCode in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("AirlineCode")]
         public string AirlineCode
         {
@@ -515,14 +519,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("AirlineCode");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _AirlineCode;
         partial void OnAirlineCodeChanging(string value);
         partial void OnAirlineCodeChanged();
         /// <summary>
         /// There are no comments for Property Name in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Name")]
         public string Name
         {
@@ -538,14 +542,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Name");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _Name;
         partial void OnNameChanging(string value);
         partial void OnNameChanged();
         /// <summary>
         /// There are no comments for Property TimeStampValue in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("TimeStampValue")]
         public byte[] TimeStampValue
         {
@@ -561,20 +565,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("TimeStampValue");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private byte[] _TimeStampValue;
         partial void OnTimeStampValueChanging(byte[] value);
         partial void OnTimeStampValueChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -593,22 +597,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new AirportSingle object.
         /// </summary>
         public AirportSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new AirportSingle object.
         /// </summary>
         public AirportSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new AirportSingle object.
         /// </summary>
         public AirportSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Airport> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -626,7 +627,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Create a new Airport object.
         /// </summary>
         /// <param name="icaoCode">Initial value of IcaoCode.</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public static Airport CreateAirport(string icaoCode)
         {
             Airport airport = new Airport();
@@ -636,7 +637,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Property IcaoCode in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("IcaoCode")]
         public string IcaoCode
         {
@@ -652,14 +653,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("IcaoCode");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _IcaoCode;
         partial void OnIcaoCodeChanging(string value);
         partial void OnIcaoCodeChanged();
         /// <summary>
         /// There are no comments for Property Name in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Name")]
         public string Name
         {
@@ -675,14 +676,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Name");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _Name;
         partial void OnNameChanging(string value);
         partial void OnNameChanged();
         /// <summary>
         /// There are no comments for Property IataCode in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("IataCode")]
         public string IataCode
         {
@@ -698,20 +699,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("IataCode");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _IataCode;
         partial void OnIataCodeChanging(string value);
         partial void OnIataCodeChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -729,7 +730,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Property Address in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Address")]
         public string Address
         {
@@ -745,20 +746,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Address");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _Address;
         partial void OnAddressChanging(string value);
         partial void OnAddressChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -777,22 +778,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new EventSingle object.
         /// </summary>
         public EventSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new EventSingle object.
         /// </summary>
         public EventSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new EventSingle object.
         /// </summary>
         public EventSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Event> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -811,7 +809,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         /// <param name="ID">Initial value of Id.</param>
         /// <param name="occursAt">Initial value of OccursAt.</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public static Event CreateEvent(int ID, global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location occursAt)
         {
             Event @event = new Event();
@@ -826,7 +824,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Property Id in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Id")]
         public int Id
         {
@@ -842,14 +840,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Id");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private int _Id;
         partial void OnIdChanging(int value);
         partial void OnIdChanged();
         /// <summary>
         /// There are no comments for Property OccursAt in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("OccursAt")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location OccursAt
         {
@@ -865,14 +863,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("OccursAt");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location _OccursAt;
         partial void OnOccursAtChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location value);
         partial void OnOccursAtChanged();
         /// <summary>
         /// There are no comments for Property Description in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Description")]
         public string Description
         {
@@ -888,20 +886,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Description");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _Description;
         partial void OnDescriptionChanging(string value);
         partial void OnDescriptionChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -920,27 +918,24 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new FlightSingle object.
         /// </summary>
         public FlightSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new FlightSingle object.
         /// </summary>
         public FlightSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new FlightSingle object.
         /// </summary>
         public FlightSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Flight> query)
-            : base(query)
-        { }
+            : base(query) {}
 
         /// <summary>
         /// There are no comments for Airline in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Airline")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle Airline
         {
@@ -957,12 +952,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Airline;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle _Airline;
         /// <summary>
         /// There are no comments for From in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("From")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle From
         {
@@ -979,12 +974,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._From;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle _From;
         /// <summary>
         /// There are no comments for To in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("To")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle To
         {
@@ -1001,7 +996,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._To;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle _To;
     }
     /// <summary>
@@ -1022,7 +1017,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="startsAt">Initial value of StartsAt.</param>
         /// <param name="endsAt">Initial value of EndsAt.</param>
         /// <param name="duration">Initial value of Duration.</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public static Flight CreateFlight(int flightId, global::System.DateTimeOffset startsAt, global::System.DateTimeOffset endsAt, global::System.TimeSpan duration)
         {
             Flight flight = new Flight();
@@ -1035,7 +1030,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Property FlightId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("FlightId")]
         public int FlightId
         {
@@ -1051,14 +1046,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("FlightId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private int _FlightId;
         partial void OnFlightIdChanging(int value);
         partial void OnFlightIdChanged();
         /// <summary>
         /// There are no comments for Property ConfirmationCode in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("ConfirmationCode")]
         public string ConfirmationCode
         {
@@ -1074,14 +1069,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("ConfirmationCode");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _ConfirmationCode;
         partial void OnConfirmationCodeChanging(string value);
         partial void OnConfirmationCodeChanged();
         /// <summary>
         /// There are no comments for Property StartsAt in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("StartsAt")]
         public global::System.DateTimeOffset StartsAt
         {
@@ -1097,14 +1092,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("StartsAt");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.DateTimeOffset _StartsAt;
         partial void OnStartsAtChanging(global::System.DateTimeOffset value);
         partial void OnStartsAtChanged();
         /// <summary>
         /// There are no comments for Property EndsAt in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("EndsAt")]
         public global::System.DateTimeOffset EndsAt
         {
@@ -1120,14 +1115,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("EndsAt");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.DateTimeOffset _EndsAt;
         partial void OnEndsAtChanging(global::System.DateTimeOffset value);
         partial void OnEndsAtChanged();
         /// <summary>
         /// There are no comments for Property Duration in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Duration")]
         public global::System.TimeSpan Duration
         {
@@ -1143,14 +1138,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Duration");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.TimeSpan _Duration;
         partial void OnDurationChanging(global::System.TimeSpan value);
         partial void OnDurationChanged();
         /// <summary>
         /// There are no comments for Property SeatNumber in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("SeatNumber")]
         public string SeatNumber
         {
@@ -1166,14 +1161,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("SeatNumber");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _SeatNumber;
         partial void OnSeatNumberChanging(string value);
         partial void OnSeatNumberChanged();
         /// <summary>
         /// There are no comments for Property FlightNumber in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("FlightNumber")]
         public string FlightNumber
         {
@@ -1189,14 +1184,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("FlightNumber");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _FlightNumber;
         partial void OnFlightNumberChanging(string value);
         partial void OnFlightNumberChanged();
         /// <summary>
         /// There are no comments for Property FromId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("FromId")]
         public string FromId
         {
@@ -1212,14 +1207,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("FromId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _FromId;
         partial void OnFromIdChanging(string value);
         partial void OnFromIdChanged();
         /// <summary>
         /// There are no comments for Property ToId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("ToId")]
         public string ToId
         {
@@ -1235,14 +1230,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("ToId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _ToId;
         partial void OnToIdChanging(string value);
         partial void OnToIdChanged();
         /// <summary>
         /// There are no comments for Property AirlineId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("AirlineId")]
         public string AirlineId
         {
@@ -1258,14 +1253,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("AirlineId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _AirlineId;
         partial void OnAirlineIdChanging(string value);
         partial void OnAirlineIdChanged();
         /// <summary>
         /// There are no comments for Property Airline in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Airline")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline Airline
         {
@@ -1281,14 +1276,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Airline");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline _Airline;
         partial void OnAirlineChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline value);
         partial void OnAirlineChanged();
         /// <summary>
         /// There are no comments for Property From in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("From")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport From
         {
@@ -1304,14 +1299,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("From");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport _From;
         partial void OnFromChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport value);
         partial void OnFromChanged();
         /// <summary>
         /// There are no comments for Property To in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("To")]
         public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport To
         {
@@ -1327,20 +1322,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("To");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport _To;
         partial void OnToChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport value);
         partial void OnToChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -1359,27 +1354,24 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new PersonSingle object.
         /// </summary>
         public PersonSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new PersonSingle object.
         /// </summary>
         public PersonSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new PersonSingle object.
         /// </summary>
         public PersonSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Person> query)
-            : base(query)
-        { }
+            : base(query) {}
 
         /// <summary>
         /// There are no comments for Friends in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Friends")]
         public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> Friends
         {
@@ -1396,12 +1388,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Friends;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> _Friends;
         /// <summary>
         /// There are no comments for Trips in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Trips")]
         public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> Trips
         {
@@ -1418,7 +1410,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Trips;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> _Trips;
     }
     /// <summary>
@@ -1438,20 +1430,22 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="firstName">Initial value of FirstName.</param>
         /// <param name="concurrency">Initial value of Concurrency.</param>
         /// <param name="birthDate">Initial value of BirthDate.</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
-        public static Person CreatePerson(int personId, string firstName, long concurrency, global::Microsoft.OData.Edm.Library.Date birthDate)
+        /// <param name="favoriteFeature">Initial value of FavoriteFeature.</param>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        public static Person CreatePerson(int personId, string firstName, long concurrency, global::Microsoft.OData.Edm.Library.Date birthDate, global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature favoriteFeature)
         {
             Person person = new Person();
             person.PersonId = personId;
             person.FirstName = firstName;
             person.Concurrency = concurrency;
             person.BirthDate = birthDate;
+            person.FavoriteFeature = favoriteFeature;
             return person;
         }
         /// <summary>
         /// There are no comments for Property PersonId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("PersonId")]
         public int PersonId
         {
@@ -1467,14 +1461,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("PersonId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private int _PersonId;
         partial void OnPersonIdChanging(int value);
         partial void OnPersonIdChanged();
         /// <summary>
         /// There are no comments for Property UserName in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("UserName")]
         public string UserName
         {
@@ -1490,14 +1484,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("UserName");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _UserName;
         partial void OnUserNameChanging(string value);
         partial void OnUserNameChanged();
         /// <summary>
         /// There are no comments for Property FirstName in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("FirstName")]
         public string FirstName
         {
@@ -1513,14 +1507,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("FirstName");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _FirstName;
         partial void OnFirstNameChanging(string value);
         partial void OnFirstNameChanged();
         /// <summary>
         /// There are no comments for Property LastName in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("LastName")]
         public string LastName
         {
@@ -1536,14 +1530,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("LastName");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _LastName;
         partial void OnLastNameChanging(string value);
         partial void OnLastNameChanged();
         /// <summary>
         /// There are no comments for Property Concurrency in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Concurrency")]
         public long Concurrency
         {
@@ -1559,14 +1553,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Concurrency");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private long _Concurrency;
         partial void OnConcurrencyChanging(long value);
         partial void OnConcurrencyChanged();
         /// <summary>
         /// There are no comments for Property BirthDate in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BirthDate")]
         public global::Microsoft.OData.Edm.Library.Date BirthDate
         {
@@ -1582,14 +1576,37 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("BirthDate");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Edm.Library.Date _BirthDate;
         partial void OnBirthDateChanging(global::Microsoft.OData.Edm.Library.Date value);
         partial void OnBirthDateChanged();
         /// <summary>
+        /// There are no comments for Property FavoriteFeature in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("FavoriteFeature")]
+        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature FavoriteFeature
+        {
+            get
+            {
+                return this._FavoriteFeature;
+            }
+            set
+            {
+                this.OnFavoriteFeatureChanging(value);
+                this._FavoriteFeature = value;
+                this.OnFavoriteFeatureChanged();
+                this.OnPropertyChanged("FavoriteFeature");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature _FavoriteFeature;
+        partial void OnFavoriteFeatureChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature value);
+        partial void OnFavoriteFeatureChanged();
+        /// <summary>
         /// There are no comments for Property Friends in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Friends")]
         public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> Friends
         {
@@ -1605,14 +1622,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Friends");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> _Friends = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>(null, global::Microsoft.OData.Client.TrackingMode.None);
         partial void OnFriendsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> value);
         partial void OnFriendsChanged();
         /// <summary>
         /// There are no comments for Property Trips in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Trips")]
         public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> Trips
         {
@@ -1628,20 +1645,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Trips");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> _Trips = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip>(null, global::Microsoft.OData.Client.TrackingMode.None);
         partial void OnTripsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> value);
         partial void OnTripsChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -1653,12 +1670,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// There are no comments for GetNumberOfFriends in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetNumberOfFriends")]
-        public global::Microsoft.OData.Client.DataServiceQuerySingle<int> GetNumberOfFriends()
+        public  global::Microsoft.OData.Client.DataServiceQuerySingle<int> GetNumberOfFriends()
         {
             global::System.Uri requestUri;
             Context.TryGetUri(this, out requestUri);
 
-            return this.Context.CreateFunctionQuerySingle<int>(string.Join("/", global::System.Linq.Enumerable.Select(global::System.Linq.Enumerable.Skip(requestUri.Segments, this.Context.BaseUri.Segments.Length), s => s.Trim('/'))), "Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", true);
+            return this.Context.CreateFunctionQuerySingle<int>(string.Join("/", global::System.Linq.Enumerable.Select(global::System.Linq.Enumerable.Skip(requestUri.Segments, this.Context.BaseUri.Segments.Length), s => s.Trim('/'))), "Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", false);
         }
     }
     /// <summary>
@@ -1671,27 +1688,24 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new TripSingle object.
         /// </summary>
         public TripSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new TripSingle object.
         /// </summary>
         public TripSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new TripSingle object.
         /// </summary>
         public TripSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Trip> query)
-            : base(query)
-        { }
+            : base(query) {}
 
         /// <summary>
         /// There are no comments for Events in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Events")]
         public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> Events
         {
@@ -1708,12 +1722,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Events;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> _Events;
         /// <summary>
         /// There are no comments for Flights in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Flights")]
         public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> Flights
         {
@@ -1730,7 +1744,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 return this._Flights;
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> _Flights;
     }
     /// <summary>
@@ -1753,12 +1767,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="startsAt">Initial value of StartsAt.</param>
         /// <param name="endsAt">Initial value of EndsAt.</param>
         /// <param name="lastUpdated">Initial value of LastUpdated.</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
-        public static Trip CreateTrip(int tripId,
-                    global::System.Guid shareId,
-                    float budget,
-                    global::System.DateTimeOffset startsAt,
-                    global::System.DateTimeOffset endsAt,
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        public static Trip CreateTrip(int tripId, 
+                    global::System.Guid shareId, 
+                    float budget, 
+                    global::System.DateTimeOffset startsAt, 
+                    global::System.DateTimeOffset endsAt, 
                     global::System.DateTimeOffset lastUpdated)
         {
             Trip trip = new Trip();
@@ -1773,7 +1787,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <summary>
         /// There are no comments for Property TripId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("TripId")]
         public int TripId
         {
@@ -1789,14 +1803,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("TripId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private int _TripId;
         partial void OnTripIdChanging(int value);
         partial void OnTripIdChanged();
         /// <summary>
         /// There are no comments for Property TrackGuid in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("TrackGuid")]
         public global::System.Nullable<global::System.Guid> TrackGuid
         {
@@ -1812,14 +1826,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("TrackGuid");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.Nullable<global::System.Guid> _TrackGuid;
         partial void OnTrackGuidChanging(global::System.Nullable<global::System.Guid> value);
         partial void OnTrackGuidChanged();
         /// <summary>
         /// There are no comments for Property PersonId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("PersonId")]
         public global::System.Nullable<int> PersonId
         {
@@ -1835,14 +1849,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("PersonId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.Nullable<int> _PersonId;
         partial void OnPersonIdChanging(global::System.Nullable<int> value);
         partial void OnPersonIdChanged();
         /// <summary>
         /// There are no comments for Property ShareId in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("ShareId")]
         public global::System.Guid ShareId
         {
@@ -1858,14 +1872,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("ShareId");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.Guid _ShareId;
         partial void OnShareIdChanging(global::System.Guid value);
         partial void OnShareIdChanged();
         /// <summary>
         /// There are no comments for Property Name in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Name")]
         public string Name
         {
@@ -1881,14 +1895,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Name");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _Name;
         partial void OnNameChanging(string value);
         partial void OnNameChanged();
         /// <summary>
         /// There are no comments for Property Budget in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Budget")]
         public float Budget
         {
@@ -1904,14 +1918,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Budget");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private float _Budget;
         partial void OnBudgetChanging(float value);
         partial void OnBudgetChanged();
         /// <summary>
         /// There are no comments for Property Description in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Description")]
         public string Description
         {
@@ -1927,14 +1941,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Description");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private string _Description;
         partial void OnDescriptionChanging(string value);
         partial void OnDescriptionChanged();
         /// <summary>
         /// There are no comments for Property StartsAt in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("StartsAt")]
         public global::System.DateTimeOffset StartsAt
         {
@@ -1950,14 +1964,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("StartsAt");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.DateTimeOffset _StartsAt;
         partial void OnStartsAtChanging(global::System.DateTimeOffset value);
         partial void OnStartsAtChanged();
         /// <summary>
         /// There are no comments for Property EndsAt in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("EndsAt")]
         public global::System.DateTimeOffset EndsAt
         {
@@ -1973,14 +1987,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("EndsAt");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.DateTimeOffset _EndsAt;
         partial void OnEndsAtChanging(global::System.DateTimeOffset value);
         partial void OnEndsAtChanged();
         /// <summary>
         /// There are no comments for Property LastUpdated in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("LastUpdated")]
         public global::System.DateTimeOffset LastUpdated
         {
@@ -1996,14 +2010,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("LastUpdated");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::System.DateTimeOffset _LastUpdated;
         partial void OnLastUpdatedChanging(global::System.DateTimeOffset value);
         partial void OnLastUpdatedChanged();
         /// <summary>
         /// There are no comments for Property Events in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Events")]
         public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> Events
         {
@@ -2019,14 +2033,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Events");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> _Events = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event>(null, global::Microsoft.OData.Client.TrackingMode.None);
         partial void OnEventsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> value);
         partial void OnEventsChanged();
         /// <summary>
         /// There are no comments for Property Flights in the schema.
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Flights")]
         public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> Flights
         {
@@ -2042,20 +2056,20 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 this.OnPropertyChanged("Flights");
             }
         }
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> _Flights = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight>(null, global::Microsoft.OData.Client.TrackingMode.None);
         partial void OnFlightsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> value);
         partial void OnFlightsChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
         /// </summary>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         public event global::System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         /// <summary>
         /// The value of the property is changed
         /// </summary>
         /// <param name="property">property name</param>
-        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.3.0")]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected virtual void OnPropertyChanged(string property)
         {
             if ((this.PropertyChanged != null))
@@ -2077,6 +2091,21 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
             return new global::Microsoft.OData.Client.DataServiceActionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip>(this.Context, resource.EditLink.OriginalString.Trim('/') + "/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip");
         }
+    }
+    /// <summary>
+    /// There are no comments for Feature in the schema.
+    /// </summary>
+    [global::Microsoft.OData.Client.OriginalNameAttribute("Feature")]
+    public enum Feature
+    {
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature1")]
+        Feature1 = 0,
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature2")]
+        Feature2 = 1,
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature3")]
+        Feature3 = 2,
+        [global::Microsoft.OData.Client.OriginalNameAttribute("Feature4")]
+        Feature4 = 3
     }
     /// <summary>
     /// Class containing all extension methods
@@ -2232,7 +2261,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 throw new global::System.NotSupportedException("The previous function is not composable.");
             }
 
-            return source.CreateFunctionQuerySingle<int>("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", true);
+            return source.CreateFunctionQuerySingle<int>("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", false);
         }
         /// <summary>
         /// There are no comments for EndTrip in the schema.

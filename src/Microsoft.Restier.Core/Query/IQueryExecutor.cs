@@ -11,11 +11,7 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents a hook point that executes a query.
     /// </summary>
-    /// <remarks>
-    /// This is a singleton hook point that should be
-    /// implemented by an underlying data provider.
-    /// </remarks>
-    public interface IQueryExecutor
+    public interface IQueryExecutor : IHookHandler
     {
         /// <summary>
         /// Asynchronously executes a query and produces a query result.
