@@ -63,9 +63,9 @@ namespace Microsoft.Restier.Core
 
         #region HookHandler
         /// <summary>
-        /// Add an hook handler instance.
+        /// Adds a hook handler instance.
         /// </summary>
-        /// <typeparam name="T">The context class.</typeparam>
+        /// <typeparam name="T">The hook handler interface.</typeparam>
         /// <param name="handler">An instance of hook handler for TContext.</param>
         /// <returns>Current <see cref="ApiConfiguration"/></returns>
         public ApiConfiguration AddHookHandler<T>(T handler) where T : class, IHookHandler
@@ -92,7 +92,12 @@ namespace Microsoft.Restier.Core
             return this;
         }
 
-        internal T GetHookHandler<T>() where T : class, IHookHandler
+        /// <summary>
+        /// Gets a hook handler instance.
+        /// </summary>
+        /// <typeparam name="T">The hook handler interface.</typeparam>
+        /// <returns>The hook handler instance.</returns>
+        public T GetHookHandler<T>() where T : class, IHookHandler
         {
             IHookHandler value;
             this.hookHandlers.TryGetValue(typeof(T), out value);

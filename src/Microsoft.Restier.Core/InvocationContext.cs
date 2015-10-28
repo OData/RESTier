@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core
 {
@@ -33,7 +32,16 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public ApiContext ApiContext { get; private set; }
 
-        internal T GetHookHandler<T>() where T : class, IHookHandler
+        /// <summary>
+        /// Gets a hook handler instance.
+        /// </summary>
+        /// <typeparam name="T">The hook handler interface.</typeparam>
+        /// <returns>The hook handler instance.</returns>
+        /// <remarks>
+        /// This method directly returns the hook handler instance from
+        /// the configuration of the inner context.
+        /// </remarks>
+        public T GetHookHandler<T>() where T : class, IHookHandler
         {
             return this.ApiContext.Configuration.GetHookHandler<T>();
         }

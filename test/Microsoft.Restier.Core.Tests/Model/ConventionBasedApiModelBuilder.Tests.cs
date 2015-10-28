@@ -138,9 +138,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiA : BaseApi
     {
-        public IQueryable<Person> People { get; }
-        public Person Me { get; }
-        public IQueryable<Person> Invisible { get; }
+        public IQueryable<Person> People { get; set; }
+        public Person Me { get; set; }
+        public IQueryable<Person> Invisible { get; set; }
 
         protected override ApiConfiguration CreateApiConfiguration()
         {
@@ -152,7 +152,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiB : ApiA
     {
-        public IQueryable<Person> Customers { get; }
+        public IQueryable<Person> Customers { get; set; }
     }
 
     public class Customer
@@ -162,8 +162,8 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiC : ApiB
     {
-        public new IQueryable<Customer> Customers { get; }
-        public new Customer Me { get; }
+        public new IQueryable<Customer> Customers { get; set; }
+        public new Customer Me { get; set; }
     }
 
     public class ApiD : ApiC
@@ -181,8 +181,8 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiE : BaseApi
     {
-        public IQueryable<Person> People { get; }
-        public IQueryable<Order> Orders { get; }
+        public IQueryable<Person> People { get; set; }
+        public IQueryable<Order> Orders { get; set; }
 
         protected override ApiConfiguration CreateApiConfiguration()
         {
@@ -193,7 +193,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiF : BaseApi
     {
-        public IQueryable<Customer> VipCustomers { get; }
+        public IQueryable<Customer> VipCustomers { get; set; }
 
         protected override ApiConfiguration CreateApiConfiguration()
         {

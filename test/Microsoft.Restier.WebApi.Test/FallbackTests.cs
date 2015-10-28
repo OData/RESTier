@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,7 +16,6 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.WebApi.Results;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test
@@ -63,7 +61,8 @@ namespace Microsoft.Restier.WebApi.Test
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
             HttpResponseMessage response = await client.SendAsync(request);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(234, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
+            var payload = await ((ObjectContent)response.Content).ReadAsStringAsync();
+            Assert.Contains("\"Id\":234", payload);
         }
 
         [Fact]
@@ -74,7 +73,8 @@ namespace Microsoft.Restier.WebApi.Test
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
             HttpResponseMessage response = await client.SendAsync(request);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(234, ((Order)((EntityCollectionResult)((ObjectContent)response.Content).Value).Query.SingleOrDefault()).Id);
+            var payload = await ((ObjectContent)response.Content).ReadAsStringAsync();
+            Assert.Contains("\"Id\":234", payload);
         }
     }
 

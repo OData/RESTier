@@ -13,7 +13,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
     {
         public TrippinModel Context { get { return DbContext; } }
 
-        public Person Me { get; }
+        public Person Me { get; set; }
 
         private IQueryable<Person> PeopleWithFriends
         {

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework.Submit;
 using Microsoft.Restier.EntityFramework.Tests.Models.Library;
 using Xunit;
 
@@ -29,7 +28,8 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var sc = new SubmitContext(libraryApi.Context, changeSet);
 
             // Act
-            await ChangeSetPreparer.Instance.PrepareAsync(sc, CancellationToken.None);
+            var changeSetPreparer = libraryApi.Context.Configuration.GetHookHandler<IChangeSetPreparer>();
+            await changeSetPreparer.PrepareAsync(sc, CancellationToken.None);
             var person = entry.Entity as Person;
 
             // Assert

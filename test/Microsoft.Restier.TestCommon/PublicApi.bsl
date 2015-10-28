@@ -141,6 +141,7 @@ public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.Pr
 
 	public Microsoft.Restier.Core.ApiConfiguration AddHookHandler (T handler)
 	public void EnsureCommitted ()
+	public T GetHookHandler ()
 }
 
 public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.PropertyBag {
@@ -153,6 +154,8 @@ public class Microsoft.Restier.Core.InvocationContext : Microsoft.Restier.Core.P
 	public InvocationContext (Microsoft.Restier.Core.ApiContext apiContext)
 
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
+
+	public T GetHookHandler ()
 }
 
 public class Microsoft.Restier.Core.PropertyBag {
