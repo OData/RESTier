@@ -377,10 +377,15 @@ namespace Microsoft.Restier.TestCommon
                     {
                         continue;
                     }
+                    else if (attribute is System.Diagnostics.DebuggerStepThroughAttribute)
+                    {
+                        continue;
+                    }
                     else if (isEnum && (attribute is System.SerializableAttribute))
                     {
                         continue;
                     }
+
                     count++;
 
                     if (indent)

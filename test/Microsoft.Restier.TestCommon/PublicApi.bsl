@@ -43,7 +43,6 @@ ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.Core.Api {
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiContext context, params System.Threading.CancellationToken cancellationToken)
@@ -54,13 +53,11 @@ public sealed class Microsoft.Restier.Core.Api {
 	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.IApi api, params System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiContext context, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
@@ -72,7 +69,6 @@ public sealed class Microsoft.Restier.Core.Api {
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.IApi api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
@@ -103,7 +99,6 @@ public sealed class Microsoft.Restier.Core.Api {
 	public static IQueryable`1 Source (Microsoft.Restier.Core.IApi api, string namespaceName, string name, object[] arguments)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiContext context, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
@@ -185,14 +180,12 @@ ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.WebApi.HttpConfigurationExtensions {
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
@@ -209,38 +202,32 @@ public class Microsoft.Restier.WebApi.RestierController : System.Web.OData.OData
 	Microsoft.Restier.Core.IApi Api  { public get; }
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Delete (System.Threading.CancellationToken cancellationToken)
 
 	protected virtual void Dispose (bool disposing)
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Net.Http.HttpResponseMessage]] Get (System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Patch (System.Web.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Post (System.Web.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] PostAction (System.Threading.CancellationToken cancellationToken)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Put (System.Web.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
@@ -527,7 +514,6 @@ public class Microsoft.Restier.WebApi.Batch.RestierBatchHandler : System.Web.ODa
 
 	protected virtual System.Web.OData.Batch.ChangeSetRequestItem CreateChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public virtual System.Threading.Tasks.Task`1[[System.Collections.Generic.IList`1[[System.Web.OData.Batch.ODataBatchRequestItem]]]] ParseBatchRequestsAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
@@ -537,7 +523,6 @@ public class Microsoft.Restier.WebApi.Batch.RestierChangeSetRequestItem : System
 	public RestierChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.IApi]] apiFactory)
 
 	[
-	DebuggerStepThroughAttribute(),
 	AsyncStateMachineAttribute(),
 	]
 	public virtual System.Threading.Tasks.Task`1[[System.Web.OData.Batch.ODataBatchResponseItem]] SendRequestAsync (System.Net.Http.HttpMessageInvoker invoker, System.Threading.CancellationToken cancellationToken)
