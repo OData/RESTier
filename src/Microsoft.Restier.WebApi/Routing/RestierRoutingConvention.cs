@@ -115,13 +115,18 @@ namespace Microsoft.Restier.WebApi.Routing
             ODataPathSegment firstSegment = odataPath.Segments.FirstOrDefault();
             if (firstSegment != null)
             {
-                if (firstSegment is EntitySetPathSegment)
+                var entitySetSegment = firstSegment as EntitySetPathSegment;
+                if (entitySetSegment != null)
                 {
-                    controllerName = (firstSegment as EntitySetPathSegment).EntitySetName;
+                    controllerName = entitySetSegment.EntitySetName;
                 }
-                else if (firstSegment is SingletonPathSegment)
+                else
                 {
-                    controllerName = (firstSegment as SingletonPathSegment).SingletonName;
+                    var singletonSegment = firstSegment as SingletonPathSegment;
+                    if (singletonSegment != null)
+                    {
+                        controllerName = singletonSegment.SingletonName;
+                    }
                 }
             }
 

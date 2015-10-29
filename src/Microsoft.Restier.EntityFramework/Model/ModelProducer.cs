@@ -71,10 +71,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             { PrimitiveTypeKind.Time, EdmPrimitiveTypeKind.Duration }
         };
 
-        static ModelProducer()
-        {
-            Instance = new ModelProducer();
-        }
+        private static IModelBuilder instance;
 
         private ModelProducer()
         {
@@ -83,7 +80,18 @@ namespace Microsoft.Restier.EntityFramework.Model
         /// <summary>
         /// Gets the single instance of this model producer.
         /// </summary>
-        public static ModelProducer Instance { get; private set; }
+        public static IModelBuilder Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ModelProducer();
+                }
+
+                return instance;
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
