@@ -460,50 +460,6 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Asynchronously queries for singular data exposed by an API.
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the query.
-        /// </typeparam>
-        /// <typeparam name="TResult">
-        /// The type of the result.
-        /// </typeparam>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="query">
-        /// A composed query that was derived from a queryable source.
-        /// </param>
-        /// <param name="singularExpression">
-        /// An expression that when composed on top of
-        /// the composed query produces a singular result.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is the singular result.
-        /// </returns>
-        public static async Task<TResult> QueryAsync<TElement, TResult>(
-            this IApi api,
-            IQueryable<TElement> query,
-            Expression<Func<IQueryable<TElement>, TResult>> singularExpression,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-            var request = QueryRequest.Create(query, singularExpression);
-            var result = await Api.QueryAsync(
-                api.Context, request, cancellationToken);
-            foreach (TResult first in result.Results)
-            {
-                return first;
-            }
-
-            return default(TResult);
-        }
-
-        /// <summary>
         /// Asynchronously queries for data exposed by an API.
         /// </summary>
         /// <param name="api">

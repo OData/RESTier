@@ -95,6 +95,15 @@ namespace Microsoft.Restier.Core.Conventions
                 relevantType = entitySetProperty.PropertyType.GetGenericArguments()[0];
             }
 
+            if (relevantType == null)
+            {
+                var singletonProperty = this.singletonProperties.SingleOrDefault(p => p.Name == name);
+                if (singletonProperty != null)
+                {
+                    relevantType = singletonProperty.PropertyType;
+                }
+            }
+
             if (relevantType != null)
             {
                 return true;
@@ -156,7 +165,7 @@ namespace Microsoft.Restier.Core.Conventions
                 }
             }
 
-            var query = GetEntitySetQuery(context);
+            var query = GetEntitySetQuery(context) ?? GetSingletonQuery(context);
             if (query != null)
             {
                 return Expression.Constant(query);
@@ -214,6 +223,50 @@ namespace Microsoft.Restier.Core.Conventions
                 }
 
                 return entitySetProperty.GetValue(target) as IQueryable;
+            }
+
+            return null;
+        }
+
+        private IQueryable GetSingletonQuery(QueryExpressionContext context)
+        {
+            Ensure.NotNull(context, "context");
+            if (context.ModelReference == null)
+            {
+                return null;
+            }
+
+            var apiDataReference = context.ModelReference as ApiDataReference;
+            if (apiDataReference == null)
+            {
+                return null;
+            }
+
+            var singleton = apiDataReference.Element as IEdmSingleton;
+            if (singleton == null)
+            {
+                return null;
+            }
+
+            var singletonProperty = this.singletonProperties
+                .SingleOrDefault(p => p.Name == singleton.Name);
+            if (singletonProperty != null)
+            {
+                object target = null;
+                if (!singletonProperty.GetMethod.IsStatic)
+                {
+                    target = context.QueryContext.ApiContext
+                        .GetProperty(typeof(Api).AssemblyQualifiedName);
+                    if (target == null ||
+                        !this.targetType.IsAssignableFrom(target.GetType()))
+                    {
+                        return null;
+                    }
+                }
+
+                var value = Array.CreateInstance(singletonProperty.PropertyType, 1);
+                value.SetValue(singletonProperty.GetValue(target), 0);
+                return value.AsQueryable();
             }
 
             return null;

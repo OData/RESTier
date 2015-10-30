@@ -427,16 +427,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public async Task ApiQueryAsyncWithSingletonQueryReturnsResult()
-        {
-            var api = new TestApi();
-
-            var result = await api.QueryAsync(
-                api.Source<string>("Test"), q => q.Single());
-            Assert.Equal("Test", result);
-        }
-
-        [Fact]
         public async Task ApiQueryAsyncCorrectlyForwardsCall()
         {
             var api = new TestApi();

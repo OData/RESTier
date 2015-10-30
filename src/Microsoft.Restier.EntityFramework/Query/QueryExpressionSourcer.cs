@@ -47,6 +47,13 @@ namespace Microsoft.Restier.EntityFramework.Query
         public Expression Source(QueryExpressionContext context, bool embedded)
         {
             Ensure.NotNull(context, "context");
+
+            if (context.ModelReference.EntitySet == null)
+            {
+                // EF provider can only source DbSet property from EntitySet.
+                return null;
+            }
+
             var dbContext = context.QueryContext
                 .ApiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
             var dbSetProperty = dbContext.GetType().GetProperties()

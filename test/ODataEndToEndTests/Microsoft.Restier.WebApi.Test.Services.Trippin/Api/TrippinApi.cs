@@ -13,7 +13,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
     {
         public TrippinModel Context { get { return DbContext; } }
 
-        public Person Me { get; set; }
+        public Person Me { get { return DbContext.People.Include("Friends").Single(p => p.PersonId == 1); } }
 
         private IQueryable<Person> PeopleWithFriends
         {

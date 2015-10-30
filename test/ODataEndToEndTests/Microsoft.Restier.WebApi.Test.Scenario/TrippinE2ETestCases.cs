@@ -843,5 +843,29 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             this.TestGetPayloadIs("People(1)/Friends/$count", "1");
             this.TestGetPayloadIs("Flights/$count", "4");
         }
+
+        [Fact]
+        public void TestSingleton()
+        {
+            this.TestGetPayloadContains("Me", "http://localhost:18384/api/Trippin/$metadata#Me");
+        }
+
+        [Fact]
+        public void TestSingletonPropertyAccess()
+        {
+            this.TestGetPayloadContains("Me/UserName", "http://localhost:18384/api/Trippin/$metadata#Me/UserName");
+            this.TestGetPayloadContains("Me/FavoriteFeature", "http://localhost:18384/api/Trippin/$metadata#Me/FavoriteFeature");
+            this.TestGetPayloadIs("Me/PersonId/$value", "1");
+            // TODO GitHubIssue#249: support navigation property binding for singleton.
+            ////this.TestGetPayloadContains("Me/Friends", "http://localhost:18384/api/Trippin/$metadata#People");
+            ////this.TestGetPayloadContains("Me/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips");
+        }
+
+        [Fact]
+        public void TestSingletonWithQueryOptions()
+        {
+            this.TestGetPayloadContains("Me?$expand=Friends", ",\"Friends\":[");
+            this.TestGetPayloadContains("Me?$select=UserName,PersonId", "http://localhost:18384/api/Trippin/$metadata#Me(UserName,PersonId)");
+        }
     }
 }

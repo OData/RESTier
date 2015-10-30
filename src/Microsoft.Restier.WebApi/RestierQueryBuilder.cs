@@ -38,6 +38,7 @@ namespace Microsoft.Restier.WebApi
             this.path = path;
 
             this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
+            this.handlers[ODataSegmentKinds.Singleton] = this.HandleSingletonPathSegment;
             this.handlers[ODataSegmentKinds.UnboundFunction] = this.HandleUnboundFunctionPathSegment;
             this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
             this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
@@ -159,6 +160,15 @@ namespace Microsoft.Restier.WebApi
             var entitySet = entitySetPathSegment.EntitySetBase;
             this.currentEntityType = entitySet.EntityType();
             this.queryable = this.api.Source(entitySet.Name, (object[])null);
+            this.currentType = this.queryable.ElementType;
+        }
+
+        private void HandleSingletonPathSegment(ODataPathSegment segment)
+        {
+            var singletonPathSegment = (SingletonPathSegment)segment;
+            var singleton = singletonPathSegment.Singleton;
+            this.currentEntityType = singleton.EntityType();
+            this.queryable = this.api.Source(singleton.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 

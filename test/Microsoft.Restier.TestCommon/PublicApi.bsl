@@ -68,12 +68,6 @@ public sealed class Microsoft.Restier.Core.Api {
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.IApi api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
-	[
-	AsyncStateMachineAttribute(),
-	ExtensionAttribute(),
-	]
-	public static Task`1 QueryAsync (Microsoft.Restier.Core.IApi api, IQueryable`1 query, Expression`1 singularExpression, params System.Threading.CancellationToken cancellationToken)
-
 	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	[
@@ -353,9 +347,6 @@ public class Microsoft.Restier.Core.Query.QueryRequest {
 	System.Linq.Expressions.Expression Expression  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Nullable`1[[System.Boolean]] IncludeTotalCount  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool ShouldReturnCount  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-
-	public static Microsoft.Restier.Core.Query.QueryRequest Create (IQueryable`1 query, Expression`1 singularExpression, params System.Nullable`1[[System.Boolean]] includeTotalCount)
-	public static Microsoft.Restier.Core.Query.QueryRequest Create (System.Linq.IQueryable query, System.Linq.Expressions.LambdaExpression singularExpression, params System.Nullable`1[[System.Boolean]] includeTotalCount)
 }
 
 public class Microsoft.Restier.Core.Query.QueryResult {
