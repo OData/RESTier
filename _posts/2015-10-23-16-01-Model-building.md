@@ -104,13 +104,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
     public class TrippinApi : DbApi<TrippinModel>
     {
         ...
-        public Person Me { get; }
+        public Person Me { get { return DbContext.People.Find(1); } }
         ...
     }
 }
 {% endhighlight %}
 
-Please note that in order to access a singleton user must define an action with `ODataRouteAttribute` in his custom controller.
+For versions under 0.4.0-beta, users must define an action with `ODataRouteAttribute` in their custom controller to access a singleton. **After version 0.4.0-rc, no custom route is required.** However due to some limitations from Entity Framework and OData spec, CUD (insertion, update and deletion) on the singleton entity are **NOT** supported directly by RESTier. Users need to define their own route to achieve these operations.
 
 {% highlight csharp %}
 using System;
@@ -130,6 +130,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
     public class TrippinController : ODataController
     {
         ...
+        // Only needed <=0.4.0-beta
         [EnableQuery]
         [HttpGet]
         [ODataRoute("Me")]
