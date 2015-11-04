@@ -29,6 +29,13 @@ namespace Microsoft.Restier.Core.Conventions
         private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
         private readonly ICollection<PropertyInfo> entitySetProperties = new List<PropertyInfo>();
         private readonly ICollection<PropertyInfo> singletonProperties = new List<PropertyInfo>();
+        private readonly ICollection<EdmNavigationSource> addedNavigationSources = new List<EdmNavigationSource>();
+
+        private readonly IDictionary<IEdmEntityType, IEdmEntitySet[]> entitySetCache =
+            new Dictionary<IEdmEntityType, IEdmEntitySet[]>();
+
+        private readonly IDictionary<IEdmEntityType, IEdmSingleton[]> singletonCache =
+            new Dictionary<IEdmEntityType, IEdmSingleton[]>();
 
         private ConventionBasedApiModelBuilder(Type targetType)
         {
@@ -79,6 +86,7 @@ namespace Microsoft.Restier.Core.Conventions
 
             this.ScanForDeclaredPublicProperties();
             this.BuildEntitySetsAndSingletons(context, edmModel);
+            this.AddNavigationPropertyBindings(edmModel);
             return edmModel;
         }
 
@@ -346,7 +354,8 @@ namespace Microsoft.Restier.Core.Conventions
                     if (container.FindEntitySet(property.Name) == null)
                     {
                         this.entitySetProperties.Add(property);
-                        container.AddEntitySet(property.Name, entityType);
+                        var addedEntitySet = container.AddEntitySet(property.Name, entityType);
+                        this.addedNavigationSources.Add(addedEntitySet);
                     }
                 }
                 else
@@ -354,7 +363,75 @@ namespace Microsoft.Restier.Core.Conventions
                     if (container.FindSingleton(property.Name) == null)
                     {
                         this.singletonProperties.Add(property);
-                        container.AddSingleton(property.Name, entityType);
+                        var addedSingleton = container.AddSingleton(property.Name, entityType);
+                        this.addedNavigationSources.Add(addedSingleton);
+                    }
+                }
+            }
+        }
+
+        private IEdmEntitySet[] GetMatchingEntitySets(IEdmEntityType entityType, IEdmModel model)
+        {
+            IEdmEntitySet[] matchingEntitySets;
+            if (!entitySetCache.TryGetValue(entityType, out matchingEntitySets))
+            {
+                matchingEntitySets =
+                    model.EntityContainer.EntitySets().Where(s => s.EntityType() == entityType).ToArray();
+                entitySetCache.Add(entityType, matchingEntitySets);
+            }
+
+            return matchingEntitySets;
+        }
+
+        private IEdmSingleton[] GetMatchingSingletons(IEdmEntityType entityType, IEdmModel model)
+        {
+            IEdmSingleton[] matchingSingletons;
+            if (!singletonCache.TryGetValue(entityType, out matchingSingletons))
+            {
+                matchingSingletons =
+                    model.EntityContainer.Singletons().Where(s => s.EntityType() == entityType).ToArray();
+                singletonCache.Add(entityType, matchingSingletons);
+            }
+
+            return matchingSingletons;
+        }
+
+        private void AddNavigationPropertyBindings(IEdmModel model)
+        {
+            // Only add navigation property bindings for the navigation sources added by this builder.
+            foreach (var navigationSource in this.addedNavigationSources)
+            {
+                var sourceEntityType = navigationSource.EntityType();
+                foreach (var navigationProperty in sourceEntityType.NavigationProperties())
+                {
+                    var targetEntityType = navigationProperty.ToEntityType();
+                    var matchingEntitySets = this.GetMatchingEntitySets(targetEntityType, model);
+                    IEdmNavigationSource targetNavigationSource = null;
+                    if (navigationProperty.Type.IsCollection())
+                    {
+                        // Collection navigation property can only bind to entity set.
+                        if (matchingEntitySets.Length == 1)
+                        {
+                            targetNavigationSource = matchingEntitySets[0];
+                        }
+                    }
+                    else
+                    {
+                        // Singleton navigation property can bind to either entity set or singleton.
+                        var matchingSingletons = this.GetMatchingSingletons(targetEntityType, model);
+                        if (matchingEntitySets.Length == 1 && matchingSingletons.Length == 0)
+                        {
+                            targetNavigationSource = matchingEntitySets[0];
+                        }
+                        else if (matchingEntitySets.Length == 0 && matchingSingletons.Length == 1)
+                        {
+                            targetNavigationSource = matchingSingletons[0];
+                        }
+                    }
+
+                    if (targetNavigationSource != null)
+                    {
+                        navigationSource.AddNavigationTarget(navigationProperty, targetNavigationSource);
                     }
                 }
             }

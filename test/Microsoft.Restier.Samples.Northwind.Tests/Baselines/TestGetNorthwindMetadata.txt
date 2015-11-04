@@ -258,8 +258,17 @@
           <NavigationPropertyBinding Path="Products" Target="Products" />
         </EntitySet>
         <EntitySet Name="Contacts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Contact" />
-        <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product" />
-        <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order" />
+        <EntitySet Name="ExpensiveProducts" EntityType="Microsoft.Restier.Samples.Northwind.Models.Product">
+          <NavigationPropertyBinding Path="Category" Target="Categories" />
+          <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
+          <NavigationPropertyBinding Path="Supplier" Target="Suppliers" />
+        </EntitySet>
+        <EntitySet Name="CurrentOrders" EntityType="Microsoft.Restier.Samples.Northwind.Models.Order">
+          <NavigationPropertyBinding Path="Customer" Target="Customers" />
+          <NavigationPropertyBinding Path="Employee" Target="Employees" />
+          <NavigationPropertyBinding Path="Order_Details" Target="Order_Details" />
+          <NavigationPropertyBinding Path="Shipper" Target="Shippers" />
+        </EntitySet>
         <ActionImport Name="ResetDataSource" Action="Microsoft.Restier.Samples.Northwind.Models.ResetDataSource" />
       </EntityContainer>
     </Schema>
