@@ -142,6 +142,24 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
     }
 }
 {% endhighlight %}
+<br/>
+
+**Navigation property binding**
+Starting from version 0.4.0-rc, the `ConventionBasedApiModelBuilder` follows the rules below to add navigation property bindings after entity sets and singletons have been built.
+
+ - Bindings will **ONLY** be added for those entity sets and singletons that have been built inside `ConventionBasedApiModelBuilder`.
+   **Example:** Entity sets built by the RESTier's EF provider are assumed to have their navigation property bindings added already.
+ - The `ConventionBasedApiModelBuilder` only searches navigation sources who have the same entity type as the source navigation property.
+   **Example:** If the type of a navigation property is `Person` or `Collection(Person)`, only those entity sets and singletons of type `Person` are searched.
+ - Singleton navigation properties can be bound to either entity sets or singletons. 
+   **Example:** If `Person.BestFriend` is a singleton navigation property, bindings from `BestFriend` to an entity set `People` or to a singleton `Boss` are all allowed.
+ - Collection navigation properties can **ONLY** be bound to entity sets.
+   **Example:** If `Person.Friends` is a collection navigation property. **ONLY** binding from `Friends` to an entity set `People` is allowed. Binding from `Friends` to a singleton `Boss` is **NOT** allowed.
+ - If there is any ambiguity among entity sets or singletons, no binding will be added.
+   **Example:** For the singleton navigation property `Person.BestFriend`, no binding will be added if 1) there are at least two entity sets (or singletons) both of type `Person`; 2) there is at least one entity set and one singleton both of type `Person`. However for the collection navigation property `Person.Friends`, no binding will be added only if there are at least two entity sets both of type `Person`. One entity set and one singleton both of type `Person` will **NOT** lead to any ambiguity and one binding to the entity set will be added.
+
+If any expected navigation property binding is not added by RESTier, users can always manually add it through custom model extension (mentioned below).
+<br/>
 
 **Operation**
 If a method declared in the `Api` class satisfies the following conditions, an operation whose name is the method name will be added into the model.
@@ -228,3 +246,86 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
     }
 }
 {% endhighlight %}
+
+### Custom model extension
+If users have the need to extend the model even after RESTier's conventions have been applied, `ApiConfiguratorAttribute` can be used. First implement a custom `ApiConfiguratorAttribute` and register a model extender in it. The difference from the previous `TrippinApi.ModelBuilder` is that the previous one does **NOT** need to implement `IDelegateHookHandler<IModelBuilder>` which provides it with the capability to call an inner model builder. The previous one itself is responsible for producing an initial model. However `TrippinAttribute.TrippinModelExtender` **MUST** implement this interface and call the inner model builder to at least get a workable model to extend. Notably the built-in `ConventionBasedApiModelBuilder` and `ConventionBasedOperationProvider` also follow this pattern.
+
+{% highlight csharp %}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
+{
+    public class TrippinAttribute : ApiConfiguratorAttribute
+    {
+        public override void Configure(ApiConfiguration configuration, Type type)
+        {
+            // Add your custom model extender here.
+            configuration.AddHookHandler<IModelBuilder>(new TrippinModelExtender());
+        }
+
+        private class TrippinModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+        {
+            public IModelBuilder InnerHandler { get; set; }
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                IEdmModel model = null;
+                
+                // Call inner model builder to get a model to extend.
+                if (this.InnerHandler != null)
+                {
+                    model = await this.InnerHandler.GetModelAsync(context, cancellationToken);
+                }
+
+                // Do sth to extend the model such as add custom navigation property binding.
+
+                return model;
+            }
+        }
+    }
+}
+{% endhighlight %}
+
+Then apply it to the `Api` class.
+
+{% highlight csharp %}
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+
+namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
+{
+    [Trippin]
+    public class TrippinApi : ApiBase
+    {
+        ...
+    }
+}
+{% endhighlight %}
+
+After the above steps, the final process of building the model will be:
+
+ - User's model builder or RESTier provider's model builder registered in `CreateApiConfiguration`: produce an initial model
+   **In this case:** `TrippinApi.ModelBuilder` or `Microsoft.Restier.EntityFramework.Model.ModelProducer`.
+ - `ConventionBasedApiModelBuilder`: extend the model with entity sets and singletons from `Api` class
+ - `ConventionBasedOperationProvider`: extend the model with actions and functions from `Api` class
+ - User's model extender registered in custom `ApiConfiguratorAttribute`: custom model extension
+   **In this case:** `TrippinAttribute.TrippinModelExtender`.
+ <br/>
+ 
+Actually this order not only applies to the `IModelBuilder` but also all other hook handlers. The typical order for executing a hook handler will be:
+
+ - Hook handlers registered in `CreateApiConfiguration`: provide an initial result
+ - Hook handlers provided by RESTier conventions: apply RESTier conventions to the result
+ - Hook handlers registered in custom `ApiConfiguratorAttribute`: user customizations
