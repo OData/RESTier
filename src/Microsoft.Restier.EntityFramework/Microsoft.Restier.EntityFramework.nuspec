@@ -8,6 +8,8 @@
     <owners>$author$</owners>
     <description>$description$</description>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>http://odata.github.io/</projectUrl>
+    <releaseNotes>http://odata.github.io/RESTier/</releaseNotes>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>

@@ -8,6 +8,8 @@
     <owners>Microsoft</owners>
     <description>Includes RESTier related packages. RESTier is a RESTful API development framework for building standardized, OData V4 based RESTful services on .NET.</description>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>http://odata.github.io/</projectUrl>
+    <releaseNotes>http://odata.github.io/RESTier/</releaseNotes>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>
