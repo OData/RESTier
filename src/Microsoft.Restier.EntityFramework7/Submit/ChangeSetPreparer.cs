@@ -40,7 +40,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             SubmitContext context,
             CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.ApiContext.GetProperty<DbContext>("DbContext");
+            DbContext dbContext = context.ApiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
             {
