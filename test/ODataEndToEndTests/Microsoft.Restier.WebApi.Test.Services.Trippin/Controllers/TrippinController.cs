@@ -90,6 +90,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             return Ok(Api.GetPersonWithMostFriends());
         }
 
+        [EnableQuery]
         [ODataRoute("GetPeopleWithFriendsAtLeast(n={n})")]
         public IHttpActionResult GetPeopleWithFriendsAtLeast(int n)
         {

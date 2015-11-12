@@ -40,6 +40,7 @@ namespace Microsoft.Restier.WebApi
         private const string ETagHeaderKey = "@etag";
 
         private IApi api;
+        private bool? includeTotalCount;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
 
@@ -75,8 +76,15 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            QueryRequest queryRequest = new QueryRequest(queryable) { ShouldReturnCount = this.shouldReturnCount };
+            QueryRequest queryRequest = new QueryRequest(queryable, this.includeTotalCount)
+            {
+                ShouldReturnCount = this.shouldReturnCount
+            };
             QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
+            if (this.includeTotalCount == true)
+            {
+                this.Request.ODataProperties().TotalCount = queryResult.TotalCount;
+            }
 
             this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
 
@@ -405,6 +413,10 @@ namespace Microsoft.Restier.WebApi
             ODataQueryContext queryContext =
                 new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
+            if (queryOptions.Count != null)
+            {
+                this.includeTotalCount = queryOptions.Count.Value;
+            }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
             ODataQuerySettings settings = new ODataQuerySettings()
@@ -415,7 +427,9 @@ namespace Microsoft.Restier.WebApi
                 PageSize = null,  // no support for server enforced PageSize, yet
             };
 
-            queryable = queryOptions.ApplyTo(queryable, settings);
+            // Entity count can NOT be evaluated at this point of time because the source
+            // expression is just a placeholder to be replaced by the expression sourcer.
+            queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.Count);
 
             return queryable;
         }

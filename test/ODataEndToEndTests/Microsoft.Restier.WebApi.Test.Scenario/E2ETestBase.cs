@@ -36,6 +36,12 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 payloadString => Assert.Contains(expectedSubString, payloadString));
         }
 
+        protected void TestGetPayloadDoesNotContain(string uriStringAfterServiceRoot, string expectedSubString)
+        {
+            this.TestGetPayload(uriStringAfterServiceRoot,
+                payloadString => Assert.DoesNotContain(expectedSubString, payloadString));
+        }
+
         protected void TestGetPayloadIs(string uriStringAfterServiceRoot, string expectedString)
         {
             this.TestGetPayload(uriStringAfterServiceRoot,

@@ -836,35 +836,69 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 clientException.Message);
         }
 
-        [Fact]
-        public void TestCountEntities()
+        [Theory]
+        [InlineData("People/$count", "13")]
+        [InlineData("People(1)/Friends/$count", "1")]
+        [InlineData("Flights/$count", "4")]
+        public void TestCountEntities(string uriStringAfterServiceRoot, string expectedString)
         {
-            this.TestGetPayloadIs("People/$count", "13");
-            this.TestGetPayloadIs("People(1)/Friends/$count", "1");
-            this.TestGetPayloadIs("Flights/$count", "4");
+            this.TestGetPayloadIs(uriStringAfterServiceRoot, expectedString);
         }
 
-        [Fact]
-        public void TestSingleton()
+        [Theory]
+        [InlineData("Me", "http://localhost:18384/api/Trippin/$metadata#Me")]
+        public void TestSingleton(string uriStringAfterServiceRoot, string expectedSubString)
         {
-            this.TestGetPayloadContains("Me", "http://localhost:18384/api/Trippin/$metadata#Me");
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
 
-        [Fact]
-        public void TestSingletonPropertyAccess()
+        [Theory]
+        [InlineData("Me/UserName", "http://localhost:18384/api/Trippin/$metadata#Me/UserName")]
+        [InlineData("Me/FavoriteFeature", "http://localhost:18384/api/Trippin/$metadata#Me/FavoriteFeature")]
+        [InlineData("Me/Friends", "http://localhost:18384/api/Trippin/$metadata#People")]
+        [InlineData("Me/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips")]
+        public void TestSingletonPropertyAccess(string uriStringAfterServiceRoot, string expectedSubString)
         {
-            this.TestGetPayloadContains("Me/UserName", "http://localhost:18384/api/Trippin/$metadata#Me/UserName");
-            this.TestGetPayloadContains("Me/FavoriteFeature", "http://localhost:18384/api/Trippin/$metadata#Me/FavoriteFeature");
-            this.TestGetPayloadIs("Me/PersonId/$value", "1");
-            this.TestGetPayloadContains("Me/Friends", "http://localhost:18384/api/Trippin/$metadata#People");
-            this.TestGetPayloadContains("Me/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips");
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
 
-        [Fact]
-        public void TestSingletonWithQueryOptions()
+        [Theory]
+        [InlineData("Me/PersonId/$value", "1")]
+        public void TestSingletonPropertyRawValueAccess(string uriStringAfterServiceRoot, string expectedString)
         {
-            this.TestGetPayloadContains("Me?$expand=Friends", ",\"Friends\":[");
-            this.TestGetPayloadContains("Me?$select=UserName,PersonId", "http://localhost:18384/api/Trippin/$metadata#Me(UserName,PersonId)");
+            this.TestGetPayloadIs(uriStringAfterServiceRoot, expectedString);
+        }
+
+        [Theory]
+        [InlineData("Me?$expand=Friends", ",\"Friends\":[")]
+        [InlineData("Me?$select=UserName,PersonId", "http://localhost:18384/api/Trippin/$metadata#Me(UserName,PersonId)")]
+        public void TestSingletonWithQueryOptions(string uriStringAfterServiceRoot, string expectedSubString)
+        {
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
+        }
+
+        [Theory]
+        [InlineData("People?$count=true")]
+        [InlineData("People(1)/Friends?$count=true")]
+        [InlineData("People?$filter=PersonId gt 5&$count=true")]
+        [InlineData("Me/Friends?$count=true")]
+        [InlineData("GetPeopleWithFriendsAtLeast(n=1)?$count=true")]
+        public void TestCountQueryOptionIsTrue(string uriStringAfterServiceRoot)
+        {
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, "@odata.count");
+        }
+
+        [Theory]
+        [InlineData("People?$count=false")]
+        [InlineData("People(1)/Friends?$count=false")]
+        [InlineData("GetPeopleWithFriendsAtLeast(n=1)?$count=false")]
+        [InlineData("People")]
+        [InlineData("People(1)/Friends")]
+        [InlineData("GetPeopleWithFriendsAtLeast(n=1)")]
+        [InlineData("Me?$count=true")]
+        public void TestCountQueryOptionIsFalse(string uriStringAfterServiceRoot)
+        {
+            this.TestGetPayloadDoesNotContain(uriStringAfterServiceRoot, "@odata.count");
         }
     }
 }

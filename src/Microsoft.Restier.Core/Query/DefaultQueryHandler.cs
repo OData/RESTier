@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -70,21 +69,20 @@ namespace Microsoft.Restier.Core.Query
                 var query = visitor.BaseQuery.Provider.CreateQuery(expression);
                 if (query is EnumerableQuery)
                 {
-                    // No need to call the query executor for EnumerableQuery<T>.
-                    result = new QueryResult(query);
+                    // Use the default query executor to handle query created
+                    // from IEnumerable<T> by calling query.ToList().
+                    executor = DefaultQueryExecutor.Instance;
                 }
-                else
+
+                var method = typeof(IQueryExecutor)
+                    .GetMethod("ExecuteQueryAsync")
+                    .MakeGenericMethod(elementType);
+                var parameters = new object[]
                 {
-                    var method = typeof(IQueryExecutor)
-                        .GetMethod("ExecuteQueryAsync")
-                        .MakeGenericMethod(elementType);
-                    var parameters = new object[]
-                    {
-                        context, query, cancellationToken
-                    };
-                    var task = method.Invoke(executor, parameters) as Task<QueryResult>;
-                    result = await task;
-                }
+                    context, query, cancellationToken
+                };
+                var task = method.Invoke(executor, parameters) as Task<QueryResult>;
+                result = await task;
             }
             else
             {
