@@ -80,6 +80,14 @@ namespace System
 
         public static bool TryGetElementType(this Type type, out Type elementType)
         {
+            // Special case: string implements IEnumerable<char> however it should
+            // NOT be treated as a collection type.
+            if (type == typeof(string))
+            {
+                elementType = null;
+                return false;
+            }
+
             var interfaceType = type.FindGenericType(typeof(IEnumerable<>));
             if (interfaceType != null)
             {
