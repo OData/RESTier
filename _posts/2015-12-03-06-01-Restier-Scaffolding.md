@@ -13,7 +13,6 @@ The installer of Restier scaffolding can be downloaded from Visual Studio Galler
 
 ### Using Scaffolding Tool
 [Here](http://odata.github.io/RESTier/#11-40-Bootstrap) is the process of building an OData V4 endpoint using RESTier. With scaffolding tool, you only need to "Create a project and a web app", then "Generate the model classes". The project will looks like:
-
 ![]({{site.baseurl}}/images/ScaffoldingBefore.PNG)
 
 1. Right click the APP_Start folder->Add->New Scaffolded items
@@ -26,7 +25,8 @@ The installer of Restier scaffolding can be downloaded from Visual Studio Galler
 6. Rebuld the project and start:
 ![]({{site.baseurl}}/images/ScaffoldingResult.PNG)
 
-Notice: The alpha version of tool may contains some issues: During the step 5 and 6, visual studio may need to be restarted. 
+
+Notice: The alpha version of tool may contain an issue: during the step 5 and 6, visual studio may need to be restarted. 
 
 
 
