@@ -114,6 +114,7 @@ namespace Microsoft.Restier.Core
             {
                 ApiConfiguratorAttribute.ApplyDisposal(
                     this.GetType(), this, this.apiContext);
+                this.apiContext.DisposeScope();
             }
 
             this.Dispose(true);

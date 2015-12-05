@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Restier.Core.Properties;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -16,6 +17,8 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiContext : PropertyBag
     {
+        IServiceScope contextScope;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiContext" /> class.
         /// </summary>
@@ -31,11 +34,32 @@ namespace Microsoft.Restier.Core
             }
 
             this.Configuration = configuration;
+            this.contextScope = configuration.ServiceProvider.GetRequiredService<IApiScopeFactory>().CreateApiScope();
         }
 
         /// <summary>
         /// Gets the API configuration.
         /// </summary>
         public ApiConfiguration Configuration { get; private set; }
+
+        public IServiceProvider ServiceProvider
+        {
+            get { return this.contextScope.ServiceProvider; }
+        }
+
+        /// <summary>
+        /// Gets a service instance.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public T GetApiService<T>() where T : class
+        {
+            return this.ServiceProvider.GetService<T>();
+        }
+
+        internal void DisposeScope()
+        {
+            this.contextScope.Dispose();
+        }
     }
 }

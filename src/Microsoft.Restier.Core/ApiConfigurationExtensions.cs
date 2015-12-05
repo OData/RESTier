@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.DependencyInjection.Extensions;
 
 namespace Microsoft.Restier.Core
 {
@@ -11,6 +13,58 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public static class ApiConfigurationExtensions
     {
+        private class SharedApiScopeFactory : IApiScopeFactory
+        {
+            private class ServiceScope : IServiceScope
+            {
+                public IServiceProvider ServiceProvider
+                {
+                    get; set;
+                }
+
+                public void Dispose()
+                {
+                    this.ServiceProvider = null;
+                }
+            }
+
+            public SharedApiScopeFactory(IServiceProvider serviceProvider)
+            {
+                this.ServiceProvider = serviceProvider;
+            }
+
+            public IServiceProvider ServiceProvider
+            {
+                get; private set;
+            }
+
+            public IServiceScope CreateApiScope()
+            {
+                return new ServiceScope()
+                {
+                    ServiceProvider = this.ServiceProvider,
+                };
+            }
+        }
+
+        private class ContextApiScopeFactory : IApiScopeFactory
+        {
+            public ContextApiScopeFactory(IServiceScopeFactory factory)
+            {
+                this.Factory = factory;
+            }
+
+            public IServiceScopeFactory Factory
+            {
+                get; private set;
+            }
+
+            public IServiceScope CreateApiScope()
+            {
+                return this.Factory.CreateScope();
+            }
+        }
+
         private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
 
         /// <summary>
@@ -27,6 +81,30 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(propertyName, "propertyName");
 
             configuration.GetIgnoredPropertiesImplementation().Add(propertyName);
+            return configuration;
+        }
+
+        public static ApiConfiguration UseSharedApiScope(this ApiConfiguration configuration)
+        {
+            configuration.Services.AddSingleton<IApiScopeFactory, SharedApiScopeFactory>();
+            return configuration;
+        }
+
+        public static ApiConfiguration UseContextApiScope(this ApiConfiguration configuration)
+        {
+            configuration.Services.AddSingleton<IApiScopeFactory, ContextApiScopeFactory>();
+            return configuration;
+        }
+
+        public static ApiConfiguration TryUseSharedApiScope(this ApiConfiguration configuration)
+        {
+            configuration.Services.TryAddSingleton<IApiScopeFactory, SharedApiScopeFactory>();
+            return configuration;
+        }
+
+        public static ApiConfiguration TryUseContextApiScope(this ApiConfiguration configuration)
+        {
+            configuration.Services.TryAddSingleton<IApiScopeFactory, ContextApiScopeFactory>();
             return configuration;
         }
 
