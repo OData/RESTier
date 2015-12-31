@@ -24,6 +24,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [MaxLength(26), MinLength(1)]
         public string LastName { get; set; }
 
+        public int? Age { get; set; }
+
         public long Concurrency { get; set; }
 
         [Column("BirthDate", TypeName = "Date")]

@@ -145,9 +145,15 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
                 {
                     DbPropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
-                    Type type = propertyEntry.CurrentValue.GetType();
                     object value = propertyPair.Value;
+                    if (value == null)
+                    {
+                        // If the property value is null, we set null in the entry too.
+                        propertyEntry.CurrentValue = null;
+                        continue;
+                    }
 
+                    Type type = propertyEntry.CurrentValue.GetType();
                     if (propertyEntry is DbComplexPropertyEntry)
                     {
                         var dic = value as IReadOnlyDictionary<string, object>;
