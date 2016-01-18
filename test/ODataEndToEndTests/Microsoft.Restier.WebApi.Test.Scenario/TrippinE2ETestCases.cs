@@ -224,11 +224,6 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 { "Content-Type", "application/json" } 
             };
 
-            ODataMessageWriterSettings writerSettings = new ODataMessageWriterSettings
-            {
-                PayloadBaseUri = this.TestClientContext.BaseUri
-            };
-
             HttpWebRequestMessage request = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "Put",
@@ -527,6 +522,47 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
+        public void PostNonContainedEntityToNavigationProperty()
+        {
+            // Note that this scenario DOES NOT conform to OData spec because the client
+            // should post a non-contained entity directly to the entity set rather than
+            // the navigation property. This case is just to repro a customer scenario
+            // and test if the action TrippinController.PostToTripsFromPeople works.
+            var personId = 2;
+            var person = this.TestClientContext.People.ByKey(
+                new Dictionary<string, object> { { "PersonId", personId } }).GetValue();
+
+            var startDate = DateTime.Now;
+            var trip = new Trip()
+            {
+                PersonId = personId,
+                TrackGuid = Guid.NewGuid(),
+                ShareId = new Guid("32a7ce27-7092-4754-a694-3ebf90278d0b"),
+                Name = "Mars",
+                Budget = 2000.0f,
+                Description = "Happy Mars trip",
+                StartsAt = startDate,
+                EndsAt = startDate.AddYears(14),
+                LastUpdated = DateTime.UtcNow,
+            };
+
+            // By default, this line of code would issue a POST request to the entity set
+            // for non-contained navigation property.
+            this.TestClientContext.AddRelatedObject(person, "Trips", trip);
+            this.TestClientContext.Configurations.RequestPipeline.OnMessageCreating = args =>
+                new HttpWebRequestMessage(
+                    new DataServiceClientRequestMessageArgs(
+                        args.Method,
+                        new Uri(string.Format(this.TestClientContext.BaseUri + "/People({0})/Trips", personId),
+                            UriKind.Absolute), // Force POST to navigation property instead of entity set.
+                        args.UseDefaultCredentials,
+                        args.UsePostTunneling,
+                        args.Headers));
+            var response = this.TestClientContext.SaveChanges();
+            Assert.Equal(201, response.Single().StatusCode);
+        }
+
+        [Fact]
         public void CURDCollectionNavigationPropertyAndRef()
         {
             this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
@@ -594,10 +630,6 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                     false,
                     new Dictionary<string, string>()));
 
-            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings
-            {
-                BaseUri = this.TestClientContext.BaseUri
-            };
             using (var response = request.GetResponse() as HttpWebResponseMessage)
             {
                 Assert.Equal(200, response.StatusCode);
