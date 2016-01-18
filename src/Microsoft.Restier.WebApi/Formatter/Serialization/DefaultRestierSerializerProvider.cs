@@ -96,10 +96,33 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             {
                 return this.entityTypeSerializer;
             }
-            else
+
+            if (edmType.IsComplex())
             {
-                return base.GetEdmTypeSerializer(edmType);
+                return this.complexTypeSerializer;
             }
+
+            if (edmType.IsPrimitive())
+            {
+                return this.primitiveSerializer;
+            }
+
+            if (edmType.IsEnum())
+            {
+                return this.enumSerializer;
+            }
+
+            if (edmType.IsCollection())
+            {
+                if (edmType.AsCollection().ElementType().IsEntity())
+                {
+                    return this.feedSerializer;
+                }
+
+                return this.collectionSerializer;
+            }
+
+            return base.GetEdmTypeSerializer(edmType);
         }
     }
 }
