@@ -21,25 +21,42 @@ namespace Microsoft.Restier.WebApi
         /// <param name="value">The given CLR value.</param>
         /// <param name="edmTypeReference">The expected type reference from model.</param>
         /// <returns>The converted payload value of the underlying type.</returns>
-        /// <remarks>
-        /// RESTier handles Edm.Date specially.
-        /// System.DateTime values will be converted to System.DateTimeOffset in OData Web API
-        /// before being passed into ODataLib for serialization. So we need to convert System.DateTimeOffset
-        /// to Edm.Library.Date to avoid type validation failure in ODataLib.
-        /// </remarks>
         public override object ConvertToPayloadValue(object value, IEdmTypeReference edmTypeReference)
         {
-            if (value is DateTime)
+            if (edmTypeReference != null)
             {
-                // System.DateTime is considered as the only mapped type for Edm.Date.
-                var dateTimeValue = (DateTime)value;
-                return new Date(dateTimeValue.Year, dateTimeValue.Month, dateTimeValue.Day);
-            }
+                // System.DateTime is shared by *Edm.Date and Edm.DateTimeOffset.
+                if (value is DateTime)
+                {
+                    var dateTimeValue = (DateTime)value;
 
-            if (edmTypeReference != null && edmTypeReference.IsDate() && value is DateTimeOffset)
-            {
-                var dateTimeOffsetValue = (DateTimeOffset)value;
-                return new Date(dateTimeOffsetValue.Year, dateTimeOffsetValue.Month, dateTimeOffsetValue.Day);
+                    // System.DateTime[SqlType = Date] => Edm.Library.Date
+                    if (edmTypeReference.IsDate())
+                    {
+                        return new Date(dateTimeValue.Year, dateTimeValue.Month, dateTimeValue.Day);
+                    }
+
+                    // System.DateTime[SqlType = DateTime or DateTime2] => Edm.DateTimeOffset
+                    return new DateTimeOffset(dateTimeValue, TimeSpan.Zero);
+                }
+
+                // System.TimeSpan is shared by *Edm.TimeOfDay and Edm.Duration:
+                //   System.TimeSpan[SqlType = Time] => Edm.Library.TimeOfDay
+                //   System.TimeSpan[SqlType = Time] => System.TimeSpan[EdmType = Duration]
+                if (edmTypeReference.IsTimeOfDay() && value is TimeSpan)
+                {
+                    var timeSpanValue = (TimeSpan)value;
+                    return (TimeOfDay)timeSpanValue;
+                }
+
+                // System.DateTime is converted to System.DateTimeOffset in OData Web API.
+                // In order not to break ODL serialization when the EDM type is Edm.Date,
+                // need to convert System.DateTimeOffset back to Edm.Date.
+                if (edmTypeReference.IsDate() && value is DateTimeOffset)
+                {
+                    var dateTimeOffsetValue = (DateTimeOffset)value;
+                    return new Date(dateTimeOffsetValue.Year, dateTimeOffsetValue.Month, dateTimeOffsetValue.Day);
+                }
             }
 
             return base.ConvertToPayloadValue(value, edmTypeReference);

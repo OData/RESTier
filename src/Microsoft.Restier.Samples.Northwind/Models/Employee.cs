@@ -33,11 +33,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         [StringLength(25)]
         public string TitleOfCourtesy { get; set; }
 
-		[Column(TypeName = "Date")]
+        [Column(TypeName = "Date")]
         public DateTime? BirthDate { get; set; }
 
-		[Column(TypeName = "Date")]
-		public DateTime? HireDate { get; set; }
+        [Column(TypeName = "Date")]
+        public DateTime? HireDate { get; set; }
 
         [StringLength(60)]
         public string Address { get; set; }

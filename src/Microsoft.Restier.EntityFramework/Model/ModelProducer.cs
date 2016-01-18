@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
@@ -34,9 +35,11 @@ namespace Microsoft.Restier.EntityFramework.Model
 
         private const string StoreGeneratedPatternKey = ":StoreGeneratedPattern";
         private const string StoreGeneratedPatternValueComputed = "Computed";
+        private const string ColumnTypeNameDateUpper = "DATE";
+        private const string ColumnTypeNameTimeUpper = "TIME";
 
         private static IDictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
-            primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>()
+            primitiveTypeKindMap = new Dictionary<PrimitiveTypeKind, EdmPrimitiveTypeKind>
         {
             { PrimitiveTypeKind.Binary, EdmPrimitiveTypeKind.Binary },
             { PrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Boolean },
@@ -305,12 +308,27 @@ namespace Microsoft.Restier.EntityFramework.Model
 
         private static IEdmPrimitiveTypeReference GetPrimitiveTypeReference(EdmProperty efProperty)
         {
-            var kind = EdmPrimitiveTypeKind.None;
+            EdmPrimitiveTypeKind kind;
             var efKind = efProperty.PrimitiveType.PrimitiveTypeKind;
             if (!primitiveTypeKindMap.TryGetValue(efKind, out kind))
             {
                 // TODO GitHubIssue#103 : Choose property error message for unknown type
                 return null;
+            }
+
+            // The EDM type of a System.DateTime or System.TimeSpan property can be determined by
+            // the DB type name specified through the ColumnAttribute on that property.
+            if (efKind == PrimitiveTypeKind.DateTime || efKind == PrimitiveTypeKind.Time)
+            {
+                var columnTypeName = GetColumnTypeName(efProperty).ToUpperInvariant();
+                if (efKind == PrimitiveTypeKind.DateTime && columnTypeName == ColumnTypeNameDateUpper)
+                {
+                    kind = EdmPrimitiveTypeKind.Date;
+                }
+                else if (efKind == PrimitiveTypeKind.Time && columnTypeName == ColumnTypeNameTimeUpper)
+                {
+                    kind = EdmPrimitiveTypeKind.TimeOfDay;
+                }
             }
 
             switch (kind)
@@ -401,8 +419,7 @@ namespace Microsoft.Restier.EntityFramework.Model
 
                 var entityType = elementMap[efEntityType] as IEdmEntityType;
                 var efNavProperty = efEntityType.NavigationProperties
-                    .Where(np => np.FromEndMember == efEnd)
-                    .SingleOrDefault();
+                    .SingleOrDefault(np => np.FromEndMember == efEnd);
                 if (efNavProperty == null)
                 {
                     continue;
@@ -528,6 +545,28 @@ namespace Microsoft.Restier.EntityFramework.Model
                 default:
                     return EdmMultiplicity.Unknown;
             }
+        }
+
+        private static IEnumerable<Attribute> GetClrAttributes(EdmProperty efProperty)
+        {
+            var metadataProperty = efProperty.MetadataProperties.SingleOrDefault(p => p.Name == "ClrAttributes");
+            if (metadataProperty == null)
+            {
+                return Enumerable.Empty<Attribute>();
+            }
+
+            return (IEnumerable<Attribute>)metadataProperty.Value;
+        }
+
+        private static string GetColumnTypeName(EdmProperty efProperty)
+        {
+            var columnAttribute = GetClrAttributes(efProperty).OfType<ColumnAttribute>().SingleOrDefault();
+            if (columnAttribute != null)
+            {
+                return columnAttribute.TypeName;
+            }
+
+            return string.Empty;
         }
     }
 }

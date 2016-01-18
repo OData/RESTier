@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generation date: 12/31/2015 2:53:38 PM
+// Generation date: 1/18/2016 4:37:12 PM
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
     /// <summary>
@@ -318,6 +318,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""Age"" Type=""Edm.Int32"" />
         <Property Name=""Concurrency"" Type=""Edm.Int64"" Nullable=""false"" />
         <Property Name=""BirthDate"" Type=""Edm.Date"" Nullable=""false"" />
+        <Property Name=""BirthTime"" Type=""Edm.TimeOfDay"" Nullable=""false"" />
+        <Property Name=""BirthDateTime"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <Property Name=""FavoriteFeature"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" Nullable=""false"" />
         <NavigationProperty Name=""Friends"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
         <NavigationProperty Name=""Trips"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip)"" />
@@ -1449,15 +1451,25 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="firstName">Initial value of FirstName.</param>
         /// <param name="concurrency">Initial value of Concurrency.</param>
         /// <param name="birthDate">Initial value of BirthDate.</param>
+        /// <param name="birthTime">Initial value of BirthTime.</param>
+        /// <param name="birthDateTime">Initial value of BirthDateTime.</param>
         /// <param name="favoriteFeature">Initial value of FavoriteFeature.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        public static Person CreatePerson(int personId, string firstName, long concurrency, global::Microsoft.OData.Edm.Library.Date birthDate, global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature favoriteFeature)
+        public static Person CreatePerson(int personId,
+                    string firstName,
+                    long concurrency,
+                    global::Microsoft.OData.Edm.Library.Date birthDate,
+                    global::Microsoft.OData.Edm.Library.TimeOfDay birthTime,
+                    global::System.DateTimeOffset birthDateTime,
+                    global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature favoriteFeature)
         {
             Person person = new Person();
             person.PersonId = personId;
             person.FirstName = firstName;
             person.Concurrency = concurrency;
             person.BirthDate = birthDate;
+            person.BirthTime = birthTime;
+            person.BirthDateTime = birthDateTime;
             person.FavoriteFeature = favoriteFeature;
             return person;
         }
@@ -1622,6 +1634,52 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         private global::Microsoft.OData.Edm.Library.Date _BirthDate;
         partial void OnBirthDateChanging(global::Microsoft.OData.Edm.Library.Date value);
         partial void OnBirthDateChanged();
+        /// <summary>
+        /// There are no comments for Property BirthTime in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("BirthTime")]
+        public global::Microsoft.OData.Edm.Library.TimeOfDay BirthTime
+        {
+            get
+            {
+                return this._BirthTime;
+            }
+            set
+            {
+                this.OnBirthTimeChanging(value);
+                this._BirthTime = value;
+                this.OnBirthTimeChanged();
+                this.OnPropertyChanged("BirthTime");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::Microsoft.OData.Edm.Library.TimeOfDay _BirthTime;
+        partial void OnBirthTimeChanging(global::Microsoft.OData.Edm.Library.TimeOfDay value);
+        partial void OnBirthTimeChanged();
+        /// <summary>
+        /// There are no comments for Property BirthDateTime in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("BirthDateTime")]
+        public global::System.DateTimeOffset BirthDateTime
+        {
+            get
+            {
+                return this._BirthDateTime;
+            }
+            set
+            {
+                this.OnBirthDateTimeChanging(value);
+                this._BirthDateTime = value;
+                this.OnBirthDateTimeChanged();
+                this.OnPropertyChanged("BirthDateTime");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::System.DateTimeOffset _BirthDateTime;
+        partial void OnBirthDateTimeChanging(global::System.DateTimeOffset value);
+        partial void OnBirthDateTimeChanged();
         /// <summary>
         /// There are no comments for Property FavoriteFeature in the schema.
         /// </summary>
