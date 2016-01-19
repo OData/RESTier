@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
 
             if (writeContext != null)
             {
-                graph = RestierPrimitiveSerializer.ConvertToPayloadValue(writeContext.Model, graph);
+                graph = RestierPrimitiveSerializer.ConvertToPayloadValue(graph, writeContext);
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);

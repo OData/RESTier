@@ -5,6 +5,7 @@ using System;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi.Formatter.Serialization
@@ -35,18 +36,57 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
 
             if (writeContext != null)
             {
-                graph = ConvertToPayloadValue(writeContext.Model, graph);
+                graph = ConvertToPayloadValue(graph, writeContext);
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);
         }
 
-        internal static object ConvertToPayloadValue(IEdmModel model, object value)
+        /// <summary>
+        /// Creates an <see cref="ODataPrimitiveValue"/> for the object represented by <paramref name="graph"/>.
+        /// </summary>
+        /// <param name="graph">The primitive value.</param>
+        /// <param name="primitiveType">The EDM primitive type of the value.</param>
+        /// <param name="writeContext">The serializer write context.</param>
+        /// <returns>The created <see cref="ODataPrimitiveValue"/>.</returns>
+        public override ODataPrimitiveValue CreateODataPrimitiveValue(
+            object graph,
+            IEdmPrimitiveTypeReference primitiveType,
+            ODataSerializerContext writeContext)
         {
-            Ensure.NotNull(model, "model");
+            // The EDM type of the "graph" would override the EDM type of the property when
+            // OData Web API infers the primitiveType. Thus for "graph" of System.DateTime,
+            // the primitiveType is always Edm.DateTimeOffset.
+            //
+            // In EF, System.DateTime is used for SqlDate, SqlDateTime and SqlDateTime2.
+            // All of them have no time zone information thus it is safe to clear the time
+            // zone when converting the "graph" to a DateTimeOffset.
+            if (primitiveType != null && primitiveType.IsDateTimeOffset() && graph is DateTime)
+            {
+                graph = new DateTimeOffset((DateTime)graph, TimeSpan.Zero);
+            }
 
-            var payloadValueConverter = model.GetPayloadValueConverter();
-            return payloadValueConverter.ConvertToPayloadValue(value, null);
+            return base.CreateODataPrimitiveValue(graph, primitiveType, writeContext);
+        }
+
+        internal static object ConvertToPayloadValue(object value, ODataSerializerContext writeContext)
+        {
+            Ensure.NotNull(writeContext, "writeContext");
+
+            IEdmTypeReference edmTypeReference = null;
+            if (writeContext.Path != null)
+            {
+                // Try to get the EDM type of the value from the path.
+                var edmType = writeContext.Path.EdmType as IEdmPrimitiveType;
+                if (edmType != null)
+                {
+                    // Just created to call the payload value converter.
+                    edmTypeReference = new EdmPrimitiveTypeReference(edmType, true /*isNullable*/);
+                }
+            }
+
+            var payloadValueConverter = writeContext.Model.GetPayloadValueConverter();
+            return payloadValueConverter.ConvertToPayloadValue(value, edmTypeReference);
         }
     }
 }

@@ -169,7 +169,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         SetValues(value, type, dic);
                     }
 
-                    propertyEntry.CurrentValue = ConvertIfNecessary(type, value);
+                    propertyEntry.CurrentValue = ConvertToEfValue(type, value);
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             {
                 object value = propertyPair.Value;
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
-                value = ConvertIfNecessary(propertyInfo.PropertyType, value);
+                value = ConvertToEfValue(propertyInfo.PropertyType, value);
                 if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
                     var dic = value as IReadOnlyDictionary<string, object>;
@@ -200,19 +200,33 @@ namespace Microsoft.Restier.EntityFramework.Submit
             }
         }
 
-        private static object ConvertIfNecessary(Type type, object value)
+        private static object ConvertToEfValue(Type type, object value)
         {
-            // Convert to System.Enum from name or value STRING provided by ODL.
+            // string[EdmType = Enum] => System.Enum
             if (type.IsEnum)
             {
                 return Enum.Parse(type, (string)value);
             }
 
-            // Convert to System.DateTime supported by EF from Edm.Date.
+            // Edm.Date => System.DateTime[SqlType = Date]
             if (value is Date)
             {
                 var dateValue = (Date)value;
                 return (DateTime)dateValue;
+            }
+
+            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
+            if (value is TimeOfDay)
+            {
+                var timeOfDayValue = (TimeOfDay)value;
+                return (TimeSpan)timeOfDayValue;
+            }
+
+            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
+            if (value is DateTimeOffset && type == typeof(DateTime))
+            {
+                var dateTimeOffsetValue = (DateTimeOffset)value;
+                return dateTimeOffsetValue.DateTime;
             }
 
             return value;

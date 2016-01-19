@@ -106,6 +106,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             {
                 return NotFound();
             }
+
             entity.LastName = name;
 
             try
@@ -135,6 +136,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             {
                 return NotFound();
             }
+
             entity.BirthDate = Date.Parse(birthDate);
 
             try
@@ -153,6 +155,66 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
                 }
             }
             return Ok(birthDate);
+        }
+
+        [HttpPut]
+        [ODataRoute("People({key})/BirthTime")]
+        public IHttpActionResult UpdatePersonBirthTime([FromODataUri]int key, [FromBody]string birthTime)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.BirthTime = TimeOfDay.Parse(birthTime);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthTime);
+        }
+
+        [HttpPut]
+        [ODataRoute("People({key})/BirthDateTime")]
+        public IHttpActionResult UpdatePersonBirthDateTime([FromODataUri]int key, [FromBody]string birthDateTime)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.BirthDateTime = DateTimeOffset.Parse(birthDateTime).DateTime;
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthDateTime);
         }
 
         [HttpGet]

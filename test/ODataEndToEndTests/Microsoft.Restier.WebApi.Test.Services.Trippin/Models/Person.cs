@@ -28,8 +28,18 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
         public long Concurrency { get; set; }
 
-        [Column("BirthDate", TypeName = "Date")]
+        [Column(TypeName = "Date")]
         public DateTime BirthDate { get; set; }
+
+        [Column(TypeName = "Time")]
+        public TimeSpan BirthTime { get; set; }
+
+        // Notes:
+        //   1) System.DateTime is mapped to Edm.DateTimeOffset by default;
+        //   2) The range of SqlDateTime is limited (1753-01-01 ~ 9999-12-31);
+        //      so use SqlDateTime2 for wider range (0001-01-01 ~ 9999-12-31).
+        [Column(TypeName = "DateTime2")]
+        public DateTime BirthDateTime { get; set; }
 
         public Feature FavoriteFeature { get; set; }
     }
