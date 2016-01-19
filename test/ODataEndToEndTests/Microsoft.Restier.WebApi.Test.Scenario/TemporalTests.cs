@@ -217,7 +217,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 FirstName = "Sheldon",
                 LastName = "Cooper",
                 UserName = "SheldonCooper",
-                BirthTime = new TimeOfDay(12, 12, 12, 34)
+                BirthTime = new TimeOfDay(12, 12, 12, 340)
             };
 
             this.TestClientContext.AddToPeople(person);
@@ -229,7 +229,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.Equal(personId, count);
 
             // Update an entity
-            person.BirthTime = new TimeOfDay(12, 12, 12, 34);
+            person.BirthTime = new TimeOfDay(12, 12, 12, 340);
             this.TestClientContext.UpdateObject(person);
             this.TestClientContext.SaveChanges();
 
@@ -243,13 +243,13 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             this.TestClientContext.DeleteObject(person);
             this.TestClientContext.SaveChanges();
 
-            // Filter this entity (Web API bug)
-            //var persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "BirthTime eq 22:58:02.0000000").ToList();
-            //Assert.Equal(1, persons.Count);
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "hour(BirthTime) eq 22").ToList();
-            //Assert.Equal(1, persons.Count);
+            // Filter this entity
+            var persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "BirthTime eq 22:58:02.0000000").ToList();
+            Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "hour(BirthTime) eq 22").ToList();
+            Assert.Equal(1, persons.Count);
         }
 
         [Fact]
@@ -262,7 +262,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 FirstName = "Sheldon",
                 LastName = "Cooper",
                 UserName = "SheldonCooper",
-                BirthTime = new TimeOfDay(12, 12, 12, 34)
+                BirthTime = new TimeOfDay(12, 12, 12, 340)
             };
 
             this.TestClientContext.AddToPeople(person);
@@ -273,7 +273,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var birthTime = this.TestClientContext.People
                 .Where(p => p.PersonId == personId).Select(p => p.BirthTime)
                 .SingleOrDefault();
-            Assert.Equal(new TimeOfDay(12, 12, 12, 34), birthTime);
+            Assert.Equal(new TimeOfDay(12, 12, 12, 340), birthTime);
 
             // Update a property
             Dictionary<string, string> headers = new Dictionary<string, string>()
@@ -329,7 +329,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         public void QueryOptionsOnTimeOfDayProperty()
         {
             this.TestClientContext.MergeOption = Microsoft.OData.Client.MergeOption.OverwriteChanges;
-            var birthTime = new TimeOfDay(23, 59, 59, 34);
+            var birthTime = new TimeOfDay(23, 59, 50, 340);
 
             // Post an entity
             Person person = new Person()
@@ -344,16 +344,16 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             this.TestClientContext.SaveChanges();
             int personId = person.PersonId;
 
-            // Filter this entity (Web API bug)
-            //var persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "BirthTime eq 23:59:59.34")
-            //    .ToList();
-            //Assert.Equal(1, persons.Count);
+            // Filter this entity
+            var persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "BirthTime eq 23:59:50.34")
+                .ToList();
+            Assert.Equal(1, persons.Count);
 
             // Filter with Parameter alias
             // ODL Bug: https://github.com/OData/odata.net/issues/316
             //this.TestClientContext.People
-            //    .AddQueryOption("$filter", string.Format("BirthTime eq @p1 and PersonId gt {0}&@p1=23:59:59.34", personId - 1))
+            //    .AddQueryOption("$filter", string.Format("BirthTime eq @p1 and PersonId gt {0}&@p1=23:59:50.34", personId - 1))
             //    .ToList();
             //Assert.Equal(1, persons.Count);
 
