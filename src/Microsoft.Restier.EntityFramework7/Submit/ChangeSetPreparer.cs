@@ -16,6 +16,8 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework.Properties;
+using Microsoft.OData.Edm.Library;
+using System.Globalization;
 
 namespace Microsoft.Restier.EntityFramework.Submit
 {
@@ -76,10 +78,18 @@ namespace Microsoft.Restier.EntityFramework.Submit
             }
             else if (entry.IsUpdate)
             {
-                entity = (TEntity)await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
+                if (entry.IsFullReplaceUpdate)
+                {
+                    entity = (TEntity)ChangeSetPreparer.CreateFullUpdateInstance(entry, entityType);
+                    dbContext.Update(entity);
+                }
+                else
+                {
+                    entity = (TEntity)await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
 
-                var dbEntry = dbContext.Update(entity);
-                ChangeSetPreparer.SetValues(dbEntry, entry, entityType);
+                    var dbEntry = dbContext.Attach(entity);
+                    ChangeSetPreparer.SetValues(dbEntry, entry, entityType);
+                }
             }
             else
             {
@@ -116,68 +126,47 @@ namespace Microsoft.Restier.EntityFramework.Submit
             return entity;
         }
 
+        private static object CreateFullUpdateInstance(DataModificationEntry entry, Type entityType)
+        {
+            // The algorithm for a "FullReplaceUpdate" is taken from ObjectContextServiceProvider.ResetResource
+            // in WCF DS, and works as follows:
+            //  - Create a new, blank instance of the entity.
+            //  - Copy over the key values and set any updated values from the client on the new instance.
+            //  - Then apply all the properties of the new instance to the instance to be updated.
+            //    This will set any unspecified properties to their default value.
+            object newInstance = Activator.CreateInstance(entityType);
+
+            ChangeSetPreparer.SetValues(newInstance, entityType, entry.EntityKey);
+            ChangeSetPreparer.SetValues(newInstance, entityType, entry.LocalValues);
+
+            return newInstance;
+        }
+
         private static void SetValues(EntityEntry dbEntry, DataModificationEntry entry, Type entityType)
         {
-            //StateEntry stateEntry = ((IAccessor<InternalEntityEntry>) dbEntry.StateEntry;
-            IEntityType edmType = dbEntry.Metadata;
-
-            if (entry.IsFullReplaceUpdate)
+            foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
             {
-                // The algorithm for a "FullReplaceUpdate" is taken from WCF DS ObjectContextServiceProvider.ResetResource, and is as follows:
-                // Create a new, blank instance of the entity.  Copy over the key values, and set any updated values from the client on the new instance.
-                // Then apply all the properties of the new instance to the instance to be updated.  This will set any unspecified
-                // properties to their default value.
-
-                object newInstance = Activator.CreateInstance(entityType);
-
-                ChangeSetPreparer.SetValues(newInstance, entityType, entry.EntityKey);
-                ChangeSetPreparer.SetValues(newInstance, entityType, entry.LocalValues);
-
-                foreach (var property in edmType.GetProperties())
+                PropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
+                Type type = propertyEntry.CurrentValue.GetType();
+                object value = propertyPair.Value;
+                value = ConvertIfNecessary(type, value);
+                if (value != null && !propertyEntry.Metadata.ClrType.IsInstanceOfType(value))
                 {
-                    object val;
-                    if (!entry.LocalValues.TryGetValue(property.Name, out val))
+                    var dic = value as IReadOnlyDictionary<string, object>;
+                    if (dic == null)
                     {
-                        PropertyInfo propertyInfo = entityType.GetProperty(property.Name);
-                        val = propertyInfo.GetValue(newInstance);
+                        throw new NotSupportedException(string.Format(
+                            CultureInfo.InvariantCulture,
+                            Resources.UnsupportedPropertyType,
+                            propertyPair.Key));
                     }
-                    //stateEntry[property] = val;
-                    dbEntry.Property(property.Name).CurrentValue = val;
+
+                    value = Activator.CreateInstance(type);
+                    SetValues(value, type, dic);
+                    value = ConvertIfNecessary(type, value);
                 }
-            }
-            else
-            {
-                // For some properties like DateTimeOffset, the backing EF property could be of a different type like DateTime, so we can't just
-                // copy every property pair in DataModificationEntry to EF StateEntry, instead we let the entity type to do the conversion, by
-                // first setting the EDM property (in DataModificationEntry) to a entity instance, then getting the EF mapped property from the
-                // entity instance and set to StateEntry.
 
-                object instance = null;
-
-                foreach (var property in edmType.GetProperties())
-                {
-                    object val;
-
-                    var edmPropName = (string)property["EdmPropertyName"];
-                    if (edmPropName != null && entry.LocalValues.TryGetValue(edmPropName, out val))
-                    {
-                        if (instance == null)
-                        {
-                            instance = Activator.CreateInstance(entityType);
-                        }
-                        PropertyInfo edmPropInfo = entityType.GetProperty(edmPropName);
-                        edmPropInfo.SetValue(instance, val);
-
-                        PropertyInfo propertyInfo = entityType.GetProperty(property.Name);
-                        val = propertyInfo.GetValue(instance);
-                    }
-                    else if (!entry.LocalValues.TryGetValue(property.Name, out val))
-                    {
-                        continue;
-                    }
-                    //stateEntry[property] = val;
-                    dbEntry.Property(property.Name).CurrentValue = val;
-                }
+                propertyEntry.CurrentValue = value;
             }
         }
 
@@ -186,8 +175,61 @@ namespace Microsoft.Restier.EntityFramework.Submit
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
-                propertyInfo.SetValue(instance, propertyPair.Value);
+                object value = propertyPair.Value;
+                value = ConvertIfNecessary(propertyInfo.PropertyType, value);
+                if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
+                {
+                    var dic = value as IReadOnlyDictionary<string, object>;
+                    if (dic == null)
+                    {
+                        throw new NotSupportedException(string.Format(
+                            CultureInfo.InvariantCulture,
+                            Resources.UnsupportedPropertyType,
+                            propertyPair.Key));
+                    }
+
+                    value = Activator.CreateInstance(propertyInfo.PropertyType);
+                    SetValues(value, propertyInfo.PropertyType, dic);
+                }
+
+                propertyInfo.SetValue(instance, value);
             }
+        }
+
+        private static object ConvertIfNecessary(Type type, object value)
+        {
+            // Convert to System.Enum from name or value STRING provided by ODL.
+            if (type.IsEnum)
+            {
+                return Enum.Parse(type, (string)value);
+            }
+
+            // Convert to System.DateTime supported by EF from Edm.Date.
+            if (value is Date)
+            {
+                var dateValue = (Date)value;
+                return (DateTime)dateValue;
+            }
+
+            // Convert to System.DateTime supported by EF from DateTimeOffset.
+            if (value is DateTimeOffset)
+            {
+                if (TypeHelper.IsDateTime(type))
+                {
+                    return ((DateTimeOffset)value).DateTime;
+                }
+            }
+
+            // Convert to System.DateTime supported by EF from DateTimeOffset.
+            if (value is TimeOfDay)
+            {
+                if (TypeHelper.IsTimeSpan(type))
+                {
+                    return (TimeSpan)(TimeOfDay)value;
+                }
+            }
+
+            return value;
         }
     }
 }

@@ -145,10 +145,11 @@ namespace Microsoft.Restier.EntityFramework.Model
                 if (type != null)
                 {
                     string defaultValue = null;
+                    RelationalPropertyAnnotations annotations = new RelationalPropertyAnnotations(efProperty, null);
 
-                    if (efProperty.SqlServer().DefaultValue != null)
+                    if (annotations.DefaultValue != null)
                     {
-                        defaultValue = efProperty.SqlServer().DefaultValue.ToString();
+                        defaultValue = annotations.DefaultValue.ToString();
                     }
 
                     var property = entityType.AddStructuralProperty(
@@ -202,6 +203,29 @@ namespace Microsoft.Restier.EntityFramework.Model
             {
                 return null;
             }
+
+            if (Type.GetTypeCode(propertyType) == TypeCode.DateTime)
+            {
+                RelationalPropertyAnnotations annotations = new RelationalPropertyAnnotations(efProperty, null);
+                var columnType = annotations.ColumnType;
+
+                if (string.Equals(columnType, "date", StringComparison.OrdinalIgnoreCase))
+                {
+                    kind = EdmPrimitiveTypeKind.Date;
+                }
+            }
+
+            if (propertyType == typeof(TimeSpan))
+            {
+                RelationalPropertyAnnotations annotations = new RelationalPropertyAnnotations(efProperty, null);
+                var columnType = annotations.ColumnType;
+
+                if (string.Equals(columnType, "time", StringComparison.OrdinalIgnoreCase))
+                {
+                    kind = EdmPrimitiveTypeKind.TimeOfDay;
+                }
+            }
+
             switch (kind)
             {
                 default:
@@ -237,7 +261,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             { typeof(byte[]), EdmPrimitiveTypeKind.Binary },
             { typeof(System.IO.Stream), EdmPrimitiveTypeKind.Binary },
             { typeof(bool), EdmPrimitiveTypeKind.Boolean },
-            //{ PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.DateTimeOffset },
+            { typeof(DateTime), EdmPrimitiveTypeKind.DateTimeOffset },
             { typeof(DateTimeOffset), EdmPrimitiveTypeKind.DateTimeOffset },
             { typeof(Decimal), EdmPrimitiveTypeKind.Decimal },
             { typeof(double), EdmPrimitiveTypeKind.Double },

@@ -121,7 +121,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Order>(entityBuilder =>
             {
                 entityBuilder.ToTable("Orders");
-                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
+				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>

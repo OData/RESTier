@@ -209,6 +209,24 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 return (DateTime)dateValue;
             }
 
+            // Convert to System.DateTime supported by EF from DateTimeOffset.
+            if (value is DateTimeOffset)
+            {
+                if (TypeHelper.IsDateTime(type))
+                {
+                    return ((DateTimeOffset)value).DateTime;
+                }
+            }
+
+            // Convert to System.DateTime supported by EF from DateTimeOffset.
+            if (value is TimeOfDay)
+            {
+                if (TypeHelper.IsTimeSpan(type))
+                {
+                    return (TimeSpan)(TimeOfDay)value;
+                }
+            }
+
             return value;
         }
     }
