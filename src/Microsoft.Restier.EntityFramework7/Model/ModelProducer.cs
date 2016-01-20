@@ -193,18 +193,14 @@ namespace Microsoft.Restier.EntityFramework.Model
             IProperty efProperty)
         {
             var kind = EdmPrimitiveTypeKind.None;
-            var propertyType = efProperty.ClrType;
-            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(System.Nullable<>))
-            {
-                propertyType = propertyType.GetGenericArguments()[0];
-            }
+            var propertyType = TypeHelper.GetUnderlyingTypeOrSelf(efProperty.ClrType);
 
             if (!s_primitiveTypeKindMap.TryGetValue(propertyType, out kind))
             {
                 return null;
             }
 
-            if (Type.GetTypeCode(propertyType) == TypeCode.DateTime)
+            if (TypeHelper.IsDateTime(propertyType))
             {
                 RelationalPropertyAnnotations annotations = new RelationalPropertyAnnotations(efProperty, null);
                 var columnType = annotations.ColumnType;
@@ -214,8 +210,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     kind = EdmPrimitiveTypeKind.Date;
                 }
             }
-
-            if (propertyType == typeof(TimeSpan))
+            else if (TypeHelper.IsTimeSpan(propertyType))
             {
                 RelationalPropertyAnnotations annotations = new RelationalPropertyAnnotations(efProperty, null);
                 var columnType = annotations.ColumnType;

@@ -147,10 +147,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
             foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
             {
                 PropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
-                Type type = propertyEntry.CurrentValue.GetType();
+                Type type = TypeHelper.GetUnderlyingTypeOrSelf(propertyEntry.Metadata.ClrType);
                 object value = propertyPair.Value;
                 value = ConvertIfNecessary(type, value);
-                if (value != null && !propertyEntry.Metadata.ClrType.IsInstanceOfType(value))
+                if (value != null && !type.IsInstanceOfType(value))
                 {
                     var dic = value as IReadOnlyDictionary<string, object>;
                     if (dic == null)
@@ -163,21 +163,21 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
                     value = Activator.CreateInstance(type);
                     SetValues(value, type, dic);
-                    value = ConvertIfNecessary(type, value);
                 }
 
                 propertyEntry.CurrentValue = value;
             }
         }
 
-        private static void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
+        private static void SetValues(object instance, Type instanceType, IReadOnlyDictionary<string, object> values)
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
-                PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
+                PropertyInfo propertyInfo = instanceType.GetProperty(propertyPair.Key);
+                Type type = TypeHelper.GetUnderlyingTypeOrSelf(propertyInfo.PropertyType);
                 object value = propertyPair.Value;
-                value = ConvertIfNecessary(propertyInfo.PropertyType, value);
-                if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
+                value = ConvertIfNecessary(type, value);
+                if (value != null && !type.IsInstanceOfType(value))
                 {
                     var dic = value as IReadOnlyDictionary<string, object>;
                     if (dic == null)
@@ -188,8 +188,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
                             propertyPair.Key));
                     }
 
-                    value = Activator.CreateInstance(propertyInfo.PropertyType);
-                    SetValues(value, propertyInfo.PropertyType, dic);
+                    value = Activator.CreateInstance(type);
+                    SetValues(value, type, dic);
                 }
 
                 propertyInfo.SetValue(instance, value);
