@@ -41,7 +41,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             { PrimitiveTypeKind.Binary, EdmPrimitiveTypeKind.Binary },
             { PrimitiveTypeKind.Boolean, EdmPrimitiveTypeKind.Boolean },
             { PrimitiveTypeKind.Byte, EdmPrimitiveTypeKind.Byte },
-            { PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.Date },
+            { PrimitiveTypeKind.DateTime, EdmPrimitiveTypeKind.DateTimeOffset },
             { PrimitiveTypeKind.DateTimeOffset, EdmPrimitiveTypeKind.DateTimeOffset },
             { PrimitiveTypeKind.Decimal, EdmPrimitiveTypeKind.Decimal },
             { PrimitiveTypeKind.Double, EdmPrimitiveTypeKind.Double },
@@ -336,11 +336,46 @@ namespace Microsoft.Restier.EntityFramework.Model
                         efProperty.IsUnicode,
                         efProperty.Nullable);
                 case EdmPrimitiveTypeKind.DateTimeOffset:
-                case EdmPrimitiveTypeKind.Duration:
+                    if (efProperty.PrimitiveType.PrimitiveTypeKind == PrimitiveTypeKind.DateTime)
+                    {
+                        MetadataProperty metadata;
+                        efProperty.MetadataProperties.TryGetValue("Configuration", true, out metadata);
+                        if (metadata != null)
+                        {
+                            object config = metadata.Value;
+                            var columnType = (string)config.GetType().GetProperty("ColumnType").GetValue(config);
+
+                            if (string.Equals(columnType, "date", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return EdmCoreModel.Instance.GetDate(efProperty.Nullable);
+                            }
+                        }
+                    }
+
                     return EdmCoreModel.Instance.GetTemporal(
                         kind,
                         efProperty.Precision,
                         efProperty.Nullable);
+                case EdmPrimitiveTypeKind.Duration:
+                    {
+                        MetadataProperty metadata;
+                        efProperty.MetadataProperties.TryGetValue("Configuration", true, out metadata);
+                        if (metadata != null)
+                        {
+                            object config = metadata.Value;
+                            var columnType = (string)config.GetType().GetProperty("ColumnType").GetValue(config);
+
+                            if (string.Equals(columnType, "time", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return EdmCoreModel.Instance.GetTimeOfDay(efProperty.Nullable);
+                            }
+                        }
+
+                        return EdmCoreModel.Instance.GetTemporal(
+                            kind,
+                            efProperty.Precision,
+                            efProperty.Nullable);
+                    }
             }
         }
 

@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace System
@@ -103,6 +101,64 @@ namespace System
         {
             return type.IsGenericType &&
                    type.GetGenericTypeDefinition() == definition;
+        }
+    }
+
+    internal static class TypeHelper
+    {
+        public static Type GetUnderlyingTypeOrSelf(Type type)
+        {
+            return Nullable.GetUnderlyingType(type) ?? type;
+        }
+
+        public static bool IsEnum(Type type)
+        {
+            Type underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
+            return underlyingTypeOrSelf.IsEnum;
+        }
+
+        public static bool IsDateTime(Type type)
+        {
+            Type underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
+            return Type.GetTypeCode(underlyingTypeOrSelf) == TypeCode.DateTime;
+        }
+
+        public static bool IsTimeSpan(Type type)
+        {
+            Type underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
+            return underlyingTypeOrSelf == typeof(TimeSpan);
+        }
+
+        public static bool IsDateTimeOffset(Type type)
+        {
+            Type underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
+            return underlyingTypeOrSelf == typeof(DateTimeOffset);
+        }
+
+        /// <summary>
+        /// Returns the innermost element type for a given type, dealing with
+        /// nullable, arrays, etc.
+        /// </summary>
+        /// <param name="type">The type from which to get the innermost type.</param>
+        /// <returns>The innermost element type</returns>
+        internal static Type GetInnerMostElementType(Type type)
+        {
+            while (true)
+            {
+                Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
+                if (nullableUnderlyingType != null)
+                {
+                    type = nullableUnderlyingType;
+                }
+                else if (type.HasElementType)
+                {
+                    type = type.GetElementType();
+                }
+                else
+                {
+                    return type;
+                }
+            }
         }
     }
 }

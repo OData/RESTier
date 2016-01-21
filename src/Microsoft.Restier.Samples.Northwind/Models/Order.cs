@@ -22,11 +22,14 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
         public int? EmployeeID { get; set; }
 
-        public DateTime? OrderDate { get; set; }
+		[Column(TypeName = "Date")]
+		public DateTime? OrderDate { get; set; }
 
-        public DateTime? RequiredDate { get; set; }
+		[Column(TypeName = "Date")]
+		public DateTime? RequiredDate { get; set; }
 
-        public DateTime? ShippedDate { get; set; }
+		[Column(TypeName = "Date")]
+		public DateTime? ShippedDate { get; set; }
 
         [Range(0, 3)]
         public int? ShipVia { get; set; }
