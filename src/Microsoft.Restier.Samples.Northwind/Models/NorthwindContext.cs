@@ -115,13 +115,18 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                 entityBuilder.ToTable("Employees");
                 entityBuilder.Property(e => e.LastName).IsRequired().HasMaxLength(20);
                 entityBuilder.Property(e => e.FirstName).IsRequired().HasMaxLength(10);
-                entityBuilder.HasMany(e => e.Employees1).WithOne(e => e.Employee1).Required(false).ForeignKey(e => e.ReportsTo);
+				entityBuilder.Property(e => e.BirthDate).HasColumnType("date");
+				entityBuilder.Property(e => e.HireDate).HasColumnType("date");
+				entityBuilder.HasMany(e => e.Employees1).WithOne(e => e.Employee1).Required(false).ForeignKey(e => e.ReportsTo);
             });
 
             modelBuilder.Entity<Order>(entityBuilder =>
             {
                 entityBuilder.ToTable("Orders");
-                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
+				entityBuilder.Property(e => e.OrderDate).HasColumnType("date");
+				entityBuilder.Property(e => e.RequiredDate).HasColumnType("date");
+				entityBuilder.Property(e => e.ShippedDate).HasColumnType("date");
+				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>

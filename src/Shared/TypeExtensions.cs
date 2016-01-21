@@ -137,7 +137,7 @@ namespace System
 
         /// <summary>
         /// Returns the innermost element type for a given type, dealing with
-        /// nullables, arrays, etc.
+        /// nullable, arrays, etc.
         /// </summary>
         /// <param name="type">The type from which to get the innermost type.</param>
         /// <returns>The innermost element type</returns>
