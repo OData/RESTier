@@ -36,11 +36,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Contact> Contacts { get; set; }
-#if !EF7
-        // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-        // Restore this property after ToTable() is supported by EF7.
         public virtual DbSet<CustomerDemographic> CustomerDemographics { get; set; }
-#endif
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Order_Detail> Order_Details { get; set; }
@@ -110,6 +106,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                 entityBuilder.HasKey(e => e.CustomerID);
             });
 
+            modelBuilder.Entity<CustomerDemographic>(entityBuilder =>
+            {
+                entityBuilder.ToTable("CustomerDemographics");
+            });
+
             modelBuilder.Entity<Employee>(entityBuilder =>
             {
                 entityBuilder.ToTable("Employees");
@@ -126,7 +127,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 				entityBuilder.Property(e => e.OrderDate).HasColumnType("date");
 				entityBuilder.Property(e => e.RequiredDate).HasColumnType("date");
 				entityBuilder.Property(e => e.ShippedDate).HasColumnType("date");
-				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID);
+				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID).WillCascadeOnDelete(false);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
@@ -144,7 +145,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             {
                 entityBuilder.ToTable("Products");
                 entityBuilder.Property(e => e.UnitPrice).HasSqlServerColumnType("money");
-                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Product).Required();
+                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Product).Required().ForeignKey(e => e.ProductID).WillCascadeOnDelete(false);
             });
 
             modelBuilder.Entity<Region>(entityBuilder =>
@@ -166,12 +167,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Territory>(entityBuilder =>
             {
                 entityBuilder.ToTable("Territories");
+                entityBuilder.HasOne(e => e.Region).WithMany(e => e.Territories).ForeignKey(e => e.RegionID).Required().WillCascadeOnDelete(false);
             });
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-            // ToTable() is not yet supported in EF7, remove following ignores after it's ready.
-            modelBuilder.Ignore<CustomerDemographic>();
-
+            // ToTable() for navigation configuration is not yet supported in EF7, remove following ignores after it's ready.
             modelBuilder.Entity<Customer>().Ignore(e => e.CustomerDemographics);
 
             modelBuilder.Entity<Employee>().Ignore(e => e.Territories);

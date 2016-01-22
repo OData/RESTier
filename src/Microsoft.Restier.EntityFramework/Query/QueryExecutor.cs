@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
-#if EF7
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Infrastructure;
-using IAsyncQueryProvider = Microsoft.Data.Entity.Query.IAsyncQueryProvider;
-#else
+#if !EF7
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 #endif
@@ -14,7 +9,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+#if EF7
+using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.Infrastructure;
+#endif
 using Microsoft.Restier.Core.Query;
+#if EF7
+using IAsyncQueryProvider = Microsoft.Data.Entity.Query.IAsyncQueryProvider;
+#endif
 
 namespace Microsoft.Restier.EntityFramework.Query
 {
