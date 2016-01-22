@@ -97,6 +97,7 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiConfiguration()
                 .AddHookHandler<IHookB>(q1)
                 .AddHookHandler<IHookB>(q2);
+            configuration.EnsureCommitted();
 
             var handler = configuration.GetHookHandler<IHookB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());

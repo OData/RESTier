@@ -4,12 +4,17 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.DependencyInjection.Extensions;
 
 namespace Microsoft.Restier.Core
 {
+    public delegate T ApiServiceContributor<T>(IServiceProvider sp, Func<T> next) where T : class;
+
     /// <summary>
     /// Represents a configuration that defines an API.
     /// </summary>
@@ -35,15 +40,41 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration : PropertyBag
     {
-        private readonly IDictionary<Type, IHookHandler> hookHandlers =
-            new ConcurrentDictionary<Type, IHookHandler>();
+        private IServiceCollection services;
+
+        private IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiConfiguration" /> class.
         /// </summary>
-        public ApiConfiguration()
+        public ApiConfiguration() : this(null)
         {
+        }
+
+        [CLSCompliant(false)]
+        public ApiConfiguration(IServiceCollection services)
+        {
+            if (services == null)
+            {
+                services = new ServiceCollection();
+            }
+
+            services.AddInstance<ApiConfiguration>(this);
+            this.services = services;
+            this.TryUseSharedApiScope();
+
             this.AddDefaultHookHandlers();
+        }
+
+        public IServiceProvider ServiceProvider
+        {
+            get { return serviceProvider; }
+        }
+
+        [CLSCompliant(false)]
+        public IServiceCollection Services
+        {
+            get { return services; }
         }
 
         /// <summary>
@@ -54,12 +85,88 @@ namespace Microsoft.Restier.Core
         internal IEdmModel Model { get; set; }
 
         /// <summary>
+        /// Override this to use your favorite DI container, as long as it has an IServiceProvider wrapper.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IServiceProvider BuildServiceProvider()
+        {
+            return Services.BuildServiceProvider();
+        }
+
+        /// <summary>
         /// Ensures this API configuration has been committed.
         /// </summary>
         public void EnsureCommitted()
         {
+            if (this.IsCommitted) return;
+
+            this.serviceProvider = BuildServiceProvider();
+            this.services = null;
+
             this.IsCommitted = true;
         }
+
+        private class LegacyHookHandler<T> where T : class, IHookHandler
+        {
+            public LegacyHookHandler(T instance)
+            {
+                Instance = instance;
+            }
+
+            public T Instance { get; private set; }
+        }
+
+        private static class ChainedService<T> where T : class
+        {
+            public readonly static Func<IServiceProvider, T> DefaultFactory = sp =>
+            {
+                var instances = sp.GetServices<ApiServiceContributor<T>>().Reverse();
+
+                using (var e = instances.GetEnumerator())
+                {
+                    Func<T> next = null;
+                    next = () =>
+                    {
+                        if (e.MoveNext())
+                        {
+                            return e.Current(sp, next);
+                        }
+
+                        return null;
+                    };
+
+                    return next();
+                }
+            };
+        }
+
+        private static class HookHandlerType<T> where T : class, IHookHandler
+        {
+            public static T BuildLegacyHandlers(IServiceProvider sp)
+            {
+                var instances = sp.GetServices<LegacyHookHandler<T>>().Reverse();
+
+                using (var e = instances.GetEnumerator())
+                {
+                    if (!e.MoveNext())
+                    {
+                        return null;
+                    }
+
+                    T first = e.Current.Instance;
+                    T current = first;
+                    while (e.MoveNext())
+                    {
+                        var delegateHandler = current as IDelegateHookHandler<T>;
+                        if (delegateHandler == null) break;
+
+                        delegateHandler.InnerHandler = current = e.Current.Instance;
+                    }
+
+                    return first;
+                }
+            }
+        };
 
         #region HookHandler
         /// <summary>
@@ -82,26 +189,89 @@ namespace Microsoft.Restier.Core
                 throw new InvalidOperationException(Resources.ShouldBeInterfaceType);
             }
 
-            var delegateHandler = handler as IDelegateHookHandler<T>;
-            if (delegateHandler != null)
+            // Since legacy hook handlers are registered with instance, they must have singleton lifetime.
+            // And so a singleton HookHandlerContributor is registered for each hook handler type, and it
+            // will cache the legacy handler chain once built.
+            if (!this.services.Any(sd => sd.ServiceType == typeof(LegacyHookHandler<T>)))
             {
-                delegateHandler.InnerHandler = this.GetHookHandler<T>();
+                T cached = null;
+                this.services.AddInstance<ApiServiceContributor<T>>((sp, next) =>
+                {
+                    return cached ?? (cached = HookHandlerType<T>.BuildLegacyHandlers(sp));
+                });
+
+                // Hook handlers have singleton lifetime by default, call Make... to change.
+                this.services.TryAddSingleton(typeof(T), ChainedService<T>.DefaultFactory);
             }
 
-            this.hookHandlers[typeof(T)] = handler;
+            this.services.AddInstance(new LegacyHookHandler<T>(handler));
+
             return this;
         }
 
         /// <summary>
-        /// Gets a hook handler instance.
+        /// Adds a service contributor, which has a chance to chain previously registered service instances.
         /// </summary>
-        /// <typeparam name="T">The hook handler interface.</typeparam>
-        /// <returns>The hook handler instance.</returns>
-        public T GetHookHandler<T>() where T : class, IHookHandler
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="contributor">An instance of <see cref="ApiServiceContributor{T}"/>.</param>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public ApiConfiguration AddContributor<T>(ApiServiceContributor<T> contributor) where T : class
         {
-            IHookHandler value;
-            this.hookHandlers.TryGetValue(typeof(T), out value);
-            return value as T;
+            Ensure.NotNull(contributor, nameof(contributor));
+
+            if (this.IsCommitted)
+            {
+                throw new InvalidOperationException(Resources.ApiConfigurationIsCommitted);
+            }
+
+            // Services have singleton lifetime by default, call Make... to change.
+            this.services.TryAddSingleton(typeof(T), ChainedService<T>.DefaultFactory);
+            this.services.AddInstance(contributor);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Call this to make singleton lifetime of a service.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public ApiConfiguration MakeSingleton<T>() where T : class
+        {
+            this.services.AddSingleton<T>(ChainedService<T>.DefaultFactory);
+            return this;
+        }
+
+        /// <summary>
+        /// Call this to make scoped lifetime of a service.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public ApiConfiguration MakeScoped<T>() where T : class
+        {
+            this.services.AddScoped<T>(ChainedService<T>.DefaultFactory);
+            return this;
+        }
+
+        /// <summary>
+        /// Call this to make transient lifetime of a service.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public ApiConfiguration MakeTransient<T>() where T : class
+        {
+            this.services.AddTransient<T>(ChainedService<T>.DefaultFactory);
+            return this;
+        }
+
+        /// <summary>
+        /// Gets a service instance.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public T GetHookHandler<T>() where T : class
+        {
+            return this.serviceProvider.GetService<T>();
         }
         #endregion
 

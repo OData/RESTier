@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public T GetHookHandler<T>() where T : class, IHookHandler
         {
-            return this.ApiContext.Configuration.GetHookHandler<T>();
+            return this.ApiContext.GetApiService<T>();
         }
     }
 }
