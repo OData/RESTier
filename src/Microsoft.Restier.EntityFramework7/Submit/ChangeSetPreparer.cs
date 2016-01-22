@@ -4,40 +4,51 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
-using Microsoft.Data.Entity.Infrastructure;
-using Microsoft.Data.Entity.Metadata;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework.Properties;
-using Microsoft.OData.Edm.Library;
-using System.Globalization;
 
 namespace Microsoft.Restier.EntityFramework.Submit
 {
     /// <summary>
-    /// This class convert OData entity changes (update/remove/create) to Entity Framework entity changes (in the form of StateEntry)
-    /// For this class we cannot reuse EF6 ChangeSetPreparer code, since many types used here have their type name or member name changed.
+    /// To prepare changed entries for the given <see cref="ChangeSet"/>.
+    /// For this class we cannot reuse EF6 ChangeSetPreparer code, since many types used here have their type name or
+    /// member name changed.
     /// </summary>
     public class ChangeSetPreparer : IChangeSetPreparer
     {
+        private static MethodInfo prepareEntryGeneric = typeof(ChangeSetPreparer)
+            .GetMethod("PrepareEntry", BindingFlags.Static | BindingFlags.NonPublic);
+
+        static ChangeSetPreparer()
+        {
+            Instance = new ChangeSetPreparer();
+        }
+
         private ChangeSetPreparer()
         {
         }
 
-        private static readonly ChangeSetPreparer instance = new ChangeSetPreparer();
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="ChangeSetPreparer"/> class.
+        /// </summary>
+        public static ChangeSetPreparer Instance { get; private set; }
 
-        public static ChangeSetPreparer Instance { get { return instance; } }
-
-        private static MethodInfo _prepareEntryGeneric = typeof(ChangeSetPreparer).
-            GetMethod("PrepareEntry", BindingFlags.Static | BindingFlags.NonPublic);
-
+        /// <summary>
+        /// Asynchronously prepare the <see cref="ChangeSet"/>.
+        /// </summary>
+        /// <param name="context">The submit context class used for preparation.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that represents this asynchronous operation.</returns>
         public async Task PrepareAsync(
             SubmitContext context,
             CancellationToken cancellationToken)
@@ -48,17 +59,21 @@ namespace Microsoft.Restier.EntityFramework.Submit
             {
                 object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
                 Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
-                MethodInfo prepareEntryMethod = _prepareEntryGeneric.MakeGenericMethod(entityType);
+                MethodInfo prepareEntryMethod = prepareEntryGeneric.MakeGenericMethod(entityType);
 
-                await (Task)prepareEntryMethod.Invoke(
+                var task = (Task)prepareEntryMethod.Invoke(
                     obj: null,
-                    parameters: new object[] { context, dbContext, entry, strongTypedDbSet, cancellationToken });
+                    parameters: new[] { context, dbContext, entry, strongTypedDbSet, cancellationToken });
+                await task;
             }
         }
 
         private static async Task PrepareEntry<TEntity>(
-            SubmitContext context, DbContext dbContext, DataModificationEntry entry, DbSet<TEntity> set, CancellationToken cancellationToken)
-            where TEntity : class
+            SubmitContext context,
+            DbContext dbContext,
+            DataModificationEntry entry,
+            DbSet<TEntity> set,
+            CancellationToken cancellationToken) where TEntity : class
         {
             Type entityType = typeof(TEntity);
             TEntity entity;
@@ -99,12 +114,18 @@ namespace Microsoft.Restier.EntityFramework.Submit
             entry.Entity = entity;
         }
 
-        private static async Task<object> FindEntity(SubmitContext context, DataModificationEntry entry, CancellationToken cancellationToken)
+        private static async Task<object> FindEntity(
+            SubmitContext context,
+            DataModificationEntry entry,
+            CancellationToken cancellationToken)
         {
             IQueryable query = Api.Source(context.ApiContext, entry.EntitySetName);
             query = entry.ApplyTo(query);
 
-            QueryResult result = await Api.QueryAsync(context.ApiContext, new QueryRequest(query), cancellationToken);
+            QueryResult result = await Api.QueryAsync(
+                context.ApiContext,
+                new QueryRequest(query),
+                cancellationToken);
 
             object entity = result.Results.SingleOrDefault();
             if (entity == null)
@@ -114,12 +135,15 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 // 1) it doesn't exist
                 // 2) concurrency checks have failed
                 // we should account for both - I can see 3 options:
-                // a. always return "PreConditionFailed" result - this is the canonical behavior of WebAPI OData (see http://blogs.msdn.com/b/webdev/archive/2014/03/13/getting-started-with-asp-net-web-api-2-2-for-odata-v4-0.aspx)
+                // a. always return "PreConditionFailed" result
+                //  - this is the canonical behavior of WebAPI OData, see the following post:
+                //    "Getting started with ASP.NET Web API 2.2 for OData v4.0" on http://blogs.msdn.com/b/webdev/.
                 //  - this makes sense because if someone deleted the record, then you still have a concurrency error
                 // b. possibly doing a 2nd query with just the keys to see if the record still exists
-                // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values, letting the save fail if there are concurrency errors
+                // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values,
+                //    letting the save fail if there are concurrency errors
 
-                //throw new EntityNotFoundException
+                ////throw new EntityNotFoundException
                 throw new InvalidOperationException(Resources.ResourceNotFound);
             }
 
