@@ -134,31 +134,5 @@ namespace System
             Type underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
             return underlyingTypeOrSelf == typeof(DateTimeOffset);
         }
-
-        /// <summary>
-        /// Returns the innermost element type for a given type, dealing with
-        /// nullable, arrays, etc.
-        /// </summary>
-        /// <param name="type">The type from which to get the innermost type.</param>
-        /// <returns>The innermost element type</returns>
-        internal static Type GetInnerMostElementType(Type type)
-        {
-            while (true)
-            {
-                Type nullableUnderlyingType = Nullable.GetUnderlyingType(type);
-                if (nullableUnderlyingType != null)
-                {
-                    type = nullableUnderlyingType;
-                }
-                else if (type.HasElementType)
-                {
-                    type = type.GetElementType();
-                }
-                else
-                {
-                    return type;
-                }
-            }
-        }
     }
 }
