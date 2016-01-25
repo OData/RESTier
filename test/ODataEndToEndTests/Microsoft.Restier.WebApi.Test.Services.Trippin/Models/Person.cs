@@ -31,8 +31,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [Column(TypeName = "Date")]
         public DateTime BirthDate { get; set; }
 
+        [Column(TypeName = "Date")]
+        public DateTime? BirthDate2 { get; set; }
+
         [Column(TypeName = "Time")]
         public TimeSpan BirthTime { get; set; }
+
+        [Column(TypeName = "Time")]
+        public TimeSpan? BirthTime2 { get; set; }
 
         // Notes:
         //   1) System.DateTime is mapped to Edm.DateTimeOffset by default;
@@ -41,6 +47,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [Column(TypeName = "DateTime2")]
         public DateTime BirthDateTime { get; set; }
 
+        [Column(TypeName = "DateTime2")]
+        public DateTime? BirthDateTime2 { get; set; }
+
         public Feature FavoriteFeature { get; set; }
+
+        public Feature? FavoriteFeature2 { get; set; }
     }
 }

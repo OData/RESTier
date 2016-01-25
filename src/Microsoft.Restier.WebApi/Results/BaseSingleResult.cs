@@ -26,11 +26,17 @@ namespace Microsoft.Restier.WebApi.Results
             Ensure.NotNull(query, "query");
 
             this.Result = query.SingleOrDefault();
+            this.Type = query.ElementType;
         }
 
         /// <summary>
         /// Gets the result object.
         /// </summary>
         public object Result { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the result object.
+        /// </summary>
+        public Type Type { get; private set; }
     }
 }

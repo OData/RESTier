@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generation date: 1/18/2016 4:37:12 PM
+// Generation date: 1/25/2016 4:57:49 PM
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
     /// <summary>
@@ -318,9 +318,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""Age"" Type=""Edm.Int32"" />
         <Property Name=""Concurrency"" Type=""Edm.Int64"" Nullable=""false"" />
         <Property Name=""BirthDate"" Type=""Edm.Date"" Nullable=""false"" />
+        <Property Name=""BirthDate2"" Type=""Edm.Date"" />
         <Property Name=""BirthTime"" Type=""Edm.TimeOfDay"" Nullable=""false"" />
+        <Property Name=""BirthTime2"" Type=""Edm.TimeOfDay"" />
         <Property Name=""BirthDateTime"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
+        <Property Name=""BirthDateTime2"" Type=""Edm.DateTimeOffset"" />
         <Property Name=""FavoriteFeature"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" Nullable=""false"" />
+        <Property Name=""FavoriteFeature2"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" />
         <NavigationProperty Name=""Friends"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
         <NavigationProperty Name=""Trips"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip)"" />
       </EntityType>
@@ -1635,6 +1639,29 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         partial void OnBirthDateChanging(global::Microsoft.OData.Edm.Library.Date value);
         partial void OnBirthDateChanged();
         /// <summary>
+        /// There are no comments for Property BirthDate2 in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("BirthDate2")]
+        public global::System.Nullable<global::Microsoft.OData.Edm.Library.Date> BirthDate2
+        {
+            get
+            {
+                return this._BirthDate2;
+            }
+            set
+            {
+                this.OnBirthDate2Changing(value);
+                this._BirthDate2 = value;
+                this.OnBirthDate2Changed();
+                this.OnPropertyChanged("BirthDate2");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::System.Nullable<global::Microsoft.OData.Edm.Library.Date> _BirthDate2;
+        partial void OnBirthDate2Changing(global::System.Nullable<global::Microsoft.OData.Edm.Library.Date> value);
+        partial void OnBirthDate2Changed();
+        /// <summary>
         /// There are no comments for Property BirthTime in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
@@ -1657,6 +1684,29 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         private global::Microsoft.OData.Edm.Library.TimeOfDay _BirthTime;
         partial void OnBirthTimeChanging(global::Microsoft.OData.Edm.Library.TimeOfDay value);
         partial void OnBirthTimeChanged();
+        /// <summary>
+        /// There are no comments for Property BirthTime2 in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("BirthTime2")]
+        public global::System.Nullable<global::Microsoft.OData.Edm.Library.TimeOfDay> BirthTime2
+        {
+            get
+            {
+                return this._BirthTime2;
+            }
+            set
+            {
+                this.OnBirthTime2Changing(value);
+                this._BirthTime2 = value;
+                this.OnBirthTime2Changed();
+                this.OnPropertyChanged("BirthTime2");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::System.Nullable<global::Microsoft.OData.Edm.Library.TimeOfDay> _BirthTime2;
+        partial void OnBirthTime2Changing(global::System.Nullable<global::Microsoft.OData.Edm.Library.TimeOfDay> value);
+        partial void OnBirthTime2Changed();
         /// <summary>
         /// There are no comments for Property BirthDateTime in the schema.
         /// </summary>
@@ -1681,6 +1731,29 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         partial void OnBirthDateTimeChanging(global::System.DateTimeOffset value);
         partial void OnBirthDateTimeChanged();
         /// <summary>
+        /// There are no comments for Property BirthDateTime2 in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("BirthDateTime2")]
+        public global::System.Nullable<global::System.DateTimeOffset> BirthDateTime2
+        {
+            get
+            {
+                return this._BirthDateTime2;
+            }
+            set
+            {
+                this.OnBirthDateTime2Changing(value);
+                this._BirthDateTime2 = value;
+                this.OnBirthDateTime2Changed();
+                this.OnPropertyChanged("BirthDateTime2");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::System.Nullable<global::System.DateTimeOffset> _BirthDateTime2;
+        partial void OnBirthDateTime2Changing(global::System.Nullable<global::System.DateTimeOffset> value);
+        partial void OnBirthDateTime2Changed();
+        /// <summary>
         /// There are no comments for Property FavoriteFeature in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
@@ -1703,6 +1776,29 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature _FavoriteFeature;
         partial void OnFavoriteFeatureChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature value);
         partial void OnFavoriteFeatureChanged();
+        /// <summary>
+        /// There are no comments for Property FavoriteFeature2 in the schema.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        [global::Microsoft.OData.Client.OriginalNameAttribute("FavoriteFeature2")]
+        public global::System.Nullable<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature> FavoriteFeature2
+        {
+            get
+            {
+                return this._FavoriteFeature2;
+            }
+            set
+            {
+                this.OnFavoriteFeature2Changing(value);
+                this._FavoriteFeature2 = value;
+                this.OnFavoriteFeature2Changed();
+                this.OnPropertyChanged("FavoriteFeature2");
+            }
+        }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
+        private global::System.Nullable<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature> _FavoriteFeature2;
+        partial void OnFavoriteFeature2Changing(global::System.Nullable<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature> value);
+        partial void OnFavoriteFeature2Changed();
         /// <summary>
         /// There are no comments for Property Friends in the schema.
         /// </summary>

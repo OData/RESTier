@@ -180,6 +180,13 @@ namespace Microsoft.Restier.EntityFramework.Submit
             {
                 object value = propertyPair.Value;
                 PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
+                if (value == null)
+                {
+                    // If the property value is null, we set null in the object too.
+                    propertyInfo.SetValue(instance, null);
+                    continue;
+                }
+
                 value = ConvertToEfValue(propertyInfo.PropertyType, value);
                 if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
@@ -203,9 +210,9 @@ namespace Microsoft.Restier.EntityFramework.Submit
         private static object ConvertToEfValue(Type type, object value)
         {
             // string[EdmType = Enum] => System.Enum
-            if (type.IsEnum)
+            if (TypeHelper.IsEnum(type))
             {
-                return Enum.Parse(type, (string)value);
+                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
             }
 
             // Edm.Date => System.DateTime[SqlType = Date]

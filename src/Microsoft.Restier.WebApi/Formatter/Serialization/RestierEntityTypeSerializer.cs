@@ -40,6 +40,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             if (entityResult != null)
             {
                 graph = entityResult.Result;
+                type = entityResult.Type;
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);

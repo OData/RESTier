@@ -32,6 +32,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             if (primitiveResult != null)
             {
                 graph = primitiveResult.Result;
+                type = primitiveResult.Type;
             }
 
             if (writeContext != null)

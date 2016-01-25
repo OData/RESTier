@@ -120,7 +120,7 @@ namespace System
         public static bool IsDateTime(Type type)
         {
             Type underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
-            return Type.GetTypeCode(underlyingTypeOrSelf) == TypeCode.DateTime;
+            return underlyingTypeOrSelf == typeof(DateTime);
         }
 
         public static bool IsTimeSpan(Type type)

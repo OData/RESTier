@@ -39,6 +39,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             if (complexResult != null)
             {
                 graph = complexResult.Result;
+                type = complexResult.Type;
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);

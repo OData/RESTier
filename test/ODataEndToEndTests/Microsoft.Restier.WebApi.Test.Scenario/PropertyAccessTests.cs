@@ -73,6 +73,86 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
+        public void QueryTimeOfDayPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/BirthTime", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(1)/BirthTime\"," +
+                    "\"value\":\"02:03:04.0000000\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryRawTimeOfDayPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/BirthTime/$value", payloadStr =>
+            {
+                Assert.Equal("02:03:04.0000000", payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullableTimeOfDayPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(4)/BirthTime2", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(4)/BirthTime2\"," +
+                    "\"value\":\"23:59:01.0000000\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullRawTimeOfDayPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/BirthTime2/$value", payloadStr =>
+            {
+                Assert.Equal(string.Empty, payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryDateTimeOffsetPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/BirthDateTime", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(1)/BirthDateTime\"," +
+                    "\"value\":\"1980-10-15T02:03:04Z\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryRawDateTimeOffsetPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/BirthDateTime/$value", payloadStr =>
+            {
+                Assert.Equal("1980-10-15T02:03:04Z", payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullableDateTimeOffsetPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(4)/BirthDateTime2", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(4)/BirthDateTime2\"," +
+                    "\"value\":\"1985-01-10T23:59:01Z\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullRawDateTimeOffsetPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/BirthDateTime2/$value", payloadStr =>
+            {
+                Assert.Equal(string.Empty, payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
         public void QueryComplexPropertyOfSingleEntity()
         {
             var firstEvent = this.TestClientContext.Events.First();
@@ -118,11 +198,51 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
+        public void QueryNullableEnumPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(4)/FavoriteFeature2", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(4)/FavoriteFeature2\"," +
+                    "\"value\":\"Feature4\"", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullEnumPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/FavoriteFeature2", payloadStr =>
+            {
+                Assert.Contains(
+                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(1)/FavoriteFeature2\"," +
+                    "\"@odata.null\":true", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
         public void QueryRawEnumPropertyOfSingleEntity()
         {
             TestPayloadString("People(1)/FavoriteFeature/$value", payloadStr =>
             {
                 Assert.Equal("Feature1", payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullableRawEnumPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(4)/FavoriteFeature2/$value", payloadStr =>
+            {
+                Assert.Equal("Feature4", payloadStr, StringComparer.Ordinal);
+            });
+        }
+
+        [Fact]
+        public void QueryNullRawEnumPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/FavoriteFeature2/$value", payloadStr =>
+            {
+                Assert.Equal(string.Empty, payloadStr, StringComparer.Ordinal);
             });
         }
 

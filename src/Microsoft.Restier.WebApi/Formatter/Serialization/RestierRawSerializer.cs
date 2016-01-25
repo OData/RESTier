@@ -30,11 +30,18 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             if (rawResult != null)
             {
                 graph = rawResult.Result;
+                type = rawResult.Type;
             }
 
             if (writeContext != null)
             {
                 graph = RestierPrimitiveSerializer.ConvertToPayloadValue(graph, writeContext);
+            }
+
+            if (graph == null)
+            {
+                // This is to make ODataRawValueSerializer happily serialize null value.
+                graph = string.Empty;
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);

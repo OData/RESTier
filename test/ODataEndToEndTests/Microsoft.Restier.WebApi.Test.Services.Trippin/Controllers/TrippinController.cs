@@ -158,6 +158,36 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         }
 
         [HttpPut]
+        [ODataRoute("People({key})/BirthDate2")]
+        public IHttpActionResult UpdatePersonBirthDate2([FromODataUri]int key, [FromBody]string birthDate)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.BirthDate2 = Date.Parse(birthDate);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthDate);
+        }
+
+        [HttpPut]
         [ODataRoute("People({key})/BirthTime")]
         public IHttpActionResult UpdatePersonBirthTime([FromODataUri]int key, [FromBody]string birthTime)
         {
@@ -188,6 +218,36 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
         }
 
         [HttpPut]
+        [ODataRoute("People({key})/BirthTime2")]
+        public IHttpActionResult UpdatePersonBirthTime2([FromODataUri]int key, [FromBody]string birthTime)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.BirthTime2 = TimeOfDay.Parse(birthTime);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthTime);
+        }
+
+        [HttpPut]
         [ODataRoute("People({key})/BirthDateTime")]
         public IHttpActionResult UpdatePersonBirthDateTime([FromODataUri]int key, [FromBody]string birthDateTime)
         {
@@ -198,6 +258,36 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
             }
 
             entity.BirthDateTime = DateTimeOffset.Parse(birthDateTime).DateTime;
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!PeopleExists(key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+            return Ok(birthDateTime);
+        }
+
+        [HttpPut]
+        [ODataRoute("People({key})/BirthDateTime2")]
+        public IHttpActionResult UpdatePersonBirthDateTime2([FromODataUri]int key, [FromBody]string birthDateTime)
+        {
+            var entity = DbContext.People.Find(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.BirthDateTime2 = DateTimeOffset.Parse(birthDateTime).DateTime;
 
             try
             {

@@ -25,11 +25,17 @@ namespace Microsoft.Restier.WebApi.Results
             Ensure.NotNull(query, "query");
 
             this.Query = query;
+            this.Type = query.GetType();
         }
 
         /// <summary>
         /// Gets the query that returns a collection of objects.
         /// </summary>
         public IQueryable Query { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the query.
+        /// </summary>
+        public Type Type { get; private set; }
     }
 }

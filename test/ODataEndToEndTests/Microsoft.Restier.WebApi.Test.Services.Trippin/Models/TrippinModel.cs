@@ -336,6 +336,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     BirthTime = new TimeSpan(23, 59, 1),
                     BirthDateTime = new DateTime(1985, 1, 10, 23, 59, 1),
                     FavoriteFeature = Feature.Feature4,
+                    BirthDate2 = new DateTime(1985, 1, 10),
+                    BirthTime2 = new TimeSpan(23, 59, 1),
+                    BirthDateTime2 = new DateTime(1985, 1, 10, 23, 59, 1),
+                    FavoriteFeature2 = Feature.Feature4,
                 },
                 new Person
                 {
