@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.OData.Builder;
 
 namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 {
     public class Person
     {
+        // Way 1: enable auto-expand through attribute.
+        [AutoExpand]
         public virtual ICollection<Person> Friends { get; set; }
 
         public int PersonId { get; set; }

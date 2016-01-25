@@ -76,5 +76,11 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             TestGetPayloadIs("People(1)/Locations/$count", "2");
             TestGetPayloadIs("People(1)/Features/$count", "2");
         }
+
+        [Fact]
+        public void TestAutoExpandedNavigationProperty()
+        {
+            TestGetPayloadContains("People", "\"Friends\":[");
+        }
     }
 }

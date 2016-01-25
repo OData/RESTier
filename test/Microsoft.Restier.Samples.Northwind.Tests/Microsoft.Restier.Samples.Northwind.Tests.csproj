@@ -152,6 +152,9 @@
     <Content Include="Baselines\TestGetNorthwindMetadata.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Baselines\TestOrdersEntitySetAutoExpandQuery.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Baselines\TestPatchProductReturnContent.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

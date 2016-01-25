@@ -34,6 +34,12 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         }
 
         [Fact]
+        public async Task TestOrdersEntitySetAutoExpandQuery()
+        {
+            await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Orders?$top=5");
+        }
+
+        [Fact]
         public async Task TestCustomersEntitySetTopSkipQuery()
         {
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Customers?$top=5&$skip=1");

@@ -4,6 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
@@ -61,6 +66,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             return 0.0;
         }
 
+        protected override ApiConfiguration CreateApiConfiguration()
+        {
+            return base.CreateApiConfiguration().AddHookHandler<IModelBuilder>(new NorthwindModelExtender());
+        }
+
         // Entity set filter
         protected IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
         {
@@ -81,6 +91,25 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         private void WriteLog(string text)
         {
             // Fake writing log method for submit logic demo
+        }
+
+        private class NorthwindModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+        {
+            public IModelBuilder InnerHandler { get; set; }
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                var model = await InnerHandler.GetModelAsync(context, cancellationToken);
+
+                // Way 2: enable auto-expand through model annotation.
+                var orderType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Order");
+                var orderDetailsProperty = (EdmNavigationProperty)orderType.DeclaredProperties
+                    .Single(prop => prop.Name == "Order_Details");
+                model.SetAnnotationValue(orderDetailsProperty,
+                    new QueryableRestrictionsAnnotation(new QueryableRestrictions { AutoExpand = true }));
+
+                return model;
+            }
         }
     }
 }

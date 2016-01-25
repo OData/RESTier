@@ -100,6 +100,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             }
         };
 
+        static TrippinApi()
+        {
+            people[0].Friends = new Collection<Person> { people[1], people[2] };
+            people[1].Friends = new Collection<Person> { people[2], people[3] };
+            people[2].Friends = new Collection<Person> { people[3], people[0] };
+            people[3].Friends = new Collection<Person> { people[0], people[1] };
+        }
+
         public IQueryable<Person> People
         {
             get { return people.AsQueryable(); }
