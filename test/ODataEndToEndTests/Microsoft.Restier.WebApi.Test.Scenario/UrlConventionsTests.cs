@@ -195,7 +195,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             TestGetPayloadContains(
                 "Trips?$filter=true eq false or 0.2 gt 0.1e2 or -3 lt -1 or StartsAt eq 2012-12-03T07:16:23Z or " +
                 "TrackGuid eq 01234567-89ab-cdef-0123-456789abcdef or " +
-                "duration'P12DT23H59M59.999999999999S' ne duration'P12DT23H59M58.999999999999S' or " +
+                "duration'P00DT23H59M59.999999999999S' ne duration'P00DT23H59M58.999999999999S' or " +
                 "['red','green'] ne ['yellow','blue']",
                 "http://localhost:18384/api/Trippin/$metadata#Trips");
         }

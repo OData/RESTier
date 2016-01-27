@@ -62,13 +62,12 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             persons = this.TestClientContext.People
                 .AddQueryOption("$filter", "year(BirthDate) eq 1986").ToList();
             Assert.Equal(1, persons.Count);
-            // Web API bug
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "BirthDate2 eq 1986-02-09").ToList();
-            //Assert.Equal(1, persons.Count);
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "year(BirthDate2) eq 1986").ToList();
-            //Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "BirthDate2 eq 1985-01-10").ToList();
+            Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "year(BirthDate2) eq 1985").ToList();
+            Assert.Equal(1, persons.Count);
         }
         
         [Fact]
@@ -134,11 +133,10 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 .AddQueryOption("$filter", "BirthDate eq 2012-12-20")
                 .ToList();
             Assert.Equal(1, persons.Count);
-            // Web API bug
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "BirthDate2 eq 2012-12-20")
-            //    .ToList();
-            //Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "BirthDate2 eq 2012-12-20")
+                .ToList();
+            Assert.Equal(1, persons.Count);
 
             // Filter with Parameter alias
             // ODL Bug: https://github.com/OData/odata.net/issues/316

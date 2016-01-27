@@ -419,11 +419,9 @@ namespace Microsoft.Restier.WebApi
             }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
-            ODataQuerySettings settings = new ODataQuerySettings()
+            ODataQuerySettings settings = new ODataQuerySettings
             {
                 HandleNullPropagation = HandleNullPropagationOption.False,
-                EnsureStableOrdering = true,
-                EnableConstantParameterization = false,
                 PageSize = null,  // no support for server enforced PageSize, yet
             };
 
