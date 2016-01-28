@@ -239,13 +239,12 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             persons = this.TestClientContext.People
                 .AddQueryOption("$filter", "hour(BirthTime) eq 22").ToList();
             Assert.Equal(1, persons.Count);
-            // Web API bug
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "BirthTime2 eq 22:58:02.0000000").ToList();
-            //Assert.Equal(1, persons.Count);
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "hour(BirthTime2) eq 22").ToList();
-            //Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "BirthTime2 eq 23:59:01.0000000").ToList();
+            Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "hour(BirthTime2) eq 23").ToList();
+            Assert.Equal(1, persons.Count);
         }
 
         [Fact]
@@ -311,11 +310,10 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
                 .AddQueryOption("$filter", "BirthTime eq 23:59:50.34")
                 .ToList();
             Assert.Equal(1, persons.Count);
-            // Web API bug
-            //persons = this.TestClientContext.People
-            //    .AddQueryOption("$filter", "BirthTime2 eq 23:59:50.34")
-            //    .ToList();
-            //Assert.Equal(1, persons.Count);
+            persons = this.TestClientContext.People
+                .AddQueryOption("$filter", "BirthTime2 eq 23:59:01.00")
+                .ToList();
+            Assert.Equal(1, persons.Count);
 
             // Filter with Parameter alias
             // ODL Bug: https://github.com/OData/odata.net/issues/316
