@@ -38,7 +38,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 {% endhighlight %}
 
 ### Plug in user logic
-Users can plug in user logic before and after executing one of the four submit operations by putting similar **protected** methods into the `Api` class. The method signatures must also exactly match the following examples. The method name must conform to `Can<Insert|Updat|Delet|Execut><ed|ing><EntitySetName|ActionName>` where `ing` for **before submit** and `ed` for **after submit**.
+Users can plug in user logic before and after executing one of the four submit operations by putting similar **protected** methods into the `Api` class. The method signatures must also exactly match the following examples. The method name must conform to `On<Insert|Updat|Delet|Execut><ed|ing><EntitySetName|ActionName>` where `ing` for **before submit** and `ed` for **after submit**.
 
 {% highlight csharp %}
 using System;
