@@ -27,10 +27,10 @@ namespace Microsoft.Restier.Core.Conventions
 
         public IModelBuilder InnerHandler { get; set; }
 
-        public static void ApplyTo(ApiConfiguration configuration, Type targetType)
+        public static void ApplyTo(ApiBuilder builder, Type targetType)
         {
             ConventionBasedOperationProvider provider = new ConventionBasedOperationProvider(targetType);
-            configuration.AddHookHandler<IModelBuilder>(provider);
+            builder.AddHookHandler<IModelBuilder>(provider);
         }
 
         public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)

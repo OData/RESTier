@@ -14,6 +14,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Framework.DependencyInjection, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Framework.DependencyInjection.1.0.0-beta8\lib\net45\Microsoft.Framework.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Framework.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Framework.DependencyInjection.Abstractions.1.0.0-beta8\lib\net45\Microsoft.Framework.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.OData.Edm, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.OData.Edm.6.15.0-beta\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
       <Private>True</Private>
@@ -45,6 +53,9 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
+    <Compile Include="ApiBuilder.cs" />
+    <Compile Include="ApiBuilderExtensions.cs" />
+    <Compile Include="IApiScopeFactory.cs" />
     <Compile Include="Model\FunctionAttribute.cs" />
     <Compile Include="Model\ActionAttribute.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetAuthorizer.cs" />
@@ -104,7 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft.Restier.Core.nuspec" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

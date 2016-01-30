@@ -64,10 +64,13 @@ namespace Microsoft.Restier.Core
                     ApiConfiguration configuration;
                     if (!Configurations.TryGetValue(apiType, out configuration))
                     {
-                        configuration = this.CreateApiConfiguration();
-                        EnableConventions(configuration, apiType);
-                        ApiConfiguratorAttribute.ApplyConfiguration(
-                            apiType, configuration);
+                        var builder = this.ConfigureApiBuilder(new ApiBuilder());
+                        EnableConventions(builder, apiType);
+                        ApiConfiguratorAttribute.ApplyApiBuilder(apiType, builder);
+                        builder.TryUseSharedApiScope(); // TODO: Maybe default to context scope?
+
+                        configuration = this.CreateApiConfiguration(builder);
+                        ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
                         Configurations[apiType] = configuration;
                     }
 
@@ -121,14 +124,31 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Creates the API configuration for this API.
+        /// Configure services for this API.
         /// </summary>
-        /// <returns>
-        /// The API configuration for this API.
-        /// </returns>
-        protected virtual ApiConfiguration CreateApiConfiguration()
+        /// <param name="builder">
+        /// The <see cref="ApiBuilder"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// </param>
+        /// <returns>The <see cref="ApiBuilder"/>.</returns>
+        [CLSCompliant(false)]
+        protected virtual ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
         {
-            return new ApiConfiguration();
+            return builder;
+        }
+
+        /// <summary>
+        /// Creates the API configuration for this API.
+        /// Descendants may override to use a customized DI container, or further configure the built
+        /// <see cref="ApiConfiguration"/>.
+        /// </summary>
+        /// <param name="builder">The <see cref="ApiBuilder"/> containing API service registrations.</param>
+        /// <returns>
+        /// An <see cref="ApiConfiguration"/> with which to create the API configuration for this API.
+        /// </returns>
+        [CLSCompliant(false)]
+        protected virtual ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
+        {
+            return builder.Build();
         }
 
         /// <summary>
@@ -156,6 +176,11 @@ namespace Microsoft.Restier.Core
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
+            if (this.apiContext != null)
+            {
+                this.apiContext.DisposeScope();
+            }
+
             if (disposing)
             {
                 this.apiContext = null;
@@ -166,7 +191,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Enables code-based conventions for an API.
         /// </summary>
-        /// <param name="configuration">
+        /// <param name="builder">
         /// An API configuration.
         /// </param>
         /// <param name="targetType">
@@ -179,18 +204,18 @@ namespace Microsoft.Restier.Core
         /// certain naming conventions.
         /// </remarks>
         private static void EnableConventions(
-            ApiConfiguration configuration,
+            ApiBuilder builder,
             Type targetType)
         {
-            Ensure.NotNull(configuration, "configuration");
+            Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
 
-            ConventionBasedChangeSetAuthorizer.ApplyTo(configuration, targetType);
-            ConventionBasedChangeSetEntryFilter.ApplyTo(configuration, targetType);
-            configuration.AddHookHandler<IChangeSetEntryValidator>(ConventionBasedChangeSetEntryValidator.Instance);
-            ConventionBasedApiModelBuilder.ApplyTo(configuration, targetType);
-            ConventionBasedOperationProvider.ApplyTo(configuration, targetType);
-            ConventionBasedEntitySetFilter.ApplyTo(configuration, targetType);
+            ConventionBasedChangeSetAuthorizer.ApplyTo(builder, targetType);
+            ConventionBasedChangeSetEntryFilter.ApplyTo(builder, targetType);
+            builder.AddHookHandler<IChangeSetEntryValidator>(ConventionBasedChangeSetEntryValidator.Instance);
+            ConventionBasedApiModelBuilder.ApplyTo(builder, targetType);
+            ConventionBasedOperationProvider.ApplyTo(builder, targetType);
+            ConventionBasedEntitySetFilter.ApplyTo(builder, targetType);
         }
     }
 }

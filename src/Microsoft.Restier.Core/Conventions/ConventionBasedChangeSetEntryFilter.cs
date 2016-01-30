@@ -27,12 +27,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            ApiConfiguration configuration,
+            ApiBuilder builder,
             Type targetType)
         {
-            Ensure.NotNull(configuration, "configuration");
+            Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
+            builder.AddHookHandler<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
         }
 
         /// <inheritdoc/>
@@ -59,32 +59,32 @@ namespace Microsoft.Restier.Core.Conventions
         {
             switch (entry.Type)
             {
-            case ChangeSetEntryType.DataModification:
-                DataModificationEntry dataModification = (DataModificationEntry)entry;
-                string operationName = null;
-                if (dataModification.IsNew)
-                {
-                    operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
-                }
-                else if (dataModification.IsUpdate)
-                {
+                case ChangeSetEntryType.DataModification:
+                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                    string operationName = null;
+                    if (dataModification.IsNew)
+                    {
+                        operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
+                    }
+                    else if (dataModification.IsUpdate)
+                    {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
-                }
-                else if (dataModification.IsDelete)
-                {
+                    }
+                    else if (dataModification.IsDelete)
+                    {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
-                }
+                    }
 
-                return operationName + suffix + dataModification.EntitySetName;
+                    return operationName + suffix + dataModification.EntitySetName;
 
-            case ChangeSetEntryType.ActionInvocation:
-                ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                return ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
-                       suffix + actionEntry.ActionName;
+                case ChangeSetEntryType.ActionInvocation:
+                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
+                    return ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
+                           suffix + actionEntry.ActionName;
 
-            default:
-                throw new InvalidOperationException(string.Format(
-                    CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+                default:
+                    throw new InvalidOperationException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
             }
         }
 
@@ -92,17 +92,17 @@ namespace Microsoft.Restier.Core.Conventions
         {
             switch (entry.Type)
             {
-            case ChangeSetEntryType.DataModification:
-                DataModificationEntry dataModification = (DataModificationEntry)entry;
-                return new object[] { dataModification.Entity };
+                case ChangeSetEntryType.DataModification:
+                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                    return new object[] { dataModification.Entity };
 
-            case ChangeSetEntryType.ActionInvocation:
-                ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                return actionEntry.GetArgumentArray();
+                case ChangeSetEntryType.ActionInvocation:
+                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
+                    return actionEntry.GetArgumentArray();
 
-            default:
-                throw new InvalidOperationException(string.Format(
-                    CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+                default:
+                    throw new InvalidOperationException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
             }
         }
 

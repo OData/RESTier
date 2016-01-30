@@ -66,9 +66,10 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             return 0.0;
         }
 
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration().AddHookHandler<IModelBuilder>(new NorthwindModelExtender());
+            return base.ConfigureApiBuilder(builder)
+                .AddHookHandler<IModelBuilder>(new NorthwindModelExtender());
         }
 
         // Entity set filter

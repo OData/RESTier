@@ -2,11 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+using Microsoft.Framework.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Properties;
-using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core
 {
@@ -35,21 +32,34 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration : PropertyBag
     {
-        private readonly IDictionary<Type, IHookHandler> hookHandlers =
-            new ConcurrentDictionary<Type, IHookHandler>();
+        private IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiConfiguration" /> class.
         /// </summary>
-        public ApiConfiguration()
+        /// <param name="serviceProvider">
+        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
+        /// </param>
+        public ApiConfiguration(IServiceProvider serviceProvider)
         {
-            this.AddDefaultHookHandlers();
+            this.serviceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
+        /// </summary>
+        public IServiceProvider ServiceProvider
+        {
+            get { return serviceProvider; }
         }
 
         /// <summary>
         /// Gets a value indicating whether this API configuration has been committed.
         /// </summary>
-        public bool IsCommitted { get; private set; }
+        public bool IsCommitted
+        {
+            get { return true; }
+        }
 
         internal IEdmModel Model { get; set; }
 
@@ -58,56 +68,16 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public void EnsureCommitted()
         {
-            this.IsCommitted = true;
-        }
-
-        #region HookHandler
-        /// <summary>
-        /// Adds a hook handler instance.
-        /// </summary>
-        /// <typeparam name="T">The hook handler interface.</typeparam>
-        /// <param name="handler">An instance of hook handler for TContext.</param>
-        /// <returns>Current <see cref="ApiConfiguration"/></returns>
-        public ApiConfiguration AddHookHandler<T>(T handler) where T : class, IHookHandler
-        {
-            Ensure.NotNull(handler, "handler");
-
-            if (this.IsCommitted)
-            {
-                throw new InvalidOperationException(Resources.ApiConfigurationIsCommitted);
-            }
-
-            if (!typeof(T).IsInterface)
-            {
-                throw new InvalidOperationException(Resources.ShouldBeInterfaceType);
-            }
-
-            var delegateHandler = handler as IDelegateHookHandler<T>;
-            if (delegateHandler != null)
-            {
-                delegateHandler.InnerHandler = this.GetHookHandler<T>();
-            }
-
-            this.hookHandlers[typeof(T)] = handler;
-            return this;
         }
 
         /// <summary>
-        /// Gets a hook handler instance.
+        /// Gets a service instance.
         /// </summary>
-        /// <typeparam name="T">The hook handler interface.</typeparam>
-        /// <returns>The hook handler instance.</returns>
-        public T GetHookHandler<T>() where T : class, IHookHandler
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public T GetHookHandler<T>() where T : class
         {
-            IHookHandler value;
-            this.hookHandlers.TryGetValue(typeof(T), out value);
-            return value as T;
-        }
-        #endregion
-
-        private void AddDefaultHookHandlers()
-        {
-            this.AddHookHandler<IQueryExecutor>(DefaultQueryExecutor.Instance);
+            return this.serviceProvider.GetService<T>();
         }
     }
 }

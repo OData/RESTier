@@ -58,6 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiBuilder.Tests.cs" />
     <Compile Include="Model\ConventionBasedApiModelBuilder.Tests.cs" />
     <Compile Include="Model\DefaultModelHandler.Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

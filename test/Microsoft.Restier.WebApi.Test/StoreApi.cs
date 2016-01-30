@@ -34,15 +34,15 @@ namespace Microsoft.Restier.WebApi.Test
 
     internal class StoreApi : ApiBase
     {
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
         {
-            var configuration = base.CreateApiConfiguration();
-            configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
-            configuration.AddHookHandler<IModelMapper>(new TestModelMapper());
-            configuration.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
-            configuration.AddHookHandler<IChangeSetPreparer>(new TestChangeSetPreparer());
-            configuration.AddHookHandler<ISubmitExecutor>(new TestSubmitExecutor());
-            return configuration;
+            builder = base.ConfigureApiBuilder(builder);
+            builder.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
+            builder.AddHookHandler<IModelMapper>(new TestModelMapper());
+            builder.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
+            builder.AddHookHandler<IChangeSetPreparer>(new TestChangeSetPreparer());
+            builder.AddHookHandler<ISubmitExecutor>(new TestSubmitExecutor());
+            return builder;
         }
     }
 

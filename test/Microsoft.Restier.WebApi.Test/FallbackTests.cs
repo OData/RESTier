@@ -94,13 +94,13 @@ namespace Microsoft.Restier.WebApi.Test
 
     internal class FallbackApi : ApiBase
     {
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
         {
-            var configuration = base.CreateApiConfiguration();
-            configuration.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
-            configuration.AddHookHandler<IModelMapper>(new FallbackModelMapper());
-            configuration.AddHookHandler<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
-            return configuration;
+            builder = base.ConfigureApiBuilder(builder);
+            builder.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
+            builder.AddHookHandler<IModelMapper>(new FallbackModelMapper());
+            builder.AddHookHandler<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
+            return builder;
         }
 
         public IQueryable<Order> PreservedOrders

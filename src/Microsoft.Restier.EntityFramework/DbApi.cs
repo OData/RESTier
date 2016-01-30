@@ -48,19 +48,23 @@ namespace Microsoft.Restier.EntityFramework
         /// <summary>
         /// Creates the API configuration for this API.
         /// </summary>
+        /// <param name="builder">
+        /// The <see cref="ApiBuilder"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// </param>
         /// <returns>
         /// The API configuration for this API.
         /// </returns>
-        protected override ApiConfiguration CreateApiConfiguration()
+        [CLSCompliant(false)]
+        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
         {
-            var configuration = base.CreateApiConfiguration();
-            configuration.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
-            configuration.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
-            configuration.AddHookHandler<IQueryExpressionSourcer>(QueryExpressionSourcer.Instance);
-            configuration.AddHookHandler<IQueryExecutor>(QueryExecutor.Instance);
-            configuration.AddHookHandler<IChangeSetPreparer>(ChangeSetPreparer.Instance);
-            configuration.AddHookHandler<ISubmitExecutor>(SubmitExecutor.Instance);
-            return configuration;
+            builder = base.ConfigureApiBuilder(builder);
+            builder.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
+            builder.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
+            builder.AddHookHandler<IQueryExpressionSourcer>(QueryExpressionSourcer.Instance);
+            builder.AddHookHandler<IQueryExecutor>(QueryExecutor.Instance);
+            builder.AddHookHandler<IChangeSetPreparer>(ChangeSetPreparer.Instance);
+            builder.AddHookHandler<ISubmitExecutor>(SubmitExecutor.Instance);
+            return builder;
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NewInvocationContextIsConfiguredCorrectly()
         {
-            var configuration = new ApiConfiguration();
+            var configuration = new ApiBuilder().Build();
             configuration.EnsureCommitted();
             var apiContext = new ApiContext(configuration);
             var context = new InvocationContext(apiContext);
@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Core.Tests
         public void InvocationContextGetsHookPointsCorrectly()
         {
             var hook = new HookA();
-            var configuration = new ApiConfiguration().AddHookHandler<IHookA>(hook);
+            var configuration = new ApiBuilder().AddHookHandler<IHookA>(hook).Build();
             configuration.EnsureCommitted();
             var apiContext = new ApiContext(configuration);
             var context = new InvocationContext(apiContext);
