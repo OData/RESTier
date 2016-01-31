@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.DependencyInjection.Extensions;
 
 namespace Microsoft.Restier.Core
 {
@@ -30,6 +32,54 @@ namespace Microsoft.Restier.Core
             return configuration;
         }
 
+        /// <summary>
+        /// Make the built <see cref="ApiConfiguration"/> to create <see cref="ApiContext"/> with its own instance
+        /// of <see cref="IServiceProvider"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="ApiConfiguration"/>.</param>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public static ApiConfiguration UseSharedApiScope(this ApiConfiguration obj)
+        {
+            obj.Services.AddSingleton<IApiScopeFactory, SharedApiScopeFactory>();
+            return obj;
+        }
+
+        /// <summary>
+        /// Make the built <see cref="ApiConfiguration"/> to create <see cref="ApiContext"/> with a scoped
+        /// <see cref="IServiceProvider"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="ApiConfiguration"/>.</param>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public static ApiConfiguration UseContextApiScope(this ApiConfiguration obj)
+        {
+            obj.Services.AddSingleton<IApiScopeFactory, ContextApiScopeFactory>();
+            return obj;
+        }
+
+        /// <summary>
+        /// If service scope is not yet configured, make the built <see cref="ApiConfiguration"/> to create
+        /// <see cref="ApiContext"/> with its own instance of <see cref="IServiceProvider"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="ApiConfiguration"/>.</param>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public static ApiConfiguration TryUseSharedApiScope(this ApiConfiguration obj)
+        {
+            obj.Services.TryAddSingleton<IApiScopeFactory, SharedApiScopeFactory>();
+            return obj;
+        }
+
+        /// <summary>
+        /// If service scope is not yet configured, make the built <see cref="ApiConfiguration"/> to create
+        /// <see cref="ApiContext"/> with a scoped <see cref="IServiceProvider"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="ApiConfiguration"/>.</param>
+        /// <returns>Current <see cref="ApiConfiguration"/></returns>
+        public static ApiConfiguration TryUseContextApiScope(this ApiConfiguration obj)
+        {
+            obj.Services.TryAddSingleton<IApiScopeFactory, ContextApiScopeFactory>();
+            return obj;
+        }
+
         internal static bool IsPropertyIgnored(this ApiConfiguration configuration, string propertyName)
         {
             Ensure.NotNull(configuration, "configuration");
@@ -47,6 +97,58 @@ namespace Microsoft.Restier.Core
             }
 
             return ignoredProperties;
+        }
+
+        private class SharedApiScopeFactory : IApiScopeFactory
+        {
+            public SharedApiScopeFactory(IServiceProvider serviceProvider)
+            {
+                this.ServiceProvider = serviceProvider;
+            }
+
+            public IServiceProvider ServiceProvider
+            {
+                get; private set;
+            }
+
+            public IServiceScope CreateApiScope()
+            {
+                return new ServiceScope()
+                {
+                    ServiceProvider = this.ServiceProvider,
+                };
+            }
+
+            private class ServiceScope : IServiceScope
+            {
+                public IServiceProvider ServiceProvider
+                {
+                    get; set;
+                }
+
+                public void Dispose()
+                {
+                    this.ServiceProvider = null;
+                }
+            }
+        }
+
+        private class ContextApiScopeFactory : IApiScopeFactory
+        {
+            public ContextApiScopeFactory(IServiceScopeFactory factory)
+            {
+                this.Factory = factory;
+            }
+
+            public IServiceScopeFactory Factory
+            {
+                get; private set;
+            }
+
+            public IServiceScope CreateApiScope()
+            {
+                return this.Factory.CreateScope();
+            }
         }
     }
 }

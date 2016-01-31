@@ -2,6 +2,13 @@ public interface Microsoft.Restier.Core.IApi : IDisposable {
 	Microsoft.Restier.Core.ApiContext Context  { public abstract get; }
 }
 
+[
+CLSCompliantAttribute(),
+]
+public interface Microsoft.Restier.Core.IApiScopeFactory {
+	Microsoft.Framework.DependencyInjection.IServiceScope CreateApiScope ()
+}
+
 public interface Microsoft.Restier.Core.IDelegateHookHandler`1 {
 	T InnerHandler  { public abstract get; public abstract set; }
 }
@@ -111,6 +118,26 @@ public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
 	ExtensionAttribute(),
 	]
 	public static Microsoft.Restier.Core.ApiConfiguration IgnoreProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Restier.Core.ApiConfiguration TryUseContextApiScope (Microsoft.Restier.Core.ApiConfiguration obj)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Restier.Core.ApiConfiguration TryUseSharedApiScope (Microsoft.Restier.Core.ApiConfiguration obj)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Restier.Core.ApiConfiguration UseContextApiScope (Microsoft.Restier.Core.ApiConfiguration obj)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Restier.Core.ApiConfiguration UseSharedApiScope (Microsoft.Restier.Core.ApiConfiguration obj)
 }
 
 public sealed class Microsoft.Restier.Core.ApiData {
@@ -125,18 +152,37 @@ public sealed class Microsoft.Restier.Core.ApiData {
 
 public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.PropertyBag {
 	public ApiConfiguration ()
+	[
+	CLSCompliantAttribute(),
+	]
+	public ApiConfiguration (Microsoft.Framework.DependencyInjection.IServiceCollection services)
 
 	bool IsCommitted  { [CompilerGeneratedAttribute(),]public get; }
+	System.IServiceProvider ServiceProvider  { public get; }
+	[
+	CLSCompliantAttribute(),
+	]
+	Microsoft.Framework.DependencyInjection.IServiceCollection Services  { public get; }
 
+	public Microsoft.Restier.Core.ApiConfiguration AddContributor (ApiServiceContributor`1 contributor)
 	public Microsoft.Restier.Core.ApiConfiguration AddHookHandler (T handler)
+	protected virtual System.IServiceProvider BuildServiceProvider ()
+	public Microsoft.Restier.Core.ApiConfiguration ChainPrevious (Func`2 factory)
+	public Microsoft.Restier.Core.ApiConfiguration ChainPrevious (Func`3 factory)
 	public void EnsureCommitted ()
 	public T GetHookHandler ()
+	public Microsoft.Restier.Core.ApiConfiguration MakeScoped ()
+	public Microsoft.Restier.Core.ApiConfiguration MakeSingleton ()
+	public Microsoft.Restier.Core.ApiConfiguration MakeTransient ()
 }
 
 public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.PropertyBag {
 	public ApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 
 	Microsoft.Restier.Core.ApiConfiguration Configuration  { [CompilerGeneratedAttribute(),]public get; }
+	System.IServiceProvider ServiceProvider  { public get; }
+
+	public T GetApiService ()
 }
 
 public class Microsoft.Restier.Core.InvocationContext : Microsoft.Restier.Core.PropertyBag {
@@ -155,6 +201,14 @@ public class Microsoft.Restier.Core.PropertyBag {
 	public T GetProperty (string name)
 	public virtual bool HasProperty (string name)
 	public void SetProperty (string name, object value)
+}
+
+public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.MulticastDelegate, ICloneable, ISerializable {
+	public ApiServiceContributor`1 (object object, System.IntPtr method)
+
+	public virtual System.IAsyncResult BeginInvoke (System.IServiceProvider serviceProvider, Func`1 next, System.AsyncCallback callback, object object)
+	public virtual T EndInvoke (System.IAsyncResult result)
+	public virtual T Invoke (System.IServiceProvider serviceProvider, Func`1 next)
 }
 
 public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {

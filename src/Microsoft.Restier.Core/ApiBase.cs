@@ -156,6 +156,11 @@ namespace Microsoft.Restier.Core
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
+            if (this.apiContext != null)
+            {
+                this.apiContext.DisposeScope();
+            }
+
             if (disposing)
             {
                 this.apiContext = null;
