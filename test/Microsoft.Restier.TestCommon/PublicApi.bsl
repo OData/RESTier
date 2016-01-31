@@ -152,7 +152,12 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.ApiBuilder obj, params System.Func`2[[Microsoft.Restier.Core.ApiBuilder],[System.IServiceProvider]] serviceProviderFactory)
+	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.ApiBuilder obj)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.ApiBuilder obj, System.Func`2[[Microsoft.Restier.Core.ApiBuilder],[System.IServiceProvider]] serviceProviderFactory)
 
 	[
 	ExtensionAttribute(),

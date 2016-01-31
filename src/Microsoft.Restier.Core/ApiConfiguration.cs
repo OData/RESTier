@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
@@ -58,7 +59,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public bool IsCommitted
         {
-            get { return true; }
+            get { return serviceProvider != null; }
         }
 
         internal IEdmModel Model { get; set; }
@@ -68,6 +69,10 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public void EnsureCommitted()
         {
+            if (!IsCommitted)
+            {
+                throw new ArgumentException(Resources.ApiConfigurationShouldBeCommitted);
+            }
         }
 
         /// <summary>
