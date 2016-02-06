@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Extensions;
 using Microsoft.Restier.Core.Properties;
@@ -188,13 +189,33 @@ namespace Microsoft.Restier.Core
             return obj.AddContributor<T>((sp, next) => factory(next()));
         }
 
-        /// <summary>
-        /// Call this to make singleton lifetime of a service.
-        /// </summary>
-        /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder MakeSingleton<T>(this ApiBuilder obj) where T : class
+		/// <summary>
+		/// Adds a service contributor, which has a chance to chain previously registered service instances.
+		/// </summary>
+		/// <typeparam name="TService">The service type.</typeparam>
+		/// <typeparam name="TImplementation">The implementation type.</typeparam>
+		/// <param name="obj">The <see cref="ApiBuilder"/>.</param>
+		/// <returns>Current <see cref="ApiBuilder"/></returns>
+		public static ApiBuilder ChainPrevious<TService, TImplementation>(this ApiBuilder obj)
+			where TService : class
+		{
+			return obj.AddContributor<TService>((sp, next) => {
+				var typeInfo = typeof(TImplementation).GetTypeInfo();
+				var creators = typeInfo.DeclaredConstructors
+					.Where(e => e.IsPublic)
+					.OrderByDescending(e => e.GetParameters().Length);
+
+				throw new NotImplementedException();
+			});
+		}
+
+		/// <summary>
+		/// Call this to make singleton lifetime of a service.
+		/// </summary>
+		/// <typeparam name="T">The service type.</typeparam>
+		/// <param name="obj">The <see cref="ApiBuilder"/>.</param>
+		/// <returns>Current <see cref="ApiBuilder"/></returns>
+		public static ApiBuilder MakeSingleton<T>(this ApiBuilder obj) where T : class
         {
             Ensure.NotNull(obj, nameof(obj));
             obj.Services.AddSingleton<T>(ChainedService<T>.DefaultFactory);
