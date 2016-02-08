@@ -167,6 +167,11 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	[
 	ExtensionAttribute(),
 	]
+	public static Microsoft.Restier.Core.ApiBuilder ChainPrevious (Microsoft.Restier.Core.ApiBuilder obj)
+
+	[
+	ExtensionAttribute(),
+	]
 	public static Microsoft.Restier.Core.ApiBuilder ChainPrevious (Microsoft.Restier.Core.ApiBuilder obj, Func`2 factory)
 
 	[

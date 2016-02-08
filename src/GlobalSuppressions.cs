@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Usage", "CA2243:AttributeStringLiteralsShouldParseCorrectly", Justification = "AssemblyInformationalVersion could be string.")]
 
 #region CA1004 Generic method with type parameter
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#ChainPrevious`2(Microsoft.Restier.Core.ApiBuilder)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#HasHookHandler`1(Microsoft.Restier.Core.ApiBuilder)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#MakeSingleton`1(Microsoft.Restier.Core.ApiBuilder)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#MakeScoped`1(Microsoft.Restier.Core.ApiBuilder)")]

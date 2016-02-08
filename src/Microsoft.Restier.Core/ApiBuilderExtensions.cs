@@ -2,7 +2,9 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Extensions;
@@ -189,33 +191,54 @@ namespace Microsoft.Restier.Core
             return obj.AddContributor<T>((sp, next) => factory(next()));
         }
 
-		/// <summary>
-		/// Adds a service contributor, which has a chance to chain previously registered service instances.
-		/// </summary>
-		/// <typeparam name="TService">The service type.</typeparam>
-		/// <typeparam name="TImplementation">The implementation type.</typeparam>
-		/// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-		/// <returns>Current <see cref="ApiBuilder"/></returns>
-		public static ApiBuilder ChainPrevious<TService, TImplementation>(this ApiBuilder obj)
-			where TService : class
-		{
-			return obj.AddContributor<TService>((sp, next) => {
-				var typeInfo = typeof(TImplementation).GetTypeInfo();
-				var creators = typeInfo.DeclaredConstructors
-					.Where(e => e.IsPublic)
-					.OrderByDescending(e => e.GetParameters().Length);
+        /// <summary>
+        /// Adds a service contributor, which has a chance to chain previously registered service instances.
+        /// Constructor parameters other than the next service instance would be fulfilled from service provider.
+        /// And this method is capable of choosing a constructor base on available services.
+        /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TImplement">The implementation type.</typeparam>
+        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
+        /// <returns>Current <see cref="ApiBuilder"/></returns>
+        public static ApiBuilder ChainPrevious<TService, TImplement>(this ApiBuilder obj)
+            where TService : class
+            where TImplement : TService
+        {
+            Func<IServiceProvider, TService, TService> factory = null;
 
-				throw new NotImplementedException();
-			});
-		}
+            return obj.AddContributor<TService>((sp, next) =>
+            {
+                if (factory != null)
+                {
+                    return factory(sp, next());
+                }
 
-		/// <summary>
-		/// Call this to make singleton lifetime of a service.
-		/// </summary>
-		/// <typeparam name="T">The service type.</typeparam>
-		/// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-		/// <returns>Current <see cref="ApiBuilder"/></returns>
-		public static ApiBuilder MakeSingleton<T>(this ApiBuilder obj) where T : class
+                // TODO: See if in the future ActivatorUtilities could replace these implementation. For now its
+                // methods can't select constructor appropriately, base on avaialble services.
+                var ret = ChainedService.CreateViaReflection(typeof(TService), typeof(TImplement), sp, next);
+                var value = ret.Item1;
+                var creator = ret.Item2;
+
+                // Create a factory proxy for the first call, to save the expression compilation cost to the 2nd
+                // call, in case the service is a singleton or for any reason only resolved once.
+                factory = (serviceProvider, nextService) =>
+                {
+                    factory = ChainedService<TService>.CreateFactory(creator);
+                    creator = null;
+                    return factory(serviceProvider, nextService);
+                };
+
+                return (TService)value;
+            });
+        }
+
+        /// <summary>
+        /// Call this to make singleton lifetime of a service.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
+        /// <returns>Current <see cref="ApiBuilder"/></returns>
+        public static ApiBuilder MakeSingleton<T>(this ApiBuilder obj) where T : class
         {
             Ensure.NotNull(obj, nameof(obj));
             obj.Services.AddSingleton<T>(ChainedService<T>.DefaultFactory);
@@ -362,6 +385,57 @@ namespace Microsoft.Restier.Core
         }
     }
 
+    internal static class ChainedService
+    {
+        public static Tuple<object, ConstructorInfo> CreateViaReflection(
+            Type serviceType,
+            Type implementType,
+            IServiceProvider serviceProvider,
+            Func<object> next)
+        {
+            var typeInfo = implementType.GetTypeInfo();
+            var creators = typeInfo.DeclaredConstructors
+                .Where(e => e.IsPublic)
+                .OrderByDescending(e => e.GetParameters().Length);
+            foreach (var creator in creators)
+            {
+                var paramInfoList = creator.GetParameters();
+                var paramList = new object[paramInfoList.Length];
+                for (int i = 0; i < paramInfoList.Length; i++)
+                {
+                    var paramInfo = paramInfoList[i];
+                    if (paramInfo.ParameterType == serviceType)
+                    {
+                        paramList[i] = next();
+                        continue;
+                    }
+
+                    paramList[i] = serviceProvider.GetService(paramInfo.ParameterType);
+                    if (paramList[i] != null)
+                    {
+                        continue;
+                    }
+
+                    if (paramInfo.HasDefaultValue)
+                    {
+                        paramList[i] = paramInfo.DefaultValue;
+                        continue;
+                    }
+
+                    paramList = null;
+                    break;
+                }
+
+                if (paramList != null)
+                {
+                    return Tuple.Create(creator.Invoke(paramList), creator);
+                }
+            }
+
+            throw new NotSupportedException("No appropriate constructor found.");
+        }
+    }
+
     internal static class ChainedService<T> where T : class
     {
         public static readonly Func<IServiceProvider, T> DefaultFactory = sp =>
@@ -384,6 +458,61 @@ namespace Microsoft.Restier.Core
                 return next();
             }
         };
+
+        public static Func<IServiceProvider, T, T> CreateFactory(ConstructorInfo creator)
+        {
+            var serviceProviderParam = Expression.Parameter(typeof(IServiceProvider));
+            var nextParam = Expression.Parameter(typeof(T));
+
+            var paramInfoList = creator.GetParameters();
+            var locals = new List<ParameterExpression>(paramInfoList.Length);
+            var paramList = paramInfoList.Select(e =>
+            {
+                if (e.ParameterType == typeof(T))
+                {
+                    return (Expression)nextParam;
+                }
+
+                if (e.HasDefaultValue)
+                {
+                    var value = Expression.Variable(typeof(object));
+                    locals.Add(value);
+                    var call = Expression.Call(
+                        serviceProviderParam,
+                        "GetService",
+                        null,
+                        Expression.Constant(e.ParameterType));
+
+                    return Expression.Condition(
+                        Expression.ReferenceNotEqual(
+                            Expression.Assign(value, call),
+                            Expression.Constant(null)),
+                        Expression.Convert(value, e.ParameterType),
+                        Expression.Constant(e.DefaultValue, e.ParameterType),
+                        e.ParameterType);
+                }
+                else
+                {
+                    return Expression.Call(
+                        typeof(ServiceProviderExtensions),
+                        "GetRequiredService",
+                        new[] { e.ParameterType },
+                        serviceProviderParam);
+                }
+            });
+
+            Expression body = Expression.New(creator, paramList);
+            if (locals.Count > 0)
+            {
+                body = Expression.Block(typeof(T), locals, body);
+            }
+
+            var ret = Expression.Lambda<Func<IServiceProvider, T, T>>(
+                body,
+                serviceProviderParam,
+                nextParam);
+            return ret.Compile();
+        }
     }
 
     internal static class HookHandlerType<T> where T : class, IHookHandler
