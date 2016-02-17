@@ -15,7 +15,6 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Contains extension methods of <see cref="ApiBuilder"/>.
     /// </summary>
-    [CLSCompliant(false)]
     public static class ApiBuilderExtensions
     {
         /// <summary>

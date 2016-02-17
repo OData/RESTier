@@ -31,7 +31,6 @@ namespace Microsoft.Restier.Core
         /// <param name="builder">
         /// An API builder.
         /// </param>
-        [CLSCompliant(false)]
         public static void ApplyApiBuilder(
             Type type, ApiBuilder builder)
         {
@@ -47,7 +46,7 @@ namespace Microsoft.Restier.Core
                 typeof(ApiConfiguratorAttribute), false);
             foreach (ApiConfiguratorAttribute attribute in attributes)
             {
-                attribute.ConfigureBuilder(builder, type);
+                attribute.ConfigureApi(builder, type);
             }
         }
 
@@ -153,8 +152,7 @@ namespace Microsoft.Restier.Core
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
-        [CLSCompliant(false)]
-        public virtual void ConfigureBuilder(
+        public virtual void ConfigureApi(
             ApiBuilder builder,
             Type type)
         {

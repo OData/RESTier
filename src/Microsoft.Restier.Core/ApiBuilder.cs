@@ -25,7 +25,6 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Builder object to create an <see cref="ApiConfiguration"/>
     /// </summary>
-    [CLSCompliant(false)]
     public sealed class ApiBuilder
     {
         /// <summary>
@@ -40,6 +39,7 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="ApiBuilder"/> class.
         /// </summary>
         /// <param name="services">A service collection.</param>
+        [CLSCompliant(false)]
         public ApiBuilder(IServiceCollection services)
         {
             Services = services ?? new ServiceCollection();
@@ -52,6 +52,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets the service collection containing service registration.
         /// </summary>
+        [CLSCompliant(false)]
         public IServiceCollection Services
         {
             get; private set;

@@ -23,8 +23,7 @@ namespace Microsoft.Restier.Security
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
-        [CLSCompliant(false)]
-        public override void ConfigureBuilder(
+        public override void ConfigureApi(
             ApiBuilder builder,
             Type type)
         {

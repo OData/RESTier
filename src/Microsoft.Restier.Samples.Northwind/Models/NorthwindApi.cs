@@ -66,9 +66,9 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             return 0.0;
         }
 
-        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            return base.ConfigureApiBuilder(builder)
+            return base.ConfigureApi(builder)
                 .AddHookHandler<IModelBuilder>(new NorthwindModelExtender());
         }
 

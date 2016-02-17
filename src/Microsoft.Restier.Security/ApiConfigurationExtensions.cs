@@ -31,7 +31,6 @@ namespace Microsoft.Restier.Security
         /// authorize according to roles assigned to the current principal
         /// along with any that have been asserted during an API flow.
         /// </remarks>
-        [CLSCompliant(false)]
         public static void EnableRoleBasedSecurity(
             this ApiBuilder builder)
         {

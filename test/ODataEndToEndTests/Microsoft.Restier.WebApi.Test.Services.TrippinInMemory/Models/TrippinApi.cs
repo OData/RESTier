@@ -118,9 +118,9 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             get { return this.Source<Person>("People").Where(p => p.PersonId >= 2); }
         }
 
-        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            return base.ConfigureApiBuilder(builder)
+            return base.ConfigureApi(builder)
                 .AddHookHandler<IModelBuilder>(new ModelBuilder());
         }
 

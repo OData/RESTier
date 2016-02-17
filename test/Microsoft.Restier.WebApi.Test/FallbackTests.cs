@@ -94,9 +94,9 @@ namespace Microsoft.Restier.WebApi.Test
 
     internal class FallbackApi : ApiBase
     {
-        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            builder = base.ConfigureApiBuilder(builder);
+            builder = base.ConfigureApi(builder);
             builder.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
             builder.AddHookHandler<IModelMapper>(new FallbackModelMapper());
             builder.AddHookHandler<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());

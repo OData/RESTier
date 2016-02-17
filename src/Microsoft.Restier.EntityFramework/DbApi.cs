@@ -54,10 +54,9 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>
         /// The API configuration for this API.
         /// </returns>
-        [CLSCompliant(false)]
-        protected override ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            builder = base.ConfigureApiBuilder(builder);
+            builder = base.ConfigureApi(builder);
             builder.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
             builder.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
             builder.AddHookHandler<IQueryExpressionSourcer>(QueryExpressionSourcer.Instance);

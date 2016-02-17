@@ -23,16 +23,8 @@ public abstract class Microsoft.Restier.Core.ApiBase : IDisposable, IApi {
 	Microsoft.Restier.Core.ApiContext ApiContext  { protected get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]protected get; }
 
-	[
-	CLSCompliantAttribute(),
-	]
-	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApiBuilder (Microsoft.Restier.Core.ApiBuilder builder)
-
-	[
-	CLSCompliantAttribute(),
-	]
+	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
 	protected virtual Microsoft.Restier.Core.ApiConfiguration CreateApiConfiguration (Microsoft.Restier.Core.ApiBuilder builder)
-
 	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 	public virtual void Dispose ()
 	protected virtual void Dispose (bool disposing)
@@ -46,20 +38,12 @@ SerializableAttribute(),
 public abstract class Microsoft.Restier.Core.ApiConfiguratorAttribute : System.Attribute, _Attribute {
 	protected ApiConfiguratorAttribute ()
 
-	[
-	CLSCompliantAttribute(),
-	]
 	public static void ApplyApiBuilder (System.Type type, Microsoft.Restier.Core.ApiBuilder builder)
-
 	public static void ApplyConfiguration (System.Type type, Microsoft.Restier.Core.ApiConfiguration configuration)
 	public static void ApplyDisposal (System.Type type, object instance, Microsoft.Restier.Core.ApiContext context)
 	public static void ApplyInitialization (System.Type type, object instance, Microsoft.Restier.Core.ApiContext context)
 	public virtual void Configure (Microsoft.Restier.Core.ApiConfiguration configuration, System.Type type)
-	[
-	CLSCompliantAttribute(),
-	]
-	public virtual void ConfigureBuilder (Microsoft.Restier.Core.ApiBuilder builder, System.Type type)
-
+	public virtual void ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder, System.Type type)
 	public virtual void Dispose (Microsoft.Restier.Core.ApiContext context, System.Type type, object instance)
 	public virtual void Initialize (Microsoft.Restier.Core.ApiContext context, System.Type type, object instance)
 }
@@ -130,7 +114,6 @@ public sealed class Microsoft.Restier.Core.Api {
 }
 
 [
-CLSCompliantAttribute(),
 ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
@@ -277,13 +260,16 @@ public class Microsoft.Restier.Core.PropertyBag {
 	public void SetProperty (string name, object value)
 }
 
-[
-CLSCompliantAttribute(),
-]
 public sealed class Microsoft.Restier.Core.ApiBuilder {
 	public ApiBuilder ()
+	[
+	CLSCompliantAttribute(),
+	]
 	public ApiBuilder (Microsoft.Framework.DependencyInjection.IServiceCollection services)
 
+	[
+	CLSCompliantAttribute(),
+	]
 	Microsoft.Framework.DependencyInjection.IServiceCollection Services  { [CompilerGeneratedAttribute(),]public get; }
 }
 
@@ -300,11 +286,7 @@ public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.
 
 	T DbContext  { protected get; }
 
-	[
-	CLSCompliantAttribute(),
-	]
-	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApiBuilder (Microsoft.Restier.Core.ApiBuilder builder)
-
+	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
 	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 	protected virtual T CreateDbContext ()
 	protected virtual void Dispose (bool disposing)

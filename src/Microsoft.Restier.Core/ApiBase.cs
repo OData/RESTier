@@ -64,7 +64,7 @@ namespace Microsoft.Restier.Core
                     ApiConfiguration configuration;
                     if (!Configurations.TryGetValue(apiType, out configuration))
                     {
-                        var builder = this.ConfigureApiBuilder(new ApiBuilder());
+                        var builder = this.ConfigureApi(new ApiBuilder());
                         EnableConventions(builder, apiType);
                         ApiConfiguratorAttribute.ApplyApiBuilder(apiType, builder);
                         builder.TryUseSharedApiScope(); // TODO: Maybe default to context scope?
@@ -130,8 +130,7 @@ namespace Microsoft.Restier.Core
         /// The <see cref="ApiBuilder"/> with which to create an <see cref="ApiConfiguration"/>.
         /// </param>
         /// <returns>The <see cref="ApiBuilder"/>.</returns>
-        [CLSCompliant(false)]
-        protected virtual ApiBuilder ConfigureApiBuilder(ApiBuilder builder)
+        protected virtual ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return builder;
         }
@@ -145,7 +144,6 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// An <see cref="ApiConfiguration"/> with which to create the API configuration for this API.
         /// </returns>
-        [CLSCompliant(false)]
         protected virtual ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
         {
             return builder.Build();
