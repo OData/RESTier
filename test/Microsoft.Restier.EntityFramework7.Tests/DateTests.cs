@@ -57,7 +57,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
             {
                 dynamic newObj = new ExpandoObject();
                 newObj.DateProperty = "2016-01-04";
-                newObj.DTProperty = DateTime.Now;
+                newObj.DTProperty = DateTime.UtcNow;
                 newObj.DTOProperty = DateTimeOffset.Now;
                 newObj.TODProperty = "08:09:10";
                 newObj.TSProperty = "PT4H12M";
@@ -81,7 +81,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
             {
                 dynamic newObj = new ExpandoObject();
                 newObj.DateProperty = "2016-01-04";
-                newObj.DTProperty = DateTime.Now;
+                newObj.DTProperty = DateTime.UtcNow;
                 newObj.DTOProperty = DateTimeOffset.Now;
                 newObj.RowId = 1024;
                 newObj.TODProperty = "08:09:10";
@@ -142,7 +142,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
                 ctx.Add(new DateItem()
                 {
                     DateProperty = DateTime.Now,
-                    DTProperty = DateTime.Now,
+                    DTProperty = DateTime.UtcNow,
                     DTOProperty = DateTimeOffset.Now,
                     RowId = rowId,
                     TODProperty = TimeOfDay.Now,

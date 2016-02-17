@@ -50,17 +50,17 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            ApiConfiguration configuration,
+            ApiBuilder builder,
             Type targetType)
         {
-            Ensure.NotNull(configuration, "configuration");
+            Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
 
             var provider = new ConventionBasedApiModelBuilder(targetType);
-            configuration.AddHookHandler<IModelBuilder>(provider);
-            configuration.AddHookHandler<IModelMapper>(provider);
-            configuration.AddHookHandler<IQueryExpressionExpander>(provider);
-            configuration.AddHookHandler<IQueryExpressionSourcer>(provider);
+            builder.AddHookHandler<IModelBuilder>(provider);
+            builder.AddHookHandler<IModelMapper>(provider);
+            builder.AddHookHandler<IQueryExpressionExpander>(provider);
+            builder.AddHookHandler<IQueryExpressionSourcer>(provider);
         }
 
         /// <inheritdoc/>

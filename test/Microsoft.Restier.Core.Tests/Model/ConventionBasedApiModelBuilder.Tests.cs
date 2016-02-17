@@ -179,9 +179,9 @@ namespace Microsoft.Restier.Core.Tests.Model
             get { return base.ApiContext; }
         }
 
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration()
+            return base.CreateApiConfiguration(builder)
                 .IgnoreProperty("ApiConfiguration")
                 .IgnoreProperty("ApiContext");
         }
@@ -202,11 +202,16 @@ namespace Microsoft.Restier.Core.Tests.Model
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration()
-                .AddHookHandler<IModelBuilder>(new TestModelBuilder())
+            return base.CreateApiConfiguration(builder)
                 .IgnoreProperty("Invisible");
+        }
+
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        {
+            return base.ConfigureApi(builder)
+                .AddHookHandler<IModelBuilder>(new TestModelBuilder());
         }
     }
 
@@ -234,9 +239,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiD : ApiC
     {
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration().IgnoreProperty("People");
+            return base.CreateApiConfiguration(builder).IgnoreProperty("People");
         }
     }
 
@@ -250,9 +255,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         public IQueryable<Person> People { get; set; }
         public IQueryable<Order> Orders { get; set; }
 
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration()
+            return base.ConfigureApi(builder)
                 .AddHookHandler<IModelBuilder>(new TestModelBuilder());
         }
     }
@@ -261,9 +266,9 @@ namespace Microsoft.Restier.Core.Tests.Model
     {
         public IQueryable<Customer> VipCustomers { get; set; }
 
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration()
+            return base.ConfigureApi(builder)
                 .AddHookHandler<IModelBuilder>(new TestModelBuilder());
         }
     }
@@ -279,9 +284,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         public IQueryable<Customer> Customers { get; set; }
         public Customer Me2 { get; set; }
 
-        protected override ApiConfiguration CreateApiConfiguration()
+        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            return base.CreateApiConfiguration()
+            return base.ConfigureApi(builder)
                 .AddHookHandler<IModelBuilder>(new TestModelBuilder());
         }
     }

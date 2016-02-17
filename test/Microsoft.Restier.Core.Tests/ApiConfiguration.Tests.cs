@@ -14,13 +14,6 @@ namespace Microsoft.Restier.Core.Tests
     public class ApiConfigurationTests
     {
         [Fact]
-        public void EmptyConfigurationIsConfiguredCorrectly()
-        {
-            var configuration = new ApiConfiguration();
-            Assert.False(configuration.IsCommitted);
-        }
-
-        [Fact]
         public void CachedConfigurationIsCachedCorrectly()
         {
             IApi api = new TestApi();
@@ -34,29 +27,19 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void CommittedConfigurationIsConfiguredCorrectly()
         {
-            var configuration = new ApiConfiguration();
+            var configuration = new ApiBuilder().Build();
 
             configuration.EnsureCommitted();
             Assert.True(configuration.IsCommitted);
 
             configuration.EnsureCommitted();
             Assert.True(configuration.IsCommitted);
-        }
-
-        [Fact]
-        public void CommittedConfigurationCannotAddHookHandler()
-        {
-            var configuration = new ApiConfiguration();
-            configuration.EnsureCommitted();
-
-            Assert.Throws<InvalidOperationException>(
-                () => configuration.AddHookHandler<IHookHandler>(new TestModelBuilder()));
         }
 
         [Fact]
         public void ConfigurationCannotAddHookHandlerOfWrongType()
         {
-            var configuration = new ApiConfiguration();
+            var configuration = new ApiBuilder();
             Assert.Throws<InvalidOperationException>(
                 () => configuration.AddHookHandler<TestModelBuilder>(new TestModelBuilder()));
         }
@@ -64,23 +47,29 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ConfigurationRegistersHookPointsCorrectly()
         {
-            var configuration = new ApiConfiguration();
+            var builder = new ApiBuilder();
+            var configuration = builder.Build();
 
             Assert.Null(configuration.GetHookHandler<IHookA>());
             Assert.Null(configuration.GetHookHandler<IHookB>());
 
             var singletonHookPoint = new HookA();
-            configuration.AddHookHandler<IHookA>(singletonHookPoint);
+            builder.AddHookHandler<IHookA>(singletonHookPoint);
+            configuration = builder.Build();
             Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
             Assert.Null(configuration.GetHookHandler<IHookB>());
 
             var multiCastHookPoint1 = new HookB();
-            configuration.AddHookHandler<IHookB>(multiCastHookPoint1);
+            builder.AddHookHandler<IHookB>(multiCastHookPoint1);
+            configuration = builder.Build();
             Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
             Assert.Equal(multiCastHookPoint1, configuration.GetHookHandler<IHookB>());
 
             var multiCastHookPoint2 = new HookB();
-            configuration.AddHookHandler<IHookB>(multiCastHookPoint2);
+            builder = new ApiBuilder()
+                .AddHookHandler<IHookB>(multiCastHookPoint1)
+                .AddHookHandler<IHookB>(multiCastHookPoint2);
+            configuration = builder.Build();
             var handler = configuration.GetHookHandler<IHookB>();
             Assert.Equal(multiCastHookPoint2, handler);
 
@@ -94,9 +83,9 @@ namespace Microsoft.Restier.Core.Tests
         {
             var q1 = new HookB("q1Pre", "q1Post");
             var q2 = new HookB("q2Pre", "q2Post");
-            var configuration = new ApiConfiguration()
+            var configuration = new ApiBuilder()
                 .AddHookHandler<IHookB>(q1)
-                .AddHookHandler<IHookB>(q2);
+                .AddHookHandler<IHookB>(q2).Build();
 
             var handler = configuration.GetHookHandler<IHookB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());

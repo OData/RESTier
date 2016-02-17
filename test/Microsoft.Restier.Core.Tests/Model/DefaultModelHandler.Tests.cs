@@ -66,12 +66,12 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var configuration = new ApiConfiguration();
-            configuration.AddHookHandler<IModelBuilder>(new TestModelProducer());
-            configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(2));
-            configuration.AddHookHandler<IModelBuilder>(new TestModelExtender(3));
+            var builder = new ApiBuilder();
+            builder.AddHookHandler<IModelBuilder>(new TestModelProducer());
+            builder.AddHookHandler<IModelBuilder>(new TestModelExtender(2));
+            builder.AddHookHandler<IModelBuilder>(new TestModelExtender(3));
 
-            configuration.EnsureCommitted();
+            var configuration = builder.Build();
             var context = new ApiContext(configuration);
 
             var model = await Api.GetModelAsync(context);

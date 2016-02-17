@@ -23,6 +23,35 @@ namespace Microsoft.Restier.Core
 
         /// <summary>
         /// Applies configuration from any API configurator attributes
+        /// specified on an API type to an API builder.
+        /// </summary>
+        /// <param name="type">
+        /// An API type.
+        /// </param>
+        /// <param name="builder">
+        /// An API builder.
+        /// </param>
+        public static void ApplyApiBuilder(
+            Type type, ApiBuilder builder)
+        {
+            Ensure.NotNull(type, "type");
+            Ensure.NotNull(builder, "builder");
+            if (type.BaseType != null)
+            {
+                ApiConfiguratorAttribute.ApplyApiBuilder(
+                    type.BaseType, builder);
+            }
+
+            var attributes = type.GetCustomAttributes(
+                typeof(ApiConfiguratorAttribute), false);
+            foreach (ApiConfiguratorAttribute attribute in attributes)
+            {
+                attribute.ConfigureApi(builder, type);
+            }
+        }
+
+        /// <summary>
+        /// Applies configuration from any API configurator attributes
         /// specified on an API type to an API configuration.
         /// </summary>
         /// <param name="type">
@@ -112,6 +141,21 @@ namespace Microsoft.Restier.Core
                 ApiConfiguratorAttribute.ApplyDisposal(
                     type.BaseType, instance, context);
             }
+        }
+
+        /// <summary>
+        /// Configures an API builder.
+        /// </summary>
+        /// <param name="builder">
+        /// An API builder.
+        /// </param>
+        /// <param name="type">
+        /// The API type on which this attribute was placed.
+        /// </param>
+        public virtual void ConfigureApi(
+            ApiBuilder builder,
+            Type type)
+        {
         }
 
         /// <summary>

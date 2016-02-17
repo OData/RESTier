@@ -31,9 +31,9 @@ namespace Microsoft.Restier.WebApi.Test
 
         private class ExcApi : StoreApi
         {
-            protected override ApiConfiguration CreateApiConfiguration()
+            protected override ApiBuilder ConfigureApi(ApiBuilder builder)
             {
-                return base.CreateApiConfiguration()
+                return base.ConfigureApi(builder)
                     .AddHookHandler<IQueryExpressionSourcer>(new FakeSourcer());
             }
         }

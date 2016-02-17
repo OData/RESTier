@@ -26,12 +26,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            ApiConfiguration configuration,
+            ApiBuilder builder,
             Type targetType)
         {
-            Ensure.NotNull(configuration, "configuration");
+            Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
+            builder.AddHookHandler<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>

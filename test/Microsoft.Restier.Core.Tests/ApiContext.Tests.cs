@@ -9,16 +9,9 @@ namespace Microsoft.Restier.Core.Tests
     public class ApiContextTests
     {
         [Fact]
-        public void ApiContextOnlyAcceptsCommittedConfiguration()
-        {
-            var configuration = new ApiConfiguration();
-            Assert.Throws<ArgumentException>(() => new ApiContext(configuration));
-        }
-
-        [Fact]
         public void NewApiContextIsConfiguredCorrectly()
         {
-            var configuration = new ApiConfiguration();
+            var configuration = new ApiBuilder().Build();
             configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             Assert.Same(configuration, context.Configuration);

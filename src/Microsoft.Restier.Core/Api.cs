@@ -80,7 +80,7 @@ namespace Microsoft.Restier.Core
             var config = context.Configuration;
             if (config.Model == null)
             {
-                var builder = context.Configuration.GetHookHandler<IModelBuilder>();
+                var builder = context.GetApiService<IModelBuilder>();
                 if (builder != null)
                 {
                     config.Model = await builder.GetModelAsync(new InvocationContext(context), cancellationToken);
@@ -631,7 +631,7 @@ namespace Microsoft.Restier.Core
         {
             Type elementType = null;
 
-            var mapper = context.Configuration.GetHookHandler<IModelMapper>();
+            var mapper = context.GetApiService<IModelMapper>();
             if (mapper != null)
             {
                 if (namespaceName == null)

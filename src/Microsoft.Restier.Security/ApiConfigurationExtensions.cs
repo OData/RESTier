@@ -23,8 +23,8 @@ namespace Microsoft.Restier.Security
         /// <summary>
         /// Enables principal-supplied role-based security for an API.
         /// </summary>
-        /// <param name="configuration">
-        /// An API configuration.
+        /// <param name="builder">
+        /// An API configuration builder.
         /// </param>
         /// <remarks>
         /// This method adds hook points to the API configuration that
@@ -32,11 +32,11 @@ namespace Microsoft.Restier.Security
         /// along with any that have been asserted during an API flow.
         /// </remarks>
         public static void EnableRoleBasedSecurity(
-            this ApiConfiguration configuration)
+            this ApiBuilder builder)
         {
-            Ensure.NotNull(configuration, "configuration");
-            configuration.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
-            configuration.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
+            Ensure.NotNull(builder, "configuration");
+            builder.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
+            builder.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
         }
 
         /// <summary>

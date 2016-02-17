@@ -17,17 +17,17 @@ namespace Microsoft.Restier.Security
         /// <summary>
         /// Configures an API configuration.
         /// </summary>
-        /// <param name="configuration">
-        /// An API configuration.
+        /// <param name="builder">
+        /// An API configuration builder.
         /// </param>
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
-        public override void Configure(
-            ApiConfiguration configuration,
+        public override void ConfigureApi(
+            ApiBuilder builder,
             Type type)
         {
-            configuration.EnableRoleBasedSecurity();
+            builder.EnableRoleBasedSecurity();
         }
     }
 }

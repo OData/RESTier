@@ -23,12 +23,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            ApiConfiguration configuration,
+            ApiBuilder builder,
             Type targetType)
         {
-            Ensure.NotNull(configuration, "configuration");
+            Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
-            configuration.AddHookHandler<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
+            builder.AddHookHandler<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
         }
 
         /// <inheritdoc/>
