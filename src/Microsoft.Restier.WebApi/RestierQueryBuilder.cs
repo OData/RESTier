@@ -147,8 +147,7 @@ namespace Microsoft.Restier.WebApi
             object propertyValue)
         {
             var property = Expression.Property(parameterExpression, propertyName);
-            var constant = Expression.Constant(propertyValue);
-
+            var constant = Expression.Constant(Convert.ChangeType(propertyValue, property.Type));
             return Expression.Equal(property, constant);
         }
         #endregion
