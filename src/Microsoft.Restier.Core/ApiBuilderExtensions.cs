@@ -244,14 +244,15 @@ namespace Microsoft.Restier.Core
                         "GetRequiredService",
                         new[] { typeof(TImplement) },
                         serviceProviderParam);
+                    var inject = Expression.Assign(
+                        Expression.MakeMemberAccess(value, nextProperty),
+                        Expression.Invoke(nextParam));
 
                     var block = Expression.Block(
                         typeof(TService),
                         new[] { value },
                         Expression.Assign(value, getService),
-                        Expression.Assign(
-                            Expression.MakeMemberAccess(value, nextProperty),
-                            Expression.Invoke(nextParam)),
+                        inject,
                         value);
 
                     factory = LambdaExpression.Lambda<Func<IServiceProvider, Func<TService>, TService>>(
