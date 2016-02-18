@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for complex result.
     /// </summary>
-    internal class RestierComplexTypeSerializer : ODataComplexTypeSerializer
+    public class RestierComplexTypeSerializer : ODataComplexTypeSerializer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierComplexTypeSerializer" /> class.

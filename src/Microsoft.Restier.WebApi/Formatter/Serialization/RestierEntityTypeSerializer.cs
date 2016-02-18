@@ -12,7 +12,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for entity result.
     /// </summary>
-    internal class RestierEntityTypeSerializer : ODataEntityTypeSerializer
+    public class RestierEntityTypeSerializer : ODataEntityTypeSerializer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierEntityTypeSerializer" /> class.

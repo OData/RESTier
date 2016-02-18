@@ -12,7 +12,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The default serializer provider.
     /// </summary>
-    internal class DefaultRestierSerializerProvider : DefaultODataSerializerProvider
+    public class DefaultRestierSerializerProvider : DefaultODataSerializerProvider
     {
         private RestierFeedSerializer feedSerializer;
         private RestierEntityTypeSerializer entityTypeSerializer;

@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
     /// <summary>
     /// The serializer for raw result.
     /// </summary>
-    internal class RestierRawSerializer : ODataRawValueSerializer
+    public class RestierRawSerializer : ODataRawValueSerializer
     {
         /// <summary>
         /// Writes the entity result to the response message.
