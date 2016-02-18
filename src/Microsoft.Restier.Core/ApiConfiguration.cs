@@ -54,26 +54,7 @@ namespace Microsoft.Restier.Core
             get { return serviceProvider; }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether this API configuration has been committed.
-        /// </summary>
-        public bool IsCommitted
-        {
-            get { return serviceProvider != null; }
-        }
-
         internal IEdmModel Model { get; set; }
-
-        /// <summary>
-        /// Ensures this API configuration has been committed.
-        /// </summary>
-        public void EnsureCommitted()
-        {
-            if (!IsCommitted)
-            {
-                throw new ArgumentException(Resources.ApiConfigurationShouldBeCommitted);
-            }
-        }
 
         /// <summary>
         /// Gets a service instance.

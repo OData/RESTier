@@ -20,11 +20,6 @@ namespace Microsoft.Restier.Core.Tests
 
         class SomeService : ISomeService
         {
-            public SomeService(ISomeService next)
-            {
-                Next = next;
-            }
-
             public SomeService()
             {
             }
@@ -83,7 +78,7 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void NextInjectedViaConstructor()
+        public void NextInjectedViaProperty()
         {
             var builder = new ApiBuilder()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
@@ -229,9 +224,8 @@ namespace Microsoft.Restier.Core.Tests
 
         class SomeService2 : ISomeService
         {
-            public SomeService2(ISomeService next, string value = "4")
+            public SomeService2(string value = "4")
             {
-                Next = next;
                 Value = value;
             }
 
@@ -240,24 +234,24 @@ namespace Microsoft.Restier.Core.Tests
                 get; set;
             }
 
-            public ISomeService Next
+            public ISomeService WeirdName
             {
-                get; set;
+                private get; set;
             }
 
             public string Call()
             {
-                if (Next == null)
+                if (WeirdName == null)
                 {
                     return Value.ToString();
                 }
 
-                return Value + Next.Call();
+                return Value + WeirdName.Call();
             }
         }
 
         [Fact]
-        public void ServiceInjectedViaConstructor()
+        public void ServiceInjectedViaProperty()
         {
             var first = new SomeService()
             {
@@ -308,18 +302,16 @@ namespace Microsoft.Restier.Core.Tests
 
         class SomeService3 : ISomeService
         {
-            public SomeService3(string value, ISomeService next, SomeService dep1, SomeService dep2)
+            public SomeService3(string value, SomeService dep1, SomeService dep2)
             {
                 Value = value;
-                Next = next;
                 Param2 = dep1;
                 Param3 = dep2;
             }
 
-            public SomeService3(ISomeService next, SomeService dep1)
+            public SomeService3(SomeService dep1)
             {
                 Value = "4";
-                Next = next;
                 Param2 = Param3 = dep1;
             }
 
@@ -388,14 +380,22 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService, SomeService3>();
 
             var configuration = builder.Build();
-            Assert.Throws<NotSupportedException>(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
                 configuration.GetHookHandler<ISomeService>();
             });
         }
 
+        class SomeService4 : SomeService3
+        {
+            public SomeService4(SomeService dep1)
+                : base(dep1)
+            {
+            }
+        }
+
         [Fact]
-        public void AvailableServicesSelectConstructor()
+        public void NextInjectedWithInheritedProperty()
         {
             var builder = new ApiBuilder()
                 .MakeTransient<ISomeService>()
@@ -407,7 +407,7 @@ namespace Microsoft.Restier.Core.Tests
                 {
                     Value = 0,
                 })
-                .ChainPrevious<ISomeService, SomeService3>();
+                .ChainPrevious<ISomeService, SomeService4>();
 
             var configuration = builder.Build();
             var value = configuration.GetHookHandler<ISomeService>().Call();

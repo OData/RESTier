@@ -226,10 +226,8 @@ public sealed class Microsoft.Restier.Core.ApiData {
 public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.PropertyBag {
 	public ApiConfiguration (System.IServiceProvider serviceProvider)
 
-	bool IsCommitted  { public get; }
 	System.IServiceProvider ServiceProvider  { public get; }
 
-	public void EnsureCommitted ()
 	public T GetHookHandler ()
 }
 

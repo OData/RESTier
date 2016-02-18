@@ -138,7 +138,6 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
             var configuration = new ApiBuilder().Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -152,7 +151,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -200,7 +198,6 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
             var configuration = new ApiBuilder().Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -214,7 +211,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -266,7 +262,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -280,7 +275,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -332,7 +326,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -346,7 +339,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -376,7 +368,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
@@ -390,7 +381,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
@@ -404,7 +394,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
@@ -418,7 +407,6 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = new ApiBuilder()
                 .AddHookHandler<IModelMapper>(modelMapper)
                 .Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
