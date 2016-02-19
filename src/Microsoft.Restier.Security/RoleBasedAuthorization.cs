@@ -22,8 +22,6 @@ namespace Microsoft.Restier.Security
     public class RoleBasedAuthorization : IQueryExpressionInspector,
         IQueryExpressionExpander, IDelegateHookHandler<IQueryExpressionExpander>
     {
-        private const string Permissions = "Microsoft.Restier.Security.Permissions";
-
         private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
 
         static RoleBasedAuthorization()
@@ -145,8 +143,7 @@ namespace Microsoft.Restier.Security
 
             var assertedRoles = context.QueryContext
                 .GetProperty<List<string>>(AssertedRoles);
-            var permissions = context.QueryContext.ApiContext.Configuration
-                .GetProperty<IEnumerable<ApiPermission>>(Permissions);
+            var permissions = context.QueryContext.ApiContext.GetApiService<IEnumerable<ApiPermission>>();
             if (permissions == null)
             {
                 throw new SecurityException(

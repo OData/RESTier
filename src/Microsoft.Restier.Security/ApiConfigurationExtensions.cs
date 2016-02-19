@@ -17,9 +17,6 @@ namespace Microsoft.Restier.Security
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class ApiConfigurationExtensions
     {
-        private const string Permissions =
-            "Microsoft.Restier.Security.Permissions";
-
         /// <summary>
         /// Enables principal-supplied role-based security for an API.
         /// </summary>
@@ -37,31 +34,6 @@ namespace Microsoft.Restier.Security
             Ensure.NotNull(builder, "configuration");
             builder.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
             builder.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
-        }
-
-        /// <summary>
-        /// Adds an API permission to an API configuration.
-        /// </summary>
-        /// <param name="configuration">
-        /// An API configuration.
-        /// </param>
-        /// <param name="permission">
-        /// An API permission.
-        /// </param>
-        public static void AddPermission(
-            this ApiConfiguration configuration,
-            ApiPermission permission)
-        {
-            Ensure.NotNull(configuration, "configuration");
-            Ensure.NotNull(permission, "permission");
-            var permissions = configuration.GetProperty<List<ApiPermission>>(Permissions);
-            if (permissions == null)
-            {
-                permissions = new List<ApiPermission>();
-                configuration.SetProperty(Permissions, permissions);
-            }
-
-            permissions.Add(permission);
         }
     }
 }
