@@ -234,9 +234,9 @@ namespace Microsoft.Restier.Core.Tests
                 get; set;
             }
 
-            public ISomeService WeirdName
+            protected ISomeService WeirdName
             {
-                private get; set;
+                get; set;
             }
 
             public string Call()
@@ -317,7 +317,7 @@ namespace Microsoft.Restier.Core.Tests
 
             public string Value { get; set; }
 
-            public ISomeService Next { get; set; }
+            protected ISomeService Next { get; set; }
 
             public SomeService Param2 { get; set; }
 

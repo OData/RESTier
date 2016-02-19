@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -228,8 +227,9 @@ namespace Microsoft.Restier.Core
                     return instance;
                 }
 
-                var nextProperty = typeof(TImplement).GetTypeInfo().GetProperties()
-                    .FirstOrDefault(e => e.SetMethod.IsPublic && e.PropertyType == typeof(TService));
+                var nextProperty = typeof(TImplement).GetTypeInfo()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .FirstOrDefault(e => e.SetMethod != null && e.PropertyType == typeof(TService));
                 if (nextProperty == null)
                 {
                     factory = (serviceProvider, _) => serviceProvider.GetRequiredService<TImplement>();
@@ -239,6 +239,13 @@ namespace Microsoft.Restier.Core
                 nextProperty.SetValue(instance, next());
                 factory = (serviceProvider, getNext) =>
                 {
+                    // To build a lambda expression like:
+                    // (sp, next) => 
+                    // {
+                    //     var hook = sp.GetRequiredService<TImplement>();
+                    //     hook.next = next();
+                    //     return hook;
+                    // }
                     var serviceProviderParam = Expression.Parameter(typeof(IServiceProvider));
                     var nextParam = Expression.Parameter(typeof(Func<TService>));
 
@@ -431,8 +438,8 @@ namespace Microsoft.Restier.Core
             {
                 return this.Factory.CreateScope();
             }
-                    }
-                    }
+        }
+    }
 
     internal static class ChainedService<T> where T : class
     {
