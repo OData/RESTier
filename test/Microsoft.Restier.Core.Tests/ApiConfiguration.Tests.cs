@@ -25,18 +25,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void CommittedConfigurationIsConfiguredCorrectly()
-        {
-            var configuration = new ApiBuilder().Build();
-
-            configuration.EnsureCommitted();
-            Assert.True(configuration.IsCommitted);
-
-            configuration.EnsureCommitted();
-            Assert.True(configuration.IsCommitted);
-        }
-
-        [Fact]
         public void ConfigurationCannotAddHookHandlerOfWrongType()
         {
             var configuration = new ApiBuilder();

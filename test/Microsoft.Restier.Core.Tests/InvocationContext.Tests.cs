@@ -11,7 +11,6 @@ namespace Microsoft.Restier.Core.Tests
         public void NewInvocationContextIsConfiguredCorrectly()
         {
             var configuration = new ApiBuilder().Build();
-            configuration.EnsureCommitted();
             var apiContext = new ApiContext(configuration);
             var context = new InvocationContext(apiContext);
             Assert.Same(apiContext, context.ApiContext);
@@ -22,7 +21,6 @@ namespace Microsoft.Restier.Core.Tests
         {
             var hook = new HookA();
             var configuration = new ApiBuilder().AddHookHandler<IHookA>(hook).Build();
-            configuration.EnsureCommitted();
             var apiContext = new ApiContext(configuration);
             var context = new InvocationContext(apiContext);
             Assert.Same(hook, context.GetHookHandler<IHookA>());
