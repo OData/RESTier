@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core

@@ -6,7 +6,7 @@ public interface Microsoft.Restier.Core.IApi : IDisposable {
 CLSCompliantAttribute(),
 ]
 public interface Microsoft.Restier.Core.IApiScopeFactory {
-	Microsoft.Framework.DependencyInjection.IServiceScope CreateApiScope ()
+	Microsoft.Extensions.DependencyInjection.IServiceScope CreateApiScope ()
 }
 
 public interface Microsoft.Restier.Core.IDelegateHookHandler`1 {
@@ -265,12 +265,12 @@ public sealed class Microsoft.Restier.Core.ApiBuilder {
 	[
 	CLSCompliantAttribute(),
 	]
-	public ApiBuilder (Microsoft.Framework.DependencyInjection.IServiceCollection services)
+	public ApiBuilder (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	CLSCompliantAttribute(),
 	]
-	Microsoft.Framework.DependencyInjection.IServiceCollection Services  { [CompilerGeneratedAttribute(),]public get; }
+	Microsoft.Extensions.DependencyInjection.IServiceCollection Services  { [CompilerGeneratedAttribute(),]public get; }
 }
 
 public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.MulticastDelegate, ICloneable, ISerializable {
