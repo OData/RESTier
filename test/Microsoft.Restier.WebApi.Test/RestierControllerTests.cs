@@ -39,6 +39,18 @@ namespace Microsoft.Restier.WebApi.Test
         <Property Name=""Addr2"" Type=""Microsoft.Restier.WebApi.Test.Address"" />
         <Property Name=""Addr3"" Type=""Microsoft.Restier.WebApi.Test.Address"" />
       </EntityType>
+      <EntityType Name=""Customer"">
+        <Key>
+          <PropertyRef Name=""Id"" />
+        </Key>
+        <Property Name=""Id"" Type=""Edm.Int16"" Nullable=""false"" />
+      </EntityType>
+      <EntityType Name=""Store"">
+        <Key>
+          <PropertyRef Name=""Id"" />
+        </Key>
+        <Property Name=""Id"" Type=""Edm.Int64"" Nullable=""false"" />
+      </EntityType>
       <ComplexType Name=""Address"">
         <Property Name=""Zip"" Type=""Edm.Int32"" Nullable=""false"" />
       </ComplexType>
@@ -50,6 +62,8 @@ namespace Microsoft.Restier.WebApi.Test
       </Action>
       <EntityContainer Name=""Container"">
         <EntitySet Name=""Products"" EntityType=""Microsoft.Restier.WebApi.Test.Product"" />
+        <EntitySet Name=""Customers"" EntityType=""Microsoft.Restier.WebApi.Test.Customer"" />
+        <EntitySet Name=""Stores"" EntityType=""Microsoft.Restier.WebApi.Test.Store"" />
         <FunctionImport Name=""GetBestProduct"" Function=""Microsoft.Restier.WebApi.Test.GetBestProduct"" EntitySet=""Products"" IncludeInServiceDocument=""true"" />
         <ActionImport Name=""RemoveWorstProduct"" Action=""Microsoft.Restier.WebApi.Test.RemoveWorstProduct"" EntitySet=""Products"" />
       </EntityContainer>

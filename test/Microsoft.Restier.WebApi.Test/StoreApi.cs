@@ -25,6 +25,8 @@ namespace Microsoft.Restier.WebApi.Test
             var builder = new ODataConventionModelBuilder();
             builder.Namespace = "Microsoft.Restier.WebApi.Test";
             builder.EntitySet<Product>("Products");
+            builder.EntitySet<Customer>("Customers");
+            builder.EntitySet<Store>("Stores");
             builder.Function("GetBestProduct").ReturnsFromEntitySet<Product>("Products");
             builder.Action("RemoveWorstProduct").ReturnsFromEntitySet<Product>("Products");
             Model = (EdmModel)builder.GetEdmModel();
@@ -60,6 +62,16 @@ namespace Microsoft.Restier.WebApi.Test
         public Address Addr3 { get; set; }
     }
 
+    class Customer
+    {
+        public short Id { get; set; }
+    }
+
+    class Store
+    {
+        public long Id { get; set; }
+    }
+
     class Address
     {
         public int Zip { get; set; }
@@ -69,7 +81,23 @@ namespace Microsoft.Restier.WebApi.Test
     {
         public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
         {
-            relevantType = typeof(Product);
+            if (name == "Products")
+            {
+                relevantType = typeof(Product);
+            }
+            else if (name == "Customers")
+            {
+                relevantType = typeof(Customer);
+            }
+            else if (name == "Stores")
+            {
+                relevantType = typeof(Store);
+            }
+            else
+            {
+                relevantType = null;
+            }
+            
             return true;
         }
 
@@ -106,11 +134,31 @@ namespace Microsoft.Restier.WebApi.Test
                 Addr2= new Address { Zip = 0002 }
             } };
 
+            var b = new[] { new Customer
+            {
+                Id = 1,
+            } };
+
+            var c = new[] { new Store
+            {
+                Id = 1,
+            } };
+
             if (!embedded)
             {
                 if (context.VisitedNode.ToString() == "Source(\"Products\", null)")
                 {
                     return Expression.Constant(a.AsQueryable());
+                }
+
+                if (context.VisitedNode.ToString() == "Source(\"Customers\", null)")
+                {
+                    return Expression.Constant(b.AsQueryable());
+                }
+
+                if (context.VisitedNode.ToString() == "Source(\"Stores\", null)")
+                {
+                    return Expression.Constant(c.AsQueryable());
                 }
             }
 

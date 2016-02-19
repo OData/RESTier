@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="FallbackTests.cs" />
     <Compile Include="ExceptionHandlerTests.cs" />
+    <Compile Include="RestierQueryBuilderTests.cs" />
     <Compile Include="RestierControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StoreApi.cs" />
