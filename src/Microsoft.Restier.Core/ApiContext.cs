@@ -28,10 +28,6 @@ namespace Microsoft.Restier.Core
         public ApiContext(ApiConfiguration configuration)
         {
             Ensure.NotNull(configuration, "configuration");
-            if (!configuration.IsCommitted)
-            {
-                throw new ArgumentException(Resources.ApiConfigurationShouldBeCommitted);
-            }
 
             this.Configuration = configuration;
             this.contextScope = configuration.ServiceProvider.GetRequiredService<IApiScopeFactory>().CreateApiScope();

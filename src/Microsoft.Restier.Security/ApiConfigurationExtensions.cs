@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Security
         public static void EnableRoleBasedSecurity(
             this ApiBuilder builder)
         {
-            Ensure.NotNull(builder, "configuration");
+            Ensure.NotNull(builder, "builder");
             builder.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
             builder.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
         }
