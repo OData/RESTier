@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder UseSharedApiScope(this ApiBuilder obj)
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             obj.Services.AddSingleton<IApiScopeFactory>(SharedApiScopeFactory.Creator);
             return obj;
@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder UseContextApiScope(this ApiBuilder obj)
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             obj.Services.AddSingleton<IApiScopeFactory>(ContextApiScopeFactory.Creator);
             return obj;
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder TryUseSharedApiScope(this ApiBuilder obj)
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             obj.Services.TryAddSingleton(typeof(IApiScopeFactory), SharedApiScopeFactory.Creator);
             return obj;
@@ -67,7 +67,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder TryUseContextApiScope(this ApiBuilder obj)
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             obj.Services.TryAddSingleton(typeof(IApiScopeFactory), ContextApiScopeFactory.Creator);
             return obj;
@@ -83,7 +83,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public static bool HasHookHandler<T>(this ApiBuilder obj) where T : class, IHookHandler
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             return obj.Services.Any(sd => sd.ServiceType == typeof(LegacyHookHandler<T>));
         }
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder AddHookHandler<T>(this ApiBuilder obj, T handler) where T : class, IHookHandler
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
             Ensure.NotNull(handler, "handler");
 
             if (!typeof(T).IsInterface)
@@ -133,7 +133,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder AddInstance<T>(this ApiBuilder obj, T instance) where T : class
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             obj.Services.AddInstance<T>(instance);
             return obj;
@@ -149,8 +149,8 @@ namespace Microsoft.Restier.Core
         public static ApiBuilder AddContributor<T>(this ApiBuilder obj, ApiServiceContributor<T> contributor)
             where T : class
         {
-            Ensure.NotNull(obj, nameof(obj));
-            Ensure.NotNull(contributor, nameof(contributor));
+            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(contributor, "contributor");
 
             // Services have singleton lifetime by default, call Make... to change.
             obj.Services.TryAddSingleton(typeof(T), ChainedService<T>.DefaultFactory);
@@ -171,7 +171,7 @@ namespace Microsoft.Restier.Core
         public static ApiBuilder ChainPrevious<T>(this ApiBuilder obj, Func<IServiceProvider, T, T> factory)
             where T : class
         {
-            Ensure.NotNull(factory, nameof(factory));
+            Ensure.NotNull(factory, "factory");
             return obj.AddContributor<T>((sp, next) => factory(sp, next()));
         }
 
@@ -186,7 +186,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder ChainPrevious<T>(this ApiBuilder obj, Func<T, T> factory) where T : class
         {
-            Ensure.NotNull(factory, nameof(factory));
+            Ensure.NotNull(factory, "factory");
             return obj.AddContributor<T>((sp, next) => factory(next()));
         }
 
@@ -239,7 +239,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder MakeSingleton<T>(this ApiBuilder obj) where T : class
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
             obj.Services.AddSingleton<T>(ChainedService<T>.DefaultFactory);
             return obj;
         }
@@ -252,7 +252,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder MakeScoped<T>(this ApiBuilder obj) where T : class
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
             obj.Services.AddScoped<T>(ChainedService<T>.DefaultFactory);
             return obj;
         }
@@ -265,7 +265,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="ApiBuilder"/></returns>
         public static ApiBuilder MakeTransient<T>(this ApiBuilder obj) where T : class
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
             obj.Services.AddTransient<T>(ChainedService<T>.DefaultFactory);
             return obj;
         }
@@ -293,7 +293,7 @@ namespace Microsoft.Restier.Core
             this ApiBuilder obj,
             Func<ApiBuilder, IServiceProvider> serviceProviderFactory)
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
 
             obj.Services.TryAddSingleton<ApiConfiguration>();
             obj.TryUseContextApiScope();
@@ -320,7 +320,7 @@ namespace Microsoft.Restier.Core
         /// </example>
         public static T BuildApiServiceChain<T>(this IServiceProvider obj) where T : class
         {
-            Ensure.NotNull(obj, nameof(obj));
+            Ensure.NotNull(obj, "obj");
             return ChainedService<T>.DefaultFactory(obj);
         }
 
