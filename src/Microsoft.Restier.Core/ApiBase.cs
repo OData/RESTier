@@ -74,7 +74,6 @@ namespace Microsoft.Restier.Core
                         Configurations[apiType] = configuration;
                     }
 
-                    configuration.EnsureCommitted();
                     this.apiConfiguration = configuration;
                 }
 

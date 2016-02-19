@@ -12,7 +12,6 @@ namespace Microsoft.Restier.Core.Tests
         public void NewApiContextIsConfiguredCorrectly()
         {
             var configuration = new ApiBuilder().Build();
-            configuration.EnsureCommitted();
             var context = new ApiContext(configuration);
             Assert.Same(configuration, context.Configuration);
         }
