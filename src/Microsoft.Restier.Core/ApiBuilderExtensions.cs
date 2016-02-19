@@ -240,7 +240,7 @@ namespace Microsoft.Restier.Core
                 factory = (serviceProvider, getNext) =>
                 {
                     // To build a lambda expression like:
-                    // (sp, next) => 
+                    // (sp, next) =>
                     // {
                     //     var hook = sp.GetRequiredService<TImplement>();
                     //     hook.next = next();
