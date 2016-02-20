@@ -224,6 +224,8 @@ namespace Microsoft.Restier.Core.Tests
 
         class SomeService2 : ISomeService
         {
+            protected ISomeService shouldSetProperty = null;
+
             public SomeService2(string value = "4")
             {
                 Value = value;
@@ -302,6 +304,8 @@ namespace Microsoft.Restier.Core.Tests
 
         class SomeService3 : ISomeService
         {
+            protected ISomeService next = null;
+
             public SomeService3(string value, SomeService dep1, SomeService dep2)
             {
                 Value = value;
@@ -317,8 +321,6 @@ namespace Microsoft.Restier.Core.Tests
 
             public string Value { get; set; }
 
-            protected ISomeService Next { get; set; }
-
             public SomeService Param2 { get; set; }
 
             public SomeService Param3 { get; set; }
@@ -326,7 +328,7 @@ namespace Microsoft.Restier.Core.Tests
             public string Call()
             {
                 return Value +
-                    (Next == null ? string.Empty : Next.Call()) +
+                    (next == null ? string.Empty : next.Call()) +
                     Param2.Call() +
                     Param3.Call();
             }
@@ -395,7 +397,7 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void NextInjectedWithInheritedProperty()
+        public void NextInjectedWithInheritedField()
         {
             var builder = new ApiBuilder()
                 .MakeTransient<ISomeService>()

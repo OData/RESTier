@@ -53,17 +53,15 @@ namespace Microsoft.Restier.Security
         public string To { get; set; }
 
         /// <summary>
-        /// Configures an API configuration.
+        /// Configure an API.
         /// </summary>
-        /// <param name="configuration">
-        /// An API configuration.
+        /// <param name="builder">
+        /// An <see cref="ApiBuilder"/>.
         /// </param>
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
-        public override void Configure(
-            ApiConfiguration configuration,
-            Type type)
+        public override void ConfigureApi(ApiBuilder builder, Type type)
         {
             var permission = ApiPermission.CreateGrant(
                 this.PermissionType,
@@ -71,7 +69,7 @@ namespace Microsoft.Restier.Security
                 this.OnNamespace,
                 this.On,
                 this.OnChild);
-            configuration.AddPermission(permission);
+            builder.AddInstance(permission);
         }
     }
 }

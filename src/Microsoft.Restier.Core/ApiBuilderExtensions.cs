@@ -227,16 +227,13 @@ namespace Microsoft.Restier.Core
                     return instance;
                 }
 
-                var nextProperty = typeof(TImplement).GetTypeInfo()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    .FirstOrDefault(e => e.SetMethod != null && e.PropertyType == typeof(TService));
-                if (nextProperty == null)
+                var innerMember = FindInnerMemberAndInject(instance, next);
+                if (innerMember == null)
                 {
                     factory = (serviceProvider, _) => serviceProvider.GetRequiredService<TImplement>();
                     return instance;
                 }
 
-                nextProperty.SetValue(instance, next());
                 factory = (serviceProvider, getNext) =>
                 {
                     // To build a lambda expression like:
@@ -256,7 +253,7 @@ namespace Microsoft.Restier.Core
                         new[] { typeof(TImplement) },
                         serviceProviderParam);
                     var inject = Expression.Assign(
-                        Expression.MakeMemberAccess(value, nextProperty),
+                        Expression.MakeMemberAccess(value, innerMember),
                         Expression.Invoke(nextParam));
 
                     var block = Expression.Block(
@@ -270,7 +267,7 @@ namespace Microsoft.Restier.Core
                         block,
                         serviceProviderParam,
                         nextParam).Compile();
-                    nextProperty = null;
+                    innerMember = null;
                     return factory(serviceProvider, getNext);
                 };
 
@@ -379,6 +376,32 @@ namespace Microsoft.Restier.Core
             obj.Services.AddInstance(contributor);
 
             return obj;
+        }
+
+        private static MemberInfo FindInnerMemberAndInject<TService, TImplement>(
+            TImplement instance,
+            Func<TService> next)
+        {
+            var typeInfo = typeof(TImplement).GetTypeInfo();
+            var nextProperty = typeInfo
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(e => e.SetMethod != null && e.PropertyType == typeof(TService));
+            if (nextProperty != null)
+            {
+                nextProperty.SetValue(instance, next());
+                return nextProperty;
+            }
+
+            var nextField = typeInfo
+                .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .FirstOrDefault(e => e.FieldType == typeof(TService));
+            if (nextField != null)
+            {
+                nextField.SetValue(instance, next());
+                return nextField;
+            }
+
+            return null;
         }
 
         private class SharedApiScopeFactory : IApiScopeFactory
