@@ -440,9 +440,9 @@ namespace Microsoft.Restier.Core.Conventions
                 ModelBuilder = modelBuilder;
             }
 
-            private ConventionBasedApiModelBuilder ModelBuilder { get; set; }
-
             public IQueryExpressionSourcer InnerQueryExpressionSourcer { get; set; }
+
+            private ConventionBasedApiModelBuilder ModelBuilder { get; set; }
 
             /// <inheritdoc/>
             public Expression Source(QueryExpressionContext context, bool embedded)
