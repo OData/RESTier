@@ -72,9 +72,7 @@
     <Compile Include="ApiContext.cs" />
     <Compile Include="ApiData.cs" />
     <Compile Include="ApiConfiguratorAttribute.cs" />
-    <Compile Include="IDelegateHookHandler.cs" />
     <Compile Include="IApi.cs" />
-    <Compile Include="IHookHandler.cs" />
     <Compile Include="InvocationContext.cs" />
     <Compile Include="Model\IModelBuilder.cs" />
     <Compile Include="Model\IModelMapper.cs" />

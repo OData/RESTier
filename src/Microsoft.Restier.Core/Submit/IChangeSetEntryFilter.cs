@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry filter.
     /// </summary>
-    public interface IChangeSetEntryFilter : IHookHandler
+    public interface IChangeSetEntryFilter
     {
         /// <summary>
         /// Asynchronously applies logic before a change set entry is executed.

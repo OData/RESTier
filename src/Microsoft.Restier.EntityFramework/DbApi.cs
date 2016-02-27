@@ -57,12 +57,12 @@ namespace Microsoft.Restier.EntityFramework
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             builder = base.ConfigureApi(builder);
-            builder.AddHookHandler<IModelBuilder>(ModelProducer.Instance);
-            builder.AddHookHandler<IModelMapper>(new ModelMapper(typeof(T)));
-            builder.AddHookHandler<IQueryExpressionSourcer>(QueryExpressionSourcer.Instance);
-            builder.AddHookHandler<IQueryExecutor>(QueryExecutor.Instance);
-            builder.AddHookHandler<IChangeSetPreparer>(ChangeSetPreparer.Instance);
-            builder.AddHookHandler<ISubmitExecutor>(SubmitExecutor.Instance);
+            builder.CutoffPrevious<IModelBuilder>(ModelProducer.Instance);
+            builder.CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)));
+            builder.CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
+            builder.CutoffPrevious<IQueryExecutor>(QueryExecutor.Instance);
+            builder.CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>();
+            builder.CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
             return builder;
         }
 

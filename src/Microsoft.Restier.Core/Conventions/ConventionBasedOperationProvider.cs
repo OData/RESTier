@@ -14,7 +14,7 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Core.Conventions
 {
-    internal class ConventionBasedOperationProvider : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+    internal class ConventionBasedOperationProvider : IModelBuilder
     {
         private readonly Type targetType;
         private readonly ICollection<ActionMethodInfo> actionInfos = new List<ActionMethodInfo>();
@@ -25,12 +25,14 @@ namespace Microsoft.Restier.Core.Conventions
             this.targetType = targetType;
         }
 
-        public IModelBuilder InnerHandler { get; set; }
+        private IModelBuilder InnerHandler { get; set; }
 
         public static void ApplyTo(ApiBuilder builder, Type targetType)
         {
-            ConventionBasedOperationProvider provider = new ConventionBasedOperationProvider(targetType);
-            builder.AddHookHandler<IModelBuilder>(provider);
+            builder.ChainPrevious<IModelBuilder>(next => new ConventionBasedOperationProvider(targetType)
+            {
+                InnerHandler = next,
+            });
         }
 
         public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)

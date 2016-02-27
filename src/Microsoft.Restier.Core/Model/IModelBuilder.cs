@@ -10,7 +10,7 @@ namespace Microsoft.Restier.Core.Model
     /// <summary>
     /// The hook point for model generation.
     /// </summary>
-    public interface IModelBuilder : IHookHandler
+    public interface IModelBuilder
     {
         /// <summary>
         /// Asynchronously gets an API model for an API.

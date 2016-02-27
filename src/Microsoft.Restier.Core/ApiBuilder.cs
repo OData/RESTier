@@ -43,9 +43,9 @@ namespace Microsoft.Restier.Core
         public ApiBuilder(IServiceCollection services)
         {
             Services = services ?? new ServiceCollection();
-            if (!this.HasHookHandler<IQueryExecutor>())
+            if (!this.HasService<IQueryExecutor>())
             {
-                this.AddHookHandler<IQueryExecutor>(DefaultQueryExecutor.Instance);
+                this.CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
             }
         }
 

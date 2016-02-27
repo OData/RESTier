@@ -18,10 +18,8 @@ namespace Microsoft.Restier.Core.Tests
 {
     public class ApiTests
     {
-        private class TestModelBuilder : IDelegateHookHandler<IModelBuilder>, IModelBuilder
+        private class TestModelBuilder : IModelBuilder
         {
-            public IModelBuilder InnerHandler { get; set; }
-
             public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
@@ -95,11 +93,11 @@ namespace Microsoft.Restier.Core.Tests
                         var querySourcer = new TestQuerySourcer();
                         var changeSetPreparer = new TestChangeSetPreparer();
                         var submitExecutor = new TestSubmitExecutor();
-                        builder.AddHookHandler<IModelBuilder>(modelBuilder);
-                        builder.AddHookHandler<IModelMapper>(modelMapper);
-                        builder.AddHookHandler<IQueryExpressionSourcer>(querySourcer);
-                        builder.AddHookHandler<IChangeSetPreparer>(changeSetPreparer);
-                        builder.AddHookHandler<ISubmitExecutor>(submitExecutor);
+                        builder.CutoffPrevious<IModelBuilder>(modelBuilder);
+                        builder.CutoffPrevious<IModelMapper>(modelMapper);
+                        builder.CutoffPrevious<IQueryExpressionSourcer>(querySourcer);
+                        builder.CutoffPrevious<IChangeSetPreparer>(changeSetPreparer);
+                        builder.CutoffPrevious<ISubmitExecutor>(submitExecutor);
                         _context = new ApiContext(builder.Build());
                     }
 
@@ -149,7 +147,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
@@ -209,7 +207,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
@@ -260,7 +258,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
@@ -273,7 +271,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
@@ -324,7 +322,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
@@ -337,7 +335,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
@@ -366,7 +364,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
 
@@ -379,7 +377,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
 
@@ -392,7 +390,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
 
@@ -405,7 +403,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var modelMapper = new TestModelMapper();
             var configuration = new ApiBuilder()
-                .AddHookHandler<IModelMapper>(modelMapper)
+                .CutoffPrevious<IModelMapper>(modelMapper)
                 .Build();
             var context = new ApiContext(configuration);
 

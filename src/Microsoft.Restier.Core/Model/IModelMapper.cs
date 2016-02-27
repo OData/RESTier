@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Model
     /// Represents a hook point that maps between
     /// the model space and the object space.
     /// </summary>
-    public interface IModelMapper : IHookHandler
+    public interface IModelMapper
     {
         /// <summary>
         /// Tries to get the relevant type of an entity

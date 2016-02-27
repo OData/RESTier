@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry validator.
     /// </summary>
-    public interface IChangeSetEntryValidator : IHookHandler
+    public interface IChangeSetEntryValidator
     {
         /// <summary>
         /// Asynchronously validates a change set entry.

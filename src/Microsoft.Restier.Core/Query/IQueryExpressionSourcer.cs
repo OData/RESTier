@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Core.Query
     /// data that cannot be expanded into any more primitive of an expression.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionSourcer : IHookHandler
+    public interface IQueryExpressionSourcer
     {
         /// <summary>
         /// Sources an expression.

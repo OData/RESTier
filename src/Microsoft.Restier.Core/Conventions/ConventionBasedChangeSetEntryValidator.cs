@@ -19,20 +19,6 @@ namespace Microsoft.Restier.Core.Conventions
     internal class ConventionBasedChangeSetEntryValidator :
         IChangeSetEntryValidator
     {
-        static ConventionBasedChangeSetEntryValidator()
-        {
-            Instance = new ConventionBasedChangeSetEntryValidator();
-        }
-
-        private ConventionBasedChangeSetEntryValidator()
-        {
-        }
-
-        /// <summary>
-        /// Gets a static instance of convention-based change set entry validator.
-        /// </summary>
-        public static ConventionBasedChangeSetEntryValidator Instance { get; private set; }
-
         /// <inheritdoc/>
         public Task ValidateEntityAsync(
             SubmitContext context,

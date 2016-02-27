@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core.Query
     /// the exception of normalization of expressions identifying API data).
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionInspector : IHookHandler
+    public interface IQueryExpressionInspector
     {
         /// <summary>
         /// Inspects an expression.

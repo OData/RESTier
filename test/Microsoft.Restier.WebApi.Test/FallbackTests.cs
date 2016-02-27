@@ -97,9 +97,9 @@ namespace Microsoft.Restier.WebApi.Test
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             builder = base.ConfigureApi(builder);
-            builder.AddHookHandler<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
-            builder.AddHookHandler<IModelMapper>(new FallbackModelMapper());
-            builder.AddHookHandler<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
+            builder.CutoffPrevious<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
+            builder.CutoffPrevious<IModelMapper>(new FallbackModelMapper());
+            builder.CutoffPrevious<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
             return builder;
         }
 

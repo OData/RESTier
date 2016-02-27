@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a service that can prepare a change set.
     /// </summary>
-    public interface IChangeSetPreparer : IHookHandler
+    public interface IChangeSetPreparer
     {
         /// <summary>
         /// Asynchronously prepares a change set for submission.

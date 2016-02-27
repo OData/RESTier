@@ -20,13 +20,13 @@ namespace Microsoft.Restier.Core.Tests
         public void InvocationContextGetsHookPointsCorrectly()
         {
             var hook = new HookA();
-            var configuration = new ApiBuilder().AddHookHandler<IHookA>(hook).Build();
+            var configuration = new ApiBuilder().CutoffPrevious<IHookA>(hook).Build();
             var apiContext = new ApiContext(configuration);
             var context = new InvocationContext(apiContext);
-            Assert.Same(hook, context.GetHookHandler<IHookA>());
+            Assert.Same(hook, context.GetApiService<IHookA>());
         }
 
-        private interface IHookA : IHookHandler
+        private interface IHookA
         {
         }
 

@@ -28,7 +28,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
-            builder.AddHookHandler<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
+            builder.CutoffPrevious<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
         }
 
         /// <inheritdoc/>

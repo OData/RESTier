@@ -121,7 +121,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return base.ConfigureApi(builder)
-                .AddHookHandler<IModelBuilder>(new ModelBuilder());
+                .CutoffPrevious<IModelBuilder>(new ModelBuilder());
         }
 
         private class ModelBuilder : IModelBuilder

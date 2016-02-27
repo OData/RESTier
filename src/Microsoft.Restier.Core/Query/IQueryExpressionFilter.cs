@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core.Query
     /// sourcing occurs.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionFilter : IHookHandler
+    public interface IQueryExpressionFilter
     {
         /// <summary>
         /// Filters an expression.

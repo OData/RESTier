@@ -211,7 +211,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return base.ConfigureApi(builder)
-                .AddHookHandler<IModelBuilder>(new TestModelBuilder());
+                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
 
@@ -258,7 +258,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return base.ConfigureApi(builder)
-                .AddHookHandler<IModelBuilder>(new TestModelBuilder());
+                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
 
@@ -269,7 +269,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return base.ConfigureApi(builder)
-                .AddHookHandler<IModelBuilder>(new TestModelBuilder());
+                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
 
@@ -287,7 +287,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return base.ConfigureApi(builder)
-                .AddHookHandler<IModelBuilder>(new TestModelBuilder());
+                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
 }

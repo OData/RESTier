@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a hook point that executes a submission.
     /// </summary>
-    public interface ISubmitExecutor : IHookHandler
+    public interface ISubmitExecutor
     {
         /// <summary>
         /// Asynchronously executes a submission and produces a submit result.

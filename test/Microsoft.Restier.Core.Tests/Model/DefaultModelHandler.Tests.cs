@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        private class TestModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+        private class TestModelExtender : IModelBuilder
         {
             private int _index;
 
@@ -67,9 +67,15 @@ namespace Microsoft.Restier.Core.Tests.Model
         public async Task GetModelUsingDefaultModelHandler()
         {
             var builder = new ApiBuilder();
-            builder.AddHookHandler<IModelBuilder>(new TestModelProducer());
-            builder.AddHookHandler<IModelBuilder>(new TestModelExtender(2));
-            builder.AddHookHandler<IModelBuilder>(new TestModelExtender(3));
+            builder.CutoffPrevious<IModelBuilder>(new TestModelProducer());
+            builder.ChainPrevious<IModelBuilder>(next => new TestModelExtender(2)
+            {
+                InnerHandler = next,
+            });
+            builder.ChainPrevious<IModelBuilder>(next => new TestModelExtender(3)
+            {
+                InnerHandler = next,
+            });
 
             var configuration = builder.Build();
             var context = new ApiContext(configuration);

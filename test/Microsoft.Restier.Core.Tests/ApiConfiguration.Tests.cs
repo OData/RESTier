@@ -25,14 +25,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void ConfigurationCannotAddHookHandlerOfWrongType()
-        {
-            var configuration = new ApiBuilder();
-            Assert.Throws<InvalidOperationException>(
-                () => configuration.AddHookHandler<TestModelBuilder>(new TestModelBuilder()));
-        }
-
-        [Fact]
         public void ConfigurationRegistersHookPointsCorrectly()
         {
             var builder = new ApiBuilder();
@@ -42,26 +34,27 @@ namespace Microsoft.Restier.Core.Tests
             Assert.Null(configuration.GetHookHandler<IHookB>());
 
             var singletonHookPoint = new HookA();
-            builder.AddHookHandler<IHookA>(singletonHookPoint);
+            builder.CutoffPrevious<IHookA>(singletonHookPoint);
             configuration = builder.Build();
             Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
             Assert.Null(configuration.GetHookHandler<IHookB>());
 
             var multiCastHookPoint1 = new HookB();
-            builder.AddHookHandler<IHookB>(multiCastHookPoint1);
+            builder.CutoffPrevious<IHookB>(multiCastHookPoint1);
             configuration = builder.Build();
             Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
             Assert.Equal(multiCastHookPoint1, configuration.GetHookHandler<IHookB>());
 
-            var multiCastHookPoint2 = new HookB();
             builder = new ApiBuilder()
-                .AddHookHandler<IHookB>(multiCastHookPoint1)
-                .AddHookHandler<IHookB>(multiCastHookPoint2);
+                .CutoffPrevious<IHookB>(multiCastHookPoint1)
+                .ChainPrevious<IHookB, HookB>()
+                .AddInstance(new HookB());
             configuration = builder.Build();
+            var multiCastHookPoint2 = configuration.GetHookHandler<HookB>();
             var handler = configuration.GetHookHandler<IHookB>();
             Assert.Equal(multiCastHookPoint2, handler);
 
-            var delegateHandler = handler as IDelegateHookHandler<IHookB>;
+            var delegateHandler = handler as HookB;
             Assert.NotNull(delegateHandler);
             Assert.Equal(multiCastHookPoint1, delegateHandler.InnerHandler);
         }
@@ -72,8 +65,12 @@ namespace Microsoft.Restier.Core.Tests
             var q1 = new HookB("q1Pre", "q1Post");
             var q2 = new HookB("q2Pre", "q2Post");
             var configuration = new ApiBuilder()
-                .AddHookHandler<IHookB>(q1)
-                .AddHookHandler<IHookB>(q2).Build();
+                .CutoffPrevious<IHookB>(q1)
+                .ChainPrevious<IHookB>(next =>
+                {
+                    q2.InnerHandler = next;
+                    return q2;
+                }).Build();
 
             var handler = configuration.GetHookHandler<IHookB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
@@ -91,7 +88,7 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private interface IHookA : IHookHandler
+        private interface IHookA
         {
         }
 
@@ -99,12 +96,12 @@ namespace Microsoft.Restier.Core.Tests
         {
         }
 
-        private interface IHookB : IHookHandler
+        private interface IHookB
         {
             string GetStr();
         }
 
-        private class HookB : IHookB, IDelegateHookHandler<IHookB>
+        private class HookB : IHookB
         {
             public IHookB InnerHandler { get; set; }
 

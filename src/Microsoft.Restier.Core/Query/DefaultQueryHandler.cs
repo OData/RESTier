@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core.Query
 
             // execute query
             QueryResult result;
-            var executor = context.GetHookHandler<IQueryExecutor>();
+            var executor = context.GetApiService<IQueryExecutor>();
             if (executor == null)
             {
                 throw new NotSupportedException(Resources.QueryExecutorMissing);
@@ -191,7 +191,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 if (this.inspector == null)
                 {
-                    this.inspector = this.context.QueryContext.GetHookHandler<IQueryExpressionInspector>();
+                    this.inspector = this.context.QueryContext.GetApiService<IQueryExpressionInspector>();
                 }
 
                 if (this.inspector != null && !this.inspector.Inspect(this.context))
@@ -205,7 +205,7 @@ namespace Microsoft.Restier.Core.Query
                 if (this.expander == null)
                 {
                     this.expander = this.context.QueryContext
-                        .GetHookHandler<IQueryExpressionExpander>();
+                        .GetApiService<IQueryExpressionExpander>();
                 }
 
                 if (expander == null)
@@ -242,7 +242,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 if (this.filter == null)
                 {
-                    this.filter = this.context.QueryContext.GetHookHandler<IQueryExpressionFilter>();
+                    this.filter = this.context.QueryContext.GetApiService<IQueryExpressionFilter>();
                 }
 
                 if (this.filter != null)
@@ -285,7 +285,7 @@ namespace Microsoft.Restier.Core.Query
                 if (this.sourcer == null)
                 {
                     this.sourcer = this.context.QueryContext
-                        .GetHookHandler<IQueryExpressionSourcer>();
+                        .GetApiService<IQueryExpressionSourcer>();
                 }
 
                 if (this.sourcer == null)

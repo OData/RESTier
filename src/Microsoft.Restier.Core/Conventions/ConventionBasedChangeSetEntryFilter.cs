@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
-            builder.AddHookHandler<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
+            builder.CutoffPrevious<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
         }
 
         /// <inheritdoc/>

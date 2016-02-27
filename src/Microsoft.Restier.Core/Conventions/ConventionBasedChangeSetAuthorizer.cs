@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(builder, "builder");
             Ensure.NotNull(targetType, "targetType");
-            builder.AddHookHandler<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
+            builder.CutoffPrevious<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>

@@ -39,11 +39,11 @@ namespace Microsoft.Restier.WebApi.Test
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             builder = base.ConfigureApi(builder);
-            builder.AddHookHandler<IModelBuilder>(new TestModelProducer(StoreModel.Model));
-            builder.AddHookHandler<IModelMapper>(new TestModelMapper());
-            builder.AddHookHandler<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
-            builder.AddHookHandler<IChangeSetPreparer>(new TestChangeSetPreparer());
-            builder.AddHookHandler<ISubmitExecutor>(new TestSubmitExecutor());
+            builder.CutoffPrevious<IModelBuilder>(new TestModelProducer(StoreModel.Model));
+            builder.CutoffPrevious<IModelMapper>(new TestModelMapper());
+            builder.CutoffPrevious<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
+            builder.CutoffPrevious<IChangeSetPreparer>(new TestChangeSetPreparer());
+            builder.CutoffPrevious<ISubmitExecutor>(new TestSubmitExecutor());
             return builder;
         }
     }

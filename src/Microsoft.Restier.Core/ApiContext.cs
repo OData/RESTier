@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Properties;
 
@@ -54,6 +55,16 @@ namespace Microsoft.Restier.Core
         public T GetApiService<T>() where T : class
         {
             return this.ServiceProvider.GetService<T>();
+        }
+
+        /// <summary>
+        /// Gets all registered service instances.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The ordered collection of service instances.</returns>
+        public IEnumerable<T> GetApiServices<T>() where T : class
+        {
+            return this.ServiceProvider.GetServices<T>();
         }
 
         internal void DisposeScope()

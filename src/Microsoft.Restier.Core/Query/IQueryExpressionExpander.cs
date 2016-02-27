@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Core.Query
     /// normalization, inspection, expansion, filtering and sourcing occurs.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionExpander : IHookHandler
+    public interface IQueryExpressionExpander
     {
         /// <summary>
         /// Expands an expression.

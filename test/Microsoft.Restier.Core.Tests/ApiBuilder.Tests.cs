@@ -98,59 +98,12 @@ namespace Microsoft.Restier.Core.Tests
             Assert.Equal("01", value);
         }
 
-        interface ISomeHook : ISomeService, IHookHandler
+        interface ISomeHook : ISomeService
         {
         }
 
         class SomeHook : SomeService, ISomeHook
         {
-        }
-
-        class SomeDelegateHook : SomeHook, IDelegateHookHandler<ISomeHook>
-        {
-            public ISomeHook InnerHandler
-            {
-                get { return (ISomeHook)Next; }
-                set { Next = value; }
-            }
-        }
-
-        [Fact]
-        public void LegacyHookHandlerChainContributor()
-        {
-            var builder = new ApiBuilder()
-                .AddContributor<ISomeHook>((sp, next) => new SomeHook()
-                {
-                    Next = next(),
-                    Value = 0,
-                })
-                .AddHookHandler<ISomeHook>(new SomeDelegateHook()
-                {
-                    Value = 1,
-                });
-
-            var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeHook>().Call();
-            Assert.Equal("10", value);
-        }
-
-        [Fact]
-        public void ContributorChainLegacyHookHandler()
-        {
-            var builder = new ApiBuilder()
-                .AddHookHandler<ISomeHook>(new SomeDelegateHook()
-                {
-                    Value = 1,
-                })
-                .AddContributor<ISomeHook>((sp, next) => new SomeHook()
-                {
-                    Next = next(),
-                    Value = 0,
-                });
-
-            var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeHook>().Call();
-            Assert.Equal("01", value);
         }
 
         [Fact]

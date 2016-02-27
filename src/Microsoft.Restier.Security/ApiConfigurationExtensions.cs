@@ -32,8 +32,8 @@ namespace Microsoft.Restier.Security
             this ApiBuilder builder)
         {
             Ensure.NotNull(builder, "builder");
-            builder.AddHookHandler<IQueryExpressionInspector>(RoleBasedAuthorization.Default);
-            builder.AddHookHandler<IQueryExpressionExpander>(RoleBasedAuthorization.Default);
+            builder.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorization>();
+            builder.ChainPrevious<IQueryExpressionExpander, RoleBasedAuthorization>();
         }
     }
 }

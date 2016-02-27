@@ -9,13 +9,6 @@ public interface Microsoft.Restier.Core.IApiScopeFactory {
 	Microsoft.Extensions.DependencyInjection.IServiceScope CreateApiScope ()
 }
 
-public interface Microsoft.Restier.Core.IDelegateHookHandler`1 {
-	T InnerHandler  { public abstract get; public abstract set; }
-}
-
-public interface Microsoft.Restier.Core.IHookHandler {
-}
-
 public abstract class Microsoft.Restier.Core.ApiBase : IDisposable, IApi {
 	protected ApiBase ()
 
@@ -125,11 +118,6 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder AddHookHandler (Microsoft.Restier.Core.ApiBuilder obj, T handler)
-
-	[
-	ExtensionAttribute(),
-	]
 	public static Microsoft.Restier.Core.ApiBuilder AddInstance (Microsoft.Restier.Core.ApiBuilder obj, T instance)
 
 	[
@@ -165,7 +153,17 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static bool HasHookHandler (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.ApiBuilder CutoffPrevious (Microsoft.Restier.Core.ApiBuilder obj)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Restier.Core.ApiBuilder CutoffPrevious (Microsoft.Restier.Core.ApiBuilder obj, T handler)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static bool HasService (Microsoft.Restier.Core.ApiBuilder obj)
 
 	[
 	ExtensionAttribute(),
@@ -238,6 +236,7 @@ public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.Property
 	System.IServiceProvider ServiceProvider  { public get; }
 
 	public T GetApiService ()
+	public IEnumerable`1 GetApiServices ()
 }
 
 public class Microsoft.Restier.Core.InvocationContext : Microsoft.Restier.Core.PropertyBag {
@@ -245,7 +244,8 @@ public class Microsoft.Restier.Core.InvocationContext : Microsoft.Restier.Core.P
 
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
 
-	public T GetHookHandler ()
+	public T GetApiService ()
+	public IEnumerable`1 GetApiServices ()
 }
 
 public class Microsoft.Restier.Core.PropertyBag {
@@ -355,11 +355,11 @@ public class Microsoft.Restier.WebApi.RestierPayloadValueConverter : Microsoft.O
 	public virtual object ConvertToPayloadValue (object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
 }
 
-public interface Microsoft.Restier.Core.Model.IModelBuilder : IHookHandler {
+public interface Microsoft.Restier.Core.Model.IModelBuilder {
 	System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.InvocationContext context, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Model.IModelMapper : IHookHandler {
+public interface Microsoft.Restier.Core.Model.IModelMapper {
 	bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string name, out System.Type& relevantType)
 	bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, out System.Type& relevantType)
 }
@@ -387,24 +387,24 @@ public sealed class Microsoft.Restier.Core.Model.FunctionAttribute : System.Attr
 	string Namespace  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExecutor : IHookHandler {
+public interface Microsoft.Restier.Core.Query.IQueryExecutor {
 	System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteQueryAsync (Microsoft.Restier.Core.Query.QueryContext context, IQueryable`1 query, System.Threading.CancellationToken cancellationToken)
 	System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteSingleAsync (Microsoft.Restier.Core.Query.QueryContext context, System.Linq.IQueryable query, System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExpressionExpander : IHookHandler {
+public interface Microsoft.Restier.Core.Query.IQueryExpressionExpander {
 	System.Linq.Expressions.Expression Expand (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExpressionFilter : IHookHandler {
+public interface Microsoft.Restier.Core.Query.IQueryExpressionFilter {
 	System.Linq.Expressions.Expression Filter (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExpressionInspector : IHookHandler {
+public interface Microsoft.Restier.Core.Query.IQueryExpressionInspector {
 	bool Inspect (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer : IHookHandler {
+public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
 	System.Linq.Expressions.Expression Source (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
 }
 
@@ -507,24 +507,24 @@ public enum Microsoft.Restier.Core.Submit.ValidationSeverity : int {
 	Warning = 1
 }
 
-public interface Microsoft.Restier.Core.Submit.IChangeSetEntryAuthorizer : IHookHandler {
+public interface Microsoft.Restier.Core.Submit.IChangeSetEntryAuthorizer {
 	System.Threading.Tasks.Task`1[[System.Boolean]] AuthorizeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetEntry entry, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Submit.IChangeSetEntryFilter : IHookHandler {
+public interface Microsoft.Restier.Core.Submit.IChangeSetEntryFilter {
 	System.Threading.Tasks.Task OnExecutedEntryAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetEntry entry, System.Threading.CancellationToken cancellationToken)
 	System.Threading.Tasks.Task OnExecutingEntryAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetEntry entry, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Submit.IChangeSetEntryValidator : IHookHandler {
+public interface Microsoft.Restier.Core.Submit.IChangeSetEntryValidator {
 	System.Threading.Tasks.Task ValidateEntityAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetEntry entry, Microsoft.Restier.Core.Submit.ValidationResults validationResults, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Submit.IChangeSetPreparer : IHookHandler {
+public interface Microsoft.Restier.Core.Submit.IChangeSetPreparer {
 	System.Threading.Tasks.Task PrepareAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Submit.ISubmitExecutor : IHookHandler {
+public interface Microsoft.Restier.Core.Submit.ISubmitExecutor {
 	System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] ExecuteSubmitAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
 }
 

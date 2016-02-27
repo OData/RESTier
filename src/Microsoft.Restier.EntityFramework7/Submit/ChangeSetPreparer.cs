@@ -29,20 +29,6 @@ namespace Microsoft.Restier.EntityFramework.Submit
         private static MethodInfo prepareEntryGeneric = typeof(ChangeSetPreparer)
             .GetMethod("PrepareEntry", BindingFlags.Static | BindingFlags.NonPublic);
 
-        static ChangeSetPreparer()
-        {
-            Instance = new ChangeSetPreparer();
-        }
-
-        private ChangeSetPreparer()
-        {
-        }
-
-        /// <summary>
-        /// Gets the singleton instance of the <see cref="ChangeSetPreparer"/> class.
-        /// </summary>
-        public static ChangeSetPreparer Instance { get; private set; }
-
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
         /// </summary>

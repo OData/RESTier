@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core
 {
@@ -33,17 +34,27 @@ namespace Microsoft.Restier.Core
         public ApiContext ApiContext { get; private set; }
 
         /// <summary>
-        /// Gets a hook handler instance.
+        /// Gets an API service.
         /// </summary>
-        /// <typeparam name="T">The hook handler interface.</typeparam>
-        /// <returns>The hook handler instance.</returns>
+        /// <typeparam name="T">The API service type.</typeparam>
+        /// <returns>The service instance.</returns>
         /// <remarks>
-        /// This method directly returns the hook handler instance from
+        /// This method directly returns the API service instance from
         /// the configuration of the inner context.
         /// </remarks>
-        public T GetHookHandler<T>() where T : class, IHookHandler
+        public T GetApiService<T>() where T : class
         {
             return this.ApiContext.GetApiService<T>();
+        }
+
+        /// <summary>
+        /// Gets an ordered collection of service instances.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The ordered collection of service instances.</returns>
+        public IEnumerable<T> GetApiServices<T>() where T : class
+        {
+            return this.ApiContext.GetApiServices<T>();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry authorizer.
     /// </summary>
-    public interface IChangeSetEntryAuthorizer : IHookHandler
+    public interface IChangeSetEntryAuthorizer
     {
         /// <summary>
         /// Asynchronously authorizes the ChangeSetEntry.

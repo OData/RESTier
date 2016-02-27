@@ -20,24 +20,9 @@ namespace Microsoft.Restier.Security
     /// Represents a role-based authorization system.
     /// </summary>
     public class RoleBasedAuthorization : IQueryExpressionInspector,
-        IQueryExpressionExpander, IDelegateHookHandler<IQueryExpressionExpander>
+        IQueryExpressionExpander
     {
         private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
-
-        static RoleBasedAuthorization()
-        {
-            Default = new RoleBasedAuthorization();
-        }
-
-        private RoleBasedAuthorization()
-        {
-        }
-
-        /// <summary>
-        /// Gets the default role-based authorization system instance, which
-        /// uses the current security principal to determine role membership.
-        /// </summary>
-        public static RoleBasedAuthorization Default { get; private set; }
 
         /// <inheritdoc/>
         public IQueryExpressionExpander InnerHandler { get; set; }

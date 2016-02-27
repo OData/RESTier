@@ -73,58 +73,56 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Return true if the <see cref="ApiBuilder"/> has any <typeparamref name="T"/> service registered.
+        /// Returns true if the <see cref="ApiBuilder"/> has any <typeparamref name="T"/> service registered.
         /// </summary>
-        /// <typeparam name="T">The hook handler interface.</typeparam>
+        /// <typeparam name="T">The API service interface.</typeparam>
         /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
         /// <returns>
-        /// True if the hook handler is registered.
+        /// True if the service is registered.
         /// </returns>
-        public static bool HasHookHandler<T>(this ApiBuilder obj) where T : class, IHookHandler
+        public static bool HasService<T>(this ApiBuilder obj) where T : class
         {
             Ensure.NotNull(obj, "obj");
 
-            return obj.Services.Any(sd => sd.ServiceType == typeof(LegacyHookHandler<T>));
+            return obj.Services.Any(sd => sd.ServiceType == typeof(ApiServiceContributor<T>));
         }
 
         /// <summary>
-        /// Adds a hook handler instance.
+        /// Adds an API service instance, ignore all previously registered service instances of type
+        /// <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">The hook handler interface.</typeparam>
+        /// <typeparam name="T">The API service type.</typeparam>
         /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <param name="handler">An instance of hook handler for <typeparamref name="T"/>.</param>
+        /// <param name="handler">An instance of type <typeparamref name="T"/>.</param>
         /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder AddHookHandler<T>(this ApiBuilder obj, T handler) where T : class, IHookHandler
+        public static ApiBuilder CutoffPrevious<T>(this ApiBuilder obj, T handler) where T : class
         {
             Ensure.NotNull(obj, "obj");
             Ensure.NotNull(handler, "handler");
 
-            if (!typeof(T).IsInterface)
-            {
-                throw new InvalidOperationException(Resources.ShouldBeInterfaceType);
-            }
-
-            // Since legacy hook handlers are registered with instance, they must have singleton lifetime.
-            // And so a singleton HookHandlerContributor is registered for each hook handler type, and it
-            // will cache the legacy handler chain once built.
-            if (!obj.HasHookHandler<T>())
-            {
-                T cached = null;
-                obj.Services.AddInstance<ApiServiceContributor<T>>((sp, next) =>
-                {
-                    return cached ?? (cached = HookHandlerType<T>.BuildLegacyHandlers(sp, next));
-                });
-
-                // Hook handlers have singleton lifetime by default, call Make... to change.
-                obj.Services.TryAddSingleton(typeof(T), ChainedService<T>.DefaultFactory);
-            }
-
-            obj.Services.AddInstance(new LegacyHookHandler<T>(handler));
-            return obj;
+            return obj.AddContributorNoCheck<T>((sp, next) => handler);
         }
 
         /// <summary>
-        /// Adds a service contributor, which has a chance to chain previously registered service instances.
+        /// Adds an API service instance, ignore all previously registered service instances of type
+        /// <typeparamref name="TService"/>.
+        /// </summary>
+        /// <typeparam name="TService">The API service type.</typeparam>
+        /// <typeparam name="TImplement">The API service implementation type.</typeparam>
+        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
+        /// <returns>Current <see cref="ApiBuilder"/></returns>
+        public static ApiBuilder CutoffPrevious<TService, TImplement>(this ApiBuilder obj)
+            where TService : class
+            where TImplement : class, TService
+        {
+            Ensure.NotNull(obj, "obj");
+
+            obj.Services.TryAddTransient<TImplement>();
+            return obj.AddContributorNoCheck<TService>((sp, next) => sp.GetRequiredService<TImplement>());
+        }
+
+        /// <summary>
+        /// Adds a service instance of service type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
         /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
@@ -486,52 +484,5 @@ namespace Microsoft.Restier.Core
                 return next();
             }
         };
-    }
-
-    internal static class HookHandlerType<T> where T : class, IHookHandler
-    {
-        public static T BuildLegacyHandlers(IServiceProvider sp, Func<T> next)
-        {
-            var instances = sp.GetServices<LegacyHookHandler<T>>().Reverse();
-
-            using (var e = instances.GetEnumerator())
-            {
-                if (!e.MoveNext())
-                {
-                    return null;
-                }
-
-                T first = e.Current.Instance;
-                T current = first;
-                while (e.MoveNext())
-                {
-                    var delegateHandler = current as IDelegateHookHandler<T>;
-                    if (delegateHandler == null)
-                    {
-                        return first;
-                    }
-
-                    delegateHandler.InnerHandler = current = e.Current.Instance;
-                }
-
-                var finalDelegate = current as IDelegateHookHandler<T>;
-                if (finalDelegate != null)
-                {
-                    finalDelegate.InnerHandler = next();
-                }
-
-                return first;
-            }
-        }
-    }
-
-    internal class LegacyHookHandler<T> where T : class, IHookHandler
-    {
-        public LegacyHookHandler(T instance)
-        {
-            Instance = instance;
-        }
-
-        public T Instance { get; private set; }
     }
 }

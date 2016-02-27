@@ -69,7 +69,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
             return base.ConfigureApi(builder)
-                .AddHookHandler<IModelBuilder>(new NorthwindModelExtender());
+                .ChainPrevious<IModelBuilder, NorthwindModelExtender>();
         }
 
         // Entity set filter
@@ -94,7 +94,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             // Fake writing log method for submit logic demo
         }
 
-        private class NorthwindModelExtender : IModelBuilder, IDelegateHookHandler<IModelBuilder>
+        private class NorthwindModelExtender : IModelBuilder
         {
             public IModelBuilder InnerHandler { get; set; }
 

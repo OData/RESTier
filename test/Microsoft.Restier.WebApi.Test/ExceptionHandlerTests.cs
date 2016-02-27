@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Test
             protected override ApiBuilder ConfigureApi(ApiBuilder builder)
             {
                 return base.ConfigureApi(builder)
-                    .AddHookHandler<IQueryExpressionSourcer>(new FakeSourcer());
+                    .CutoffPrevious<IQueryExpressionSourcer>(new FakeSourcer());
             }
         }
 
