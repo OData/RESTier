@@ -17,13 +17,10 @@ using Microsoft.Restier.Security.Properties;
 namespace Microsoft.Restier.Security
 {
     /// <summary>
-    /// Represents a role-based authorization system.
+    /// This class applies security policy on expanded expression nodes.
     /// </summary>
-    public class RoleBasedAuthorization : IQueryExpressionInspector,
-        IQueryExpressionExpander
+    public class ApiPolicyActivator : IQueryExpressionExpander
     {
-        private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
-
         /// <inheritdoc/>
         public IQueryExpressionExpander InnerHandler { get; set; }
 
@@ -94,6 +91,15 @@ namespace Microsoft.Restier.Security
 
             return context.VisitedNode;
         }
+    }
+
+    /// <summary>
+    /// Represents a role-based authorization system.
+    /// This class makes role based security checks on expression nodes.
+    /// </summary>
+    public class RoleBasedAuthorization : IQueryExpressionInspector
+    {
+        private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
 
         /// <summary>
         /// Inspects an expression.

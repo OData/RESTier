@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Core.Conventions
     /// A convention-based API model builder that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    internal class ConventionBasedApiModelBuilder : IModelBuilder
+    internal class ConventionBasedApiModelBuilder
     {
         private readonly Type targetType;
         private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
@@ -39,9 +39,6 @@ namespace Microsoft.Restier.Core.Conventions
             this.targetType = targetType;
         }
 
-        public IModelBuilder InnerModelBuilder { get; private set; }
-
-        /// <inheritdoc/>
         public static void ApplyTo(
             ApiBuilder builder,
             Type targetType)
@@ -53,37 +50,10 @@ namespace Microsoft.Restier.Core.Conventions
             // some other services.
             builder.AddInstance(new ConventionBasedApiModelBuilder(targetType));
 
-            builder.ChainPrevious<IModelBuilder, ConventionBasedApiModelBuilder>();
+            builder.ChainPrevious<IModelBuilder, ModelBuilder>();
             builder.ChainPrevious<IModelMapper, ModelMapper>();
             builder.CutoffPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
             builder.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
-        }
-
-        /// <inheritdoc/>
-        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
-        {
-            Ensure.NotNull(context, "context");
-
-            IEdmModel modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
-            if (modelReturned == null)
-            {
-                // There is no model returned so return an empty model.
-                var emptyModel = new EdmModel();
-                emptyModel.EnsureEntityContainer(this.targetType);
-                return emptyModel;
-            }
-
-            EdmModel edmModel = modelReturned as EdmModel;
-            if (edmModel == null)
-            {
-                // The model returned is not an EDM model.
-                return modelReturned;
-            }
-
-            this.ScanForDeclaredPublicProperties();
-            this.BuildEntitySetsAndSingletons(context, edmModel);
-            this.AddNavigationPropertyBindings(edmModel);
-            return edmModel;
         }
 
         private static bool IsEntitySetProperty(PropertyInfo property)
@@ -179,18 +149,6 @@ namespace Microsoft.Restier.Core.Conventions
                 var value = Array.CreateInstance(singletonProperty.PropertyType, 1);
                 value.SetValue(singletonProperty.GetValue(target), 0);
                 return value.AsQueryable();
-            }
-
-            return null;
-        }
-
-        private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(
-            InvocationContext context, CancellationToken cancellationToken)
-        {
-            var innerHandler = InnerModelBuilder;
-            if (innerHandler != null)
-            {
-                return await innerHandler.GetModelAsync(context, cancellationToken);
             }
 
             return null;
@@ -341,14 +299,65 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        internal class ModelMapper : IModelMapper
+        internal class ModelBuilder : IModelBuilder
         {
-            public ModelMapper(ConventionBasedApiModelBuilder modelBuilder)
+            public ModelBuilder(ConventionBasedApiModelBuilder modelCache)
             {
-                ModelBuilder = modelBuilder;
+                ModelCache = modelCache;
             }
 
-            public ConventionBasedApiModelBuilder ModelBuilder { get; set; }
+            public IModelBuilder InnerModelBuilder { get; private set; }
+
+            private ConventionBasedApiModelBuilder ModelCache { get; set; }
+
+            /// <inheritdoc/>
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                Ensure.NotNull(context, "context");
+
+                IEdmModel modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
+                if (modelReturned == null)
+                {
+                    // There is no model returned so return an empty model.
+                    var emptyModel = new EdmModel();
+                    emptyModel.EnsureEntityContainer(ModelCache.targetType);
+                    return emptyModel;
+                }
+
+                EdmModel edmModel = modelReturned as EdmModel;
+                if (edmModel == null)
+                {
+                    // The model returned is not an EDM model.
+                    return modelReturned;
+                }
+
+                ModelCache.ScanForDeclaredPublicProperties();
+                ModelCache.BuildEntitySetsAndSingletons(context, edmModel);
+                ModelCache.AddNavigationPropertyBindings(edmModel);
+                return edmModel;
+            }
+
+            private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(
+                InvocationContext context, CancellationToken cancellationToken)
+            {
+                var innerHandler = InnerModelBuilder;
+                if (innerHandler != null)
+                {
+                    return await innerHandler.GetModelAsync(context, cancellationToken);
+                }
+
+                return null;
+            }
+        }
+
+        internal class ModelMapper : IModelMapper
+        {
+            public ModelMapper(ConventionBasedApiModelBuilder modelCache)
+            {
+                ModelCache = modelCache;
+            }
+
+            public ConventionBasedApiModelBuilder ModelCache { get; set; }
 
             private IModelMapper InnerModelMapper { get; set; }
 
@@ -359,7 +368,7 @@ namespace Microsoft.Restier.Core.Conventions
                 out Type relevantType)
             {
                 relevantType = null;
-                var entitySetProperty = this.ModelBuilder.entitySetProperties.SingleOrDefault(p => p.Name == name);
+                var entitySetProperty = this.ModelCache.entitySetProperties.SingleOrDefault(p => p.Name == name);
                 if (entitySetProperty != null)
                 {
                     relevantType = entitySetProperty.PropertyType.GetGenericArguments()[0];
@@ -367,7 +376,7 @@ namespace Microsoft.Restier.Core.Conventions
 
                 if (relevantType == null)
                 {
-                    var singletonProperty = this.ModelBuilder.singletonProperties.SingleOrDefault(p => p.Name == name);
+                    var singletonProperty = this.ModelCache.singletonProperties.SingleOrDefault(p => p.Name == name);
                     if (singletonProperty != null)
                     {
                         relevantType = singletonProperty.PropertyType;
@@ -397,17 +406,17 @@ namespace Microsoft.Restier.Core.Conventions
 
         internal class QueryExpressionExpander : IQueryExpressionExpander
         {
-            public QueryExpressionExpander(ConventionBasedApiModelBuilder modelBuilder)
+            public QueryExpressionExpander(ConventionBasedApiModelBuilder modelCache)
             {
-                ModelBuilder = modelBuilder;
+                ModelCache = modelCache;
             }
 
-            private ConventionBasedApiModelBuilder ModelBuilder { get; set; }
+            private ConventionBasedApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
             {
-                IQueryable result = ModelBuilder.GetEntitySetQuery(context);
+                IQueryable result = ModelCache.GetEntitySetQuery(context);
 
                 if (result != null)
                 {
@@ -435,14 +444,14 @@ namespace Microsoft.Restier.Core.Conventions
 
         internal class QueryExpressionSourcer : IQueryExpressionSourcer
         {
-            public QueryExpressionSourcer(ConventionBasedApiModelBuilder modelBuilder)
+            public QueryExpressionSourcer(ConventionBasedApiModelBuilder modelCache)
             {
-                ModelBuilder = modelBuilder;
+                ModelCache = modelCache;
             }
 
             public IQueryExpressionSourcer InnerQueryExpressionSourcer { get; set; }
 
-            private ConventionBasedApiModelBuilder ModelBuilder { get; set; }
+            private ConventionBasedApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Source(QueryExpressionContext context, bool embedded)
@@ -457,7 +466,7 @@ namespace Microsoft.Restier.Core.Conventions
                     }
                 }
 
-                var query = ModelBuilder.GetEntitySetQuery(context) ?? ModelBuilder.GetSingletonQuery(context);
+                var query = ModelCache.GetEntitySetQuery(context) ?? ModelCache.GetSingletonQuery(context);
                 if (query != null)
                 {
                     return Expression.Constant(query);

@@ -73,7 +73,7 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService, SomeService>();
 
             var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("03210", value);
         }
 
@@ -90,11 +90,11 @@ namespace Microsoft.Restier.Core.Tests
                 .MakeTransient<ISomeService>();
 
             var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
 
             // Test expression compilation.
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
         }
 
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService>(next => new SomeService());
 
             var configuration = builder.Build();
-            var service1 = configuration.GetHookHandler<ISomeService>();
+            var service1 = configuration.GetApiService<ISomeService>();
 
             var context = new ApiContext(configuration);
             var service2 = context.GetApiService<ISomeService>();
@@ -131,7 +131,7 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService>(next => new SomeService());
 
             var configuration = builder.Build();
-            var service1 = configuration.GetHookHandler<ISomeService>();
+            var service1 = configuration.GetApiService<ISomeService>();
 
             var context = new ApiContext(configuration);
             var service2 = context.GetApiService<ISomeService>();
@@ -165,13 +165,13 @@ namespace Microsoft.Restier.Core.Tests
                 .MakeTransient<ISomeService>();
 
             var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
 
             // Test expression compilation.
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
         }
 
@@ -220,18 +220,18 @@ namespace Microsoft.Restier.Core.Tests
 
             var configuration = builder.Build();
             var expected = "Text42";
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
 
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
 
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
 
             Assert.NotEqual(
-                configuration.GetHookHandler<ISomeService>(),
-                configuration.GetHookHandler<ISomeService>());
+                configuration.GetApiService<ISomeService>(),
+                configuration.GetApiService<ISomeService>());
         }
 
         [Fact]
@@ -246,12 +246,12 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService, SomeService2>();
 
             var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
 
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
         }
 
@@ -308,13 +308,13 @@ namespace Microsoft.Restier.Core.Tests
                 });
 
             var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
 
             // Test expression compilation
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
         }
 
@@ -337,7 +337,7 @@ namespace Microsoft.Restier.Core.Tests
             var configuration = builder.Build();
             Assert.Throws<InvalidOperationException>(() =>
             {
-                configuration.GetHookHandler<ISomeService>();
+                configuration.GetApiService<ISomeService>();
             });
         }
 
@@ -365,13 +365,13 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService, SomeService4>();
 
             var configuration = builder.Build();
-            var value = configuration.GetHookHandler<ISomeService>().Call();
+            var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
 
             // Test expression compilation
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
-            value = configuration.GetHookHandler<ISomeService>().Call();
+            value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
         }
     }

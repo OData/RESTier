@@ -30,28 +30,28 @@ namespace Microsoft.Restier.Core.Tests
             var builder = new ApiBuilder();
             var configuration = builder.Build();
 
-            Assert.Null(configuration.GetHookHandler<IHookA>());
-            Assert.Null(configuration.GetHookHandler<IHookB>());
+            Assert.Null(configuration.GetApiService<IHookA>());
+            Assert.Null(configuration.GetApiService<IHookB>());
 
             var singletonHookPoint = new HookA();
             builder.CutoffPrevious<IHookA>(singletonHookPoint);
             configuration = builder.Build();
-            Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
-            Assert.Null(configuration.GetHookHandler<IHookB>());
+            Assert.Same(singletonHookPoint, configuration.GetApiService<IHookA>());
+            Assert.Null(configuration.GetApiService<IHookB>());
 
             var multiCastHookPoint1 = new HookB();
             builder.CutoffPrevious<IHookB>(multiCastHookPoint1);
             configuration = builder.Build();
-            Assert.Same(singletonHookPoint, configuration.GetHookHandler<IHookA>());
-            Assert.Equal(multiCastHookPoint1, configuration.GetHookHandler<IHookB>());
+            Assert.Same(singletonHookPoint, configuration.GetApiService<IHookA>());
+            Assert.Equal(multiCastHookPoint1, configuration.GetApiService<IHookB>());
 
             builder = new ApiBuilder()
                 .CutoffPrevious<IHookB>(multiCastHookPoint1)
                 .ChainPrevious<IHookB, HookB>()
                 .AddInstance(new HookB());
             configuration = builder.Build();
-            var multiCastHookPoint2 = configuration.GetHookHandler<HookB>();
-            var handler = configuration.GetHookHandler<IHookB>();
+            var multiCastHookPoint2 = configuration.GetApiService<HookB>();
+            var handler = configuration.GetApiService<IHookB>();
             Assert.Equal(multiCastHookPoint2, handler);
 
             var delegateHandler = handler as HookB;
@@ -72,7 +72,7 @@ namespace Microsoft.Restier.Core.Tests
                     return q2;
                 }).Build();
 
-            var handler = configuration.GetHookHandler<IHookB>();
+            var handler = configuration.GetApiService<IHookB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
         }
 

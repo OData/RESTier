@@ -226,7 +226,7 @@ public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.Pr
 
 	System.IServiceProvider ServiceProvider  { public get; }
 
-	public T GetHookHandler ()
+	public T GetApiService ()
 }
 
 public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.PropertyBag {

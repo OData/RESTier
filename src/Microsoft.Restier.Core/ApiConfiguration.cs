@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
         /// <returns>The service instance.</returns>
-        public T GetHookHandler<T>() where T : class
+        public T GetApiService<T>() where T : class
         {
             return this.serviceProvider.GetService<T>();
         }

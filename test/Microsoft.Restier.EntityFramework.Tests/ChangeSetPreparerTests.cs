@@ -28,7 +28,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var sc = new SubmitContext(libraryApi.Context, changeSet);
 
             // Act
-            var changeSetPreparer = libraryApi.Context.Configuration.GetHookHandler<IChangeSetPreparer>();
+            var changeSetPreparer = libraryApi.Context.Configuration.GetApiService<IChangeSetPreparer>();
             await changeSetPreparer.PrepareAsync(sc, CancellationToken.None);
             var person = entry.Entity as Person;
 

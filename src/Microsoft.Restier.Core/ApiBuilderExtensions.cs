@@ -84,7 +84,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(obj, "obj");
 
-            return obj.Services.Any(sd => sd.ServiceType == typeof(ApiServiceContributor<T>));
+            return obj.Services.Any(sd => sd.ServiceType == typeof(T));
         }
 
         /// <summary>
