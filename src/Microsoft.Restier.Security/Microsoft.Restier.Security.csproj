@@ -32,7 +32,7 @@
       <Link>Shared\Ensure.cs</Link>
     </Compile>
     <Compile Include="ApiPermission.cs" />
-    <Compile Include="AssertAttribute.cs" />
+    <Compile Include="AssertRoleAttribute.cs" />
     <Compile Include="ApiConfigurationExtensions.cs" />
     <Compile Include="ApiPermissionType.cs" />
     <Compile Include="DenyAttribute.cs" />

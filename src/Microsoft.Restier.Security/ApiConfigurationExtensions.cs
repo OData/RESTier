@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Security
             this ApiBuilder builder)
         {
             Ensure.NotNull(builder, "builder");
-            builder.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorization>();
+            builder.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorizer>();
             builder.ChainPrevious<IQueryExpressionExpander, ApiPolicyActivator>();
         }
     }

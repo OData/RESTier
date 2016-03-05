@@ -12,15 +12,15 @@ namespace Microsoft.Restier.Security
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public sealed class AssertAttribute : Attribute, IApiPolicy
+    public sealed class AssertRoleAttribute : Attribute, IApiPolicy
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssertAttribute" /> class.
+        /// Initializes a new instance of the <see cref="AssertRoleAttribute" /> class.
         /// </summary>
         /// <param name="role">
         /// The name of a role.
         /// </param>
-        public AssertAttribute(string role)
+        public AssertRoleAttribute(string role)
         {
             Ensure.NotNull(role, "role");
             this.Role = role;

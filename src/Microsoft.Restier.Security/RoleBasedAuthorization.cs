@@ -97,7 +97,7 @@ namespace Microsoft.Restier.Security
     /// Represents a role-based authorization system.
     /// This class makes role based security checks on expression nodes.
     /// </summary>
-    public class RoleBasedAuthorization : IQueryExpressionInspector
+    public class RoleBasedAuthorizer : IQueryExpressionInspector
     {
         private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
 
