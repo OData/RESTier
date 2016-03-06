@@ -17,63 +17,7 @@ namespace Microsoft.Restier.Core
     public static class ApiBuilderExtensions
     {
         /// <summary>
-        /// Make the built <see cref="ApiConfiguration"/> to create <see cref="ApiContext"/> with its own instance
-        /// of <see cref="IServiceProvider"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder UseSharedApiScope(this ApiBuilder obj)
-        {
-            Ensure.NotNull(obj, "obj");
-
-            obj.Services.AddSingleton<IApiScopeFactory>(SharedApiScopeFactory.Creator);
-            return obj;
-        }
-
-        /// <summary>
-        /// Make the built <see cref="ApiConfiguration"/> to create <see cref="ApiContext"/> with a scoped
-        /// <see cref="IServiceProvider"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder UseContextApiScope(this ApiBuilder obj)
-        {
-            Ensure.NotNull(obj, "obj");
-
-            obj.Services.AddSingleton<IApiScopeFactory>(ContextApiScopeFactory.Creator);
-            return obj;
-        }
-
-        /// <summary>
-        /// If service scope is not yet configured, make the built <see cref="ApiConfiguration"/> to create
-        /// <see cref="ApiContext"/> with its own instance of <see cref="IServiceProvider"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder TryUseSharedApiScope(this ApiBuilder obj)
-        {
-            Ensure.NotNull(obj, "obj");
-
-            obj.Services.TryAddSingleton(typeof(IApiScopeFactory), SharedApiScopeFactory.Creator);
-            return obj;
-        }
-
-        /// <summary>
-        /// If service scope is not yet configured, make the built <see cref="ApiConfiguration"/> to create
-        /// <see cref="ApiContext"/> with a scoped <see cref="IServiceProvider"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder TryUseContextApiScope(this ApiBuilder obj)
-        {
-            Ensure.NotNull(obj, "obj");
-
-            obj.Services.TryAddSingleton(typeof(IApiScopeFactory), ContextApiScopeFactory.Creator);
-            return obj;
-        }
-
-        /// <summary>
-        /// Returns true if the <see cref="ApiBuilder"/> has any <typeparamref name="T"/> service registered.
+        /// Return true if the <see cref="ApiBuilder"/> has any <typeparamref name="T"/> service registered.
         /// </summary>
         /// <typeparam name="T">The API service interface.</typeparam>
         /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
@@ -338,7 +282,6 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(obj, "obj");
 
             obj.Services.TryAddSingleton<ApiConfiguration>();
-            obj.TryUseContextApiScope();
 
             var serviceProvider = serviceProviderFactory != null ?
                 serviceProviderFactory(obj) : obj.Services.BuildServiceProvider();
@@ -400,65 +343,6 @@ namespace Microsoft.Restier.Core
             }
 
             return null;
-        }
-
-        private class SharedApiScopeFactory : IApiScopeFactory
-        {
-            public static readonly Func<IServiceProvider, IApiScopeFactory> Creator =
-                serviceProvider => new SharedApiScopeFactory(serviceProvider);
-
-            public SharedApiScopeFactory(IServiceProvider serviceProvider)
-            {
-                this.ServiceProvider = serviceProvider;
-            }
-
-            public IServiceProvider ServiceProvider
-            {
-                get; private set;
-            }
-
-            public IServiceScope CreateApiScope()
-            {
-                return new ServiceScope()
-                {
-                    ServiceProvider = this.ServiceProvider,
-                };
-            }
-
-            private class ServiceScope : IServiceScope
-            {
-                public IServiceProvider ServiceProvider
-                {
-                    get; set;
-                }
-
-                public void Dispose()
-                {
-                    this.ServiceProvider = null;
-                }
-            }
-        }
-
-        private class ContextApiScopeFactory : IApiScopeFactory
-        {
-            public static readonly Func<IServiceProvider, IApiScopeFactory> Creator =
-                serviceProvider => new ContextApiScopeFactory(
-                    serviceProvider.GetRequiredService<IServiceScopeFactory>());
-
-            public ContextApiScopeFactory(IServiceScopeFactory factory)
-            {
-                this.Factory = factory;
-            }
-
-            public IServiceScopeFactory Factory
-            {
-                get; private set;
-            }
-
-            public IServiceScope CreateApiScope()
-            {
-                return this.Factory.CreateScope();
-            }
         }
     }
 
