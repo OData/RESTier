@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Conventions;
-using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
@@ -69,7 +69,14 @@ namespace Microsoft.Restier.Core
 
                         // Make sure that all convention-based handlers are outermost.
                         EnableConventions(builder, apiType);
-                        builder.TryUseSharedApiScope(); // TODO: Maybe default to context scope?
+                        if (!builder.HasService<IApi>())
+                        {
+                            builder.Services
+                                .AddScoped(apiType, sp => sp.GetService<ApiScope>().Api)
+                                .AddScoped<IApi>(sp => sp.GetService<ApiScope>().Api)
+                                .AddScoped<ApiContext>(sp => sp.GetService<ApiScope>().Api.ApiContext)
+                                .AddScoped(sp => new ApiScope());
+                        }
 
                         configuration = this.CreateApiConfiguration(builder);
                         ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
@@ -94,7 +101,12 @@ namespace Microsoft.Restier.Core
                 {
                     this.apiContext = this.CreateApiContext(
                         this.ApiConfiguration);
-                    this.apiContext.SetProperty(typeof(Api).AssemblyQualifiedName, this);
+                    var apiScope = this.apiContext.GetApiService<ApiScope>();
+                    if (apiScope != null)
+                    {
+                        apiScope.Api = this;
+                    }
+
                     ApiConfiguratorAttribute.ApplyInitialization(
                         this.GetType(), this, this.apiContext);
                 }
@@ -114,7 +126,12 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public void Dispose()
         {
-            if (!this.IsDisposed && this.apiContext != null)
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
+            if (this.apiContext != null)
             {
                 ApiConfiguratorAttribute.ApplyDisposal(
                     this.GetType(), this, this.apiContext);
@@ -175,15 +192,11 @@ namespace Microsoft.Restier.Core
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
+            this.IsDisposed = true;
             if (this.apiContext != null)
             {
                 this.apiContext.DisposeScope();
-            }
-
-            if (disposing)
-            {
                 this.apiContext = null;
-                this.IsDisposed = true;
             }
         }
 
@@ -215,6 +228,14 @@ namespace Microsoft.Restier.Core
             ConventionBasedApiModelBuilder.ApplyTo(builder, targetType);
             ConventionBasedOperationProvider.ApplyTo(builder, targetType);
             ConventionBasedEntitySetFilter.ApplyTo(builder, targetType);
+        }
+
+        // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.
+        // If a descendant class wants to expose these 2 services in another way, it must ensure they could be
+        // resolved after CreateApiContext call.
+        private class ApiScope
+        {
+            public ApiBase Api { get; set; }
         }
     }
 }
