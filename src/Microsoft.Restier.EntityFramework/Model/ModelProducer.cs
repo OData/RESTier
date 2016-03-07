@@ -563,7 +563,8 @@ namespace Microsoft.Restier.EntityFramework.Model
             var columnAttribute = GetClrAttributes(efProperty).OfType<ColumnAttribute>().SingleOrDefault();
             if (columnAttribute != null)
             {
-                return columnAttribute.TypeName;
+                // Returns an empty string for ColumnTypeAttribute without TypeName specified.
+                return columnAttribute.TypeName ?? string.Empty;
             }
 
             return string.Empty;
