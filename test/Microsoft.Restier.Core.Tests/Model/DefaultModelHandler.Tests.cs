@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,6 +96,113 @@ namespace Microsoft.Restier.Core.Tests.Model
                 .SingleOrDefault(e => e.Name == "TestEntitySet2"));
             Assert.NotNull(model.EntityContainer.Elements
                 .SingleOrDefault(e => e.Name == "TestEntitySet3"));
+        }
+
+        private class TestSingleCallModelBuilder : IModelBuilder
+        {
+            public int CalledCount;
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                await Task.Delay(30);
+
+                Interlocked.Increment(ref CalledCount);
+                return new EdmModel();
+            }
+        }
+
+        private static Task<IEdmModel>[] PrepareThreads(int count, ApiConfiguration configuration, ManualResetEventSlim wait)
+        {
+            var tasks = new Task<IEdmModel>[count];
+            var result = Parallel.For(0, count, (inx, state) =>
+            {
+                var source = new TaskCompletionSource<IEdmModel>();
+                new Thread(() =>
+                {
+                    // To make threads better aligned.
+                    wait.Wait();
+
+                    var context = new ApiContext(configuration);
+                    try
+                    {
+                        var model = Api.GetModelAsync(context).Result;
+                        source.SetResult(model);
+                    }
+                    catch (Exception e)
+                    {
+                        source.SetException(e);
+                    }
+                }).Start();
+                tasks[inx] = source.Task;
+            });
+
+            Assert.True(result.IsCompleted);
+            return tasks;
+        }
+
+        [Fact]
+        public async Task ModelBuilderShouldBeCalledOnlyOnceIfSucceeded()
+        {
+            var builder = new ApiBuilder();
+            var service = new TestSingleCallModelBuilder();
+            builder.CutoffPrevious<IModelBuilder>(service);
+            var configuration = builder.Build();
+
+            using (var wait = new ManualResetEventSlim(false))
+            {
+                var tasks = PrepareThreads(50, configuration, wait);
+                wait.Set();
+
+                var models = await Task.WhenAll(tasks);
+                Assert.Equal(1, service.CalledCount);
+                Assert.True(models.All(e => e == models[42]));
+            }
+        }
+
+        private class TestRetryModelBuilder : IModelBuilder
+        {
+            public int CalledCount;
+
+            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            {
+                if (CalledCount++ == 0)
+                {
+                    await Task.Delay(100);
+                    throw new Exception("Deliberate failure");
+                }
+
+                return new EdmModel();
+            }
+        }
+
+        [Fact]
+        public async Task GetModelAsyncRetriableAfterFailure()
+        {
+            var builder = new ApiBuilder();
+            var service = new TestRetryModelBuilder();
+            builder.CutoffPrevious<IModelBuilder>(service);
+            var configuration = builder.Build();
+
+            using (var wait = new ManualResetEventSlim(false))
+            {
+                var tasks = PrepareThreads(6, configuration, wait);
+                wait.Set();
+
+                await Task.WhenAll(tasks).ContinueWith(t =>
+                {
+                    Assert.True(t.IsFaulted);
+                    Assert.True(tasks.All(e => e.IsFaulted));
+                });
+                Assert.Equal(1, service.CalledCount);
+
+                wait.Reset();
+                tasks = PrepareThreads(50, configuration, wait);
+                wait.Set();
+
+                var models = await Task.WhenAll(tasks);
+                Assert.Equal(2, service.CalledCount);
+                Assert.True(models.All(e => e == models[42]));
+            }
         }
     }
 }

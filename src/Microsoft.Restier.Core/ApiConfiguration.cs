@@ -2,9 +2,10 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
@@ -35,6 +36,8 @@ namespace Microsoft.Restier.Core
     {
         private IServiceProvider serviceProvider;
 
+        private Task<IEdmModel> modelTask;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiConfiguration" /> class.
         /// </summary>
@@ -54,7 +57,7 @@ namespace Microsoft.Restier.Core
             get { return serviceProvider; }
         }
 
-        internal IEdmModel Model { get; set; }
+        internal IEdmModel Model { get; private set; }
 
         /// <summary>
         /// Gets a service instance.
@@ -64,6 +67,47 @@ namespace Microsoft.Restier.Core
         public T GetApiService<T>() where T : class
         {
             return this.serviceProvider.GetService<T>();
+        }
+
+        internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)
+        {
+            var source = new TaskCompletionSource<IEdmModel>(TaskCreationOptions.AttachedToParent);
+            var exist = Interlocked.CompareExchange(ref modelTask, source.Task, null);
+            if (exist != null)
+            {
+                running = exist;
+                source.SetCanceled();
+                return null;
+            }
+
+            source.Task.ContinueWith(
+                task => FinishModelGeneration(task),
+                TaskContinuationOptions.ExecuteSynchronously);
+            running = null;
+            return source;
+        }
+
+        private void FinishModelGeneration(Task<IEdmModel> task)
+        {
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                ReplaceModelTask(Task.FromResult(task.Result), task);
+                Model = task.Result;
+            }
+            else
+            {
+                // Set modelTask null to allow retrying GetModelAsync.
+                ReplaceModelTask(null, task);
+            }
+        }
+
+        private void ReplaceModelTask(Task<IEdmModel> value, Task<IEdmModel> comparand)
+        {
+            var exist = Interlocked.CompareExchange(ref modelTask, value, comparand);
+            if (exist != comparand)
+            {
+                throw new InvalidOperationException("Unexpected: model task mismatch");
+            }
         }
     }
 }
