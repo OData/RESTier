@@ -166,13 +166,36 @@ namespace Microsoft.Restier.Core.Query
                     node = this.Filter(visited, node);
                 }
 
-                // If no processing occurred on the visited node
-                // and it represents API data, then it must be
-                // in its most primitive form, so source the node
-                if (visited == node &&
-                    this.context.ModelReference is ApiDataReference)
+                if (visited == node)
                 {
-                    node = this.Source(node);
+                    if (this.context.ModelReference is ApiDataReference)
+                    {
+                        // If no processing occurred on the visited node
+                        // and it represents API data, then it must be
+                        // in its most primitive form, so source the node
+                        node = this.Source(node);
+                    }
+
+                    if (this.BaseQuery == null)
+                    {
+                        // The very first time control reaches here, the
+                        // visited node represents the original starting
+                        // point for the entire composed query, and thus
+                        // it should produce a non-embedded expression.
+                        var constant = node as ConstantExpression;
+                        if (constant == null)
+                        {
+                            throw new NotSupportedException(Resources.OriginalExpressionShouldBeConstant);
+                        }
+
+                        this.BaseQuery = constant.Value as IQueryable;
+                        if (this.BaseQuery == null)
+                        {
+                            throw new NotSupportedException(Resources.OriginalExpressionShouldBeQueryable);
+                        }
+
+                        node = this.BaseQuery.Expression;
+                    }
                 }
 
                 // TODO GitHubIssue#28 : Support transformation between API types and data source proxy types
@@ -299,27 +322,6 @@ namespace Microsoft.Restier.Core.Query
                 {
                     // Missing source expression
                     throw new NotSupportedException(Resources.SourceExpressionMissing);
-                }
-
-                if (this.BaseQuery == null)
-                {
-                    // The very first time the sourcer is used, the
-                    // visited node represents the original starting
-                    // point for the entire composed query, and thus
-                    // it should produce a non-embedded expression.
-                    var constant = node as ConstantExpression;
-                    if (constant == null)
-                    {
-                        throw new NotSupportedException(Resources.OriginalExpressionShouldBeConstant);
-                    }
-
-                    this.BaseQuery = constant.Value as IQueryable;
-                    if (this.BaseQuery == null)
-                    {
-                        throw new NotSupportedException(Resources.OriginalExpressionShouldBeQueryable);
-                    }
-
-                    node = this.BaseQuery.Expression;
                 }
 
                 return node;
