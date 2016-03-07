@@ -66,7 +66,7 @@ namespace Microsoft.Restier.EntityFramework.Query
             long? totalCount = null;
             if (context.Request.IncludeTotalCount == true)
             {
-                var countQuery = ExpressionHelpers.StripPagingOperators(query);
+                var countQuery = ExpressionHelpers.GetCountableQuery(query);
                 totalCount = await countQuery.LongCountAsync(cancellationToken);
             }
 

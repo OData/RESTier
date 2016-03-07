@@ -328,8 +328,16 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             // skip
             people2 = this.TestClientContext.People.Skip(personId - 1).ToList();
             Assert.Equal(personId, people2.First().PersonId);
-
-            // TODO GitHubIssue#46 : case for $count=true
+            
+            // count
+            var countQuery = this.TestClientContext.People.IncludeTotalCount().Skip(1).Take(2) as DataServiceQuery<Person>;
+            var response = countQuery.Execute() as QueryOperationResponse<Person>;
+            Assert.Equal(response.TotalCount, 14);
+            
+            // count with expand
+            countQuery = this.TestClientContext.People.IncludeTotalCount().Expand("Friends").Skip(1).Take(2) as DataServiceQuery<Person>;
+            response = countQuery.Execute() as QueryOperationResponse<Person>;
+            Assert.Equal(response.TotalCount, 14);
         }
 
         [Fact]

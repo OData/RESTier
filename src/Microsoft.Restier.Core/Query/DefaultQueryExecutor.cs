@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Core.Query
             var result = new QueryResult(query.ToList());
             if (context.Request.IncludeTotalCount == true)
             {
-                result.TotalCount = ExpressionHelpers.StripPagingOperators(query).Count();
+                result.TotalCount = ExpressionHelpers.GetCountableQuery(query).Count();
             }
 
             return Task.FromResult(result);

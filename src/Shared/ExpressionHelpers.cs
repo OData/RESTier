@@ -8,8 +8,11 @@ namespace System.Linq.Expressions
 {
     internal static class ExpressionHelpers
     {
+        private const string MethodNameOfCreateQuery = "CreateQuery";
         private const string MethodNameOfQueryTake = "Take";
+        private const string MethodNameOfQuerySelect = "Select";
         private const string MethodNameOfQuerySkip = "Skip";
+        private const string ExpandClauseReflectedTypeName = "SelectExpandBinder";
 
         public static IQueryable Select(IQueryable query, LambdaExpression select)
         {
@@ -43,24 +46,43 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Remove paging methods for given IQueryable
+        /// Get count IQueryable of the elements with $skip/$top ignored
         /// </summary>
         /// <typeparam name="TElement">The type parameter for IQueryable</typeparam>
         /// <param name="query">The input query.</param>
-        /// <returns>The proceed query.</returns>
-        public static IQueryable<TElement> StripPagingOperators<TElement>(
+        /// <returns>The count IQueryable</returns>
+        public static IQueryable<object> GetCountableQuery<TElement>(
            IQueryable<TElement> query)
         {
             Ensure.NotNull(query, "query");
+            object countQuery = query;
             var expression = query.Expression;
+
+            // This is stripping select of expand and top select method is Source
+            expression = StripQueryMethod(expression, MethodNameOfQuerySelect);
             expression = StripQueryMethod(expression, MethodNameOfQueryTake);
             expression = StripQueryMethod(expression, MethodNameOfQuerySkip);
+
             if (expression != query.Expression)
             {
-                query = query.Provider.CreateQuery<TElement>(expression);
+                // If Type is Type<GenericType> to then GenericType will be returned.
+                // e.g. if type is SelectAllAndExpand<Namespace.Product>, then Namespace.Product will be returned.
+                Type elementType = GetSelectExpandElementType(typeof(TElement));
+
+                // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
+                Type thisType = query.Provider.GetType();
+
+                // Get the CreateQuery method information who accepts generic type
+                MethodInfo method = thisType.GetMethods()
+                    .Single(m => m.Name == MethodNameOfCreateQuery && m.IsGenericMethodDefinition);
+
+                // Replace method generic type with specified type.
+                MethodInfo generic = method.MakeGenericMethod(elementType);
+                countQuery = generic.Invoke(query.Provider, new object[] { expression });
             }
 
-            return query;
+            // This means there is no $expand/$skip/$top, return count directly
+            return (IQueryable<object>)countQuery;
         }
 
         internal static Type GetEnumerableItemType(this Type enumerableType)
@@ -85,6 +107,21 @@ namespace System.Linq.Expressions
             }
 
             return expression;
+        }
+
+        private static Type GetSelectExpandElementType(Type elementType)
+        {
+            // Get the generic type of a type. e.g. if type is SelectAllAndExpand<Namespace.Product>,
+            // then type Namespace.Product will be returned.
+            // Only generic type of expand clause will be retrieved to make the logic specified for $expand
+            var typeInfo = elementType.GetTypeInfo();
+            if (typeInfo.IsGenericType && typeInfo.ReflectedType != null
+                && typeInfo.ReflectedType.Name == ExpandClauseReflectedTypeName)
+            {
+                elementType = typeInfo.GenericTypeArguments[0];
+            }
+
+            return elementType;
         }
     }
 }
