@@ -150,12 +150,15 @@ namespace Microsoft.Restier.Core.Tests.Model
 
             using (var wait = new ManualResetEventSlim(false))
             {
-                var tasks = PrepareThreads(50, configuration, wait);
-                wait.Set();
+                for (int i = 0; i < 2; i++)
+                {
+                    var tasks = PrepareThreads(50, configuration, wait);
+                    wait.Set();
 
-                var models = await Task.WhenAll(tasks);
-                Assert.Equal(1, service.CalledCount);
-                Assert.True(models.All(e => e == models[42]));
+                    var models = await Task.WhenAll(tasks);
+                    Assert.Equal(1, service.CalledCount);
+                    Assert.True(models.All(e => e == models[42]));
+                }
             }
         }
 
@@ -195,9 +198,7 @@ namespace Microsoft.Restier.Core.Tests.Model
                 });
                 Assert.Equal(1, service.CalledCount);
 
-                wait.Reset();
-                tasks = PrepareThreads(50, configuration, wait);
-                wait.Set();
+                tasks = PrepareThreads(150, configuration, wait);
 
                 var models = await Task.WhenAll(tasks);
                 Assert.Equal(2, service.CalledCount);
