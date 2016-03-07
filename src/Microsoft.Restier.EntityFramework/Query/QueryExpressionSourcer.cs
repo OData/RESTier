@@ -37,14 +37,20 @@ namespace Microsoft.Restier.EntityFramework.Query
 
             if (context.ModelReference.EntitySet == null)
             {
-                // EF provider can only source DbSet property from EntitySet.
+                // EF provider can only source *EntitySet*.
                 return null;
             }
 
             var dbContext = context.QueryContext
                 .ApiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
             var dbSetProperty = dbContext.GetType().GetProperties()
-                .First(prop => prop.Name == context.ModelReference.EntitySet.Name);
+                .FirstOrDefault(prop => prop.Name == context.ModelReference.EntitySet.Name);
+            if (dbSetProperty == null)
+            {
+                // EF provider can only source EntitySet from *DbSet property*.
+                return null;
+            }
+
             if (!embedded)
             {
                 // TODO GitHubIssue#37 : Add API entity manager for tracking entities
