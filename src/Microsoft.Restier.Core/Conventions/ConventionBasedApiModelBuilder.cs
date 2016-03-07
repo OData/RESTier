@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core.Conventions
 
             builder.ChainPrevious<IModelBuilder, ModelBuilder>();
             builder.ChainPrevious<IModelMapper, ModelMapper>();
-            builder.CutoffPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
+            builder.ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
             builder.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
         }
 
@@ -411,6 +411,9 @@ namespace Microsoft.Restier.Core.Conventions
                 ModelCache = modelCache;
             }
 
+            /// <inheritdoc/>
+            public IQueryExpressionExpander InnerHandler { get; set; }
+
             private ConventionBasedApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
@@ -427,15 +430,23 @@ namespace Microsoft.Restier.Core.Conventions
                         var method = methodCall.Method;
                         if (method.DeclaringType == typeof(ApiData) && method.Name != "Value")
                         {
-                            return null;
+                            return CallInner(context);
                         }
                         else
                         {
                             return result.Expression;
                         }
                     }
+                }
 
-                    return null;
+                return CallInner(context);
+            }
+
+            private Expression CallInner(QueryExpressionContext context)
+            {
+                if (this.InnerHandler != null)
+                {
+                    return this.InnerHandler.Expand(context);
                 }
 
                 return null;
