@@ -33,15 +33,6 @@ namespace Microsoft.Restier.Security
         {
             Ensure.NotNull(context, "context");
 
-            if (this.InnerHandler != null)
-            {
-                var result = this.InnerHandler.Expand(context);
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
             if (context.ModelReference == null)
             {
                 return null;
@@ -84,7 +75,9 @@ namespace Microsoft.Restier.Security
                 };
             }
 
-            return context.VisitedNode;
+            // This class is used to activate and deactivate the policies
+            // thus it is NOT intended to actually expand any query here.
+            return null;
         }
     }
 }

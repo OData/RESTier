@@ -8,7 +8,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
@@ -367,6 +366,12 @@ namespace Microsoft.Restier.Core.Conventions
                 string name,
                 out Type relevantType)
             {
+                if (this.InnerModelMapper != null &&
+                    this.InnerModelMapper.TryGetRelevantType(context, name, out relevantType))
+                {
+                    return true;
+                }
+
                 relevantType = null;
                 var entitySetProperty = this.ModelCache.entitySetProperties.SingleOrDefault(p => p.Name == name);
                 if (entitySetProperty != null)
@@ -383,13 +388,7 @@ namespace Microsoft.Restier.Core.Conventions
                     }
                 }
 
-                if (relevantType != null)
-                {
-                    return true;
-                }
-
-                var innerHandler = InnerModelMapper;
-                return innerHandler != null && innerHandler.TryGetRelevantType(context, name, out relevantType);
+                return relevantType != null;
             }
 
             /// <inheritdoc/>
@@ -399,6 +398,12 @@ namespace Microsoft.Restier.Core.Conventions
                 string name,
                 out Type relevantType)
             {
+                if (this.InnerModelMapper != null &&
+                    this.InnerModelMapper.TryGetRelevantType(context, namespaceName, name, out relevantType))
+                {
+                    return true;
+                }
+
                 relevantType = null;
                 return false;
             }
@@ -458,27 +463,36 @@ namespace Microsoft.Restier.Core.Conventions
                 ModelCache = modelCache;
             }
 
-            public IQueryExpressionSourcer InnerQueryExpressionSourcer { get; set; }
+            public IQueryExpressionSourcer InnerHandler { get; set; }
 
             private ConventionBasedApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Source(QueryExpressionContext context, bool embedded)
             {
-                var innerHandler = InnerQueryExpressionSourcer;
-                if (innerHandler != null)
+                var result = CallInner(context, embedded);
+                if (result != null)
                 {
-                    var result = innerHandler.Source(context, embedded);
-                    if (result != null)
-                    {
-                        return result;
-                    }
+                    // Call the provider's sourcer to find the source of the query.
+                    return result;
                 }
 
+                // This sourcer ONLY deals with queries that cannot be addressed by the provider
+                // such as a singleton query that cannot be sourced by the EF provider, etc.
                 var query = ModelCache.GetEntitySetQuery(context) ?? ModelCache.GetSingletonQuery(context);
                 if (query != null)
                 {
                     return Expression.Constant(query);
+                }
+
+                return null;
+            }
+
+            private Expression CallInner(QueryExpressionContext context, bool embedded)
+            {
+                if (this.InnerHandler != null)
+                {
+                    return this.InnerHandler.Source(context, embedded);
                 }
 
                 return null;
