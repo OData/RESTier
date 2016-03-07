@@ -78,16 +78,40 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(context, "context");
             var config = context.Configuration;
-            if (config.Model == null)
+            if (config.Model != null)
             {
-                var builder = context.GetApiService<IModelBuilder>();
-                if (builder != null)
-                {
-                    config.Model = await builder.GetModelAsync(new InvocationContext(context), cancellationToken);
-                }
+                return config.Model;
             }
 
-            return config.Model;
+            var builder = context.GetApiService<IModelBuilder>();
+            if (builder == null)
+            {
+                return null;
+            }
+
+            Task<IEdmModel> running;
+            var source = config.CompeteModelGeneration(out running);
+            if (source == null)
+            {
+                return await running;
+            }
+
+            try
+            {
+                var model = await builder.GetModelAsync(new InvocationContext(context), cancellationToken);
+                source.SetResult(model);
+                return model;
+            }
+            catch (AggregateException e)
+            {
+                source.SetException(e.InnerExceptions);
+                throw;
+            }
+            catch (Exception e)
+            {
+                source.SetException(e);
+                throw;
+            }
         }
 
         #endregion
