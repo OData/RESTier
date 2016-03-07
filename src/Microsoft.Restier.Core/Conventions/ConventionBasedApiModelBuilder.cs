@@ -424,6 +424,8 @@ namespace Microsoft.Restier.Core.Conventions
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
             {
+                Ensure.NotNull(context, "context");
+
                 var result = CallInner(context);
                 if (result != null)
                 {

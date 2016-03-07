@@ -66,6 +66,7 @@ namespace Microsoft.Restier.Core
                     {
                         var builder = this.ConfigureApi(new ApiBuilder());
                         ApiConfiguratorAttribute.ApplyApiBuilder(apiType, builder);
+
                         // Make sure that all convention-based handlers are outermost.
                         EnableConventions(builder, apiType);
                         builder.TryUseSharedApiScope(); // TODO: Maybe default to context scope?

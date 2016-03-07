@@ -35,19 +35,19 @@ namespace Microsoft.Restier.Security
 
             if (context.ModelReference == null)
             {
-                return null;
+                return CallInner(context);
             }
 
             var apiDataReference = context.ModelReference as ApiDataReference;
             if (apiDataReference == null)
             {
-                return null;
+                return CallInner(context);
             }
 
             var entitySet = apiDataReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
-                return null;
+                return CallInner(context);
             }
 
             var target = context.QueryContext.ApiContext.GetProperty(
@@ -77,6 +77,16 @@ namespace Microsoft.Restier.Security
 
             // This class is used to activate and deactivate the policies
             // thus it is NOT intended to actually expand any query here.
+            return CallInner(context);
+        }
+
+        private Expression CallInner(QueryExpressionContext context)
+        {
+            if (this.InnerHandler != null)
+            {
+                return this.InnerHandler.Expand(context);
+            }
+
             return null;
         }
     }
