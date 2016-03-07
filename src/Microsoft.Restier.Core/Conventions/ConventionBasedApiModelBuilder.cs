@@ -419,27 +419,25 @@ namespace Microsoft.Restier.Core.Conventions
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
             {
-                IQueryable result = ModelCache.GetEntitySetQuery(context);
-
+                var result = CallInner(context);
                 if (result != null)
                 {
-                    // Only Expand to expression of method call on ApiData class
-                    var methodCall = result.Expression as MethodCallExpression;
-                    if (methodCall != null)
+                    return result;
+                }
+
+                // Ensure this query constructs from ApiData.
+                if (context.ModelReference is ApiDataReference)
+                {
+                    // Only expand entity set query which returns IQueryable<T>.
+                    var query = ModelCache.GetEntitySetQuery(context);
+                    if (query != null)
                     {
-                        var method = methodCall.Method;
-                        if (method.DeclaringType == typeof(ApiData) && method.Name != "Value")
-                        {
-                            return CallInner(context);
-                        }
-                        else
-                        {
-                            return result.Expression;
-                        }
+                        return query.Expression;
                     }
                 }
 
-                return CallInner(context);
+                // No expansion happened just return the node itself.
+                return context.VisitedNode;
             }
 
             private Expression CallInner(QueryExpressionContext context)
