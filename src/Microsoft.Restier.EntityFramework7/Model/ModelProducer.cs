@@ -109,7 +109,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         {
             var model = new EdmModel();
             var domainContext = context.ApiContext;
-            var dbContext = domainContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
+            var dbContext = domainContext.GetApiService<DbContext>();
             var elementMap = new Dictionary<IAnnotatable, IEdmElement>();
             var efModel = dbContext.Model;
             var namespaceName = efModel.EntityTypes
