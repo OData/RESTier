@@ -102,7 +102,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             Ensure.NotNull(context, "context");
             var model = new EdmModel();
             var apiContext = context.ApiContext;
-            var dbContext = apiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
+            var dbContext = apiContext.GetApiService<DbContext>();
             var elementMap = new Dictionary<MetadataItem, IEdmElement>();
             var efModel = (dbContext as IObjectContextAdapter)
                 .ObjectContext.MetadataWorkspace;
