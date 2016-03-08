@@ -7,6 +7,7 @@ using Microsoft.Data.Entity;
 #else
 using System.Data.Entity;
 #endif
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -41,7 +42,7 @@ namespace Microsoft.Restier.EntityFramework
         {
             get
             {
-                return this.ApiContext.GetProperty<T>(DbApiConstants.DbContextKey);
+                return this.ApiContext.GetApiService<T>();
             }
         }
 
@@ -56,71 +57,40 @@ namespace Microsoft.Restier.EntityFramework
         /// </returns>
         protected override ApiBuilder ConfigureApi(ApiBuilder builder)
         {
-            builder = base.ConfigureApi(builder);
-            builder.CutoffPrevious<IModelBuilder>(ModelProducer.Instance);
-            builder.CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)));
-            builder.CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
-            builder.CutoffPrevious<IQueryExecutor>(QueryExecutor.Instance);
-            builder.CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>();
-            builder.CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
-            return builder;
-        }
-
-        /// <summary>
-        /// Creates the API context for this API.
-        /// </summary>
-        /// <param name="configuration">
-        /// The API configuration to use.
-        /// </param>
-        /// <returns>
-        /// The API context for this API.
-        /// </returns>
-        protected override ApiContext CreateApiContext(
-            ApiConfiguration configuration)
-        {
-            var context = base.CreateApiContext(configuration);
-            var dbContext = this.CreateDbContext();
+            builder = base.ConfigureApi(builder)
+                .CutoffPrevious<IModelBuilder>(ModelProducer.Instance)
+                .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)))
+                .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
+                .CutoffPrevious<IQueryExecutor>(QueryExecutor.Instance)
+                .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
+                .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
+            builder.Services
+                .AddScoped<T>(sp =>
+                {
+                    var dbContext = this.CreateDbContext(sp);
 #if EF7
-            // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
+                    // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
 #else
-            dbContext.Configuration.ProxyCreationEnabled = false;
+                    dbContext.Configuration.ProxyCreationEnabled = false;
 #endif
-            context.SetProperty(DbApiConstants.DbContextKey, dbContext);
-            return context;
+                    return dbContext;
+                })
+                .AddScoped<DbContext>(sp => sp.GetService<T>());
+            return builder;
         }
 
         /// <summary>
         /// Creates the underlying DbContext used by this API.
         /// </summary>
+        /// <param name="serviceProvider">
+        /// The service container of the currently being created <see cref="ApiContext"/>.
+        /// </param>
         /// <returns>
         /// The underlying DbContext used by this API.
         /// </returns>
-        protected virtual T CreateDbContext()
+        protected virtual T CreateDbContext(IServiceProvider serviceProvider)
         {
             return Activator.CreateInstance<T>();
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources that are used by the
-        /// object and, optionally, releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        /// <c>true</c> to release both managed and unmanaged resources;
-        /// <c>false</c> to release only unmanaged resources.
-        /// </param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                var dbContext = this.ApiContext
-                    .GetProperty<DbContext>(DbApiConstants.DbContextKey);
-                if (dbContext != null)
-                {
-                    dbContext.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
         }
     }
 }
