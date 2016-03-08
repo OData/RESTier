@@ -7,14 +7,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Contains extension methods of <see cref="ApiBuilder"/>.
     /// </summary>
-    public static class ApiBuilderExtensions
+    public static partial class ApiBuilderExtensions
     {
         /// <summary>
         /// Return true if the <see cref="ApiBuilder"/> has any <typeparamref name="T"/> service registered.
@@ -63,21 +62,6 @@ namespace Microsoft.Restier.Core
 
             obj.Services.TryAddTransient<TImplement>();
             return obj.AddContributorNoCheck<TService>((sp, next) => sp.GetRequiredService<TImplement>());
-        }
-
-        /// <summary>
-        /// Adds a service instance of service type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="ApiBuilder"/>.</param>
-        /// <param name="instance">An instance of <typeparamref name="T"/>.</param>
-        /// <returns>Current <see cref="ApiBuilder"/></returns>
-        public static ApiBuilder AddInstance<T>(this ApiBuilder obj, T instance) where T : class
-        {
-            Ensure.NotNull(obj, "obj");
-
-            obj.Services.AddInstance<T>(instance);
-            return obj;
         }
 
         /// <summary>

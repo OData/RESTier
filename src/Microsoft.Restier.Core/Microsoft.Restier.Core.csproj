@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="ApiBuilder.cs" />
     <Compile Include="ApiBuilderExtensions.cs" />
+    <Compile Include="ApiBuilderExtensions.Wrapper.cs" />
     <Compile Include="Model\FunctionAttribute.cs" />
     <Compile Include="Model\ActionAttribute.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetAuthorizer.cs" />
