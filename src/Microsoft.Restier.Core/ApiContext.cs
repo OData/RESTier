@@ -31,7 +31,8 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(configuration, "configuration");
 
             this.Configuration = configuration;
-            this.contextScope = configuration.ServiceProvider.GetRequiredService<IApiScopeFactory>().CreateApiScope();
+            this.contextScope = configuration.ServiceProvider
+                .GetRequiredService<IServiceScopeFactory>().CreateScope();
         }
 
         /// <summary>

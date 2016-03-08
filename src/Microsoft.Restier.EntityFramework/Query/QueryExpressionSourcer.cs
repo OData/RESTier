@@ -41,8 +41,7 @@ namespace Microsoft.Restier.EntityFramework.Query
                 return null;
             }
 
-            var dbContext = context.QueryContext
-                .ApiContext.GetProperty<DbContext>(DbApiConstants.DbContextKey);
+            var dbContext = context.QueryContext.GetApiService<DbContext>();
             var dbSetProperty = dbContext.GetType().GetProperties()
                 .First(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (!embedded)

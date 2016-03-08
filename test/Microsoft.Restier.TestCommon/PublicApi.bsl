@@ -2,13 +2,6 @@ public interface Microsoft.Restier.Core.IApi : IDisposable {
 	Microsoft.Restier.Core.ApiContext Context  { public abstract get; }
 }
 
-[
-CLSCompliantAttribute(),
-]
-public interface Microsoft.Restier.Core.IApiScopeFactory {
-	Microsoft.Extensions.DependencyInjection.IServiceScope CreateApiScope ()
-}
-
 public abstract class Microsoft.Restier.Core.ApiBase : IDisposable, IApi {
 	protected ApiBase ()
 
@@ -179,26 +172,6 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	ExtensionAttribute(),
 	]
 	public static Microsoft.Restier.Core.ApiBuilder MakeTransient (Microsoft.Restier.Core.ApiBuilder obj)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static Microsoft.Restier.Core.ApiBuilder TryUseContextApiScope (Microsoft.Restier.Core.ApiBuilder obj)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static Microsoft.Restier.Core.ApiBuilder TryUseSharedApiScope (Microsoft.Restier.Core.ApiBuilder obj)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static Microsoft.Restier.Core.ApiBuilder UseContextApiScope (Microsoft.Restier.Core.ApiBuilder obj)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static Microsoft.Restier.Core.ApiBuilder UseSharedApiScope (Microsoft.Restier.Core.ApiBuilder obj)
 }
 
 [
@@ -285,9 +258,7 @@ public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.
 	T DbContext  { protected get; }
 
 	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
-	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
-	protected virtual T CreateDbContext ()
-	protected virtual void Dispose (bool disposing)
+	protected virtual T CreateDbContext (System.IServiceProvider serviceProvider)
 }
 
 [

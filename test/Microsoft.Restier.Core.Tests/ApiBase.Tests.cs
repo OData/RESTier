@@ -10,6 +10,32 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApi : ApiBase
         {
+            protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+            {
+                return base.ConfigureApi(builder)
+                    .MakeScoped<IService>()
+                    .CutoffPrevious<IService, Service>();
+            }
+        }
+
+        interface IService
+        {
+            IApi Api { get; }
+
+            ApiContext Context { get; }
+        }
+
+        class Service : IService
+        {
+            public IApi Api { get; set; }
+
+            public ApiContext Context { get; set; }
+
+            public Service(IApi api, ApiContext context)
+            {
+                Api = api;
+                Context = context;
+            }
         }
 
         [Fact]
@@ -18,6 +44,22 @@ namespace Microsoft.Restier.Core.Tests
             using (var api = new TestApi())
             {
                 api.Dispose();
+            }
+        }
+
+        [Fact]
+        public void ApiAndApiContextCanBeInjectedByDI()
+        {
+            using (var api = new TestApi())
+            {
+                var context = ((IApi)api).Context;
+                var svc = context.GetApiService<IService>();
+
+                Assert.True(svc.Api == api);
+                Assert.True(svc.Context == context);
+
+                api.Dispose();
+                Assert.Throws<ObjectDisposedException>(() => ((IApi)api).Context);
             }
         }
 

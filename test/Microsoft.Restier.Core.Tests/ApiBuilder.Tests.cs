@@ -107,23 +107,6 @@ namespace Microsoft.Restier.Core.Tests
         }
 
         [Fact]
-        public void SharedApiScopeWorksCorrectly()
-        {
-            var builder = new ApiBuilder()
-                .TryUseSharedApiScope()
-                .MakeScoped<ISomeService>()
-                .ChainPrevious<ISomeService>(next => new SomeService());
-
-            var configuration = builder.Build();
-            var service1 = configuration.GetApiService<ISomeService>();
-
-            var context = new ApiContext(configuration);
-            var service2 = context.GetApiService<ISomeService>();
-
-            Assert.Equal(service1, service2);
-        }
-
-        [Fact]
         public void ContextApiScopeWorksCorrectly()
         {
             var builder = new ApiBuilder()

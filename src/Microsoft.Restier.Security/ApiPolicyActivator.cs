@@ -59,8 +59,7 @@ namespace Microsoft.Restier.Security
                 return null;
             }
 
-            var target = context.QueryContext.ApiContext.GetProperty(
-                typeof(Api).AssemblyQualifiedName);
+            var target = context.QueryContext.GetApiService<IApi>();
             var entitySetProperty = target.GetType().GetProperties(
                 BindingFlags.Public | BindingFlags.Instance |
                 BindingFlags.Static | BindingFlags.DeclaredOnly)
