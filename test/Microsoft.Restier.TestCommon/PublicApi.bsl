@@ -258,9 +258,7 @@ public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.
 	T DbContext  { protected get; }
 
 	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
-	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
-	protected virtual T CreateDbContext ()
-	protected virtual void Dispose (bool disposing)
+	protected virtual T CreateDbContext (System.IServiceProvider serviceProvider)
 }
 
 [
