@@ -50,10 +50,14 @@ namespace Microsoft.Restier.Core.Conventions
             // some other services.
             builder.AddInstance(new ConventionBasedApiModelBuilder(targetType));
 
-            builder.ChainPrevious<IModelBuilder, ModelBuilder>();
-            builder.ChainPrevious<IModelMapper, ModelMapper>();
-            builder.ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
-            builder.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
+            builder.ChainPrevious<IModelBuilder>((sp, next) =>
+                new ModelBuilder(sp.GetService<ConventionBasedApiModelBuilder>(), next));
+            builder.ChainPrevious<IModelMapper>((sp, next) =>
+                new ModelMapper(sp.GetService<ConventionBasedApiModelBuilder>(), next));
+            builder.ChainPrevious<IQueryExpressionExpander>((sp, next) =>
+                new QueryExpressionExpander(sp.GetService<ConventionBasedApiModelBuilder>(), next));
+            builder.ChainPrevious<IQueryExpressionSourcer>((sp, next) =>
+                new QueryExpressionSourcer(sp.GetService<ConventionBasedApiModelBuilder>(), next));
         }
 
         private static bool IsEntitySetProperty(PropertyInfo property)
@@ -299,11 +303,12 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        internal class ModelBuilder : IModelBuilder
+        private class ModelBuilder : IModelBuilder
         {
-            public ModelBuilder(ConventionBasedApiModelBuilder modelCache)
+            public ModelBuilder(ConventionBasedApiModelBuilder modelCache, IModelBuilder next)
             {
                 ModelCache = modelCache;
+                InnerModelBuilder = next;
             }
 
             public IModelBuilder InnerModelBuilder { get; private set; }
@@ -350,16 +355,17 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        internal class ModelMapper : IModelMapper
+        private class ModelMapper : IModelMapper
         {
-            public ModelMapper(ConventionBasedApiModelBuilder modelCache)
+            public ModelMapper(ConventionBasedApiModelBuilder modelCache, IModelMapper next)
             {
                 ModelCache = modelCache;
+                InnerModelMapper = next;
             }
 
             public ConventionBasedApiModelBuilder ModelCache { get; set; }
 
-            private IModelMapper InnerModelMapper { get; set; }
+            public IModelMapper InnerModelMapper { get; set; }
 
             /// <inheritdoc/>
             public bool TryGetRelevantType(
@@ -404,11 +410,14 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        internal class QueryExpressionExpander : IQueryExpressionExpander
+        private class QueryExpressionExpander : IQueryExpressionExpander
         {
-            public QueryExpressionExpander(ConventionBasedApiModelBuilder modelCache)
+            public QueryExpressionExpander(
+                ConventionBasedApiModelBuilder modelCache,
+                IQueryExpressionExpander next)
             {
                 ModelCache = modelCache;
+                InnerHandler = next;
             }
 
             /// <inheritdoc/>
@@ -453,11 +462,14 @@ namespace Microsoft.Restier.Core.Conventions
             }
         }
 
-        internal class QueryExpressionSourcer : IQueryExpressionSourcer
+        private class QueryExpressionSourcer : IQueryExpressionSourcer
         {
-            public QueryExpressionSourcer(ConventionBasedApiModelBuilder modelCache)
+            public QueryExpressionSourcer(
+                ConventionBasedApiModelBuilder modelCache,
+                IQueryExpressionSourcer next)
             {
                 ModelCache = modelCache;
+                InnerQueryExpressionSourcer = next;
             }
 
             public IQueryExpressionSourcer InnerQueryExpressionSourcer { get; set; }

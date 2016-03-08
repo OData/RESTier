@@ -209,7 +209,8 @@ namespace Microsoft.Restier.Core
 
             ConventionBasedChangeSetAuthorizer.ApplyTo(builder, targetType);
             ConventionBasedChangeSetEntryFilter.ApplyTo(builder, targetType);
-            builder.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
+            builder.AddContributor<IChangeSetEntryValidator>(
+                (sp, next) => new ConventionBasedChangeSetEntryValidator());
             ConventionBasedApiModelBuilder.ApplyTo(builder, targetType);
             ConventionBasedOperationProvider.ApplyTo(builder, targetType);
             ConventionBasedEntitySetFilter.ApplyTo(builder, targetType);
