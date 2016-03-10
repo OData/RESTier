@@ -404,19 +404,15 @@ namespace Microsoft.Restier.WebApi
                         Resources.ResourceNotFound));
             }
 
-            if (this.shouldReturnCount || this.shouldWriteRawValue)
+            if (this.shouldWriteRawValue)
             {
-                // Query options don't apply to $count or $value.
+                // Query options don't apply to $value.
                 return queryable;
             }
 
             ODataQueryContext queryContext =
                 new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
-            if (queryOptions.Count != null)
-            {
-                this.includeTotalCount = queryOptions.Count.Value;
-            }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
             ODataQuerySettings settings = new ODataQuerySettings
@@ -424,6 +420,18 @@ namespace Microsoft.Restier.WebApi
                 HandleNullPropagation = HandleNullPropagationOption.False,
                 PageSize = null,  // no support for server enforced PageSize, yet
             };
+
+            if (this.shouldReturnCount)
+            {
+                // Query options other than $filter and $search don't apply to $count.
+                queryable = queryOptions.Filter.ApplyTo(queryable, settings);
+                return queryable;
+            }
+
+            if (queryOptions.Count != null)
+            {
+                this.includeTotalCount = queryOptions.Count.Value;
+            }
 
             // Entity count can NOT be evaluated at this point of time because the source
             // expression is just a placeholder to be replaced by the expression sourcer.
