@@ -324,14 +324,20 @@ namespace Microsoft.Restier.Core.Submit
             Expression where,
             KeyValuePair<string, object> item)
         {
-            MemberExpression name = Expression.Property(param, item.Key);
+            MemberExpression property = Expression.Property(param, item.Key);
             object itemValue = item.Value;
+
+            if (itemValue.GetType() != property.Type)
+            {
+                itemValue = Convert.ChangeType(itemValue, property.Type);
+            }
 
             // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary
             // Expression value = itemValue != null
             //     ? LinqParameterContainer.Parameterize(itemValue.GetType(), itemValue)
             //     : Expression.Constant(value: null);
-            BinaryExpression equal = Expression.Equal(name, Expression.Constant(item.Value));
+            var constant = Expression.Constant(itemValue, property.Type);
+            BinaryExpression equal = Expression.Equal(property, constant);
             return where == null ? equal : Expression.AndAlso(where, equal);
         }
     }
