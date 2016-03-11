@@ -40,9 +40,9 @@ namespace Microsoft.Restier.WebApi
         private const string ETagHeaderKey = "@etag";
 
         private IApi api;
-        private bool? includeTotalCount;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
+        private IQueryable countQuery;
 
         /// <summary>
         /// Gets the API associated with this controller.
@@ -76,15 +76,26 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            QueryRequest queryRequest = new QueryRequest(queryable, this.includeTotalCount)
+            QueryRequest queryRequest = new QueryRequest(queryable, false)
             {
                 ShouldReturnCount = this.shouldReturnCount
             };
-            QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
-            if (this.includeTotalCount == true)
+            Task<QueryResult> queryTask = Api.QueryAsync(queryRequest, cancellationToken);
+            if (this.countQuery != null)
             {
-                this.Request.ODataProperties().TotalCount = queryResult.TotalCount;
+                using (var api = this.Request.GetApiFactory()())
+                {
+                    var countRequst = new QueryRequest(this.countQuery, false)
+                    {
+                        ShouldReturnCount = true
+                    };
+
+                    var countResult = await api.QueryAsync(countRequst, cancellationToken);
+                    this.Request.ODataProperties().TotalCount = countResult.Results.Cast<long>().First();
+                }
             }
+
+            QueryResult queryResult = await queryTask;
 
             this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
 
@@ -428,9 +439,9 @@ namespace Microsoft.Restier.WebApi
                 return queryable;
             }
 
-            if (queryOptions.Count != null)
+            if (queryOptions.Count != null && queryOptions.Count.Value)
             {
-                this.includeTotalCount = queryOptions.Count.Value;
+                this.countQuery = queryOptions.Filter.ApplyTo(queryable, settings);
             }
 
             // Entity count can NOT be evaluated at this point of time because the source

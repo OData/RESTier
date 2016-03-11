@@ -63,16 +63,8 @@ namespace Microsoft.Restier.EntityFramework.Query
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-            long? totalCount = null;
-            if (context.Request.IncludeTotalCount == true)
-            {
-                var countQuery = ExpressionHelpers.GetCountableQuery(query);
-                totalCount = await countQuery.LongCountAsync(cancellationToken);
-            }
-
             return new QueryResult(
-                await query.ToArrayAsync(cancellationToken),
-                totalCount);
+                await query.ToArrayAsync(cancellationToken));
         }
 
         /// <summary>
