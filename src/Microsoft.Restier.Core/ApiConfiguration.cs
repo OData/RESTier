@@ -72,42 +72,30 @@ namespace Microsoft.Restier.Core
         internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)
         {
             var source = new TaskCompletionSource<IEdmModel>(TaskCreationOptions.AttachedToParent);
-            var exist = Interlocked.CompareExchange(ref modelTask, source.Task, null);
-            if (exist != null)
+            var runningTask = Interlocked.CompareExchange(ref modelTask, source.Task, null);
+            if (runningTask != null)
             {
-                running = exist;
+                running = runningTask;
                 source.SetCanceled();
                 return null;
             }
 
             source.Task.ContinueWith(
-                task => FinishModelGeneration(task),
+                task =>
+                {
+                    if (task.Status == TaskStatus.RanToCompletion)
+                    {
+                        Model = task.Result;
+                    }
+                    else
+                    {
+                        // Set modelTask null to allow retrying GetModelAsync.
+                        Interlocked.Exchange(ref modelTask, null);
+                    }
+                },
                 TaskContinuationOptions.ExecuteSynchronously);
             running = null;
             return source;
-        }
-
-        private void FinishModelGeneration(Task<IEdmModel> task)
-        {
-            if (task.Status == TaskStatus.RanToCompletion)
-            {
-                ReplaceModelTask(Task.FromResult(task.Result), task);
-                Model = task.Result;
-            }
-            else
-            {
-                // Set modelTask null to allow retrying GetModelAsync.
-                ReplaceModelTask(null, task);
-            }
-        }
-
-        private void ReplaceModelTask(Task<IEdmModel> value, Task<IEdmModel> comparand)
-        {
-            var exist = Interlocked.CompareExchange(ref modelTask, value, comparand);
-            if (exist != comparand)
-            {
-                throw new InvalidOperationException("Unexpected: model task mismatch");
-            }
         }
     }
 }

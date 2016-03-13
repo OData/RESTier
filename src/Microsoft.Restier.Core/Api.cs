@@ -86,7 +86,7 @@ namespace Microsoft.Restier.Core
             var builder = context.GetApiService<IModelBuilder>();
             if (builder == null)
             {
-                return null;
+                throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
             }
 
             Task<IEdmModel> running;

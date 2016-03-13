@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ApiConfigurationIsCommitted" xml:space="preserve">
-    <value>The specified `ApiConfiguration` is committed thus cannot be modified.</value>
-  </data>
-  <data name="ApiConfigurationShouldBeCommitted" xml:space="preserve">
-    <value>The specified `ApiConfiguration` should already be committed.</value>
-  </data>
   <data name="CallQueryableSourceNotSupported" xml:space="preserve">
     <value>Calling the methods in 'QueryableSource' or 'QueryableSource&lt;T&gt;' is not supported.</value>
   </data>
@@ -215,5 +209,8 @@
   </data>
   <data name="ValidationFailsTheOperation" xml:space="preserve">
     <value>The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information.</value>
+  </data>
+  <data name="ModelBuilderNotRegistered" xml:space="preserve">
+    <value>IEdmModel cannot be generated since API service IModelBuilder is not registered.</value>
   </data>
 </root>
