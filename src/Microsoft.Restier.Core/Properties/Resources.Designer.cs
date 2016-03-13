@@ -61,24 +61,6 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specified `ApiConfiguration` is committed thus cannot be modified..
-        /// </summary>
-        internal static string ApiConfigurationIsCommitted {
-            get {
-                return ResourceManager.GetString("ApiConfigurationIsCommitted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The specified `ApiConfiguration` should already be committed..
-        /// </summary>
-        internal static string ApiConfigurationShouldBeCommitted {
-            get {
-                return ResourceManager.GetString("ApiConfigurationShouldBeCommitted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Calling the methods in &apos;QueryableSource&apos; or &apos;QueryableSource&lt;T&gt;&apos; is not supported..
         /// </summary>
         internal static string CallQueryableSourceNotSupported {
@@ -228,6 +210,15 @@ namespace Microsoft.Restier.Core.Properties {
         internal static string InvalidChangeSetEntryType {
             get {
                 return ResourceManager.GetString("InvalidChangeSetEntryType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IEdmModel cannot be generated since API service IModelBuilder is not registered..
+        /// </summary>
+        internal static string ModelBuilderNotRegistered {
+            get {
+                return ResourceManager.GetString("ModelBuilderNotRegistered", resourceCulture);
             }
         }
         

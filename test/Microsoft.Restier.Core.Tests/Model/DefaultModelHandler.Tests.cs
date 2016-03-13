@@ -157,7 +157,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
                     var models = await Task.WhenAll(tasks);
                     Assert.Equal(1, service.CalledCount);
-                    Assert.True(models.All(e => e == models[42]));
+                    Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));
                 }
             }
         }
@@ -202,7 +202,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
                 var models = await Task.WhenAll(tasks);
                 Assert.Equal(2, service.CalledCount);
-                Assert.True(models.All(e => e == models[42]));
+                Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));
             }
         }
     }
