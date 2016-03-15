@@ -86,6 +86,13 @@ namespace Microsoft.Restier.Core.Query
             }
             else
             {
+                if (visitor.BaseQuery is EnumerableQuery)
+                {
+                    // Use the default query executor to handle query created
+                    // from IEnumerable<T> by calling query.ToList().
+                    executor = DefaultQueryExecutor.Instance;
+                }
+
                 var method = typeof(IQueryExecutor)
                     .GetMethod("ExecuteSingleAsync")
                     .MakeGenericMethod(expression.Type);

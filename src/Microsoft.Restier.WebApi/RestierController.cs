@@ -40,9 +40,9 @@ namespace Microsoft.Restier.WebApi
         private const string ETagHeaderKey = "@etag";
 
         private IApi api;
-        private bool? includeTotalCount;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
+        private IQueryable countQuery;
 
         /// <summary>
         /// Gets the API associated with this controller.
@@ -76,15 +76,18 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            QueryRequest queryRequest = new QueryRequest(queryable, this.includeTotalCount)
+            QueryRequest queryRequest = new QueryRequest(queryable, this.shouldReturnCount);
+            Task<QueryResult> queryTask = Api.QueryAsync(queryRequest, cancellationToken);
+            if (this.countQuery != null)
             {
-                ShouldReturnCount = this.shouldReturnCount
-            };
-            QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
-            if (this.includeTotalCount == true)
-            {
-                this.Request.ODataProperties().TotalCount = queryResult.TotalCount;
+                using (var api = this.Request.GetApiFactory()())
+                {
+                    this.Request.ODataProperties().TotalCount =
+                        await api.QueryCountAsync(this.countQuery, cancellationToken);
+                }
             }
+
+            QueryResult queryResult = await queryTask;
 
             this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
 
@@ -404,19 +407,15 @@ namespace Microsoft.Restier.WebApi
                         Resources.ResourceNotFound));
             }
 
-            if (this.shouldReturnCount || this.shouldWriteRawValue)
+            if (this.shouldWriteRawValue)
             {
-                // Query options don't apply to $count or $value.
+                // Query options don't apply to $value.
                 return queryable;
             }
 
             ODataQueryContext queryContext =
                 new ODataQueryContext(this.Request.ODataProperties().Model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
-            if (queryOptions.Count != null)
-            {
-                this.includeTotalCount = queryOptions.Count.Value;
-            }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
             ODataQuerySettings settings = new ODataQuerySettings
@@ -424,6 +423,21 @@ namespace Microsoft.Restier.WebApi
                 HandleNullPropagation = HandleNullPropagationOption.False,
                 PageSize = null,  // no support for server enforced PageSize, yet
             };
+
+            if (this.shouldReturnCount)
+            {
+                // Query options other than $filter and $search don't apply to $count.
+                queryable = queryOptions.ApplyTo(
+                    queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
+                return queryable;
+            }
+
+            if (queryOptions.Count != null && queryOptions.Count.Value)
+            {
+                // Query options other than $filter and $search don't apply to $count.
+                this.countQuery = queryOptions.ApplyTo(
+                    queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
+            }
 
             // Entity count can NOT be evaluated at this point of time because the source
             // expression is just a placeholder to be replaced by the expression sourcer.

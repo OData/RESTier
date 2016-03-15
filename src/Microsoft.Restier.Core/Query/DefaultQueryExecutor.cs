@@ -36,11 +36,6 @@ namespace Microsoft.Restier.Core.Query
         {
             Ensure.NotNull(context, "context");
             var result = new QueryResult(query.ToList());
-            if (context.Request.IncludeTotalCount == true)
-            {
-                result.TotalCount = ExpressionHelpers.GetCountableQuery(query).Count();
-            }
-
             return Task.FromResult(result);
         }
 

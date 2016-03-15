@@ -882,6 +882,9 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [InlineData("People/$count", "13")]
         [InlineData("People(1)/Friends/$count", "1")]
         [InlineData("Flights/$count", "4")]
+        [InlineData("People/$count?$filter=indexof(FirstName,'R') eq 0", "3")]
+        [InlineData("People/$count?$filter=indexof(FirstName,'R') eq 0&$top(1)", "3")]
+        [InlineData("People/$count?$filter=indexof(FirstName,'R') eq 0&$skip(1)&$top(1)", "3")]
         public void TestCountEntities(string uriStringAfterServiceRoot, string expectedString)
         {
             this.TestGetPayloadIs(uriStringAfterServiceRoot, expectedString);
