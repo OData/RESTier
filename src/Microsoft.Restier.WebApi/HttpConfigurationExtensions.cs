@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="apiFactory">The callback to create API instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapRestierRoute<TApi>(
+        public static Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
@@ -46,7 +46,7 @@ namespace Microsoft.Restier.WebApi
 
             using (var api = apiFactory())
             {
-                var model = await api.GetModelAsync();
+                var model = api.GetModelAsync().Result;
                 model.EnsurePayloadValueConverter();
                 var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
 
@@ -55,8 +55,9 @@ namespace Microsoft.Restier.WebApi
                     batchHandler.ApiFactory = apiFactory;
                 }
 
-                return config.MapODataServiceRoute(
+                var route = config.MapODataServiceRoute(
                     routeName, routePrefix, model, new DefaultODataPathHandler(), conventions, batchHandler);
+                return Task.FromResult(route);
             }
         }
 
