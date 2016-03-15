@@ -22,10 +22,12 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestTakeIncludeTotalCount()
         {
+            long totalCount = await this.api.QueryCountAsync(
+                this.OrdersQuery.OrderBy(o => o.OrderDate));
             QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10), true));
+                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10)));
 
-            Assert.Equal(830, result.TotalCount);
+            Assert.Equal(830, totalCount);
             var orderResults = result.Results.OfType<Order>();
             Assert.Equal(10, orderResults.Count());
         }
@@ -33,10 +35,12 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestSkipIncludeTotalCount()
         {
+            long totalCount = await this.api.QueryCountAsync(
+                this.OrdersQuery.OrderBy(o => o.OrderDate));
             QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10), true));
+                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10)));
 
-            Assert.Equal(830, result.TotalCount);
+            Assert.Equal(830, totalCount);
             var orderResults = result.Results.OfType<Order>();
             Assert.Equal(820, orderResults.Count());
         }
@@ -44,10 +48,12 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestSkipTakeIncludeTotalCount()
         {
+            long totalCount = await this.api.QueryCountAsync(
+                this.OrdersQuery.OrderBy(o => o.OrderDate));
             QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10).Take(25), true));
+                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10).Take(25)));
 
-            Assert.Equal(830, result.TotalCount);
+            Assert.Equal(830, totalCount);
             var orderResults = result.Results.OfType<Order>();
             Assert.Equal(25, orderResults.Count());
         }
@@ -59,10 +65,12 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestTakeNotStrippedIncludeTotalCount()
         {
+            long totalCount = await this.api.QueryCountAsync(
+                this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10));
             QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.Take(10).OrderBy(o => o.OrderDate), true));
+                new QueryRequest(this.OrdersQuery.Take(10).OrderBy(o => o.OrderDate)));
 
-            Assert.Equal(10, result.TotalCount);
+            Assert.Equal(10, totalCount);
             var orderResults = result.Results.OfType<Order>();
             Assert.Equal(10, orderResults.Count());
         }

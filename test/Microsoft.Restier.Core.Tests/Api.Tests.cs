@@ -427,7 +427,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
 
             var queryRequest = new QueryRequest(
-                api.Source<string>("Test"), true);
+                api.Source<string>("Test"));
             var queryResult = await api.QueryAsync(queryRequest);
             Assert.True(queryResult.Results.Cast<string>()
                 .SequenceEqual(new string[] { "Test" }));

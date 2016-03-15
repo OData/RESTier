@@ -71,6 +71,12 @@ public sealed class Microsoft.Restier.Core.Api {
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.IApi api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
+	[
+	AsyncStateMachineAttribute(),
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[System.Int64]] QueryCountAsync (Microsoft.Restier.Core.IApi api, System.Linq.IQueryable query, params System.Threading.CancellationToken cancellationToken)
+
 	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	[
@@ -464,21 +470,19 @@ public class Microsoft.Restier.Core.Query.QueryExpressionContext {
 }
 
 public class Microsoft.Restier.Core.Query.QueryRequest {
-	public QueryRequest (System.Linq.IQueryable query, params System.Nullable`1[[System.Boolean]] includeTotalCount)
+	public QueryRequest (System.Linq.IQueryable query, params System.Nullable`1[[System.Boolean]] shouldReturnCount)
 
 	System.Linq.Expressions.Expression Expression  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	System.Nullable`1[[System.Boolean]] IncludeTotalCount  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool ShouldReturnCount  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 
 public class Microsoft.Restier.Core.Query.QueryResult {
+	public QueryResult (System.Collections.IEnumerable results)
 	public QueryResult (System.Exception error)
-	public QueryResult (System.Collections.IEnumerable results, params System.Nullable`1[[System.Int64]] totalCount)
 
 	System.Exception Error  { public get; public set; }
 	System.Collections.IEnumerable Results  { public get; public set; }
 	Microsoft.OData.Edm.IEdmEntitySet ResultsSource  { public get; public set; }
-	System.Nullable`1[[System.Int64]] TotalCount  { public get; public set; }
 }
 
 public enum Microsoft.Restier.Core.Submit.AddAction : int {

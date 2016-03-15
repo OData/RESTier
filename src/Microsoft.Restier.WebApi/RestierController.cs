@@ -76,22 +76,14 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            QueryRequest queryRequest = new QueryRequest(queryable, false)
-            {
-                ShouldReturnCount = this.shouldReturnCount
-            };
+            QueryRequest queryRequest = new QueryRequest(queryable, this.shouldReturnCount);
             Task<QueryResult> queryTask = Api.QueryAsync(queryRequest, cancellationToken);
             if (this.countQuery != null)
             {
                 using (var api = this.Request.GetApiFactory()())
                 {
-                    var countRequst = new QueryRequest(this.countQuery, false)
-                    {
-                        ShouldReturnCount = true
-                    };
-
-                    var countResult = await api.QueryAsync(countRequst, cancellationToken);
-                    this.Request.ODataProperties().TotalCount = countResult.Results.Cast<long>().First();
+                    this.Request.ODataProperties().TotalCount =
+                        await api.QueryCountAsync(this.countQuery, cancellationToken);
                 }
             }
 
@@ -435,13 +427,16 @@ namespace Microsoft.Restier.WebApi
             if (this.shouldReturnCount)
             {
                 // Query options other than $filter and $search don't apply to $count.
-                queryable = queryOptions.Filter.ApplyTo(queryable, settings);
+                queryable = queryOptions.ApplyTo(
+                    queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
                 return queryable;
             }
 
             if (queryOptions.Count != null && queryOptions.Count.Value)
             {
-                this.countQuery = queryOptions.Filter.ApplyTo(queryable, settings);
+                // Query options other than $filter and $search don't apply to $count.
+                this.countQuery = queryOptions.ApplyTo(
+                    queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
             }
 
             // Entity count can NOT be evaluated at this point of time because the source

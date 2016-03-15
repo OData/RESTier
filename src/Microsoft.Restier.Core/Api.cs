@@ -460,6 +460,34 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
+        /// Asynchronously queries items count for data exposed by an API.
+        /// </summary>
+        /// <param name="api">
+        /// An API.
+        /// </param>
+        /// <param name="query">
+        /// A composed query that was derived from a queryable source.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// An optional cancellation token.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// whose result is count of the sequence of the query results.
+        /// </returns>
+        public static async Task<long> QueryCountAsync(
+            this IApi api,
+            IQueryable query,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Ensure.NotNull(api, "api");
+            var request = new QueryRequest(query, true);
+            var result = await Api.QueryAsync(
+                api.Context, request, cancellationToken);
+            return result.Results.Cast<long>().Single();
+        }
+
+        /// <summary>
         /// Asynchronously queries for data exposed by an API.
         /// </summary>
         /// <param name="api">
