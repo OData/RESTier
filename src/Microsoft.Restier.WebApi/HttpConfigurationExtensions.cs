@@ -14,6 +14,9 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Routing;
+using System.Web.Http.Routing;
+using System.Net.Http;
+using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.WebApi
 {
@@ -34,7 +37,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="apiFactory">The callback to create API instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapRestierRoute<TApi>(
+        public static Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
@@ -44,20 +47,24 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
-            using (var api = apiFactory())
+            HttpRouteCollection routes = config.Routes;
+            ////routePrefix = HttpConfigurationExtensions.RemoveTrailingSlash(routePrefix);
+            if (batchHandler != null && batchHandler.ApiFactory == null)
             {
-                var model = await api.GetModelAsync();
-                model.EnsurePayloadValueConverter();
-                var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
-
-                if (batchHandler != null && batchHandler.ApiFactory == null)
-                {
-                    batchHandler.ApiFactory = apiFactory;
-                }
-
-                return config.MapODataServiceRoute(
-                    routeName, routePrefix, model, new DefaultODataPathHandler(), conventions, batchHandler);
+                batchHandler.ApiFactory = apiFactory;
+                batchHandler.ODataRouteName = routeName;
+                string routeTemplate = string.IsNullOrEmpty(routePrefix) ?
+                    ODataRouteConstants.Batch : (routePrefix + '/' + ODataRouteConstants.Batch);
+                routes.MapHttpBatchRoute(routeName + "Batch", routeTemplate, batchHandler);
             }
+
+            var pathHandler = new DefaultODataPathHandler();
+            ////defaultODataPathHandler.ResolverSetttings = config.GetResolverSettings();
+
+            var pathConstraint = new RestierRouteConstraint(pathHandler, routeName, apiFactory);
+            ODataRoute oDataRoute = new ODataRoute(routePrefix, pathConstraint);
+            routes.Add(routeName, oDataRoute);
+            return Task.FromResult(oDataRoute);
         }
 
         /// <summary>
@@ -113,6 +120,80 @@ namespace Microsoft.Restier.WebApi
                 // User has not specified custom payload value converter
                 // so use RESTier's default converter.
                 model.SetPayloadValueConverter(RestierPayloadValueConverter.Default);
+            }
+        }
+
+        private class RestierRouteConstraint : IHttpRouteConstraint
+        {
+            public ODataPathRouteConstraint Inner { get; private set; }
+
+            public ODataPathRouteConstraint Placeholder { get; private set; }
+
+            public Func<IApi> ApiFactory { get; private set; }
+
+            public IEdmModel FinalModel { get; private set; }
+
+            public RestierRouteConstraint(IODataPathHandler pathHandler, string routeName, Func<IApi> apiFactory)
+            {
+                var conventions = ODataRoutingConventions.CreateDefault();
+                Placeholder = new ODataPathRouteConstraint(pathHandler, new EdmModel(), routeName, conventions);
+                ApiFactory = apiFactory;
+                Task.Delay(5000).ContinueWith(_ => TryInitModel());
+            }
+
+            public bool Match(
+                HttpRequestMessage request,
+                IHttpRoute route,
+                string parameterName,
+                IDictionary<string, object> values,
+                HttpRouteDirection routeDirection)
+            {
+                if (Inner != null)
+                {
+                    return Inner.Match(request, route, parameterName, values, routeDirection);
+                }
+
+                if (FinalModel == null)
+                {
+                    return Placeholder.Match(request, route, parameterName, values, routeDirection);
+                }
+
+                var config = request.GetConfiguration();
+                var conventions = ODataRoutingConventions.CreateDefault();
+                var attributeConvention = new AttributeRoutingConvention(
+                    FinalModel,
+                    config.Services.GetHttpControllerSelector().GetControllerMapping().Values);
+                conventions.Insert(0, attributeConvention);
+                conventions.Insert(1, new RestierRoutingConvention(ApiFactory));
+
+                Inner = new ODataPathRouteConstraint(
+                    Placeholder.PathHandler, FinalModel, Placeholder.RouteName, conventions);
+                Placeholder = null;
+                ApiFactory = null;
+
+                return Inner.Match(request, route, parameterName, values, routeDirection);
+            }
+
+            private void TryInitModel()
+            {
+                var api = ApiFactory();
+                api.GetModelAsync().ContinueWith(
+                    task =>
+                    {
+                        api.Dispose();
+                        if (task.Status == TaskStatus.RanToCompletion)
+                        {
+                            task.Result.EnsurePayloadValueConverter();
+                            FinalModel = task.Result;
+                            return;
+                        }
+
+                        // Retry get model
+                        Task.Delay(120).ContinueWith(
+                            _ => TryInitModel(),
+                            TaskContinuationOptions.ExecuteSynchronously);
+                    },
+                    TaskContinuationOptions.ExecuteSynchronously);
             }
         }
     }
