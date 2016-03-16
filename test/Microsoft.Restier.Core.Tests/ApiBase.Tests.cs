@@ -55,8 +55,8 @@ namespace Microsoft.Restier.Core.Tests
                 var context = ((IApi)api).Context;
                 var svc = context.GetApiService<IService>();
 
-                Assert.True(svc.Api == api);
-                Assert.True(svc.Context == context);
+                Assert.Same(svc.Api, api);
+                Assert.Same(svc.Context, context);
 
                 api.Dispose();
                 Assert.Throws<ObjectDisposedException>(() => ((IApi)api).Context);

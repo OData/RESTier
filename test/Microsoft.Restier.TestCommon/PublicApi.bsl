@@ -252,13 +252,18 @@ public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.Mult
 	public virtual T Invoke (System.IServiceProvider serviceProvider, Func`1 next)
 }
 
-public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {
+public class Microsoft.Restier.EntityFramework.DbApi`1 : DbApiBase`1, IDisposable, IApi {
 	public DbApi`1 ()
+
+	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
+}
+
+public class Microsoft.Restier.EntityFramework.DbApiBase`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {
+	public DbApiBase`1 ()
 
 	T DbContext  { protected get; }
 
 	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
-	protected virtual T CreateDbContext (System.IServiceProvider serviceProvider)
 }
 
 [

@@ -174,6 +174,7 @@ using System.Diagnostics.CodeAnalysis;
 #endregion
 
 #region CA1812 Uninstantiated internal classes
+[assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.ApiBase+ApiHolder")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.Conventions.ConventionBasedChangeSetEntryValidator")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.Conventions.ConventionBasedApiModelBuilder+QueryExpressionExpander")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.Conventions.ConventionBasedApiModelBuilder+QueryExpressionSourcer")]

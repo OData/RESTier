@@ -72,10 +72,10 @@ namespace Microsoft.Restier.Core
                         if (!builder.HasService<IApi>())
                         {
                             builder.Services
-                                .AddScoped(apiType, sp => sp.GetService<ApiScope>().Api)
-                                .AddScoped<IApi>(sp => sp.GetService<ApiScope>().Api)
-                                .AddScoped<ApiContext>(sp => sp.GetService<ApiScope>().Api.ApiContext)
-                                .AddScoped(sp => new ApiScope());
+                                .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
+                                .AddScoped<IApi>(sp => sp.GetService<ApiHolder>().Api)
+                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.ApiContext)
+                                .AddScoped<ApiHolder>();
                         }
 
                         configuration = this.CreateApiConfiguration(builder);
@@ -101,7 +101,7 @@ namespace Microsoft.Restier.Core
                 {
                     this.apiContext = this.CreateApiContext(
                         this.ApiConfiguration);
-                    var apiScope = this.apiContext.GetApiService<ApiScope>();
+                    var apiScope = this.apiContext.GetApiService<ApiHolder>();
                     if (apiScope != null)
                     {
                         apiScope.Api = this;
@@ -233,7 +233,7 @@ namespace Microsoft.Restier.Core
         // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.
         // If a descendant class wants to expose these 2 services in another way, it must ensure they could be
         // resolved after CreateApiContext call.
-        private class ApiScope
+        private class ApiHolder
         {
             public ApiBase Api { get; set; }
         }
