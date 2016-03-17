@@ -21,12 +21,12 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Usage", "CA2243:AttributeStringLiteralsShouldParseCorrectly", Justification = "AssemblyInformationalVersion could be string.")]
 
 #region CA1004 Generic method with type parameter
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#ChainPrevious`2(Microsoft.Restier.Core.IServiceCollection)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#CutoffPrevious`2(Microsoft.Restier.Core.IServiceCollection)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#HasService`1(Microsoft.Restier.Core.IServiceCollection)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#MakeSingleton`1(Microsoft.Restier.Core.IServiceCollection)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#MakeScoped`1(Microsoft.Restier.Core.IServiceCollection)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions.#MakeTransient`1(Microsoft.Restier.Core.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#ChainPrevious`2(Microsoft.Restier.Core.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#CutoffPrevious`2(Microsoft.Restier.Core.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#HasService`1(Microsoft.Restier.Core.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#MakeSingleton`1(Microsoft.Restier.Core.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#MakeScoped`1(Microsoft.Restier.Core.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#MakeTransient`1(Microsoft.Restier.Core.IServiceCollection)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.Query.IQueryExecutor.#ExecuteSingleAsync`1(Microsoft.Restier.Core.Query.QueryContext,System.Linq.IQueryable,System.Linq.Expressions.Expression,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.WebApi.HttpConfigurationExtensions.#MapRestierRoute`1(System.Web.Http.HttpConfiguration,System.String,System.String,System.Func`1<Microsoft.Restier.Core.IApi>,Microsoft.Restier.WebApi.Batch.RestierBatchHandler)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.WebApi.HttpConfigurationExtensions.#MapRestierRoute`1(System.Web.Http.HttpConfiguration,System.String,System.String,Microsoft.Restier.WebApi.Batch.RestierBatchHandler)")]
@@ -158,7 +158,6 @@ using System.Diagnostics.CodeAnalysis;
 #endregion
 
 #region CA2000 Dispose objects
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Core.ApiBuilderExtensions+SharedApiScopeFactory.#CreateApiScope()")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.RestierController`1.#GetSource(System.Web.OData.Routing.ODataPath,Microsoft.OData.Edm.IEdmEntityType&)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.RestierController`1.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.WebApi.RestierController.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType)")]

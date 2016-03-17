@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    public class ApiBuilderTests
+    public class ServiceConfigurationTests
     {
         interface ISomeService
         {
