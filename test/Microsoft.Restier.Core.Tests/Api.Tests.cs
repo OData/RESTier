@@ -94,6 +94,7 @@ namespace Microsoft.Restier.Core.Tests
                         var querySourcer = new TestQuerySourcer();
                         var changeSetPreparer = new TestChangeSetPreparer();
                         var submitExecutor = new TestSubmitExecutor();
+                        services.CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
                         services.CutoffPrevious<IModelBuilder>(modelBuilder);
                         services.CutoffPrevious<IModelMapper>(modelMapper);
                         services.CutoffPrevious<IQueryExpressionSourcer>(querySourcer);
