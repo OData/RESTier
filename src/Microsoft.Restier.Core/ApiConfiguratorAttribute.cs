@@ -33,14 +33,14 @@ namespace Microsoft.Restier.Core
         /// The API services registration.
         /// </param>
         [CLSCompliant(false)]
-        public static void ApplyApiBuilder(
+        public static void ApplyApiServices(
             Type type, IServiceCollection services)
         {
             Ensure.NotNull(type, "type");
             Ensure.NotNull(services, "services");
             if (type.BaseType != null)
             {
-                ApiConfiguratorAttribute.ApplyApiBuilder(
+                ApiConfiguratorAttribute.ApplyApiServices(
                     type.BaseType, services);
             }
 

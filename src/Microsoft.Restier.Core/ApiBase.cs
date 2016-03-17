@@ -68,7 +68,7 @@ namespace Microsoft.Restier.Core
                             IServiceCollection services = new ServiceCollection()
                                 .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
                             services = this.ConfigureApi(services);
-                            ApiConfiguratorAttribute.ApplyApiBuilder(apiType, services);
+                            ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
 
                             // Copy from pre-build registration.
                             ApiConfig.Configuration(apiType)(services);
