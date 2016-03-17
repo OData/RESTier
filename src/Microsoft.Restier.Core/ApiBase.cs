@@ -59,39 +59,38 @@ namespace Microsoft.Restier.Core
         {
             get
             {
-                if (this.apiConfiguration == null)
+                if (this.apiConfiguration != null)
                 {
-                    this.apiConfiguration = Configurations.GetOrAdd(
-                        this.GetType(),
-                        apiType =>
-                    {
-                            IServiceCollection services = new ServiceCollection()
-                                .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
-                            services = this.ConfigureApi(services);
-                            ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
+                    return this.apiConfiguration;
+                }
 
-                            // Copy from pre-build registration.
-                            ApiConfig.Configuration(apiType)(services);
+                return this.apiConfiguration = Configurations.GetOrAdd(
+                    this.GetType(),
+                    apiType =>
+                    {
+                        IServiceCollection services = new ServiceCollection()
+                            .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
+                        services = this.ConfigureApi(services);
+                        ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
+
+                        // Copy from pre-build registration.
+                        ApiConfig.Configuration(apiType)(services);
 
                         // Make sure that all convention-based handlers are outermost.
-                            EnableConventions(services, apiType);
-                            if (!services.HasService<IApi>())
+                        EnableConventions(services, apiType);
+                        if (!services.HasService<IApi>())
                         {
-                                services
+                            services.AddScoped<ApiHolder>()
                                 .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
-                                    .AddScoped<ApiBase>(sp => sp.GetService<ApiHolder>().Api)
+                                .AddScoped<ApiBase>(sp => sp.GetService<ApiHolder>().Api)
                                 .AddScoped<IApi>(sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.ApiContext)
-                                .AddScoped<ApiHolder>();
+                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.ApiContext);
                         }
 
-                            var configuration = this.CreateApiConfiguration(services);
+                        var configuration = this.CreateApiConfiguration(services);
                         ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
-                            return configuration;
-                        });
-                    }
-
-                return this.apiConfiguration;
+                        return configuration;
+                    });
             }
         }
 
