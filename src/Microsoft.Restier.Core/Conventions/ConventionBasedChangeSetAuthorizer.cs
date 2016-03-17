@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Submit;
 
@@ -26,12 +27,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            ApiBuilder builder,
+            IServiceCollection services,
             Type targetType)
         {
-            Ensure.NotNull(builder, "builder");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            builder.CutoffPrevious<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
+            services.CutoffPrevious<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
@@ -11,7 +12,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NewApiContextIsConfiguredCorrectly()
         {
-            var configuration = new ApiBuilder().Build();
+            var configuration = new ServiceCollection().BuildApiConfiguration();
             var context = new ApiContext(configuration);
             Assert.Same(configuration, context.Configuration);
         }

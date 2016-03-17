@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Expressions;
@@ -27,9 +28,9 @@ namespace Microsoft.Restier.Core.Conventions
 
         private IModelBuilder InnerHandler { get; set; }
 
-        public static void ApplyTo(ApiBuilder builder, Type targetType)
+        public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            builder.ChainPrevious<IModelBuilder>(next => new ConventionBasedOperationProvider(targetType)
+            services.ChainPrevious<IModelBuilder>(next => new ConventionBasedOperationProvider(targetType)
             {
                 InnerHandler = next,
             });

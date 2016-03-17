@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
@@ -10,9 +11,9 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApi : ApiBase
         {
-            protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                return base.ConfigureApi(builder)
+                return base.ConfigureApi(services)
                     .MakeScoped<IService>()
                     .CutoffPrevious<IService, Service>();
             }

@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Xunit;
@@ -27,29 +28,29 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ConfigurationRegistersHookPointsCorrectly()
         {
-            var builder = new ApiBuilder();
-            var configuration = builder.Build();
+            IServiceCollection services = new ServiceCollection();
+            var configuration = services.BuildApiConfiguration();
 
             Assert.Null(configuration.GetApiService<IHookA>());
             Assert.Null(configuration.GetApiService<IHookB>());
 
             var singletonHookPoint = new HookA();
-            builder.CutoffPrevious<IHookA>(singletonHookPoint);
-            configuration = builder.Build();
+            services.CutoffPrevious<IHookA>(singletonHookPoint);
+            configuration = services.BuildApiConfiguration();
             Assert.Same(singletonHookPoint, configuration.GetApiService<IHookA>());
             Assert.Null(configuration.GetApiService<IHookB>());
 
             var multiCastHookPoint1 = new HookB();
-            builder.CutoffPrevious<IHookB>(multiCastHookPoint1);
-            configuration = builder.Build();
+            services.CutoffPrevious<IHookB>(multiCastHookPoint1);
+            configuration = services.BuildApiConfiguration();
             Assert.Same(singletonHookPoint, configuration.GetApiService<IHookA>());
             Assert.Equal(multiCastHookPoint1, configuration.GetApiService<IHookB>());
 
-            builder = new ApiBuilder()
+            services = new ServiceCollection()
                 .CutoffPrevious<IHookB>(multiCastHookPoint1)
                 .ChainPrevious<IHookB, HookB>()
                 .AddInstance(new HookB());
-            configuration = builder.Build();
+            configuration = services.BuildApiConfiguration();
             var multiCastHookPoint2 = configuration.GetApiService<HookB>();
             var handler = configuration.GetApiService<IHookB>();
             Assert.Equal(multiCastHookPoint2, handler);
@@ -64,13 +65,13 @@ namespace Microsoft.Restier.Core.Tests
         {
             var q1 = new HookB("q1Pre", "q1Post");
             var q2 = new HookB("q2Pre", "q2Post");
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IHookB>(q1)
                 .ChainPrevious<IHookB>(next =>
                 {
                     q2.InnerHandler = next;
                     return q2;
-                }).Build();
+                }).BuildApiConfiguration();
 
             var handler = configuration.GetApiService<IHookB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
@@ -117,18 +118,18 @@ namespace Microsoft.Restier.Core.Tests
 
             public string GetStr()
             {
-                var builder = new StringBuilder();
-                builder.Append(this.preStr);
-                builder.Append("_");
+                var services = new StringBuilder();
+                services.Append(this.preStr);
+                services.Append("_");
 
                 if (this.InnerHandler != null)
                 {
-                    builder.Append(this.InnerHandler.GetStr());
+                    services.Append(this.InnerHandler.GetStr());
                 }
 
-                builder.Append(this.postStr);
-                builder.Append("_");
-                return builder.ToString();
+                services.Append(this.postStr);
+                services.Append("_");
+                return services.ToString();
             }
         }
     }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,11 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration : PropertyBag
     {
+        private static ConcurrentDictionary<Type, Action<IServiceCollection>> configurations =
+            new ConcurrentDictionary<Type, Action<IServiceCollection>>();
+
+        private static Action<IServiceCollection> emptyConfig = _ => { };
+
         private IServiceProvider serviceProvider;
 
         private Task<IEdmModel> modelTask;
@@ -60,6 +66,23 @@ namespace Microsoft.Restier.Core
         internal IEdmModel Model { get; private set; }
 
         /// <summary>
+        /// Adds a configuration procedure for API type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The API type.</typeparam>
+        /// <param name="configurationCallback">
+        /// An action that will be called during the configuration of <typeparamref name="T"/>.
+        /// </param>
+        [CLSCompliant(false)]
+        public static void Configure<T>(Action<IServiceCollection> configurationCallback)
+             where T : ApiBase
+        {
+            ApiConfiguration.configurations.AddOrUpdate(
+                typeof(T),
+                configurationCallback,
+                (type, existing) => existing + configurationCallback);
+        }
+
+        /// <summary>
         /// Gets a service instance.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
@@ -67,6 +90,17 @@ namespace Microsoft.Restier.Core
         public T GetApiService<T>() where T : class
         {
             return this.serviceProvider.GetService<T>();
+        }
+
+        internal static Action<IServiceCollection> Configuration(Type apiType)
+        {
+            Action<IServiceCollection> val;
+            if (ApiConfiguration.configurations.TryGetValue(apiType, out val))
+            {
+                return val;
+            }
+
+            return ApiConfiguration.emptyConfig;
         }
 
         internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)

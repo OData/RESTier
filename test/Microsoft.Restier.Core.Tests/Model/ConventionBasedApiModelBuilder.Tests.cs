@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.OData.Edm;
-using Xunit;
-using Microsoft.Restier.Core.Model;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core.Model;
+using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Xunit;
 
 namespace Microsoft.Restier.Core.Tests.Model
 {
@@ -179,9 +180,9 @@ namespace Microsoft.Restier.Core.Tests.Model
             get { return base.ApiContext; }
         }
 
-        protected override ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
+        protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
         {
-            return base.CreateApiConfiguration(builder)
+            return base.CreateApiConfiguration(services)
                 .IgnoreProperty("ApiConfiguration")
                 .IgnoreProperty("ApiContext");
         }
@@ -202,15 +203,15 @@ namespace Microsoft.Restier.Core.Tests.Model
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
-        protected override ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
+        protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
         {
-            return base.CreateApiConfiguration(builder)
+            return base.CreateApiConfiguration(services)
                 .IgnoreProperty("Invisible");
         }
 
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(builder)
+            return base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
@@ -239,9 +240,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class ApiD : ApiC
     {
-        protected override ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
+        protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
         {
-            return base.CreateApiConfiguration(builder).IgnoreProperty("People");
+            return base.CreateApiConfiguration(services).IgnoreProperty("People");
         }
     }
 
@@ -255,9 +256,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         public IQueryable<Person> People { get; set; }
         public IQueryable<Order> Orders { get; set; }
 
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(builder)
+            return base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
@@ -266,9 +267,9 @@ namespace Microsoft.Restier.Core.Tests.Model
     {
         public IQueryable<Customer> VipCustomers { get; set; }
 
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(builder)
+            return base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }
@@ -284,9 +285,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         public IQueryable<Customer> Customers { get; set; }
         public Customer Me2 { get; set; }
 
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(builder)
+            return base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
         }
     }

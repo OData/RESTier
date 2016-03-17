@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -23,30 +24,31 @@ namespace Microsoft.Restier.Core
 
         /// <summary>
         /// Applies configuration from any API configurator attributes
-        /// specified on an API type to an API builder.
+        /// specified on an API type to an API services.
         /// </summary>
         /// <param name="type">
         /// An API type.
         /// </param>
-        /// <param name="builder">
-        /// An API builder.
+        /// <param name="services">
+        /// The API services registration.
         /// </param>
+        [CLSCompliant(false)]
         public static void ApplyApiBuilder(
-            Type type, ApiBuilder builder)
+            Type type, IServiceCollection services)
         {
             Ensure.NotNull(type, "type");
-            Ensure.NotNull(builder, "builder");
+            Ensure.NotNull(services, "services");
             if (type.BaseType != null)
             {
                 ApiConfiguratorAttribute.ApplyApiBuilder(
-                    type.BaseType, builder);
+                    type.BaseType, services);
             }
 
             var attributes = type.GetCustomAttributes(
                 typeof(ApiConfiguratorAttribute), false);
             foreach (ApiConfiguratorAttribute attribute in attributes)
             {
-                attribute.ConfigureApi(builder, type);
+                attribute.ConfigureApi(services, type);
             }
         }
 
@@ -144,16 +146,17 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Configures an API builder.
+        /// Configures an API services.
         /// </summary>
-        /// <param name="builder">
-        /// An API builder.
+        /// <param name="services">
+        /// The API services registration.
         /// </param>
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
+        [CLSCompliant(false)]
         public virtual void ConfigureApi(
-            ApiBuilder builder,
+            IServiceCollection services,
             Type type)
         {
         }

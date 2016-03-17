@@ -9,8 +9,8 @@ public abstract class Microsoft.Restier.Core.ApiBase : IDisposable, IApi {
 	Microsoft.Restier.Core.ApiContext ApiContext  { protected get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]protected get; }
 
-	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
-	protected virtual Microsoft.Restier.Core.ApiConfiguration CreateApiConfiguration (Microsoft.Restier.Core.ApiBuilder builder)
+	protected virtual Microsoft.Restier.Core.IServiceCollection ConfigureApi (Microsoft.Restier.Core.IServiceCollection services)
+	protected virtual Microsoft.Restier.Core.ApiConfiguration CreateApiConfiguration (Microsoft.Restier.Core.IServiceCollection services)
 	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 	public virtual void Dispose ()
 	protected virtual void Dispose (bool disposing)
@@ -24,12 +24,12 @@ SerializableAttribute(),
 public abstract class Microsoft.Restier.Core.ApiConfiguratorAttribute : System.Attribute, _Attribute {
 	protected ApiConfiguratorAttribute ()
 
-	public static void ApplyApiBuilder (System.Type type, Microsoft.Restier.Core.ApiBuilder builder)
+	public static void ApplyApiBuilder (System.Type type, Microsoft.Restier.Core.IServiceCollection services)
 	public static void ApplyConfiguration (System.Type type, Microsoft.Restier.Core.ApiConfiguration configuration)
 	public static void ApplyDisposal (System.Type type, object instance, Microsoft.Restier.Core.ApiContext context)
 	public static void ApplyInitialization (System.Type type, object instance, Microsoft.Restier.Core.ApiContext context)
 	public virtual void Configure (Microsoft.Restier.Core.ApiConfiguration configuration, System.Type type)
-	public virtual void ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder, System.Type type)
+	public virtual void ConfigureApi (Microsoft.Restier.Core.IServiceCollection services, System.Type type)
 	public virtual void Dispose (Microsoft.Restier.Core.ApiContext context, System.Type type, object instance)
 	public virtual void Initialize (Microsoft.Restier.Core.ApiContext context, System.Type type, object instance)
 }
@@ -106,22 +106,22 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder AddContributor (Microsoft.Restier.Core.ApiBuilder obj, ApiServiceContributor`1 contributor)
+	public static Microsoft.Restier.Core.IServiceCollection AddContributor (Microsoft.Restier.Core.IServiceCollection obj, ApiServiceContributor`1 contributor)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder AddInstance (Microsoft.Restier.Core.ApiBuilder obj, T instance)
+	public static Microsoft.Restier.Core.IServiceCollection AddInstance (Microsoft.Restier.Core.IServiceCollection obj, T instance)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.IServiceCollection obj)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.ApiBuilder obj, System.Func`2[[Microsoft.Restier.Core.ApiBuilder],[System.IServiceProvider]] serviceProviderFactory)
+	public static Microsoft.Restier.Core.ApiConfiguration Build (Microsoft.Restier.Core.IServiceCollection obj, System.Func`2[[Microsoft.Restier.Core.IServiceCollection],[System.IServiceProvider]] serviceProviderFactory)
 
 	[
 	ExtensionAttribute(),
@@ -131,47 +131,47 @@ public sealed class Microsoft.Restier.Core.ApiBuilderExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder ChainPrevious (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.IServiceCollection ChainPrevious (Microsoft.Restier.Core.IServiceCollection obj)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder ChainPrevious (Microsoft.Restier.Core.ApiBuilder obj, Func`2 factory)
+	public static Microsoft.Restier.Core.IServiceCollection ChainPrevious (Microsoft.Restier.Core.IServiceCollection obj, Func`2 factory)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder ChainPrevious (Microsoft.Restier.Core.ApiBuilder obj, Func`3 factory)
+	public static Microsoft.Restier.Core.IServiceCollection ChainPrevious (Microsoft.Restier.Core.IServiceCollection obj, Func`3 factory)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder CutoffPrevious (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.IServiceCollection CutoffPrevious (Microsoft.Restier.Core.IServiceCollection obj)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder CutoffPrevious (Microsoft.Restier.Core.ApiBuilder obj, T handler)
+	public static Microsoft.Restier.Core.IServiceCollection CutoffPrevious (Microsoft.Restier.Core.IServiceCollection obj, T handler)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static bool HasService (Microsoft.Restier.Core.ApiBuilder obj)
+	public static bool HasService (Microsoft.Restier.Core.IServiceCollection obj)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder MakeScoped (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.IServiceCollection MakeScoped (Microsoft.Restier.Core.IServiceCollection obj)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder MakeSingleton (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.IServiceCollection MakeSingleton (Microsoft.Restier.Core.IServiceCollection obj)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiBuilder MakeTransient (Microsoft.Restier.Core.ApiBuilder obj)
+	public static Microsoft.Restier.Core.IServiceCollection MakeTransient (Microsoft.Restier.Core.IServiceCollection obj)
 }
 
 [
@@ -231,12 +231,12 @@ public class Microsoft.Restier.Core.PropertyBag {
 	public void SetProperty (string name, object value)
 }
 
-public sealed class Microsoft.Restier.Core.ApiBuilder {
-	public ApiBuilder ()
+public sealed class Microsoft.Restier.Core.IServiceCollection {
+	public IServiceCollection ()
 	[
 	CLSCompliantAttribute(),
 	]
-	public ApiBuilder (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+	public IServiceCollection (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	CLSCompliantAttribute(),
@@ -255,7 +255,7 @@ public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.Mult
 public class Microsoft.Restier.EntityFramework.DbApi`1 : DbApiBase`1, IDisposable, IApi {
 	public DbApi`1 ()
 
-	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
+	protected virtual Microsoft.Restier.Core.IServiceCollection ConfigureApi (Microsoft.Restier.Core.IServiceCollection services)
 }
 
 public class Microsoft.Restier.EntityFramework.DbApiBase`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {
@@ -263,7 +263,7 @@ public class Microsoft.Restier.EntityFramework.DbApiBase`1 : Microsoft.Restier.C
 
 	T DbContext  { protected get; }
 
-	protected virtual Microsoft.Restier.Core.ApiBuilder ConfigureApi (Microsoft.Restier.Core.ApiBuilder builder)
+	protected virtual Microsoft.Restier.Core.IServiceCollection ConfigureApi (Microsoft.Restier.Core.IServiceCollection services)
 }
 
 [

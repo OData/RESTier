@@ -53,7 +53,6 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="ApiBuilder.cs" />
     <Compile Include="ApiBuilderExtensions.cs" />
     <Compile Include="Model\FunctionAttribute.cs" />
     <Compile Include="Model\ActionAttribute.cs" />

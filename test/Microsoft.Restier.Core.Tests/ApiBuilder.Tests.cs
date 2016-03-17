@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Xunit;
@@ -49,7 +50,7 @@ namespace Microsoft.Restier.Core.Tests
         public void ContributorsAreCalledCorrectly()
         {
             int i = 0;
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
                     Next = next(),
@@ -72,7 +73,7 @@ namespace Microsoft.Restier.Core.Tests
                 })
                 .ChainPrevious<ISomeService, SomeService>();
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("03210", value);
         }
@@ -80,7 +81,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NextInjectedViaProperty()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
                     Next = next(),
@@ -89,7 +90,7 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService, SomeService>()
                 .MakeTransient<ISomeService>();
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
 
@@ -109,11 +110,11 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ContextApiScopeWorksCorrectly()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .MakeScoped<ISomeService>()
                 .ChainPrevious<ISomeService>(next => new SomeService());
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var service1 = configuration.GetApiService<ISomeService>();
 
             var context = new ApiContext(configuration);
@@ -138,7 +139,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NothingInjectedStillWorks()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
                     Next = next(),
@@ -147,7 +148,7 @@ namespace Microsoft.Restier.Core.Tests
                 .ChainPrevious<ISomeService, SomeServiceNoChain>()
                 .MakeTransient<ISomeService>();
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
 
@@ -195,13 +196,13 @@ namespace Microsoft.Restier.Core.Tests
             {
                 Value = 42,
             };
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .MakeTransient<ISomeService>()
                 .AddContributor<ISomeService>((sp, next) => first)
                 .ChainPrevious<ISomeService, SomeService2>()
                 .AddInstance<string>("Text");
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var expected = "Text42";
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
@@ -220,7 +221,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void DefaultValueInConstructorUsedIfNoService()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
                     Value = 2,
@@ -228,7 +229,7 @@ namespace Microsoft.Restier.Core.Tests
                 .MakeTransient<ISomeService>()
                 .ChainPrevious<ISomeService, SomeService2>();
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
 
@@ -273,7 +274,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void MultiInjectionViaConstructor()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
                     Value = 1,
@@ -290,7 +291,7 @@ namespace Microsoft.Restier.Core.Tests
                     Value = 2,
                 });
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
 
@@ -304,7 +305,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ThrowOnNoServiceFound()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
                     Value = 1,
@@ -317,7 +318,7 @@ namespace Microsoft.Restier.Core.Tests
                 .MakeTransient<string>()
                 .ChainPrevious<ISomeService, SomeService3>();
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             Assert.Throws<InvalidOperationException>(() =>
             {
                 configuration.GetApiService<ISomeService>();
@@ -335,7 +336,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NextInjectedWithInheritedField()
         {
-            var builder = new ApiBuilder()
+            var services = new ServiceCollection()
                 .MakeTransient<ISomeService>()
                 .AddContributor<ISomeService>((sp, next) => new SomeService()
                 {
@@ -347,7 +348,7 @@ namespace Microsoft.Restier.Core.Tests
                 })
                 .ChainPrevious<ISomeService, SomeService4>();
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var value = configuration.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
 

@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Conventions;
+using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using ApiConfig = Microsoft.Restier.Core.ApiConfiguration;
 
 namespace Microsoft.Restier.Core
 {
@@ -24,7 +25,7 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public abstract class ApiBase : IApi
     {
-        private static readonly IDictionary<Type, ApiConfiguration> Configurations =
+        private static readonly ConcurrentDictionary<Type, ApiConfiguration> Configurations =
             new ConcurrentDictionary<Type, ApiConfiguration>();
 
         private ApiConfiguration apiConfiguration;
@@ -60,31 +61,35 @@ namespace Microsoft.Restier.Core
             {
                 if (this.apiConfiguration == null)
                 {
-                    var apiType = this.GetType();
-                    ApiConfiguration configuration;
-                    if (!Configurations.TryGetValue(apiType, out configuration))
+                    this.apiConfiguration = Configurations.GetOrAdd(
+                        this.GetType(),
+                        apiType =>
                     {
-                        var builder = this.ConfigureApi(new ApiBuilder());
-                        ApiConfiguratorAttribute.ApplyApiBuilder(apiType, builder);
+                            IServiceCollection services = new ServiceCollection()
+                                .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
+                            services = this.ConfigureApi(services);
+                            ApiConfiguratorAttribute.ApplyApiBuilder(apiType, services);
+
+                            // Copy from pre-build registration.
+                            ApiConfig.Configuration(apiType)(services);
 
                         // Make sure that all convention-based handlers are outermost.
-                        EnableConventions(builder, apiType);
-                        if (!builder.HasService<IApi>())
+                            EnableConventions(services, apiType);
+                            if (!services.HasService<IApi>())
                         {
-                            builder.Services
+                                services
                                 .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
+                                    .AddScoped<ApiBase>(sp => sp.GetService<ApiHolder>().Api)
                                 .AddScoped<IApi>(sp => sp.GetService<ApiHolder>().Api)
                                 .AddScoped(sp => sp.GetService<ApiHolder>().Api.ApiContext)
                                 .AddScoped<ApiHolder>();
                         }
 
-                        configuration = this.CreateApiConfiguration(builder);
+                            var configuration = this.CreateApiConfiguration(services);
                         ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
-                        Configurations[apiType] = configuration;
+                            return configuration;
+                        });
                     }
-
-                    this.apiConfiguration = configuration;
-                }
 
                 return this.apiConfiguration;
             }
@@ -144,13 +149,14 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Configure services for this API.
         /// </summary>
-        /// <param name="builder">
-        /// The <see cref="ApiBuilder"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
         /// </param>
-        /// <returns>The <see cref="ApiBuilder"/>.</returns>
-        protected virtual ApiBuilder ConfigureApi(ApiBuilder builder)
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        [CLSCompliant(false)]
+        protected virtual IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return builder;
+            return services;
         }
 
         /// <summary>
@@ -158,13 +164,14 @@ namespace Microsoft.Restier.Core
         /// Descendants may override to use a customized DI container, or further configure the built
         /// <see cref="ApiConfiguration"/>.
         /// </summary>
-        /// <param name="builder">The <see cref="ApiBuilder"/> containing API service registrations.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/> containing API service registrations.</param>
         /// <returns>
         /// An <see cref="ApiConfiguration"/> with which to create the API configuration for this API.
         /// </returns>
-        protected virtual ApiConfiguration CreateApiConfiguration(ApiBuilder builder)
+        [CLSCompliant(false)]
+        protected virtual ApiConfiguration CreateApiConfiguration(IServiceCollection services)
         {
-            return builder.Build();
+            return services.BuildApiConfiguration();
         }
 
         /// <summary>
@@ -203,8 +210,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Enables code-based conventions for an API.
         /// </summary>
-        /// <param name="builder">
-        /// An API configuration.
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> containing API service registrations.
         /// </param>
         /// <param name="targetType">
         /// The type of a class on which code-based conventions are used.
@@ -216,18 +223,18 @@ namespace Microsoft.Restier.Core
         /// certain naming conventions.
         /// </remarks>
         private static void EnableConventions(
-            ApiBuilder builder,
+            IServiceCollection services,
             Type targetType)
         {
-            Ensure.NotNull(builder, "builder");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
 
-            ConventionBasedChangeSetAuthorizer.ApplyTo(builder, targetType);
-            ConventionBasedChangeSetEntryFilter.ApplyTo(builder, targetType);
-            builder.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
-            ConventionBasedApiModelBuilder.ApplyTo(builder, targetType);
-            ConventionBasedOperationProvider.ApplyTo(builder, targetType);
-            ConventionBasedEntitySetFilter.ApplyTo(builder, targetType);
+            ConventionBasedChangeSetAuthorizer.ApplyTo(services, targetType);
+            ConventionBasedChangeSetEntryFilter.ApplyTo(services, targetType);
+            services.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
+            ConventionBasedApiModelBuilder.ApplyTo(services, targetType);
+            ConventionBasedOperationProvider.ApplyTo(services, targetType);
+            ConventionBasedEntitySetFilter.ApplyTo(services, targetType);
         }
 
         // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
@@ -36,15 +37,15 @@ namespace Microsoft.Restier.WebApi.Test
 
     internal class StoreApi : ApiBase
     {
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            builder = base.ConfigureApi(builder);
-            builder.CutoffPrevious<IModelBuilder>(new TestModelProducer(StoreModel.Model));
-            builder.CutoffPrevious<IModelMapper>(new TestModelMapper());
-            builder.CutoffPrevious<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
-            builder.CutoffPrevious<IChangeSetPreparer>(new TestChangeSetPreparer());
-            builder.CutoffPrevious<ISubmitExecutor>(new TestSubmitExecutor());
-            return builder;
+            services = base.ConfigureApi(services);
+            services.CutoffPrevious<IModelBuilder>(new TestModelProducer(StoreModel.Model));
+            services.CutoffPrevious<IModelMapper>(new TestModelMapper());
+            services.CutoffPrevious<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
+            services.CutoffPrevious<IChangeSetPreparer>(new TestChangeSetPreparer());
+            services.CutoffPrevious<ISubmitExecutor>(new TestSubmitExecutor());
+            return services;
         }
     }
 
