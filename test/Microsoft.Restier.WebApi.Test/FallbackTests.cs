@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
@@ -94,13 +95,13 @@ namespace Microsoft.Restier.WebApi.Test
 
     internal class FallbackApi : ApiBase
     {
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            builder = base.ConfigureApi(builder);
-            builder.CutoffPrevious<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
-            builder.CutoffPrevious<IModelMapper>(new FallbackModelMapper());
-            builder.CutoffPrevious<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
-            return builder;
+            services = base.ConfigureApi(services);
+            services.CutoffPrevious<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
+            services.CutoffPrevious<IModelMapper>(new FallbackModelMapper());
+            services.CutoffPrevious<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
+            return services;
         }
 
         public IQueryable<Order> PreservedOrders

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
@@ -67,18 +68,18 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var builder = new ApiBuilder();
-            builder.CutoffPrevious<IModelBuilder>(new TestModelProducer());
-            builder.ChainPrevious<IModelBuilder>(next => new TestModelExtender(2)
+            var services = new ServiceCollection();
+            services.CutoffPrevious<IModelBuilder>(new TestModelProducer());
+            services.ChainPrevious<IModelBuilder>(next => new TestModelExtender(2)
             {
                 InnerHandler = next,
             });
-            builder.ChainPrevious<IModelBuilder>(next => new TestModelExtender(3)
+            services.ChainPrevious<IModelBuilder>(next => new TestModelExtender(3)
             {
                 InnerHandler = next,
             });
 
-            var configuration = builder.Build();
+            var configuration = services.BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
             var model = await Api.GetModelAsync(context);
@@ -143,10 +144,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task ModelBuilderShouldBeCalledOnlyOnceIfSucceeded()
         {
-            var builder = new ApiBuilder();
+            var services = new ServiceCollection();
             var service = new TestSingleCallModelBuilder();
-            builder.CutoffPrevious<IModelBuilder>(service);
-            var configuration = builder.Build();
+            services.CutoffPrevious<IModelBuilder>(service);
+            var configuration = services.BuildApiConfiguration();
 
             using (var wait = new ManualResetEventSlim(false))
             {
@@ -181,10 +182,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelAsyncRetriableAfterFailure()
         {
-            var builder = new ApiBuilder();
+            var services = new ServiceCollection();
             var service = new TestRetryModelBuilder();
-            builder.CutoffPrevious<IModelBuilder>(service);
-            var configuration = builder.Build();
+            services.CutoffPrevious<IModelBuilder>(service);
+            var configuration = services.BuildApiConfiguration();
 
             using (var wait = new ManualResetEventSlim(false))
             {

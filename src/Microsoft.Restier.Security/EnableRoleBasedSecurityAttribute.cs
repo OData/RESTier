@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.Security
@@ -17,17 +18,18 @@ namespace Microsoft.Restier.Security
         /// <summary>
         /// Configures an API configuration.
         /// </summary>
-        /// <param name="builder">
-        /// An API configuration builder.
+        /// <param name="services">
+        /// The API services registration.
         /// </param>
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
+        [CLSCompliant(false)]
         public override void ConfigureApi(
-            ApiBuilder builder,
+            IServiceCollection services,
             Type type)
         {
-            builder.EnableRoleBasedSecurity();
+            services.EnableRoleBasedSecurity();
         }
     }
 }

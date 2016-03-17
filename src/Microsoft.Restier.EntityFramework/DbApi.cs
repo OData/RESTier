@@ -40,17 +40,18 @@ namespace Microsoft.Restier.EntityFramework
         /// Configures <typeparamref name="T"/> to be instantiated with its parameter-less constructor,
         /// and ensures that proxy creation is suppressed under Entity Framework 6.
         /// </summary>
-        /// <param name="builder">
-        /// The <see cref="ApiBuilder"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
         /// </param>
         /// <returns>
-        /// The <see cref="ApiBuilder"/>.
+        /// The <see cref="IServiceCollection"/>.
         /// </returns>
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        [CLSCompliant(false)]
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            Ensure.NotNull(builder, "builder");
+            Ensure.NotNull(services, "services");
 
-            builder.Services.AddScoped(_ =>
+            services.AddScoped(_ =>
             {
                 var value = new T();
 #if EF7
@@ -60,7 +61,7 @@ namespace Microsoft.Restier.EntityFramework
 #endif
                 return value;
             });
-            return base.ConfigureApi(builder);
+            return base.ConfigureApi(services);
         }
     }
 
@@ -107,25 +108,26 @@ namespace Microsoft.Restier.EntityFramework
         /// Configures the API services for this API. Descendants may override this method to register
         /// <typeparamref name="T"/> as a scoped service.
         /// </summary>
-        /// <param name="builder">
-        /// The <see cref="ApiBuilder"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
         /// </param>
         /// <returns>
-        /// The <see cref="ApiBuilder"/>.
+        /// The <see cref="IServiceCollection"/>.
         /// </returns>
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        [CLSCompliant(false)]
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            builder = base.ConfigureApi(builder)
+            services = base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(ModelProducer.Instance)
                 .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)))
                 .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
                 .CutoffPrevious<IQueryExecutor>(QueryExecutor.Instance)
                 .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
                 .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
-            builder.Services
+            services
                 .AddScoped<DbContext>(sp => sp.GetService<T>())
                 .TryAddScoped<T>();
-            return builder;
+            return services;
         }
     }
 }

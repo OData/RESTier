@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
@@ -23,12 +24,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         /// <inheritdoc/>
         public static void ApplyTo(
-            ApiBuilder builder,
+            IServiceCollection services,
             Type targetType)
         {
-            Ensure.NotNull(builder, "builder");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            builder.CutoffPrevious<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
+            services.CutoffPrevious<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
         }
 
         /// <inheritdoc/>

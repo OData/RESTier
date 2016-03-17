@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Security;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Xunit;
@@ -31,9 +32,9 @@ namespace Microsoft.Restier.WebApi.Test
 
         private class ExcApi : StoreApi
         {
-            protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                return base.ConfigureApi(builder)
+                return base.ConfigureApi(services)
                     .CutoffPrevious<IQueryExpressionSourcer>(new FakeSourcer());
             }
         }

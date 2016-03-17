@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
@@ -39,20 +40,20 @@ namespace Microsoft.Restier.Core.Conventions
         }
 
         public static void ApplyTo(
-            ApiBuilder builder,
+            IServiceCollection services,
             Type targetType)
         {
-            Ensure.NotNull(builder, "builder");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
 
             // The model builder must maintain a singleton life time, for holding states and being injected into
             // some other services.
-            builder.AddInstance(new ConventionBasedApiModelBuilder(targetType));
+            services.AddInstance(new ConventionBasedApiModelBuilder(targetType));
 
-            builder.ChainPrevious<IModelBuilder, ModelBuilder>();
-            builder.ChainPrevious<IModelMapper, ModelMapper>();
-            builder.ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
-            builder.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
+            services.ChainPrevious<IModelBuilder, ModelBuilder>();
+            services.ChainPrevious<IModelMapper, ModelMapper>();
+            services.ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
+            services.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
         }
 
         private static bool IsEntitySetProperty(PropertyInfo property)

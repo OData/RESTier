@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
@@ -66,9 +67,9 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             return 0.0;
         }
 
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(builder)
+            return base.ConfigureApi(services)
                 .ChainPrevious<IModelBuilder, NorthwindModelExtender>();
         }
 

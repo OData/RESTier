@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
@@ -118,9 +119,9 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             get { return this.Source<Person>("People").Where(p => p.PersonId >= 2); }
         }
 
-        protected override ApiBuilder ConfigureApi(ApiBuilder builder)
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(builder)
+            return base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(new ModelBuilder());
         }
 
@@ -128,9 +129,9 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
         {
             public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
             {
-                var builder = new ODataConventionModelBuilder();
-                builder.EntityType<Person>();
-                return Task.FromResult(builder.GetEdmModel());
+                var services = new ODataConventionModelBuilder();
+                services.EntityType<Person>();
+                return Task.FromResult(services.GetEdmModel());
             }
         }
     }

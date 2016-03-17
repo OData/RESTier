@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
@@ -87,18 +88,18 @@ namespace Microsoft.Restier.Core.Tests
                 {
                     if (_context == null)
                     {
-                        var builder = new ApiBuilder();
+                        var services = new ServiceCollection();
                         var modelBuilder = new TestModelBuilder();
                         var modelMapper = new TestModelMapper();
                         var querySourcer = new TestQuerySourcer();
                         var changeSetPreparer = new TestChangeSetPreparer();
                         var submitExecutor = new TestSubmitExecutor();
-                        builder.CutoffPrevious<IModelBuilder>(modelBuilder);
-                        builder.CutoffPrevious<IModelMapper>(modelMapper);
-                        builder.CutoffPrevious<IQueryExpressionSourcer>(querySourcer);
-                        builder.CutoffPrevious<IChangeSetPreparer>(changeSetPreparer);
-                        builder.CutoffPrevious<ISubmitExecutor>(submitExecutor);
-                        _context = new ApiContext(builder.Build());
+                        services.CutoffPrevious<IModelBuilder>(modelBuilder);
+                        services.CutoffPrevious<IModelMapper>(modelMapper);
+                        services.CutoffPrevious<IQueryExpressionSourcer>(querySourcer);
+                        services.CutoffPrevious<IChangeSetPreparer>(changeSetPreparer);
+                        services.CutoffPrevious<ISubmitExecutor>(submitExecutor);
+                        _context = new ApiContext(services.BuildApiConfiguration());
                     }
 
                     return _context;
@@ -135,7 +136,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
-            var configuration = new ApiBuilder().Build();
+            var configuration = new ServiceCollection().BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -146,9 +147,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfEntityContainerElementIsCorrect()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -195,7 +196,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
-            var configuration = new ApiBuilder().Build();
+            var configuration = new ServiceCollection().BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -206,9 +207,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfComposableFunctionIsCorrect()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -257,9 +258,9 @@ namespace Microsoft.Restier.Core.Tests
         public void GenericSourceOfEntityContainerElementThrowsIfWrongType()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -270,9 +271,9 @@ namespace Microsoft.Restier.Core.Tests
         public void GenericSourceOfEntityContainerElementIsCorrect()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -321,9 +322,9 @@ namespace Microsoft.Restier.Core.Tests
         public void GenericSourceOfComposableFunctionThrowsIfWrongType()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -334,9 +335,9 @@ namespace Microsoft.Restier.Core.Tests
         public void GenericSourceOfComposableFunctionIsCorrect()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
@@ -363,9 +364,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceQueryableCannotGenericEnumerate()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
@@ -376,9 +377,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceQueryableCannotEnumerate()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
@@ -389,9 +390,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceQueryProviderCannotGenericExecute()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
@@ -402,9 +403,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceQueryProviderCannotExecute()
         {
             var modelMapper = new TestModelMapper();
-            var configuration = new ApiBuilder()
+            var configuration = new ServiceCollection()
                 .CutoffPrevious<IModelMapper>(modelMapper)
-                .Build();
+                .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
             var source = Api.Source<string>(context, "Test");
