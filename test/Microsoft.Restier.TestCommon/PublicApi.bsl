@@ -256,17 +256,8 @@ public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.Mult
 	public virtual T Invoke (System.IServiceProvider serviceProvider, Func`1 next)
 }
 
-public class Microsoft.Restier.EntityFramework.DbApi`1 : DbApiBase`1, IDisposable, IApi {
+public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {
 	public DbApi`1 ()
-
-	[
-	CLSCompliantAttribute(),
-	]
-	protected virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-}
-
-public class Microsoft.Restier.EntityFramework.DbApiBase`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {
-	public DbApiBase`1 ()
 
 	T DbContext  { protected get; }
 
@@ -274,6 +265,8 @@ public class Microsoft.Restier.EntityFramework.DbApiBase`1 : Microsoft.Restier.C
 	CLSCompliantAttribute(),
 	]
 	protected virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+
+	protected virtual T CreateDbContext (System.IServiceProvider serviceProvider)
 }
 
 [

@@ -20,52 +20,6 @@ using Microsoft.Restier.EntityFramework.Submit;
 namespace Microsoft.Restier.EntityFramework
 {
     /// <summary>
-    /// Represents an API over a DbContext, which will be instantiated with a parameter-less constructor.
-    /// </summary>
-    /// <typeparam name="T">The DbContext type, which has a parameter-less constructor.</typeparam>
-#if EF7
-    [CLSCompliant(false)]
-#endif
-    public class DbApi<T> : DbApiBase<T>
-        where T : DbContext, new()
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbApi{T}" /> class.
-        /// </summary>
-        public DbApi()
-        {
-        }
-
-        /// <summary>
-        /// Configures <typeparamref name="T"/> to be instantiated with its parameter-less constructor,
-        /// and ensures that proxy creation is suppressed under Entity Framework 6.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IServiceCollection"/>.
-        /// </returns>
-        [CLSCompliant(false)]
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
-        {
-            Ensure.NotNull(services, "services");
-
-            services.AddScoped(_ =>
-            {
-                var value = new T();
-#if EF7
-                // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
-#else
-                value.Configuration.ProxyCreationEnabled = false;
-#endif
-                return value;
-            });
-            return base.ConfigureApi(services);
-        }
-    }
-
-    /// <summary>
     /// Represents an API over a DbContext.
     /// </summary>
     /// <typeparam name="T">The DbContext type.</typeparam>
@@ -73,26 +27,15 @@ namespace Microsoft.Restier.EntityFramework
     /// <para>
     /// This class tries to instantiate <typeparamref name="T"/> with the best matched constructor
     /// base on services configured. Descendants could override by registering <typeparamref name="T"/>
-    /// as a scoped service.
-    /// </para>
-    /// <para>
-    /// To better work with <see cref="DbApiBase{T}"/>, it's recommended to suppress proxy creation in
-    /// constructors of <typeparamref name="T"/>, under Entity Framework 6.
+    /// as a scoped service. But in this case, proxy creation must be disabled in the constructors of
+    /// <typeparamref name="T"/> under Entity Framework 6.
     /// </para>
     /// </remarks>
 #if EF7
     [CLSCompliant(false)]
 #endif
-    public class DbApiBase<T> : ApiBase
-        where T : DbContext
+    public class DbApi<T> : ApiBase where T : DbContext
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbApiBase{T}" /> class.
-        /// </summary>
-        public DbApiBase()
-        {
-        }
-
         /// <summary>
         /// Gets the underlying DbContext for this API.
         /// </summary>
@@ -125,9 +68,33 @@ namespace Microsoft.Restier.EntityFramework
                 .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
                 .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
             services
+                .AddScoped<T>(sp =>
+                {
+                    var dbContext = this.CreateDbContext(sp);
+#if EF7
+                    // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
+#else
+                    dbContext.Configuration.ProxyCreationEnabled = false;
+#endif
+                    return dbContext;
+                })
                 .AddScoped<DbContext>(sp => sp.GetService<T>())
                 .TryAddScoped<T>();
             return services;
+        }
+
+        /// <summary>
+        /// Creates the underlying DbContext used by this API.
+        /// </summary>
+        /// <param name="serviceProvider">
+        /// The service container of the currently being created <see cref="ApiContext"/>.
+        /// </param>
+        /// <returns>
+        /// The underlying DbContext used by this API.
+        /// </returns>
+        protected virtual T CreateDbContext(IServiceProvider serviceProvider)
+        {
+            return Activator.CreateInstance<T>();
         }
     }
 }
