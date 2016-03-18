@@ -146,7 +146,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     // Only visit the visited node's children if
                     // the visited node represents API data
-                    if (!(this.context.ModelReference is ApiDataReference))
+                    if (!(this.context.ModelReference is DataSourceStubReference))
                     {
                         // Visit visited node's children
                         node = base.Visit(visited);
@@ -157,7 +157,7 @@ namespace Microsoft.Restier.Core.Query
 
                     // Try to expand the visited node
                     // if it represents API data
-                    if (this.context.ModelReference is ApiDataReference)
+                    if (this.context.ModelReference is DataSourceStubReference)
                     {
                         node = this.Expand(visited);
                     }
@@ -168,7 +168,7 @@ namespace Microsoft.Restier.Core.Query
 
                 if (visited == node)
                 {
-                    if (this.context.ModelReference is ApiDataReference)
+                    if (this.context.ModelReference is DataSourceStubReference)
                     {
                         // If no processing occurred on the visited node
                         // and it represents API data, then it must be

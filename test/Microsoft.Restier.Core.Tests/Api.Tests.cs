@@ -123,7 +123,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -159,7 +159,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -181,7 +181,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -220,7 +220,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -244,7 +244,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -283,7 +283,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
@@ -306,7 +306,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
@@ -348,7 +348,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof(ApiData), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStubs), methodCall.Method.DeclaringType);
             Assert.Equal("Source", methodCall.Method.Name);
             Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);

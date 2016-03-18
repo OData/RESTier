@@ -6,48 +6,48 @@ using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
-    public class ApiDataTests
+    public class DataSourceStubsTests
     {
         [Fact]
         public void SourceOfEntityContainerElementIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Source<object>("EntitySet"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Source<object>("EntitySet"));
         }
 
         [Fact]
         public void SourceOfComposableFunctionIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Source<object>("Namespace", "Function"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Source<object>("Namespace", "Function"));
         }
 
         [Fact]
         public void ResultsOfEntityContainerElementIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Results<object>("EntitySet"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Results<object>("EntitySet"));
         }
 
         [Fact]
         public void ResultOfEntityContainerElementIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Result<object>("Singleton"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Result<object>("Singleton"));
         }
 
         [Fact]
         public void ResultsOfComposableFunctionIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Results<object>("Namespace", "Function"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Results<object>("Namespace", "Function"));
         }
 
         [Fact]
         public void ResultOfComposableFunctionIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Result<object>("Namespace", "Function"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Result<object>("Namespace", "Function"));
         }
 
         [Fact]
         public void ValueIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => ApiData.Value<object>(new object(), "Property"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Value<object>(new object(), "Property"));
         }
     }
 }

@@ -133,11 +133,11 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do not call the methods in &apos;ApiData&apos; directly..
+        ///   Looks up a localized string similar to Do not call the methods in &apos;DataSourceStubs&apos; directly..
         /// </summary>
-        internal static string DoNotCallApiDataDirectly {
+        internal static string DoNotCallDataSourceStubDirectly {
             get {
-                return ResourceManager.GetString("DoNotCallApiDataDirectly", resourceCulture);
+                return ResourceManager.GetString("DoNotCallDataSourceStubDirectly", resourceCulture);
             }
         }
         

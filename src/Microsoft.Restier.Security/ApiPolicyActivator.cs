@@ -38,13 +38,13 @@ namespace Microsoft.Restier.Security
                 return CallInner(context);
             }
 
-            var apiDataReference = context.ModelReference as ApiDataReference;
-            if (apiDataReference == null)
+            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            if (dataSourceStubReference == null)
             {
                 return CallInner(context);
             }
 
-            var entitySet = apiDataReference.Element as IEdmEntitySet;
+            var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return CallInner(context);

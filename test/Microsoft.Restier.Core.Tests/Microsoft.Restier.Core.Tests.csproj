@@ -72,7 +72,7 @@
     <Compile Include="PropertyBag.Tests.cs" />
     <Compile Include="ApiContext.Tests.cs" />
     <Compile Include="InvocationContext.Tests.cs" />
-    <Compile Include="ApiData.Tests.cs" />
+    <Compile Include="DataSourceStubs.Tests.cs" />
     <Compile Include="Api.Tests.cs" />
     <Compile Include="ApiBase.Tests.cs" />
   </ItemGroup>

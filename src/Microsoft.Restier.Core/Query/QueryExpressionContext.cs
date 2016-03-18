@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryExpressionContext
     {
-        private const string MethodNameOfApiDataValue = "Value";
+        private const string MethodNameOfDataSourceStubValue = "Value";
 
         private Stack<Expression> visitedNodes = new Stack<Expression>();
         private IDictionary<Expression, QueryModelReference> modelReferences =
@@ -177,10 +177,10 @@ namespace Microsoft.Restier.Core.Query
             if (methodCall != null)
             {
                 var method = methodCall.Method;
-                if (method.DeclaringType == typeof(ApiData) &&
-                    method.Name != MethodNameOfApiDataValue)
+                if (method.DeclaringType == typeof(DataSourceStubs) &&
+                    method.Name != MethodNameOfDataSourceStubValue)
                 {
-                    modelReference = ComputeApiDataReference(methodCall);
+                    modelReference = ComputeDataSourceStubReference(methodCall);
                 }
                 else if (method.GetCustomAttributes<ExtensionAttribute>().Any())
                 {
@@ -238,10 +238,10 @@ namespace Microsoft.Restier.Core.Query
             return modelReference;
         }
 
-        private ApiDataReference ComputeApiDataReference(
+        private DataSourceStubReference ComputeDataSourceStubReference(
             MethodCallExpression methodCall)
         {
-            ApiDataReference modelReference = null;
+            DataSourceStubReference modelReference = null;
             ConstantExpression namespaceName = null;
             ConstantExpression name = null;
             var argumentIndex = 0;
@@ -258,12 +258,12 @@ namespace Microsoft.Restier.Core.Query
                 {
                     if (namespaceName == null)
                     {
-                        modelReference = new ApiDataReference(
+                        modelReference = new DataSourceStubReference(
                             this.QueryContext, nameValue);
                     }
                     else
                     {
-                        modelReference = new ApiDataReference(
+                        modelReference = new DataSourceStubReference(
                             this.QueryContext,
                             namespaceName.Value as string,
                             nameValue);

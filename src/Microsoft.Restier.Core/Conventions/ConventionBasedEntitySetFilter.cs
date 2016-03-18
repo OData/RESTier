@@ -41,13 +41,13 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
 
-            var apiDataReference = context.ModelReference as ApiDataReference;
-            if (apiDataReference == null)
+            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            if (dataSourceStubReference == null)
             {
                 return null;
             }
 
-            var entitySet = apiDataReference.Element as IEdmEntitySet;
+            var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;

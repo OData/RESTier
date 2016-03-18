@@ -76,13 +76,13 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
 
-            var apiDataReference = context.ModelReference as ApiDataReference;
-            if (apiDataReference == null)
+            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            if (dataSourceStubReference == null)
             {
                 return null;
             }
 
-            var entitySet = apiDataReference.Element as IEdmEntitySet;
+            var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
                 return null;
@@ -117,13 +117,13 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
 
-            var apiDataReference = context.ModelReference as ApiDataReference;
-            if (apiDataReference == null)
+            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            if (dataSourceStubReference == null)
             {
                 return null;
             }
 
-            var singleton = apiDataReference.Element as IEdmSingleton;
+            var singleton = dataSourceStubReference.Element as IEdmSingleton;
             if (singleton == null)
             {
                 return null;
@@ -431,8 +431,8 @@ namespace Microsoft.Restier.Core.Conventions
                     return result;
                 }
 
-                // Ensure this query constructs from ApiData.
-                if (context.ModelReference is ApiDataReference)
+                // Ensure this query constructs from DataSourceStubs.
+                if (context.ModelReference is DataSourceStubReference)
                 {
                     // Only expand entity set query which returns IQueryable<T>.
                     var query = ModelCache.GetEntitySetQuery(context);

@@ -68,7 +68,7 @@
     <Compile Include="ApiConfiguration.cs" />
     <Compile Include="ApiConfigurationExtensions.cs" />
     <Compile Include="ApiContext.cs" />
-    <Compile Include="ApiData.cs" />
+    <Compile Include="DataSourceStubs.cs" />
     <Compile Include="ApiConfiguratorAttribute.cs" />
     <Compile Include="IApi.cs" />
     <Compile Include="InvocationContext.cs" />

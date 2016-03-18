@@ -125,7 +125,7 @@ public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
 	public static Microsoft.Restier.Core.ApiConfiguration IgnoreProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
 }
 
-public sealed class Microsoft.Restier.Core.ApiData {
+public sealed class Microsoft.Restier.Core.DataSourceStubs {
 	public static TResult Result (string name, object[] arguments)
 	public static TResult Result (string namespaceName, string name, object[] arguments)
 	public static IEnumerable`1 Results (string name, object[] arguments)
@@ -391,18 +391,18 @@ public abstract class Microsoft.Restier.Core.Query.QueryModelReference {
 	Microsoft.OData.Edm.IEdmType Type  { public abstract get; }
 }
 
-public class Microsoft.Restier.Core.Query.ApiDataReference : Microsoft.Restier.Core.Query.QueryModelReference {
-	public ApiDataReference (Microsoft.Restier.Core.Query.QueryContext context, string name)
-	public ApiDataReference (Microsoft.Restier.Core.Query.QueryContext context, string namespaceName, string name)
-
-	Microsoft.OData.Edm.IEdmElement Element  { public get; }
-	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
-	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
-}
-
 public class Microsoft.Restier.Core.Query.CollectionElementReference : Microsoft.Restier.Core.Query.DerivedDataReference {
 	public CollectionElementReference (Microsoft.Restier.Core.Query.QueryModelReference source)
 
+	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
+}
+
+public class Microsoft.Restier.Core.Query.DataSourceStubReference : Microsoft.Restier.Core.Query.QueryModelReference {
+	public DataSourceStubReference (Microsoft.Restier.Core.Query.QueryContext context, string name)
+	public DataSourceStubReference (Microsoft.Restier.Core.Query.QueryContext context, string namespaceName, string name)
+
+	Microsoft.OData.Edm.IEdmElement Element  { public get; }
+	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
 }
 

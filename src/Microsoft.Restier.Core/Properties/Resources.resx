@@ -141,8 +141,8 @@
   <data name="DataModificationRequiresEntityKey" xml:space="preserve">
     <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
   </data>
-  <data name="DoNotCallApiDataDirectly" xml:space="preserve">
-    <value>Do not call the methods in 'ApiData' directly.</value>
+  <data name="DoNotCallDataSourceStubDirectly" xml:space="preserve">
+    <value>Do not call the methods in 'DataSourceStubs' directly.</value>
   </data>
   <data name="ElementTypeNotFound" xml:space="preserve">
     <value>Element type cannot be found for '{0}'.</value>

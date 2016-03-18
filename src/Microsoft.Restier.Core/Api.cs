@@ -28,11 +28,11 @@ namespace Microsoft.Restier.Core
             .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
             .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
 
-        private static readonly MethodInfo Source2Method = typeof(ApiData)
+        private static readonly MethodInfo Source2Method = typeof(DataSourceStubs)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 2);
 
-        private static readonly MethodInfo Source3Method = typeof(ApiData)
+        private static readonly MethodInfo Source3Method = typeof(DataSourceStubs)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);
 

@@ -9,14 +9,15 @@ using Microsoft.Restier.Core.Properties;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// Represents methods that identify API data.
+    /// Represents method stubs that identify API data source.
     /// </summary>
     /// <remarks>
-    /// The methods in this class are placeholders that identify API data
-    /// in a normalized manner inside a query expression. This enables query
-    /// hook points to identify and reason about the referenced API data.
+    /// The methods in this class are stubs that identify API data source
+    /// inside a query expression. This is a generic way to reference a
+    /// data source in API. Later in the query pipeline the sourcer from
+    /// the data provider will replace the stub with the actual data source.
     /// </remarks>
-    public static class ApiData
+    public static class DataSourceStubs
     {
         /// <summary>
         /// Identifies an entity set, singleton or queryable data
@@ -39,7 +40,7 @@ namespace Microsoft.Restier.Core
         public static IQueryable<TElement> Source<TElement>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Core
         public static IQueryable<TElement> Source<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace Microsoft.Restier.Core
         public static IEnumerable<TElement> Results<TElement>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace Microsoft.Restier.Core
         public static TResult Result<TResult>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace Microsoft.Restier.Core
         public static IEnumerable<TElement> Results<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace Microsoft.Restier.Core
         public static TResult Result<TResult>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
 
         /// <summary>
@@ -182,7 +183,7 @@ namespace Microsoft.Restier.Core
         public static TResult Value<TResult>(
             object source, string propertyName)
         {
-            throw new InvalidOperationException(Resources.DoNotCallApiDataDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
         }
     }
 }
