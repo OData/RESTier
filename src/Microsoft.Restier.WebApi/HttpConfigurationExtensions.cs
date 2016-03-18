@@ -9,10 +9,13 @@ using System.Web.Http;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Query;
 using Microsoft.Restier.WebApi.Routing;
 
 namespace Microsoft.Restier.WebApi
@@ -44,6 +47,11 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
+            ApiConfiguration.Configure<TApi>(services =>
+            {
+                services.AddScoped<WebApiContext>()
+                    .ChainPrevious<IQueryExecutor, QueryExecutorWebApi>();
+            });
             using (var api = apiFactory())
             {
                 var model = api.GetModelAsync().Result;
