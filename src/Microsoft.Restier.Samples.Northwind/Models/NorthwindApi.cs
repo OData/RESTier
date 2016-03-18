@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
     [Grant(ApiPermissionType.All, On = "ResetDataSource")]
     public class NorthwindApi : DbApi<NorthwindContext>
     {
-        public NorthwindContext Context { get { return DbContext; } }
+        public new NorthwindContext Context { get { return DbContext; } }
 
         // Imperative views. Currently CUD operations not supported
         public IQueryable<Product> ExpensiveProducts

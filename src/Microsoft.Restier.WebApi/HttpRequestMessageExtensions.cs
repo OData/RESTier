@@ -41,14 +41,14 @@ namespace Microsoft.Restier.WebApi
         /// </summary>
         /// <param name="request">The HTTP request.</param>
         /// <returns>The API factory.</returns>
-        internal static Func<IApi> GetApiFactory(this HttpRequestMessage request)
+        internal static Func<ApiBase> GetApiFactory(this HttpRequestMessage request)
         {
             Ensure.NotNull(request, "request");
 
             object value;
             if (request.Properties.TryGetValue(ApiFactoryKey, out value))
             {
-                return value as Func<IApi>;
+                return value as Func<ApiBase>;
             }
 
             return null;
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.WebApi
         /// </summary>
         /// <param name="request">The HTTP request.</param>
         /// <param name="apiFactory">The API factory.</param>
-        internal static void SetApiFactory(this HttpRequestMessage request, Func<IApi> apiFactory)
+        internal static void SetApiFactory(this HttpRequestMessage request, Func<ApiBase> apiFactory)
         {
             Ensure.NotNull(request, "request");
             Ensure.NotNull(apiFactory, "apiFactory");

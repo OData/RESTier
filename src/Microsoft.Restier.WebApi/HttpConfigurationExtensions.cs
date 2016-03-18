@@ -38,7 +38,7 @@ namespace Microsoft.Restier.WebApi
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            Func<IApi> apiFactory,
+            Func<ApiBase> apiFactory,
             RestierBatchHandler batchHandler = null)
             where TApi : ApiBase
         {
@@ -89,7 +89,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="apiFactory">The API factory.</param>
         /// <returns>The routing conventions created.</returns>
         private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
-            this HttpConfiguration config, IEdmModel model, Func<IApi> apiFactory)
+            this HttpConfiguration config, IEdmModel model, Func<ApiBase> apiFactory)
         {
             var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
             var index = 0;

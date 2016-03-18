@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core
     /// API type to avoid re-computing it on each invocation.
     /// </para>
     /// </remarks>
-    public abstract class ApiBase : IApi
+    public abstract class ApiBase : IDisposable
     {
         private static readonly ConcurrentDictionary<Type, ApiConfiguration> Configurations =
             new ConcurrentDictionary<Type, ApiConfiguration>();
@@ -39,7 +39,10 @@ namespace Microsoft.Restier.Core
             this.Dispose(false);
         }
 
-        ApiContext IApi.Context
+        /// <summary>
+        /// Gets the API context for this API.
+        /// </summary>
+        public ApiContext Context
         {
             get
             {
@@ -48,7 +51,21 @@ namespace Microsoft.Restier.Core
                     throw new ObjectDisposedException(this.GetType().FullName);
                 }
 
-                return this.ApiContext;
+                if (this.apiContext == null)
+                {
+                    this.apiContext = this.CreateApiContext(
+                        this.ApiConfiguration);
+                    var apiScope = this.apiContext.GetApiService<ApiHolder>();
+                    if (apiScope != null)
+                    {
+                        apiScope.Api = this;
+                    }
+
+                    ApiConfiguratorAttribute.ApplyInitialization(
+                        this.GetType(), this, this.apiContext);
+                }
+
+                return this.apiContext;
             }
         }
 
@@ -78,44 +95,18 @@ namespace Microsoft.Restier.Core
 
                         // Make sure that all convention-based handlers are outermost.
                         EnableConventions(services, apiType);
-                        if (!services.HasService<IApi>())
+                        if (!services.HasService<ApiBase>())
                         {
                             services.AddScoped<ApiHolder>()
                                 .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped<ApiBase>(sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped<IApi>(sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.ApiContext);
+                                .AddScoped(sp => sp.GetService<ApiHolder>().Api)
+                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.Context);
                         }
 
                         var configuration = this.CreateApiConfiguration(services);
                         ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
                         return configuration;
                     });
-            }
-        }
-
-        /// <summary>
-        /// Gets the API context for this API.
-        /// </summary>
-        protected ApiContext ApiContext
-        {
-            get
-            {
-                if (this.apiContext == null)
-                {
-                    this.apiContext = this.CreateApiContext(
-                        this.ApiConfiguration);
-                    var apiScope = this.apiContext.GetApiService<ApiHolder>();
-                    if (apiScope != null)
-                    {
-                        apiScope.Api = this;
-                    }
-
-                    ApiConfiguratorAttribute.ApplyInitialization(
-                        this.GetType(), this, this.apiContext);
-                }
-
-                return this.apiContext;
             }
         }
 

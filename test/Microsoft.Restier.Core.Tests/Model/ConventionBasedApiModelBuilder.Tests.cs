@@ -131,7 +131,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi, new()
         {
             var api = (BaseApi)Activator.CreateInstance<T>();
-            return await Api.GetModelAsync(api.ApiContext);
+            return await Api.GetModelAsync(api.Context);
         }
     }
 
@@ -173,11 +173,6 @@ namespace Microsoft.Restier.Core.Tests.Model
         public new ApiConfiguration ApiConfiguration
         {
             get { return base.ApiConfiguration; }
-        }
-
-        public new ApiContext ApiContext
-        {
-            get { return base.ApiContext; }
         }
 
         protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)

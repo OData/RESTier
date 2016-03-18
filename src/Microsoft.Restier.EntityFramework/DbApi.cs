@@ -43,7 +43,7 @@ namespace Microsoft.Restier.EntityFramework
         {
             get
             {
-                return this.ApiContext.GetApiService<T>();
+                return this.Context.GetApiService<T>();
             }
         }
 

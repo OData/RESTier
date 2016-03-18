@@ -17,10 +17,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void CachedConfigurationIsCachedCorrectly()
         {
-            IApi api = new TestApi();
+            ApiBase api = new TestApi();
             var configuration = api.Context.Configuration;
 
-            IApi anotherApi = new TestApi();
+            ApiBase anotherApi = new TestApi();
             var cached = anotherApi.Context.Configuration;
             Assert.Same(configuration, cached);
         }

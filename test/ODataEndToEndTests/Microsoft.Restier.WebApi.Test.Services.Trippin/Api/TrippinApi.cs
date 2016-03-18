@@ -11,7 +11,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 {
     public class TrippinApi : DbApi<TrippinModel>
     {
-        public TrippinModel Context { get { return DbContext; } }
+        public new TrippinModel Context { get { return DbContext; } }
 
         public Person Me
         {

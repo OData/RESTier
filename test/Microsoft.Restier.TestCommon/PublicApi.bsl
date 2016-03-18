@@ -1,12 +1,8 @@
-public interface Microsoft.Restier.Core.IApi : IDisposable {
-	Microsoft.Restier.Core.ApiContext Context  { public abstract get; }
-}
-
-public abstract class Microsoft.Restier.Core.ApiBase : IDisposable, IApi {
+public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 	protected ApiBase ()
 
 	Microsoft.Restier.Core.ApiConfiguration ApiConfiguration  { protected get; }
-	Microsoft.Restier.Core.ApiContext ApiContext  { protected get; }
+	Microsoft.Restier.Core.ApiContext Context  { public get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]protected get; }
 
 	[
@@ -55,14 +51,25 @@ ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.Core.Api {
 	[
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiBase api, params System.Threading.CancellationToken cancellationToken)
+
+	[
 	AsyncStateMachineAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiContext context, params System.Threading.CancellationToken cancellationToken)
 
 	[
+	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.IApi api, params System.Threading.CancellationToken cancellationToken)
+	public static Task`1 QueryAsync (Microsoft.Restier.Core.ApiBase api, IQueryable`1 query, params System.Threading.CancellationToken cancellationToken)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
 	[
 	AsyncStateMachineAttribute(),
@@ -70,49 +77,38 @@ public sealed class Microsoft.Restier.Core.Api {
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiContext context, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
 	[
-	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
-	public static Task`1 QueryAsync (Microsoft.Restier.Core.IApi api, IQueryable`1 query, params System.Threading.CancellationToken cancellationToken)
+	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.IApi api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
+	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
 
 	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.IApi api, string name, object[] arguments)
+	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static IQueryable`1 Source (Microsoft.Restier.Core.IApi api, string name, object[] arguments)
+	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
 
 	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
 	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.IApi api, string namespaceName, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static IQueryable`1 Source (Microsoft.Restier.Core.IApi api, string namespaceName, string name, object[] arguments)
+	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiBase api, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
 
 	[
 	AsyncStateMachineAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiContext context, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.IApi api, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
 }
 
 [
@@ -256,7 +252,7 @@ public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.Mult
 	public virtual T Invoke (System.IServiceProvider serviceProvider, Func`1 next)
 }
 
-public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable, IApi {
+public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
 	public DbApi`1 ()
 
 	T DbContext  { protected get; }
@@ -283,7 +279,7 @@ public sealed class Microsoft.Restier.WebApi.HttpConfigurationExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.IApi]] apiFactory, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
+	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
 }
 
 [
@@ -293,7 +289,7 @@ RestierExceptionFilterAttribute(),
 public class Microsoft.Restier.WebApi.RestierController : System.Web.OData.ODataController, IDisposable, IHttpController {
 	public RestierController ()
 
-	Microsoft.Restier.Core.IApi Api  { public get; }
+	Microsoft.Restier.Core.ApiBase Api  { public get; }
 
 	[
 	AsyncStateMachineAttribute(),
@@ -606,9 +602,9 @@ public class Microsoft.Restier.Core.Submit.ValidationResults : System.Collection
 }
 
 public class Microsoft.Restier.WebApi.Batch.RestierBatchHandler : System.Web.OData.Batch.DefaultODataBatchHandler, IDisposable {
-	public RestierBatchHandler (System.Web.Http.HttpServer httpServer, params System.Func`1[[Microsoft.Restier.Core.IApi]] apiFactory)
+	public RestierBatchHandler (System.Web.Http.HttpServer httpServer, params System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
 
-	System.Func`1[[Microsoft.Restier.Core.IApi]] ApiFactory  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	System.Func`1[[Microsoft.Restier.Core.ApiBase]] ApiFactory  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 
 	protected virtual System.Web.OData.Batch.ChangeSetRequestItem CreateChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
 	[
@@ -618,7 +614,7 @@ public class Microsoft.Restier.WebApi.Batch.RestierBatchHandler : System.Web.ODa
 }
 
 public class Microsoft.Restier.WebApi.Batch.RestierChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
-	public RestierChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.IApi]] apiFactory)
+	public RestierChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
 
 	[
 	AsyncStateMachineAttribute(),

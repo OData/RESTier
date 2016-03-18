@@ -21,18 +21,18 @@ namespace Microsoft.Restier.Core.Tests
 
         interface IService
         {
-            IApi Api { get; }
+            ApiBase Api { get; }
 
             ApiContext Context { get; }
         }
 
         class Service : IService
         {
-            public IApi Api { get; set; }
+            public ApiBase Api { get; set; }
 
             public ApiContext Context { get; set; }
 
-            public Service(IApi api, ApiContext context)
+            public Service(ApiBase api, ApiContext context)
             {
                 Api = api;
                 Context = context;
@@ -53,14 +53,14 @@ namespace Microsoft.Restier.Core.Tests
         {
             using (var api = new TestApi())
             {
-                var context = ((IApi)api).Context;
+                var context = api.Context;
                 var svc = context.GetApiService<IService>();
 
                 Assert.Same(svc.Api, api);
                 Assert.Same(svc.Context, context);
 
                 api.Dispose();
-                Assert.Throws<ObjectDisposedException>(() => ((IApi)api).Context);
+                Assert.Throws<ObjectDisposedException>(() => api.Context);
             }
         }
 
@@ -113,7 +113,7 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void TestApiAppliesApiParticipantsCorrectly()
         {
-            IApi api = new TestApiWithParticipants();
+            ApiBase api = new TestApiWithParticipants();
 
             var configuration = api.Context.Configuration;
             Assert.True(configuration.GetProperty<bool>("Test1"));

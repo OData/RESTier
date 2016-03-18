@@ -39,7 +39,7 @@ namespace Microsoft.Restier.WebApi
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
 
-        private IApi api;
+        private ApiBase api;
         private bool? includeTotalCount;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
@@ -47,7 +47,7 @@ namespace Microsoft.Restier.WebApi
         /// <summary>
         /// Gets the API associated with this controller.
         /// </summary>
-        public IApi Api
+        public ApiBase Api
         {
             get
             {

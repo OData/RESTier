@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents the API engine and provides a set of static
     /// (Shared in Visual Basic) methods for interacting with objects
-    /// that implement <see cref="IApi"/>.
+    /// that implement <see cref="ApiBase"/>.
     /// </summary>
     public static class Api // TODO GitHubIssue#25,#26 : transactions, exception filters
     {
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core
         /// operation whose result is the API model.
         /// </returns>
         public static Task<IEdmModel> GetModelAsync(
-            this IApi api,
+            this ApiBase api,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(api, "api");
@@ -146,7 +146,7 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable Source(
-            this IApi api,
+            this ApiBase api,
             string name,
             params object[] arguments)
         {
@@ -221,7 +221,7 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable Source(
-            this IApi api,
+            this ApiBase api,
             string namespaceName,
             string name,
             params object[] arguments)
@@ -302,7 +302,7 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable<TElement> Source<TElement>(
-            this IApi api,
+            this ApiBase api,
             string name,
             params object[] arguments)
         {
@@ -389,7 +389,7 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable<TElement> Source<TElement>(
-            this IApi api,
+            this ApiBase api,
             string namespaceName,
             string name,
             params object[] arguments)
@@ -472,7 +472,7 @@ namespace Microsoft.Restier.Core
         /// whose result is a sequence of the query results.
         /// </returns>
         public static async Task<IEnumerable<TElement>> QueryAsync<TElement>(
-            this IApi api,
+            this ApiBase api,
             IQueryable<TElement> query,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -500,7 +500,7 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a query result.
         /// </returns>
         public static Task<QueryResult> QueryAsync(
-            this IApi api,
+            this ApiBase api,
             QueryRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -558,7 +558,7 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a submit result.
         /// </returns>
         public static Task<SubmitResult> SubmitAsync(
-            this IApi api,
+            this ApiBase api,
             ChangeSet changeSet = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {

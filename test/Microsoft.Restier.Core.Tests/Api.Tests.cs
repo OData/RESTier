@@ -78,37 +78,24 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private class TestApi : IApi
+        private class TestApi : ApiBase
         {
-            private ApiContext _context;
-            
-            public ApiContext Context
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                get
-                {
-                    if (_context == null)
-                    {
-                        var services = new ServiceCollection();
-                        var modelBuilder = new TestModelBuilder();
-                        var modelMapper = new TestModelMapper();
-                        var querySourcer = new TestQuerySourcer();
-                        var changeSetPreparer = new TestChangeSetPreparer();
-                        var submitExecutor = new TestSubmitExecutor();
-                        services.CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
-                        services.CutoffPrevious<IModelBuilder>(modelBuilder);
-                        services.CutoffPrevious<IModelMapper>(modelMapper);
-                        services.CutoffPrevious<IQueryExpressionSourcer>(querySourcer);
-                        services.CutoffPrevious<IChangeSetPreparer>(changeSetPreparer);
-                        services.CutoffPrevious<ISubmitExecutor>(submitExecutor);
-                        _context = new ApiContext(services.BuildApiConfiguration());
-                    }
+                var modelBuilder = new TestModelBuilder();
+                var modelMapper = new TestModelMapper();
+                var querySourcer = new TestQuerySourcer();
+                var changeSetPreparer = new TestChangeSetPreparer();
+                var submitExecutor = new TestSubmitExecutor();
 
-                    return _context;
-                }
-            }
+                services.CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
+                services.CutoffPrevious<IModelBuilder>(modelBuilder);
+                services.CutoffPrevious<IModelMapper>(modelMapper);
+                services.CutoffPrevious<IQueryExpressionSourcer>(querySourcer);
+                services.CutoffPrevious<IChangeSetPreparer>(changeSetPreparer);
+                services.CutoffPrevious<ISubmitExecutor>(submitExecutor);
 
-            public void Dispose()
-            {
+                return services;
             }
         }
 
