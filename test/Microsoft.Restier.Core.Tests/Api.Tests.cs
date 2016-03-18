@@ -128,7 +128,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => Api.Source(context, "Test", arguments));
+            Assert.Throws<NotSupportedException>(() => context.Source("Test", arguments));
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Api.Source(context, "Test", arguments);
+            var source = context.Source("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -188,7 +188,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => Api.Source(context, "Namespace", "Function", arguments));
+            Assert.Throws<NotSupportedException>(() => context.Source("Namespace", "Function", arguments));
         }
 
         [Fact]
@@ -201,8 +201,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Api.Source(context,
-                "Namespace", "Function", arguments);
+            var source = context.Source("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -252,7 +251,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => Api.Source<object>(context, "Test", arguments));
+            Assert.Throws<ArgumentException>(() => context.Source<object>("Test", arguments));
         }
 
         [Fact]
@@ -265,7 +264,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Api.Source<string>(context, "Test", arguments);
+            var source = context.Source<string>("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -316,7 +315,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => Api.Source<object>(context, "Namespace", "Function", arguments));
+            Assert.Throws<ArgumentException>(() => context.Source<object>("Namespace", "Function", arguments));
         }
 
         [Fact]
@@ -329,8 +328,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = new ApiContext(configuration);
             var arguments = new object[0];
 
-            var source = Api.Source<DateTime>(context,
-                "Namespace", "Function", arguments);
+            var source = context.Source<DateTime>("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -357,7 +355,7 @@ namespace Microsoft.Restier.Core.Tests
                 .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
-            var source = Api.Source<string>(context, "Test");
+            var source = context.Source<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.GetEnumerator());
         }
 
@@ -370,7 +368,7 @@ namespace Microsoft.Restier.Core.Tests
                 .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
-            var source = Api.Source<string>(context, "Test");
+            var source = context.Source<string>("Test");
             Assert.Throws<NotSupportedException>(() => (source as IEnumerable).GetEnumerator());
         }
 
@@ -383,7 +381,7 @@ namespace Microsoft.Restier.Core.Tests
                 .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
-            var source = Api.Source<string>(context, "Test");
+            var source = context.Source<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute<string>(null));
         }
 
@@ -396,7 +394,7 @@ namespace Microsoft.Restier.Core.Tests
                 .BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
-            var source = Api.Source<string>(context, "Test");
+            var source = context.Source<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute(null));
         }
 

@@ -131,7 +131,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi, new()
         {
             var api = (BaseApi)Activator.CreateInstance<T>();
-            return await Api.GetModelAsync(api.Context);
+            return await api.Context.GetModelAsync();
         }
     }
 

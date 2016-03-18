@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -20,11 +19,11 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents the API engine and provides a set of static
     /// (Shared in Visual Basic) methods for interacting with objects
-    /// that implement <see cref="ApiBase"/>.
+    /// that implement <see cref="ApiContext"/>.
     /// </summary>
-    public static class Api // TODO GitHubIssue#25,#26 : transactions, exception filters
+    public static class ApiContextExtensions
     {
-        private static readonly MethodInfo SourceCoreMethod = typeof(Api)
+        private static readonly MethodInfo SourceCoreMethod = typeof(ApiContextExtensions)
             .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
             .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
 
@@ -37,27 +36,6 @@ namespace Microsoft.Restier.Core
             .Single(m => m.GetParameters().Length == 3);
 
         #region Model
-
-        /// <summary>
-        /// Asynchronously gets an API model for an API.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is the API model.
-        /// </returns>
-        public static Task<IEdmModel> GetModelAsync(
-            this ApiBase api,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-            return Api.GetModelAsync(api.Context, cancellationToken);
-        }
 
         /// <summary>
         /// Asynchronously gets an API model using an API context.
@@ -73,10 +51,11 @@ namespace Microsoft.Restier.Core
         /// operation whose result is the API model.
         /// </returns>
         public static async Task<IEdmModel> GetModelAsync(
-            ApiContext context,
+            this ApiContext context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");
+
             var config = context.Configuration;
             if (config.Model != null)
             {
@@ -119,42 +98,6 @@ namespace Microsoft.Restier.Core
         #region Source
 
         /// <summary>
-        /// Gets a queryable source of data exposed by an API.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="name">
-        /// The name of an entity set, singleton or composable function import.
-        /// </param>
-        /// <param name="arguments">
-        /// If <paramref name="name"/> is a composable function import,
-        /// the arguments to be passed to the composable function import.
-        /// </param>
-        /// <returns>
-        /// A queryable source.
-        /// </returns>
-        /// <remarks>
-        /// <para>
-        /// If the name identifies a singleton or a composable function import
-        /// whose result is a singleton, the resulting queryable source will
-        /// be configured such that it represents exactly zero or one result.
-        /// </para>
-        /// <para>
-        /// Note that the resulting queryable source cannot be synchronously
-        /// enumerated as the API engine only operates asynchronously.
-        /// </para>
-        /// </remarks>
-        public static IQueryable Source(
-            this ApiBase api,
-            string name,
-            params object[] arguments)
-        {
-            Ensure.NotNull(api, "api");
-            return Api.Source(api.Context, name, arguments);
-        }
-
-        /// <summary>
         /// Gets a queryable source of data using an API context.
         /// </summary>
         /// <param name="context">
@@ -182,52 +125,14 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable Source(
-            ApiContext context,
+            this ApiContext context,
             string name,
             params object[] arguments)
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(name, "name");
-            return Api.SourceCore(context, null, name, arguments);
-        }
 
-        /// <summary>
-        /// Gets a queryable source of data exposed by an API.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="namespaceName">
-        /// The name of a namespace containing a composable function.
-        /// </param>
-        /// <param name="name">
-        /// The name of a composable function.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments to be passed to the composable function.
-        /// </param>
-        /// <returns>
-        /// A queryable source.
-        /// </returns>
-        /// <remarks>
-        /// <para>
-        /// If the name identifies a composable function whose result is a
-        /// singleton, the resulting queryable source will be configured such
-        /// that it represents exactly zero or one result.
-        /// </para>
-        /// <para>
-        /// Note that the resulting queryable source cannot be synchronously
-        /// enumerated, as the API engine only operates asynchronously.
-        /// </para>
-        /// </remarks>
-        public static IQueryable Source(
-            this ApiBase api,
-            string namespaceName,
-            string name,
-            params object[] arguments)
-        {
-            Ensure.NotNull(api, "api");
-            return Api.Source(api.Context, namespaceName, name, arguments);
+            return context.SourceCore(null, name, arguments);
         }
 
         /// <summary>
@@ -260,7 +165,7 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable Source(
-            ApiContext context,
+            this ApiContext context,
             string namespaceName,
             string name,
             params object[] arguments)
@@ -268,46 +173,8 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
             Ensure.NotNull(namespaceName, "namespaceName");
             Ensure.NotNull(name, "name");
-            return Api.SourceCore(context, namespaceName, name, arguments);
-        }
 
-        /// <summary>
-        /// Gets a queryable source of data exposed by an API.
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the queryable source.
-        /// </typeparam>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="name">
-        /// The name of an entity set, singleton or composable function import.
-        /// </param>
-        /// <param name="arguments">
-        /// If <paramref name="name"/> is a composable function import,
-        /// the arguments to be passed to the composable function import.
-        /// </param>
-        /// <returns>
-        /// A queryable source.
-        /// </returns>
-        /// <remarks>
-        /// <para>
-        /// If the name identifies a singleton or a composable function import
-        /// whose result is a singleton, the resulting queryable source will
-        /// be configured such that it represents exactly zero or one result.
-        /// </para>
-        /// <para>
-        /// Note that the resulting queryable source cannot be synchronously
-        /// enumerated, as the API engine only operates asynchronously.
-        /// </para>
-        /// </remarks>
-        public static IQueryable<TElement> Source<TElement>(
-            this ApiBase api,
-            string name,
-            params object[] arguments)
-        {
-            Ensure.NotNull(api, "api");
-            return Api.Source<TElement>(api.Context, name, arguments);
+            return SourceCore(context, namespaceName, name, arguments);
         }
 
         /// <summary>
@@ -341,62 +208,20 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable<TElement> Source<TElement>(
-            ApiContext context,
+            this ApiContext context,
             string name,
             params object[] arguments)
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(name, "name");
-            var elementType = Api.EnsureElementType(context, null, name);
+
+            var elementType = context.EnsureElementType(null, name);
             if (typeof(TElement) != elementType)
             {
                 throw new ArgumentException(Resources.ElementTypeNotMatch);
             }
 
-            return Api.SourceCore<TElement>(null, name, arguments);
-        }
-
-        /// <summary>
-        /// Gets a queryable source of data exposed by an API.
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the queryable source.
-        /// </typeparam>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="namespaceName">
-        /// The name of a namespace containing a composable function.
-        /// </param>
-        /// <param name="name">
-        /// The name of a composable function.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments to be passed to the composable function.
-        /// </param>
-        /// <returns>
-        /// A queryable source.
-        /// </returns>
-        /// <remarks>
-        /// <para>
-        /// If the name identifies a composable function whose result is a
-        /// singleton, the resulting queryable source will be configured such
-        /// that it represents exactly zero or one result.
-        /// </para>
-        /// <para>
-        /// Note that the resulting queryable source cannot be synchronously
-        /// enumerated, as the API engine only operates asynchronously.
-        /// </para>
-        /// </remarks>
-        public static IQueryable<TElement> Source<TElement>(
-            this ApiBase api,
-            string namespaceName,
-            string name,
-            params object[] arguments)
-        {
-            Ensure.NotNull(api, "api");
-            return Api.Source<TElement>(
-                api.Context, namespaceName, name, arguments);
+            return SourceCore<TElement>(null, name, arguments);
         }
 
         /// <summary>
@@ -432,7 +257,7 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable<TElement> Source<TElement>(
-            ApiContext context,
+            this ApiContext context,
             string namespaceName,
             string name,
             params object[] arguments)
@@ -440,73 +265,19 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
             Ensure.NotNull(namespaceName, "namespaceName");
             Ensure.NotNull(name, "name");
-            var elementType = Api.EnsureElementType(context, namespaceName, name);
+
+            var elementType = context.EnsureElementType(namespaceName, name);
             if (typeof(TElement) != elementType)
             {
                 throw new ArgumentException(Resources.ElementTypeNotMatch);
             }
 
-            return Api.SourceCore<TElement>(namespaceName, name, arguments);
+            return SourceCore<TElement>(namespaceName, name, arguments);
         }
+
         #endregion
 
         #region Query
-
-        /// <summary>
-        /// Asynchronously queries for data exposed by an API.
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the query.
-        /// </typeparam>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="query">
-        /// A composed query that was derived from a queryable source.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// whose result is a sequence of the query results.
-        /// </returns>
-        public static async Task<IEnumerable<TElement>> QueryAsync<TElement>(
-            this ApiBase api,
-            IQueryable<TElement> query,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-            var request = new QueryRequest(query);
-            var result = await Api.QueryAsync(
-                api.Context, request, cancellationToken);
-            return result.Results.Cast<TElement>();
-        }
-
-        /// <summary>
-        /// Asynchronously queries for data exposed by an API.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="request">
-        /// A query request.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is a query result.
-        /// </returns>
-        public static Task<QueryResult> QueryAsync(
-            this ApiBase api,
-            QueryRequest request,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-            return Api.QueryAsync(api.Context, request, cancellationToken);
-        }
 
         /// <summary>
         /// Asynchronously queries for data using an API context.
@@ -525,14 +296,15 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a query result.
         /// </returns>
         public static async Task<QueryResult> QueryAsync(
-            ApiContext context,
+            this ApiContext context,
             QueryRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(request, "request");
+
             var queryContext = new QueryContext(context, request);
-            var model = await Api.GetModelAsync(context);
+            var model = await context.GetModelAsync(cancellationToken);
             queryContext.Model = model;
             return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
         }
@@ -540,34 +312,6 @@ namespace Microsoft.Restier.Core
         #endregion
 
         #region Submit
-
-        /// <summary>
-        /// Asynchronously submits changes made to an API.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="changeSet">
-        /// A change set, or <c>null</c> to submit existing pending changes.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is a submit result.
-        /// </returns>
-        public static Task<SubmitResult> SubmitAsync(
-            this ApiBase api,
-            ChangeSet changeSet = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-            return Api.SubmitAsync(
-                api.Context,
-                changeSet,
-                cancellationToken);
-        }
 
         /// <summary>
         /// Asynchronously submits changes made using an API context.
@@ -586,14 +330,14 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a submit result.
         /// </returns>
         public static async Task<SubmitResult> SubmitAsync(
-            ApiContext context,
+            this ApiContext context,
             ChangeSet changeSet = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             Ensure.NotNull(context, "context");
 
             var submitContext = new SubmitContext(context, changeSet);
-            var model = await Api.GetModelAsync(context);
+            var model = await context.GetModelAsync(cancellationToken);
             submitContext.Model = model;
             return await DefaultSubmitHandler.SubmitAsync(
                 submitContext, cancellationToken);
@@ -602,13 +346,14 @@ namespace Microsoft.Restier.Core
         #endregion
 
         #region Source Private
+
         private static IQueryable SourceCore(
-            ApiContext context,
+            this ApiContext context,
             string namespaceName,
             string name,
             object[] arguments)
         {
-            var elementType = Api.EnsureElementType(context, namespaceName, name);
+            var elementType = context.EnsureElementType(namespaceName, name);
             var method = SourceCoreMethod.MakeGenericMethod(elementType);
             var args = new object[] { namespaceName, name, arguments };
             return method.Invoke(null, args) as IQueryable;
@@ -619,8 +364,8 @@ namespace Microsoft.Restier.Core
             string name,
             object[] arguments)
         {
-            MethodInfo sourceMethod = null;
-            Expression[] expressions = null;
+            MethodInfo sourceMethod;
+            Expression[] expressions;
             if (namespaceName == null)
             {
                 sourceMethod = Source2Method;
@@ -649,7 +394,7 @@ namespace Microsoft.Restier.Core
         }
 
         private static Type EnsureElementType(
-            ApiContext context,
+            this ApiContext context,
             string namespaceName,
             string name)
         {
@@ -664,7 +409,7 @@ namespace Microsoft.Restier.Core
                 }
                 else
                 {
-                     mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
+                    mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
                 }
             }
 
@@ -678,6 +423,7 @@ namespace Microsoft.Restier.Core
 
             return elementType;
         }
+
         #endregion
     }
 }

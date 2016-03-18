@@ -82,7 +82,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             var configuration = services.BuildApiConfiguration();
             var context = new ApiContext(configuration);
 
-            var model = await Api.GetModelAsync(context);
+            var model = await context.GetModelAsync();
             Assert.Equal(4, model.SchemaElements.Count());
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));
@@ -126,7 +126,7 @@ namespace Microsoft.Restier.Core.Tests.Model
                     var context = new ApiContext(configuration);
                     try
                     {
-                        var model = Api.GetModelAsync(context).Result;
+                        var model = context.GetModelAsync().Result;
                         source.SetResult(model);
                     }
                     catch (Exception e)

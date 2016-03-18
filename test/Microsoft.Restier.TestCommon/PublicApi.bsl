@@ -49,16 +49,11 @@ public abstract class Microsoft.Restier.Core.ApiConfiguratorAttribute : System.A
 [
 ExtensionAttribute(),
 ]
-public sealed class Microsoft.Restier.Core.Api {
+public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	[
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiBase api, params System.Threading.CancellationToken cancellationToken)
-
-	[
-	AsyncStateMachineAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiContext context, params System.Threading.CancellationToken cancellationToken)
 
 	[
 	AsyncStateMachineAttribute(),
@@ -72,11 +67,6 @@ public sealed class Microsoft.Restier.Core.Api {
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
 
 	[
-	AsyncStateMachineAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiContext context, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
-
-	[
 	ExtensionAttribute(),
 	]
 	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
@@ -86,8 +76,6 @@ public sealed class Microsoft.Restier.Core.Api {
 	]
 	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
 
-	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
-	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 	[
 	ExtensionAttribute(),
 	]
@@ -98,17 +86,10 @@ public sealed class Microsoft.Restier.Core.Api {
 	]
 	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
 
-	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
-	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
 	[
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiBase api, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
-
-	[
-	AsyncStateMachineAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiContext context, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
 }
 
 [
@@ -119,6 +100,49 @@ public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
 	ExtensionAttribute(),
 	]
 	public static Microsoft.Restier.Core.ApiConfiguration IgnoreProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
+}
+
+[
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.Core.ApiContextExtensions {
+	[
+	AsyncStateMachineAttribute(),
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiContext context, params System.Threading.CancellationToken cancellationToken)
+
+	[
+	AsyncStateMachineAttribute(),
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiContext context, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Linq.IQueryable Source (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IQueryable`1 Source (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
+
+	[
+	AsyncStateMachineAttribute(),
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiContext context, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
 }
 
 public sealed class Microsoft.Restier.Core.DataSourceStubs {
