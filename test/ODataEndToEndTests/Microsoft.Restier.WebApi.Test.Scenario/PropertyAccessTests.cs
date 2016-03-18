@@ -211,12 +211,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Fact]
         public void QueryNullEnumPropertyOfSingleEntity()
         {
-            TestPayloadString("People(1)/FavoriteFeature2", payloadStr =>
-            {
-                Assert.Contains(
-                    "\"@odata.context\":\"http://localhost:18384/api/Trippin/$metadata#People(1)/FavoriteFeature2\"," +
-                    "\"@odata.null\":true", payloadStr, StringComparison.Ordinal);
-            });
+            TestGetStatusCodeIs("People(1)/FavoriteFeature2", 204);
         }
 
         [Fact]
@@ -240,10 +235,30 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Fact]
         public void QueryNullRawEnumPropertyOfSingleEntity()
         {
-            TestPayloadString("People(1)/FavoriteFeature2/$value", payloadStr =>
-            {
-                Assert.Equal(string.Empty, payloadStr, StringComparer.Ordinal);
-            });
+            TestGetStatusCodeIs("People(1)/FavoriteFeature2/$value", 204);
+        }
+
+        /// Note: 1.null collection of any type (primitive/enum/Complex/navCollection) is not tested yet.
+        /// 2. No test case of collection with primitive/enum/complex as EF does not support
+        /// 3. Complex can not be null in EF
+        [Theory]
+        // Single primitive property with null value 
+        [InlineData("/People(4)/LastName", 204)]
+        // Single primitive property $value with null value 
+        [InlineData("/People(4)/LastName/$value", 204)]
+        // single navigation property with null value
+        // TODO Should be 204, cannot differentiate ~/People(nonexistkey) vs /People(5)/NullSingNav now
+        [InlineData("/People(4)/BestFriend", 404)]
+        // single navigation property's propery and navigation property has null value
+        // TODO should be 404
+        [InlineData("/People(4)/BestFriend/LastName", 204)]
+        // single navigation property's property with null value
+        [InlineData("/People(5)/BestFriend/LastName", 204)]
+        // collection of navigation property with empty collection value
+        [InlineData("/People(5)/Friends", 200)]
+        public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
+        {
+            TestGetStatusCodeIs(url, expectedCode);
         }
 
         private void TestPayloadString(string uriAfterServiceRoot, Action<string> testMethod)

@@ -897,12 +897,18 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [Theory]
         [InlineData("Me/UserName", "http://localhost:18384/api/Trippin/$metadata#Me/UserName")]
         [InlineData("Me/FavoriteFeature", "http://localhost:18384/api/Trippin/$metadata#Me/FavoriteFeature")]
-        [InlineData("Me/FavoriteFeature2", "http://localhost:18384/api/Trippin/$metadata#Me/FavoriteFeature2")]
         [InlineData("Me/Friends", "http://localhost:18384/api/Trippin/$metadata#People")]
         [InlineData("Me/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips")]
         public void TestSingletonPropertyAccess(string uriStringAfterServiceRoot, string expectedSubString)
         {
             this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
+        }
+
+        [Theory]
+        [InlineData("Me/FavoriteFeature2", 204)]
+        public void TestSingletonPropertyAccessStatus(string uriStringAfterServiceRoot, int statusCode)
+        {
+            this.TestGetStatusCodeIs(uriStringAfterServiceRoot, statusCode);
         }
 
         [Theory]

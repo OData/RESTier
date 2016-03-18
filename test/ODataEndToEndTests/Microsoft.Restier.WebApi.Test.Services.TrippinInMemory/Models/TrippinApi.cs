@@ -25,6 +25,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                     "u1@trippin.com",
                     "u1@odata.org"
                 },
+                HomeAddress = new Location { Address = "ccc1" },
                 Locations = new Collection<Location>
                 {
                     new Location { Address = "a1" },
@@ -98,6 +99,37 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                     Feature.Feature4,
                     Feature.Feature1
                 }
+            },
+            new Person
+            {
+                PersonId = 5,
+                FirstName = "u4",
+                FavoriteFeature = Feature.Feature4,
+                Emails = new Collection<string>(),
+                Features = new Collection<Feature>(),
+                Locations = new Collection<Location>()
+            },
+            new Person
+            {
+                PersonId = 6,
+                FirstName = "u4",
+                FavoriteFeature = Feature.Feature4,
+                Emails = new Collection<string>
+                {
+                    "u4@trippin.com",
+                    "u4@odata.org"
+                },
+                HomeAddress = new Location(),
+                Locations = new Collection<Location>
+                {
+                    new Location { Address = "a4" },
+                    new Location { Address = "b4" }
+                },
+                Features = new Collection<Feature>
+                {
+                    Feature.Feature4,
+                    Feature.Feature1
+                }
             }
         };
 
@@ -107,6 +139,10 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             people[1].Friends = new Collection<Person> { people[2], people[3] };
             people[2].Friends = new Collection<Person> { people[3], people[0] };
             people[3].Friends = new Collection<Person> { people[0], people[1] };
+            people[4].Friends = new Collection<Person>();
+            people[5].Friends = new Collection<Person>();
+
+            people[5].BestFriend = people[4];
         }
 
         public IQueryable<Person> People

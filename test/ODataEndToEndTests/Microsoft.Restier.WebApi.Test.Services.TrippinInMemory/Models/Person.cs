@@ -11,6 +11,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 {
     public class Person
     {
+        public Person BestFriend { get; set; }
+
         // Way 1: enable auto-expand through attribute.
         [AutoExpand]
         public virtual ICollection<Person> Friends { get; set; }
@@ -24,6 +26,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 
         [MaxLength(26), MinLength(1)]
         public string LastName { get; set; }
+        
+        public string MiddleName { get; set; }
 
         public long Concurrency { get; set; }
 
@@ -33,6 +37,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
         public Feature FavoriteFeature { get; set; }
 
         public virtual ICollection<string> Emails { get; set; }
+        
+        public Location HomeAddress { get; set; }
 
         public virtual ICollection<Location> Locations { get; set; } 
 

@@ -151,6 +151,16 @@ namespace Microsoft.Restier.WebApi
                 Convert.ChangeType(propertyValue, property.Type, CultureInfo.InvariantCulture));
             return Expression.Equal(property, constant);
         }
+
+        private static LambdaExpression CreateNotEqualsNullExpression(
+            Type currentType)
+        {
+            var parameterExpression = Expression.Parameter(currentType);
+            var nullConstant = Expression.Constant(null);
+            BinaryExpression nullFilterExpression = Expression.NotEqual(parameterExpression, nullConstant);
+            var whereExpression = Expression.Lambda(nullFilterExpression, parameterExpression);
+            return whereExpression;
+        }
         #endregion
 
         #region Handler Methods
@@ -249,6 +259,11 @@ namespace Microsoft.Restier.WebApi
                 LambdaExpression selectBody =
                     Expression.Lambda(navigationPropertyExpression, entityParameterExpression);
                 this.queryable = ExpressionHelpers.Select(this.queryable, selectBody);
+
+                // Handle case we expect a single navigation property which could be null,
+                // default query executor will throw NullReferenceException
+                var whereExpression = CreateNotEqualsNullExpression(this.currentType);
+                this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
             }
         }
 
@@ -279,6 +294,15 @@ namespace Microsoft.Restier.WebApi
                 LambdaExpression selectBody =
                     Expression.Lambda(structuralPropertyExpression, entityParameterExpression);
                 this.queryable = ExpressionHelpers.Select(this.queryable, selectBody);
+
+                // Handle request property of complex with null value
+                // default query executor will throw NullReferenceException
+                if (propertySegment.Property.Type.IsNullable
+                    && propertySegment.Property.Type.TypeKind() == EdmTypeKind.Complex)
+                {
+                    var whereExpression = CreateNotEqualsNullExpression(this.currentType);
+                    this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
+                }
             }
         }
         #endregion

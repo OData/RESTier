@@ -82,5 +82,87 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetPayloadContains("People", "\"Friends\":[");
         }
+
+        [Theory]
+        // Note, null collection of any type (primitive/enum/Complex/navCollection) is not tested.
+        // Single primitive property with null value 
+        [InlineData("/People(5)/MiddleName", 204)]
+        // Single primitive property $value with null value 
+        [InlineData("/People(5)/MiddleName/$value", 204)]
+        // Collection of primitive property with empty value 
+        [InlineData("/People(5)/Emails", 200)]
+        // Collection of primitive property $value with null value, should throw exception
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
+        [InlineData("/People(5)/Emails/$value", 404)]
+        // single complex property with null value
+        [InlineData("/People(5)/HomeAddress", 204)]
+        // single complex property's propery and complex property has null value
+        // TODO should be 404
+        [InlineData("/People(5)/HomeAddress/Address", 204)]
+        // single complex property's property with null value 
+        [InlineData("/People(6)/HomeAddress/Address", 204)]
+        // collection of complex property with empty collection value
+        [InlineData("/People(5)/Locations", 200)]
+        // collection of complex property's propery and collection of complex property has null value
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
+        [InlineData("/People(5)/Locations/Address", 404)]
+        // single navigation property with null value
+        // TODO Should be 204, cannot differentiate ~/People(nonexistkey) vs /People(5)/NullSingNav now
+        [InlineData("/People(5)/BestFriend", 404)]
+        // single navigation property's propery and navigation property has null value
+        // TODO should be 404
+        [InlineData("/People(5)/BestFriend/MiddleName", 204)]
+        // single navigation property's property with null value
+        [InlineData("/People(6)/BestFriend/MiddleName", 204)]
+        // collection of navigation property with empty collection value
+        [InlineData("/People(5)/Friends", 200)]
+        // collection of navigation property's property and navigation property has null value
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
+        [InlineData("/People(5)/Friends/MiddleName", 404)]
+        public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
+        {
+            TestGetStatusCodeIs(url, expectedCode);
+        }
+
+        [Theory]
+        // Single primitive property
+        // TODO should be 404
+        [InlineData("/People(15)/MiddleName", 204)]
+        // Single primitive property $value
+        // TODO should be 404
+        [InlineData("/People(15)/MiddleName/$value", 204)]
+        // Collection of primitive property 
+        // TODO should be 404
+        [InlineData("/People(15)/Emails", 200)]
+        // Collection of primitive property $value
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
+        [InlineData("/People(15)/Emails/$value", 404)]
+        // single complex property
+        // TODO should be 404
+        [InlineData("/People(15)/HomeAddress", 204)]
+        // single complex property's property
+        // TODO should be 404
+        [InlineData("/People(15)/HomeAddress/Address", 204)]
+        // collection of complex property
+        // TODO should be 404
+        [InlineData("/People(15)/Locations", 200)]
+        // collection of complex property's propery
+        // TODO should be bad request 400 as this is not allowed?? 404 is returned by WebApi Route Match method
+        [InlineData("/People(15)/Locations/Address", 404)]
+        // single navigation property
+        [InlineData("/People(15)/BestFriend", 404)]
+        // single navigation property's propery
+        // TODO should be 404
+        [InlineData("/People(15)/BestFriend/MiddleName", 204)]
+        // collection of navigation property
+        // TODO should be 404
+        [InlineData("/People(15)/Friends", 200)]
+        // collection of navigation property's property
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
+        [InlineData("/People(15)/Friends/MiddleName", 404)]
+        public void QueryPropertyWithNonExistEntity(string url, int expectedCode)
+        {
+            TestGetStatusCodeIs(url, expectedCode);
+        }
     }
 }

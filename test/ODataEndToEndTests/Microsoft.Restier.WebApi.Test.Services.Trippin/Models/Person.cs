@@ -10,6 +10,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {
     public class Person
     {
+        public virtual Person BestFriend { get; set; }
+
         public virtual ICollection<Person> Friends { get; set; }
 
         public virtual ICollection<Trip> Trips { get; set; }

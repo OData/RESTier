@@ -69,11 +69,21 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             var requestMessage = new HttpWebRequestMessage(
                 new DataServiceClientRequestMessageArgs(
                     "GET",
-                    new Uri(this.ServiceBaseUri, uriStringAfterServiceRoot),
+                    new Uri(this.ServiceBaseUri + uriStringAfterServiceRoot, UriKind.Absolute),
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>()));
-            Assert.Equal(statusCode, requestMessage.GetResponse().StatusCode);
+
+            try
+            {
+                Assert.Equal(statusCode, requestMessage.GetResponse().StatusCode);
+            }
+            catch (DataServiceTransportException e)
+            {
+                // In case of 404 or 500, it will be handled here
+                var response = e.Response;
+                Assert.Equal(statusCode, response.StatusCode);
+            }
         }
 
         protected void TestPostPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)

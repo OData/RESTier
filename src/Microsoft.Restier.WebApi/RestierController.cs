@@ -332,34 +332,59 @@ namespace Microsoft.Restier.WebApi
         {
             IEdmTypeReference typeReference = GetTypeReference(edmType);
 
+            // TODO, GitHubIssue#328 : 404 should be returned when requesting property of non-exist entity
+            BaseSingleResult singleResult = null;
+            HttpResponseMessage response = null;
+
             if (typeReference.IsPrimitive())
             {
                 if (this.shouldReturnCount || this.shouldWriteRawValue)
                 {
-                    return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Api.Context));
+                    var rawResult = new RawResult(query, typeReference, this.Api.Context);
+                    singleResult = rawResult;
+                    response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
-
-                return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new PrimitiveResult(query, typeReference, this.Api.Context));
+                else
+                {
+                    var primitiveResult = new PrimitiveResult(query, typeReference, this.Api.Context);
+                    singleResult = primitiveResult;
+                    response = this.Request.CreateResponse(HttpStatusCode.OK, primitiveResult);
+                }
             }
 
             if (typeReference.IsComplex())
             {
-                return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new ComplexResult(query, typeReference, this.Api.Context));
+                var complexResult = new ComplexResult(query, typeReference, this.Api.Context);
+                singleResult = complexResult;
+                response = this.Request.CreateResponse(HttpStatusCode.OK, complexResult);
             }
 
             if (typeReference.IsEnum())
             {
                 if (this.shouldWriteRawValue)
                 {
-                    return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new RawResult(query, typeReference, this.Api.Context));
+                    var rawResult = new RawResult(query, typeReference, this.Api.Context);
+                    singleResult = rawResult;
+                    response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
+                }
+                else
+                {
+                    var enumResult = new EnumResult(query, typeReference, this.Api.Context);
+                    singleResult = enumResult;
+                    response = this.Request.CreateResponse(HttpStatusCode.OK, enumResult);
+                }
+            }
+
+            if (singleResult != null)
+            {
+                if (singleResult.Result == null)
+                {
+                    // Per specification, If the property is single-valued and has the null value,
+                    // the service responds with 204 No Content.
+                    return this.Request.CreateResponse(HttpStatusCode.NoContent);
                 }
 
-                return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EnumResult(query, typeReference, this.Api.Context));
+                return response;
             }
 
             if (typeReference.IsCollection())
@@ -378,6 +403,9 @@ namespace Microsoft.Restier.WebApi
             var entityResult = new EntityResult(query, typeReference, this.Api.Context);
             if (entityResult.Result == null)
             {
+                // TODO GitHubIssue#288: 204 expected when requesting single nav propery which has null value
+                // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
+                // ~/People(key)/BestFriend, abd BestFriend is null, expected 204
                 throw new HttpResponseException(
                     this.Request.CreateErrorResponse(
                         HttpStatusCode.NotFound,
