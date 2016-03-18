@@ -25,6 +25,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Filters;
 using Microsoft.Restier.WebApi.Properties;
+using Microsoft.Restier.WebApi.Query;
 using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi
@@ -40,7 +41,6 @@ namespace Microsoft.Restier.WebApi
         private const string ETagHeaderKey = "@etag";
 
         private IApi api;
-        private bool? includeTotalCount;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
 
@@ -76,15 +76,11 @@ namespace Microsoft.Restier.WebApi
             }
 
             IQueryable queryable = this.GetQuery();
-            QueryRequest queryRequest = new QueryRequest(queryable, this.includeTotalCount)
+            QueryRequest queryRequest = new QueryRequest(queryable, false)
             {
                 ShouldReturnCount = this.shouldReturnCount
             };
             QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
-            if (this.includeTotalCount == true)
-            {
-                this.Request.ODataProperties().TotalCount = queryResult.TotalCount;
-            }
 
             this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
 
@@ -415,7 +411,9 @@ namespace Microsoft.Restier.WebApi
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
             if (queryOptions.Count != null)
             {
-                this.includeTotalCount = queryOptions.Count.Value;
+                WebApiContext context = Api.Context.GetApiService<WebApiContext>();
+                context.Request = this.Request;
+                context.QueryIncludeTotalCount = queryOptions.Count.Value;
             }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
