@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using ApiConfig = Microsoft.Restier.Core.ApiConfiguration;
 
 namespace Microsoft.Restier.Core
 {
@@ -54,7 +53,7 @@ namespace Microsoft.Restier.Core
                 if (this.apiContext == null)
                 {
                     this.apiContext = this.CreateApiContext(
-                        this.ApiConfiguration);
+                        this.Configuration);
                     var apiScope = this.apiContext.GetApiService<ApiHolder>();
                     if (apiScope != null)
                     {
@@ -72,7 +71,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets the API configuration for this API.
         /// </summary>
-        protected ApiConfiguration ApiConfiguration
+        protected ApiConfiguration Configuration
         {
             get
             {
@@ -91,7 +90,7 @@ namespace Microsoft.Restier.Core
                         ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
 
                         // Copy from pre-build registration.
-                        ApiConfig.Configuration(apiType)(services);
+                        ApiConfiguration.Configuration(apiType)(services);
 
                         // Make sure that all convention-based handlers are outermost.
                         EnableConventions(services, apiType);

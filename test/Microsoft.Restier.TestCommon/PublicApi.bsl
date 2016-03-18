@@ -1,7 +1,7 @@
 public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 	protected ApiBase ()
 
-	Microsoft.Restier.Core.ApiConfiguration ApiConfiguration  { protected get; }
+	Microsoft.Restier.Core.ApiConfiguration Configuration  { protected get; }
 	Microsoft.Restier.Core.ApiContext Context  { public get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]protected get; }
 

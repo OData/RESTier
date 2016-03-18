@@ -170,9 +170,9 @@ namespace Microsoft.Restier.Core.Tests.Model
 
     public class BaseApi : ApiBase
     {
-        public new ApiConfiguration ApiConfiguration
+        public ApiConfiguration ApiConfiguration
         {
-            get { return base.ApiConfiguration; }
+            get { return base.Configuration; }
         }
 
         protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
