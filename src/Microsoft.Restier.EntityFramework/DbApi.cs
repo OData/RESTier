@@ -78,8 +78,7 @@ namespace Microsoft.Restier.EntityFramework
 #endif
                     return dbContext;
                 })
-                .AddScoped<DbContext>(sp => sp.GetService<T>())
-                .TryAddScoped<T>();
+                .AddScoped<DbContext>(sp => sp.GetService<T>());
             return services;
         }
 
