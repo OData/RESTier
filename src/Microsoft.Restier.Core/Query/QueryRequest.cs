@@ -19,11 +19,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="query">
         /// A composed query that was derived from a queryable source.
         /// </param>
-        /// <param name="includeTotalCount">
-        /// Indicates if the total number of items should be retrieved
-        /// when the result has been filtered using paging operators.
-        /// </param>
-        public QueryRequest(IQueryable query, bool? includeTotalCount = null)
+        public QueryRequest(IQueryable query)
         {
             Ensure.NotNull(query, "query");
             if (!(query is QueryableSource))
@@ -33,24 +29,12 @@ namespace Microsoft.Restier.Core.Query
             }
 
             this.Expression = query.Expression;
-            this.IncludeTotalCount = includeTotalCount;
         }
 
         /// <summary>
         /// Gets or sets the composed query expression.
         /// </summary>
         public Expression Expression { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the total
-        /// number of items should be retrieved when the
-        /// result has been filtered using paging operators.
-        /// </summary>
-        /// <remarks>
-        /// Setting this to <c>true</c> may have a performance impact as
-        /// the data provider may need to execute two independent queries.
-        /// </remarks>
-        public bool? IncludeTotalCount { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the number
