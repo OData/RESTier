@@ -469,21 +469,19 @@ public class Microsoft.Restier.Core.Query.QueryExpressionContext {
 }
 
 public class Microsoft.Restier.Core.Query.QueryRequest {
-	public QueryRequest (System.Linq.IQueryable query, params System.Nullable`1[[System.Boolean]] includeTotalCount)
+	public QueryRequest (System.Linq.IQueryable query)
 
 	System.Linq.Expressions.Expression Expression  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	System.Nullable`1[[System.Boolean]] IncludeTotalCount  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool ShouldReturnCount  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 
 public class Microsoft.Restier.Core.Query.QueryResult {
+	public QueryResult (System.Collections.IEnumerable results)
 	public QueryResult (System.Exception error)
-	public QueryResult (System.Collections.IEnumerable results, params System.Nullable`1[[System.Int64]] totalCount)
 
 	System.Exception Error  { public get; public set; }
 	System.Collections.IEnumerable Results  { public get; public set; }
 	Microsoft.OData.Edm.IEdmEntitySet ResultsSource  { public get; public set; }
-	System.Nullable`1[[System.Int64]] TotalCount  { public get; public set; }
 }
 
 public enum Microsoft.Restier.Core.Submit.AddAction : int {

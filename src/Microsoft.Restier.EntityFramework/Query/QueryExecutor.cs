@@ -25,22 +25,12 @@ namespace Microsoft.Restier.EntityFramework.Query
     /// </summary>
     internal class QueryExecutor : IQueryExecutor
     {
-        static QueryExecutor()
-        {
-            Instance = new QueryExecutor();
-        }
-
-        private QueryExecutor()
-        {
-        }
-
-        /// <summary>
-        /// Gets the single instance of this query executor.
-        /// </summary>
-        public static QueryExecutor Instance { get; private set; }
+        public IQueryExecutor Inner { get; set; }
 
         /// <summary>
         /// Asynchronously executes a query and produces a query result.
+        /// This class only executes queries against EF provider, it'll
+        /// delegate other queries to inner IQueryExecutor.
         /// </summary>
         /// <typeparam name="TElement">
         /// The type of the elements in the query.
@@ -63,16 +53,17 @@ namespace Microsoft.Restier.EntityFramework.Query
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-            long? totalCount = null;
-            if (context.Request.IncludeTotalCount == true)
+#if EF7
+            if (query.Provider is IAsyncQueryProvider)
+#else
+            if (query.Provider is IDbAsyncQueryProvider)
+#endif
             {
-                var countQuery = ExpressionHelpers.GetCountableQuery(query);
-                totalCount = await countQuery.LongCountAsync(cancellationToken);
+                return new QueryResult(
+                    await query.ToArrayAsync(cancellationToken));
             }
 
-            return new QueryResult(
-                await query.ToArrayAsync(cancellationToken),
-                totalCount);
+            return await Inner.ExecuteQueryAsync(context, query, cancellationToken);
         }
 
         /// <summary>
@@ -109,9 +100,14 @@ namespace Microsoft.Restier.EntityFramework.Query
 #else
             var provider = query.Provider as IDbAsyncQueryProvider;
 #endif
-            var result = await provider.ExecuteAsync<TResult>(
-                expression, cancellationToken);
-            return new QueryResult(new TResult[] { result });
+            if (provider != null)
+            {
+                var result = await provider.ExecuteAsync<TResult>(
+                    expression, cancellationToken);
+                return new QueryResult(new TResult[] { result });
+            }
+
+            return await Inner.ExecuteSingleAsync<TResult>(context, query, expression, cancellationToken);
         }
     }
 }

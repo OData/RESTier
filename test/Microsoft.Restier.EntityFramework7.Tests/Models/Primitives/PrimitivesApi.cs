@@ -13,11 +13,6 @@ namespace Microsoft.Restier.EntityFramework.Tests.Models.Primitives
 {
     class PrimitivesApi : DbApi<PrimitivesContext>
     {
-        internal ApiContext Context
-        {
-            get { return this.ApiContext; }
-        }
-
         internal PrimitivesContext DataContext
         {
             get { return (PrimitivesContext)this.DbContext; }

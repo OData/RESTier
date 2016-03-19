@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         {
             var query = this.api.Source<Product>("Products").OrderBy(p => p.ProductID).Take(1);
             QueryResult result = await this.api.QueryAsync(
-                   new QueryRequest(query, true));
+                   new QueryRequest(query));
 
             var product = result.Results.OfType<Product>().First();
             var price = product.UnitPrice;
