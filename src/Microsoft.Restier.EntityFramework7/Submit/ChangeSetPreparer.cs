@@ -105,11 +105,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
             DataModificationEntry entry,
             CancellationToken cancellationToken)
         {
-            IQueryable query = Api.Source(context.ApiContext, entry.EntitySetName);
+            IQueryable query = context.ApiContext.Source(entry.EntitySetName);
             query = entry.ApplyTo(query);
 
-            QueryResult result = await Api.QueryAsync(
-                context.ApiContext,
+            QueryResult result = await context.ApiContext.QueryAsync(
                 new QueryRequest(query),
                 cancellationToken);
 
