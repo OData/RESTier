@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Restier.Core.Properties;
@@ -329,7 +330,7 @@ namespace Microsoft.Restier.Core.Submit
 
             if (itemValue.GetType() != property.Type)
             {
-                itemValue = Convert.ChangeType(itemValue, property.Type);
+                itemValue = Convert.ChangeType(itemValue, property.Type, CultureInfo.InvariantCulture);
             }
 
             // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary
