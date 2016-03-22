@@ -60,14 +60,13 @@ namespace Microsoft.Restier.EntityFramework
         [CLSCompliant(false)]
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services = base.ConfigureApi(services)
+            return base.ConfigureApi(services)
                 .CutoffPrevious<IModelBuilder>(ModelProducer.Instance)
                 .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)))
                 .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
-                .CutoffPrevious<IQueryExecutor>(QueryExecutor.Instance)
+                .ChainPrevious<IQueryExecutor, QueryExecutor>()
                 .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
-                .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
-            services
+                .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance)
                 .AddScoped<T>(sp =>
                 {
                     var dbContext = this.CreateDbContext(sp);
@@ -79,7 +78,6 @@ namespace Microsoft.Restier.EntityFramework
                     return dbContext;
                 })
                 .AddScoped<DbContext>(sp => sp.GetService<T>());
-            return services;
         }
 
         /// <summary>
