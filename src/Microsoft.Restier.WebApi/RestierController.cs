@@ -456,7 +456,7 @@ namespace Microsoft.Restier.WebApi
 
             if (queryOptions.Count != null)
             {
-                ODataCountOption context = Api.Context.GetApiService<ODataCountOption>();
+                ODataQueryExecutorOptions context = Api.Context.GetApiService<ODataQueryExecutorOptions>();
                 context.IncludeTotalCount = queryOptions.Count.Value;
                 context.SetTotalCount = value => properties.TotalCount = value;
             }

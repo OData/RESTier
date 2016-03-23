@@ -8,7 +8,6 @@ using Microsoft.Data.Entity;
 using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;

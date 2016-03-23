@@ -11,6 +11,10 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents a hook point that executes a query.
     /// </summary>
+    /// <remarks>
+    /// Data provider implemented IQueryExecutor should only handle queries against the specific
+    /// provider, and delegates all other queries to inner IQueryExecutor.
+    /// </remarks>
     public interface IQueryExecutor
     {
         /// <summary>

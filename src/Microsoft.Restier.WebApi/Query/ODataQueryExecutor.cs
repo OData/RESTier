@@ -9,7 +9,7 @@ using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.WebApi.Query
 {
-    internal class QueryTotalCount : IQueryExecutor
+    internal class ODataQueryExecutor : IQueryExecutor
     {
         public IQueryExecutor Inner { get; set; }
 
@@ -18,7 +18,7 @@ namespace Microsoft.Restier.WebApi.Query
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-            var countOption = context.ApiContext.GetApiService<ODataCountOption>();
+            var countOption = context.ApiContext.GetApiService<ODataQueryExecutorOptions>();
             if (countOption.IncludeTotalCount)
             {
                 var countQuery = ExpressionHelpers.GetCountableQuery(query);

@@ -22,6 +22,8 @@ namespace Microsoft.Restier.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query executor that uses Entity Framework methods.
+    /// This class only executes queries against EF provider, it'll
+    /// delegate other queries to inner IQueryExecutor.
     /// </summary>
     internal class QueryExecutor : IQueryExecutor
     {
@@ -29,8 +31,6 @@ namespace Microsoft.Restier.EntityFramework.Query
 
         /// <summary>
         /// Asynchronously executes a query and produces a query result.
-        /// This class only executes queries against EF provider, it'll
-        /// delegate other queries to inner IQueryExecutor.
         /// </summary>
         /// <typeparam name="TElement">
         /// The type of the elements in the query.
