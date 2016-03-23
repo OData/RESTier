@@ -19,7 +19,10 @@ namespace Microsoft.Restier.Security
     /// </summary>
     public class RoleBasedAuthorizer : IQueryExpressionInspector
     {
-        private const string AssertedRoles = "Microsoft.Restier.Security.AssertedRoles";
+        /// <summary>
+        /// Gets or sets the inner <see cref="IQueryExpressionInspector"/> instance.
+        /// </summary>
+        public IQueryExpressionInspector Inner { get; set; }
 
         /// <summary>
         /// Inspects an expression.
@@ -37,24 +40,23 @@ namespace Microsoft.Restier.Security
             // TODO GitHubIssue#35 : Support Inspect more elements in authorization
             if (context.ModelReference == null)
             {
-                return true;
+                return CallInner(context);
             }
 
             var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
             if (dataSourceStubReference == null)
             {
-                return true;
+                return CallInner(context);
             }
 
             var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
-                return true;
+                return CallInner(context);
             }
 
-            var assertedRoles = context.QueryContext
-                .GetProperty<List<string>>(AssertedRoles);
-            var permissions = context.QueryContext.ApiContext.GetApiService<IEnumerable<ApiPermission>>();
+            var assertedRoles = context.QueryContext.GetApiService<AssertedRoles>();
+            var permissions = context.QueryContext.GetApiServices<ApiPermission>();
             if (permissions == null)
             {
                 throw new SecurityException(
@@ -72,6 +74,25 @@ namespace Microsoft.Restier.Security
             {
                 throw new SecurityException(
                     string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
+            }
+
+            return CallInner(context);
+        }
+
+        /// <summary>
+        /// Calls the inner handler if it presents.
+        /// </summary>
+        /// <param name="context">
+        /// The query expression context.
+        /// </param>
+        /// <returns>
+        /// The return value of the inner handler or <c>true</c> if inner handler is <c>null</c>.
+        /// </returns>
+        protected bool CallInner(QueryExpressionContext context)
+        {
+            if (Inner != null)
+            {
+                return Inner.Inspect(context);
             }
 
             return true;

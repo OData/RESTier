@@ -16,9 +16,6 @@ namespace Microsoft.Restier.Security
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class InvocationContextExtensions
     {
-        private const string AssertedRoles =
-            "Microsoft.Restier.Security.AssertedRoles";
-
         /// <summary>
         /// Asserts that a role should be present for the current principal.
         /// </summary>
@@ -33,13 +30,7 @@ namespace Microsoft.Restier.Security
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(role, "role");
-            var assertedRoles = context.GetProperty<List<string>>(AssertedRoles);
-            if (assertedRoles == null)
-            {
-                assertedRoles = new List<string>();
-                context.SetProperty(AssertedRoles, assertedRoles);
-            }
-
+            var assertedRoles = context.GetApiService<AssertedRoles>();
             assertedRoles.Add(role);
         }
 
@@ -57,15 +48,16 @@ namespace Microsoft.Restier.Security
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(role, "role");
-            var assertedRoles = context.GetProperty<List<string>>(AssertedRoles);
-            if (assertedRoles != null)
+            var assertedRoles = context.GetApiService<AssertedRoles>();
+            int index = assertedRoles.LastIndexOf(role);
+            if (index >= 0)
             {
-                int index = assertedRoles.LastIndexOf(role);
-                if (index >= 0)
-                {
-                    assertedRoles.RemoveAt(index);
-                }
+                assertedRoles.RemoveAt(index);
             }
         }
+    }
+
+    internal class AssertedRoles : List<string>
+    {
     }
 }
