@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core
     /// is used for a specific API flow. It maintains a set of properties
     /// that can store data that lives for the lifetime of the flow.
     /// </remarks>
-    public class InvocationContext : PropertyBag
+    public class InvocationContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
