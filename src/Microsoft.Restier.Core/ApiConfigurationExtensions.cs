@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Restier.Core.Conventions;
 
 namespace Microsoft.Restier.Core
 {
@@ -26,7 +27,12 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(configuration, "configuration");
             Ensure.NotNull(propertyName, "propertyName");
 
-            configuration.GetIgnoredPropertiesImplementation().Add(propertyName);
+            var ignored = configuration.GetApiService<IgnoredPropertyList>();
+            if (ignored != null)
+            {
+                ignored.Add(propertyName);
+            }
+
             return configuration;
         }
 
@@ -34,19 +40,13 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(configuration, "configuration");
 
-            return configuration.GetIgnoredPropertiesImplementation().Contains(propertyName);
-        }
-
-        private static ICollection<string> GetIgnoredPropertiesImplementation(this ApiConfiguration configuration)
-        {
-            var ignoredProperties = configuration.GetProperty<ICollection<string>>(IgnoredPropertiesKey);
-            if (ignoredProperties == null)
+            var ignored = configuration.GetApiService<IgnoredPropertyList>();
+            if (ignored != null)
             {
-                ignoredProperties = new HashSet<string>();
-                configuration.SetProperty(IgnoredPropertiesKey, ignoredProperties);
+                return ignored.Contains(propertyName);
             }
 
-            return ignoredProperties;
+            return false;
         }
     }
 }
