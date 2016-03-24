@@ -12,8 +12,6 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public static class ApiConfigurationExtensions
     {
-        private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
-
         /// <summary>
         /// Ignores the given property when building the model.
         /// </summary>
