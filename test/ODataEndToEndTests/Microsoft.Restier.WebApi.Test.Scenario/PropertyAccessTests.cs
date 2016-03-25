@@ -238,9 +238,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             TestGetStatusCodeIs("People(1)/FavoriteFeature2/$value", 204);
         }
 
-        /// Note: 1.null collection of any type (primitive/enum/Complex/navCollection) is not tested yet.
-        /// 2. No test case of collection with primitive/enum/complex as EF does not support
-        /// 3. Complex can not be null in EF
+        /// Note: 1. No test case of collection with primitive/enum/complex as EF does not support
+        /// 2. Complex can not be null in EF
         [Theory]
         // Single primitive property with null value 
         [InlineData("/People(4)/LastName", 204)]
@@ -256,6 +255,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [InlineData("/People(5)/BestFriend/LastName", 204)]
         // collection of navigation property with empty collection value
         [InlineData("/People(5)/Friends", 200)]
+        // collection of navigation property with null collection value
+        [InlineData("/People(7)/Friends", 200)]
         public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
