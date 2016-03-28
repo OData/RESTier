@@ -130,6 +130,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                     Feature.Feature4,
                     Feature.Feature1
                 }
+            },
+            new Person
+            {
+                PersonId = 7,
+                FirstName = "u4",
+                FavoriteFeature = Feature.Feature4,
+                HomeAddress = new Location()
             }
         };
 
@@ -141,6 +148,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
             people[3].Friends = new Collection<Person> { people[0], people[1] };
             people[4].Friends = new Collection<Person>();
             people[5].Friends = new Collection<Person>();
+            people[6].Friends = new Collection<Person>();
 
             people[5].BestFriend = people[4];
         }

@@ -153,12 +153,12 @@ namespace Microsoft.Restier.WebApi
         }
 
         private static LambdaExpression CreateNotEqualsNullExpression(
-            Type currentType)
+            Expression propertyExpression, ParameterExpression parameterExpression)
         {
-            var parameterExpression = Expression.Parameter(currentType);
             var nullConstant = Expression.Constant(null);
-            BinaryExpression nullFilterExpression = Expression.NotEqual(parameterExpression, nullConstant);
+            BinaryExpression nullFilterExpression = Expression.NotEqual(propertyExpression, nullConstant);
             var whereExpression = Expression.Lambda(nullFilterExpression, parameterExpression);
+
             return whereExpression;
         }
         #endregion
@@ -238,6 +238,9 @@ namespace Microsoft.Restier.WebApi
 
             this.currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
 
+            // TODO GitHubIssue#330: EF QueryExecutor will throw exception if check whether collections is null added.
+            // Error message likes "Cannot compare elements of type 'ICollection`1[[EntityType]]'.
+            // Only primitive types, enumeration types and entity types are supported."
             if (navigationSegment.NavigationProperty.TargetMultiplicity() == EdmMultiplicity.Many)
             {
                 // get the element type of the target
@@ -255,15 +258,15 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
+                // Check whether property is null or not before futher selection
+                var whereExpression =
+                    CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
+                this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
+
                 this.currentType = navigationPropertyExpression.Type;
                 LambdaExpression selectBody =
                     Expression.Lambda(navigationPropertyExpression, entityParameterExpression);
                 this.queryable = ExpressionHelpers.Select(this.queryable, selectBody);
-
-                // Handle case we expect a single navigation property which could be null,
-                // default query executor will throw NullReferenceException
-                var whereExpression = CreateNotEqualsNullExpression(this.currentType);
-                this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
             }
         }
 
@@ -273,6 +276,14 @@ namespace Microsoft.Restier.WebApi
             var entityParameterExpression = Expression.Parameter(this.currentType);
             var structuralPropertyExpression =
                 Expression.Property(entityParameterExpression, propertySegment.PropertyName);
+
+            // Check whether property is null or not before futher selection
+            if (propertySegment.Property.Type.IsNullable)
+            {
+                var whereExpression =
+                    CreateNotEqualsNullExpression(structuralPropertyExpression, entityParameterExpression);
+                this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
+            }
 
             if (propertySegment.Property.Type.IsCollection())
             {
@@ -294,15 +305,6 @@ namespace Microsoft.Restier.WebApi
                 LambdaExpression selectBody =
                     Expression.Lambda(structuralPropertyExpression, entityParameterExpression);
                 this.queryable = ExpressionHelpers.Select(this.queryable, selectBody);
-
-                // Handle request property of complex with null value
-                // default query executor will throw NullReferenceException
-                if (propertySegment.Property.Type.IsNullable
-                    && propertySegment.Property.Type.TypeKind() == EdmTypeKind.Complex)
-                {
-                    var whereExpression = CreateNotEqualsNullExpression(this.currentType);
-                    this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
-                }
             }
         }
         #endregion

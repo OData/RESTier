@@ -401,7 +401,7 @@ namespace Microsoft.Restier.WebApi
             {
                 // TODO GitHubIssue#288: 204 expected when requesting single nav propery which has null value
                 // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
-                // ~/People(key)/BestFriend, abd BestFriend is null, expected 204
+                // ~/People(key)/BestFriend, and BestFriend is null, expected 204
                 throw new HttpResponseException(
                     this.Request.CreateErrorResponse(
                         HttpStatusCode.NotFound,

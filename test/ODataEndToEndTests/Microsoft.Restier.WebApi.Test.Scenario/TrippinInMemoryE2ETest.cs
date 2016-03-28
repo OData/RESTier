@@ -38,6 +38,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetPayloadContains("People(1)/Emails",
                 "\"@odata.context\":\"http://localhost:21248/api/Trippin/$metadata#Collection(Edm.String)\"");
+            TestGetPayloadContains("People(7)/Emails",
+                "\"value\":[");
         }
 
         [Fact]
@@ -84,7 +86,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Theory]
-        // Note, null collection of any type (primitive/enum/Complex/navCollection) is not tested.
+        // Note, null collection of any type (navCollection) is not tested as EF Query Executor does not support comparision of ICollection.
         // Single primitive property with null value 
         [InlineData("/People(5)/MiddleName", 204)]
         // Single primitive property $value with null value 
@@ -94,6 +96,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         // Collection of primitive property $value with null value, should throw exception
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
         [InlineData("/People(5)/Emails/$value", 404)]
+        // Collection of primitive property with null collection
+        [InlineData("/People(7)/Emails", 200)]
         // single complex property with null value
         [InlineData("/People(5)/HomeAddress", 204)]
         // single complex property's propery and complex property has null value
@@ -106,6 +110,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         // collection of complex property's propery and collection of complex property has null value
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
         [InlineData("/People(5)/Locations/Address", 404)]
+        // Collection of primitive property with null collection
+        [InlineData("/People(7)/Locations", 200)]
         // single navigation property with null value
         // TODO Should be 204, cannot differentiate ~/People(nonexistkey) vs /People(5)/NullSingNav now
         [InlineData("/People(5)/BestFriend", 404)]
