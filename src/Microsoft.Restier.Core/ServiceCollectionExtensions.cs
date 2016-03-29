@@ -291,7 +291,14 @@ namespace Microsoft.Restier.Core
 
             var serviceProvider = serviceProviderFactory != null ?
                 serviceProviderFactory(obj) : obj.BuildServiceProvider();
-            return serviceProvider.GetService<ApiConfiguration>();
+            var configuration = serviceProvider.GetService<ApiConfiguration>();
+
+            foreach (var e in serviceProvider.GetServices<IApiInitializer>())
+            {
+                e.Initialize(configuration);
+            }
+
+            return configuration;
         }
 
         /// <summary>

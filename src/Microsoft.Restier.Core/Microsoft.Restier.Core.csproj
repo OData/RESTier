@@ -53,6 +53,9 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
+    <Compile Include="Api.cs" />
+    <Compile Include="ApiBuilder.cs" />
+    <Compile Include="ApiBuilderExtensions.cs" />
     <Compile Include="ApiContextExtensions.cs" />
     <Compile Include="ServiceCollectionExtensions.cs" />
     <Compile Include="Model\FunctionAttribute.cs" />
@@ -110,6 +113,7 @@
     <Compile Include="Submit\ValidationSeverity.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api.Interfaces.cs" />
     <None Include="Microsoft.Restier.Core.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

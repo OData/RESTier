@@ -52,16 +52,14 @@ namespace Microsoft.Restier.Core
 
                 if (this.apiContext == null)
                 {
-                    this.apiContext = this.CreateApiContext(
-                        this.Configuration);
-                    var apiScope = this.apiContext.GetApiService<ApiHolder>();
+                    var scope = Configuration.GetApiService<IServiceScopeFactory>().CreateScope();
+                    var apiScope = scope.ServiceProvider.GetService<ApiHolder>();
                     if (apiScope != null)
                     {
                         apiScope.Api = this;
                     }
 
-                    ApiConfiguratorAttribute.ApplyInitialization(
-                        this.GetType(), this, this.apiContext);
+                    this.apiContext = Configuration.CreateContextWithin(scope);
                 }
 
                 return this.apiContext;
@@ -84,27 +82,27 @@ namespace Microsoft.Restier.Core
                     this.GetType(),
                     apiType =>
                     {
-                        IServiceCollection services = new ServiceCollection()
-                            .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
-                        services = this.ConfigureApi(services);
-                        ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
+                        var builder = new ApiBuilder()
+                            .AddInnerMost(ApiConfiguration.Configure(apiType).Configuration)
+                            .UseAttributes(apiType)
+                            .AddInnerMost(services => this.ConfigureApi(services))
+                            .UseConventions(apiType)
+                            .AddOuterMost(services =>
+                            {
+                                if (!services.HasService<ApiBase>())
+                                {
+                                    services.AddScoped<ApiHolder>()
+                                        .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
+                                        .AddScoped(sp => sp.GetService<ApiHolder>().Api);
+                                }
+                            });
+                        var serviceCollection = new ServiceCollection();
+                        ApiBuilder.DefaultInnerMost(serviceCollection);
+                        builder.Configuration(serviceCollection);
+                        ApiBuilder.DefaultOuterMost(serviceCollection);
 
-                        // Copy from pre-build registration.
-                        ApiConfiguration.Configuration(apiType)(services);
-
-                        // Make sure that all convention-based handlers are outermost.
-                        EnableConventions(services, apiType);
-                        if (!services.HasService<ApiBase>())
-                        {
-                            services.AddScoped<ApiHolder>()
-                                .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.Context);
-                        }
-
-                        var configuration = this.CreateApiConfiguration(services);
-                        ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
-                        return configuration;
+                        var configration = this.CreateApiConfiguration(serviceCollection);
+                        return configration;
                     });
             }
         }
@@ -123,12 +121,6 @@ namespace Microsoft.Restier.Core
             if (this.IsDisposed)
             {
                 return;
-            }
-
-            if (this.apiContext != null)
-            {
-                ApiConfiguratorAttribute.ApplyDisposal(
-                    this.GetType(), this, this.apiContext);
             }
 
             this.Dispose(true);
@@ -164,21 +156,6 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Creates the API context for this API.
-        /// </summary>
-        /// <param name="configuration">
-        /// The API configuration to use.
-        /// </param>
-        /// <returns>
-        /// The API context for this API.
-        /// </returns>
-        protected virtual ApiContext CreateApiContext(
-            ApiConfiguration configuration)
-        {
-            return new ApiContext(configuration);
-        }
-
-        /// <summary>
         /// Releases the unmanaged resources that are used by the
         /// object and, optionally, releases the managed resources.
         /// </summary>
@@ -191,39 +168,9 @@ namespace Microsoft.Restier.Core
             this.IsDisposed = true;
             if (this.apiContext != null)
             {
-                this.apiContext.DisposeScope();
+                this.apiContext.Dispose();
                 this.apiContext = null;
             }
-        }
-
-        /// <summary>
-        /// Enables code-based conventions for an API.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="targetType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
-        /// <remarks>
-        /// This method adds hook points to the API configuration that
-        /// inspect a target type for a variety of code-based conventions
-        /// such as usage of specific attributes or members that follow
-        /// certain naming conventions.
-        /// </remarks>
-        private static void EnableConventions(
-            IServiceCollection services,
-            Type targetType)
-        {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
-
-            ConventionBasedChangeSetAuthorizer.ApplyTo(services, targetType);
-            ConventionBasedChangeSetEntryFilter.ApplyTo(services, targetType);
-            services.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
-            ConventionBasedApiModelBuilder.ApplyTo(services, targetType);
-            ConventionBasedOperationProvider.ApplyTo(services, targetType);
-            ConventionBasedEntitySetFilter.ApplyTo(services, targetType);
         }
 
         // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.

@@ -17,14 +17,14 @@ namespace Microsoft.Restier.WebApi.Batch
     /// </summary>
     public class RestierChangeSetRequestItem : ChangeSetRequestItem
     {
-        private Func<ApiBase> apiFactory;
+        private Func<ApiContext> apiFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierChangeSetRequestItem" /> class.
         /// </summary>
         /// <param name="requests">The request messages.</param>
         /// <param name="apiFactory">Gets or sets the callback to create API.</param>
-        public RestierChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<ApiBase> apiFactory)
+        public RestierChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<ApiContext> apiFactory)
             : base(requests)
         {
             Ensure.NotNull(apiFactory, "apiFactory");

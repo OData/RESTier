@@ -95,7 +95,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
-                    target = context.QueryContext.GetApiService<ApiBase>();
+                    target = context.QueryContext.ApiContext.
+                        ServiceProvider.GetService(targetType);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {
@@ -136,7 +137,8 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!singletonProperty.GetMethod.IsStatic)
                 {
-                    target = context.QueryContext.GetApiService<ApiBase>();
+                    target = context.QueryContext.ApiContext.
+                        ServiceProvider.GetService(targetType);
                     if (target == null ||
                         !this.targetType.IsAssignableFrom(target.GetType()))
                     {

@@ -41,13 +41,13 @@ namespace Microsoft.Restier.WebApi
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            Func<ApiBase> apiFactory,
+            Func<ApiContext> apiFactory,
             RestierBatchHandler batchHandler = null)
-            where TApi : ApiBase
+            where TApi : class
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
-            ApiConfiguration.Configure<TApi>(services =>
+            Api<TApi>.Configure().AddOuterHead(services =>
             {
                 services.AddScoped<ODataQueryExecutorOptions>()
                     .ChainPrevious<IQueryExecutor, ODataQueryExecutor>();
@@ -86,7 +86,7 @@ namespace Microsoft.Restier.WebApi
             where TApi : ApiBase, new()
         {
             return await MapRestierRoute<TApi>(
-                config, routeName, routePrefix, () => new TApi(), batchHandler);
+                config, routeName, routePrefix, () => new TApi().Context, batchHandler);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="apiFactory">The API factory.</param>
         /// <returns>The routing conventions created.</returns>
         private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
-            this HttpConfiguration config, IEdmModel model, Func<ApiBase> apiFactory)
+            this HttpConfiguration config, IEdmModel model, Func<ApiContext> apiFactory)
         {
             var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
             var index = 0;

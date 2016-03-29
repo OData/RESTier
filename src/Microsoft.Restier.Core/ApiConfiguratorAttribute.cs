@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public abstract class ApiConfiguratorAttribute : Attribute
+    public abstract class ApiConfiguratorAttribute : Attribute, IApiConfigurator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiConfiguratorAttribute" /> class.
@@ -212,6 +212,42 @@ namespace Microsoft.Restier.Core
             Type type,
             object instance)
         {
+        }
+
+        [CLSCompliant(false)]
+        public void Configure(IServiceCollection services, Type apiType)
+        {
+            ConfigureApi(services, apiType);
+
+            var adapter = new AttributeAdapter()
+            {
+                Target = this,
+                ApiType = apiType,
+            };
+            services.AddInstance<IApiInitializer>(adapter)
+                .AddInstance<IApiContextConfigurator>(adapter);
+        }
+
+        private class AttributeAdapter : IApiInitializer, IApiContextConfigurator
+        {
+            public ApiConfiguratorAttribute Target { get; set; }
+
+            public Type ApiType { get; set; }
+
+            public void Cleanup(ApiContext context)
+            {
+                Target.Dispose(context, ApiType, context.ServiceProvider.GetService(ApiType));
+            }
+
+            public void Initialize(ApiContext context)
+            {
+                Target.Initialize(context, ApiType, context.ServiceProvider.GetService(ApiType));
+            }
+
+            public void Initialize(ApiConfiguration configuration)
+            {
+                Target.Configure(configuration, ApiType);
+            }
         }
     }
 }

@@ -60,15 +60,10 @@ namespace Microsoft.Restier.EntityFramework
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(ModelProducer.Instance)
-                .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)))
-                .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
-                .ChainPrevious<IQueryExecutor, QueryExecutor>()
-                .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
-                .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance)
                 .AddScoped<T>(sp =>
                 {
-                    var dbContext = this.CreateDbContext(sp);
+                    var instance = (DbApi<T>)sp.GetService<ApiBase>();
+                    var dbContext = instance.CreateDbContext(sp);
 #if EF7
                     // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
 #else
@@ -76,7 +71,7 @@ namespace Microsoft.Restier.EntityFramework
 #endif
                     return dbContext;
                 })
-                .AddScoped<DbContext>(sp => sp.GetService<T>());
+                .UseDbContext<T>();
         }
 
         /// <summary>
