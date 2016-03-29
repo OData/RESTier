@@ -456,9 +456,10 @@ namespace Microsoft.Restier.WebApi
 
             if (queryOptions.Count != null)
             {
-                ODataQueryExecutorOptions context = Api.Context.GetApiService<ODataQueryExecutorOptions>();
-                context.IncludeTotalCount = queryOptions.Count.Value;
-                context.SetTotalCount = value => properties.TotalCount = value;
+                RestierQueryExecutorOptions queryExecutorOptions =
+                    Api.Context.GetApiService<RestierQueryExecutorOptions>();
+                queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
+                queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }
 
             // Entity count can NOT be evaluated at this point of time because the source

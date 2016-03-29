@@ -49,8 +49,8 @@ namespace Microsoft.Restier.WebApi
 
             ApiConfiguration.Configure<TApi>(services =>
             {
-                services.AddScoped<ODataQueryExecutorOptions>()
-                    .ChainPrevious<IQueryExecutor, ODataQueryExecutor>();
+                services.AddScoped<RestierQueryExecutorOptions>()
+                    .ChainPrevious<IQueryExecutor, RestierQueryExecutor>();
             });
             using (var api = apiFactory())
             {
