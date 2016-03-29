@@ -90,7 +90,7 @@
     <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
     <Compile Include="HttpConfigurationExtensions.cs" />
     <Compile Include="HttpRequestMessageExtensions.cs" />
-    <Compile Include="Query\ODataQueryExecutor.cs" />
+    <Compile Include="Query\RestierQueryExecutor.cs" />
     <Compile Include="RestierQueryBuilder.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="RestierFormattingAttribute.cs" />
@@ -120,7 +120,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SharedResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Query\ODataQueryExecutorOptions.cs" />
+    <Compile Include="Query\RestierQueryExecutorOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">

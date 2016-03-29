@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Restier.WebApi.Query
 {
-    internal class ODataQueryExecutorOptions
+    internal class RestierQueryExecutorOptions
     {
         /// <summary>
         /// Gets or sets a value indicating whether the total
