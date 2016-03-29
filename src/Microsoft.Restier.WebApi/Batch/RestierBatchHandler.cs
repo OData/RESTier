@@ -25,7 +25,7 @@ namespace Microsoft.Restier.WebApi.Batch
         /// </summary>
         /// <param name="httpServer">The HTTP server instance.</param>
         /// <param name="apiFactory">Gets or sets the callback to create API.</param>
-        public RestierBatchHandler(HttpServer httpServer, Func<ApiBase> apiFactory = null)
+        public RestierBatchHandler(HttpServer httpServer, Func<ApiContext> apiFactory = null)
             : base(httpServer)
         {
             this.ApiFactory = apiFactory;
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.WebApi.Batch
         /// <summary>
         /// Gets or sets the callback to create API.
         /// </summary>
-        public Func<ApiBase> ApiFactory { get; set; }
+        public Func<ApiContext> ApiFactory { get; set; }
 
         /// <summary>
         /// Asynchronously parses the batch requests.

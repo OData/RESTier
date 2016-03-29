@@ -3,10 +3,14 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Conventions;
+using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -35,10 +39,8 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration : PropertyBag
     {
-        private static ConcurrentDictionary<Type, Action<IServiceCollection>> configurations =
-            new ConcurrentDictionary<Type, Action<IServiceCollection>>();
-
-        private static Action<IServiceCollection> emptyConfig = _ => { };
+        private static ConcurrentDictionary<Type, ApiBuilder> configurations =
+            new ConcurrentDictionary<Type, ApiBuilder>();
 
         private IServiceProvider serviceProvider;
 
@@ -65,21 +67,14 @@ namespace Microsoft.Restier.Core
 
         internal IEdmModel Model { get; private set; }
 
-        /// <summary>
-        /// Adds a configuration procedure for API type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The API type.</typeparam>
-        /// <param name="configurationCallback">
-        /// An action that will be called during the configuration of <typeparamref name="T"/>.
-        /// </param>
-        [CLSCompliant(false)]
-        public static void Configure<T>(Action<IServiceCollection> configurationCallback)
-             where T : ApiBase
+        public static ApiBuilder Configure<TKey>()
         {
-            ApiConfiguration.configurations.AddOrUpdate(
-                typeof(T),
-                configurationCallback,
-                (type, existing) => existing + configurationCallback);
+            return Configure(typeof(TKey));
+        }
+
+        public static ApiBuilder Configure(Type keyType)
+        {
+            return configurations.GetOrAdd(keyType, _ => new ApiBuilder());
         }
 
         /// <summary>
@@ -92,15 +87,10 @@ namespace Microsoft.Restier.Core
             return this.serviceProvider.GetService<T>();
         }
 
-        internal static Action<IServiceCollection> Configuration(Type apiType)
+        [CLSCompliant(false)]
+        public ApiContext CreateContextWithin(IServiceScope scope)
         {
-            Action<IServiceCollection> val;
-            if (ApiConfiguration.configurations.TryGetValue(apiType, out val))
-            {
-                return val;
-            }
-
-            return ApiConfiguration.emptyConfig;
+            return GetApiService<IApiContextFactory>().CreateWithin(scope);
         }
 
         internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)

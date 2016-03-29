@@ -107,6 +107,9 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\ApiBuilderExtensions.cs">
+      <Link>ApiBuilderExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Microsoft.Restier.EntityFramework\DbApi.cs">
       <Link>DbApi.cs</Link>
     </Compile>

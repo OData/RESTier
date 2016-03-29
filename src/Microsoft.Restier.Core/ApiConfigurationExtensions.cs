@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core.Conventions;
 
 namespace Microsoft.Restier.Core
 {
@@ -12,6 +14,17 @@ namespace Microsoft.Restier.Core
     public static class ApiConfigurationExtensions
     {
         private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
+
+        /// <summary>
+        /// Creates an <see cref="ApiContext"/> configured by current <see cref="ApiConfiguration"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="ApiConfiguration"/>.</param>
+        /// <returns>An <see cref="ApiContext"/>.</returns>
+        public static ApiContext CreateContext(this ApiConfiguration obj)
+        {
+            var scope = obj.GetApiService<IServiceScopeFactory>().CreateScope();
+            return obj.CreateContextWithin(scope);
+        }
 
         /// <summary>
         /// Ignores the given property when building the model.

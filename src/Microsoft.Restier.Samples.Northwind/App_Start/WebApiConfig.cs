@@ -6,6 +6,7 @@ using System.Web.OData.Extensions;
 using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.Restier.WebApi;
 using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.Samples.Northwind
 {
@@ -31,8 +32,13 @@ namespace Microsoft.Restier.Samples.Northwind
         public static async void RegisterNorthwind(
             HttpConfiguration config, HttpServer server)
         {
-            await config.MapRestierRoute<NorthwindApi>(
+            //await config.MapRestierRoute<NorthwindApi>(
+            //    "NorthwindApi", "api/Northwind",
+            //    new RestierBatchHandler(server));
+            NorthWindApi2.Configure();
+            await config.MapRestierRoute<NorthWindApi2>(
                 "NorthwindApi", "api/Northwind",
+                () => Api<NorthWindApi2>.Configuration.CreateContext(),
                 new RestierBatchHandler(server));
         }
     }

@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Properties;
@@ -34,6 +35,13 @@ namespace Microsoft.Restier.Core
         private static readonly MethodInfo Source3Method = typeof(DataSourceStubs)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);
+
+        public static ApiContext CreateNew(this ApiContext obj)
+        {
+            var sp = obj.ServiceProvider;
+            return sp.GetService<IApiContextFactory>().CreateWithin(
+                sp.GetService<IServiceScopeFactory>().CreateScope());
+        }
 
         #region Model
 

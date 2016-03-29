@@ -50,10 +50,10 @@ namespace Microsoft.Restier.Security
                 return CallInner(context);
             }
 
-            var target = context.QueryContext.GetApiService<ApiBase>();
-            var entitySetProperty = target.GetType().GetProperties(
+            var apiTypes = context.QueryContext.GetApiService<ApiTypeInfo>().ApiTypes;
+            var entitySetProperty = apiTypes.SelectMany(e => e.GetProperties(
                 BindingFlags.Public | BindingFlags.Instance |
-                BindingFlags.Static | BindingFlags.DeclaredOnly)
+                BindingFlags.Static | BindingFlags.DeclaredOnly))
                 .SingleOrDefault(p => p.Name == entitySet.Name);
             if (entitySetProperty != null)
             {

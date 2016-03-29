@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Properties;
 
@@ -16,7 +17,7 @@ namespace Microsoft.Restier.Core
     /// maintains a set of properties that can be used to share instance
     /// data between hook points.
     /// </remarks>
-    public class ApiContext : PropertyBag
+    public class ApiContext : PropertyBag, IDisposable
     {
         private IServiceScope contextScope;
 
@@ -27,12 +28,23 @@ namespace Microsoft.Restier.Core
         /// An API configuration.
         /// </param>
         public ApiContext(ApiConfiguration configuration)
+            : this(configuration.ServiceProvider.GetService<IServiceScopeFactory>().CreateScope())
         {
-            Ensure.NotNull(configuration, "configuration");
+        }
 
-            this.Configuration = configuration;
-            this.contextScope = configuration.ServiceProvider
-                .GetRequiredService<IServiceScopeFactory>().CreateScope();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiContext" /> class.
+        /// </summary>
+        /// <param name="contextScope">
+        /// The <see cref="IServiceScope"/> within which to initialize the <see cref="ApiContext"/>.
+        /// </param>
+        [CLSCompliant(false)]
+        public ApiContext(IServiceScope contextScope)
+        {
+            Ensure.NotNull(contextScope, "contextScope");
+
+            this.contextScope = contextScope;
+            this.Configuration = contextScope.ServiceProvider.GetRequiredService<ApiConfiguration>();
         }
 
         /// <summary>
@@ -45,7 +57,39 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public IServiceProvider ServiceProvider
         {
-            get { return this.contextScope.ServiceProvider; }
+            get
+            {
+                if (this.contextScope == null)
+                {
+                    throw new ObjectDisposedException("ApiContext");
+                }
+
+                return this.contextScope.ServiceProvider;
+            }
+        }
+
+        public void Dispose()
+        {
+            var scope = this.contextScope;
+            if (scope == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var configs = scope.ServiceProvider
+                    .GetServices<IApiContextConfigurator>().Reverse();
+                foreach (var e in configs)
+                {
+                    e.Cleanup(this);
+                }
+            }
+            finally
+            {
+                this.contextScope = null;
+                scope.Dispose();
+            }
         }
 
         /// <summary>
@@ -66,11 +110,6 @@ namespace Microsoft.Restier.Core
         public IEnumerable<T> GetApiServices<T>() where T : class
         {
             return this.ServiceProvider.GetServices<T>();
-        }
-
-        internal void DisposeScope()
-        {
-            this.contextScope.Dispose();
         }
     }
 }
