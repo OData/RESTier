@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Core
     /// consistent set of hook points throughout a particular API flow.
     /// </para>
     /// </remarks>
-    public class ApiConfiguration : PropertyBag
+    public class ApiConfiguration
     {
         private static ConcurrentDictionary<Type, Action<IServiceCollection>> configurations =
             new ConcurrentDictionary<Type, Action<IServiceCollection>>();

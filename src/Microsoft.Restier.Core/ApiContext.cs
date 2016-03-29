@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core
     /// maintains a set of properties that can be used to share instance
     /// data between hook points.
     /// </remarks>
-    public class ApiContext : PropertyBag
+    public class ApiContext
     {
         private IServiceScope contextScope;
 

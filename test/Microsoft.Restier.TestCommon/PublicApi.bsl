@@ -226,7 +226,7 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeTransient (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
 }
 
-public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.PropertyBag {
+public class Microsoft.Restier.Core.ApiConfiguration {
 	public ApiConfiguration (System.IServiceProvider serviceProvider)
 
 	System.IServiceProvider ServiceProvider  { public get; }
@@ -239,7 +239,7 @@ public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.Pr
 	public T GetApiService ()
 }
 
-public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.PropertyBag {
+public class Microsoft.Restier.Core.ApiContext {
 	public ApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 
 	Microsoft.Restier.Core.ApiConfiguration Configuration  { [CompilerGeneratedAttribute(),]public get; }
@@ -249,23 +249,13 @@ public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.Property
 	public IEnumerable`1 GetApiServices ()
 }
 
-public class Microsoft.Restier.Core.InvocationContext : Microsoft.Restier.Core.PropertyBag {
+public class Microsoft.Restier.Core.InvocationContext {
 	public InvocationContext (Microsoft.Restier.Core.ApiContext apiContext)
 
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
 
 	public T GetApiService ()
 	public IEnumerable`1 GetApiServices ()
-}
-
-public class Microsoft.Restier.Core.PropertyBag {
-	public PropertyBag ()
-
-	public void ClearProperty (string name)
-	public virtual object GetProperty (string name)
-	public T GetProperty (string name)
-	public virtual bool HasProperty (string name)
-	public void SetProperty (string name, object value)
 }
 
 public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.MulticastDelegate, ICloneable, ISerializable {
@@ -693,5 +683,13 @@ public class Microsoft.Restier.WebApi.Formatter.Serialization.RestierRawSerializ
 	public RestierRawSerializer ()
 
 	public virtual void WriteObject (object graph, System.Type type, Microsoft.OData.Core.ODataMessageWriter messageWriter, System.Web.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+}
+
+public sealed class Microsoft.Restier.WebApi.Formatter.Serialization.ETagGetter : System.MulticastDelegate, ICloneable, ISerializable {
+	public ETagGetter (object object, System.IntPtr method)
+
+	public virtual System.IAsyncResult BeginInvoke (object entity, System.AsyncCallback callback, object object)
+	public virtual string EndInvoke (System.IAsyncResult result)
+	public virtual string Invoke (object entity)
 }
 

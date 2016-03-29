@@ -24,6 +24,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Filters;
+using Microsoft.Restier.WebApi.Formatter.Serialization;
 using Microsoft.Restier.WebApi.Properties;
 using Microsoft.Restier.WebApi.Query;
 using Microsoft.Restier.WebApi.Results;
@@ -82,7 +83,7 @@ namespace Microsoft.Restier.WebApi
             };
             QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
 
-            this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
+            this.Request.Properties[ETagGetterKey] = this.Api.Context.GetApiService<ETagGetter>();
 
             return this.CreateQueryResponse(queryResult.Results.AsQueryable(), path.EdmType);
         }

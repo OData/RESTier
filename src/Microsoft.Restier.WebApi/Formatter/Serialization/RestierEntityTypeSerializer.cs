@@ -10,6 +10,13 @@ using Microsoft.Restier.WebApi.Results;
 namespace Microsoft.Restier.WebApi.Formatter.Serialization
 {
     /// <summary>
+    /// Optional service to get e-tag of an entity instance.
+    /// </summary>
+    /// <param name="entity">The entity instance.</param>
+    /// <returns>e-tag value of <paramref name="entity"/>.</returns>
+    public delegate string ETagGetter(object entity);
+
+    /// <summary>
     /// The serializer for entity result.
     /// </summary>
     public class RestierEntityTypeSerializer : ODataEntityTypeSerializer
@@ -58,7 +65,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             object etagGetterObject;
             if (entityInstanceContext.Request.Properties.TryGetValue("ETagGetter", out etagGetterObject))
             {
-                Func<object, string> etagGetter = etagGetterObject as Func<object, string>;
+                ETagGetter etagGetter = etagGetterObject as ETagGetter;
                 if (etagGetter != null)
                 {
                     etag = etagGetter(entityInstanceContext.EntityInstance);

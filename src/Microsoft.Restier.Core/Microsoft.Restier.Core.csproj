@@ -80,7 +80,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="PropertyBag.cs" />
     <Compile Include="QueryableSource.cs" />
     <Compile Include="Query\DefaultQueryExecutor.cs" />
     <Compile Include="Query\DefaultQueryHandler.cs" />

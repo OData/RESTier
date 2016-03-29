@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core.Tests
 {
@@ -75,13 +76,21 @@ namespace Microsoft.Restier.Core.Tests
 
             public string Value { get; private set; }
 
-            public override void Configure(
-                ApiConfiguration configuration,
-                Type type)
+            public override void ConfigureApi(IServiceCollection services, Type type)
             {
-                base.Configure(configuration, type);
+                base.ConfigureApi(services, type);
                 Assert.Same(typeof(TestApiWithParticipants), type);
-                configuration.SetProperty(this.Value, true);
+                services.ChainPrevious<Dictionary<string, object>>((sp, next) =>
+                {
+                    if (next == null)
+                    {
+                        next = new Dictionary<string, object>();
+                    }
+
+                    next.Add(this.Value, true);
+                    return next;
+                })
+                .MakeScoped<Dictionary<string, object>>();
             }
 
             public override void Initialize(
@@ -90,8 +99,8 @@ namespace Microsoft.Restier.Core.Tests
             {
                 base.Initialize(context, type, instance);
                 Assert.Same(typeof(TestApiWithParticipants), type);
-                context.SetProperty(this.Value + ".Self", instance);
-                context.SetProperty(this.Value, true);
+                context.GetApiService<Dictionary<string, object>>()
+                    .Add(this.Value + ".Self", instance);
             }
 
             public override void Dispose(
@@ -99,7 +108,8 @@ namespace Microsoft.Restier.Core.Tests
                 Type type, object instance)
             {
                 Assert.Same(typeof(TestApiWithParticipants), type);
-                context.SetProperty(this.Value, false);
+                context.GetApiService<Dictionary<string, object>>()
+                    .Remove(this.Value);
                 base.Dispose(context, type, instance);
             }
         }
@@ -116,18 +126,20 @@ namespace Microsoft.Restier.Core.Tests
             ApiBase api = new TestApiWithParticipants();
 
             var configuration = api.Context.Configuration;
-            Assert.True(configuration.GetProperty<bool>("Test1"));
-            Assert.True(configuration.GetProperty<bool>("Test2"));
+            Assert.True((bool)configuration.GetApiService<Dictionary<string, object>>()["Test1"]);
+            Assert.True((bool)configuration.GetApiService<Dictionary<string, object>>()["Test2"]);
 
             var context = api.Context;
-            Assert.True(context.GetProperty<bool>("Test1"));
-            Assert.Same(api, context.GetProperty("Test1.Self"));
-            Assert.True(context.GetProperty<bool>("Test2"));
-            Assert.Same(api, context.GetProperty("Test2.Self"));
+            var dict = context.GetApiService<Dictionary<string, object>>();
+            Assert.NotSame(dict, configuration.GetApiService<Dictionary<string, object>>());
+            Assert.True((bool)dict["Test1"]);
+            Assert.Same(api, dict["Test1.Self"]);
+            Assert.True((bool)dict["Test2"]);
+            Assert.Same(api, dict["Test2.Self"]);
 
             (api as IDisposable).Dispose();
-            Assert.False(context.GetProperty<bool>("Test2"));
-            Assert.False(context.GetProperty<bool>("Test1"));
+            Assert.False(dict.ContainsKey("Test2"));
+            Assert.False(dict.ContainsKey("Test1"));
         }
     }
 }

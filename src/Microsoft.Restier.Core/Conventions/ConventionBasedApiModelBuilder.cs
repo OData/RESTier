@@ -48,12 +48,12 @@ namespace Microsoft.Restier.Core.Conventions
 
             // The model builder must maintain a singleton life time, for holding states and being injected into
             // some other services.
-            services.AddInstance(new ConventionBasedApiModelBuilder(targetType));
-
-            services.ChainPrevious<IModelBuilder, ModelBuilder>();
-            services.ChainPrevious<IModelMapper, ModelMapper>();
-            services.ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
-            services.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
+            services.AddInstance(new ConventionBasedApiModelBuilder(targetType))
+                .ChainPrevious<IModelBuilder, ModelBuilder>()
+                .ChainPrevious<IModelMapper, ModelMapper>()
+                .ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>()
+                .ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
+                .AddSingleton<IgnoredPropertyList>();
         }
 
         private static bool IsEntitySetProperty(PropertyInfo property)
@@ -499,5 +499,9 @@ namespace Microsoft.Restier.Core.Conventions
                 return null;
             }
         }
+    }
+
+    internal class IgnoredPropertyList : HashSet<string>
+    {
     }
 }
