@@ -150,9 +150,6 @@
   <data name="ElementTypeNotMatch" xml:space="preserve">
     <value>Element type not match.</value>
   </data>
-  <data name="ErrorInVerifyingNoEntityHasChanged" xml:space="preserve">
-    <value>Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates.</value>
-  </data>
   <data name="ExpanderCannotChangeExpressionType" xml:space="preserve">
     <value>Expander cannot change the expression type.</value>
   </data>

@@ -552,7 +552,6 @@ public class Microsoft.Restier.Core.Submit.ChangeSet {
 	public ChangeSet ()
 	public ChangeSet (System.Collections.Generic.IEnumerable`1[[Microsoft.Restier.Core.Submit.ChangeSetEntry]] entries)
 
-	bool AnEntityHasChanged  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Collections.Generic.IList`1[[Microsoft.Restier.Core.Submit.ChangeSetEntry]] Entries  { public get; }
 }
 

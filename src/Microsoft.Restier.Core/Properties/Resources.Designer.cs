@@ -160,15 +160,6 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saving the change set has terminated to prevent potential stack overflow.  There have been entity changes and/or creates that have continuously spawn entity changes and/or creates..
-        /// </summary>
-        internal static string ErrorInVerifyingNoEntityHasChanged {
-            get {
-                return ResourceManager.GetString("ErrorInVerifyingNoEntityHasChanged", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Expander cannot change the expression type..
         /// </summary>
         internal static string ExpanderCannotChangeExpressionType {

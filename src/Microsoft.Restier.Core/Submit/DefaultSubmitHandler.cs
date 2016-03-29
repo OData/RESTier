@@ -18,13 +18,6 @@ namespace Microsoft.Restier.Core.Submit
     internal static class DefaultSubmitHandler
     {
         /// <summary>
-        /// The maximum numbers of loops for the pre-persisting events save loop
-        /// and the post-persisting events save loops allowed before the DataService
-        /// stops processing to prevent potential infinite loop.
-        /// </summary>
-        private const int MaxLoop = 200;
-
-        /// <summary>
         /// Asynchronously executes the submit flow.
         /// </summary>
         /// <param name="context">
@@ -55,44 +48,19 @@ namespace Microsoft.Restier.Core.Submit
                 return context.Result;
             }
 
-            ChangeSet eventsChangeSet = context.ChangeSet;
+            var eventsChangeSet = context.ChangeSet;
 
-            IEnumerable<ChangeSetEntry> currentChangeSetItems;
-            int outerLoopCount = 0;
+            IEnumerable<ChangeSetEntry> currentChangeSetItems = eventsChangeSet.Entries.ToArray();
 
-            do
-            {
-                outerLoopCount++;
-                int innerLoopCount = 0;
-                do
-                {
-                    innerLoopCount++;
-                    eventsChangeSet.AnEntityHasChanged = false;
-                    currentChangeSetItems = eventsChangeSet.Entries.ToArray();
+            await PerformValidate(context, currentChangeSetItems, cancellationToken);
 
-                    if (eventsChangeSet.AnEntityHasChanged)
-                    {
-                        eventsChangeSet.AnEntityHasChanged = false;
-                        currentChangeSetItems = eventsChangeSet.Entries.ToArray();
-                    }
+            await PerformPreEvent(context, currentChangeSetItems, cancellationToken);
 
-                    await PerformValidate(context, currentChangeSetItems, cancellationToken);
+            await PerformPersist(context, currentChangeSetItems, cancellationToken);
 
-                    await PerformPreEvent(context, currentChangeSetItems, cancellationToken);
-                }
-                while (eventsChangeSet.AnEntityHasChanged && (innerLoopCount < MaxLoop));
+            context.ChangeSet.Entries.Clear();
 
-                VerifyNoEntityHasChanged(eventsChangeSet);
-
-                await PerformPersist(context, currentChangeSetItems, cancellationToken);
-
-                eventsChangeSet.Entries.Clear();
-
-                await PerformPostEvent(context, currentChangeSetItems, cancellationToken);
-            }
-            while (eventsChangeSet.AnEntityHasChanged && (outerLoopCount < MaxLoop));
-
-            VerifyNoEntityHasChanged(eventsChangeSet);
+            await PerformPostEvent(context, currentChangeSetItems, cancellationToken);
 
             return context.Result;
         }
@@ -135,14 +103,6 @@ namespace Microsoft.Restier.Core.Submit
                         CultureInfo.InvariantCulture,
                         Resources.InvalidChangeSetEntryType,
                         entry.Type));
-            }
-        }
-
-        private static void VerifyNoEntityHasChanged(ChangeSet changeSet)
-        {
-            if (changeSet.AnEntityHasChanged)
-            {
-                throw new InvalidOperationException(Resources.ErrorInVerifyingNoEntityHasChanged);
             }
         }
 
