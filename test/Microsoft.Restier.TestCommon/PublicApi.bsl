@@ -295,7 +295,6 @@ ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.WebApi.HttpConfigurationExtensions {
 	[
-	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)

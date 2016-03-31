@@ -13,8 +13,6 @@ namespace Microsoft.Restier.WebApi
     /// </summary>
     public class RestierPayloadValueConverter : ODataPayloadValueConverter
     {
-        internal static readonly RestierPayloadValueConverter Default = new RestierPayloadValueConverter();
-
         /// <summary>
         /// Converts the given primitive value defined in a type definition from the payload object.
         /// </summary>

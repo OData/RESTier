@@ -133,6 +133,15 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Fact]
+        public void QueryConvertedPropertyOfSingleEntity()
+        {
+            TestPayloadString("People(1)/FirstName", payloadStr =>
+            {
+                Assert.Contains("RussellConverter", payloadStr, StringComparison.Ordinal);
+            });
+        }
+
+        [Fact]
         public void QueryNullableDateTimeOffsetPropertyOfSingleEntity()
         {
             TestPayloadString("People(4)/BirthDateTime2", payloadStr =>

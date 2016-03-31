@@ -73,12 +73,13 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
                    new QueryRequest(query));
 
             var product = result.Results.OfType<Product>().First();
+            var productID = product.ProductID;
             var price = product.UnitPrice;
 
             var response = await ODataTestHelpers.GetResponse(
                 isqualified ?
-                string.Format("http://localhost/api/Northwind/Products({0})/IncreasePrice", product.ProductID)
-                : string.Format("http://localhost/api/Northwind/Products({0})/Microsoft.Restier.Samples.Northwind.Models.IncreasePrice", product.ProductID),
+                string.Format("http://localhost/api/Northwind/Products({0})/IncreasePrice", productID)
+                : string.Format("http://localhost/api/Northwind/Products({0})/Microsoft.Restier.Samples.Northwind.Models.IncreasePrice", productID),
                 HttpMethod.Post,
                 new StringContent(@"{""diff"":2}", UTF8Encoding.Default, "application/json"),
                 registerOData,
@@ -87,7 +88,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
             var getResponse = await ODataTestHelpers.GetResponse(
-                string.Format("http://localhost/api/Northwind/Products({0})", product.ProductID),
+                string.Format("http://localhost/api/Northwind/Products({0})", productID),
                 HttpMethod.Get,
                 null,
                 (config, server) => { WebApiConfig.RegisterNorthwind(config, server); },

@@ -47,6 +47,7 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
+            // ApiBase.ConfigureApi is called before this method is called.
             ApiConfiguration.Configure<TApi>(services =>
             {
                 services.AddScoped<RestierQueryExecutorOptions>()
@@ -55,7 +56,7 @@ namespace Microsoft.Restier.WebApi
             using (var api = apiFactory())
             {
                 var model = api.GetModelAsync().Result;
-                model.EnsurePayloadValueConverter();
+
                 var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
 
                 if (batchHandler != null && batchHandler.ApiFactory == null)
@@ -65,6 +66,16 @@ namespace Microsoft.Restier.WebApi
 
                 var route = config.MapODataServiceRoute(
                     routeName, routePrefix, model, new DefaultODataPathHandler(), conventions, batchHandler);
+
+                // Customized converter should be added in ConfigureApi as service
+                var converter = api.Context.GetApiService<ODataPayloadValueConverter>();
+                if (converter == null)
+                {
+                    converter = new RestierPayloadValueConverter();
+                }
+
+                model.SetPayloadValueConverter(converter);
+
                 return Task.FromResult(route);
             }
         }
@@ -78,14 +89,14 @@ namespace Microsoft.Restier.WebApi
         /// <param name="routePrefix">The prefix of the route.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static async Task<ODataRoute> MapRestierRoute<TApi>(
+        public static Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
             RestierBatchHandler batchHandler = null)
             where TApi : ApiBase, new()
         {
-            return await MapRestierRoute<TApi>(
+            return MapRestierRoute<TApi>(
                 config, routeName, routePrefix, () => new TApi(), batchHandler);
         }
 
@@ -112,17 +123,6 @@ namespace Microsoft.Restier.WebApi
 
             conventions.Insert(index + 1, new RestierRoutingConvention(apiFactory));
             return conventions;
-        }
-
-        private static void EnsurePayloadValueConverter(this IEdmModel model)
-        {
-            var payloadValueConverter = model.GetPayloadValueConverter();
-            if (payloadValueConverter.GetType() == typeof(ODataPayloadValueConverter))
-            {
-                // User has not specified custom payload value converter
-                // so use RESTier's default converter.
-                model.SetPayloadValueConverter(RestierPayloadValueConverter.Default);
-            }
         }
     }
 }
