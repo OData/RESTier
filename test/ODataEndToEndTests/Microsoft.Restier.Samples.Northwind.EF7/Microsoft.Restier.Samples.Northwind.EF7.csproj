@@ -131,6 +131,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -142,6 +146,10 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.OData, Version=5.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.OData.5.9.0-beta\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
@@ -153,12 +161,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http">
-      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.Http.WebHost">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
@@ -245,19 +247,19 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.EntityFramework7\Microsoft.Restier.EntityFramework7.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.EntityFramework7\Microsoft.Restier.EntityFramework7.csproj">
       <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
       <Name>Microsoft.Restier.EntityFramework7</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
       <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
       <Name>Microsoft.Restier.Security</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
       <Name>Microsoft.Restier.WebApi</Name>
     </ProjectReference>

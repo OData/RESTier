@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,15 +46,15 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.OData.Core, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Core.6.15.0-beta\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.OData.Core.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.OData.Edm, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Edm.6.15.0-beta\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.OData.Edm.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.OData.Edm.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Edm.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Spatial, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Spatial.6.15.0-beta\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.Spatial.6.15.0\lib\portable-net45+win+wpa81\Microsoft.Spatial.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -76,31 +77,31 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.OData, Version=5.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.9.0-beta\lib\net45\System.Web.OData.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.5.9.0\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
+      <HintPath>..\..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.assert, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
+      <HintPath>..\..\..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.core, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+      <HintPath>..\..\..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.execution.desktop, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
+      <HintPath>..\..\..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\BaselineHelpers.cs">
+    <Compile Include="..\..\Shared\BaselineHelpers.cs">
       <Link>.Shared\BaselineHelpers.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\ODataTestHelpers.cs">
+    <Compile Include="..\..\Shared\ODataTestHelpers.cs">
       <Link>.Shared\ODataTestHelpers.cs</Link>
     </Compile>
     <Compile Include="TestBase.cs" />
@@ -111,23 +112,23 @@
     <Compile Include="SaveTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
       <Name>Microsoft.Restier.EntityFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Samples.Northwind\Microsoft.Restier.Samples.Northwind.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.Samples.Northwind\Microsoft.Restier.Samples.Northwind.csproj">
       <Project>{bce769ad-2d64-4ead-b83d-1328621cf6e6}</Project>
       <Name>Microsoft.Restier.Samples.Northwind</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
       <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
       <Name>Microsoft.Restier.Security</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
       <Name>Microsoft.Restier.WebApi</Name>
     </ProjectReference>
