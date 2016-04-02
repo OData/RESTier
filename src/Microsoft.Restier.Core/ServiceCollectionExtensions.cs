@@ -8,6 +8,9 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core.Properties;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Conventions;
+using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -301,6 +304,88 @@ namespace Microsoft.Restier.Core
             return configuration;
         }
 
+        public static IServiceCollection DefaultInnerMost(this IServiceCollection obj)
+        {
+            return obj.CutoffPrevious<IApiContextFactory, ApiContextFactory>()
+                .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
+        }
+
+        public static IServiceCollection DefaultOuterMost(this IServiceCollection obj)
+        {
+            obj.ChainPrevious<IApiContextFactory, ApiContextInitializer>();
+            if (!obj.HasService<ApiContext>())
+            {
+                obj.AddScoped<ContextHolder>()
+                    .AddScoped(sp => sp.GetService<ContextHolder>().Context);
+            }
+
+            return obj;
+        }
+
+        public static IServiceCollection UseAttributes(this IServiceCollection obj, Type apiType)
+        {
+            Ensure.NotNull(apiType, "type");
+
+            if (apiType.BaseType != null)
+            {
+                obj = obj.UseAttributes(apiType.BaseType);
+            }
+
+            var attributes = apiType.GetCustomAttributes(
+                typeof(IApiConfigurator), false);
+            if (attributes.Length == 0)
+            {
+                return obj;
+            }
+
+            foreach (IApiConfigurator e in attributes)
+            {
+                e.Configure(obj, apiType);
+            }
+
+            return obj;
+        }
+
+        public static IServiceCollection UseAttributes<T>(this IServiceCollection obj)
+            where T : class
+        {
+            return obj.UseAttributes(typeof(T));
+        }
+
+        public static IServiceCollection UseConventions(this IServiceCollection obj, Type apiType)
+        {
+            Ensure.NotNull(apiType, "apiType");
+
+            ConventionBasedChangeSetAuthorizer.ApplyTo(obj, apiType);
+            ConventionBasedChangeSetEntryFilter.ApplyTo(obj, apiType);
+            obj.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
+            ConventionBasedApiModelBuilder.ApplyTo(obj, apiType);
+            ConventionBasedOperationProvider.ApplyTo(obj, apiType);
+            ConventionBasedEntitySetFilter.ApplyTo(obj, apiType);
+            return obj;
+        }
+
+        public static IServiceCollection UseConventions<T>(this IServiceCollection obj)
+            where T : class
+        {
+            return obj.UseConventions(typeof(T));
+        }
+
+        public static IServiceCollection Apply(
+            this IServiceCollection obj,
+            Action<IServiceCollection> configurationCall)
+        {
+            configurationCall(obj);
+            return obj;
+        }
+
+        public static IServiceCollection Apply(
+            this IServiceCollection obj,
+            ApiConfiguration.Anchor anchor)
+        {
+            return obj.Apply(anchor.Configuration);
+        }
+
         /// <summary>
         /// Call this to build a service chain explicitly.
         /// Typically you just resolve the service with <see cref="IServiceProvider.GetService(Type)"/>, but
@@ -358,6 +443,42 @@ namespace Microsoft.Restier.Core
             }
 
             return null;
+        }
+
+        private class ApiContextFactory : IApiContextFactory
+        {
+            public ApiContext CreateWithin(IServiceScope scope)
+            {
+                var context = new ApiContext(scope);
+                var holder = context.GetApiService<ContextHolder>();
+                if (holder != null)
+                {
+                    holder.Context = context;
+                }
+
+                return context;
+            }
+        }
+
+        private class ApiContextInitializer : IApiContextFactory
+        {
+            public IApiContextFactory Inner { get; set; }
+
+            public ApiContext CreateWithin(IServiceScope scope)
+            {
+                var context = Inner.CreateWithin(scope);
+                foreach (var e in context.GetApiServices<IApiContextConfigurator>())
+                {
+                    e.Initialize(context);
+                }
+
+                return context;
+            }
+        }
+
+        private class ContextHolder
+        {
+            public ApiContext Context { get; set; }
         }
     }
 

@@ -39,8 +39,8 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration : PropertyBag
     {
-        private static ConcurrentDictionary<Type, ApiBuilder> configurations =
-            new ConcurrentDictionary<Type, ApiBuilder>();
+        private static ConcurrentDictionary<Type, Customizer> configurations =
+            new ConcurrentDictionary<Type, Customizer>();
 
         private IServiceProvider serviceProvider;
 
@@ -67,14 +67,24 @@ namespace Microsoft.Restier.Core
 
         internal IEdmModel Model { get; private set; }
 
-        public static ApiBuilder Configure<TKey>()
+        public static Customizer Customize<TKey>()
         {
-            return Configure(typeof(TKey));
+            return Customize(typeof(TKey));
         }
 
-        public static ApiBuilder Configure(Type keyType)
+        public static Customizer Customize(Type keyType)
         {
-            return configurations.GetOrAdd(keyType, _ => new ApiBuilder());
+            return configurations.GetOrAdd(keyType, _ => new Customizer());
+        }
+
+        [CLSCompliant(false)]
+        public static ApiConfiguration Create(Action<IServiceCollection> configurationCall)
+        {
+            return new ServiceCollection()
+                .DefaultInnerMost()
+                .Apply(configurationCall)
+                .DefaultOuterMost()
+                .BuildApiConfiguration();
         }
 
         /// <summary>
@@ -120,6 +130,52 @@ namespace Microsoft.Restier.Core
                 TaskContinuationOptions.ExecuteSynchronously);
             running = null;
             return source;
+        }
+
+        public sealed class Customizer
+        {
+            public Customizer()
+            {
+                InnerMost = new Anchor();
+                OuterMost = new Anchor();
+                Overrides = new Anchor();
+                PrivateApi = new Anchor();
+            }
+
+            public Anchor InnerMost { get; private set; }
+
+            public Anchor OuterMost { get; private set; }
+
+            public Anchor PrivateApi { get; private set; }
+
+            public Anchor Overrides { get; private set; }
+        }
+
+        public sealed class Anchor
+        {
+            private static Action<IServiceCollection> emptyConfig = _ => { };
+
+            private Action<IServiceCollection> call;
+
+            [CLSCompliant(false)]
+            public Action<IServiceCollection> Configuration
+            {
+                get { return call ?? emptyConfig; }
+            }
+
+            [CLSCompliant(false)]
+            public Anchor Append(Action<IServiceCollection> configurationCall)
+            {
+                call += configurationCall;
+                return this;
+            }
+
+            [CLSCompliant(false)]
+            public Anchor Prepend(Action<IServiceCollection> configurationCall)
+            {
+                call = configurationCall + call;
+                return this;
+            }
         }
     }
 }

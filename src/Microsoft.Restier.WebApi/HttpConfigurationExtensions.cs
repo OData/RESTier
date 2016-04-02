@@ -47,7 +47,7 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
-            Api<TApi>.Configure().AddOuterHead(services =>
+            ApiConfiguration.Customize<TApi>().Overrides.Append(services =>
             {
                 services.AddScoped<ODataQueryExecutorOptions>()
                     .ChainPrevious<IQueryExecutor, ODataQueryExecutor>();

@@ -34,8 +34,28 @@ namespace Microsoft.Restier.Security
             this IServiceCollection services)
         {
             Ensure.NotNull(services, "services");
-            services.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorizer>();
-            services.ChainPrevious<IQueryExpressionExpander, ApiPolicyActivator>();
+            if (!services.HasService<RoleBasedAuthorizer>())
+            {
+                services.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorizer>();
+            }
+        }
+
+        [CLSCompliant(false)]
+        public static void EnableApiPolicy(
+            this IServiceCollection services, Type apiType)
+        {
+            Ensure.NotNull(services, "services");
+            services.ChainPrevious<IQueryExpressionExpander>(next => new ApiPolicyActivator(apiType)
+            {
+                InnerHandler = next,
+            });
+        }
+
+        [CLSCompliant(false)]
+        public static void EnableApiPolicy<T>(this IServiceCollection services)
+            where T : class
+        {
+            services.EnableApiPolicy(typeof(T));
         }
     }
 }

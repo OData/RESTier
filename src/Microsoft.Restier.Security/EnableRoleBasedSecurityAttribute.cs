@@ -30,6 +30,7 @@ namespace Microsoft.Restier.Security
             Type type)
         {
             services.EnableRoleBasedSecurity();
+            services.EnableApiPolicy(type);
         }
     }
 }

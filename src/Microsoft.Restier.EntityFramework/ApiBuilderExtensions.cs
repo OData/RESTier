@@ -32,11 +32,5 @@ namespace Microsoft.Restier.EntityFramework
                 .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
                 .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
         }
-
-        public static ApiBuilder UseDbContext<T>(this ApiBuilder obj)
-            where T : DbContext
-        {
-            return obj.AddInnerMost(services => services.UseDbContext<T>());
-        }
     }
 }

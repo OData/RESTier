@@ -56,8 +56,7 @@ namespace Microsoft.Restier.Core.Conventions
                 {
                     target = context.ApiContext.
                         ServiceProvider.GetService(targetType);
-                    if (target == null ||
-                        !this.targetType.IsAssignableFrom(target.GetType()))
+                    if (target == null)
                     {
                         return Task.FromResult(result);
                     }

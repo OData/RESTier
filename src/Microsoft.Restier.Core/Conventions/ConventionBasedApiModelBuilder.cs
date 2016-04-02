@@ -97,8 +97,7 @@ namespace Microsoft.Restier.Core.Conventions
                 {
                     target = context.QueryContext.ApiContext.
                         ServiceProvider.GetService(targetType);
-                    if (target == null ||
-                        !this.targetType.IsAssignableFrom(target.GetType()))
+                    if (target == null)
                     {
                         return null;
                     }
@@ -139,8 +138,7 @@ namespace Microsoft.Restier.Core.Conventions
                 {
                     target = context.QueryContext.ApiContext.
                         ServiceProvider.GetService(targetType);
-                    if (target == null ||
-                        !this.targetType.IsAssignableFrom(target.GetType()))
+                    if (target == null)
                     {
                         return null;
                     }

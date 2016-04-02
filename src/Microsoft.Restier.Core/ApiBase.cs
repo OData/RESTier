@@ -52,14 +52,7 @@ namespace Microsoft.Restier.Core
 
                 if (this.apiContext == null)
                 {
-                    var scope = Configuration.GetApiService<IServiceScopeFactory>().CreateScope();
-                    var apiScope = scope.ServiceProvider.GetService<ApiHolder>();
-                    if (apiScope != null)
-                    {
-                        apiScope.Api = this;
-                    }
-
-                    this.apiContext = Configuration.CreateContextWithin(scope);
+                    this.apiContext = this.CreateApiContext(Configuration);
                 }
 
                 return this.apiContext;
@@ -82,26 +75,26 @@ namespace Microsoft.Restier.Core
                     this.GetType(),
                     apiType =>
                     {
-                        var builder = new ApiBuilder()
-                            .AddInnerMost(ApiConfiguration.Configure(apiType).Configuration)
-                            .UseAttributes(apiType)
-                            .AddInnerMost(services => this.ConfigureApi(services))
-                            .UseConventions(apiType)
-                            .AddOuterMost(services =>
-                            {
-                                if (!services.HasService<ApiBase>())
-                                {
-                                    services.AddScoped<ApiHolder>()
-                                        .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
-                                        .AddScoped(sp => sp.GetService<ApiHolder>().Api);
-                                }
-                            });
-                        var serviceCollection = new ServiceCollection();
-                        ApiBuilder.DefaultInnerMost(serviceCollection);
-                        builder.Configuration(serviceCollection);
-                        ApiBuilder.DefaultOuterMost(serviceCollection);
+                        var customizer = ApiConfiguration.Customize(apiType);
+                        var services = new ServiceCollection()
+                            .DefaultInnerMost()
+                            .Apply(customizer.InnerMost);
 
-                        var configration = this.CreateApiConfiguration(serviceCollection);
+                        services = this.ConfigureApi(services)
+                            .Apply(customizer.PrivateApi)
+                            .UseAttributes(apiType)
+                            .UseConventions(apiType)
+                            .Apply(customizer.Overrides)
+                            .Apply(customizer.OuterMost)
+                            .DefaultOuterMost();
+                        if (!services.HasService<ApiBase>())
+                        {
+                            services.AddScoped<ApiHolder>()
+                                .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
+                                .AddScoped(sp => sp.GetService<ApiHolder>().Api);
+                        }
+
+                        var configration = this.CreateApiConfiguration(services);
                         return configration;
                     });
             }
@@ -153,6 +146,27 @@ namespace Microsoft.Restier.Core
         protected virtual ApiConfiguration CreateApiConfiguration(IServiceCollection services)
         {
             return services.BuildApiConfiguration();
+        }
+
+        /// <summary>
+        /// Creates the API context for this API.
+        /// </summary>
+        /// <param name="configuration">
+        /// The API configuration to use.
+        /// </param>
+        /// <returns>
+        /// The API context for this API.
+        /// </returns>
+        protected virtual ApiContext CreateApiContext(ApiConfiguration configuration)
+        {
+            var scope = configuration.GetApiService<IServiceScopeFactory>().CreateScope();
+            var apiScope = scope.ServiceProvider.GetService<ApiHolder>();
+            if (apiScope != null)
+            {
+                apiScope.Api = this;
+            }
+
+            return configuration.CreateContextWithin(scope);
         }
 
         /// <summary>

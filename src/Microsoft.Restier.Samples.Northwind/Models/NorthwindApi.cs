@@ -127,24 +127,11 @@ namespace Microsoft.Restier.Samples.Northwind.Models
     [Grant(ApiPermissionType.Inspect, On = "Suppliers")]
     [Grant(ApiPermissionType.Read, On = "Suppliers")]
     [Grant(ApiPermissionType.All, On = "ResetDataSource")]
-    public class NorthWindApi2
+    public class NorthwindApi2
     {
-        public static void Configure()
-        {
-            ApiConfiguration.Configure<NorthWindApi2>()
-                .UseAttributes<NorthWindApi2>()
-                .UseConventions<NorthWindApi2>()
-                .AddInnerMost(services =>
-                {
-                    services.AddApiType<NorthWindApi2>()
-                        .ChainPrevious<IModelBuilder, NorthwindModelExtender>();
-                })
-                .UseDbContext<NorthwindContext>();
-        }
-
         public ApiContext Context { get; private set; }
 
-        public NorthWindApi2(ApiContext context)
+        public NorthwindApi2(ApiContext context)
         {
             Context = context;
         }
@@ -204,25 +191,6 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         private void WriteLog(string text)
         {
             // Fake writing log method for submit logic demo
-        }
-
-        private class NorthwindModelExtender : IModelBuilder
-        {
-            public IModelBuilder InnerHandler { get; set; }
-
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
-            {
-                var model = await InnerHandler.GetModelAsync(context, cancellationToken);
-
-                // Way 2: enable auto-expand through model annotation.
-                var orderType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Order");
-                var orderDetailsProperty = (EdmNavigationProperty)orderType.DeclaredProperties
-                    .Single(prop => prop.Name == "Order_Details");
-                model.SetAnnotationValue(orderDetailsProperty,
-                    new QueryableRestrictionsAnnotation(new QueryableRestrictions { AutoExpand = true }));
-
-                return model;
-            }
         }
     }
 }

@@ -31,25 +31,4 @@ namespace Microsoft.Restier.Core
     {
         ApiContext CreateWithin(IServiceScope scope);
     }
-
-    public sealed class ApiTypeInfo
-    {
-        public ApiTypeInfo(IEnumerable<ApiTypeAdded> apiTypes)
-        {
-            ApiTypes = apiTypes.Reverse()
-                .Select(e => e.ApiType).Distinct().ToList();
-        }
-
-        public IEnumerable<Type> ApiTypes { get; private set; }
-    }
-
-    public sealed class ApiTypeAdded
-    {
-        public ApiTypeAdded(Type apiType)
-        {
-            ApiType = apiType;
-        }
-
-        public Type ApiType { get; private set; }
-    }
 }
