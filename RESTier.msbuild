@@ -27,9 +27,9 @@
   <ItemGroup>
     <TestAssembiles Include="test\Microsoft.Restier.TestCommon\bin\$(Configuration)\Microsoft.Restier.TestCommon.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.Core.Tests\bin\$(Configuration)\Microsoft.Restier.Core.Tests.dll" />
-    <TestAssembiles Include="test\Microsoft.Restier.Samples.Northwind.Tests\bin\$(Configuration)\Microsoft.Restier.Samples.Northwind.Tests.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.WebApi.Test\bin\$(Configuration)\Microsoft.Restier.WebApi.Test.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.EntityFramework.Tests\bin\$(Configuration)\Microsoft.Restier.EntityFramework.Tests.dll" />
+    <TestAssembiles Include="test\ODataEndToEndTests\Microsoft.Restier.Samples.Northwind.Tests\bin\$(Configuration)\Microsoft.Restier.Samples.Northwind.Tests.dll" />
     <TestAssembiles Include="test\ODataEndToEndTests\Microsoft.Restier.WebApi.Test.Scenario\bin\$(Configuration)\Microsoft.Restier.WebApi.Test.Scenario.dll" />
   </ItemGroup>
 
