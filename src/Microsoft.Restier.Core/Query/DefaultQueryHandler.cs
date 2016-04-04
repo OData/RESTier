@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core.Query
 
             // execute query
             QueryResult result;
-            var executor = context.GetApiService<IQueryExecutor>();
+            var executor = context.GetApiContextService<IQueryExecutor>();
             if (executor == null)
             {
                 throw new NotSupportedException(Resources.QueryExecutorMissing);
@@ -207,7 +207,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 if (this.inspector == null)
                 {
-                    this.inspector = this.context.QueryContext.GetApiService<IQueryExpressionInspector>();
+                    this.inspector = this.context.QueryContext.GetApiContextService<IQueryExpressionInspector>();
                 }
 
                 if (this.inspector != null && !this.inspector.Inspect(this.context))
@@ -221,7 +221,7 @@ namespace Microsoft.Restier.Core.Query
                 if (this.expander == null)
                 {
                     this.expander = this.context.QueryContext
-                        .GetApiService<IQueryExpressionExpander>();
+                        .GetApiContextService<IQueryExpressionExpander>();
                 }
 
                 if (expander == null)
@@ -258,7 +258,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 if (this.filter == null)
                 {
-                    this.filter = this.context.QueryContext.GetApiService<IQueryExpressionFilter>();
+                    this.filter = this.context.QueryContext.GetApiContextService<IQueryExpressionFilter>();
                 }
 
                 if (this.filter != null)
@@ -301,7 +301,7 @@ namespace Microsoft.Restier.Core.Query
                 if (this.sourcer == null)
                 {
                     this.sourcer = this.context.QueryContext
-                        .GetApiService<IQueryExpressionSourcer>();
+                        .GetApiContextService<IQueryExpressionSourcer>();
                 }
 
                 if (this.sourcer == null)

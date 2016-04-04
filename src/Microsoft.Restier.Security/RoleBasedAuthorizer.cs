@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Security
 
             var assertedRoles = context.QueryContext
                 .GetProperty<List<string>>(AssertedRoles);
-            var permissions = context.QueryContext.ApiContext.GetApiService<IEnumerable<ApiPermission>>();
+            var permissions = context.QueryContext.GetApiContextServices<ApiPermission>();
             if (permissions == null)
             {
                 throw new SecurityException(

@@ -18,7 +18,7 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiContext : PropertyBag
     {
-        private IServiceScope contextScope;
+        private readonly IServiceScope scope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiContext" /> class.
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(configuration, "configuration");
 
             this.Configuration = configuration;
-            this.contextScope = configuration.ServiceProvider
+            this.scope = configuration.ServiceProvider
                 .GetRequiredService<IServiceScopeFactory>().CreateScope();
         }
 
@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public IServiceProvider ServiceProvider
         {
-            get { return this.contextScope.ServiceProvider; }
+            get { return this.scope.ServiceProvider; }
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Core
 
         internal void DisposeScope()
         {
-            this.contextScope.Dispose();
+            this.scope.Dispose();
         }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -11,11 +12,12 @@ namespace Microsoft.Restier.Core
     /// </summary>
     /// <remarks>
     /// An invocation context is created each time an API is invoked and
-    /// is used for a specific API flow. It maintains a set of properties
-    /// that can store data that lives for the lifetime of the flow.
+    /// is used for a specific API flow.
     /// </remarks>
     public class InvocationContext : PropertyBag
     {
+        private readonly IServiceScope scope;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
@@ -25,7 +27,10 @@ namespace Microsoft.Restier.Core
         public InvocationContext(ApiContext apiContext)
         {
             Ensure.NotNull(apiContext, "apiContext");
+
             this.ApiContext = apiContext;
+            this.scope = apiContext.ServiceProvider
+                .GetRequiredService<IServiceScopeFactory>().CreateScope();
         }
 
         /// <summary>
@@ -34,27 +39,36 @@ namespace Microsoft.Restier.Core
         public ApiContext ApiContext { get; private set; }
 
         /// <summary>
-        /// Gets an API service.
+        /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiContext"/>.
         /// </summary>
-        /// <typeparam name="T">The API service type.</typeparam>
+        public IServiceProvider ServiceProvider
+        {
+            get { return this.scope.ServiceProvider; }
+        }
+
+        /// <summary>
+        /// Gets a service from the <see cref="ApiContext"/>.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
         /// <returns>The service instance.</returns>
-        /// <remarks>
-        /// This method directly returns the API service instance from
-        /// the configuration of the inner context.
-        /// </remarks>
-        public T GetApiService<T>() where T : class
+        public T GetApiContextService<T>() where T : class
         {
             return this.ApiContext.GetApiService<T>();
         }
 
         /// <summary>
-        /// Gets an ordered collection of service instances.
+        /// Gets an ordered collection of service instances from the <see cref="ApiContext"/>.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
         /// <returns>The ordered collection of service instances.</returns>
-        public IEnumerable<T> GetApiServices<T>() where T : class
+        public IEnumerable<T> GetApiContextServices<T>() where T : class
         {
             return this.ApiContext.GetApiServices<T>();
+        }
+
+        internal void DisposeScope()
+        {
+            this.scope.Dispose();
         }
     }
 }
