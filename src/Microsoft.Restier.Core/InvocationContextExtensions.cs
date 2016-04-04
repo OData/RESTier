@@ -2,7 +2,9 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
- 
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Microsoft.Restier.Core
 {
     /// <summary>
@@ -12,6 +14,66 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public static class InvocationContextExtensions
     {
+        #region GetApiService<T>
+
+        /// <summary>
+        /// Gets an API service.
+        /// </summary>
+        /// <param name="context">
+        /// An invocation context.
+        /// </param>
+        /// <typeparam name="T">The API service type.</typeparam>
+        /// <returns>The API service instance.</returns>
+        public static T GetApiService<T>(this InvocationContext context) where T : class
+        {
+            Ensure.NotNull(context, "context");
+            return context.ServiceProvider.GetService<T>();
+        }
+
+        /// <summary>
+        /// Gets an ordered collection of service instances.
+        /// </summary>
+        /// <param name="context">
+        /// An invocation context.
+        /// </param>
+        /// <typeparam name="T">The API service type.</typeparam>
+        /// <returns>The ordered collection of service instances.</returns>
+        public static IEnumerable<T> GetApiServices<T>(this InvocationContext context) where T : class
+        {
+            Ensure.NotNull(context, "context");
+            return context.ServiceProvider.GetServices<T>();
+        }
+
+        /// <summary>
+        /// Gets a service from the <see cref="ApiContext"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An invocation context.
+        /// </param>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public static T GetApiContextService<T>(this InvocationContext context) where T : class
+        {
+            Ensure.NotNull(context, "context");
+            return context.ApiContext.GetApiService<T>();
+        }
+
+        /// <summary>
+        /// Gets an ordered collection of service instances from the <see cref="ApiContext"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An invocation context.
+        /// </param>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The ordered collection of service instances.</returns>
+        public static IEnumerable<T> GetApiContextServices<T>(this InvocationContext context) where T : class
+        {
+            Ensure.NotNull(context, "context");
+            return context.ApiContext.GetApiServices<T>();
+        }
+
+        #endregion
+
         #region PropertyBag
 
         /// <summary>

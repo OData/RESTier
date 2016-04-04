@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 #if EF7
 using Microsoft.Data.Entity;
 #endif
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.EntityFramework.Submit

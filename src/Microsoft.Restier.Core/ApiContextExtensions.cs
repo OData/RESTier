@@ -2,12 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Properties;
@@ -34,6 +36,38 @@ namespace Microsoft.Restier.Core
         private static readonly MethodInfo Source3Method = typeof(DataSourceStubs)
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);
+
+        #region GetApiService<T>
+
+        /// <summary>
+        /// Gets a service instance.
+        /// </summary>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public static T GetApiService<T>(this ApiContext context) where T : class
+        {
+            Ensure.NotNull(context, "context");
+            return context.ServiceProvider.GetService<T>();
+        }
+
+        /// <summary>
+        /// Gets all registered service instances.
+        /// </summary>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The ordered collection of service instances.</returns>
+        public static IEnumerable<T> GetApiServices<T>(this ApiContext context) where T : class
+        {
+            Ensure.NotNull(context, "context");
+            return context.ServiceProvider.GetServices<T>();
+        }
+
+        #endregion
 
         #region PropertyBag
 

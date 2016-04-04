@@ -16,13 +16,6 @@ namespace Microsoft.Restier.Core
     public abstract class ApiConfiguratorAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiConfiguratorAttribute" /> class.
-        /// </summary>
-        protected ApiConfiguratorAttribute()
-        {
-        }
-
-        /// <summary>
         /// Applies configuration from any API configurator attributes
         /// specified on an API type to an API services.
         /// </summary>

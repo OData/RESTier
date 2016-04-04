@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -12,6 +13,24 @@ namespace Microsoft.Restier.Core
     public static class ApiConfigurationExtensions
     {
         private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
+
+        #region GetApiService<T>
+
+        /// <summary>
+        /// Gets a service instance.
+        /// </summary>
+        /// <param name="configuration">
+        /// An API configuration.
+        /// </param>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <returns>The service instance.</returns>
+        public static T GetApiService<T>(this ApiConfiguration configuration) where T : class
+        {
+            Ensure.NotNull(configuration, "configuration");
+            return configuration.ServiceProvider.GetService<T>();
+        }
+
+        #endregion
 
         #region PropertyBag
 

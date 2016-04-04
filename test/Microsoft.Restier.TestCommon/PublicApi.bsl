@@ -104,6 +104,11 @@ public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
 	[
 	ExtensionAttribute(),
 	]
+	public static T GetApiService (Microsoft.Restier.Core.ApiConfiguration configuration)
+
+	[
+	ExtensionAttribute(),
+	]
 	public static object GetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
 
 	[
@@ -135,6 +140,16 @@ public sealed class Microsoft.Restier.Core.ApiContextExtensions {
 	ExtensionAttribute(),
 	]
 	public static void ClearProperty (Microsoft.Restier.Core.ApiContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetApiService (Microsoft.Restier.Core.ApiContext context)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IEnumerable`1 GetApiServices (Microsoft.Restier.Core.ApiContext context)
 
 	[
 	AsyncStateMachineAttribute(),
@@ -213,6 +228,26 @@ public sealed class Microsoft.Restier.Core.InvocationContextExtensions {
 	ExtensionAttribute(),
 	]
 	public static void ClearProperty (Microsoft.Restier.Core.InvocationContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetApiContextService (Microsoft.Restier.Core.InvocationContext context)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IEnumerable`1 GetApiContextServices (Microsoft.Restier.Core.InvocationContext context)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetApiService (Microsoft.Restier.Core.InvocationContext context)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IEnumerable`1 GetApiServices (Microsoft.Restier.Core.InvocationContext context)
 
 	[
 	ExtensionAttribute(),
@@ -315,8 +350,6 @@ public class Microsoft.Restier.Core.ApiConfiguration {
 	CLSCompliantAttribute(),
 	]
 	public static void Configure (System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
-
-	public T GetApiService ()
 }
 
 public class Microsoft.Restier.Core.ApiContext {
@@ -324,9 +357,6 @@ public class Microsoft.Restier.Core.ApiContext {
 
 	Microsoft.Restier.Core.ApiConfiguration Configuration  { [CompilerGeneratedAttribute(),]public get; }
 	System.IServiceProvider ServiceProvider  { public get; }
-
-	public T GetApiService ()
-	public IEnumerable`1 GetApiServices ()
 }
 
 public class Microsoft.Restier.Core.InvocationContext {
@@ -334,11 +364,6 @@ public class Microsoft.Restier.Core.InvocationContext {
 
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
 	System.IServiceProvider ServiceProvider  { public get; }
-
-	public T GetApiContextService ()
-	public IEnumerable`1 GetApiContextServices ()
-	public T GetApiService ()
-	public IEnumerable`1 GetApiServices ()
 }
 
 public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.MulticastDelegate, ICloneable, ISerializable {

@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 #if EF7
 using Microsoft.Data.Entity;
 #endif
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.EntityFramework.Query

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework.Tests.Models.Library;
 using Xunit;

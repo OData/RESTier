@@ -81,16 +81,6 @@ namespace Microsoft.Restier.Core
                 (type, existing) => existing + configurationCallback);
         }
 
-        /// <summary>
-        /// Gets a service instance.
-        /// </summary>
-        /// <typeparam name="T">The service type.</typeparam>
-        /// <returns>The service instance.</returns>
-        public T GetApiService<T>() where T : class
-        {
-            return this.serviceProvider.GetService<T>();
-        }
-
         internal static Action<IServiceCollection> Configuration(Type apiType)
         {
             Action<IServiceCollection> val;

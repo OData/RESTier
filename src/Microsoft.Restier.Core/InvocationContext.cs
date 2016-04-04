@@ -46,46 +46,6 @@ namespace Microsoft.Restier.Core
             get { return this.scope.ServiceProvider; }
         }
 
-        /// <summary>
-        /// Gets an API service.
-        /// </summary>
-        /// <typeparam name="T">The API service type.</typeparam>
-        /// <returns>The API service instance.</returns>
-        public T GetApiService<T>() where T : class
-        {
-            return this.ServiceProvider.GetService<T>();
-        }
-
-        /// <summary>
-        /// Gets an ordered collection of service instances.
-        /// </summary>
-        /// <typeparam name="T">The API service type.</typeparam>
-        /// <returns>The ordered collection of service instances.</returns>
-        public IEnumerable<T> GetApiServices<T>() where T : class
-        {
-            return this.ServiceProvider.GetServices<T>();
-        }
-
-        /// <summary>
-        /// Gets a service from the <see cref="ApiContext"/>.
-        /// </summary>
-        /// <typeparam name="T">The service type.</typeparam>
-        /// <returns>The service instance.</returns>
-        public T GetApiContextService<T>() where T : class
-        {
-            return this.ApiContext.GetApiService<T>();
-        }
-
-        /// <summary>
-        /// Gets an ordered collection of service instances from the <see cref="ApiContext"/>.
-        /// </summary>
-        /// <typeparam name="T">The service type.</typeparam>
-        /// <returns>The ordered collection of service instances.</returns>
-        public IEnumerable<T> GetApiContextServices<T>() where T : class
-        {
-            return this.ApiContext.GetApiServices<T>();
-        }
-
         internal void DisposeScope()
         {
             this.scope.Dispose();
