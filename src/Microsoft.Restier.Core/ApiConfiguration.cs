@@ -16,8 +16,7 @@ namespace Microsoft.Restier.Core
     /// <remarks>
     /// <para>
     /// An API configuration defines the model and behavior of an API
-    /// through a set of registered hook points. It also maintains a set of
-    /// properties that can be used to share static data between hook points.
+    /// through a set of registered hook points.
     /// </para>
     /// <para>
     /// Hook points may be singletons, meaning there is at most one instance of
@@ -33,7 +32,7 @@ namespace Microsoft.Restier.Core
     /// consistent set of hook points throughout a particular API flow.
     /// </para>
     /// </remarks>
-    public class ApiConfiguration : PropertyBag
+    public class ApiConfiguration
     {
         private static ConcurrentDictionary<Type, Action<IServiceCollection>> configurations =
             new ConcurrentDictionary<Type, Action<IServiceCollection>>();

@@ -53,8 +53,6 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="ApiContextExtensions.cs" />
-    <Compile Include="ServiceCollectionExtensions.cs" />
     <Compile Include="Model\FunctionAttribute.cs" />
     <Compile Include="Model\ActionAttribute.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetAuthorizer.cs" />
@@ -69,9 +67,12 @@
     <Compile Include="ApiConfiguration.cs" />
     <Compile Include="ApiConfigurationExtensions.cs" />
     <Compile Include="ApiContext.cs" />
+    <Compile Include="ApiContextExtensions.cs" />
     <Compile Include="DataSourceStubs.cs" />
     <Compile Include="ApiConfiguratorAttribute.cs" />
     <Compile Include="InvocationContext.cs" />
+    <Compile Include="InvocationContextExtensions.cs" />
+    <Compile Include="ServiceCollectionExtensions.cs" />
     <Compile Include="Model\IModelBuilder.cs" />
     <Compile Include="Model\IModelMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,7 +81,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="PropertyBag.cs" />
+    <Compile Include="PropertyBagBase.cs" />
     <Compile Include="QueryableSource.cs" />
     <Compile Include="Query\DefaultQueryExecutor.cs" />
     <Compile Include="Query\DefaultQueryHandler.cs" />

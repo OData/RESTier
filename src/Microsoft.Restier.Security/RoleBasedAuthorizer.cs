@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security;
 using System.Threading;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Security.Properties;
 
@@ -52,8 +53,7 @@ namespace Microsoft.Restier.Security
                 return true;
             }
 
-            var assertedRoles = context.QueryContext
-                .GetProperty<List<string>>(AssertedRoles);
+            var assertedRoles = context.QueryContext.GetProperty<List<string>>(AssertedRoles);
             var permissions = context.QueryContext.GetApiContextServices<ApiPermission>();
             if (permissions == null)
             {

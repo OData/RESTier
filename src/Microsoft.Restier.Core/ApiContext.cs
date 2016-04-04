@@ -12,11 +12,9 @@ namespace Microsoft.Restier.Core
     /// Represents context under which an API operates.
     /// </summary>
     /// <remarks>
-    /// An API context is an instantiation of an API configuration. It
-    /// maintains a set of properties that can be used to share instance
-    /// data between hook points.
+    /// An API context is an instantiation of an API configuration.
     /// </remarks>
-    public class ApiContext : PropertyBag
+    public class ApiContext
     {
         private readonly IServiceScope scope;
 

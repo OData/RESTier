@@ -35,6 +35,96 @@ namespace Microsoft.Restier.Core
             .GetMember("Source").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);
 
+        #region PropertyBag
+
+        /// <summary>
+        /// Indicates if this object has a property.
+        /// </summary>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if this object has the
+        /// property; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool HasProperty(this ApiContext context, string name)
+        {
+            return context.GetPropertyBag().HasProperty(name);
+        }
+
+        /// <summary>
+        /// Gets a property.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the property.
+        /// </typeparam>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// The value of the property.
+        /// </returns>
+        public static T GetProperty<T>(this ApiContext context, string name)
+        {
+            return context.GetPropertyBag().GetProperty<T>(name);
+        }
+
+        /// <summary>
+        /// Gets a property.
+        /// </summary>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// The value of the property.
+        /// </returns>
+        public static object GetProperty(this ApiContext context, string name)
+        {
+            return context.GetPropertyBag().GetProperty(name);
+        }
+
+        /// <summary>
+        /// Sets a property.
+        /// </summary>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <param name="value">
+        /// A value for the property.
+        /// </param>
+        public static void SetProperty(this ApiContext context, string name, object value)
+        {
+            context.GetPropertyBag().SetProperty(name, value);
+        }
+
+        /// <summary>
+        /// Clears a property.
+        /// </summary>
+        /// <param name="context">
+        /// An API context.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        public static void ClearProperty(this ApiContext context, string name)
+        {
+            context.GetPropertyBag().ClearProperty(name);
+        }
+
+        #endregion
+
         #region Model
 
         /// <summary>
@@ -350,6 +440,14 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
+        #region PropertyBag Internal
+
+        internal class PropertyBag : PropertyBagBase
+        {
+        }
+
+        #endregion
+
         #region Source Private
 
         private static IQueryable SourceCore(
@@ -427,6 +525,16 @@ namespace Microsoft.Restier.Core
             }
 
             return elementType;
+        }
+
+        #endregion
+
+        #region PropertyBag Private
+
+        private static PropertyBag GetPropertyBag(this ApiContext context)
+        {
+            Ensure.NotNull(context, "context");
+            return context.GetApiService<PropertyBag>();
         }
 
         #endregion

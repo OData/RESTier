@@ -85,7 +85,10 @@ namespace Microsoft.Restier.Core
                     apiType =>
                     {
                         IServiceCollection services = new ServiceCollection()
-                            .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance);
+                            .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance)
+                            .AddSingleton<ApiConfigurationExtensions.PropertyBag>()
+                            .AddScoped<ApiContextExtensions.PropertyBag>()
+                            .AddScoped<InvocationContextExtensions.PropertyBag>();
                         services = this.ConfigureApi(services);
                         ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
 

@@ -13,6 +13,98 @@ namespace Microsoft.Restier.Core
     {
         private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
 
+        #region PropertyBag
+
+        /// <summary>
+        /// Indicates if this object has a property.
+        /// </summary>
+        /// <param name="configuration">
+        /// An API configuration.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if this object has the
+        /// property; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool HasProperty(this ApiConfiguration configuration, string name)
+        {
+            return configuration.GetPropertyBag().HasProperty(name);
+        }
+
+        /// <summary>
+        /// Gets a property.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of the property.
+        /// </typeparam>
+        /// <param name="configuration">
+        /// An API configuration.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// The value of the property.
+        /// </returns>
+        public static T GetProperty<T>(this ApiConfiguration configuration, string name)
+        {
+            return configuration.GetPropertyBag().GetProperty<T>(name);
+        }
+
+        /// <summary>
+        /// Gets a property.
+        /// </summary>
+        /// <param name="configuration">
+        /// An API configuration.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// The value of the property.
+        /// </returns>
+        public static object GetProperty(this ApiConfiguration configuration, string name)
+        {
+            return configuration.GetPropertyBag().GetProperty(name);
+        }
+
+        /// <summary>
+        /// Sets a property.
+        /// </summary>
+        /// <param name="configuration">
+        /// An API configuration.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <param name="value">
+        /// A value for the property.
+        /// </param>
+        public static void SetProperty(this ApiConfiguration configuration, string name, object value)
+        {
+            configuration.GetPropertyBag().SetProperty(name, value);
+        }
+
+        /// <summary>
+        /// Clears a property.
+        /// </summary>
+        /// <param name="configuration">
+        /// An API configuration.
+        /// </param>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        public static void ClearProperty(this ApiConfiguration configuration, string name)
+        {
+            configuration.GetPropertyBag().ClearProperty(name);
+        }
+
+        #endregion
+
+        #region IgnoreProperty
+
         /// <summary>
         /// Ignores the given property when building the model.
         /// </summary>
@@ -30,12 +122,28 @@ namespace Microsoft.Restier.Core
             return configuration;
         }
 
+        #endregion
+
+        #region IgnoreProperty Internal
+
         internal static bool IsPropertyIgnored(this ApiConfiguration configuration, string propertyName)
         {
             Ensure.NotNull(configuration, "configuration");
 
             return configuration.GetIgnoredPropertiesImplementation().Contains(propertyName);
         }
+
+        #endregion
+
+        #region PropertyBag Internal
+
+        internal class PropertyBag : PropertyBagBase
+        {
+        }
+
+        #endregion
+
+        #region IgnoreProperty Private
 
         private static ICollection<string> GetIgnoredPropertiesImplementation(this ApiConfiguration configuration)
         {
@@ -48,5 +156,17 @@ namespace Microsoft.Restier.Core
 
             return ignoredProperties;
         }
+
+        #endregion
+
+        #region PropertyBag Private
+
+        private static PropertyBag GetPropertyBag(this ApiConfiguration configuration)
+        {
+            Ensure.NotNull(configuration, "configuration");
+            return configuration.GetApiService<PropertyBag>();
+        }
+
+        #endregion
     }
 }

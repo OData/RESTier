@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a bag of properties.
     /// </summary>
-    public class PropertyBag
+    internal abstract class PropertyBagBase
     {
         private readonly IDictionary<string, object> properties =
             new Dictionary<string, object>();
@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core
         /// <c>true</c> if this object has the
         /// property; otherwise, <c>false</c>.
         /// </returns>
-        public virtual bool HasProperty(string name)
+        public bool HasProperty(string name)
         {
             Ensure.NotNull(name, "name");
             return this.properties.ContainsKey(name);
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// The value of the property.
         /// </returns>
-        public virtual object GetProperty(string name)
+        public object GetProperty(string name)
         {
             Ensure.NotNull(name, "name");
             object value = null;

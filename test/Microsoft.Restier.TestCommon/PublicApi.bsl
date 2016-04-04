@@ -99,7 +99,32 @@ public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
 	[
 	ExtensionAttribute(),
 	]
+	public static void ClearProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static object GetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static bool HasProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
+
+	[
+	ExtensionAttribute(),
+	]
 	public static Microsoft.Restier.Core.ApiConfiguration IgnoreProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static void SetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name, object value)
 }
 
 [
@@ -107,16 +132,41 @@ ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.Core.ApiContextExtensions {
 	[
+	ExtensionAttribute(),
+	]
+	public static void ClearProperty (Microsoft.Restier.Core.ApiContext context, string name)
+
+	[
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiContext context, params System.Threading.CancellationToken cancellationToken)
 
 	[
+	ExtensionAttribute(),
+	]
+	public static object GetProperty (Microsoft.Restier.Core.ApiContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetProperty (Microsoft.Restier.Core.ApiContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static bool HasProperty (Microsoft.Restier.Core.ApiContext context, string name)
+
+	[
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiContext context, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static void SetProperty (Microsoft.Restier.Core.ApiContext context, string name, object value)
 
 	[
 	ExtensionAttribute(),
@@ -153,6 +203,36 @@ public sealed class Microsoft.Restier.Core.DataSourceStubs {
 	public static IQueryable`1 Source (string name, object[] arguments)
 	public static IQueryable`1 Source (string namespaceName, string name, object[] arguments)
 	public static TResult Value (object source, string propertyName)
+}
+
+[
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.Core.InvocationContextExtensions {
+	[
+	ExtensionAttribute(),
+	]
+	public static void ClearProperty (Microsoft.Restier.Core.InvocationContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static object GetProperty (Microsoft.Restier.Core.InvocationContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetProperty (Microsoft.Restier.Core.InvocationContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static bool HasProperty (Microsoft.Restier.Core.InvocationContext context, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static void SetProperty (Microsoft.Restier.Core.InvocationContext context, string name, object value)
 }
 
 [
@@ -226,7 +306,7 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeTransient (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
 }
 
-public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.PropertyBag {
+public class Microsoft.Restier.Core.ApiConfiguration {
 	public ApiConfiguration (System.IServiceProvider serviceProvider)
 
 	System.IServiceProvider ServiceProvider  { public get; }
@@ -239,7 +319,7 @@ public class Microsoft.Restier.Core.ApiConfiguration : Microsoft.Restier.Core.Pr
 	public T GetApiService ()
 }
 
-public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.PropertyBag {
+public class Microsoft.Restier.Core.ApiContext {
 	public ApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 
 	Microsoft.Restier.Core.ApiConfiguration Configuration  { [CompilerGeneratedAttribute(),]public get; }
@@ -249,23 +329,16 @@ public class Microsoft.Restier.Core.ApiContext : Microsoft.Restier.Core.Property
 	public IEnumerable`1 GetApiServices ()
 }
 
-public class Microsoft.Restier.Core.InvocationContext : Microsoft.Restier.Core.PropertyBag {
+public class Microsoft.Restier.Core.InvocationContext {
 	public InvocationContext (Microsoft.Restier.Core.ApiContext apiContext)
 
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
+	System.IServiceProvider ServiceProvider  { public get; }
 
+	public T GetApiContextService ()
+	public IEnumerable`1 GetApiContextServices ()
 	public T GetApiService ()
 	public IEnumerable`1 GetApiServices ()
-}
-
-public class Microsoft.Restier.Core.PropertyBag {
-	public PropertyBag ()
-
-	public void ClearProperty (string name)
-	public virtual object GetProperty (string name)
-	public T GetProperty (string name)
-	public virtual bool HasProperty (string name)
-	public void SetProperty (string name, object value)
 }
 
 public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.MulticastDelegate, ICloneable, ISerializable {

@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core
     /// An invocation context is created each time an API is invoked and
     /// is used for a specific API flow.
     /// </remarks>
-    public class InvocationContext : PropertyBag
+    public class InvocationContext
     {
         private readonly IServiceScope scope;
 
@@ -44,6 +44,26 @@ namespace Microsoft.Restier.Core
         public IServiceProvider ServiceProvider
         {
             get { return this.scope.ServiceProvider; }
+        }
+
+        /// <summary>
+        /// Gets an API service.
+        /// </summary>
+        /// <typeparam name="T">The API service type.</typeparam>
+        /// <returns>The API service instance.</returns>
+        public T GetApiService<T>() where T : class
+        {
+            return this.ServiceProvider.GetService<T>();
+        }
+
+        /// <summary>
+        /// Gets an ordered collection of service instances.
+        /// </summary>
+        /// <typeparam name="T">The API service type.</typeparam>
+        /// <returns>The ordered collection of service instances.</returns>
+        public IEnumerable<T> GetApiServices<T>() where T : class
+        {
+            return this.ServiceProvider.GetServices<T>();
         }
 
         /// <summary>
