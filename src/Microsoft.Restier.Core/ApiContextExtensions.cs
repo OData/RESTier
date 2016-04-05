@@ -203,7 +203,6 @@ namespace Microsoft.Restier.Core
             {
                 var buildContext = new InvocationContext(context);
                 var model = await builder.GetModelAsync(buildContext, cancellationToken);
-                buildContext.DisposeScope();
                 source.SetResult(model);
                 return model;
             }
@@ -432,9 +431,7 @@ namespace Microsoft.Restier.Core
             var queryContext = new QueryContext(context, request);
             var model = await context.GetModelAsync(cancellationToken);
             queryContext.Model = model;
-            var result = await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
-            queryContext.DisposeScope();
-            return result;
+            return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
         }
 
         #endregion
@@ -467,9 +464,7 @@ namespace Microsoft.Restier.Core
             var submitContext = new SubmitContext(context, changeSet);
             var model = await context.GetModelAsync(cancellationToken);
             submitContext.Model = model;
-            var result = await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken);
-            submitContext.DisposeScope();
-            return result;
+            return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken);
         }
 
         #endregion

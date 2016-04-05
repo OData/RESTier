@@ -328,7 +328,6 @@ public class Microsoft.Restier.Core.InvocationContext {
 	public InvocationContext (Microsoft.Restier.Core.ApiContext apiContext)
 
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
-	System.IServiceProvider ServiceProvider  { public get; }
 }
 
 public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.MulticastDelegate, ICloneable, ISerializable {

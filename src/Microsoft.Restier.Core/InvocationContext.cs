@@ -2,8 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -16,8 +14,6 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class InvocationContext
     {
-        private readonly IServiceScope scope;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
@@ -29,26 +25,11 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(apiContext, "apiContext");
 
             this.ApiContext = apiContext;
-            this.scope = apiContext.ServiceProvider
-                .GetRequiredService<IServiceScopeFactory>().CreateScope();
         }
 
         /// <summary>
         /// Gets the API context.
         /// </summary>
         public ApiContext ApiContext { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiContext"/>.
-        /// </summary>
-        public IServiceProvider ServiceProvider
-        {
-            get { return this.scope.ServiceProvider; }
-        }
-
-        internal void DisposeScope()
-        {
-            this.scope.Dispose();
-        }
     }
 }
