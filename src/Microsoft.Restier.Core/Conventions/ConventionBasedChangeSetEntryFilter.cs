@@ -130,7 +130,7 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.GetApiContextService<ApiBase>();
+                    target = context.GetApiService<ApiBase>();
                     if (target == null ||
                         !this.targetType.IsInstanceOfType(target))
                     {

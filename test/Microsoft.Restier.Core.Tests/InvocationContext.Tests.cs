@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Core.Tests
                 .BuildApiConfiguration();
             var apiContext = new ApiContext(configuration);
             var context = new InvocationContext(apiContext);
-            Assert.Same(hook, context.GetApiContextService<IHookA>());
+            Assert.Same(hook, context.GetApiService<IHookA>());
         }
 
         private interface IHookA

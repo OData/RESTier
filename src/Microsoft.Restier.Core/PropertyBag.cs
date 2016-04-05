@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents a bag of properties.
     /// </summary>
-    internal abstract class PropertyBagBase
+    internal class PropertyBag
     {
         private readonly IDictionary<string, object> properties =
             new Dictionary<string, object>();

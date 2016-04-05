@@ -64,7 +64,7 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.QueryContext.GetApiContextService<ApiBase>();
+                    target = context.QueryContext.GetApiService<ApiBase>();
                     if (target == null ||
                         !this.targetType.IsInstanceOfType(target))
                     {

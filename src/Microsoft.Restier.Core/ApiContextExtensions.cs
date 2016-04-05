@@ -474,14 +474,6 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
-        #region PropertyBag Internal
-
-        internal class PropertyBag : PropertyBagBase
-        {
-        }
-
-        #endregion
-
         #region Source Private
 
         private static IQueryable SourceCore(

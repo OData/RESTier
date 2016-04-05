@@ -154,14 +154,6 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
-        #region PropertyBag Internal
-
-        internal class PropertyBag : PropertyBagBase
-        {
-        }
-
-        #endregion
-
         #region IgnoreProperty Private
 
         private static ICollection<string> GetIgnoredPropertiesImplementation(this ApiConfiguration configuration)

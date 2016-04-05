@@ -227,47 +227,12 @@ public sealed class Microsoft.Restier.Core.InvocationContextExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static void ClearProperty (Microsoft.Restier.Core.InvocationContext context, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static T GetApiContextService (Microsoft.Restier.Core.InvocationContext context)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static IEnumerable`1 GetApiContextServices (Microsoft.Restier.Core.InvocationContext context)
-
-	[
-	ExtensionAttribute(),
-	]
 	public static T GetApiService (Microsoft.Restier.Core.InvocationContext context)
 
 	[
 	ExtensionAttribute(),
 	]
 	public static IEnumerable`1 GetApiServices (Microsoft.Restier.Core.InvocationContext context)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static object GetProperty (Microsoft.Restier.Core.InvocationContext context, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static T GetProperty (Microsoft.Restier.Core.InvocationContext context, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static bool HasProperty (Microsoft.Restier.Core.InvocationContext context, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static void SetProperty (Microsoft.Restier.Core.InvocationContext context, string name, object value)
 }
 
 [

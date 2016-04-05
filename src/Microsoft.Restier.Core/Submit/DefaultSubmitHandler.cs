@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             Ensure.NotNull(context, "context");
 
-            var preparer = context.GetApiContextService<IChangeSetPreparer>();
+            var preparer = context.GetApiService<IChangeSetPreparer>();
             if (preparer == null)
             {
                 throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
@@ -133,7 +133,7 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
-            var authorizer = context.GetApiContextService<IChangeSetEntryAuthorizer>();
+            var authorizer = context.GetApiService<IChangeSetEntryAuthorizer>();
             if (authorizer == null)
             {
                 return;
@@ -154,7 +154,7 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetEntry> changeSetItems,
             CancellationToken cancellationToken)
         {
-            var validator = context.GetApiContextService<IChangeSetEntryValidator>();
+            var validator = context.GetApiService<IChangeSetEntryValidator>();
             if (validator == null)
             {
                 return;
@@ -188,7 +188,7 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     entry.ChangeSetEntityState = DynamicChangeSetEntityState.PreEventing;
 
-                    var filter = context.GetApiContextService<IChangeSetEntryFilter>();
+                    var filter = context.GetApiService<IChangeSetEntryFilter>();
                     if (filter != null)
                     {
                         await filter.OnExecutingEntryAsync(context, entry, cancellationToken);
@@ -237,7 +237,7 @@ namespace Microsoft.Restier.Core.Submit
                 }
             }
 
-            var executor = context.GetApiContextService<ISubmitExecutor>();
+            var executor = context.GetApiService<ISubmitExecutor>();
             if (executor == null)
             {
                 throw new NotSupportedException(Resources.SubmitExecutorMissing);
@@ -253,7 +253,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             foreach (ChangeSetEntry entry in changeSetItems)
             {
-                var filter = context.GetApiContextService<IChangeSetEntryFilter>();
+                var filter = context.GetApiService<IChangeSetEntryFilter>();
                 if (filter != null)
                 {
                     await filter.OnExecutedEntryAsync(context, entry, cancellationToken);
