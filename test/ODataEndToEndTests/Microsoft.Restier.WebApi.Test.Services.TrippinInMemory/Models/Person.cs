@@ -17,6 +17,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
         [AutoExpand]
         public virtual ICollection<Person> Friends { get; set; }
 
+        public virtual ICollection<Trip> Trips { get; set; }
+
         public int PersonId { get; set; }
 
         public string UserName { get; set; }

@@ -238,9 +238,11 @@ namespace Microsoft.Restier.WebApi
 
             this.currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
 
-            // TODO GitHubIssue#330: EF QueryExecutor will throw exception if check whether collections is null added.
-            // Error message likes "Cannot compare elements of type 'ICollection`1[[EntityType]]'.
-            // Only primitive types, enumeration types and entity types are supported."
+            // Check whether property is null or not before futher selection
+            var whereExpression =
+                CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
+            this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
+
             if (navigationSegment.NavigationProperty.TargetMultiplicity() == EdmMultiplicity.Many)
             {
                 // get the element type of the target
@@ -258,11 +260,6 @@ namespace Microsoft.Restier.WebApi
             }
             else
             {
-                // Check whether property is null or not before futher selection
-                var whereExpression =
-                    CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
-                this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
-
                 this.currentType = navigationPropertyExpression.Type;
                 LambdaExpression selectBody =
                     Expression.Lambda(navigationPropertyExpression, entityParameterExpression);

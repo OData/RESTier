@@ -64,6 +64,7 @@ namespace Microsoft.Restier.EntityFramework
                 .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)))
                 .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
                 .ChainPrevious<IQueryExecutor, QueryExecutor>()
+                .CutoffPrevious<IQueryExpressionFilter, QueryExpressionFilter>()
                 .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
                 .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance)
                 .AddScoped<T>(sp =>

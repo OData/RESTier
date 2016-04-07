@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         /// <returns>
         /// A filtered expression of the same type as the visited node, or
-        /// if filtering did not apply, the visited node or <c>null</c>.
+        /// if filtering did not apply, the visited node.
         /// </returns>
         Expression Filter(QueryExpressionContext context);
     }

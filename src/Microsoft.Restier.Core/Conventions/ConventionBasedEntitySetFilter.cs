@@ -22,6 +22,8 @@ namespace Microsoft.Restier.Core.Conventions
             this.targetType = targetType;
         }
 
+        public IQueryExpressionFilter Inner { get; set; }
+
         /// <inheritdoc/>
         public static void ApplyTo(
             IServiceCollection services,
@@ -29,16 +31,24 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.CutoffPrevious<IQueryExpressionFilter>(new ConventionBasedEntitySetFilter(targetType));
+            services.ChainPrevious<IQueryExpressionFilter>(next => new ConventionBasedEntitySetFilter(targetType)
+            {
+                Inner = next,
+            });
         }
 
         /// <inheritdoc/>
         public Expression Filter(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
-            if (context.ModelReference == null)
+
+            if (Inner != null)
             {
-                return null;
+                var innerFilteredExpression = Inner.Filter(context);
+                if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
+                {
+                    return innerFilteredExpression;
+                }
             }
 
             var dataSourceStubReference = context.ModelReference as DataSourceStubReference;

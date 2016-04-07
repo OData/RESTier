@@ -107,7 +107,22 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 FavoriteFeature = Feature.Feature4,
                 Emails = new Collection<string>(),
                 Features = new Collection<Feature>(),
-                Locations = new Collection<Location>()
+                Locations = new Collection<Location>(),
+                Trips = new Collection<Trip>()
+                {
+                    new Trip()
+                    {
+                        TripId = 0,
+                        Name = "Team Building",
+                        Description = "Trip from Shanghai To Chongqing"
+                    },
+                    new Trip()
+                    {
+                        TripId = 0,
+                        Name = "Team Building",
+                        Description = "Trip from Chongqing To Shanghai"
+                    }
+                }
             },
             new Person
             {
@@ -129,7 +144,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
                 {
                     Feature.Feature4,
                     Feature.Feature1
-                }
+                },
+                Trips = new Collection<Trip>()
             },
             new Person
             {

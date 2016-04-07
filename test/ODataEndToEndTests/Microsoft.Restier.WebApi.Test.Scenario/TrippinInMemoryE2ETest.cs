@@ -86,7 +86,6 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         }
 
         [Theory]
-        // Note, null collection of any type (navCollection) is not tested as EF Query Executor does not support comparision of ICollection.
         // Single primitive property with null value 
         [InlineData("/People(5)/MiddleName", 204)]
         // Single primitive property $value with null value 
@@ -110,7 +109,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         // collection of complex property's propery and collection of complex property has null value
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
         [InlineData("/People(5)/Locations/Address", 404)]
-        // Collection of primitive property with null collection
+        // Collection of complex property with null collection
         [InlineData("/People(7)/Locations", 200)]
         // single navigation property with null value
         // TODO Should be 204, cannot differentiate ~/People(nonexistkey) vs /People(5)/NullSingNav now
@@ -122,6 +121,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         [InlineData("/People(6)/BestFriend/MiddleName", 204)]
         // collection of navigation property with empty collection value
         [InlineData("/People(5)/Friends", 200)]
+        // collection of navigation property with null collection value
+        [InlineData("/People(7)/Trips", 200)]
         // collection of navigation property's property and navigation property has null value
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
         [InlineData("/People(5)/Friends/MiddleName", 404)]

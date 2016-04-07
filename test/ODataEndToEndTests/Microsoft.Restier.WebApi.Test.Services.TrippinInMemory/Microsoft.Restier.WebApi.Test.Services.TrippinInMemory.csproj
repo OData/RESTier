@@ -99,6 +99,7 @@
     <Compile Include="Models\Feature.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Person.cs" />
+    <Compile Include="Models\Trip.cs" />
     <Compile Include="Models\TrippinApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
