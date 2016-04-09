@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
@@ -112,6 +113,84 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
                 return model;
             }
+        }
+    }
+
+    [EnableRoleBasedSecurity]
+    [Grant(ApiPermissionType.All, On = "Customers")]
+    [Grant(ApiPermissionType.All, On = "Products")]
+    [Grant(ApiPermissionType.All, On = "CurrentOrders")]
+    [Grant(ApiPermissionType.All, On = "ExpensiveProducts")]
+    [Grant(ApiPermissionType.All, On = "Orders")]
+    [Grant(ApiPermissionType.All, On = "Employees")]
+    [Grant(ApiPermissionType.All, On = "Regions")]
+    [Grant(ApiPermissionType.Inspect, On = "Suppliers")]
+    [Grant(ApiPermissionType.Read, On = "Suppliers")]
+    [Grant(ApiPermissionType.All, On = "ResetDataSource")]
+    public class NorthwindApi2
+    {
+        public ApiContext Context { get; private set; }
+
+        public NorthwindApi2(ApiContext context)
+        {
+            Context = context;
+        }
+
+        // Imperative views. Currently CUD operations not supported
+        public IQueryable<Product> ExpensiveProducts
+        {
+            get
+            {
+                return Context.Source<Product>("Products")
+                    .Where(c => c.UnitPrice > 50);
+            }
+        }
+
+        public IQueryable<Order> CurrentOrders
+        {
+            get
+            {
+                return Context.Source<Order>("Orders")
+                    .Where(o => o.ShippedDate == null);
+            }
+        }
+
+        [Action]
+        public void IncreasePrice(Product bindingParameter, int diff)
+        {
+        }
+
+        [Action]
+        public void ResetDataSource()
+        {
+        }
+
+        [Function]
+        public double MostExpensive(IEnumerable<Product> bindingParameter)
+        {
+            return 0.0;
+        }
+
+        // Entity set filter
+        protected IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
+        {
+            return customers.Where(c => c.CountryRegion == "France");
+        }
+
+        // Submit logic
+        protected void OnUpdatingProducts(Product product)
+        {
+            WriteLog(DateTime.Now.ToString() + product.ProductID + " is being updated");
+        }
+
+        protected void OnInsertedProducts(Product product)
+        {
+            WriteLog(DateTime.Now.ToString() + product.ProductID + " has been inserted");
+        }
+
+        private void WriteLog(string text)
+        {
+            // Fake writing log method for submit logic demo
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -104,10 +105,31 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
+        class ApiContextDisposeVerifier : IApiContextConfigurator
+        {
+            public bool DisposeVerified { get; private set; }
+
+            public void Cleanup(ApiContext context)
+            {
+                Assert.False(context.GetProperty<bool>("Test2"));
+                Assert.False(context.GetProperty<bool>("Test1"));
+                DisposeVerified = true;
+            }
+
+            public void Initialize(ApiContext context)
+            {
+            }
+        }
+
         [TestApiConfigurator("Test1")]
         [TestApiConfigurator("Test2")]
         private class TestApiWithParticipants : ApiBase
         {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                return base.ConfigureApi(services)
+                    .AddSingleton<IApiContextConfigurator, ApiContextDisposeVerifier>();
+            }
         }
 
         [Fact]
@@ -125,9 +147,13 @@ namespace Microsoft.Restier.Core.Tests
             Assert.True(context.GetProperty<bool>("Test2"));
             Assert.Same(api, context.GetProperty("Test2.Self"));
 
+            var disposeVerifier = context
+                .GetApiServices<IApiContextConfigurator>()
+                .OfType<ApiContextDisposeVerifier>()
+                .Single();
             (api as IDisposable).Dispose();
-            Assert.False(context.GetProperty<bool>("Test2"));
-            Assert.False(context.GetProperty<bool>("Test1"));
+
+            Assert.True(disposeVerifier.DisposeVerified);
         }
     }
 }

@@ -40,14 +40,14 @@ namespace Microsoft.Restier.WebApi
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
 
-        private ApiBase api;
+        private ApiContext api;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
 
         /// <summary>
         /// Gets the API associated with this controller.
         /// </summary>
-        public ApiBase Api
+        public ApiContext Api
         {
             get
             {
@@ -82,7 +82,7 @@ namespace Microsoft.Restier.WebApi
             };
             QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
 
-            this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
+            this.Request.Properties[ETagGetterKey] = this.Api.GetProperty(ETagGetterKey);
 
             return this.CreateQueryResponse(queryResult.Results.AsQueryable(), path.EdmType);
         }
@@ -336,13 +336,13 @@ namespace Microsoft.Restier.WebApi
             {
                 if (this.shouldReturnCount || this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.Api.Context);
+                    var rawResult = new RawResult(query, typeReference, this.Api);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var primitiveResult = new PrimitiveResult(query, typeReference, this.Api.Context);
+                    var primitiveResult = new PrimitiveResult(query, typeReference, this.Api);
                     singleResult = primitiveResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, primitiveResult);
                 }
@@ -350,7 +350,7 @@ namespace Microsoft.Restier.WebApi
 
             if (typeReference.IsComplex())
             {
-                var complexResult = new ComplexResult(query, typeReference, this.Api.Context);
+                var complexResult = new ComplexResult(query, typeReference, this.Api);
                 singleResult = complexResult;
                 response = this.Request.CreateResponse(HttpStatusCode.OK, complexResult);
             }
@@ -359,13 +359,13 @@ namespace Microsoft.Restier.WebApi
             {
                 if (this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.Api.Context);
+                    var rawResult = new RawResult(query, typeReference, this.Api);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var enumResult = new EnumResult(query, typeReference, this.Api.Context);
+                    var enumResult = new EnumResult(query, typeReference, this.Api);
                     singleResult = enumResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, enumResult);
                 }
@@ -389,14 +389,14 @@ namespace Microsoft.Restier.WebApi
                 if (elementType.IsPrimitive() || elementType.IsComplex() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Api.Context));
+                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Api));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Api.Context));
+                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Api));
             }
 
-            var entityResult = new EntityResult(query, typeReference, this.Api.Context);
+            var entityResult = new EntityResult(query, typeReference, this.Api);
             if (entityResult.Result == null)
             {
                 // TODO GitHubIssue#288: 204 expected when requesting single nav propery which has null value
@@ -457,7 +457,7 @@ namespace Microsoft.Restier.WebApi
             if (queryOptions.Count != null)
             {
                 RestierQueryExecutorOptions queryExecutorOptions =
-                    Api.Context.GetApiService<RestierQueryExecutorOptions>();
+                    Api.GetApiService<RestierQueryExecutorOptions>();
                 queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
                 queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }

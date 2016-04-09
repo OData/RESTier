@@ -21,7 +21,7 @@ namespace Microsoft.Restier.WebApi
         private const char EntityKeySeparator = ',';
         private const char EntityKeyNameValueSeparator = '=';
 
-        private readonly ApiBase api;
+        private readonly ApiContext api;
         private readonly ODataPath path;
         private readonly IDictionary<string, Action<ODataPathSegment>> handlers =
             new Dictionary<string, Action<ODataPathSegment>>();
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.WebApi
         private IEdmEntityType currentEntityType;
         private Type currentType;
 
-        public RestierQueryBuilder(ApiBase api, ODataPath path)
+        public RestierQueryBuilder(ApiContext api, ODataPath path)
         {
             Ensure.NotNull(api, "api");
             Ensure.NotNull(path, "path");

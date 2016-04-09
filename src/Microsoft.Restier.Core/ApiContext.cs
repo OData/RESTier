@@ -2,9 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {
@@ -14,9 +13,9 @@ namespace Microsoft.Restier.Core
     /// <remarks>
     /// An API context is an instantiation of an API configuration.
     /// </remarks>
-    public class ApiContext
+    public class ApiContext : IDisposable
     {
-        private readonly IServiceScope scope;
+        private IServiceScope scope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiContext" /> class.
@@ -25,12 +24,23 @@ namespace Microsoft.Restier.Core
         /// An API configuration.
         /// </param>
         public ApiContext(ApiConfiguration configuration)
+            : this(configuration.ServiceProvider.GetService<IServiceScopeFactory>().CreateScope())
         {
-            Ensure.NotNull(configuration, "configuration");
+        }
 
-            this.Configuration = configuration;
-            this.scope = configuration.ServiceProvider
-                .GetRequiredService<IServiceScopeFactory>().CreateScope();
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiContext" /> class.
+        /// </summary>
+        /// <param name="contextScope">
+        /// The <see cref="IServiceScope"/> within which to initialize the <see cref="ApiContext"/>.
+        /// </param>
+        [CLSCompliant(false)]
+        public ApiContext(IServiceScope contextScope)
+        {
+            Ensure.NotNull(contextScope, "contextScope");
+
+            this.scope = contextScope;
+            this.Configuration = contextScope.ServiceProvider.GetRequiredService<ApiConfiguration>();
         }
 
         /// <summary>
@@ -43,12 +53,39 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public IServiceProvider ServiceProvider
         {
-            get { return this.scope.ServiceProvider; }
+            get
+            {
+                if (this.scope == null)
+                {
+                    throw new ObjectDisposedException("ApiContext");
+                }
+
+                return this.scope.ServiceProvider;
+            }
         }
 
-        internal void DisposeScope()
+        public void Dispose()
         {
-            this.scope.Dispose();
+            var scope = this.scope;
+            if (scope == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var configs = scope.ServiceProvider
+                    .GetServices<IApiContextConfigurator>().Reverse();
+                foreach (var e in configs)
+                {
+                    e.Cleanup(this);
+                }
+            }
+            finally
+            {
+                this.scope = null;
+                scope.Dispose();
+            }
         }
     }
 }

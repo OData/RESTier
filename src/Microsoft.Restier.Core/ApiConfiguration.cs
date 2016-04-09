@@ -72,6 +72,16 @@ namespace Microsoft.Restier.Core
             return configurations.GetOrAdd(keyType, _ => new Customizer());
         }
 
+        [CLSCompliant(false)]
+        public static ApiConfiguration Create(Action<IServiceCollection> configurationCall)
+        {
+            return new ServiceCollection()
+                .DefaultInnerMost()
+                .Apply(configurationCall)
+                .DefaultOuterMost()
+                .BuildApiConfiguration();
+        }
+
         internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)
         {
             var source = new TaskCompletionSource<IEdmModel>(TaskCreationOptions.AttachedToParent);

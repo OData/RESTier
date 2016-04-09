@@ -52,16 +52,7 @@ namespace Microsoft.Restier.Core
 
                 if (this.apiContext == null)
                 {
-                    this.apiContext = this.CreateApiContext(
-                        this.Configuration);
-                    var apiScope = this.apiContext.GetApiService<ApiHolder>();
-                    if (apiScope != null)
-                    {
-                        apiScope.Api = this;
-                    }
-
-                    ApiConfiguratorAttribute.ApplyInitialization(
-                        this.GetType(), this, this.apiContext);
+                    this.apiContext = this.CreateApiContext(Configuration);
                 }
 
                 return this.apiContext;
@@ -85,20 +76,18 @@ namespace Microsoft.Restier.Core
                     apiType =>
                     {
                         IServiceCollection services = new ServiceCollection()
-                            .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance)
-                            .AddScoped<PropertyBag>();
+                            .DefaultInnerMost();
 
-                        services = this.ConfigureApiServices(apiType, services);
+                        services = this.ConfigureApiServices(apiType, services)
+                            .DefaultOuterMost();
                         if (!services.HasService<ApiBase>())
                         {
                             services.AddScoped<ApiHolder>()
                                 .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.Context);
+                                .AddScoped(sp => sp.GetService<ApiHolder>().Api);
                         }
 
                         var configuration = this.CreateApiConfiguration(services);
-                        ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
                         return configuration;
                     });
             }
@@ -118,12 +107,6 @@ namespace Microsoft.Restier.Core
             if (this.IsDisposed)
             {
                 return;
-            }
-
-            if (this.apiContext != null)
-            {
-                ApiConfiguratorAttribute.ApplyDisposal(
-                    this.GetType(), this, this.apiContext);
             }
 
             this.Dispose(true);
@@ -192,10 +175,16 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// The API context for this API.
         /// </returns>
-        protected virtual ApiContext CreateApiContext(
-            ApiConfiguration configuration)
+        protected virtual ApiContext CreateApiContext(ApiConfiguration configuration)
         {
-            return new ApiContext(configuration);
+            var scope = configuration.GetApiService<IServiceScopeFactory>().CreateScope();
+            var apiScope = scope.ServiceProvider.GetService<ApiHolder>();
+            if (apiScope != null)
+            {
+                apiScope.Api = this;
+            }
+
+            return configuration.CreateContextWithin(scope);
         }
 
         /// <summary>
@@ -211,7 +200,7 @@ namespace Microsoft.Restier.Core
             this.IsDisposed = true;
             if (this.apiContext != null)
             {
-                this.apiContext.DisposeScope();
+                this.apiContext.Dispose();
                 this.apiContext = null;
             }
         }

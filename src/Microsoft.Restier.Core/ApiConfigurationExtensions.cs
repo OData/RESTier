@@ -122,6 +122,22 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
+        [CLSCompliant(false)]
+        public static ApiContext CreateContextWithin(this ApiConfiguration obj, IServiceScope scope)
+        {
+            return obj.GetApiService<IApiContextFactory>().CreateWithin(scope);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="ApiContext"/> configured by current <see cref="ApiConfiguration"/>.
+        /// </summary>
+        /// <param name="obj">The <see cref="ApiConfiguration"/>.</param>
+        /// <returns>An <see cref="ApiContext"/>.</returns>
+        public static ApiContext CreateContext(this ApiConfiguration obj)
+        {
+            return obj.CreateContextWithin(obj.GetApiService<IServiceScopeFactory>().CreateScope());
+        }
+
         #region IgnoreProperty
 
         /// <summary>

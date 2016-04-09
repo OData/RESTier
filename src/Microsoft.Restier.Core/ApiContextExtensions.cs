@@ -159,6 +159,13 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
+        public static ApiContext CreateNew(this ApiContext obj)
+        {
+            var sp = obj.ServiceProvider;
+            return sp.GetService<IApiContextFactory>().CreateWithin(
+                sp.GetService<IServiceScopeFactory>().CreateScope());
+        }
+
         #region Model
 
         /// <summary>

@@ -16,6 +16,13 @@ namespace Microsoft.Restier.Security
     /// </summary>
     public class ApiPolicyActivator : IQueryExpressionExpander
     {
+        private Type targetType;
+
+        public ApiPolicyActivator(Type targetType)
+        {
+            this.targetType = targetType;
+        }
+
         /// <inheritdoc/>
         public IQueryExpressionExpander InnerHandler { get; set; }
 
@@ -50,8 +57,7 @@ namespace Microsoft.Restier.Security
                 return CallInner(context);
             }
 
-            var target = context.QueryContext.GetApiService<ApiBase>();
-            var entitySetProperty = target.GetType().GetProperties(
+            var entitySetProperty = targetType.GetProperties(
                 BindingFlags.Public | BindingFlags.Instance |
                 BindingFlags.Static | BindingFlags.DeclaredOnly)
                 .SingleOrDefault(p => p.Name == entitySet.Name);
