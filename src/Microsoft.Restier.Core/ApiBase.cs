@@ -87,14 +87,8 @@ namespace Microsoft.Restier.Core
                         IServiceCollection services = new ServiceCollection()
                             .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance)
                             .AddScoped<PropertyBag>();
-                        services = this.ConfigureApi(services);
-                        ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
 
-                        // Copy from pre-build registration.
-                        ApiConfiguration.Configuration(apiType)(services);
-
-                        // Make sure that all convention-based handlers are outermost.
-                        EnableConventions(services, apiType);
+                        services = this.ConfigureApiServices(apiType, services);
                         if (!services.HasService<ApiBase>())
                         {
                             services.AddScoped<ApiHolder>()
@@ -134,6 +128,31 @@ namespace Microsoft.Restier.Core
 
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Configure the entire service set for this API. Descendants can override this method to choose
+        /// from the default service sets provided by RESTier.
+        /// </summary>
+        /// <param name="apiType">
+        /// CLR type of this <see cref="ApiBase"/>.
+        /// </param>
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// </param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        [CLSCompliant(false)]
+        protected virtual IServiceCollection ConfigureApiServices(Type apiType, IServiceCollection services)
+        {
+            var customizer = ApiConfiguration.Customize(apiType);
+            services.Apply(customizer.InnerMost);
+
+            return this.ConfigureApi(services)
+                .Apply(customizer.PrivateApi)
+                .UseAttributes(apiType)
+                .UseConventions(apiType)
+                .Apply(customizer.Overrides)
+                .Apply(customizer.OuterMost);
         }
 
         /// <summary>
@@ -195,36 +214,6 @@ namespace Microsoft.Restier.Core
                 this.apiContext.DisposeScope();
                 this.apiContext = null;
             }
-        }
-
-        /// <summary>
-        /// Enables code-based conventions for an API.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="targetType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
-        /// <remarks>
-        /// This method adds hook points to the API configuration that
-        /// inspect a target type for a variety of code-based conventions
-        /// such as usage of specific attributes or members that follow
-        /// certain naming conventions.
-        /// </remarks>
-        private static void EnableConventions(
-            IServiceCollection services,
-            Type targetType)
-        {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
-
-            ConventionBasedChangeSetAuthorizer.ApplyTo(services, targetType);
-            ConventionBasedChangeSetEntryFilter.ApplyTo(services, targetType);
-            services.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
-            ConventionBasedApiModelBuilder.ApplyTo(services, targetType);
-            ConventionBasedOperationProvider.ApplyTo(services, targetType);
-            ConventionBasedEntitySetFilter.ApplyTo(services, targetType);
         }
 
         // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.

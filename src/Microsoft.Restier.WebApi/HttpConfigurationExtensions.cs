@@ -48,7 +48,7 @@ namespace Microsoft.Restier.WebApi
             Ensure.NotNull(apiFactory, "apiFactory");
 
             // ApiBase.ConfigureApi is called before this method is called.
-            ApiConfiguration.Configure<TApi>(services =>
+            ApiConfiguration.Customize<TApi>().PrivateApi.Append(services =>
             {
                 services.AddScoped<RestierQueryExecutorOptions>()
                     .ChainPrevious<IQueryExecutor, RestierQueryExecutor>();

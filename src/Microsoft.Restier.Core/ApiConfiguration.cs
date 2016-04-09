@@ -34,10 +34,8 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration
     {
-        private static ConcurrentDictionary<Type, Action<IServiceCollection>> configurations =
-            new ConcurrentDictionary<Type, Action<IServiceCollection>>();
-
-        private static Action<IServiceCollection> emptyConfig = _ => { };
+        private static ConcurrentDictionary<Type, Customizer> configurations =
+            new ConcurrentDictionary<Type, Customizer>();
 
         private IServiceProvider serviceProvider;
 
@@ -64,32 +62,14 @@ namespace Microsoft.Restier.Core
 
         internal IEdmModel Model { get; private set; }
 
-        /// <summary>
-        /// Adds a configuration procedure for API type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The API type.</typeparam>
-        /// <param name="configurationCallback">
-        /// An action that will be called during the configuration of <typeparamref name="T"/>.
-        /// </param>
-        [CLSCompliant(false)]
-        public static void Configure<T>(Action<IServiceCollection> configurationCallback)
-             where T : ApiBase
+        public static Customizer Customize<TKey>()
         {
-            ApiConfiguration.configurations.AddOrUpdate(
-                typeof(T),
-                configurationCallback,
-                (type, existing) => existing + configurationCallback);
+            return Customize(typeof(TKey));
         }
 
-        internal static Action<IServiceCollection> Configuration(Type apiType)
+        public static Customizer Customize(Type keyType)
         {
-            Action<IServiceCollection> val;
-            if (ApiConfiguration.configurations.TryGetValue(apiType, out val))
-            {
-                return val;
-            }
-
-            return ApiConfiguration.emptyConfig;
+            return configurations.GetOrAdd(keyType, _ => new Customizer());
         }
 
         internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)
@@ -119,6 +99,52 @@ namespace Microsoft.Restier.Core
                 TaskContinuationOptions.ExecuteSynchronously);
             running = null;
             return source;
+        }
+
+        public sealed class Customizer
+        {
+            public Customizer()
+            {
+                InnerMost = new Anchor();
+                OuterMost = new Anchor();
+                Overrides = new Anchor();
+                PrivateApi = new Anchor();
+            }
+
+            public Anchor InnerMost { get; private set; }
+
+            public Anchor OuterMost { get; private set; }
+
+            public Anchor PrivateApi { get; private set; }
+
+            public Anchor Overrides { get; private set; }
+        }
+
+        public sealed class Anchor
+        {
+            private static Action<IServiceCollection> emptyConfig = _ => { };
+
+            private Action<IServiceCollection> call;
+
+            [CLSCompliant(false)]
+            public Action<IServiceCollection> Configuration
+            {
+                get { return call ?? emptyConfig; }
+            }
+
+            [CLSCompliant(false)]
+            public Anchor Append(Action<IServiceCollection> configurationCall)
+            {
+                call += configurationCall;
+                return this;
+            }
+
+            [CLSCompliant(false)]
+            public Anchor Prepend(Action<IServiceCollection> configurationCall)
+            {
+                call = configurationCall + call;
+                return this;
+            }
         }
     }
 }
