@@ -75,7 +75,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.UseSqlServerIdentityColumns();
+            modelBuilder.ForSqlServerUseIdentityColumns();
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // After EF7 adds support for DataAnnotation, some of following configuration could be deprecated.
@@ -84,8 +84,8 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             {
                 entityBuilder.ToTable("Categories");
                 entityBuilder.Property(e => e.CategoryName).IsRequired().HasMaxLength(15);
-                entityBuilder.Property(e => e.Description).HasSqlServerColumnType("ntext");
-                entityBuilder.Property(e => e.Picture).HasSqlServerColumnType("image");
+                entityBuilder.Property(e => e.Description).HasColumnType("ntext");
+                entityBuilder.Property(e => e.Picture).HasColumnType("image");
                 entityBuilder.Property(e => e.CategoryName).HasMaxLength(15);
                 entityBuilder.HasKey(e => e.CategoryID);
             });
@@ -94,8 +94,8 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Contact>(entityBuilder =>
             {
                 entityBuilder.ToTable("Contacts");
-                entityBuilder.Property(e => e.HomePage).HasSqlServerColumnType("ntext");
-                entityBuilder.Property(e => e.Photo).HasSqlServerColumnType("image");
+                entityBuilder.Property(e => e.HomePage).HasColumnType("ntext");
+                entityBuilder.Property(e => e.Photo).HasColumnType("image");
                 //entityBuilder.Key(e => e.ContactID);
             });
 
@@ -118,7 +118,10 @@ namespace Microsoft.Restier.Samples.Northwind.Models
                 entityBuilder.Property(e => e.FirstName).IsRequired().HasMaxLength(10);
 				entityBuilder.Property(e => e.BirthDate).HasColumnType("date");
 				entityBuilder.Property(e => e.HireDate).HasColumnType("date");
-				entityBuilder.HasMany(e => e.Employees1).WithOne(e => e.Employee1).Required(false).ForeignKey(e => e.ReportsTo);
+				entityBuilder.HasMany(e => e.Employees1)
+                    .WithOne(e => e.Employee1)
+                    .IsRequired(false)
+                    .HasForeignKey(e => e.ReportsTo);
             });
 
             modelBuilder.Entity<Order>(entityBuilder =>
@@ -127,13 +130,15 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 				entityBuilder.Property(e => e.OrderDate).HasColumnType("date");
 				entityBuilder.Property(e => e.RequiredDate).HasColumnType("date");
 				entityBuilder.Property(e => e.ShippedDate).HasColumnType("date");
-				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order).Required().ForeignKey(e => e.OrderID).WillCascadeOnDelete(false);
+				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order)
+                    .IsRequired()
+                    .HasForeignKey(e => e.OrderID).OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
             {
                 entityBuilder.ToTable("Order Details");
-                entityBuilder.Property(e => e.UnitPrice).HasSqlServerColumnType("money");
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
                 entityBuilder.HasKey(e => new
                 {
                     K1 = e.OrderID,
@@ -144,8 +149,12 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Product>(entityBuilder =>
             {
                 entityBuilder.ToTable("Products");
-                entityBuilder.Property(e => e.UnitPrice).HasSqlServerColumnType("money");
-                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Product).Required().ForeignKey(e => e.ProductID).WillCascadeOnDelete(false);
+                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
+                entityBuilder.HasMany(e => e.Order_Details)
+                    .WithOne(e => e.Product)
+                    .IsRequired()
+                    .HasForeignKey(e => e.ProductID)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Region>(entityBuilder =>
@@ -157,7 +166,10 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Shipper>(entityBuilder =>
             {
                 entityBuilder.ToTable("Shippers");
-                entityBuilder.HasMany(e => e.Orders).WithOne(e => e.Shipper).ForeignKey(e => e.ShipVia).Required(false);
+                entityBuilder.HasMany(e => e.Orders)
+                    .WithOne(e => e.Shipper)
+                    .HasForeignKey(e => e.ShipVia)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<Supplier>(entityBuilder =>
@@ -167,12 +179,18 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             modelBuilder.Entity<Territory>(entityBuilder =>
             {
                 entityBuilder.ToTable("Territories");
-                entityBuilder.HasOne(e => e.Region).WithMany(e => e.Territories).ForeignKey(e => e.RegionID).Required().WillCascadeOnDelete(false);
+                entityBuilder.HasOne(e => e.Region)
+                    .WithMany(e => e.Territories)
+                    .HasForeignKey(e => e.RegionID)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // ToTable() for navigation configuration is not yet supported in EF7, remove following ignores after it's ready.
             modelBuilder.Entity<Customer>().Ignore(e => e.CustomerDemographics);
+
+            modelBuilder.Entity<CustomerDemographic>().Ignore(e => e.Customers);
 
             modelBuilder.Entity<Employee>().Ignore(e => e.Territories);
 

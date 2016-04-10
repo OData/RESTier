@@ -112,8 +112,8 @@ namespace Microsoft.Restier.EntityFramework.Model
             var dbContext = domainContext.GetApiService<DbContext>();
             var elementMap = new Dictionary<IAnnotatable, IEdmElement>();
             var efModel = dbContext.Model;
-            var namespaceName = efModel.EntityTypes
-                .Select(t => t.HasClrType() ? t.ClrType.Namespace : null)
+            var namespaceName = efModel.GetEntityTypes()
+                .Select(t => t.ClrType != null ? t.ClrType.Namespace : null)
                 .Where(t => t != null)
                 .GroupBy(nameSpace => nameSpace)
                 .Select(group => new
@@ -130,7 +130,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 namespaceName = dbContext.GetType().Namespace ?? dbContext.GetType().Name;
             }
 
-            var entityTypes = efModel.EntityTypes;
+            var entityTypes = efModel.GetEntityTypes();
             var entityContainer = new EdmEntityContainer(
                 namespaceName, "Container");
 
@@ -212,7 +212,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                         EdmConcurrencyMode.None); // alway None:replaced by OptimisticConcurrency annotation
 
                     // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-                    if (efProperty.StoreGeneratedAlways)
+                    if (efProperty.IsStoreGeneratedAlways)
                     {
                         SetComputedAnnotation(model, property);
                     }
@@ -225,7 +225,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                 }
             }
 
-            var key = efEntityType.GetPrimaryKey();
+            var key = efEntityType.FindPrimaryKey();
             if (key != null)
             {
                 entityType.AddKeys(key.Properties
@@ -316,7 +316,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             EdmModel model,
             IDictionary<IAnnotatable, IEdmElement> elementMap)
         {
-            if (!navigation.PointsToPrincipal())
+            if (!navigation.IsDependentToPrincipal())
             {
                 return;
             }
@@ -353,7 +353,7 @@ namespace Microsoft.Restier.EntityFramework.Model
                     TargetMultiplicity = ModelProducer.GetEdmMultiplicity(navi),
                 };
                 var foreignKey = navi.ForeignKey;
-                if (foreignKey != null && navi.PointsToPrincipal())
+                if (foreignKey != null && navi.IsDependentToPrincipal())
                 {
                     navPropertyInfos[i].OnDelete = foreignKey.DeleteBehavior == DeleteBehavior.Cascade ?
                         EdmOnDeleteAction.Cascade : EdmOnDeleteAction.None;
@@ -402,7 +402,7 @@ namespace Microsoft.Restier.EntityFramework.Model
             EdmEntityContainer container,
             IDictionary<IAnnotatable, IEdmElement> elementMap)
         {
-            if (!navi.PointsToPrincipal())
+            if (!navi.IsDependentToPrincipal())
             {
                 return;
             }
