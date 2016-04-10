@@ -111,6 +111,7 @@
     <Compile Include="Submit\ValidationSeverity.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api.Interfaces.cs" />
     <None Include="Microsoft.Restier.Core.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

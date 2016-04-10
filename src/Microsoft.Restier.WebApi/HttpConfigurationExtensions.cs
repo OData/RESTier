@@ -41,14 +41,14 @@ namespace Microsoft.Restier.WebApi
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            Func<ApiBase> apiFactory,
+            Func<ApiContext> apiFactory,
             RestierBatchHandler batchHandler = null)
-            where TApi : ApiBase
+            where TApi : class
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
             // ApiBase.ConfigureApi is called before this method is called.
-            ApiConfiguration.Configure<TApi>(services =>
+            ApiConfiguration.Customize<TApi>().PrivateApi.Append(services =>
             {
                 services.AddScoped<RestierQueryExecutorOptions>()
                     .ChainPrevious<IQueryExecutor, RestierQueryExecutor>();
@@ -68,7 +68,7 @@ namespace Microsoft.Restier.WebApi
                     routeName, routePrefix, model, new DefaultODataPathHandler(), conventions, batchHandler);
 
                 // Customized converter should be added in ConfigureApi as service
-                var converter = api.Context.GetApiService<ODataPayloadValueConverter>();
+                var converter = api.GetApiService<ODataPayloadValueConverter>();
                 if (converter == null)
                 {
                     converter = new RestierPayloadValueConverter();
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.WebApi
             where TApi : ApiBase, new()
         {
             return MapRestierRoute<TApi>(
-                config, routeName, routePrefix, () => new TApi(), batchHandler);
+                config, routeName, routePrefix, () => new TApi().Context, batchHandler);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.WebApi
         /// <param name="apiFactory">The API factory.</param>
         /// <returns>The routing conventions created.</returns>
         private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
-            this HttpConfiguration config, IEdmModel model, Func<ApiBase> apiFactory)
+            this HttpConfiguration config, IEdmModel model, Func<ApiContext> apiFactory)
         {
             var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
             var index = 0;

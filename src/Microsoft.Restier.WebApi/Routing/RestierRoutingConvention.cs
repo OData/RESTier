@@ -22,13 +22,13 @@ namespace Microsoft.Restier.WebApi.Routing
         private const string MethodNameOfGet = "Get";
         private const string MethodNameOfPostAction = "PostAction";
 
-        private readonly Func<ApiBase> apiFactory;
+        private readonly Func<ApiContext> apiFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierRoutingConvention" /> class.
         /// </summary>
         /// <param name="apiFactory">The API factory method.</param>
-        public RestierRoutingConvention(Func<ApiBase> apiFactory)
+        public RestierRoutingConvention(Func<ApiContext> apiFactory)
         {
             this.apiFactory = apiFactory;
         }

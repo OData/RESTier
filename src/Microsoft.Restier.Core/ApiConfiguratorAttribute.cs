@@ -13,131 +13,8 @@ namespace Microsoft.Restier.Core
     /// </summary>
     [Serializable]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public abstract class ApiConfiguratorAttribute : Attribute
+    public abstract class ApiConfiguratorAttribute : Attribute, IApiConfigurator
     {
-        /// <summary>
-        /// Applies configuration from any API configurator attributes
-        /// specified on an API type to an API services.
-        /// </summary>
-        /// <param name="type">
-        /// An API type.
-        /// </param>
-        /// <param name="services">
-        /// The API services registration.
-        /// </param>
-        [CLSCompliant(false)]
-        public static void ApplyApiServices(
-            Type type, IServiceCollection services)
-        {
-            Ensure.NotNull(type, "type");
-            Ensure.NotNull(services, "services");
-            if (type.BaseType != null)
-            {
-                ApiConfiguratorAttribute.ApplyApiServices(
-                    type.BaseType, services);
-            }
-
-            var attributes = type.GetCustomAttributes(
-                typeof(ApiConfiguratorAttribute), false);
-            foreach (ApiConfiguratorAttribute attribute in attributes)
-            {
-                attribute.ConfigureApi(services, type);
-            }
-        }
-
-        /// <summary>
-        /// Applies configuration from any API configurator attributes
-        /// specified on an API type to an API configuration.
-        /// </summary>
-        /// <param name="type">
-        /// An API type.
-        /// </param>
-        /// <param name="configuration">
-        /// An API configuration.
-        /// </param>
-        public static void ApplyConfiguration(
-            Type type, ApiConfiguration configuration)
-        {
-            Ensure.NotNull(type, "type");
-            Ensure.NotNull(configuration, "configuration");
-            if (type.BaseType != null)
-            {
-                ApiConfiguratorAttribute.ApplyConfiguration(
-                    type.BaseType, configuration);
-            }
-
-            var attributes = type.GetCustomAttributes(
-                typeof(ApiConfiguratorAttribute), false);
-            foreach (ApiConfiguratorAttribute attribute in attributes)
-            {
-                attribute.Configure(configuration, type);
-            }
-        }
-
-        /// <summary>
-        /// Applies initialization routines from any API configurator
-        /// attributes specified on an API type to an API context.
-        /// </summary>
-        /// <param name="type">
-        /// An API type.
-        /// </param>
-        /// <param name="instance">
-        /// An API instance, if applicable.
-        /// </param>
-        /// <param name="context">
-        /// An API context.
-        /// </param>
-        public static void ApplyInitialization(
-            Type type, object instance, ApiContext context)
-        {
-            Ensure.NotNull(type, "type");
-            Ensure.NotNull(context, "context");
-            if (type.BaseType != null)
-            {
-                ApiConfiguratorAttribute.ApplyInitialization(
-                    type.BaseType, instance, context);
-            }
-
-            var attributes = type.GetCustomAttributes(
-                typeof(ApiConfiguratorAttribute), false);
-            foreach (ApiConfiguratorAttribute attribute in attributes)
-            {
-                attribute.Initialize(context, type, instance);
-            }
-        }
-
-        /// <summary>
-        /// Applies disposal routines from any API configurator
-        /// attributes specified on an API type to an API context.
-        /// </summary>
-        /// <param name="type">
-        /// An API type.
-        /// </param>
-        /// <param name="instance">
-        /// An API instance, if applicable.
-        /// </param>
-        /// <param name="context">
-        /// An API context.
-        /// </param>
-        public static void ApplyDisposal(
-            Type type, object instance, ApiContext context)
-        {
-            Ensure.NotNull(type, "type");
-            Ensure.NotNull(context, "context");
-            var attributes = type.GetCustomAttributes(
-                typeof(ApiConfiguratorAttribute), false);
-            foreach (ApiConfiguratorAttribute attribute in attributes.Reverse())
-            {
-                attribute.Dispose(context, type, instance);
-            }
-
-            if (type.BaseType != null)
-            {
-                ApiConfiguratorAttribute.ApplyDisposal(
-                    type.BaseType, instance, context);
-            }
-        }
-
         /// <summary>
         /// Configures an API services.
         /// </summary>
@@ -205,6 +82,42 @@ namespace Microsoft.Restier.Core
             Type type,
             object instance)
         {
+        }
+
+        [CLSCompliant(false)]
+        public void Configure(IServiceCollection services, Type apiType)
+        {
+            ConfigureApi(services, apiType);
+
+            var adapter = new AttributeAdapter()
+            {
+                Target = this,
+                ApiType = apiType,
+            };
+            services.AddInstance<IApiInitializer>(adapter)
+                .AddInstance<IApiContextConfigurator>(adapter);
+        }
+
+        private class AttributeAdapter : IApiInitializer, IApiContextConfigurator
+        {
+            public ApiConfiguratorAttribute Target { get; set; }
+
+            public Type ApiType { get; set; }
+
+            public void Cleanup(ApiContext context)
+            {
+                Target.Dispose(context, ApiType, context.ServiceProvider.GetService(ApiType));
+            }
+
+            public void Initialize(ApiContext context)
+            {
+                Target.Initialize(context, ApiType, context.ServiceProvider.GetService(ApiType));
+            }
+
+            public void Initialize(ApiConfiguration configuration)
+            {
+                Target.Configure(configuration, ApiType);
+            }
         }
     }
 }
