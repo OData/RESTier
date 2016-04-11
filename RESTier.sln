@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{552DD8A7-2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Core.Tests", "test\Microsoft.Restier.Core.Tests\Microsoft.Restier.Core.Tests.csproj", "{D1F0FA28-73A1-4202-807B-DCAF5FFEDC2F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODataEndToEndTests", "ODataEndToEndTests", "{4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EndToEnd", "EndToEnd", "{4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test", "test\Microsoft.Restier.WebApi.Test\Microsoft.Restier.WebApi.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
 EndProject
