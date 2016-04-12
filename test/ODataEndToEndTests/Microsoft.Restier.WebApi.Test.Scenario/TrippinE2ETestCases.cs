@@ -524,11 +524,16 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.NotNull(exception);
             Assert.Equal(404, exception.Response.StatusCode);
 
-            // TODO GitHubIssue#48 : Add case for null entity return value
-            // WebApi doesn't allow return a null entity.
+            // TODO GitHubIssue#288 : 204 is expected.
             // Query an Navigation Property
-            //airline2 = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "FlightId", flight.FlightId } }).Airline.GetValue();
-            //Assert.Null(airline2);
+            try
+            {
+                airline2 = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "FlightId", flight.FlightId } }).Airline.GetValue();
+            }
+            catch (DataServiceQueryException e)
+            {
+                Assert.Equal(404, e.Response.StatusCode);
+            }
         }
 
         [Fact]

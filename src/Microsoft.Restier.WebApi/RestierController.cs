@@ -462,6 +462,11 @@ namespace Microsoft.Restier.WebApi
                 queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }
 
+            // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
+            // TODO GitHubIssue#359 : Allow user to customize the query and validation setting
+            ODataValidationSettings validationSettings = new ODataValidationSettings();
+            queryOptions.Validate(validationSettings);
+
             // Entity count can NOT be evaluated at this point of time because the source
             // expression is just a placeholder to be replaced by the expression sourcer.
             queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.Count);

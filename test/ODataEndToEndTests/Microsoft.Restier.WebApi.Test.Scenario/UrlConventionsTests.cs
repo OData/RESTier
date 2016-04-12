@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using FluentAssertions;
+using Microsoft.OData.Client;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario
@@ -234,6 +237,15 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetPayloadContains(
                 "People?$expand=Friends($levels=2)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void ApplyingLevelThanMaxExpand()
+        {
+            Action test = () => TestGetPayloadContains(
+                "People?$expand=Friends($levels=3)", "The request includes a $expand path which is too deep. The maximum depth allowed is 2. To increase the limit, set the 'MaxExpansionDepth' property on EnableQueryAttribute or ODataValidationSettings.");
+            // OData .NET client has wrapped the expcetion with new message.
+            test.ShouldThrow<DataServiceTransportException>();
         }
 
         [Fact]
