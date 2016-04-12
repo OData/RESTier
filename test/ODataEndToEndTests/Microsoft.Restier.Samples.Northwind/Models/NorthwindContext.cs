@@ -67,6 +67,16 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             loader.SetDatabaseEngine("(localdb)\\MSSQLLocalDB");
             loader.AddScript("instnwdb.sql");
             loader.AddScriptArgument("SqlSamplesDatabasePath", dbPath);
+
+            // Length of database name in SQLServer cannot exceed 128.
+            var dbNamePrefix = dbPath;
+            if (dbNamePrefix.Length > 100)
+            {
+                dbNamePrefix = dbNamePrefix.Substring(dbNamePrefix.Length - 100);
+                dbNamePrefix = dbNamePrefix.Substring(dbNamePrefix.IndexOf('\\') + 1);
+            }
+
+            loader.AddScriptArgument("SqlDBNamePrefix", dbNamePrefix);
             loader.Execute(dbPath);
         }
 

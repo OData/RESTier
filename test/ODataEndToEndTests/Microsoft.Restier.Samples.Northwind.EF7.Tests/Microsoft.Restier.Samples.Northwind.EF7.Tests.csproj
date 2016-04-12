@@ -236,6 +236,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.EF7\App_Data\instnwdb.sql">
+      <Link>App_Data\instnwdb.sql</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestBatch.txt">
       <Link>Baselines\TestBatch.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -267,9 +271,6 @@
     <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPutProductReturnContent.txt">
       <Link>Baselines\TestPutProductReturnContent.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="App_Data\instnwdb.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />
