@@ -82,6 +82,40 @@ namespace Microsoft.Restier.Tests
             }
         }
 
+        public static async Task<HttpResponseMessage> GetResponse(
+            string requestUri,
+            HttpMethod httpMethod,
+            HttpContent requestContent,
+            HttpConfiguration config,
+            Action<HttpConfiguration, HttpServer> registerOData,
+            IEnumerable<KeyValuePair<string, string>> headers = null)
+        {
+            using (HttpServer server = new HttpServer(config))
+            using (HttpMessageInvoker client = new HttpMessageInvoker(server))
+            {
+                registerOData(config, server);
+                HttpRequestMessage request = new HttpRequestMessage(httpMethod, requestUri);
+                try
+                {
+                    request.Content = requestContent;
+                    if (headers != null)
+                    {
+                        foreach (var header in headers)
+                        {
+                            request.Headers.Add(header.Key, header.Value);
+                        }
+                    }
+
+                    return await client.SendAsync(request, CancellationToken.None);
+                }
+                finally
+                {
+                    request.DisposeRequestResources();
+                    request.Dispose();
+                }
+            }
+        }
+
         public static async Task CheckResponse(
             HttpResponseMessage response,
             HttpStatusCode expectedStatusCode,

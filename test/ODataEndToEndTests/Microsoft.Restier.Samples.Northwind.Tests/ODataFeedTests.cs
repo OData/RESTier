@@ -12,6 +12,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.OData.Extensions;
+using Microsoft.OData.Core.UriParser;
 using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.Restier.Tests;
 using Newtonsoft.Json;
@@ -51,6 +54,24 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             // The count should NOT include the entities that have been filtered out.
             // In this case, only count of French customers should be returned.
             await ODataFeedTests.TestODataRequest("http://localhost/api/Northwind/Customers/$count");
+        }
+
+        [Fact]
+        public async Task TestCustomerKeyAsSegment()
+        {
+            // BLONP is the key for a customer
+            var requestUri = "http://localhost/api/Northwind/Customers/BLONP";
+
+            //Enable Key as Segment
+            HttpConfiguration httpConfig = new HttpConfiguration();
+            httpConfig.SetUrlConventions(ODataUrlConventions.ODataSimplified);
+
+            Action<HttpConfiguration, HttpServer> registerOData = (config, server) => WebApiConfig.RegisterNorthwind(config, server);
+            string baselineFileName = "TestCustomerKeyAsSegment";
+            using (HttpResponseMessage response = await ODataTestHelpers.GetResponse(requestUri, HttpMethod.Get, null, httpConfig, registerOData, null))
+            {
+                await ODataTestHelpers.CheckResponse(response, HttpStatusCode.OK, baselineFileName, null);
+            }
         }
 
         [Fact]
