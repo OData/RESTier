@@ -42,6 +42,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         }
 
         public DbSet<Person> People { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Airport> Airports { get; set; }
         public DbSet<Airline> Airlines { get; set; }
         public DbSet<Flight> Flights { get; set; }
@@ -68,6 +69,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             // As per kb321843, manually handle dropping Friends constraint before cleaning up People table.
             instance.Database.ExecuteSqlCommand("DELETE FROM PersonFriends");
             instance.People.RemoveRange(instance.People);
+            instance.Orders.RemoveRange(instance.Orders);
             instance.Flights.RemoveRange(instance.Flights);
             instance.Airlines.RemoveRange(instance.Airlines);
             instance.Airports.RemoveRange(instance.Airports);
@@ -446,7 +448,44 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     FavoriteFeature = Feature.Feature1,
                 }
             });
-            
+
+            #endregion
+
+            #region Orders
+
+            var orders = new List<Order>
+            {
+                new Order
+                {
+                    PersonId = 1,
+                    OrderId = 1,
+                    Description = "Person 1 Order 1",
+                    Price = 200
+                },
+                new Order
+                {
+                    PersonId = 1,
+                    OrderId = 2,
+                    Description = "Person 1 Order 2",
+                    Price = 400
+                },
+                new Order
+                {
+                    PersonId = 2,
+                    OrderId = 1,
+                    Description = "Person 2 Order 1",
+                    Price = 600
+                },
+                new Order
+                {
+                    PersonId = 2,
+                    OrderId = 2,
+                    Description = "Person 2 Order 2",
+                    Price = 800
+                },
+            };
+            instance.Orders.AddRange(orders);
+
             #endregion
 
             #region Flights

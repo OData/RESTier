@@ -270,6 +270,49 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             }
         }
 
+
+        [Fact]
+        public void CRUDCompositeKey()
+        {
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
+
+            // Post an entity
+            Order order = new Order()
+            {
+                PersonId = 3,
+                OrderId = 1,
+                Description = "Person 3 order 1",
+                Price = 1000
+            };
+
+            this.TestClientContext.AddToOrders(order);
+            this.TestClientContext.SaveChanges();
+
+            // Update an entity
+            order.Description = "Order31";
+            this.TestClientContext.UpdateObject(order);
+            this.TestClientContext.SaveChanges();
+
+            // Query an entity
+            this.TestClientContext.Detach(order);
+            order = this.TestClientContext.Orders
+                .ByKey(new Dictionary<string, object>() { { "PersonId", 3 } , { "OrderId", 1 } }).GetValue();
+            Assert.Equal("Order31", order.Description);
+
+            // Filter this entity
+            var orders = this.TestClientContext.Orders
+                .AddQueryOption("$filter", "PersonId eq 3 and OrderId eq 1").ToList();
+            Assert.Equal(1, orders.Count);
+
+            // Delete an entity
+            this.TestClientContext.DeleteObject(order);
+            this.TestClientContext.SaveChanges();
+
+            // Filter this entity
+            orders = this.TestClientContext.Orders
+                .AddQueryOption("$filter", "PersonId eq 3 and OrderId eq 1").ToList();
+            Assert.Equal(0, orders.Count);
+        }
         [Fact]
         public void QueryOptions()
         {
