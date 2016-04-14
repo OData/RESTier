@@ -17,7 +17,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;EF7</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>

@@ -89,7 +89,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
                     entity = (TEntity)await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
 
                     var dbEntry = dbContext.Attach(entity);
-                    ChangeSetPreparer.SetValues(dbEntry, entry, entityType);
+                    ChangeSetPreparer.SetValues(dbEntry, entry);
                 }
             }
             else
@@ -108,9 +108,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             IQueryable query = context.ApiContext.Source(entry.EntitySetName);
             query = entry.ApplyTo(query);
 
-            QueryResult result = await context.ApiContext.QueryAsync(
-                new QueryRequest(query),
-                cancellationToken);
+            QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
 
             object entity = result.Results.SingleOrDefault();
             if (entity == null)
@@ -151,14 +149,21 @@ namespace Microsoft.Restier.EntityFramework.Submit
             return newInstance;
         }
 
-        private static void SetValues(EntityEntry dbEntry, DataModificationEntry entry, Type entityType)
+        private static void SetValues(EntityEntry dbEntry, DataModificationEntry entry)
         {
             foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
             {
                 PropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
-                Type type = TypeHelper.GetUnderlyingTypeOrSelf(propertyEntry.Metadata.ClrType);
                 object value = propertyPair.Value;
-                value = ConvertIfNecessary(type, value);
+                if (value == null)
+                {
+                    // If the property value is null, we set null in the entry too.
+                    propertyEntry.CurrentValue = null;
+                    continue;
+                }
+
+                Type type = TypeHelper.GetUnderlyingTypeOrSelf(propertyEntry.Metadata.ClrType);
+                value = ConvertToEfValue(type, value);
                 if (value != null && !type.IsInstanceOfType(value))
                 {
                     var dic = value as IReadOnlyDictionary<string, object>;
@@ -182,10 +187,17 @@ namespace Microsoft.Restier.EntityFramework.Submit
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
-                PropertyInfo propertyInfo = instanceType.GetProperty(propertyPair.Key);
-                Type type = TypeHelper.GetUnderlyingTypeOrSelf(propertyInfo.PropertyType);
                 object value = propertyPair.Value;
-                value = ConvertIfNecessary(type, value);
+                PropertyInfo propertyInfo = instanceType.GetProperty(propertyPair.Key);
+                if (value == null)
+                {
+                    // If the property value is null, we set null in the object too.
+                    propertyInfo.SetValue(instance, null);
+                    continue;
+                }
+
+                Type type = TypeHelper.GetUnderlyingTypeOrSelf(propertyInfo.PropertyType);
+                value = ConvertToEfValue(type, value);
                 if (value != null && !type.IsInstanceOfType(value))
                 {
                     var dic = value as IReadOnlyDictionary<string, object>;
@@ -205,37 +217,33 @@ namespace Microsoft.Restier.EntityFramework.Submit
             }
         }
 
-        private static object ConvertIfNecessary(Type type, object value)
+        private static object ConvertToEfValue(Type type, object value)
         {
-            // Convert to System.Enum from name or value STRING provided by ODL.
-            if (type.IsEnum)
+            // string[EdmType = Enum] => System.Enum
+            if (TypeHelper.IsEnum(type))
             {
-                return Enum.Parse(type, (string)value);
+                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
             }
 
-            // Convert to System.DateTime supported by EF from Edm.Date.
+            // Edm.Date => System.DateTime[SqlType = Date]
             if (value is Date)
             {
                 var dateValue = (Date)value;
                 return (DateTime)dateValue;
             }
 
-            // Convert to System.DateTime supported by EF from DateTimeOffset.
-            if (value is DateTimeOffset)
+            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
+            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
             {
-                if (TypeHelper.IsDateTime(type))
-                {
-                    return ((DateTimeOffset)value).DateTime;
-                }
+                var dateTimeOffsetValue = (DateTimeOffset)value;
+                return dateTimeOffsetValue.DateTime;
             }
 
-            // Convert to System.DateTime supported by EF from DateTimeOffset.
-            if (value is TimeOfDay)
+            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
+            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
             {
-                if (TypeHelper.IsTimeSpan(type))
-                {
-                    return (TimeSpan)(TimeOfDay)value;
-                }
+                var timeOfDayValue = (TimeOfDay)value;
+                return (TimeSpan)timeOfDayValue;
             }
 
             return value;

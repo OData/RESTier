@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Entity;
@@ -107,12 +108,64 @@ namespace Microsoft.Restier.EntityFramework.Model
             InvocationContext context,
             CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context, "context");
+
             var model = new EdmModel();
-            var domainContext = context.ApiContext;
-            var dbContext = domainContext.GetApiService<DbContext>();
+            var dbContext = context.GetApiService<DbContext>();
             var elementMap = new Dictionary<IAnnotatable, IEdmElement>();
-            var efModel = dbContext.Model;
-            var namespaceName = efModel.GetEntityTypes()
+            var entityTypes = dbContext.Model.GetEntityTypes();
+            string namespaceName = CalcNamespace(dbContext, entityTypes);
+
+            var entityContainer = new EdmEntityContainer(
+                namespaceName, "Container");
+            Dictionary<Type, PropertyInfo> dbSetProperties = GetDbSetPropeties(dbContext);
+
+            // TODO GitHubIssue#36 : support complex and entity inheritance
+            foreach (var efEntityType in entityTypes)
+            {
+                if (elementMap.ContainsKey(efEntityType))
+                {
+                    continue;
+                }
+
+                List<EdmStructuralProperty> concurrencyProperties;
+                var entityType = ModelProducer.CreateEntityType(
+                    efEntityType, model, out concurrencyProperties);
+                model.AddElement(entityType);
+
+                PropertyInfo propInfo;
+                if (dbSetProperties.TryGetValue(efEntityType.ClrType, out propInfo))
+                {
+                    var entitySet = entityContainer.AddEntitySet(propInfo.Name, entityType);
+                    if (concurrencyProperties != null)
+                    {
+                        model.SetOptimisticConcurrencyAnnotation(entitySet, concurrencyProperties);
+                    }
+                }
+
+                elementMap.Add(efEntityType, entityType);
+            }
+
+            CreateNavigations(entityContainer, entityTypes, elementMap);
+
+            // TODO GitHubIssue#36 : support function imports
+            model.AddElement(entityContainer);
+
+            return Task.FromResult<IEdmModel>(model);
+        }
+
+        private static Dictionary<Type, PropertyInfo> GetDbSetPropeties(DbContext dbContext)
+        {
+            return dbContext.GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(e => e.PropertyType.IsGenericType &&
+                e.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+                .ToDictionary(e => e.PropertyType.GetGenericArguments()[0]);
+        }
+
+        private static string CalcNamespace(DbContext dbContext, IEnumerable<IEntityType> entityTypes)
+        {
+            var namespaceName = entityTypes
                 .Select(t => t.ClrType != null ? t.ClrType.Namespace : null)
                 .Where(t => t != null)
                 .GroupBy(nameSpace => nameSpace)
@@ -130,60 +183,25 @@ namespace Microsoft.Restier.EntityFramework.Model
                 namespaceName = dbContext.GetType().Namespace ?? dbContext.GetType().Name;
             }
 
-            var entityTypes = efModel.GetEntityTypes();
-            var entityContainer = new EdmEntityContainer(
-                namespaceName, "Container");
+            return namespaceName;
+        }
 
-            var dbSetProperties = dbContext.GetType()
-                .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-                .Where(e => e.PropertyType.IsGenericType &&
-                e.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
-                .ToDictionary(e => e.PropertyType.GetGenericArguments()[0]);
-
-            // TODO GitHubIssue#36 : support complex and entity inheritance
-            foreach (var efEntityType in entityTypes)
-            {
-                if (elementMap.ContainsKey(efEntityType))
-                {
-                    continue;
-                }
-
-                List<EdmStructuralProperty> concurrencyProperties;
-                var entityType = ModelProducer.CreateEntityType(
-                    efModel, efEntityType, model, out concurrencyProperties);
-                model.AddElement(entityType);
-                elementMap.Add(efEntityType, entityType);
-
-                System.Reflection.PropertyInfo propInfo;
-                if (dbSetProperties.TryGetValue(efEntityType.ClrType, out propInfo))
-                {
-                    var entitySet = entityContainer.AddEntitySet(propInfo.Name, entityType);
-                    if (concurrencyProperties != null)
-                    {
-                        model.SetOptimisticConcurrencyAnnotation(entitySet, concurrencyProperties);
-                    }
-                }
-            }
-
+        private static void CreateNavigations(
+            EdmEntityContainer entityContainer,
+            IEnumerable<IEntityType> entityTypes,
+            Dictionary<IAnnotatable, IEdmElement> elementMap)
+        {
             foreach (var efEntityType in entityTypes)
             {
                 foreach (var navi in efEntityType.GetNavigations())
                 {
-                    ModelProducer.AddNavigationProperties(
-                        efModel, navi, model, elementMap);
-                    ModelProducer.AddNavigationPropertyBindings(
-                        efModel, navi, entityContainer, elementMap);
+                    ModelProducer.AddNavigationProperties(navi, elementMap);
+                    ModelProducer.AddNavigationPropertyBindings(navi, entityContainer, elementMap);
                 }
             }
-
-            // TODO GitHubIssue#36 : support function imports
-            model.AddElement(entityContainer);
-
-            return Task.FromResult<IEdmModel>(model);
         }
 
         private static IEdmEntityType CreateEntityType(
-            IModel efModel,
             IEntityType efEntityType,
             EdmModel model,
             out List<EdmStructuralProperty> concurrencyProperties)
@@ -311,9 +329,7 @@ namespace Microsoft.Restier.EntityFramework.Model
         }
 
         private static void AddNavigationProperties(
-            IModel efModel,
             INavigation navigation,
-            EdmModel model,
             IDictionary<IAnnotatable, IEdmElement> elementMap)
         {
             if (!navigation.IsDependentToPrincipal())
@@ -397,7 +413,6 @@ namespace Microsoft.Restier.EntityFramework.Model
         }
 
         private static void AddNavigationPropertyBindings(
-            IModel efModel,
             INavigation navi,
             EdmEntityContainer container,
             IDictionary<IAnnotatable, IEdmElement> elementMap)
