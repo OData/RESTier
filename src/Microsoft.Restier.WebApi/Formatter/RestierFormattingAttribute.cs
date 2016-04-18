@@ -9,7 +9,7 @@ using System.Web.OData.Formatter;
 using Microsoft.Restier.WebApi.Formatter.Deserialization;
 using Microsoft.Restier.WebApi.Formatter.Serialization;
 
-namespace Microsoft.Restier.WebApi
+namespace Microsoft.Restier.WebApi.Formatter
 {
     /// <summary>
     /// Specifies the serializer and deserializer provider for the API controller.

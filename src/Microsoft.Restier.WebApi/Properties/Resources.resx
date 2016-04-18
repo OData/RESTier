@@ -156,6 +156,9 @@
   <data name="MultiKeyValuesExpected" xml:space="preserve">
     <value>Only one key was specified, when multiple were expected.</value>
   </data>
+  <data name="NotSupportedType" xml:space="preserve">
+    <value>Not supported type: {0}.</value>
+  </data>
   <data name="PathSegmentNotSupported" xml:space="preserve">
     <value>Path segment not supported: {0}</value>
   </data>

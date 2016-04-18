@@ -15,6 +15,7 @@ using System.Web.Http.Filters;
 using System.Web.Http.Results;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.WebApi.Query;
 
 namespace Microsoft.Restier.WebApi.Filters
 {

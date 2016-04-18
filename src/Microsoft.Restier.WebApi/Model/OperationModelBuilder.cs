@@ -11,17 +11,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Expressions;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.WebApi.Model
 {
-    internal class ConventionBasedOperationProvider : IModelBuilder
+    internal class OperationModelBuilder : IModelBuilder
     {
         private readonly Type targetType;
         private readonly ICollection<ActionMethodInfo> actionInfos = new List<ActionMethodInfo>();
         private readonly ICollection<FunctionMethodInfo> functionInfos = new List<FunctionMethodInfo>();
 
-        private ConventionBasedOperationProvider(Type targetType)
+        private OperationModelBuilder(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -30,7 +31,7 @@ namespace Microsoft.Restier.Core.Conventions
 
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            services.ChainPrevious<IModelBuilder>(next => new ConventionBasedOperationProvider(targetType)
+            services.ChainPrevious<IModelBuilder>(next => new OperationModelBuilder(targetType)
             {
                 InnerHandler = next,
             });

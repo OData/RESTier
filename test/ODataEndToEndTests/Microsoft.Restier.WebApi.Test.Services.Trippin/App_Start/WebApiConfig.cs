@@ -3,6 +3,7 @@
 
 using System.Web.Http;
 using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Routing;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Api;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin

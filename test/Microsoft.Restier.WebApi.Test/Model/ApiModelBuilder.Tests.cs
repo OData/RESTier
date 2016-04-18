@@ -4,17 +4,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core.Model;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Xunit;
 
-namespace Microsoft.Restier.Core.Tests.Model
+namespace Microsoft.Restier.WebApi.Test.Model
 {
-    public class ConventionBasedApiModelBuilderTests
+    public class ApiModelBuilderTests
     {
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldProduceEmptyModelForEmptyApi()
+        public async Task ApiModelBuilderShouldProduceEmptyModelForEmptyApi()
         {
             var model = await this.GetModelAsync<EmptyApi>();
             Assert.Single(model.SchemaElements);
@@ -22,7 +23,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForBasicScenario()
+        public async Task ApiModelBuilderShouldProduceCorrectModelForBasicScenario()
         {
             var model = await this.GetModelAsync<ApiA>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
@@ -33,7 +34,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForDerivedApi()
+        public async Task ApiModelBuilderShouldProduceCorrectModelForDerivedApi()
         {
             var model = await this.GetModelAsync<ApiB>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForOverridingProperty()
+        public async Task ApiModelBuilderShouldProduceCorrectModelForOverridingProperty()
         {
             var model = await this.GetModelAsync<ApiC>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
@@ -57,7 +58,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldProduceCorrectModelForIgnoringInheritedProperty()
+        public async Task ApiModelBuilderShouldProduceCorrectModelForIgnoringInheritedProperty()
         {
             var model = await this.GetModelAsync<ApiD>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
@@ -69,7 +70,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldSkipEntitySetWithUndeclaredType()
+        public async Task ApiModelBuilderShouldSkipEntitySetWithUndeclaredType()
         {
             var model = await this.GetModelAsync<ApiE>();
             Assert.Equal("Person", model.EntityContainer.FindEntitySet("People").EntityType().Name);
@@ -77,14 +78,14 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldSkipExistingEntitySet()
+        public async Task ApiModelBuilderShouldSkipExistingEntitySet()
         {
             var model = await this.GetModelAsync<ApiF>();
             Assert.Equal("VipCustomer", model.EntityContainer.FindEntitySet("VipCustomers").EntityType().Name);
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldCorrectlyAddBindingsForCollectionNavigationProperty()
+        public async Task ApiModelBuilderShouldCorrectlyAddBindingsForCollectionNavigationProperty()
         {
             // In this case, only one entity set People has entity type Person.
             // Bindings for collection navigation property Customer.Friends should be added.
@@ -103,7 +104,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldCorrectlyAddBindingsForSingletonNavigationProperty()
+        public async Task ApiModelBuilderShouldCorrectlyAddBindingsForSingletonNavigationProperty()
         {
             // In this case, only one singleton Me has entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
@@ -118,7 +119,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         }
 
         [Fact]
-        public async Task ConventionBasedApiModelBuilderShouldNotAddAmbiguousNavigationPropertyBindings()
+        public async Task ApiModelBuilderShouldNotAddAmbiguousNavigationPropertyBindings()
         {
             // In this case, two entity sets Employees and People have entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
@@ -131,6 +132,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi, new()
         {
             var api = (BaseApi)Activator.CreateInstance<T>();
+            ApiConfiguration.AddInternalServices<T>(services =>
+            {
+                services.AddWebApiServices<T>();
+            });
             return await api.Context.GetModelAsync();
         }
     }
@@ -206,8 +211,8 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            return base.ConfigureApi(services);
         }
     }
 
@@ -253,8 +258,8 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            return base.ConfigureApi(services);
         }
     }
 
@@ -264,8 +269,8 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            return base.ConfigureApi(services);
         }
     }
 
@@ -282,8 +287,8 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            return base.ConfigureApi(services);
         }
     }
 }

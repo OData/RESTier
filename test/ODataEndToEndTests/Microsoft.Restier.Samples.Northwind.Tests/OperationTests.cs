@@ -16,13 +16,6 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 {
     public class OperationTests : TestBase
     {
-        private NorthwindApi api = new NorthwindApi();
-
-        private IQueryable<Product> ProductsQuery
-        {
-            get { return this.api.Source<Product>("Products"); }
-        }
-
         [Fact]
         public async Task FunctionCallWithFullName()
         {
@@ -68,11 +61,9 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 
         private async Task ActionCall(bool isqualified, Action<HttpConfiguration, HttpServer> registerOData)
         {
-            var query = this.api.Source<Product>("Products").OrderBy(p => p.ProductID).Take(1);
-            QueryResult result = await this.api.QueryAsync(
-                   new QueryRequest(query));
-
-            var product = result.Results.OfType<Product>().First();
+            NorthwindContext ctx = GetDbContext();
+            Product product = ctx.Products.First();
+            
             var productID = product.ProductID;
             var price = product.UnitPrice;
 
@@ -97,6 +88,11 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
             var responseString = await BaselineHelpers.GetFormattedContent(getResponse);
             Assert.True(responseString.Contains(string.Format(@"""UnitPrice"":{0}", price + 2)));
+        }
+
+        private static NorthwindContext GetDbContext()
+        {
+            return new NorthwindContext();
         }
     }
 }

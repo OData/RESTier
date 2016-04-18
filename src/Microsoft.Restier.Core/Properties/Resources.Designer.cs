@@ -248,7 +248,7 @@ namespace Microsoft.Restier.Core.Properties {
                 return ResourceManager.GetString("NoPermissionToUpdateEntity", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Not supported type: {0}..
         /// </summary>

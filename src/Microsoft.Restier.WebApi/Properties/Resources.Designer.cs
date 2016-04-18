@@ -178,6 +178,15 @@ namespace Microsoft.Restier.WebApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not supported type: {0}..
+        /// </summary>
+        internal static string NotSupportedType {
+            get {
+                return ResourceManager.GetString("NotSupportedType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path segment not supported: {0}.
         /// </summary>
         internal static string PathSegmentNotSupported {

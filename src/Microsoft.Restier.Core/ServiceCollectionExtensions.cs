@@ -7,7 +7,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Restier.Core.Conventions;
 using Microsoft.Restier.Core.Properties;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -313,6 +316,51 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(obj, "obj");
             return ChainedService<T>.DefaultFactory(obj);
+        }
+
+        public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
+        {
+            if (!services.HasService<ApiBase>())
+            {
+                services.AddScoped<ApiBase.ApiHolder>()
+                    .AddScoped(apiType, sp => sp.GetService<ApiBase.ApiHolder>().Api)
+                    .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api)
+                    .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api.Context);
+            }
+
+            return services.CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance)
+                            .AddScoped<PropertyBag>();
+        }
+
+        /// <summary>
+        /// Add services of enabled abbtributes.
+        /// </summary>
+        public static IServiceCollection AddAttributeServices(this IServiceCollection services, Type apiType)
+        {
+            Ensure.NotNull(apiType, "apiType");
+
+            ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
+            return services;
+        }
+
+        /// <summary>
+        /// Enables code-based conventions for an API.
+        /// </summary>
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> containing API service registrations.
+        /// </param>
+        /// <param name="apiType">
+        /// The type of a class on which code-based conventions are used.
+        /// </param>
+        public static IServiceCollection AddConventionServices(this IServiceCollection services, Type apiType)
+        {
+            Ensure.NotNull(apiType, "apiType");
+
+            ConventionBasedChangeSetAuthorizer.ApplyTo(services, apiType);
+            ConventionBasedChangeSetEntryFilter.ApplyTo(services, apiType);
+            services.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
+            ConventionBasedEntitySetFilter.ApplyTo(services, apiType);
+            return services;
         }
 
         private static IServiceCollection AddContributorNoCheck<T>(

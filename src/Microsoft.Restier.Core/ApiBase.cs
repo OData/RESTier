@@ -84,24 +84,8 @@ namespace Microsoft.Restier.Core
                     this.GetType(),
                     apiType =>
                     {
-                        IServiceCollection services = new ServiceCollection()
-                            .CutoffPrevious<IQueryExecutor>(DefaultQueryExecutor.Instance)
-                            .AddScoped<PropertyBag>();
+                        IServiceCollection services = new ServiceCollection();
                         services = this.ConfigureApi(services);
-                        ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
-
-                        // Copy from pre-build registration.
-                        ApiConfiguration.Configuration(apiType)(services);
-
-                        // Make sure that all convention-based handlers are outermost.
-                        EnableConventions(services, apiType);
-                        if (!services.HasService<ApiBase>())
-                        {
-                            services.AddScoped<ApiHolder>()
-                                .AddScoped(apiType, sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api)
-                                .AddScoped(sp => sp.GetService<ApiHolder>().Api.Context);
-                        }
 
                         var configuration = this.CreateApiConfiguration(services);
                         ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
@@ -146,6 +130,16 @@ namespace Microsoft.Restier.Core
         [CLSCompliant(false)]
         protected virtual IServiceCollection ConfigureApi(IServiceCollection services)
         {
+            Type apiType = this.GetType();
+            // Add core and conversion's services
+            services = services.AddCoreServices(apiType)
+                .AddAttributeServices(apiType)
+                .AddConventionServices(apiType);
+
+            // This is used to add the publisher's services
+            //TODO, will think about a better way
+            ApiConfiguration.GetInternalServiceCallback(apiType)(services);
+
             return services;
         }
 
@@ -197,40 +191,10 @@ namespace Microsoft.Restier.Core
             }
         }
 
-        /// <summary>
-        /// Enables code-based conventions for an API.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="targetType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
-        /// <remarks>
-        /// This method adds hook points to the API configuration that
-        /// inspect a target type for a variety of code-based conventions
-        /// such as usage of specific attributes or members that follow
-        /// certain naming conventions.
-        /// </remarks>
-        private static void EnableConventions(
-            IServiceCollection services,
-            Type targetType)
-        {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
-
-            ConventionBasedChangeSetAuthorizer.ApplyTo(services, targetType);
-            ConventionBasedChangeSetEntryFilter.ApplyTo(services, targetType);
-            services.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
-            ConventionBasedApiModelBuilder.ApplyTo(services, targetType);
-            ConventionBasedOperationProvider.ApplyTo(services, targetType);
-            ConventionBasedEntitySetFilter.ApplyTo(services, targetType);
-        }
-
         // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.
         // If a descendant class wants to expose these 2 services in another way, it must ensure they could be
         // resolved after CreateApiContext call.
-        private class ApiHolder
+        internal class ApiHolder
         {
             public ApiBase Api { get; set; }
         }

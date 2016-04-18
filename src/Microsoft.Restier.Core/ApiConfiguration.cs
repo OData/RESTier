@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration
     {
-        private static ConcurrentDictionary<Type, Action<IServiceCollection>> configurations =
+        private static ConcurrentDictionary<Type, Action<IServiceCollection>> _internalServicesCallback =
             new ConcurrentDictionary<Type, Action<IServiceCollection>>();
 
         private static Action<IServiceCollection> emptyConfig = _ => { };
@@ -65,31 +65,33 @@ namespace Microsoft.Restier.Core
         internal IEdmModel Model { get; private set; }
 
         /// <summary>
-        /// Adds a configuration procedure for API type <typeparamref name="T"/>.
+        /// Adds a configuration procedure for API type <typeparamref name="TApi"/>.
+        /// This is expected to be called by publisher like WebApi to add services.
         /// </summary>
-        /// <typeparam name="T">The API type.</typeparam>
+        /// <typeparam name="TApi">The API type.</typeparam>
         /// <param name="configurationCallback">
-        /// An action that will be called during the configuration of <typeparamref name="T"/>.
+        /// An action that will be called during the configuration of <typeparamref name="TApi"/>.
         /// </param>
         [CLSCompliant(false)]
-        public static void Configure<T>(Action<IServiceCollection> configurationCallback)
-             where T : ApiBase
+        public static void AddInternalServices<TApi>(Action<IServiceCollection> configurationCallback)
+             where TApi : ApiBase
         {
-            ApiConfiguration.configurations.AddOrUpdate(
-                typeof(T),
+            _internalServicesCallback.AddOrUpdate(
+                typeof(TApi),
                 configurationCallback,
                 (type, existing) => existing + configurationCallback);
         }
 
-        internal static Action<IServiceCollection> Configuration(Type apiType)
+        [CLSCompliant(false)]
+        public static Action<IServiceCollection> GetInternalServiceCallback(Type apiType)
         {
             Action<IServiceCollection> val;
-            if (ApiConfiguration.configurations.TryGetValue(apiType, out val))
+            if (_internalServicesCallback.TryGetValue(apiType, out val))
             {
                 return val;
             }
 
-            return ApiConfiguration.emptyConfig;
+            return emptyConfig;
         }
 
         internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)

@@ -181,8 +181,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(new ModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(new ModelBuilder());
+            return base.ConfigureApi(services);
         }
 
         private class ModelBuilder : IModelBuilder

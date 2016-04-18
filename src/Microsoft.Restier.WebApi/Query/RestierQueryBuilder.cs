@@ -13,7 +13,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.WebApi.Properties;
 
-namespace Microsoft.Restier.WebApi
+namespace Microsoft.Restier.WebApi.Query
 {
     internal class RestierQueryBuilder
     {

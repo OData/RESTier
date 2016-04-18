@@ -11,16 +11,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.WebApi.Model
 {
     /// <summary>
     /// A convention-based API model builder that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    internal class ConventionBasedApiModelBuilder
+    internal class ApiModelBuilder
     {
         private readonly Type targetType;
         private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
@@ -34,7 +35,7 @@ namespace Microsoft.Restier.Core.Conventions
         private readonly IDictionary<IEdmEntityType, IEdmSingleton[]> singletonCache =
             new Dictionary<IEdmEntityType, IEdmSingleton[]>();
 
-        private ConventionBasedApiModelBuilder(Type targetType)
+        private ApiModelBuilder(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -48,7 +49,7 @@ namespace Microsoft.Restier.Core.Conventions
 
             // The model builder must maintain a singleton life time, for holding states and being injected into
             // some other services.
-            services.AddInstance(new ConventionBasedApiModelBuilder(targetType));
+            services.AddInstance(new ApiModelBuilder(targetType));
 
             services.ChainPrevious<IModelBuilder, ModelBuilder>();
             services.ChainPrevious<IModelMapper, ModelMapper>();
@@ -299,14 +300,14 @@ namespace Microsoft.Restier.Core.Conventions
 
         internal class ModelBuilder : IModelBuilder
         {
-            public ModelBuilder(ConventionBasedApiModelBuilder modelCache)
+            public ModelBuilder(ApiModelBuilder modelCache)
             {
                 ModelCache = modelCache;
             }
 
             public IModelBuilder InnerModelBuilder { get; private set; }
 
-            private ConventionBasedApiModelBuilder ModelCache { get; set; }
+            private ApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
             public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
@@ -350,12 +351,12 @@ namespace Microsoft.Restier.Core.Conventions
 
         internal class ModelMapper : IModelMapper
         {
-            public ModelMapper(ConventionBasedApiModelBuilder modelCache)
+            public ModelMapper(ApiModelBuilder modelCache)
             {
                 ModelCache = modelCache;
             }
 
-            public ConventionBasedApiModelBuilder ModelCache { get; set; }
+            public ApiModelBuilder ModelCache { get; set; }
 
             private IModelMapper InnerModelMapper { get; set; }
 
@@ -410,7 +411,7 @@ namespace Microsoft.Restier.Core.Conventions
 
         internal class QueryExpressionExpander : IQueryExpressionExpander
         {
-            public QueryExpressionExpander(ConventionBasedApiModelBuilder modelCache)
+            public QueryExpressionExpander(ApiModelBuilder modelCache)
             {
                 ModelCache = modelCache;
             }
@@ -418,7 +419,7 @@ namespace Microsoft.Restier.Core.Conventions
             /// <inheritdoc/>
             public IQueryExpressionExpander InnerHandler { get; set; }
 
-            private ConventionBasedApiModelBuilder ModelCache { get; set; }
+            private ApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
@@ -459,14 +460,14 @@ namespace Microsoft.Restier.Core.Conventions
 
         internal class QueryExpressionSourcer : IQueryExpressionSourcer
         {
-            public QueryExpressionSourcer(ConventionBasedApiModelBuilder modelCache)
+            public QueryExpressionSourcer(ApiModelBuilder modelCache)
             {
                 ModelCache = modelCache;
             }
 
             public IQueryExpressionSourcer InnerHandler { get; set; }
 
-            private ConventionBasedApiModelBuilder ModelCache { get; set; }
+            private ApiModelBuilder ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Source(QueryExpressionContext context, bool embedded)

@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Core.Conventions
             this.targetType = targetType;
         }
 
+        // Inner should be null unless user add one as inner most 
         public IQueryExpressionFilter Inner { get; set; }
 
         /// <inheritdoc/>

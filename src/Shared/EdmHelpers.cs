@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core.Properties;
+using Microsoft.Restier.WebApi.Properties;
 
 namespace Microsoft.OData.Edm
 {

@@ -59,39 +59,20 @@ namespace Microsoft.Restier.EntityFramework
         [CLSCompliant(false)]
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .CutoffPrevious<IModelBuilder>(ModelProducer.Instance)
-                .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(T)))
-                .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
-                .ChainPrevious<IQueryExecutor, QueryExecutor>()
-                .CutoffPrevious<IQueryExpressionFilter, QueryExpressionFilter>()
-                .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
-                .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance)
-                .AddScoped<T>(sp =>
-                {
-                    var dbContext = this.CreateDbContext(sp);
-#if EF7
-                    // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
-#else
-                    dbContext.Configuration.ProxyCreationEnabled = false;
-#endif
-                    return dbContext;
-                })
-                .AddScoped<DbContext>(sp => sp.GetService<T>());
-        }
+            Type apiType = this.GetType();
+            // Add core and conversion's services
+            services = services.AddCoreServices(apiType)
+                .AddAttributeServices(apiType)
+                .AddConventionServices(apiType);
 
-        /// <summary>
-        /// Creates the underlying DbContext used by this API.
-        /// </summary>
-        /// <param name="serviceProvider">
-        /// The service container of the currently being created <see cref="ApiContext"/>.
-        /// </param>
-        /// <returns>
-        /// The underlying DbContext used by this API.
-        /// </returns>
-        protected virtual T CreateDbContext(IServiceProvider serviceProvider)
-        {
-            return Activator.CreateInstance<T>();
+            // Add EF related services
+            services.AddDbContextServices<T>();
+
+            // This is used to add the publisher's services
+            // TODO, will think about a better way
+            ApiConfiguration.GetInternalServiceCallback(apiType)(services);
+
+            return services;
         }
     }
 }

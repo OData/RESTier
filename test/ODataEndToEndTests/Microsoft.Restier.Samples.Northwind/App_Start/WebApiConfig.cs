@@ -6,6 +6,7 @@ using System.Web.OData.Extensions;
 using Microsoft.Restier.Samples.Northwind.Models;
 using Microsoft.Restier.WebApi;
 using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Routing;
 
 namespace Microsoft.Restier.Samples.Northwind
 {

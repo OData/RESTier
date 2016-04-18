@@ -17,6 +17,7 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.WebApi.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test
@@ -97,10 +98,10 @@ namespace Microsoft.Restier.WebApi.Test
     {
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services = base.ConfigureApi(services);
             services.CutoffPrevious<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
             services.CutoffPrevious<IModelMapper>(new FallbackModelMapper());
             services.CutoffPrevious<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
+            services = base.ConfigureApi(services);
             return services;
         }
 

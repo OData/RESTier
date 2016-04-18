@@ -7,6 +7,7 @@ using System.Web.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.WebApi.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test

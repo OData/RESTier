@@ -145,7 +145,7 @@ namespace Microsoft.Restier.Core
 
         #region IgnoreProperty Internal
 
-        internal static bool IsPropertyIgnored(this ApiConfiguration configuration, string propertyName)
+        public static bool IsPropertyIgnored(this ApiConfiguration configuration, string propertyName)
         {
             Ensure.NotNull(configuration, "configuration");
 

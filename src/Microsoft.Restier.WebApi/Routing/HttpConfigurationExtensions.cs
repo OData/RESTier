@@ -9,16 +9,12 @@ using System.Web.Http;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.WebApi.Batch;
-using Microsoft.Restier.WebApi.Query;
-using Microsoft.Restier.WebApi.Routing;
 
-namespace Microsoft.Restier.WebApi
+namespace Microsoft.Restier.WebApi.Routing
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpConfiguration"/>.
@@ -47,11 +43,10 @@ namespace Microsoft.Restier.WebApi
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
-            // ApiBase.ConfigureApi is called before this method is called.
-            ApiConfiguration.Configure<TApi>(services =>
+            // This will be added a service add callback which is added in ApiBase.ConfigureApi method.
+            ApiConfiguration.AddInternalServices<TApi>(services =>
             {
-                services.AddScoped<RestierQueryExecutorOptions>()
-                    .ChainPrevious<IQueryExecutor, RestierQueryExecutor>();
+                services.AddWebApiServices<TApi>();
             });
             using (var api = apiFactory())
             {

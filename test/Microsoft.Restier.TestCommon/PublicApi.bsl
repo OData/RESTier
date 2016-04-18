@@ -129,6 +129,11 @@ public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
 	[
 	ExtensionAttribute(),
 	]
+	public static bool IsPropertyIgnored (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
+
+	[
+	ExtensionAttribute(),
+	]
 	public static void SetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name, object value)
 }
 
@@ -243,7 +248,22 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	[
 	ExtensionAttribute(),
 	]
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddAttributeServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type apiType)
+
+	[
+	ExtensionAttribute(),
+	]
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddContributor (Microsoft.Extensions.DependencyInjection.IServiceCollection obj, ApiServiceContributor`1 contributor)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddConventionServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type apiType)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddCoreServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type apiType)
 
 	[
 	ExtensionAttribute(),
@@ -314,7 +334,12 @@ public class Microsoft.Restier.Core.ApiConfiguration {
 	[
 	CLSCompliantAttribute(),
 	]
-	public static void Configure (System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
+	public static void AddInternalServices (System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
+
+	[
+	CLSCompliantAttribute(),
+	]
+	public static System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] GetInternalServiceCallback (System.Type apiType)
 }
 
 public class Microsoft.Restier.Core.ApiContext {
@@ -338,6 +363,17 @@ public sealed class Microsoft.Restier.Core.ApiServiceContributor`1 : System.Mult
 	public virtual T Invoke (System.IServiceProvider serviceProvider, Func`1 next)
 }
 
+[
+CLSCompliantAttribute(),
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.EntityFramework.ServiceCollectionExtensions {
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDbContextServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+}
+
 public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
 	public DbApi`1 ()
 
@@ -347,29 +383,22 @@ public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.
 	CLSCompliantAttribute(),
 	]
 	protected virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-
-	protected virtual T CreateDbContext (System.IServiceProvider serviceProvider)
 }
 
 [
-EditorBrowsableAttribute(),
+CLSCompliantAttribute(),
 ExtensionAttribute(),
 ]
-public sealed class Microsoft.Restier.WebApi.HttpConfigurationExtensions {
+public sealed class Microsoft.Restier.WebApi.ServiceCollectionExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddWebApiServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
 [
-RestierFormattingAttribute(),
 RestierExceptionFilterAttribute(),
+RestierFormattingAttribute(),
 ]
 public class Microsoft.Restier.WebApi.RestierController : System.Web.OData.ODataController, IDisposable, IHttpController {
 	public RestierController ()
@@ -702,6 +731,22 @@ public class Microsoft.Restier.WebApi.Batch.RestierChangeSetRequestItem : System
 	AsyncStateMachineAttribute(),
 	]
 	public virtual System.Threading.Tasks.Task`1[[System.Web.OData.Batch.ODataBatchResponseItem]] SendRequestAsync (System.Net.Http.HttpMessageInvoker invoker, System.Threading.CancellationToken cancellationToken)
+}
+
+[
+EditorBrowsableAttribute(),
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.WebApi.Routing.HttpConfigurationExtensions {
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
 }
 
 public class Microsoft.Restier.WebApi.Formatter.Serialization.DefaultRestierSerializerProvider : System.Web.OData.Formatter.Serialization.DefaultODataSerializerProvider {

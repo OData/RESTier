@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.WebApi.Routing;
 
 namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 {

@@ -14,6 +14,7 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Security;
+using Microsoft.Restier.WebApi;
 
 namespace Microsoft.Restier.Samples.Northwind.Models
 {
@@ -69,8 +70,22 @@ namespace Microsoft.Restier.Samples.Northwind.Models
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            return base.ConfigureApi(services)
-                .ChainPrevious<IModelBuilder, NorthwindModelExtender>();
+            Type apiType = this.GetType();
+            // Add core and conversion's services
+            services = services.AddCoreServices(apiType)
+                .AddAttributeServices(apiType)
+                .AddConventionServices(apiType);
+
+            // Add EF related services
+            services.AddDbContextServices<NorthwindContext>();
+
+            // Add customized services, after EF model builder and before WebApi operation model builder
+            services.ChainPrevious<IModelBuilder, NorthwindModelExtender>();
+
+            // This is used to add the publisher's services
+            ApiConfiguration.GetInternalServiceCallback(apiType)(services);
+
+            return services;
         }
 
         // Entity set filter

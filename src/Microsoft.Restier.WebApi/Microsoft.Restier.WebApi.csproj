@@ -57,6 +57,9 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="..\Shared\EdmHelpers.cs">
+      <Link>Shared\EdmHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
@@ -78,6 +81,8 @@
     <Compile Include="Batch\RestierBatchHandler.cs" />
     <Compile Include="Batch\RestierChangeSetProperty.cs" />
     <Compile Include="Batch\RestierChangeSetRequestItem.cs" />
+    <Compile Include="Model\ApiModelBuilder.cs" />
+    <Compile Include="Model\OperationModelBuilder.cs" />
     <Compile Include="Formatter\Deserialization\DefaultRestierDeserializerProvider.cs" />
     <Compile Include="Formatter\Deserialization\RestierEnumDeserializer.cs" />
     <Compile Include="Formatter\Serialization\DefaultRestierSerializerProvider.cs" />
@@ -88,12 +93,12 @@
     <Compile Include="Formatter\Serialization\RestierPrimitiveSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierEntityTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
-    <Compile Include="HttpConfigurationExtensions.cs" />
+    <Compile Include="Routing\HttpConfigurationExtensions.cs" />
     <Compile Include="HttpRequestMessageExtensions.cs" />
     <Compile Include="Query\RestierQueryExecutor.cs" />
-    <Compile Include="RestierQueryBuilder.cs" />
+    <Compile Include="Query\RestierQueryBuilder.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="RestierFormattingAttribute.cs" />
+    <Compile Include="Formatter\RestierFormattingAttribute.cs" />
     <Compile Include="Filters\RestierExceptionFilterAttribute.cs" />
     <Compile Include="RestierPayloadValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,6 +126,7 @@
       <DependentUpon>SharedResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Query\RestierQueryExecutorOptions.cs" />
+    <Compile Include="ServiceCollectionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">

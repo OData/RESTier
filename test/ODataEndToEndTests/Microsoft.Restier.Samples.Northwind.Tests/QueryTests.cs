@@ -3,6 +3,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Samples.Northwind.Models;
@@ -22,31 +23,52 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestTakeIncludeTotalCount()
         {
-            QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10)));
+            using (HttpConfiguration config = new HttpConfiguration())
+            {
+                using (HttpServer server = new HttpServer(config))
+                {
+                    WebApiConfig.RegisterNorthwind(config, server);
+                    QueryResult result = await this.api.QueryAsync(
+                        new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10)));
 
-            var orderResults = result.Results.OfType<Order>();
-            Assert.Equal(10, orderResults.Count());
+                    var orderResults = result.Results.OfType<Order>();
+                    Assert.Equal(10, orderResults.Count());
+                }
+            }
         }
 
         [Fact]
         public async Task TestSkipIncludeTotalCount()
         {
-            QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10)));
+            using (HttpConfiguration config = new HttpConfiguration())
+            {
+                using (HttpServer server = new HttpServer(config))
+                {
+                    WebApiConfig.RegisterNorthwind(config, server);
+                    QueryResult result = await this.api.QueryAsync(
+                        new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10)));
 
-            var orderResults = result.Results.OfType<Order>();
-            Assert.Equal(820, orderResults.Count());
+                    var orderResults = result.Results.OfType<Order>();
+                    Assert.Equal(820, orderResults.Count());
+                }
+            }
         }
 
         [Fact]
         public async Task TestSkipTakeIncludeTotalCount()
         {
-            QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10).Take(25)));
+            using (HttpConfiguration config = new HttpConfiguration())
+            {
+                using (HttpServer server = new HttpServer(config))
+                {
+                    WebApiConfig.RegisterNorthwind(config, server);
+                    QueryResult result = await this.api.QueryAsync(
+                        new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10).Take(25)));
 
-            var orderResults = result.Results.OfType<Order>();
-            Assert.Equal(25, orderResults.Count());
+                    var orderResults = result.Results.OfType<Order>();
+                    Assert.Equal(25, orderResults.Count());
+                }
+            }
         }
 
         /// <summary>
@@ -56,11 +78,18 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
         [Fact]
         public async Task TestTakeNotStrippedIncludeTotalCount()
         {
-            QueryResult result = await this.api.QueryAsync(
-                new QueryRequest(this.OrdersQuery.Take(10).OrderBy(o => o.OrderDate)));
+            using (HttpConfiguration config = new HttpConfiguration())
+            {
+                using (HttpServer server = new HttpServer(config))
+                {
+                    WebApiConfig.RegisterNorthwind(config, server);
+                    QueryResult result = await this.api.QueryAsync(
+                        new QueryRequest(this.OrdersQuery.Take(10).OrderBy(o => o.OrderDate)));
 
-            var orderResults = result.Results.OfType<Order>();
-            Assert.Equal(10, orderResults.Count());
+                    var orderResults = result.Results.OfType<Order>();
+                    Assert.Equal(10, orderResults.Count());
+                }
+            }
         }
     }
 }

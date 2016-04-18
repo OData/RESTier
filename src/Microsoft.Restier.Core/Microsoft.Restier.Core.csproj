@@ -38,9 +38,6 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="..\Shared\EdmHelpers.cs">
-      <Link>Shared\EdmHelpers.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
@@ -59,9 +56,7 @@
     <Compile Include="Conventions\ConventionBasedChangeSetConstants.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetEntryFilter.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetEntryValidator.cs" />
-    <Compile Include="Conventions\ConventionBasedApiModelBuilder.cs" />
     <Compile Include="Conventions\ConventionBasedEntitySetFilter.cs" />
-    <Compile Include="Conventions\ConventionBasedOperationProvider.cs" />
     <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="ApiBase.cs" />
     <Compile Include="ApiConfiguration.cs" />
