@@ -21,7 +21,7 @@ namespace Microsoft.Restier.WebApi.Model
     /// A convention-based API model builder that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    internal class ApiModelBuilder
+    internal class RestierModelExtender
     {
         private readonly Type targetType;
         private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
@@ -35,7 +35,7 @@ namespace Microsoft.Restier.WebApi.Model
         private readonly IDictionary<IEdmEntityType, IEdmSingleton[]> singletonCache =
             new Dictionary<IEdmEntityType, IEdmSingleton[]>();
 
-        private ApiModelBuilder(Type targetType)
+        private RestierModelExtender(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -49,7 +49,7 @@ namespace Microsoft.Restier.WebApi.Model
 
             // The model builder must maintain a singleton life time, for holding states and being injected into
             // some other services.
-            services.AddInstance(new ApiModelBuilder(targetType));
+            services.AddInstance(new RestierModelExtender(targetType));
 
             services.ChainPrevious<IModelBuilder, ModelBuilder>();
             services.ChainPrevious<IModelMapper, ModelMapper>();
@@ -300,14 +300,14 @@ namespace Microsoft.Restier.WebApi.Model
 
         internal class ModelBuilder : IModelBuilder
         {
-            public ModelBuilder(ApiModelBuilder modelCache)
+            public ModelBuilder(RestierModelExtender modelCache)
             {
                 ModelCache = modelCache;
             }
 
             public IModelBuilder InnerModelBuilder { get; private set; }
 
-            private ApiModelBuilder ModelCache { get; set; }
+            private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
             public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
@@ -351,12 +351,12 @@ namespace Microsoft.Restier.WebApi.Model
 
         internal class ModelMapper : IModelMapper
         {
-            public ModelMapper(ApiModelBuilder modelCache)
+            public ModelMapper(RestierModelExtender modelCache)
             {
                 ModelCache = modelCache;
             }
 
-            public ApiModelBuilder ModelCache { get; set; }
+            public RestierModelExtender ModelCache { get; set; }
 
             private IModelMapper InnerModelMapper { get; set; }
 
@@ -411,7 +411,7 @@ namespace Microsoft.Restier.WebApi.Model
 
         internal class QueryExpressionExpander : IQueryExpressionExpander
         {
-            public QueryExpressionExpander(ApiModelBuilder modelCache)
+            public QueryExpressionExpander(RestierModelExtender modelCache)
             {
                 ModelCache = modelCache;
             }
@@ -419,7 +419,7 @@ namespace Microsoft.Restier.WebApi.Model
             /// <inheritdoc/>
             public IQueryExpressionExpander InnerHandler { get; set; }
 
-            private ApiModelBuilder ModelCache { get; set; }
+            private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
@@ -460,14 +460,14 @@ namespace Microsoft.Restier.WebApi.Model
 
         internal class QueryExpressionSourcer : IQueryExpressionSourcer
         {
-            public QueryExpressionSourcer(ApiModelBuilder modelCache)
+            public QueryExpressionSourcer(RestierModelExtender modelCache)
             {
                 ModelCache = modelCache;
             }
 
             public IQueryExpressionSourcer InnerHandler { get; set; }
 
-            private ApiModelBuilder ModelCache { get; set; }
+            private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Source(QueryExpressionContext context, bool embedded)

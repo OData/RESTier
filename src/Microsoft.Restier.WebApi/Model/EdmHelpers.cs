@@ -4,10 +4,11 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.WebApi.Properties;
 
-namespace Microsoft.OData.Edm
+namespace Microsoft.Restier.WebApi.Model
 {
     internal static class EdmHelpers
     {

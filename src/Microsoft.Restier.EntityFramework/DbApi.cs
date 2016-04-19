@@ -63,14 +63,13 @@ namespace Microsoft.Restier.EntityFramework
             // Add core and conversion's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)
-                .AddConventionServices(apiType);
+                .AddConventionBasedServices(apiType);
 
             // Add EF related services
-            services.AddDbContextServices<T>();
+            services.AddEfProviderServices<T>();
 
             // This is used to add the publisher's services
-            // TODO, will think about a better way
-            ApiConfiguration.GetInternalServiceCallback(apiType)(services);
+            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
 
             return services;
         }

@@ -50,6 +50,7 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
+    <Compile Include="ApiConfiguratorAttributes.cs" />
     <Compile Include="Model\FunctionAttribute.cs" />
     <Compile Include="Model\ActionAttribute.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetAuthorizer.cs" />

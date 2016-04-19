@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Security
         /// The API type on which this attribute was placed.
         /// </param>
         [CLSCompliant(false)]
-        public override void ConfigureApi(IServiceCollection services, Type type)
+        public override void AddApiServices(IServiceCollection services, Type type)
         {
             var permission = ApiPermission.CreateDeny(
                 this.PermissionType,

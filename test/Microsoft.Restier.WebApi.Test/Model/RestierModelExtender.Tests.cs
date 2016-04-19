@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.WebApi.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Model
 {
-    public class ApiModelBuilderTests
+    public class RestierModelExtenderTests
     {
         [Fact]
         public async Task ApiModelBuilderShouldProduceEmptyModelForEmptyApi()
@@ -132,10 +134,9 @@ namespace Microsoft.Restier.WebApi.Test.Model
         private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi, new()
         {
             var api = (BaseApi)Activator.CreateInstance<T>();
-            ApiConfiguration.AddInternalServices<T>(services =>
-            {
-                services.AddWebApiServices<T>();
-            });
+            HttpConfiguration config = new HttpConfiguration();
+            await config.MapRestierRoute<T>(
+                    "test", "api/test",null);
             return await api.Context.GetModelAsync();
         }
     }

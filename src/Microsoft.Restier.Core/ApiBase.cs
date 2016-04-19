@@ -60,7 +60,7 @@ namespace Microsoft.Restier.Core
                         apiScope.Api = this;
                     }
 
-                    ApiConfiguratorAttribute.ApplyInitialization(
+                    ApiConfiguratorAttributes.ApplyInitialization(
                         this.GetType(), this, this.apiContext);
                 }
 
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Core
                         services = this.ConfigureApi(services);
 
                         var configuration = this.CreateApiConfiguration(services);
-                        ApiConfiguratorAttribute.ApplyConfiguration(apiType, configuration);
+                        ApiConfiguratorAttributes.ApplyConfiguration(apiType, configuration);
                         return configuration;
                     });
             }
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.Core
 
             if (this.apiContext != null)
             {
-                ApiConfiguratorAttribute.ApplyDisposal(
+                ApiConfiguratorAttributes.ApplyDisposal(
                     this.GetType(), this, this.apiContext);
             }
 
@@ -134,11 +134,10 @@ namespace Microsoft.Restier.Core
             // Add core and conversion's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)
-                .AddConventionServices(apiType);
+                .AddConventionBasedServices(apiType);
 
             // This is used to add the publisher's services
-            //TODO, will think about a better way
-            ApiConfiguration.GetInternalServiceCallback(apiType)(services);
+            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
 
             return services;
         }

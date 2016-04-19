@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Security
         /// The API type on which this attribute was placed.
         /// </param>
         [CLSCompliant(false)]
-        public override void ConfigureApi(
+        public override void AddApiServices(
             IServiceCollection services,
             Type type)
         {

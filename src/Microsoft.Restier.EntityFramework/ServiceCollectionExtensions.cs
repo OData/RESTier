@@ -15,7 +15,7 @@ namespace Microsoft.Restier.EntityFramework
     [CLSCompliant(false)]
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDbContextServices<TDbContext>(this IServiceCollection services)
+        public static IServiceCollection AddEfProviderServices<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
             services.TryAddScoped<TDbContext>();

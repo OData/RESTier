@@ -74,16 +74,16 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             // Add core and conversion's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)
-                .AddConventionServices(apiType);
+                .AddConventionBasedServices(apiType);
 
             // Add EF related services
-            services.AddDbContextServices<NorthwindContext>();
+            services.AddEfProviderServices<NorthwindContext>();
 
             // Add customized services, after EF model builder and before WebApi operation model builder
             services.ChainPrevious<IModelBuilder, NorthwindModelExtender>();
 
             // This is used to add the publisher's services
-            ApiConfiguration.GetInternalServiceCallback(apiType)(services);
+            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
 
             return services;
         }

@@ -43,8 +43,9 @@ namespace Microsoft.Restier.WebApi.Routing
         {
             Ensure.NotNull(apiFactory, "apiFactory");
 
-            // This will be added a service add callback which is added in ApiBase.ConfigureApi method.
-            ApiConfiguration.AddInternalServices<TApi>(services =>
+            // This will be added a service to callback stored in ApiConfiguration
+            // Callback is called by ApiBase.AddApiServices method to add real services.
+            ApiConfiguration.AddPublisherServices<TApi>(services =>
             {
                 services.AddWebApiServices<TApi>();
             });

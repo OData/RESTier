@@ -16,13 +16,13 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.WebApi.Model
 {
-    internal class OperationModelBuilder : IModelBuilder
+    internal class RestierOperationModelBuilder : IModelBuilder
     {
         private readonly Type targetType;
         private readonly ICollection<ActionMethodInfo> actionInfos = new List<ActionMethodInfo>();
         private readonly ICollection<FunctionMethodInfo> functionInfos = new List<FunctionMethodInfo>();
 
-        private OperationModelBuilder(Type targetType)
+        private RestierOperationModelBuilder(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.WebApi.Model
 
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            services.ChainPrevious<IModelBuilder>(next => new OperationModelBuilder(targetType)
+            services.ChainPrevious<IModelBuilder>(next => new RestierOperationModelBuilder(targetType)
             {
                 InnerHandler = next,
             });

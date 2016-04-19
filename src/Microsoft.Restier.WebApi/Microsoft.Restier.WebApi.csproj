@@ -57,9 +57,6 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="..\Shared\EdmHelpers.cs">
-      <Link>Shared\EdmHelpers.cs</Link>
-    </Compile>
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
@@ -81,8 +78,8 @@
     <Compile Include="Batch\RestierBatchHandler.cs" />
     <Compile Include="Batch\RestierChangeSetProperty.cs" />
     <Compile Include="Batch\RestierChangeSetRequestItem.cs" />
-    <Compile Include="Model\ApiModelBuilder.cs" />
-    <Compile Include="Model\OperationModelBuilder.cs" />
+    <Compile Include="Model\RestierModelExtender.cs" />
+    <Compile Include="Model\RestierOperationModelBuilder.cs" />
     <Compile Include="Formatter\Deserialization\DefaultRestierDeserializerProvider.cs" />
     <Compile Include="Formatter\Deserialization\RestierEnumDeserializer.cs" />
     <Compile Include="Formatter\Serialization\DefaultRestierSerializerProvider.cs" />
@@ -127,6 +124,7 @@
     </Compile>
     <Compile Include="Query\RestierQueryExecutorOptions.cs" />
     <Compile Include="ServiceCollectionExtensions.cs" />
+    <Compile Include="Model\EdmHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">

@@ -31,17 +31,9 @@ public abstract class Microsoft.Restier.Core.ApiConfiguratorAttribute : System.A
 	[
 	CLSCompliantAttribute(),
 	]
-	public static void ApplyApiServices (System.Type type, Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+	public virtual void AddApiServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type type)
 
-	public static void ApplyConfiguration (System.Type type, Microsoft.Restier.Core.ApiConfiguration configuration)
-	public static void ApplyDisposal (System.Type type, object instance, Microsoft.Restier.Core.ApiContext context)
-	public static void ApplyInitialization (System.Type type, object instance, Microsoft.Restier.Core.ApiContext context)
 	public virtual void Configure (Microsoft.Restier.Core.ApiConfiguration configuration, System.Type type)
-	[
-	CLSCompliantAttribute(),
-	]
-	public virtual void ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type type)
-
 	public virtual void Dispose (Microsoft.Restier.Core.ApiContext context, System.Type type, object instance)
 	public virtual void Initialize (Microsoft.Restier.Core.ApiContext context, System.Type type, object instance)
 }
@@ -253,12 +245,12 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddContributor (Microsoft.Extensions.DependencyInjection.IServiceCollection obj, ApiServiceContributor`1 contributor)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddContributor (Microsoft.Extensions.DependencyInjection.IServiceCollection services, ApiServiceContributor`1 contributor)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddConventionServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type apiType)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddConventionBasedServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Type apiType)
 
 	[
 	ExtensionAttribute(),
@@ -268,62 +260,62 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiConfiguration BuildApiConfiguration (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static Microsoft.Restier.Core.ApiConfiguration BuildApiConfiguration (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Restier.Core.ApiConfiguration BuildApiConfiguration (Microsoft.Extensions.DependencyInjection.IServiceCollection obj, System.Func`2[[Microsoft.Extensions.DependencyInjection.IServiceCollection],[System.IServiceProvider]] serviceProviderFactory)
+	public static Microsoft.Restier.Core.ApiConfiguration BuildApiConfiguration (Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Func`2[[Microsoft.Extensions.DependencyInjection.IServiceCollection],[System.IServiceProvider]] serviceProviderFactory)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static T BuildApiServiceChain (System.IServiceProvider obj)
+	public static T BuildApiServiceChain (System.IServiceProvider services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ChainPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ChainPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ChainPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection obj, Func`2 factory)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ChainPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection services, Func`2 factory)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ChainPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection obj, Func`3 factory)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ChainPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection services, Func`3 factory)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection CutoffPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection CutoffPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection CutoffPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection obj, T handler)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection CutoffPrevious (Microsoft.Extensions.DependencyInjection.IServiceCollection services, T handler)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static bool HasService (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static bool HasService (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeScoped (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeScoped (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeSingleton (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeSingleton (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeTransient (Microsoft.Extensions.DependencyInjection.IServiceCollection obj)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeTransient (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
 public class Microsoft.Restier.Core.ApiConfiguration {
@@ -334,12 +326,12 @@ public class Microsoft.Restier.Core.ApiConfiguration {
 	[
 	CLSCompliantAttribute(),
 	]
-	public static void AddInternalServices (System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
+	public static void AddPublisherServices (System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
 
 	[
 	CLSCompliantAttribute(),
 	]
-	public static System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] GetInternalServiceCallback (System.Type apiType)
+	public static System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] GetPublisherServiceCallback (System.Type apiType)
 }
 
 public class Microsoft.Restier.Core.ApiContext {
@@ -371,7 +363,7 @@ public sealed class Microsoft.Restier.EntityFramework.ServiceCollectionExtension
 	[
 	ExtensionAttribute(),
 	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDbContextServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddEfProviderServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
 public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
@@ -383,17 +375,6 @@ public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.
 	CLSCompliantAttribute(),
 	]
 	protected virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-}
-
-[
-CLSCompliantAttribute(),
-ExtensionAttribute(),
-]
-public sealed class Microsoft.Restier.WebApi.ServiceCollectionExtensions {
-	[
-	ExtensionAttribute(),
-	]
-	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddWebApiServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
 [

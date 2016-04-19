@@ -38,15 +38,15 @@ namespace Microsoft.Restier.Core
         /// Return true if the <see cref="IServiceCollection"/> has any <typeparamref name="T"/> service registered.
         /// </summary>
         /// <typeparam name="T">The API service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>
         /// True if the service is registered.
         /// </returns>
-        public static bool HasService<T>(this IServiceCollection obj) where T : class
+        public static bool HasService<T>(this IServiceCollection services) where T : class
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
 
-            return obj.Any(sd => sd.ServiceType == typeof(T));
+            return services.Any(sd => sd.ServiceType == typeof(T));
         }
 
         /// <summary>
@@ -54,15 +54,15 @@ namespace Microsoft.Restier.Core
         /// <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The API service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="handler">An instance of type <typeparamref name="T"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection CutoffPrevious<T>(this IServiceCollection obj, T handler) where T : class
+        public static IServiceCollection CutoffPrevious<T>(this IServiceCollection services, T handler) where T : class
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(handler, "handler");
 
-            return obj.AddContributorNoCheck<T>((sp, next) => handler);
+            return services.AddContributorNoCheck<T>((sp, next) => handler);
         }
 
         /// <summary>
@@ -71,71 +71,71 @@ namespace Microsoft.Restier.Core
         /// </summary>
         /// <typeparam name="TService">The API service type.</typeparam>
         /// <typeparam name="TImplement">The API service implementation type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection CutoffPrevious<TService, TImplement>(this IServiceCollection obj)
+        public static IServiceCollection CutoffPrevious<TService, TImplement>(this IServiceCollection services)
             where TService : class
             where TImplement : class, TService
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
 
-            obj.TryAddTransient<TImplement>();
-            return obj.AddContributorNoCheck<TService>((sp, next) => sp.GetRequiredService<TImplement>());
+            services.TryAddTransient<TImplement>();
+            return services.AddContributorNoCheck<TService>((sp, next) => sp.GetRequiredService<TImplement>());
         }
 
         /// <summary>
         /// Adds a service contributor, which has a chance to chain previously registered service instances.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="contributor">An instance of <see cref="ApiServiceContributor{T}"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddContributor<T>(
-            this IServiceCollection obj,
+            this IServiceCollection services,
             ApiServiceContributor<T> contributor)
             where T : class
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(contributor, "contributor");
 
-            return obj.AddContributorNoCheck<T>(contributor);
+            return services.AddContributorNoCheck<T>(contributor);
         }
 
         /// <summary>
         /// Adds a service contributor, which has a chance to chain previously registered service instances.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="factory">
         /// A factory method to create a new instance of service T, wrapping previous instance."/>.
         /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection ChainPrevious<T>(
-            this IServiceCollection obj,
+            this IServiceCollection services,
             Func<IServiceProvider, T, T> factory)
             where T : class
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(factory, "factory");
-            return obj.AddContributorNoCheck<T>((sp, next) => factory(sp, next()));
+            return services.AddContributorNoCheck<T>((sp, next) => factory(sp, next()));
         }
 
         /// <summary>
         /// Adds a service contributor, which has a chance to chain previously registered service instances.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="factory">
         /// A factory method to create a new instance of service T, wrapping previous instance."/>.
         /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection ChainPrevious<T>(
-            this IServiceCollection obj,
+            this IServiceCollection services,
             Func<T, T> factory) where T : class
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
             Ensure.NotNull(factory, "factory");
-            return obj.AddContributorNoCheck<T>((sp, next) => factory(next()));
+            return services.AddContributorNoCheck<T>((sp, next) => factory(next()));
         }
 
         /// <summary>
@@ -154,18 +154,18 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TImplement">The implementation type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection ChainPrevious<TService, TImplement>(this IServiceCollection obj)
+        public static IServiceCollection ChainPrevious<TService, TImplement>(this IServiceCollection services)
             where TService : class
             where TImplement : class, TService
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
 
             Func<IServiceProvider, Func<TService>, TService> factory = null;
 
-            obj.TryAddTransient<TImplement>();
-            return obj.AddContributorNoCheck<TService>((sp, next) =>
+            services.TryAddTransient<TImplement>();
+            return services.AddContributorNoCheck<TService>((sp, next) =>
             {
                 if (factory != null)
                 {
@@ -230,70 +230,70 @@ namespace Microsoft.Restier.Core
         /// Call this to make singleton lifetime of a service.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeSingleton<T>(this IServiceCollection obj) where T : class
+        public static IServiceCollection MakeSingleton<T>(this IServiceCollection services) where T : class
         {
-            Ensure.NotNull(obj, "obj");
-            obj.AddSingleton<T>(ChainedService<T>.DefaultFactory);
-            return obj;
+            Ensure.NotNull(services, "services");
+            services.AddSingleton<T>(ChainedService<T>.DefaultFactory);
+            return services;
         }
 
         /// <summary>
         /// Call this to make scoped lifetime of a service.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeScoped<T>(this IServiceCollection obj) where T : class
+        public static IServiceCollection MakeScoped<T>(this IServiceCollection services) where T : class
         {
-            Ensure.NotNull(obj, "obj");
-            obj.AddScoped<T>(ChainedService<T>.DefaultFactory);
-            return obj;
+            Ensure.NotNull(services, "services");
+            services.AddScoped<T>(ChainedService<T>.DefaultFactory);
+            return services;
         }
 
         /// <summary>
         /// Call this to make transient lifetime of a service.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeTransient<T>(this IServiceCollection obj) where T : class
+        public static IServiceCollection MakeTransient<T>(this IServiceCollection services) where T : class
         {
-            Ensure.NotNull(obj, "obj");
-            obj.AddTransient<T>(ChainedService<T>.DefaultFactory);
-            return obj;
+            Ensure.NotNull(services, "services");
+            services.AddTransient<T>(ChainedService<T>.DefaultFactory);
+            return services;
         }
 
         /// <summary>
         /// Build the <see cref="ApiConfiguration"/>
         /// </summary>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The built <see cref="ApiConfiguration"/></returns>
-        public static ApiConfiguration BuildApiConfiguration(this IServiceCollection obj)
+        public static ApiConfiguration BuildApiConfiguration(this IServiceCollection services)
         {
-            return obj.BuildApiConfiguration(null);
+            return services.BuildApiConfiguration(null);
         }
 
         /// <summary>
         /// Build the <see cref="ApiConfiguration"/>
         /// </summary>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="serviceProviderFactory">
         /// An optional factory to create an <see cref="IServiceProvider"/>.
         /// Use this to inject your favorite DI container.
         /// </param>
         /// <returns>The built <see cref="ApiConfiguration"/></returns>
         public static ApiConfiguration BuildApiConfiguration(
-            this IServiceCollection obj,
+            this IServiceCollection services,
             Func<IServiceCollection, IServiceProvider> serviceProviderFactory)
         {
-            Ensure.NotNull(obj, "obj");
+            Ensure.NotNull(services, "services");
 
-            obj.TryAddSingleton<ApiConfiguration>();
+            services.TryAddSingleton<ApiConfiguration>();
 
             var serviceProvider = serviceProviderFactory != null ?
-                serviceProviderFactory(obj) : obj.BuildServiceProvider();
+                serviceProviderFactory(services) : services.BuildServiceProvider();
             return serviceProvider.GetService<ApiConfiguration>();
         }
 
@@ -304,7 +304,7 @@ namespace Microsoft.Restier.Core
         /// service chain registered with <see cref="IServiceCollection"/>.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
-        /// <param name="obj">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The service instance built.</returns>
         /// <example>
         /// <code>
@@ -312,10 +312,10 @@ namespace Microsoft.Restier.Core
         ///     new SomeService(sp.BuildApiServiceChain &lt; ISomeService &gt;()));
         /// </code>
         /// </example>
-        public static T BuildApiServiceChain<T>(this IServiceProvider obj) where T : class
+        public static T BuildApiServiceChain<T>(this IServiceProvider services) where T : class
         {
-            Ensure.NotNull(obj, "obj");
-            return ChainedService<T>.DefaultFactory(obj);
+            Ensure.NotNull(services, "services");
+            return ChainedService<T>.DefaultFactory(services);
         }
 
         public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
@@ -339,7 +339,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(apiType, "apiType");
 
-            ApiConfiguratorAttribute.ApplyApiServices(apiType, services);
+            ApiConfiguratorAttributes.AddApiServices(apiType, services);
             return services;
         }
 
@@ -352,7 +352,7 @@ namespace Microsoft.Restier.Core
         /// <param name="apiType">
         /// The type of a class on which code-based conventions are used.
         /// </param>
-        public static IServiceCollection AddConventionServices(this IServiceCollection services, Type apiType)
+        public static IServiceCollection AddConventionBasedServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(apiType, "apiType");
 
@@ -364,15 +364,15 @@ namespace Microsoft.Restier.Core
         }
 
         private static IServiceCollection AddContributorNoCheck<T>(
-            this IServiceCollection obj,
+            this IServiceCollection services,
             ApiServiceContributor<T> contributor)
             where T : class
         {
             // Services have singleton lifetime by default, call Make... to change.
-            obj.TryAddSingleton(typeof(T), ChainedService<T>.DefaultFactory);
-            obj.AddInstance(contributor);
+            services.TryAddSingleton(typeof(T), ChainedService<T>.DefaultFactory);
+            services.AddInstance(contributor);
 
-            return obj;
+            return services;
         }
 
         private static MemberInfo FindInnerMemberAndInject<TService, TImplement>(

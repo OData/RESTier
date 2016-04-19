@@ -95,7 +95,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Model\ApiModelBuilder.Tests.cs" />
+    <Compile Include="Model\RestierModelExtender.Tests.cs" />
     <Compile Include="FallbackTests.cs" />
     <Compile Include="ExceptionHandlerTests.cs" />
     <Compile Include="RestierQueryBuilderTests.cs" />

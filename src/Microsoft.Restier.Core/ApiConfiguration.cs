@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiConfiguration
     {
-        private static ConcurrentDictionary<Type, Action<IServiceCollection>> _internalServicesCallback =
+        private static ConcurrentDictionary<Type, Action<IServiceCollection>> publisherServicesCallback =
             new ConcurrentDictionary<Type, Action<IServiceCollection>>();
 
         private static Action<IServiceCollection> emptyConfig = _ => { };
@@ -73,20 +73,20 @@ namespace Microsoft.Restier.Core
         /// An action that will be called during the configuration of <typeparamref name="TApi"/>.
         /// </param>
         [CLSCompliant(false)]
-        public static void AddInternalServices<TApi>(Action<IServiceCollection> configurationCallback)
+        public static void AddPublisherServices<TApi>(Action<IServiceCollection> configurationCallback)
              where TApi : ApiBase
         {
-            _internalServicesCallback.AddOrUpdate(
+            publisherServicesCallback.AddOrUpdate(
                 typeof(TApi),
                 configurationCallback,
                 (type, existing) => existing + configurationCallback);
         }
 
         [CLSCompliant(false)]
-        public static Action<IServiceCollection> GetInternalServiceCallback(Type apiType)
+        public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
         {
             Action<IServiceCollection> val;
-            if (_internalServicesCallback.TryGetValue(apiType, out val))
+            if (publisherServicesCallback.TryGetValue(apiType, out val))
             {
                 return val;
             }
