@@ -1,20 +1,19 @@
 ---
 layout: post
-title: "2.2 Entity Set Filters [<=0.3.0-beta2]"
+title: "2.3 Entity Set Filters [>=0.4.0-beta]"
 description: ""
 category: "2. Conventions"
 ---
 
-Entity set filter convention helps plug in a piece of filtering logic for entity set. It is done via adding an `OnFilter[entity set name](IQueryable<T> entityset)` method to the domain class.
+Entity set filter convention helps plug in a piece of filtering logic for entity set. It is done via adding an `OnFilter[entity set name](IQueryable<T> entityset)` method to the `Api` class.
 
 	1. The filter method name must be OnFilter[entity set name], ending with the target entity set name.
-	2. It must be a private method on the domain class with [EnableConventions] attribute.
+	2. It must be a **protected** method on the `Api` class.
 	3. It should accept an IQueryable<T> parameter and return an IQueryable<T> result where T is the entity type. 
 
 Supposed that ~/AdventureWorksLT/Products can get all the Product entities, the below OnFilterProducts method will filter some Product entities by checking the ProductID.
 
 {% highlight csharp %}
-using Microsoft.Restier.Conventions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.EntityFramework;
 using System.Data.Entity;
@@ -23,10 +22,9 @@ using System.Threading.Tasks;
 
 namespace AdventureWorksLTSample.Models
 {
-    [EnableConventions]
-    public class AdventureWorksDomain : DbDomain<AdventureWorksContext>
+    public class AdventureWorksApi : DbApi<AdventureWorksContext>
     {
-        private IQueryable<Product> OnFilterProducts(IQueryable<Product> entitySet)
+        protected IQueryable<Product> OnFilterProducts(IQueryable<Product> entitySet)
         {
             return entitySet.Where(s => s.ProductID % 3 == 0).AsQueryable();
         }

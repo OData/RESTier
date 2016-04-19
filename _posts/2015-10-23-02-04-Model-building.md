@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.6 Model Building [>=0.4.0-beta]"
+title: "2.4 Model Building [>=0.4.0-beta]"
 description: ""
 category: "2. Conventions"
 ---
