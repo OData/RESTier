@@ -100,7 +100,6 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Person person = new Person()
             {
                 FirstName = "Sheldon",
-                LastName = "Cooper",
                 UserName = "SheldonCooper"
             };
 

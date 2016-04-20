@@ -136,7 +136,18 @@ namespace Microsoft.Restier.EntityFramework.Submit
                         continue;
                     }
 
-                    Type type = propertyEntry.CurrentValue.GetType();
+                    Type type = null;
+                    if (propertyEntry.CurrentValue != null)
+                    {
+                        type = propertyEntry.CurrentValue.GetType();
+                    }
+                    else
+                    {
+                        // If property does not have value now, will get property type from model
+                        var propertyInfo = dbEntry.Entity.GetType().GetProperty(propertyPair.Key);
+                        type = propertyInfo.PropertyType;
+                    }
+
                     if (propertyEntry is DbComplexPropertyEntry)
                     {
                         var dic = value as IReadOnlyDictionary<string, object>;
