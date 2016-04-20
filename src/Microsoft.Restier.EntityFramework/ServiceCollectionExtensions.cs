@@ -1,5 +1,9 @@
 ﻿using System;
+#if EF7
+using Microsoft.Data.Entity;
+#else
 using System.Data.Entity;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;

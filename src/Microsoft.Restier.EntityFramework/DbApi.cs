@@ -9,12 +9,6 @@ using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework.Model;
-using Microsoft.Restier.EntityFramework.Query;
-using Microsoft.Restier.EntityFramework.Submit;
 
 namespace Microsoft.Restier.EntityFramework
 {

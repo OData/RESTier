@@ -127,6 +127,9 @@
     <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionSourcer.cs">
       <Link>Query.Shared\QueryExpressionSourcer.cs</Link>
     </Compile>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\ServiceCollectionExtensions.cs">
+      <Link>ServiceCollectionExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Microsoft.Restier.EntityFramework\Submit\SubmitExecutor.cs">
       <Link>Submit.Shared\SubmitExecutor.cs</Link>
     </Compile>
