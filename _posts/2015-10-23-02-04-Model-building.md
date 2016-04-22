@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.4 Model Building [0.4.0]"
+title: "2.4 Model Building [0.4.0 only]"
 description: ""
 category: "2. Features"
 ---

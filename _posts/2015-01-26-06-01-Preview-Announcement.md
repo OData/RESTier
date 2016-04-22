@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "5.1 Release notes for RESTier 0.2.0-preview"
+title: "6.1 Release notes for RESTier 0.2.0-preview"
 description: ""
-category: "5. Announcements"
+category: "6. Announcements"
 ---
 
 Below are the features supported in the RESTier 0.2.0-preview, as well as the limitations of the current version.
