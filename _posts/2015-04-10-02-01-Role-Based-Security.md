@@ -2,7 +2,7 @@
 layout: post
 title: "2.1 Role Based Security"
 description: ""
-category: "2. Conventions"
+category: "2. Features"
 ---
 
 Currently the quality of the role-based security module is **NOT** guaranteed and this module will **NOT** be shipped with regular RESTier releases. Please use it at your own risk.

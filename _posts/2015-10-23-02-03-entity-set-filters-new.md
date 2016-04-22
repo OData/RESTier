@@ -2,7 +2,7 @@
 layout: post
 title: "2.3 Entity Set Filters [>=0.4.0-beta]"
 description: ""
-category: "2. Conventions"
+category: "2. Features"
 ---
 
 Entity set filter convention helps plug in a piece of filtering logic for entity set. It is done via adding an `OnFilter[entity set name](IQueryable<T> entityset)` method to the `Api` class.
