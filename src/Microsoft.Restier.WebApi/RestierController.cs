@@ -441,11 +441,7 @@ namespace Microsoft.Restier.WebApi
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
-            ODataQuerySettings settings = new ODataQuerySettings
-            {
-                HandleNullPropagation = HandleNullPropagationOption.False,
-                PageSize = null,  // no support for server enforced PageSize, yet
-            };
+            ODataQuerySettings settings = Api.Context.GetApiService<ODataQuerySettings>();
 
             if (this.shouldReturnCount)
             {
@@ -464,8 +460,7 @@ namespace Microsoft.Restier.WebApi
             }
 
             // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
-            // TODO GitHubIssue#359 : Allow user to customize the query and validation setting
-            ODataValidationSettings validationSettings = new ODataValidationSettings();
+            ODataValidationSettings validationSettings = Api.Context.GetApiService<ODataValidationSettings>();
             queryOptions.Validate(validationSettings);
 
             // Entity count can NOT be evaluated at this point of time because the source

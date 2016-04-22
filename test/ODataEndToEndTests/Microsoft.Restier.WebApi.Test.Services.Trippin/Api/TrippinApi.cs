@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
@@ -139,8 +141,17 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
+
+            // Add OData Query Settings and valiadtion settings
+            Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = (sp) => new ODataValidationSettings
+            {
+                MaxAnyAllExpressionDepth =3,
+                MaxExpansionDepth = 3
+            };
+
             return base.ConfigureApi(services)
-                .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>();
+                .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
+                .AddSingleton<ODataValidationSettings>(validationSettingFactory);
         }
     }
 }
