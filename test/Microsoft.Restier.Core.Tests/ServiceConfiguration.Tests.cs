@@ -2,244 +2,221 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Model;
 using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
 {
     public class ServiceConfigurationTests
     {
-        interface ISomeService
+        private class TestApiA : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                var i = 0;
+                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                {
+                    Inner = next,
+                    Value = i++
+                })
+                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    {
+                        Inner = next,
+                        Value = i++
+                    })
+                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    {
+                        Inner = next,
+                        Value = i++
+                    })
+                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    {
+                        Inner = next,
+                        Value = i++
+                    })
+                    .ChainPrevious<ISomeService, SomeService>();
+
+                return services;
+            }
+        }
+
+        private class TestApiB : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                {
+                    Inner = next,
+                    Value = 1
+                })
+                    .ChainPrevious<ISomeService, SomeService>()
+                    .MakeTransient<ISomeService>();
+
+                return services;
+            }
+        }
+
+        private class TestApiC : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.MakeScoped<ISomeService>()
+                    .ChainPrevious<ISomeService>((sp, next) => new SomeService());
+                return services;
+            }
+        }
+
+        private class TestApiD : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                {
+                    Inner = next,
+                    Value = 1
+                })
+                    .ChainPrevious<ISomeService, SomeServiceNoChain>()
+                    .MakeTransient<ISomeService>();
+                return services;
+            }
+        }
+
+        private class TestApiE : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                var first = new SomeService
+                {
+                    Value = 42
+                };
+                services.MakeTransient<ISomeService>()
+                    .ChainPrevious<ISomeService>((sp, next) => first)
+                    .ChainPrevious<ISomeService, SomeService2>()
+                    .AddInstance("Text");
+
+                return services;
+            }
+        }
+
+        private class TestApiF : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                {
+                    Value = 2
+                })
+                    .MakeTransient<ISomeService>()
+                    .ChainPrevious<ISomeService, SomeService2>();
+
+                return services;
+            }
+        }
+
+        private class TestApiG : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                {
+                    Value = 1
+                })
+                    .ChainPrevious<ISomeService, SomeService3>()
+                    .AddInstance(new SomeService
+                    {
+                        Value = 2
+                    })
+                    .MakeTransient<ISomeService>()
+                    .ChainPrevious<string>((sp, next) => { return "0"; })
+                    .MakeTransient<string>();
+
+                return services;
+            }
+        }
+
+        private class TestApiH : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                {
+                    Value = 1
+                })
+                    .ChainPrevious<ISomeService, SomeService3>()
+                    .MakeTransient<ISomeService>()
+                    .ChainPrevious<string>((sp, next) => { return "0"; })
+                    .MakeTransient<string>();
+
+                return services;
+            }
+        }
+
+        private class TestApiI : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.MakeTransient<ISomeService>()
+                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    {
+                        Value = 2
+                    })
+                    .AddInstance(new SomeService
+                    {
+                        Value = 0
+                    })
+                    .ChainPrevious<ISomeService, SomeService4>();
+
+                return services;
+            }
+        }
+
+
+        private interface ISomeService
         {
             string Call();
         }
 
-        class SomeService : ISomeService
+        private class SomeService : ISomeService
         {
-            public SomeService()
-            {
-            }
+            public int Value { get; set; }
 
-            public int Value
-            {
-                get; set;
-            }
-
-            public ISomeService Next
-            {
-                get; set;
-            }
+            public ISomeService Inner { get; set; }
 
             public string Call()
             {
-                if (Next == null)
+                if (Inner == null)
                 {
                     return Value.ToString();
                 }
 
-                return Value + Next.Call();
+                return Value + Inner.Call();
             }
         }
 
-        [Fact]
-        public void ContributorsAreCalledCorrectly()
+        private class SomeService2 : ISomeService
         {
-            int i = 0;
-            var services = new ServiceCollection()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Next = next(),
-                    Value = i++,
-                })
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Next = next(),
-                    Value = i++,
-                })
-                .ChainPrevious<ISomeService>(next => new SomeService()
-                {
-                    Next = next,
-                    Value = i++,
-                })
-                .ChainPrevious<ISomeService>((sp, next) => new SomeService()
-                {
-                    Next = next,
-                    Value = i++,
-                })
-                .ChainPrevious<ISomeService, SomeService>();
-
-            var configuration = services.BuildApiConfiguration();
-            var value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("03210", value);
-        }
-
-        [Fact]
-        public void NextInjectedViaProperty()
-        {
-            var services = new ServiceCollection()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Next = next(),
-                    Value = 1,
-                })
-                .ChainPrevious<ISomeService, SomeService>()
-                .MakeTransient<ISomeService>();
-
-            var configuration = services.BuildApiConfiguration();
-            var value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("01", value);
-
-            // Test expression compilation.
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("01", value);
-        }
-
-        interface ISomeHook : ISomeService
-        {
-        }
-
-        class SomeHook : SomeService, ISomeHook
-        {
-        }
-
-        [Fact]
-        public void ContextApiScopeWorksCorrectly()
-        {
-            var services = new ServiceCollection()
-                .MakeScoped<ISomeService>()
-                .ChainPrevious<ISomeService>(next => new SomeService());
-
-            var configuration = services.BuildApiConfiguration();
-            var service1 = configuration.GetApiService<ISomeService>();
-
-            var context = new ApiContext(configuration);
-            var service2 = context.GetApiService<ISomeService>();
-
-            Assert.NotEqual(service1, service2);
-
-            var context3 = new ApiContext(configuration);
-            var service3 = context3.GetApiService<ISomeService>();
-
-            Assert.NotEqual(service3, service2);
-        }
-
-        class SomeServiceNoChain : ISomeService
-        {
-            public string Call()
-            {
-                return "42";
-            }
-        }
-
-        [Fact]
-        public void NothingInjectedStillWorks()
-        {
-            var services = new ServiceCollection()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Next = next(),
-                    Value = 1,
-                })
-                .ChainPrevious<ISomeService, SomeServiceNoChain>()
-                .MakeTransient<ISomeService>();
-
-            var configuration = services.BuildApiConfiguration();
-            var value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-
-            // Test expression compilation.
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-        }
-
-        class SomeService2 : ISomeService
-        {
-            protected ISomeService shouldSetProperty = null;
-
+            // The string value will be retrieved via api.Context.GetApiService<string>()
             public SomeService2(string value = "4")
             {
                 Value = value;
             }
 
-            public string Value
-            {
-                get; set;
-            }
+            public string Value { get; }
 
-            protected ISomeService WeirdName
-            {
-                get; set;
-            }
+            protected ISomeService Inner { get; set; }
 
             public string Call()
             {
-                if (WeirdName == null)
+                if (Inner == null)
                 {
-                    return Value.ToString();
+                    return Value;
                 }
 
-                return Value + WeirdName.Call();
+                return Value + Inner.Call();
             }
         }
 
-        [Fact]
-        public void ServiceInjectedViaProperty()
-        {
-            var first = new SomeService()
-            {
-                Value = 42,
-            };
-            var services = new ServiceCollection()
-                .MakeTransient<ISomeService>()
-                .AddContributor<ISomeService>((sp, next) => first)
-                .ChainPrevious<ISomeService, SomeService2>()
-                .AddInstance<string>("Text");
-
-            var configuration = services.BuildApiConfiguration();
-            var expected = "Text42";
-            var value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal(expected, value);
-
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal(expected, value);
-
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal(expected, value);
-
-            Assert.NotEqual(
-                configuration.GetApiService<ISomeService>(),
-                configuration.GetApiService<ISomeService>());
-        }
-
-        [Fact]
-        public void DefaultValueInConstructorUsedIfNoService()
-        {
-            var services = new ServiceCollection()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Value = 2,
-                })
-                .MakeTransient<ISomeService>()
-                .ChainPrevious<ISomeService, SomeService2>();
-
-            var configuration = services.BuildApiConfiguration();
-            var value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-        }
-
-        class SomeService3 : ISomeService
+        private class SomeService3 : ISomeService
         {
             protected ISomeService next = null;
 
@@ -256,76 +233,22 @@ namespace Microsoft.Restier.Core.Tests
                 Param2 = Param3 = dep1;
             }
 
-            public string Value { get; set; }
+            public string Value { get; }
 
-            public SomeService Param2 { get; set; }
+            public SomeService Param2 { get; }
 
-            public SomeService Param3 { get; set; }
+            public SomeService Param3 { get; }
 
             public string Call()
             {
                 return Value +
-                    (next == null ? string.Empty : next.Call()) +
-                    Param2.Call() +
-                    Param3.Call();
+                       (next == null ? string.Empty : next.Call()) +
+                       Param2.Call() +
+                       Param3.Call();
             }
         }
 
-        [Fact]
-        public void MultiInjectionViaConstructor()
-        {
-            var services = new ServiceCollection()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Value = 1,
-                })
-                .MakeTransient<ISomeService>()
-                .AddContributor<string>((sp, next) =>
-                {
-                    return "0";
-                })
-                .MakeTransient<string>()
-                .ChainPrevious<ISomeService, SomeService3>()
-                .AddInstance<SomeService>(new SomeService()
-                {
-                    Value = 2,
-                });
-
-            var configuration = services.BuildApiConfiguration();
-            var value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("0122", value);
-
-            // Test expression compilation
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("0122", value);
-            value = configuration.GetApiService<ISomeService>().Call();
-            Assert.Equal("0122", value);
-        }
-
-        [Fact]
-        public void ThrowOnNoServiceFound()
-        {
-            var services = new ServiceCollection()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Value = 1,
-                })
-                .MakeTransient<ISomeService>()
-                .AddContributor<string>((sp, next) =>
-                {
-                    return "0";
-                })
-                .MakeTransient<string>()
-                .ChainPrevious<ISomeService, SomeService3>();
-
-            var configuration = services.BuildApiConfiguration();
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                configuration.GetApiService<ISomeService>();
-            });
-        }
-
-        class SomeService4 : SomeService3
+        private class SomeService4 : SomeService3
         {
             public SomeService4(SomeService dep1)
                 : base(dep1)
@@ -333,29 +256,137 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
+        private class SomeServiceNoChain : ISomeService
+        {
+            public string Call()
+            {
+                return "42";
+            }
+        }
+
+        [Fact]
+        public void ContributorsAreCalledCorrectly()
+        {
+            var api = new TestApiA();
+            var value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("03210", value);
+        }
+
+        [Fact]
+        public void NextInjectedViaProperty()
+        {
+            var api = new TestApiB();
+            var value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("01", value);
+
+            // Test expression compilation.
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("01", value);
+        }
+
+        [Fact]
+        public void ContextApiScopeWorksCorrectly()
+        {
+            var api = new TestApiC();
+            var service1 = api.Context.GetApiService<ISomeService>();
+
+            var api2 = new TestApiC();
+            var service2 = api2.Context.GetApiService<ISomeService>();
+
+            Assert.NotEqual(service1, service2);
+
+            var api3 = new TestApiC();
+            var service3 = api3.Context.GetApiService<ISomeService>();
+
+            Assert.NotEqual(service3, service2);
+        }
+
+        [Fact]
+        public void NothingInjectedStillWorks()
+        {
+            // Outmost service does not call inner service
+            var api = new TestApiD();
+            var value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("42", value);
+
+            // Test expression compilation.
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("42", value);
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("42", value);
+        }
+
+        [Fact]
+        public void ServiceInjectedViaProperty()
+        {
+            var api = new TestApiE();
+
+            var expected = "Text42";
+            var value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal(expected, value);
+
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal(expected, value);
+
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal(expected, value);
+
+            Assert.NotEqual(
+                api.Context.GetApiService<ISomeService>(),
+                api.Context.GetApiService<ISomeService>());
+        }
+
+        [Fact]
+        public void DefaultValueInConstructorUsedIfNoService()
+        {
+            var api = new TestApiF();
+
+            var value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("42", value);
+
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("42", value);
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("42", value);
+        }
+
+
+        [Fact]
+        public void MultiInjectionViaConstructor()
+        {
+            var api = new TestApiG();
+
+            var value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("0122", value);
+
+            // Test expression compilation
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("0122", value);
+            value = api.Context.GetApiService<ISomeService>().Call();
+            Assert.Equal("0122", value);
+        }
+
+        [Fact]
+        public void ThrowOnNoServiceFound()
+        {
+            var api = new TestApiH();
+
+
+            Assert.Throws<InvalidOperationException>(() => { api.Context.GetApiService<ISomeService>(); });
+        }
+
         [Fact]
         public void NextInjectedWithInheritedField()
         {
-            var services = new ServiceCollection()
-                .MakeTransient<ISomeService>()
-                .AddContributor<ISomeService>((sp, next) => new SomeService()
-                {
-                    Value = 2,
-                })
-                .AddInstance(new SomeService()
-                {
-                    Value = 0,
-                })
-                .ChainPrevious<ISomeService, SomeService4>();
+            var api = new TestApiI();
 
-            var configuration = services.BuildApiConfiguration();
-            var value = configuration.GetApiService<ISomeService>().Call();
+            var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
 
             // Test expression compilation
-            value = configuration.GetApiService<ISomeService>().Call();
+            value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
-            value = configuration.GetApiService<ISomeService>().Call();
+            value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
         }
     }

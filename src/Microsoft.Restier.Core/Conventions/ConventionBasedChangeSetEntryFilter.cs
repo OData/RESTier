@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.CutoffPrevious<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
+            services.CutoffPrevious<IChangeSetEntryFilter>((sp) => new ConventionBasedChangeSetEntryFilter(targetType));
         }
 
         /// <inheritdoc/>

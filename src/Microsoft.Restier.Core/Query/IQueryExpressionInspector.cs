@@ -4,7 +4,7 @@
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
-    /// Represents a hook point that inspects a query expression.
+    /// Represents a service that inspects a query expression.
     /// </summary>
     /// <remarks>
     /// <para>

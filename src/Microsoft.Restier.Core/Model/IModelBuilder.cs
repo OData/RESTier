@@ -8,7 +8,7 @@ using Microsoft.OData.Edm;
 namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
-    /// The hook point for model generation.
+    /// The service for model generation.
     /// </summary>
     public interface IModelBuilder
     {

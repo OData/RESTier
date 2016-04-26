@@ -40,11 +40,11 @@ namespace Microsoft.Restier.WebApi.Test
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services = base.ConfigureApi(services);
-            services.CutoffPrevious<IModelBuilder>(new TestModelProducer(StoreModel.Model));
-            services.CutoffPrevious<IModelMapper>(new TestModelMapper());
-            services.CutoffPrevious<IQueryExpressionSourcer>(new TestQueryExpressionSourcer());
-            services.CutoffPrevious<IChangeSetPreparer>(new TestChangeSetPreparer());
-            services.CutoffPrevious<ISubmitExecutor>(new TestSubmitExecutor());
+            services.CutoffPrevious<IModelBuilder>(sp => new TestModelProducer(StoreModel.Model));
+            services.CutoffPrevious<IModelMapper>(sp => new TestModelMapper());
+            services.CutoffPrevious<IQueryExpressionSourcer>(sp => new TestQueryExpressionSourcer());
+            services.CutoffPrevious<IChangeSetPreparer>(sp => new TestChangeSetPreparer());
+            services.CutoffPrevious<ISubmitExecutor>(sp => new TestSubmitExecutor());
             return services;
         }
     }

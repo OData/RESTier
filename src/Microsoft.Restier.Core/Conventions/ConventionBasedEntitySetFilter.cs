@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.ChainPrevious<IQueryExpressionFilter>(next => new ConventionBasedEntitySetFilter(targetType)
+            services.ChainPrevious<IQueryExpressionFilter>((sp, next) => new ConventionBasedEntitySetFilter(targetType)
             {
                 Inner = next,
             });

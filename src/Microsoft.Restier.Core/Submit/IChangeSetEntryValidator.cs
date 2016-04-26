@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core.Submit
         Task ValidateEntityAsync(
             SubmitContext context,
             ChangeSetEntry entry,
-            ValidationResults validationResults,
+            ChangeSetValidationResults validationResults,
             CancellationToken cancellationToken);
     }
 }

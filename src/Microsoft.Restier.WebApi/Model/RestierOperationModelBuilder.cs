@@ -31,7 +31,7 @@ namespace Microsoft.Restier.WebApi.Model
 
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            services.ChainPrevious<IModelBuilder>(next => new RestierOperationModelBuilder(targetType)
+            services.ChainPrevious<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType)
             {
                 InnerHandler = next,
             });

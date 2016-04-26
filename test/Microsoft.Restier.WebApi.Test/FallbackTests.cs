@@ -98,9 +98,9 @@ namespace Microsoft.Restier.WebApi.Test
     {
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
-            services.CutoffPrevious<IModelMapper>(new FallbackModelMapper());
-            services.CutoffPrevious<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
+            services.CutoffPrevious<IModelBuilder>(sp => new TestModelProducer(FallbackModel.Model));
+            services.CutoffPrevious<IModelMapper>(sp => new FallbackModelMapper());
+            services.CutoffPrevious<IQueryExpressionSourcer>(sp => new FallbackQueryExpressionSourcer());
             services = base.ConfigureApi(services);
             return services;
         }

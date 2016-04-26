@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 using DataAnnotations = System.ComponentModel.DataAnnotations;
-using ValidationResult = Microsoft.Restier.Core.Submit.ValidationResult;
+using ChangeSetValidationResult = Microsoft.Restier.Core.Submit.ChangeSetValidationResult;
 
 namespace Microsoft.Restier.Core.Conventions
 {
@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core.Conventions
         public Task ValidateEntityAsync(
             SubmitContext context,
             ChangeSetEntry entry,
-            ValidationResults validationResults,
+            ChangeSetValidationResults validationResults,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(validationResults, "validationResults");
@@ -52,11 +52,11 @@ namespace Microsoft.Restier.Core.Conventions
                             validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != DataAnnotations.ValidationResult.Success)
                         {
-                            validationResults.Add(new ValidationResult()
+                            validationResults.Add(new ChangeSetValidationResult()
                             {
                                 Id = validationAttribute.GetType().FullName,
                                 Message = validationResult.ErrorMessage,
-                                Severity = ValidationSeverity.Error,
+                                Severity = ChangeSetValidationSeverity.Error,
                                 Target = entity,
                                 PropertyName = property.Name
                             });

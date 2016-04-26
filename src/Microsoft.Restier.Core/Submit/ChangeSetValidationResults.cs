@@ -10,7 +10,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a collection of ValidationResult instances that identify what is not valid on a validated item.
     /// </summary>
-    public class ValidationResults : Collection<ValidationResult>
+    public class ChangeSetValidationResults : Collection<ChangeSetValidationResult>
     {
         /// <summary>
         /// Gets a value indicating whether there is any result that has Severity equal to "Error"
@@ -28,12 +28,12 @@ namespace Microsoft.Restier.Core.Submit
         /// Gets a collection of ValidationResult instances that have Severity equal to "Error"
         /// in the current validation results.
         /// </summary>
-        public IEnumerable<ValidationResult> Errors
+        public IEnumerable<ChangeSetValidationResult> Errors
         {
             get
             {
                 return this.Where(result =>
-                    result.Severity == ValidationSeverity.Error);
+                    result.Severity == ChangeSetValidationSeverity.Error);
             }
         }
     }

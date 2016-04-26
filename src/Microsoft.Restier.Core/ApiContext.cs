@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiContext"/>.
         /// </summary>
-        public IServiceProvider ServiceProvider
+        internal IServiceProvider ServiceProvider
         {
             get { return this.scope.ServiceProvider; }
         }

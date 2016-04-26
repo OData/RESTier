@@ -101,10 +101,10 @@
     <Compile Include="Submit\ISubmitExecutor.cs" />
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />
-    <Compile Include="Submit\ValidationException.cs" />
-    <Compile Include="Submit\ValidationResult.cs" />
-    <Compile Include="Submit\ValidationResults.cs" />
-    <Compile Include="Submit\ValidationSeverity.cs" />
+    <Compile Include="Submit\ChangeSetValidationException.cs" />
+    <Compile Include="Submit\ChangeSetValidationResult.cs" />
+    <Compile Include="Submit\ChangeSetValidationResults.cs" />
+    <Compile Include="Submit\ChangeSetValidationSeverity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft.Restier.Core.nuspec" />

@@ -212,7 +212,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }
@@ -259,7 +259,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }
@@ -270,7 +270,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }
@@ -288,7 +288,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(new TestModelBuilder());
+            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }

@@ -6,7 +6,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Specifies the severity of a validation result.
     /// </summary>
-    public enum ValidationSeverity
+    public enum ChangeSetValidationSeverity
     {
         /// <summary>
         /// Specifies a validation error.

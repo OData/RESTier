@@ -6,7 +6,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a single result when validating an entity, property, etc.
     /// </summary>
-    public class ValidationResult
+    public class ChangeSetValidationResult
     {
         /// <summary>
         /// Gets or sets the identifier for this validation result.
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets the severity of this validation result.
         /// </summary>
-        public ValidationSeverity Severity { get; set; }
+        public ChangeSetValidationSeverity Severity { get; set; }
 
         /// <summary>
         /// Gets or sets the message to be displayed to the end user for this validation result.

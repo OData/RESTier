@@ -15,6 +15,43 @@ namespace Microsoft.Restier.Core.Tests.Model
 {
     public class DefaultModelHandlerTests
     {
+        private class TestApiA : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.CutoffPrevious<IModelBuilder>(sp => new TestModelProducer());
+                services.ChainPrevious<IModelBuilder>((sp, next) => new TestModelExtender(2)
+                {
+                    InnerHandler = next,
+                });
+                services.ChainPrevious<IModelBuilder>((sp, next) => new TestModelExtender(3)
+                {
+                    InnerHandler = next,
+                });
+                return services;
+            }
+        }
+
+        private class TestApiB : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                var service = new TestSingleCallModelBuilder();
+                services.CutoffPrevious<IModelBuilder>(sp => service);
+                return services;
+            }
+        }
+
+        private class TestApiC : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                var service = new TestRetryModelBuilder();
+                services.CutoffPrevious<IModelBuilder>(sp => service);
+                return services;
+            }
+        }
+
         private class TestModelProducer : IModelBuilder
         {
             public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
@@ -68,19 +105,8 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var services = new ServiceCollection();
-            services.CutoffPrevious<IModelBuilder>(new TestModelProducer());
-            services.ChainPrevious<IModelBuilder>(next => new TestModelExtender(2)
-            {
-                InnerHandler = next,
-            });
-            services.ChainPrevious<IModelBuilder>(next => new TestModelExtender(3)
-            {
-                InnerHandler = next,
-            });
-
-            var configuration = services.BuildApiConfiguration();
-            var context = new ApiContext(configuration);
+            var api = new TestApiA();
+            var context = api.Context;
 
             var model = await context.GetModelAsync();
             Assert.Equal(4, model.SchemaElements.Count());
@@ -112,7 +138,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        private static Task<IEdmModel>[] PrepareThreads(int count, ApiConfiguration configuration, ManualResetEventSlim wait)
+        private static Task<IEdmModel>[] PrepareThreads(int count, Type apiType, ManualResetEventSlim wait)
         {
             var tasks = new Task<IEdmModel>[count];
             var result = Parallel.For(0, count, (inx, state) =>
@@ -123,7 +149,8 @@ namespace Microsoft.Restier.Core.Tests.Model
                     // To make threads better aligned.
                     wait.Wait();
 
-                    var context = new ApiContext(configuration);
+                    var api = (ApiBase)Activator.CreateInstance(apiType);
+                    var context = api.Context;
                     try
                     {
                         var model = context.GetModelAsync().Result;
@@ -144,20 +171,14 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task ModelBuilderShouldBeCalledOnlyOnceIfSucceeded()
         {
-            var services = new ServiceCollection();
-            var service = new TestSingleCallModelBuilder();
-            services.CutoffPrevious<IModelBuilder>(service);
-            var configuration = services.BuildApiConfiguration();
-
             using (var wait = new ManualResetEventSlim(false))
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    var tasks = PrepareThreads(50, configuration, wait);
+                    var tasks = PrepareThreads(50, typeof(TestApiB), wait);
                     wait.Set();
 
                     var models = await Task.WhenAll(tasks);
-                    Assert.Equal(1, service.CalledCount);
                     Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));
                 }
             }
@@ -182,14 +203,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelAsyncRetriableAfterFailure()
         {
-            var services = new ServiceCollection();
-            var service = new TestRetryModelBuilder();
-            services.CutoffPrevious<IModelBuilder>(service);
-            var configuration = services.BuildApiConfiguration();
-
             using (var wait = new ManualResetEventSlim(false))
             {
-                var tasks = PrepareThreads(6, configuration, wait);
+                var tasks = PrepareThreads(6, typeof(TestApiC), wait);
                 wait.Set();
 
                 await Task.WhenAll(tasks).ContinueWith(t =>
@@ -197,12 +213,10 @@ namespace Microsoft.Restier.Core.Tests.Model
                     Assert.True(t.IsFaulted);
                     Assert.True(tasks.All(e => e.IsFaulted));
                 });
-                Assert.Equal(1, service.CalledCount);
 
-                tasks = PrepareThreads(150, configuration, wait);
+                tasks = PrepareThreads(150, typeof(TestApiC), wait);
 
                 var models = await Task.WhenAll(tasks);
-                Assert.Equal(2, service.CalledCount);
                 Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));
             }
         }

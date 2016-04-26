@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Core.Submit
     /// This is required because during the post-CUD events, the EntityState has been lost.
     /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
     /// </remarks>
-    public enum AddAction
+    public enum ChangeSetAction
     {
         /// <summary>
         /// Specifies an undefined action.
@@ -161,7 +161,7 @@ namespace Microsoft.Restier.Core.Submit
             this.EntityKey = entityKey;
             this.OriginalValues = originalValues;
             this.LocalValues = localValues;
-            this.AddAction = AddAction.Undefined;
+            this.ChangeSetAction = ChangeSetAction.Undefined;
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets the action to be taken.
         /// </summary>
-        public AddAction AddAction { get; set; }
+        public ChangeSetAction ChangeSetAction { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the modification is a new entity.

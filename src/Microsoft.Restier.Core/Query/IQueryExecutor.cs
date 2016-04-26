@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
-    /// Represents a hook point that executes a query.
+    /// Represents a service that executes a query.
     /// </summary>
     /// <remarks>
     /// Data provider implemented IQueryExecutor should only handle queries against the specific

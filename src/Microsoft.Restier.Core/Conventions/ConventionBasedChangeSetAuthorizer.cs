@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.CutoffPrevious<IChangeSetEntryAuthorizer>(new ConventionBasedChangeSetAuthorizer(targetType));
+            services.CutoffPrevious<IChangeSetEntryAuthorizer>((sp) => new ConventionBasedChangeSetAuthorizer(targetType));
         }
 
         /// <inheritdoc/>

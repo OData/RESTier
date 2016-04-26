@@ -36,7 +36,7 @@ namespace Microsoft.Restier.WebApi.Test
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 return base.ConfigureApi(services)
-                    .CutoffPrevious<IQueryExpressionSourcer>(new FakeSourcer());
+                    .CutoffPrevious<IQueryExpressionSourcer>(sp => new FakeSourcer());
             }
         }
 

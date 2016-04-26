@@ -9,12 +9,16 @@ namespace Microsoft.Restier.Core.Tests
 {
     public class ApiContextTests
     {
+        private class TestApi : ApiBase
+        {
+        }
+
         [Fact]
         public void NewApiContextIsConfiguredCorrectly()
         {
-            var configuration = new ServiceCollection().BuildApiConfiguration();
-            var context = new ApiContext(configuration);
-            Assert.Same(configuration, context.Configuration);
+            var api = new TestApi();
+            var context = api.Context;
+            Assert.NotNull(context.Configuration);
         }
     }
 }

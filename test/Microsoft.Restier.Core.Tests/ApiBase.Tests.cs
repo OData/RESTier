@@ -75,20 +75,20 @@ namespace Microsoft.Restier.Core.Tests
 
             public string Value { get; private set; }
 
-            public override void Configure(
+            public override void ConfigureApiConfiguration(
                 ApiConfiguration configuration,
                 Type type)
             {
-                base.Configure(configuration, type);
+                base.ConfigureApiConfiguration(configuration, type);
                 Assert.Same(typeof(TestApiWithParticipants), type);
                 configuration.SetProperty(this.Value, true);
             }
 
-            public override void Initialize(
+            public override void ConfigureApiContext(
                 ApiContext context,
                 Type type, object instance)
             {
-                base.Initialize(context, type, instance);
+                base.ConfigureApiContext(context, type, instance);
                 Assert.Same(typeof(TestApiWithParticipants), type);
                 context.SetProperty(this.Value + ".Self", instance);
                 context.SetProperty(this.Value, true);

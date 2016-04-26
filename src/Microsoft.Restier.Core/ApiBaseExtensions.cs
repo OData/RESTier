@@ -214,37 +214,6 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Asynchronously queries for data exposed by an API.
         /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the query.
-        /// </typeparam>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="query">
-        /// A composed query that was derived from a queryable source.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// whose result is a sequence of the query results.
-        /// </returns>
-        public static async Task<IEnumerable<TElement>> QueryAsync<TElement>(
-            this ApiBase api,
-            IQueryable<TElement> query,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-
-            var request = new QueryRequest(query);
-            var result = await api.Context.QueryAsync(request, cancellationToken);
-            return result.Results.Cast<TElement>();
-        }
-
-        /// <summary>
-        /// Asynchronously queries for data exposed by an API.
-        /// </summary>
         /// <param name="api">
         /// An API.
         /// </param>

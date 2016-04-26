@@ -160,7 +160,7 @@ namespace Microsoft.Restier.Core.Submit
                 return;
             }
 
-            ValidationResults validationResults = new ValidationResults();
+            ChangeSetValidationResults validationResults = new ChangeSetValidationResults();
 
             foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
             {
@@ -170,7 +170,7 @@ namespace Microsoft.Restier.Core.Submit
             if (validationResults.HasErrors)
             {
                 string validationErrorMessage = Resources.ValidationFailsTheOperation;
-                throw new ValidationException(validationErrorMessage)
+                throw new ChangeSetValidationException(validationErrorMessage)
                 {
                     ValidationResults = validationResults.Errors
                 };
@@ -224,15 +224,15 @@ namespace Microsoft.Restier.Core.Submit
                     DataModificationEntry dataModification = (DataModificationEntry)item;
                     if (dataModification.IsNew)
                     {
-                        dataModification.AddAction = AddAction.Inserting;
+                        dataModification.ChangeSetAction = ChangeSetAction.Inserting;
                     }
                     else if (dataModification.IsUpdate)
                     {
-                        dataModification.AddAction = AddAction.Updating;
+                        dataModification.ChangeSetAction = ChangeSetAction.Updating;
                     }
                     else if (dataModification.IsDelete)
                     {
-                        dataModification.AddAction = AddAction.Removing;
+                        dataModification.ChangeSetAction = ChangeSetAction.Removing;
                     }
                 }
             }

@@ -62,7 +62,7 @@ namespace Microsoft.Restier.WebApi.Filters
            HttpActionExecutedContext context,
            CancellationToken cancellationToken)
         {
-            ValidationException validationException = context.Exception as ValidationException;
+            ChangeSetValidationException validationException = context.Exception as ChangeSetValidationException;
             if (validationException != null)
             {
                 var exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(

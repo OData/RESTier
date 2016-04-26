@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Security
         public string To { get; set; }
 
         /// <summary>
-        /// Configure an API.
+        /// Add API services into the DI container.
         /// </summary>
         /// <param name="services">
         /// The API services registration.
