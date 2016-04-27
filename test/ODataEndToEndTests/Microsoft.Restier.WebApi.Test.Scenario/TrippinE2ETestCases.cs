@@ -100,7 +100,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Person person = new Person()
             {
                 FirstName = "Sheldon",
-                UserName = "SheldonCooper"
+                UserName = "SheldonCooper",
+                Age = 12
             };
 
             this.TestClientContext.AddToPeople(person);
@@ -113,6 +114,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             // Update an entity
             person.LastName = "Lee";
+            person.Age = null;
             this.TestClientContext.UpdateObject(person);
             this.TestClientContext.SaveChanges();
 

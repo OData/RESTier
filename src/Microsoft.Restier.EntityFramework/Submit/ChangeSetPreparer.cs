@@ -230,6 +230,12 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 return (TimeSpan)timeOfDayValue;
             }
 
+            // In case key is long type, when put an entity, key value will be from key parsing which is type of int
+            if (value is int && type == typeof(long))
+            {
+                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
+            }
+
             return value;
         }
     }
