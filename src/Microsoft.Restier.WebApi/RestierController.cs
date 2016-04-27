@@ -48,7 +48,7 @@ namespace Microsoft.Restier.WebApi
         /// <summary>
         /// Gets the API associated with this controller.
         /// </summary>
-        internal ApiBase Api
+        private ApiBase Api
         {
             get
             {

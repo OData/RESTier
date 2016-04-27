@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Core.Tests
                 ApiContext context,
                 string name, out Type relevantType)
             {
-                relevantType = typeof (string);
+                relevantType = typeof(string);
                 return true;
             }
 
@@ -48,7 +48,7 @@ namespace Microsoft.Restier.Core.Tests
                 string namespaceName, string name,
                 out Type relevantType)
             {
-                relevantType = typeof (DateTime);
+                relevantType = typeof(DateTime);
                 return true;
             }
         }
