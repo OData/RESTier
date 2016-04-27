@@ -12,6 +12,11 @@ namespace Microsoft.Restier.WebApi
     {
         public static IServiceCollection AddWebApiServices<T>(this IServiceCollection services)
         {
+            if (services.HasService<RestierQueryExecutorOptions>())
+            {
+                return services;
+            }
+
             RestierModelExtender.ApplyTo(services, typeof(T));
             RestierOperationModelBuilder.ApplyTo(services, typeof(T));
 
