@@ -37,8 +37,8 @@ namespace Microsoft.Restier.WebApi.Formatter
             }
 
             odataFormatters = ODataMediaTypeFormatters.Create(
-                new DefaultRestierSerializerProvider(),
-                new DefaultRestierDeserializerProvider());
+                new RestierSerializerProviderProxy(),
+                new RestierDeserializerProviderProxy());
             controllerFormatters.InsertRange(0, odataFormatters);
         }
     }

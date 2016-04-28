@@ -677,6 +677,12 @@ public sealed class Microsoft.Restier.WebApi.Routing.HttpConfigurationExtensions
 	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.WebApi.Batch.RestierBatchHandler batchHandler)
 }
 
+public class Microsoft.Restier.WebApi.Formatter.Deserialization.DefaultRestierDeserializerProvider : System.Web.OData.Formatter.Deserialization.DefaultODataDeserializerProvider {
+	public DefaultRestierDeserializerProvider ()
+
+	public virtual System.Web.OData.Formatter.Deserialization.ODataEdmTypeDeserializer GetEdmTypeDeserializer (Microsoft.OData.Edm.IEdmTypeReference edmType)
+}
+
 public class Microsoft.Restier.WebApi.Formatter.Serialization.DefaultRestierSerializerProvider : System.Web.OData.Formatter.Serialization.DefaultODataSerializerProvider {
 	public DefaultRestierSerializerProvider ()
 

@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Web.OData.Formatter.Deserialization;
+using System.Web.OData.Formatter.Serialization;
 using System.Web.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.WebApi.Formatter.Deserialization;
+using Microsoft.Restier.WebApi.Formatter.Serialization;
 using Microsoft.Restier.WebApi.Model;
 using Microsoft.Restier.WebApi.Query;
 
@@ -22,8 +27,12 @@ namespace Microsoft.Restier.WebApi
                 PageSize = null,  // no support for server enforced PageSize, yet
             };
 
-            services.AddSingleton<ODataQuerySettings>(querySettingFactory);
-            services.AddSingleton<ODataValidationSettings>();
+            services.TryAddSingleton(typeof(ODataQuerySettings), querySettingFactory);
+            services.TryAddSingleton<ODataValidationSettings>();
+
+            // Make serializer and deserializer provider as DI services
+            services.TryAddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
+            services.TryAddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
 
             return
                 services.AddScoped<RestierQueryExecutorOptions>()

@@ -34,17 +34,15 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 
         private async Task FunctionCall(bool isqualified, Action<HttpConfiguration, HttpServer> registerOData)
         {
-            var response = await ODataTestHelpers.GetResponse(
+            var response = await ODataTestHelpers.GetResponseNoContentValidation(
                 isqualified ?
                 "http://localhost/api/Northwind/Products/Microsoft.Restier.Samples.Northwind.Models.MostExpensive"
                 : "http://localhost/api/Northwind/Products/MostExpensive",
                 HttpMethod.Get,
                 null,
                 registerOData,
+                HttpStatusCode.OK,
                 null);
-
-            var responseString = await BaselineHelpers.GetFormattedContent(response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -67,27 +65,23 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
             var productID = product.ProductID;
             var price = product.UnitPrice;
 
-            var response = await ODataTestHelpers.GetResponse(
+            var response = await ODataTestHelpers.GetResponseNoContentValidation(
                 isqualified ?
                 string.Format("http://localhost/api/Northwind/Products({0})/IncreasePrice", productID)
                 : string.Format("http://localhost/api/Northwind/Products({0})/Microsoft.Restier.Samples.Northwind.Models.IncreasePrice", productID),
                 HttpMethod.Post,
                 new StringContent(@"{""diff"":2}", UTF8Encoding.Default, "application/json"),
                 registerOData,
+                HttpStatusCode.NoContent,
                 null);
-
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-
-            var getResponse = await ODataTestHelpers.GetResponse(
+            
+            var getResponse = await ODataTestHelpers.GetResponseNoContentValidation(
                 string.Format("http://localhost/api/Northwind/Products({0})", productID),
                 HttpMethod.Get,
                 null,
                 (config, server) => { WebApiConfig.RegisterNorthwind(config, server); },
+                HttpStatusCode.OK,
                 null);
-
-            Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-            var responseString = await BaselineHelpers.GetFormattedContent(getResponse);
-            Assert.True(responseString.Contains(string.Format(@"""UnitPrice"":{0}", price + 2)));
         }
 
         private static NorthwindContext GetDbContext()

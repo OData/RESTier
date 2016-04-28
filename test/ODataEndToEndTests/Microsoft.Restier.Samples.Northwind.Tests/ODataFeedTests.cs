@@ -68,9 +68,8 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 
             Action<HttpConfiguration, HttpServer> registerOData = (config, server) => WebApiConfig.RegisterNorthwind(config, server);
             string baselineFileName = "TestCustomerKeyAsSegment";
-            using (HttpResponseMessage response = await ODataTestHelpers.GetResponse(requestUri, HttpMethod.Get, null, httpConfig, registerOData, null))
+            using (HttpResponseMessage response = await ODataTestHelpers.GetResponseWithConfig(requestUri, HttpMethod.Get, null, httpConfig, registerOData, HttpStatusCode.OK, baselineFileName,null))
             {
-                await ODataTestHelpers.CheckResponse(response, HttpStatusCode.OK, baselineFileName, null);
             }
         }
 

@@ -54,7 +54,7 @@ namespace Microsoft.Restier.WebApi
             {
                 if (this.api == null)
                 {
-                    this.api = this.Request.GetApiFactory().Invoke();
+                    this.api = this.Request.GetApiInstance();
                 }
 
                 return this.api;
