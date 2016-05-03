@@ -17,6 +17,12 @@ namespace Microsoft.Restier.WebApi
     {
         public static IServiceCollection AddWebApiServices<T>(this IServiceCollection services)
         {
+            if (services.HasService<RestierQueryExecutor>())
+            {
+                // Avoid applying multiple times to a same service collection.
+                return services;
+            }
+
             RestierModelExtender.ApplyTo(services, typeof(T));
             RestierOperationModelBuilder.ApplyTo(services, typeof(T));
 

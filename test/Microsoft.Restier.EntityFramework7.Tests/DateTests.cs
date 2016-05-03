@@ -41,11 +41,9 @@ namespace Microsoft.Restier.EntityFramework.Tests
         {
             await PopulateData(1);
 
-            using (var response = await ODataTestHelpers.GetResponse(@"http://local/api/Prim/Dates(1)", HttpMethod.Get, null, RegisterApi))
+            using (var response = await ODataTestHelpers
+                .GetResponseNoContentValidation(@"http://local/api/Prim/Dates(1)", HttpMethod.Get, null, RegisterApi, HttpStatusCode.OK))
             {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                var s = await response.Content.ReadAsStringAsync();
-                Assert.NotNull(s);
             }
         }
 
@@ -64,9 +62,9 @@ namespace Microsoft.Restier.EntityFramework.Tests
 
                 string newOrderContent = JsonConvert.SerializeObject(newObj);
                 StringContent content = new StringContent(newOrderContent, UTF8Encoding.Default, "application/json");
-                using (var response = await ODataTestHelpers.GetResponse(@"http://local/api/Prim/Dates(42)", HttpMethod.Put, content, RegisterApi))
+                using (var response = await ODataTestHelpers
+                    .GetResponseNoContentValidation(@"http://local/api/Prim/Dates(42)", HttpMethod.Put, content, RegisterApi, HttpStatusCode.NoContent))
                 {
-                    Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
                     using (var ctx = new PrimitivesContext())
                     {
                         var item42 = ctx.Dates.First(e => e.RowId == 42);
@@ -89,9 +87,9 @@ namespace Microsoft.Restier.EntityFramework.Tests
 
                 string newOrderContent = JsonConvert.SerializeObject(newObj);
                 StringContent content = new StringContent(newOrderContent, UTF8Encoding.Default, "application/json");
-                using (var response = await ODataTestHelpers.GetResponse(@"http://local/api/Prim/Dates", HttpMethod.Post, content, RegisterApi))
+                using (var response = await ODataTestHelpers
+                    .GetResponseNoContentValidation(@"http://local/api/Prim/Dates", HttpMethod.Post, content, RegisterApi, HttpStatusCode.Created))
                 {
-                    Assert.Equal(HttpStatusCode.Created, response.StatusCode);
                     var ret = await response.Content.ReadAsAsync<DateItem>();
                     Assert.Equal(new DateTime(2016, 1, 4), ret.DateProperty);
                     Assert.Equal(new TimeSpan(8, 9, 10), ret.TODProperty);
@@ -116,10 +114,9 @@ namespace Microsoft.Restier.EntityFramework.Tests
 
                 string newOrderContent = JsonConvert.SerializeObject(newObj);
                 StringContent content = new StringContent(newOrderContent, UTF8Encoding.Default, "application/json");
-                using (var response = await ODataTestHelpers.GetResponse(@"http://local/api/Prim/Dates(1024)", new HttpMethod("Patch"), content, RegisterApi))
+                using (var response = await ODataTestHelpers
+                    .GetResponseNoContentValidation(@"http://local/api/Prim/Dates(1024)", new HttpMethod("Patch"), content, RegisterApi, HttpStatusCode.NoContent))
                 {
-                    Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-
                     using (var ctx = new PrimitivesContext())
                     {
                         var ret = ctx.Dates.First(e => e.RowId == 1024);
