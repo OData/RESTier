@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Configures an API configuration after ApiConfiguration is created.
+        /// Update an API configuration after ApiConfiguration is created.
         /// </summary>
         /// <param name="configuration">
         /// An API configuration.
@@ -40,14 +40,14 @@ namespace Microsoft.Restier.Core
         /// <param name="type">
         /// The API type on which this attribute was placed.
         /// </param>
-        public virtual void ConfigureApiConfiguration(
+        public virtual void UpdateApiConfiguration(
             ApiConfiguration configuration,
             Type type)
         {
         }
 
         /// <summary>
-        /// Configure an API context after ApiContext is created.
+        /// Update an API context after ApiContext is created.
         /// </summary>
         /// <param name="context">
         /// An API context.
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core
         /// <param name="instance">
         /// An API instance, if applicable.
         /// </param>
-        public virtual void ConfigureApiContext(
+        public virtual void UpdateApiContext(
             ApiContext context,
             Type type,
             object instance)

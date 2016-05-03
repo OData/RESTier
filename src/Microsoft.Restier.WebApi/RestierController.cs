@@ -36,7 +36,7 @@ namespace Microsoft.Restier.WebApi
     /// </summary>
     [RestierFormatting]
     [RestierExceptionFilter]
-    public class RestierController : ODataController
+    public sealed class RestierController : ODataController
     {
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.WebApi
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
 
-            DataModificationEntry postEntry = new DataModificationEntry(
+            DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
                 null,
@@ -119,18 +119,18 @@ namespace Microsoft.Restier.WebApi
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(postEntry);
+                changeSet.Entries.Add(postItem);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(postEntry);
+                changeSetProperty.ChangeSet.Entries.Add(postItem);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            return this.CreateCreatedODataResult(postEntry.Entity);
+            return this.CreateCreatedODataResult(postItem.Entity);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Microsoft.Restier.WebApi
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
-            DataModificationEntry deleteEntry = new DataModificationEntry(
+            DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
                 RestierQueryBuilder.GetPathKeyValues(path),
@@ -190,13 +190,13 @@ namespace Microsoft.Restier.WebApi
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(deleteEntry);
+                changeSet.Entries.Add(deleteItem);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(deleteEntry);
+                changeSetProperty.ChangeSet.Entries.Add(deleteItem);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
@@ -218,26 +218,26 @@ namespace Microsoft.Restier.WebApi
                 throw new NotSupportedException(Resources.PostToUnboundActionNotSupported);
             }
 
-            ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);
+            ActionInvocationItem item = new ActionInvocationItem(actionPathSegment.ActionName, null);
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(entry);
+                changeSet.Entries.Add(item);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(entry);
+                changeSetProperty.ChangeSet.Entries.Add(item);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            if (entry.Result != null)
+            if (item.Result != null)
             {
-                return this.CreateOKResult(entry.Result);
+                return this.CreateOKResult(item.Result);
             }
             else
             {
@@ -299,30 +299,30 @@ namespace Microsoft.Restier.WebApi
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
-            DataModificationEntry updateEntry = new DataModificationEntry(
+            DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
                 RestierQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 edmEntityObject.CreatePropertyDictionary());
-            updateEntry.IsFullReplaceUpdate = isFullReplaceUpdate;
+            updateItem.IsFullReplaceUpdate = isFullReplaceUpdate;
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(updateEntry);
+                changeSet.Entries.Add(updateItem);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(updateEntry);
+                changeSetProperty.ChangeSet.Entries.Add(updateItem);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            return this.CreateUpdatedODataResult(updateEntry.Entity);
+            return this.CreateUpdatedODataResult(updateItem.Entity);
         }
 
         private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType)

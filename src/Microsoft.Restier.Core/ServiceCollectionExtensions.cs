@@ -50,44 +50,8 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Adds an API service instance, ignore all previously registered service instances of type
-        /// <typeparamref name="TService"/>.
-        /// </summary>
-        /// <typeparam name="TService">The API service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="factory">
-        /// A factory method to create a new instance of service TService without wrapping previous instance."/>.
-        /// </param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection CutoffPrevious<TService>(this IServiceCollection services,
-            Func<IServiceProvider, TService> factory)
-            where TService : class
-        {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(factory, "factory");
-            return services.AddContributorNoCheck<TService>((sp, next) => factory(sp));
-        }
-
-        /// <summary>
-        /// Adds an API service instance, ignore all previously registered service instances of type
-        /// <typeparamref name="TService"/>.
-        /// </summary>
-        /// <typeparam name="TService">The API service type.</typeparam>
-        /// <typeparam name="TImplement">The API service implementation type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection CutoffPrevious<TService, TImplement>(this IServiceCollection services)
-            where TService : class
-            where TImplement : class, TService
-        {
-            Ensure.NotNull(services, "services");
-
-            services.TryAddTransient<TImplement>();
-            return services.AddContributorNoCheck<TService>((sp, next) => sp.GetRequiredService<TImplement>());
-        }
-
-        /// <summary>
         /// Adds a service contributor, which has a chance to chain previously registered service instances.
+        /// If want to cutoff previous registration, not define a property with type of TService or do not use it.
         /// The first TService in Func is the service of inner, and the second TService is the service returned.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
@@ -96,7 +60,7 @@ namespace Microsoft.Restier.Core
         /// A factory method to create a new instance of service TService, wrapping previous instance."/>.
         /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection ChainPrevious<TService>(
+        public static IServiceCollection AddService<TService>(
             this IServiceCollection services,
             Func<IServiceProvider, TService, TService> factory)
             where TService : class
@@ -108,6 +72,7 @@ namespace Microsoft.Restier.Core
 
         /// <summary>
         /// Adds a service contributor, which has a chance to chain previously registered service instances.
+        /// If want to cutoff previous registration, not define a property with type of TService or do not use it.
         /// The contributor added will get an instance of <typeparamref name="TImplement"/> from the container, i.e.
         /// <see cref="IServiceProvider"/>, every time it's get called.
         /// This method will try to register <typeparamref name="TImplement"/> as a service with
@@ -124,7 +89,7 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TImplement">The implementation type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection ChainPrevious<TService, TImplement>(this IServiceCollection services)
+        public static IServiceCollection AddService<TService, TImplement>(this IServiceCollection services)
             where TService : class
             where TImplement : class, TService
         {
@@ -243,7 +208,7 @@ namespace Microsoft.Restier.Core
                     .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api.Context);
             }
 
-            return services.CutoffPrevious<IQueryExecutor, DefaultQueryExecutor>()
+            return services.AddService<IQueryExecutor, DefaultQueryExecutor>()
                             .AddScoped<PropertyBag>();
         }
 
@@ -271,10 +236,10 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(apiType, "apiType");
 
-            ConventionBasedChangeSetAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedChangeSetEntryFilter.ApplyTo(services, apiType);
-            services.CutoffPrevious<IChangeSetEntryValidator, ConventionBasedChangeSetEntryValidator>();
-            ConventionBasedEntitySetFilter.ApplyTo(services, apiType);
+            ConventionBasedChangeSetItemAuthorizer.ApplyTo(services, apiType);
+            ConventionBasedChangeSetItemProcessor.ApplyTo(services, apiType);
+            services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
+            ConventionBasedEntitySetProcessor.ApplyTo(services, apiType);
             return services;
         }
 

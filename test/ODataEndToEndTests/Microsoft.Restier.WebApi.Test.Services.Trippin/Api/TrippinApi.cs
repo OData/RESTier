@@ -10,6 +10,7 @@ using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.WebApi.Model;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Implements an action import.
         /// TODO: This method is only for building the model.
         /// </summary>
-        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
         public void ResetDataSource()
         {
             TrippinModel.ResetDataSource();
@@ -47,7 +48,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// <summary>
         /// Action import - clean up all the expired trips.
         /// </summary>
-        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
         public void CleanUpExpiredTrips()
         {
             // DO NOT ACTUALLY REMOVE THE TRIPS.
@@ -58,7 +59,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="trip">The trip to update.</param>
         /// <returns>The trip updated.</returns>
-        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
         public Trip EndTrip(Trip trip)
         {
             // DO NOT ACTUALLY UPDATE THE TRIP.
@@ -70,7 +71,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="person">The key of the binding person.</param>
         /// <returns>The number of friends of the person.</returns>
-        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public int GetNumberOfFriends(Person person)
         {
             if (person == null)
@@ -86,7 +87,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
-        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public Person GetPersonWithMostFriends()
         {
             Person result = null;
@@ -117,7 +118,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
         /// <returns>People with at least n friends.</returns>
-        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n)
         {
             foreach (var person in PeopleWithFriends)

@@ -15,6 +15,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Security;
 using Microsoft.Restier.WebApi;
+using Microsoft.Restier.WebApi.Model;
 
 namespace Microsoft.Restier.Samples.Northwind.Models
 {
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             get
             {
-                return this.Source<Product>("Products")
+                return this.GetQueryableSourceStub<Product>("Products")
                     .Where(c => c.UnitPrice > 50);
             }
         }
@@ -47,22 +48,22 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             get
             {
-                return this.Source<Order>("Orders")
+                return this.GetQueryableSourceStub<Order>("Orders")
                     .Where(o => o.ShippedDate == null);
             }
         }
 
-        [Action]
+        [Operation(HasSideEffects = true)]
         public void IncreasePrice(Product bindingParameter, int diff)
         {
         }
 
-        [Action]
+        [Operation(HasSideEffects = true)]
         public void ResetDataSource()
         {
         }
 
-        [Function]
+        [Operation]
         public double MostExpensive(IEnumerable<Product> bindingParameter)
         {
             return 0.0;
@@ -80,7 +81,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             services.AddEfProviderServices<NorthwindContext>();
 
             // Add customized services, after EF model builder and before WebApi operation model builder
-            services.ChainPrevious<IModelBuilder, NorthwindModelExtender>();
+            services.AddService<IModelBuilder, NorthwindModelExtender>();
 
             // This is used to add the publisher's services
             ApiConfiguration.GetPublisherServiceCallback(apiType)(services);

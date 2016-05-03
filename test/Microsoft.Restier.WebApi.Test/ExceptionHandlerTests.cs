@@ -36,13 +36,13 @@ namespace Microsoft.Restier.WebApi.Test
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 return base.ConfigureApi(services)
-                    .CutoffPrevious<IQueryExpressionSourcer>(sp => new FakeSourcer());
+                    .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
         }
 
         private class FakeSourcer : IQueryExpressionSourcer
         {
-            public Expression Source(QueryExpressionContext context, bool embedded)
+            public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
             {
                 throw new SecurityException();
             }

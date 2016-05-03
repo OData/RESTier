@@ -26,14 +26,14 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <inheritdoc/>
-        public Task<QueryResult> ExecuteSingleAsync<TResult>(
+        public Task<QueryResult> ExecuteExpressionAsync<TResult>(
             QueryContext context,
-            IQueryable query,
+            IQueryProvider queryProvider,
             Expression expression,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(query, "query");
-            return Task.FromResult(new QueryResult(new[] { query.Provider.Execute(expression) }));
+            Ensure.NotNull(queryProvider, "queryProvider");
+            return Task.FromResult(new QueryResult(new[] { queryProvider.Execute(expression) }));
         }
     }
 }

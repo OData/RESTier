@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Samples.Northwind.Tests
 
         private IQueryable<Order> OrdersQuery
         {
-            get { return this.api.Source<Order>("Orders"); }
+            get { return this.api.GetQueryableSourceStub<Order>("Orders"); }
         }
 
         [Fact]

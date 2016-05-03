@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry authorizer.
     /// </summary>
-    public interface IChangeSetEntryAuthorizer
+    public interface IChangeSetItemAuthorizer
     {
         /// <summary>
         /// Asynchronously authorizes the ChangeSetEntry.
@@ -17,8 +17,8 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="context">
         /// The submit context.
         /// </param>
-        /// <param name="entry">
-        /// A change set entry to be authorized.
+        /// <param name="item">
+        /// A change set item to be authorized.
         /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
@@ -28,7 +28,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         Task<bool> AuthorizeAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             CancellationToken cancellationToken);
     }
 }

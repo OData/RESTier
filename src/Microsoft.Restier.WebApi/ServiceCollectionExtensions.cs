@@ -42,7 +42,7 @@ namespace Microsoft.Restier.WebApi
 
             return
                 services.AddScoped<RestierQueryExecutorOptions>()
-                    .ChainPrevious<IQueryExecutor, RestierQueryExecutor>();
+                    .AddService<IQueryExecutor, RestierQueryExecutor>();
         }
     }
 }

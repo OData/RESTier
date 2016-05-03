@@ -32,7 +32,7 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// <returns>
         /// A data source expression that represents the visited node.
         /// </returns>
-        public Expression Source(QueryExpressionContext context, bool embedded)
+        public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
         {
             Ensure.NotNull(context, "context");
 

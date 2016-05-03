@@ -66,7 +66,7 @@ namespace Microsoft.Restier.Core
                 typeof(ApiConfiguratorAttribute), false);
             foreach (ApiConfiguratorAttribute attribute in attributes)
             {
-                attribute.ConfigureApiConfiguration(configuration, type);
+                attribute.UpdateApiConfiguration(configuration, type);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Microsoft.Restier.Core
                 typeof(ApiConfiguratorAttribute), false);
             foreach (ApiConfiguratorAttribute attribute in attributes)
             {
-                attribute.ConfigureApiContext(context, type, instance);
+                attribute.UpdateApiContext(context, type, instance);
             }
         }
 

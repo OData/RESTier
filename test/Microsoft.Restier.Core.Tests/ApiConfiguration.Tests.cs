@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core.Tests
             var serviceBInterface = apiB.Context.GetApiService<IServiceB>();
             Assert.Equal(serviceBInstance, serviceBInterface);
 
-            // ChainPrevious will call services.TryAddTransient
+            // AddService will call services.TryAddTransient
             Assert.Same(serviceBInstance, serviceBInterface);
 
             var serviceBFirst = serviceBInterface as ServiceB;
@@ -93,9 +93,9 @@ namespace Microsoft.Restier.Core.Tests
 
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.CutoffPrevious<IServiceA>(sp => serviceA);
-                services.CutoffPrevious<IServiceB>(sp => serviceB);
-                services.ChainPrevious<IServiceB, ServiceB>();
+                services.AddService<IServiceA>((sp, next) => serviceA);
+                services.AddService<IServiceB>((sp, next) => serviceB);
+                services.AddService<IServiceB, ServiceB>();
                 services.AddInstance(new ServiceB());
 
                 return services;
@@ -107,8 +107,8 @@ namespace Microsoft.Restier.Core.Tests
             {
                 var q1 = new ServiceB("q1Pre", "q1Post");
                 var q2 = new ServiceB("q2Pre", "q2Post");
-                services.CutoffPrevious<IServiceB>(sp => q1)
-                    .ChainPrevious<IServiceB>((sp, next) =>
+                services.AddService<IServiceB>((sp, next) => q1)
+                    .AddService<IServiceB>((sp, next) =>
                     {
                         q2.InnerHandler = next;
                         return q2;

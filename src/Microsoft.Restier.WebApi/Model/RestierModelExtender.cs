@@ -51,10 +51,10 @@ namespace Microsoft.Restier.WebApi.Model
             // some other services.
             services.AddInstance(new RestierModelExtender(targetType));
 
-            services.ChainPrevious<IModelBuilder, ModelBuilder>();
-            services.ChainPrevious<IModelMapper, ModelMapper>();
-            services.ChainPrevious<IQueryExpressionExpander, QueryExpressionExpander>();
-            services.ChainPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>();
+            services.AddService<IModelBuilder, ModelBuilder>();
+            services.AddService<IModelMapper, ModelMapper>();
+            services.AddService<IQueryExpressionExpander, QueryExpressionExpander>();
+            services.AddService<IQueryExpressionSourcer, QueryExpressionSourcer>();
         }
 
         private static bool IsEntitySetProperty(PropertyInfo property)
@@ -432,7 +432,7 @@ namespace Microsoft.Restier.WebApi.Model
                     return result;
                 }
 
-                // Ensure this query constructs from DataSourceStubs.
+                // Ensure this query constructs from DataSourceStub.
                 if (context.ModelReference is DataSourceStubReference)
                 {
                     // Only expand entity set query which returns IQueryable<T>.
@@ -470,7 +470,7 @@ namespace Microsoft.Restier.WebApi.Model
             private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
-            public Expression Source(QueryExpressionContext context, bool embedded)
+            public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
             {
                 var result = CallInner(context, embedded);
                 if (result != null)
@@ -494,7 +494,7 @@ namespace Microsoft.Restier.WebApi.Model
             {
                 if (this.InnerHandler != null)
                 {
-                    return this.InnerHandler.Source(context, embedded);
+                    return this.InnerHandler.ReplaceQueryableSourceStub(context, embedded);
                 }
 
                 return null;

@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Core.Tests
             {
                 return base.ConfigureApi(services)
                     .MakeScoped<IService>()
-                    .CutoffPrevious<IService, Service>();
+                    .AddService<IService, Service>();
             }
         }
 
@@ -75,20 +75,20 @@ namespace Microsoft.Restier.Core.Tests
 
             public string Value { get; private set; }
 
-            public override void ConfigureApiConfiguration(
+            public override void UpdateApiConfiguration(
                 ApiConfiguration configuration,
                 Type type)
             {
-                base.ConfigureApiConfiguration(configuration, type);
+                base.UpdateApiConfiguration(configuration, type);
                 Assert.Same(typeof(TestApiWithParticipants), type);
                 configuration.SetProperty(this.Value, true);
             }
 
-            public override void ConfigureApiContext(
+            public override void UpdateApiContext(
                 ApiContext context,
                 Type type, object instance)
             {
-                base.ConfigureApiContext(context, type, instance);
+                base.UpdateApiContext(context, type, instance);
                 Assert.Same(typeof(TestApiWithParticipants), type);
                 context.SetProperty(this.Value + ".Self", instance);
                 context.SetProperty(this.Value, true);

@@ -40,11 +40,11 @@ namespace Microsoft.Restier.WebApi.Test
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services = base.ConfigureApi(services);
-            services.CutoffPrevious<IModelBuilder>(sp => new TestModelProducer(StoreModel.Model));
-            services.CutoffPrevious<IModelMapper>(sp => new TestModelMapper());
-            services.CutoffPrevious<IQueryExpressionSourcer>(sp => new TestQueryExpressionSourcer());
-            services.CutoffPrevious<IChangeSetPreparer>(sp => new TestChangeSetPreparer());
-            services.CutoffPrevious<ISubmitExecutor>(sp => new TestSubmitExecutor());
+            services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
+            services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
+            services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer());
+            services.AddService<IChangeSetPreparer>((sp, next) => new TestChangeSetPreparer());
+            services.AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
             return services;
         }
     }
@@ -126,7 +126,7 @@ namespace Microsoft.Restier.WebApi.Test
 
     class TestQueryExpressionSourcer : IQueryExpressionSourcer
     {
-        public Expression Source(QueryExpressionContext context, bool embedded)
+        public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
         {
             var a = new[] { new Product
             {
@@ -147,17 +147,17 @@ namespace Microsoft.Restier.WebApi.Test
 
             if (!embedded)
             {
-                if (context.VisitedNode.ToString() == "Source(\"Products\", null)")
+                if (context.VisitedNode.ToString() == "GetQueryableSourceStub(\"Products\", null)")
                 {
                     return Expression.Constant(a.AsQueryable());
                 }
 
-                if (context.VisitedNode.ToString() == "Source(\"Customers\", null)")
+                if (context.VisitedNode.ToString() == "GetQueryableSourceStub(\"Customers\", null)")
                 {
                     return Expression.Constant(b.AsQueryable());
                 }
 
-                if (context.VisitedNode.ToString() == "Source(\"Stores\", null)")
+                if (context.VisitedNode.ToString() == "GetQueryableSourceStub(\"Stores\", null)")
                 {
                     return Expression.Constant(c.AsQueryable());
                 }
@@ -173,7 +173,7 @@ namespace Microsoft.Restier.WebApi.Test
         {
             var changeSetEntry = context.ChangeSet.Entries.Single();
 
-            var dataModificationEntry = changeSetEntry as DataModificationEntry;
+            var dataModificationEntry = changeSetEntry as DataModificationItem;
             if (dataModificationEntry != null)
             {
                 dataModificationEntry.Entity = new Product()

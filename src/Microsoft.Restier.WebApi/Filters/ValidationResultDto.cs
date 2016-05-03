@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics.Tracing;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.WebApi.Filters
@@ -57,7 +58,7 @@ namespace Microsoft.Restier.WebApi.Filters
         /// </summary>
         public string Severity
         {
-            get { return Enum.GetName(typeof(ChangeSetValidationSeverity), this.result.Severity); }
+            get { return Enum.GetName(typeof(EventLevel), this.result.Severity); }
         }
     }
 }

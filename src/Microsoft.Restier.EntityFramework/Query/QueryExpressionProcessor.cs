@@ -11,19 +11,19 @@ namespace Microsoft.Restier.EntityFramework.Query
     /// <summary>
     /// A query expression filter to handle EF related logic.
     /// </summary>
-    internal class QueryExpressionFilter : IQueryExpressionFilter
+    internal class QueryExpressionProcessor : IQueryExpressionProcessor
     {
-        // It will be ConventionBasedEntitySetFilter
-        public IQueryExpressionFilter Inner { get; set; }
+        // It will be ConventionBasedEntitySetProcessor
+        public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>
-        public Expression Filter(QueryExpressionContext context)
+        public Expression Process(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
 
             if (Inner != null)
             {
-                var innerFilteredExpression = Inner.Filter(context);
+                var innerFilteredExpression = Inner.Process(context);
                 if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
                 {
                     return innerFilteredExpression;
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.EntityFramework.Query
             }
 
             // TODO GitHubIssue#330: EF QueryExecutor will throw exception if check whether collections is null added.
-            // Error message likes "Cannot compare elements of type 'ICollection`1[[EntityType]]'.
+            // Exception message likes "Cannot compare elements of type 'ICollection`1[[EntityType]]'.
             // Only primitive types, enumeration types and entity types are supported."
             if (context.VisitedNode.NodeType == ExpressionType.NotEqual)
             {

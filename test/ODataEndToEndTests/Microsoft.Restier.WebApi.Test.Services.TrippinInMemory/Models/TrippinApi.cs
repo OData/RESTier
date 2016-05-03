@@ -176,12 +176,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 
         public IQueryable<Person> NewComePeople
         {
-            get { return this.Source<Person>("People").Where(p => p.PersonId >= 2); }
+            get { return this.GetQueryableSourceStub<Person>("People").Where(p => p.PersonId >= 2); }
         }
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(sp => new ModelBuilder());
+            services.AddService<IModelBuilder>((sp, next) => new ModelBuilder());
             return base.ConfigureApi(services);
         }
 

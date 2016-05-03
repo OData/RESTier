@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Tracing;
 using System.Linq;
 
 namespace Microsoft.Restier.Core.Submit
@@ -13,7 +14,7 @@ namespace Microsoft.Restier.Core.Submit
     public class ChangeSetValidationResults : Collection<ChangeSetValidationResult>
     {
         /// <summary>
-        /// Gets a value indicating whether there is any result that has Severity equal to "Error"
+        /// Gets a value indicating whether there is any result that has Severity equal to "Exception"
         /// in the current validation results.
         /// </summary>
         public bool HasErrors
@@ -25,7 +26,7 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets a collection of ValidationResult instances that have Severity equal to "Error"
+        /// Gets a collection of ValidationResult instances that have Severity equal to "Exception"
         /// in the current validation results.
         /// </summary>
         public IEnumerable<ChangeSetValidationResult> Errors
@@ -33,7 +34,7 @@ namespace Microsoft.Restier.Core.Submit
             get
             {
                 return this.Where(result =>
-                    result.Severity == ChangeSetValidationSeverity.Error);
+                    result.Severity == EventLevel.Error);
             }
         }
     }

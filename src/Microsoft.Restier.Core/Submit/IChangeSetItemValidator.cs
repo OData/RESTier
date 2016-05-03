@@ -9,16 +9,16 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry validator.
     /// </summary>
-    public interface IChangeSetEntryValidator
+    public interface IChangeSetItemValidator
     {
         /// <summary>
-        /// Asynchronously validates a change set entry.
+        /// Asynchronously validates a change set item.
         /// </summary>
         /// <param name="context">
         /// The submit context.
         /// </param>
-        /// <param name="entry">
-        /// The change set entry to validate.
+        /// <param name="item">
+        /// The change set item to validate.
         /// </param>
         /// <param name="validationResults">
         /// A set of validation results.
@@ -29,9 +29,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task ValidateEntityAsync(
+        Task ValidateChangeSetItemAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             ChangeSetValidationResults validationResults,
             CancellationToken cancellationToken);
     }

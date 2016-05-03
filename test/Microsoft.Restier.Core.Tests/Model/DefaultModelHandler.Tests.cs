@@ -19,12 +19,12 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.CutoffPrevious<IModelBuilder>(sp => new TestModelProducer());
-                services.ChainPrevious<IModelBuilder>((sp, next) => new TestModelExtender(2)
+                services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
+                services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
                 {
                     InnerHandler = next,
                 });
-                services.ChainPrevious<IModelBuilder>((sp, next) => new TestModelExtender(3)
+                services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(3)
                 {
                     InnerHandler = next,
                 });
@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var service = new TestSingleCallModelBuilder();
-                services.CutoffPrevious<IModelBuilder>(sp => service);
+                services.AddService<IModelBuilder>((sp, next) => service);
                 return services;
             }
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var service = new TestRetryModelBuilder();
-                services.CutoffPrevious<IModelBuilder>(sp => service);
+                services.AddService<IModelBuilder>((sp, next) => service);
                 return services;
             }
         }

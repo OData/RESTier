@@ -9,6 +9,7 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.WebApi.Model;
 using Microsoft.Restier.WebApi.Routing;
 using Xunit;
 
@@ -212,7 +213,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
+            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }
@@ -259,7 +260,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
+            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }
@@ -270,7 +271,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
+            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }
@@ -288,7 +289,7 @@ namespace Microsoft.Restier.WebApi.Test.Model
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(sp => new TestModelBuilder());
+            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
         }
     }

@@ -95,13 +95,13 @@ namespace Microsoft.Restier.WebApi.Batch
         }
 
         /// <summary>
-        /// Creates the <see cref="RestierChangeSetRequestItem"/> instance.
+        /// Creates the <see cref="RestierBatchEntityChangeRequestItem"/> instance.
         /// </summary>
         /// <param name="changeSetRequests">The list of changeset requests.</param>
-        /// <returns>The created <see cref="RestierChangeSetRequestItem"/> instance.</returns>
+        /// <returns>The created <see cref="RestierBatchEntityChangeRequestItem"/> instance.</returns>
         protected virtual ChangeSetRequestItem CreateChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests)
         {
-            return new RestierChangeSetRequestItem(changeSetRequests, this.ApiFactory);
+            return new RestierBatchEntityChangeRequestItem(changeSetRequests, this.ApiFactory);
         }
     }
 }

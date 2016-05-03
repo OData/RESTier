@@ -37,13 +37,13 @@ namespace Microsoft.Restier.EntityFramework
             });
 
             return services
-                .CutoffPrevious<IModelBuilder, ModelProducer>()
-                .CutoffPrevious<IModelMapper>(sp => new ModelMapper(typeof(TDbContext)))
-                .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
-                .ChainPrevious<IQueryExecutor, QueryExecutor>()
-                .ChainPrevious<IQueryExpressionFilter, QueryExpressionFilter>()
-                .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
-                .CutoffPrevious<ISubmitExecutor, SubmitExecutor>();
+                .AddService<IModelBuilder, ModelProducer>()
+                .AddService<IModelMapper>((sp, next) => new ModelMapper(typeof(TDbContext)))
+                .AddService<IQueryExpressionSourcer, QueryExpressionSourcer>()
+                .AddService<IQueryExecutor, QueryExecutor>()
+                .AddService<IQueryExpressionProcessor, QueryExpressionProcessor>()
+                .AddService<IChangeSetPreparer, ChangeSetPreparer>()
+                .AddService<ISubmitExecutor, SubmitExecutor>();
         }
     }
 }

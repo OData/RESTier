@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Core.Tests
             }
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.CutoffPrevious<IServiceA>(sp => ApiService);
+                services.AddService<IServiceA>((sp, next) => ApiService);
 
                 return services;
             }

@@ -34,8 +34,8 @@ namespace Microsoft.Restier.Security
             this IServiceCollection services)
         {
             Ensure.NotNull(services, "services");
-            services.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorizer>();
-            services.ChainPrevious<IQueryExpressionExpander, ApiPolicyActivator>();
+            services.AddService<IQueryExpressionInspector, RoleBasedAuthorizer>();
+            services.AddService<IQueryExpressionExpander, ApiPolicyActivator>();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
         {
             DbContext dbContext = context.ApiContext.GetApiService<DbContext>();
 
-            foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
+            foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
                 object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
                 Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
@@ -75,11 +75,11 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
         private static async Task<object> FindEntity(
             SubmitContext context,
-            DataModificationEntry entry,
+            DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.Source(entry.EntitySetName);
-            query = entry.ApplyTo(query);
+            IQueryable query = context.ApiContext.GetQueryableSourceStub(item.EntitySetName);
+            query = item.ApplyTo(query);
 
             QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
 
@@ -106,9 +106,9 @@ namespace Microsoft.Restier.EntityFramework.Submit
             return entity;
         }
 
-        private static void SetValues(DbEntityEntry dbEntry, DataModificationEntry entry, Type entityType)
+        private static void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)
         {
-            if (entry.IsFullReplaceUpdate)
+            if (item.IsFullReplaceUpdate)
             {
                 // The algorithm for a "FullReplaceUpdate" is taken from ObjectContextServiceProvider.ResetResource
                 // in WCF DS, and works as follows:
@@ -118,20 +118,20 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 //    This will set any unspecified properties to their default value.
                 object newInstance = Activator.CreateInstance(entityType);
 
-                SetValues(newInstance, entityType, entry.EntityKey);
-                SetValues(newInstance, entityType, entry.LocalValues);
+                SetValues(newInstance, entityType, item.EntityKey);
+                SetValues(newInstance, entityType, item.LocalValues);
 
                 dbEntry.CurrentValues.SetValues(newInstance);
             }
             else
             {
-                foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
+                foreach (KeyValuePair<string, object> propertyPair in item.LocalValues)
                 {
                     DbPropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
                     object value = propertyPair.Value;
                     if (value == null)
                     {
-                        // If the property value is null, we set null in the entry too.
+                        // If the property value is null, we set null in the item too.
                         propertyEntry.CurrentValue = null;
                         continue;
                     }

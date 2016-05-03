@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Diagnostics.Tracing;
+
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
@@ -30,7 +32,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets the severity of this validation result.
         /// </summary>
-        public ChangeSetValidationSeverity Severity { get; set; }
+        public EventLevel Severity { get; set; }
 
         /// <summary>
         /// Gets or sets the message to be displayed to the end user for this validation result.

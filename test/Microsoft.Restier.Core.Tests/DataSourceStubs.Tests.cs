@@ -11,43 +11,44 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfEntityContainerElementIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Source<object>("EntitySet"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSourceStub<object>("EntitySet"));
         }
 
         [Fact]
         public void SourceOfComposableFunctionIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Source<object>("Namespace", "Function"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSourceStub<object>("Namespace", "Function"));
         }
 
-        [Fact]
-        public void ResultsOfEntityContainerElementIsNotCallable()
-        {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Results<object>("EntitySet"));
-        }
+        // TODO enable these when function/action is supported.
+        //[Fact]
+        //public void ResultsOfEntityContainerElementIsNotCallable()
+        //{
+        //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Results<object>("EntitySet"));
+        //}
 
-        [Fact]
-        public void ResultOfEntityContainerElementIsNotCallable()
-        {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Result<object>("Singleton"));
-        }
+        //[Fact]
+        //public void ResultOfEntityContainerElementIsNotCallable()
+        //{
+        //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Result<object>("Singleton"));
+        //}
 
-        [Fact]
-        public void ResultsOfComposableFunctionIsNotCallable()
-        {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Results<object>("Namespace", "Function"));
-        }
+        //[Fact]
+        //public void ResultsOfComposableFunctionIsNotCallable()
+        //{
+        //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Results<object>("Namespace", "Function"));
+        //}
 
-        [Fact]
-        public void ResultOfComposableFunctionIsNotCallable()
-        {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Result<object>("Namespace", "Function"));
-        }
+        //[Fact]
+        //public void ResultOfComposableFunctionIsNotCallable()
+        //{
+        //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Result<object>("Namespace", "Function"));
+        //}
 
         [Fact]
         public void ValueIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStubs.Value<object>(new object(), "Property"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetPropertyValue<object>(new object(), "Property"));
         }
     }
 }

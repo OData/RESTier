@@ -13,13 +13,13 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A convention-based change set entry authorizer.
+    /// A convention-based change set item authorizer.
     /// </summary>
-    internal class ConventionBasedChangeSetAuthorizer : IChangeSetEntryAuthorizer
+    internal class ConventionBasedChangeSetItemAuthorizer : IChangeSetItemAuthorizer
     {
         private Type targetType;
 
-        private ConventionBasedChangeSetAuthorizer(Type targetType)
+        private ConventionBasedChangeSetItemAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
             this.targetType = targetType;
@@ -32,20 +32,20 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.CutoffPrevious<IChangeSetEntryAuthorizer>((sp) => new ConventionBasedChangeSetAuthorizer(targetType));
+            services.AddService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
         public Task<bool> AuthorizeAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, "context");
             bool result = true;
 
             Type returnType = typeof(bool);
-            string methodName = ConventionBasedChangeSetAuthorizer.GetAuthorizeMethodName(entry);
+            string methodName = ConventionBasedChangeSetItemAuthorizer.GetAuthorizeMethodName(item);
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsFamily &&
@@ -72,12 +72,12 @@ namespace Microsoft.Restier.Core.Conventions
             return Task.FromResult(result);
         }
 
-        private static string GetAuthorizeMethodName(ChangeSetEntry entry)
+        private static string GetAuthorizeMethodName(ChangeSetItem item)
         {
-            switch (entry.Type)
+            switch (item.Type)
             {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                case ChangeSetItemType.DataModification:
+                    DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
                     if (dataModification.IsNew)
                     {
@@ -94,14 +94,14 @@ namespace Microsoft.Restier.Core.Conventions
 
                     return operationName + dataModification.EntitySetName;
 
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
+                case ChangeSetItemType.ActionInvocation:
+                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
                     return ConventionBasedChangeSetConstants.AuthorizeMethodActionInvocationExecute +
-                        actionEntry.ActionName;
+                        actionItem.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, item.Type));
             }
         }
     }

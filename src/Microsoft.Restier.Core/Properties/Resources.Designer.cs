@@ -63,9 +63,9 @@ namespace Microsoft.Restier.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Calling the methods in &apos;QueryableSource&apos; or &apos;QueryableSource&lt;T&gt;&apos; is not supported..
         /// </summary>
-        internal static string CallQueryableSourceNotSupported {
+        internal static string CallQueryableSourceMethodNotSupported {
             get {
-                return ResourceManager.GetString("CallQueryableSourceNotSupported", resourceCulture);
+                return ResourceManager.GetString("CallQueryableSourceMethodNotSupported", resourceCulture);
             }
         }
         
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;DataModificationEntry.ApplyTo cannot be called on an IsNew entry..
+        ///   Looks up a localized string similar to &quot;DataModificationItem.ApplyTo cannot be called on an IsNew item..
         /// </summary>
         internal static string DataModificationNotSupportCreateEntity {
             get {
@@ -133,11 +133,11 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do not call the methods in &apos;DataSourceStubs&apos; directly..
+        ///   Looks up a localized string similar to Do not call the methods in &apos;DataSourceStub&apos; directly..
         /// </summary>
-        internal static string DoNotCallDataSourceStubDirectly {
+        internal static string DoNotCallDataSourceStubMethodDirectly {
             get {
-                return ResourceManager.GetString("DoNotCallDataSourceStubDirectly", resourceCulture);
+                return ResourceManager.GetString("DoNotCallDataSourceStubMethodDirectly", resourceCulture);
             }
         }
         
@@ -178,7 +178,7 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filter cannot change the expression type..
+        ///   Looks up a localized string similar to Process cannot change the expression type..
         /// </summary>
         internal static string FilterCannotChangeExpressionType {
             get {
@@ -196,7 +196,7 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid ChangeSetEntry Type: {0}..
+        ///   Looks up a localized string similar to Invalid ChangeSetItem Type: {0}..
         /// </summary>
         internal static string InvalidChangeSetEntryType {
             get {
@@ -248,7 +248,7 @@ namespace Microsoft.Restier.Core.Properties {
                 return ResourceManager.GetString("NoPermissionToUpdateEntity", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Not supported type: {0}..
         /// </summary>
@@ -331,7 +331,7 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information..
+        ///   Looks up a localized string similar to The operation cannot be performed because one or more objects are invalid.  Please inspect the ChangeSetValidationException.ValidationResults property for more information..
         /// </summary>
         internal static string ValidationFailsTheOperation {
             get {

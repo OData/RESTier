@@ -14,27 +14,27 @@ namespace Microsoft.Restier.Core.Tests
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var i = 0;
-                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Inner = next,
                     Value = i++
                 })
-                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    .AddService<ISomeService>((sp, next) => new SomeService
                     {
                         Inner = next,
                         Value = i++
                     })
-                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    .AddService<ISomeService>((sp, next) => new SomeService
                     {
                         Inner = next,
                         Value = i++
                     })
-                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    .AddService<ISomeService>((sp, next) => new SomeService
                     {
                         Inner = next,
                         Value = i++
                     })
-                    .ChainPrevious<ISomeService, SomeService>();
+                    .AddService<ISomeService, SomeService>();
 
                 return services;
             }
@@ -44,12 +44,12 @@ namespace Microsoft.Restier.Core.Tests
         {
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Inner = next,
                     Value = 1
                 })
-                    .ChainPrevious<ISomeService, SomeService>()
+                    .AddService<ISomeService, SomeService>()
                     .MakeTransient<ISomeService>();
 
                 return services;
@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Core.Tests
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.MakeScoped<ISomeService>()
-                    .ChainPrevious<ISomeService>((sp, next) => new SomeService());
+                    .AddService<ISomeService>((sp, next) => new SomeService());
                 return services;
             }
         }
@@ -70,12 +70,12 @@ namespace Microsoft.Restier.Core.Tests
         {
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Inner = next,
                     Value = 1
                 })
-                    .ChainPrevious<ISomeService, SomeServiceNoChain>()
+                    .AddService<ISomeService, SomeServiceNoChain>()
                     .MakeTransient<ISomeService>();
                 return services;
             }
@@ -90,8 +90,8 @@ namespace Microsoft.Restier.Core.Tests
                     Value = 42
                 };
                 services.MakeTransient<ISomeService>()
-                    .ChainPrevious<ISomeService>((sp, next) => first)
-                    .ChainPrevious<ISomeService, SomeService2>()
+                    .AddService<ISomeService>((sp, next) => first)
+                    .AddService<ISomeService, SomeService2>()
                     .AddInstance("Text");
 
                 return services;
@@ -102,12 +102,12 @@ namespace Microsoft.Restier.Core.Tests
         {
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Value = 2
                 })
                     .MakeTransient<ISomeService>()
-                    .ChainPrevious<ISomeService, SomeService2>();
+                    .AddService<ISomeService, SomeService2>();
 
                 return services;
             }
@@ -117,17 +117,17 @@ namespace Microsoft.Restier.Core.Tests
         {
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Value = 1
                 })
-                    .ChainPrevious<ISomeService, SomeService3>()
+                    .AddService<ISomeService, SomeService3>()
                     .AddInstance(new SomeService
                     {
                         Value = 2
                     })
                     .MakeTransient<ISomeService>()
-                    .ChainPrevious<string>((sp, next) => { return "0"; })
+                    .AddService<string>((sp, next) => { return "0"; })
                     .MakeTransient<string>();
 
                 return services;
@@ -138,13 +138,13 @@ namespace Microsoft.Restier.Core.Tests
         {
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
-                services.ChainPrevious<ISomeService>((sp, next) => new SomeService
+                services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Value = 1
                 })
-                    .ChainPrevious<ISomeService, SomeService3>()
+                    .AddService<ISomeService, SomeService3>()
                     .MakeTransient<ISomeService>()
-                    .ChainPrevious<string>((sp, next) => { return "0"; })
+                    .AddService<string>((sp, next) => { return "0"; })
                     .MakeTransient<string>();
 
                 return services;
@@ -156,7 +156,7 @@ namespace Microsoft.Restier.Core.Tests
             protected override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.MakeTransient<ISomeService>()
-                    .ChainPrevious<ISomeService>((sp, next) => new SomeService
+                    .AddService<ISomeService>((sp, next) => new SomeService
                     {
                         Value = 2
                     })
@@ -164,7 +164,7 @@ namespace Microsoft.Restier.Core.Tests
                     {
                         Value = 0
                     })
-                    .ChainPrevious<ISomeService, SomeService4>();
+                    .AddService<ISomeService, SomeService4>();
 
                 return services;
             }

@@ -55,6 +55,6 @@ namespace Microsoft.Restier.Core.Query
         /// applies is a constant expression whose value is the data object.
         /// </para>
         /// </remarks>
-        Expression Source(QueryExpressionContext context, bool embedded);
+        Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded);
     }
 }
