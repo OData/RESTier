@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task PreProcessChangeSetItemAsync(
+        Task OnProcessingChangeSetItemAsync(
             SubmitContext context,
             ChangeSetItem item,
             CancellationToken cancellationToken);
@@ -46,7 +46,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task PostProcessChangeSetItemAsync(
+        Task OnProcessedChangeSetItemAsync(
             SubmitContext context,
             ChangeSetItem item,
             CancellationToken cancellationToken);

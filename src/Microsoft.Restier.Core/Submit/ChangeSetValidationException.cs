@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class ChangeSetValidationException : Exception
     {
-        private IEnumerable<ChangeSetValidationResult> validationResults;
+        private IEnumerable<ChangeSetItemValidationResult> errorValidationResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeSetValidationException"/> class.
@@ -34,25 +34,25 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets or sets the validation results.
+        /// Gets or sets the failed validation results.
         /// </summary>
-        public IEnumerable<ChangeSetValidationResult> ValidationResults
+        public IEnumerable<ChangeSetItemValidationResult> ValidationResults
         {
             get
             {
-                if (this.validationResults == null)
+                if (this.errorValidationResults == null)
                 {
-                    return Enumerable.Empty<ChangeSetValidationResult>();
+                    return Enumerable.Empty<ChangeSetItemValidationResult>();
                 }
                 else
                 {
-                    return this.validationResults;
+                    return this.errorValidationResults;
                 }
             }
 
             set
             {
-                this.validationResults = value;
+                this.errorValidationResults = value;
             }
         }
     }

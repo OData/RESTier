@@ -22,10 +22,7 @@ namespace Microsoft.Restier.EntityFramework
         public static IServiceCollection AddEfProviderServices<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
-            services.TryAddScoped<TDbContext>();
-            services.TryAddScoped(typeof(DbContext), sp => sp.GetService<TDbContext>());
-
-            services.AddScoped<TDbContext>(sp =>
+            services.AddScoped<DbContext>(sp =>
             {
                 var dbContext = Activator.CreateInstance<TDbContext>(); 
 #if EF7

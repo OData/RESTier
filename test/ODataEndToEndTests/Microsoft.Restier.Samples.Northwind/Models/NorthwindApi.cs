@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
     [Grant(ApiPermissionType.Inspect, On = "Suppliers")]
     [Grant(ApiPermissionType.Read, On = "Suppliers")]
     [Grant(ApiPermissionType.All, On = "ResetDataSource")]
-    public class NorthwindApi : DbApi<NorthwindContext>
+    public class NorthwindApi : EntityFrameworkApi<NorthwindContext>
     {
         public new NorthwindContext Context { get { return DbContext; } }
 

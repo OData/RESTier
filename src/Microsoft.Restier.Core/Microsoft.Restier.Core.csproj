@@ -82,7 +82,7 @@
     <Compile Include="Query\IQueryExecutor.cs" />
     <Compile Include="Query\IQueryExpressionExpander.cs" />
     <Compile Include="Query\IQueryExpressionProcessor.cs" />
-    <Compile Include="Query\IQueryExpressionInspector.cs" />
+    <Compile Include="Query\IQueryExpressionAuthorizer.cs" />
     <Compile Include="Query\IQueryExpressionSourcer.cs" />
     <Compile Include="Query\QueryContext.cs" />
     <Compile Include="Query\QueryExpressionContext.cs" />
@@ -100,8 +100,7 @@
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />
     <Compile Include="Submit\ChangeSetValidationException.cs" />
-    <Compile Include="Submit\ChangeSetValidationResult.cs" />
-    <Compile Include="Submit\ChangeSetValidationResults.cs" />
+    <Compile Include="Submit\ChangeSetItemValidationResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft.Restier.Core.nuspec" />

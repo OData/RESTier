@@ -102,7 +102,7 @@ namespace Microsoft.Restier.Core.Query
         {
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
-            private IQueryExpressionInspector inspector;
+            private IQueryExpressionAuthorizer authorizer;
             private IQueryExpressionExpander expander;
             private IQueryExpressionProcessor processor;
             private IQueryExpressionSourcer sourcer;
@@ -205,12 +205,12 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                if (this.inspector == null)
+                if (this.authorizer == null)
                 {
-                    this.inspector = this.context.QueryContext.GetApiService<IQueryExpressionInspector>();
+                    this.authorizer = this.context.QueryContext.GetApiService<IQueryExpressionAuthorizer>();
                 }
 
-                if (this.inspector != null && !this.inspector.Inspect(this.context))
+                if (this.authorizer != null && !this.authorizer.Authorize(this.context))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }

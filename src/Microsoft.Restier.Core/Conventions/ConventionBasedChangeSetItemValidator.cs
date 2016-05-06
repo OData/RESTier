@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.Tracing;
 using System.Linq;
@@ -10,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 using DataAnnotations = System.ComponentModel.DataAnnotations;
-using ChangeSetValidationResult = Microsoft.Restier.Core.Submit.ChangeSetValidationResult;
 
 namespace Microsoft.Restier.Core.Conventions
 {
@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core.Conventions
         public Task ValidateChangeSetItemAsync(
             SubmitContext context,
             ChangeSetItem item,
-            ChangeSetValidationResults validationResults,
+            Collection<ChangeSetItemValidationResult> validationResults,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(validationResults, "validationResults");
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Core.Conventions
                             validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != DataAnnotations.ValidationResult.Success)
                         {
-                            validationResults.Add(new ChangeSetValidationResult()
+                            validationResults.Add(new ChangeSetItemValidationResult()
                             {
                                 Id = validationAttribute.GetType().FullName,
                                 Message = validationResult.ErrorMessage,

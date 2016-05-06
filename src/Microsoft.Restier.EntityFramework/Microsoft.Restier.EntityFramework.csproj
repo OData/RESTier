@@ -64,7 +64,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SharedResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="DbApi.cs" />
+    <Compile Include="EntityFrameworkApi.cs" />
     <Compile Include="Model\ModelMapper.cs" />
     <Compile Include="Model\ModelProducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

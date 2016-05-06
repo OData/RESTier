@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
 using System.Security;
@@ -160,19 +162,21 @@ namespace Microsoft.Restier.Core.Submit
                 return;
             }
 
-            ChangeSetValidationResults validationResults = new ChangeSetValidationResults();
+            Collection<ChangeSetItemValidationResult> validationResults = new Collection<ChangeSetItemValidationResult>();
 
             foreach (ChangeSetItem entry in changeSetItems.Where(i => i.HasChanged()))
             {
                 await validator.ValidateChangeSetItemAsync(context, entry, validationResults, cancellationToken);
             }
 
-            if (validationResults.HasErrors)
+            IEnumerable<ChangeSetItemValidationResult> errors = validationResults.Where(result => result.Severity == EventLevel.Error);
+
+            if (errors.Any())
             {
                 string validationErrorMessage = Resources.ValidationFailsTheOperation;
                 throw new ChangeSetValidationException(validationErrorMessage)
                 {
-                    ValidationResults = validationResults.Errors
+                    ValidationResults = errors
                 };
             }
         }
@@ -191,7 +195,7 @@ namespace Microsoft.Restier.Core.Submit
                     var filter = context.GetApiService<IChangeSetItemProcessor>();
                     if (filter != null)
                     {
-                        await filter.PreProcessChangeSetItemAsync(context, entry, cancellationToken);
+                        await filter.OnProcessingChangeSetItemAsync(context, entry, cancellationToken);
                     }
 
                     if (entry.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
@@ -256,7 +260,7 @@ namespace Microsoft.Restier.Core.Submit
                 var filter = context.GetApiService<IChangeSetItemProcessor>();
                 if (filter != null)
                 {
-                    await filter.PostProcessChangeSetItemAsync(context, entry, cancellationToken);
+                    await filter.OnProcessedChangeSetItemAsync(context, entry, cancellationToken);
                 }
             }
         }

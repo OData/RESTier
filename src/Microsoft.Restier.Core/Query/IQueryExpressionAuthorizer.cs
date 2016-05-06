@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core.Query
     /// the exception of normalization of expressions identifying API data).
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionInspector
+    public interface IQueryExpressionAuthorizer
     {
         /// <summary>
         /// Inspects an expression.
@@ -30,6 +30,6 @@ namespace Microsoft.Restier.Core.Query
         /// <returns>
         /// <c>true</c> if the inspection passed; otherwise, <c>false</c>.
         /// </returns>
-        bool Inspect(QueryExpressionContext context);
+        bool Authorize(QueryExpressionContext context);
     }
 }

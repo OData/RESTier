@@ -298,8 +298,8 @@ public sealed class Microsoft.Restier.EntityFramework.ServiceCollectionExtension
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddEfProviderServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
-public class Microsoft.Restier.EntityFramework.DbApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
-	public DbApi`1 ()
+public class Microsoft.Restier.EntityFramework.EntityFrameworkApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
+	public EntityFrameworkApi`1 ()
 
 	T DbContext  { protected get; }
 
@@ -367,12 +367,12 @@ public interface Microsoft.Restier.Core.Query.IQueryExecutor {
 	System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteQueryAsync (Microsoft.Restier.Core.Query.QueryContext context, IQueryable`1 query, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExpressionExpander {
-	System.Linq.Expressions.Expression Expand (Microsoft.Restier.Core.Query.QueryExpressionContext context)
+public interface Microsoft.Restier.Core.Query.IQueryExpressionAuthorizer {
+	bool Authorize (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
-public interface Microsoft.Restier.Core.Query.IQueryExpressionInspector {
-	bool Inspect (Microsoft.Restier.Core.Query.QueryExpressionContext context)
+public interface Microsoft.Restier.Core.Query.IQueryExpressionExpander {
+	System.Linq.Expressions.Expression Expand (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExpressionProcessor {
@@ -466,12 +466,12 @@ public interface Microsoft.Restier.Core.Submit.IChangeSetItemAuthorizer {
 }
 
 public interface Microsoft.Restier.Core.Submit.IChangeSetItemProcessor {
-	System.Threading.Tasks.Task PostProcessChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
-	System.Threading.Tasks.Task PreProcessChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task OnProcessedChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task OnProcessingChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
 }
 
 public interface Microsoft.Restier.Core.Submit.IChangeSetItemValidator {
-	System.Threading.Tasks.Task ValidateChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, Microsoft.Restier.Core.Submit.ChangeSetValidationResults validationResults, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task ValidateChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Collections.ObjectModel.Collection`1[[Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult]] validationResults, System.Threading.CancellationToken cancellationToken)
 }
 
 public interface Microsoft.Restier.Core.Submit.IChangeSetPreparer {
@@ -503,15 +503,8 @@ public class Microsoft.Restier.Core.Submit.ChangeSet {
 	System.Collections.Generic.IList`1[[Microsoft.Restier.Core.Submit.ChangeSetItem]] Entries  { public get; }
 }
 
-public class Microsoft.Restier.Core.Submit.ChangeSetValidationException : System.Exception, _Exception, ISerializable {
-	public ChangeSetValidationException (string message)
-	public ChangeSetValidationException (string message, System.Exception innerException)
-
-	System.Collections.Generic.IEnumerable`1[[Microsoft.Restier.Core.Submit.ChangeSetValidationResult]] ValidationResults  { public get; public set; }
-}
-
-public class Microsoft.Restier.Core.Submit.ChangeSetValidationResult {
-	public ChangeSetValidationResult ()
+public class Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult {
+	public ChangeSetItemValidationResult ()
 
 	string Id  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Message  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
@@ -522,11 +515,11 @@ public class Microsoft.Restier.Core.Submit.ChangeSetValidationResult {
 	public virtual string ToString ()
 }
 
-public class Microsoft.Restier.Core.Submit.ChangeSetValidationResults : System.Collections.ObjectModel.Collection`1[[Microsoft.Restier.Core.Submit.ChangeSetValidationResult]], ICollection, IEnumerable, IList, ICollection`1, IEnumerable`1, IList`1, IReadOnlyCollection`1, IReadOnlyList`1 {
-	public ChangeSetValidationResults ()
+public class Microsoft.Restier.Core.Submit.ChangeSetValidationException : System.Exception, _Exception, ISerializable {
+	public ChangeSetValidationException (string message)
+	public ChangeSetValidationException (string message, System.Exception innerException)
 
-	System.Collections.Generic.IEnumerable`1[[Microsoft.Restier.Core.Submit.ChangeSetValidationResult]] Errors  { public get; }
-	bool HasErrors  { public get; }
+	System.Collections.Generic.IEnumerable`1[[Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult]] ValidationResults  { public get; public set; }
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Restier.Core.Submit.ChangeSetItem {
@@ -570,8 +563,8 @@ public class Microsoft.Restier.Core.Submit.SubmitResult {
 	System.Exception Exception  { public get; public set; }
 }
 
-public class Microsoft.Restier.WebApi.Batch.RestierBatchEntityChangeRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
-	public RestierBatchEntityChangeRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
+public class Microsoft.Restier.WebApi.Batch.RestierBatchChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
+	public RestierBatchChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
 
 	[
 	AsyncStateMachineAttribute(),
@@ -584,7 +577,7 @@ public class Microsoft.Restier.WebApi.Batch.RestierBatchHandler : System.Web.ODa
 
 	System.Func`1[[Microsoft.Restier.Core.ApiBase]] ApiFactory  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 
-	protected virtual System.Web.OData.Batch.ChangeSetRequestItem CreateChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
+	protected virtual System.Web.OData.Batch.ChangeSetRequestItem CreateBatchChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
 	[
 	AsyncStateMachineAttribute(),
 	]

@@ -15,16 +15,16 @@ namespace Microsoft.Restier.WebApi.Batch
     /// <summary>
     /// Represents an API <see cref="ChangeSet"/> request.
     /// </summary>
-    public class RestierBatchEntityChangeRequestItem : ChangeSetRequestItem
+    public class RestierBatchChangeSetRequestItem : ChangeSetRequestItem
     {
         private Func<ApiBase> apiFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestierBatchEntityChangeRequestItem" /> class.
+        /// Initializes a new instance of the <see cref="RestierBatchChangeSetRequestItem" /> class.
         /// </summary>
         /// <param name="requests">The request messages.</param>
         /// <param name="apiFactory">Gets or sets the callback to create API.</param>
-        public RestierBatchEntityChangeRequestItem(IEnumerable<HttpRequestMessage> requests, Func<ApiBase> apiFactory)
+        public RestierBatchChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<ApiBase> apiFactory)
             : base(requests)
         {
             Ensure.NotNull(apiFactory, "apiFactory");
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.WebApi.Batch
         {
             foreach (HttpRequestMessage request in this.Requests)
             {
-                request.Properties.Add("Microsoft.Restier.Submit.ChangeSet", changeSetProperty);
+                request.SetChangeSet(changeSetProperty);
             }
         }
     }

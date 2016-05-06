@@ -8,7 +8,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a single result when validating an entity, property, etc.
     /// </summary>
-    public class ChangeSetValidationResult
+    public class ChangeSetItemValidationResult
     {
         /// <summary>
         /// Gets or sets the identifier for this validation result.

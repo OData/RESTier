@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Conventions
         }
 
         /// <inheritdoc/>
-        public Task PreProcessChangeSetItemAsync(
+        public Task OnProcessingChangeSetItemAsync(
             SubmitContext context,
             ChangeSetItem item,
             CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Core.Conventions
         }
 
         /// <inheritdoc/>
-        public Task PostProcessChangeSetItemAsync(
+        public Task OnProcessedChangeSetItemAsync(
             SubmitContext context,
             ChangeSetItem item,
             CancellationToken cancellationToken)

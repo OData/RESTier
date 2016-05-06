@@ -19,6 +19,17 @@ namespace Microsoft.Restier.WebApi
         private const string ApiInstanceKey = "Microsoft.Restier.Core.ApiInstance";
 
         /// <summary>
+        /// Sets the <see cref="RestierChangeSetProperty"/> to the <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="changeSetProperty">The change set to be set.</param>
+        public static void SetChangeSet(this HttpRequestMessage request, RestierChangeSetProperty changeSetProperty)
+        {
+            Ensure.NotNull(request, "request");
+            request.Properties.Add(ChangeSetKey, changeSetProperty);
+        }
+
+        /// <summary>
         /// Gets the <see cref="RestierChangeSetProperty"/> from the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>

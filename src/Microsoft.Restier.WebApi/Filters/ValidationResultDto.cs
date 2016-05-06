@@ -12,19 +12,19 @@ namespace Microsoft.Restier.WebApi.Filters
     /// </summary>
     internal class ValidationResultDto
     {
-        private ChangeSetValidationResult result;
+        private ChangeSetItemValidationResult result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationResultDto" /> class.
         /// </summary>
         /// <param name="result">The validation result.</param>
-        public ValidationResultDto(ChangeSetValidationResult result)
+        public ValidationResultDto(ChangeSetItemValidationResult result)
         {
             this.result = result;
         }
 
         /// <summary>
-        /// Gets the id of the <see cref="ChangeSetValidationResult"/> instance.
+        /// Gets the id of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string Id
         {
@@ -32,7 +32,7 @@ namespace Microsoft.Restier.WebApi.Filters
         }
 
         /// <summary>
-        /// Gets the message of the <see cref="ChangeSetValidationResult"/> instance.
+        /// Gets the message of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string Message
         {
@@ -40,7 +40,7 @@ namespace Microsoft.Restier.WebApi.Filters
         }
 
         /// <summary>
-        /// Gets the property name of the <see cref="ChangeSetValidationResult"/> instance.
+        /// Gets the property name of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string PropertyName
         {
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.WebApi.Filters
         ////}
 
         /// <summary>
-        /// Gets the string that represents the severity of the <see cref="ChangeSetValidationResult"/> instance.
+        /// Gets the string that represents the severity of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string Severity
         {

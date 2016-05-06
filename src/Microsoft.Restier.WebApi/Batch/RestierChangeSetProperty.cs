@@ -15,7 +15,7 @@ namespace Microsoft.Restier.WebApi.Batch
     /// </summary>
     internal class RestierChangeSetProperty
     {
-        private readonly RestierBatchEntityChangeRequestItem changeSetRequestItem;
+        private readonly RestierBatchChangeSetRequestItem changeSetRequestItem;
         private readonly TaskCompletionSource<bool> changeSetCompletedTaskSource;
         private int subRequestCount;
 
@@ -23,7 +23,7 @@ namespace Microsoft.Restier.WebApi.Batch
         /// Initializes a new instance of the <see cref="RestierChangeSetProperty" /> class.
         /// </summary>
         /// <param name="changeSetRequestItem">The changeset request item.</param>
-        public RestierChangeSetProperty(RestierBatchEntityChangeRequestItem changeSetRequestItem)
+        public RestierChangeSetProperty(RestierBatchChangeSetRequestItem changeSetRequestItem)
         {
             this.changeSetRequestItem = changeSetRequestItem;
             this.changeSetCompletedTaskSource = new TaskCompletionSource<bool>();

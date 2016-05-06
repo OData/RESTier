@@ -15,7 +15,7 @@ using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 {
-    public class TrippinApi : DbApi<TrippinModel>
+    public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
         public new TrippinModel Context { get { return DbContext; } }
 
@@ -87,7 +87,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", EntitySet = "People")]
         public Person GetPersonWithMostFriends()
         {
             Person result = null;
@@ -118,7 +118,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
         /// <returns>People with at least n friends.</returns>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", EntitySet = "People")]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n)
         {
             foreach (var person in PeopleWithFriends)
