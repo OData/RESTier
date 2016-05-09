@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a service that can prepare a change set.
+    /// Represents a service that can initialize a change set.
     /// </summary>
-    public interface IChangeSetPreparer
+    public interface IChangeSetInitializer
     {
         /// <summary>
-        /// Asynchronously prepares a change set for submission.
+        /// Asynchronously initialize a change set for submission.
         /// </summary>
         /// <param name="context">
         /// The submit context.
@@ -29,6 +29,6 @@ namespace Microsoft.Restier.Core.Submit
         /// to get current server values, and using a data provider mechanism
         /// to locally apply the supplied changes to the loaded entities.
         /// </remarks>
-        Task PrepareAsync(SubmitContext context, CancellationToken cancellationToken);
+        Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken);
     }
 }

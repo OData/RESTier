@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Core.Query
     public interface IQueryExpressionAuthorizer
     {
         /// <summary>
-        /// Inspects an expression.
+        /// Check an expression to see whether it is authorized.
         /// </summary>
         /// <param name="context">
         /// The query expression context.

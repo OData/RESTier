@@ -176,7 +176,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 
         public IQueryable<Person> NewComePeople
         {
-            get { return this.GetQueryableSourceStub<Person>("People").Where(p => p.PersonId >= 2); }
+            get { return this.GetQueryableSource<Person>("People").Where(p => p.PersonId >= 2); }
         }
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)

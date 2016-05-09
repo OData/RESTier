@@ -11,13 +11,13 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfEntityContainerElementIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSourceStub<object>("EntitySet"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSource<object>("EntitySet"));
         }
 
         [Fact]
         public void SourceOfComposableFunctionIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSourceStub<object>("Namespace", "Function"));
+            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSource<object>("Namespace", "Function"));
         }
 
         // TODO enable these when function/action is supported.

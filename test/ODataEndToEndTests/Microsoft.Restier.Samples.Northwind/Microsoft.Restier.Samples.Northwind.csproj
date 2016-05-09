@@ -154,9 +154,9 @@
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>Microsoft.Restier.WebApi</Name>
+      <Name>Microsoft.Restier.OData</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

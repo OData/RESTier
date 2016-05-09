@@ -63,15 +63,15 @@ namespace Microsoft.Restier.Core.Conventions
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
-                    if (dataModification.IsNew)
+                    if (dataModification.IsNewRequest)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
                     }
-                    else if (dataModification.IsUpdate)
+                    else if (dataModification.IsUpdateRequest)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
                     }
-                    else if (dataModification.IsDelete)
+                    else if (dataModification.IsDeleteRequest)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
                     }

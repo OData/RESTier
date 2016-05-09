@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
-        #region GetQueryableSourceStub
+        #region GetQueryableSource
 
         /// <summary>
         /// Gets a queryable source of data exposed by an API.
@@ -74,14 +74,14 @@ namespace Microsoft.Restier.Core
         /// enumerated as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable GetQueryableSourceStub(
+        public static IQueryable GetQueryableSource(
             this ApiBase api,
             string name,
             params object[] arguments)
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.GetQueryableSourceStub(name, arguments);
+            return api.Context.GetQueryableSource(name, arguments);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable GetQueryableSourceStub(
+        public static IQueryable GetQueryableSource(
             this ApiBase api,
             string namespaceName,
             string name,
@@ -121,7 +121,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.GetQueryableSourceStub(namespaceName, name, arguments);
+            return api.Context.GetQueryableSource(namespaceName, name, arguments);
         }
 
         /// <summary>
@@ -154,14 +154,14 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable<TElement> GetQueryableSourceStub<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             this ApiBase api,
             string name,
             params object[] arguments)
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.GetQueryableSourceStub<TElement>(name, arguments);
+            return api.Context.GetQueryableSource<TElement>(name, arguments);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable<TElement> GetQueryableSourceStub<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             this ApiBase api,
             string namespaceName,
             string name,
@@ -204,7 +204,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.GetQueryableSourceStub<TElement>(namespaceName, name, arguments);
+            return api.Context.GetQueryableSource<TElement>(namespaceName, name, arguments);
         }
 
         #endregion

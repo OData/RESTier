@@ -12,7 +12,7 @@ namespace Microsoft.Restier.WebApi.Model
     /// </summary>
     public static class ApiConfigurationExtensions
     {
-        private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
+        private const string IgnoredPropertiesKey = "Microsoft.Restier.WebApi.IgnoredProperties";
 
         #region IgnoreProperty
 

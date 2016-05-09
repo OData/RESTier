@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.EntityFra
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Publishers", "Publishers", "{432208D4-54DF-453E-96AE-CB7721461030}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi", "src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj", "{186F667E-54E5-4B57-9998-21D74CB77C24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.OData", "src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj", "{186F667E-54E5-4B57-9998-21D74CB77C24}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}"
 EndProject

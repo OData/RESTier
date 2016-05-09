@@ -470,7 +470,7 @@ namespace Microsoft.Restier.WebApi.Model
             private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
-            public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
+            public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
             {
                 var result = CallInner(context, embedded);
                 if (result != null)
@@ -494,7 +494,7 @@ namespace Microsoft.Restier.WebApi.Model
             {
                 if (this.InnerHandler != null)
                 {
-                    return this.InnerHandler.ReplaceQueryableSourceStub(context, embedded);
+                    return this.InnerHandler.ReplaceQueryableSource(context, embedded);
                 }
 
                 return null;

@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core
         /// A representation of the entity set, singleton or queryable
         /// data resulting from a call to the composable function import.
         /// </returns>
-        public static IQueryable<TElement> GetQueryableSourceStub<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             string name, params object[] arguments)
         {
             throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Core
         /// A representation of the queryable data resulting
         /// from a call to the composable function.
         /// </returns>
-        public static IQueryable<TElement> GetQueryableSourceStub<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
             throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);

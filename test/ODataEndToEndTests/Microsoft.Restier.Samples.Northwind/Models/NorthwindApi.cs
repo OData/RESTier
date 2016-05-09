@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             get
             {
-                return this.GetQueryableSourceStub<Product>("Products")
+                return this.GetQueryableSource<Product>("Products")
                     .Where(c => c.UnitPrice > 50);
             }
         }
@@ -48,7 +48,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             get
             {
-                return this.GetQueryableSourceStub<Order>("Orders")
+                return this.GetQueryableSource<Order>("Orders")
                     .Where(o => o.ShippedDate == null);
             }
         }
@@ -72,7 +72,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
-            // Add core and conversion's services
+            // Add core and convention's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)
                 .AddConventionBasedServices(apiType);

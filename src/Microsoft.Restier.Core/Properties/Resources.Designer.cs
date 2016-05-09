@@ -178,15 +178,6 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Process cannot change the expression type..
-        /// </summary>
-        internal static string FilterCannotChangeExpressionType {
-            get {
-                return ResourceManager.GetString("FilterCannotChangeExpressionType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Inspection failed..
         /// </summary>
         internal static string InspectionFailed {
@@ -273,6 +264,15 @@ namespace Microsoft.Restier.Core.Properties {
         internal static string OriginalExpressionShouldBeQueryable {
             get {
                 return ResourceManager.GetString("OriginalExpressionShouldBeQueryable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processor cannot change the expression type..
+        /// </summary>
+        internal static string ProcessorCannotChangeExpressionType {
+            get {
+                return ResourceManager.GetString("ProcessorCannotChangeExpressionType", resourceCulture);
             }
         }
         

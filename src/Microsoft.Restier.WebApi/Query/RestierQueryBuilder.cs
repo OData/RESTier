@@ -169,7 +169,7 @@ namespace Microsoft.Restier.WebApi.Query
             var entitySetPathSegment = (EntitySetPathSegment)segment;
             var entitySet = entitySetPathSegment.EntitySetBase;
             this.currentEntityType = entitySet.EntityType();
-            this.queryable = this.api.GetQueryableSourceStub(entitySet.Name, (object[])null);
+            this.queryable = this.api.GetQueryableSource(entitySet.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 
@@ -178,7 +178,7 @@ namespace Microsoft.Restier.WebApi.Query
             var singletonPathSegment = (SingletonPathSegment)segment;
             var singleton = singletonPathSegment.Singleton;
             this.currentEntityType = singleton.EntityType();
-            this.queryable = this.api.GetQueryableSourceStub(singleton.Name, (object[])null);
+            this.queryable = this.api.GetQueryableSource(singleton.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 
@@ -196,7 +196,7 @@ namespace Microsoft.Restier.WebApi.Query
                     p => unboundFunctionPathSegment.GetParameterValue(p.Name)).ToArray();
             }
 
-            this.queryable = this.api.GetQueryableSourceStub(functionImport.Name, queryArgs);
+            this.queryable = this.api.GetQueryableSource(functionImport.Name, queryArgs);
             this.currentType = queryable.ElementType;
         }
 

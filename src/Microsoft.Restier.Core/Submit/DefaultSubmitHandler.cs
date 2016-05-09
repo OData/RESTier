@@ -37,13 +37,13 @@ namespace Microsoft.Restier.Core.Submit
         {
             Ensure.NotNull(context, "context");
 
-            var preparer = context.GetApiService<IChangeSetPreparer>();
+            var preparer = context.GetApiService<IChangeSetInitializer>();
             if (preparer == null)
             {
                 throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
             }
 
-            await preparer.PrepareAsync(context, cancellationToken);
+            await preparer.InitializeAsync(context, cancellationToken);
 
             if (context.Result != null)
             {
@@ -74,15 +74,15 @@ namespace Microsoft.Restier.Core.Submit
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string message = null;
-                    if (dataModification.IsNew)
+                    if (dataModification.IsNewRequest)
                     {
                         message = Resources.NoPermissionToInsertEntity;
                     }
-                    else if (dataModification.IsUpdate)
+                    else if (dataModification.IsUpdateRequest)
                     {
                         message = Resources.NoPermissionToUpdateEntity;
                     }
-                    else if (dataModification.IsDelete)
+                    else if (dataModification.IsDeleteRequest)
                     {
                         message = Resources.NoPermissionToDeleteEntity;
                     }
@@ -226,15 +226,15 @@ namespace Microsoft.Restier.Core.Submit
                 if (item.Type == ChangeSetItemType.DataModification)
                 {
                     DataModificationItem dataModification = (DataModificationItem)item;
-                    if (dataModification.IsNew)
+                    if (dataModification.IsNewRequest)
                     {
                         dataModification.ChangeSetItemAction = ChangeSetItemAction.Insert;
                     }
-                    else if (dataModification.IsUpdate)
+                    else if (dataModification.IsUpdateRequest)
                     {
                         dataModification.ChangeSetItemAction = ChangeSetItemAction.Update;
                     }
-                    else if (dataModification.IsDelete)
+                    else if (dataModification.IsDeleteRequest)
                     {
                         dataModification.ChangeSetItemAction = ChangeSetItemAction.Remove;
                     }

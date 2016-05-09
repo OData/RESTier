@@ -78,9 +78,9 @@
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
       <Name>Microsoft.Restier.EntityFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>Microsoft.Restier.WebApi</Name>
+      <Name>Microsoft.Restier.OData</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

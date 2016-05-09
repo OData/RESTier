@@ -107,7 +107,7 @@ namespace Microsoft.Restier.WebApi.Test
 
         public IQueryable<Order> PreservedOrders
         {
-            get { return this.GetQueryableSourceStub<Order>("Orders").Where(o => o.Id > 123); }
+            get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
         }
     }
 
@@ -148,7 +148,7 @@ namespace Microsoft.Restier.WebApi.Test
 
     class FallbackQueryExpressionSourcer : IQueryExpressionSourcer
     {
-        public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
+        public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
         {
             var orders = new[]
             {
@@ -157,7 +157,7 @@ namespace Microsoft.Restier.WebApi.Test
 
             if (!embedded)
             {
-                if (context.VisitedNode.ToString().StartsWith("GetQueryableSourceStub(\"Orders\""))
+                if (context.VisitedNode.ToString().StartsWith("GetQueryableSource(\"Orders\""))
                 {
                     return Expression.Constant(orders.AsQueryable());
                 }

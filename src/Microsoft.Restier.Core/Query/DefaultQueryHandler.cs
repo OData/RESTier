@@ -271,7 +271,7 @@ namespace Microsoft.Restier.Core.Query
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
                             throw new InvalidOperationException(
-                                Resources.FilterCannotChangeExpressionType);
+                                Resources.ProcessorCannotChangeExpressionType);
                         }
 
                         this.processedExpressions.Add(visited, processed);
@@ -310,7 +310,7 @@ namespace Microsoft.Restier.Core.Query
                     throw new NotSupportedException(Resources.QuerySourcerMissing);
                 }
 
-                node = this.sourcer.ReplaceQueryableSourceStub(this.context, this.BaseQuery != null);
+                node = this.sourcer.ReplaceQueryableSource(this.context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression

@@ -187,7 +187,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets a value indicating whether the modification is a new entity.
         /// </summary>
-        public bool IsNew
+        public bool IsNewRequest
         {
             get
             {
@@ -198,7 +198,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets a value indicating whether the modification is updating an entity.
         /// </summary>
-        public bool IsUpdate
+        public bool IsUpdateRequest
         {
             get
             {
@@ -213,12 +213,12 @@ namespace Microsoft.Restier.Core.Submit
         /// If true, all properties will be updated, even if the property isn't in LocalValues.
         /// If false, only properties identified in LocalValues will be updated on the entity.
         /// </remarks>
-        public bool IsFullReplaceUpdate { get; set; }
+        public bool IsFullReplaceUpdateRequest { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the modification is deleting an entity.
         /// </summary>
-        public bool IsDelete
+        public bool IsDeleteRequest
         {
             get
             {
@@ -283,7 +283,7 @@ namespace Microsoft.Restier.Core.Submit
         public IQueryable ApplyTo(IQueryable query)
         {
             Ensure.NotNull(query, "query");
-            if (this.IsNew)
+            if (this.IsNewRequest)
             {
                 throw new InvalidOperationException(Resources.DataModificationNotSupportCreateEntity);
             }
@@ -448,7 +448,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// An array of the arguments to pass to the action.
         /// </returns>
-        public object[] GetArgumentArray()
+        internal object[] GetArgumentArray()
         {
             if (this.Arguments == null)
             {

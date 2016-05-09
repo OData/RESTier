@@ -78,7 +78,7 @@ namespace Microsoft.Restier.WebApi.Batch
                         changeSetRequest.CopyBatchRequestProperties(request);
                     }
 
-                    requests.Add(this.CreateBatchChangeSetRequestItem(changeSetRequests));
+                    requests.Add(this.CreateRestierBatchChangeSetRequestItem(changeSetRequests));
                 }
                 else if (batchReader.State == ODataBatchReaderState.Operation)
                 {
@@ -99,7 +99,7 @@ namespace Microsoft.Restier.WebApi.Batch
         /// </summary>
         /// <param name="changeSetRequests">The list of changeset requests.</param>
         /// <returns>The created <see cref="RestierBatchChangeSetRequestItem"/> instance.</returns>
-        protected virtual ChangeSetRequestItem CreateBatchChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests)
+        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests)
         {
             return new RestierBatchChangeSetRequestItem(changeSetRequests, this.ApiFactory);
         }

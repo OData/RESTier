@@ -54,7 +54,7 @@ namespace Microsoft.Restier.EntityFramework
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
-            // Add core and conversion's services
+            // Add core and convention's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)
                 .AddConventionBasedServices(apiType);

@@ -156,8 +156,8 @@
   <data name="ExpressionMustBeQueryable" xml:space="preserve">
     <value>Expression must be queryable.</value>
   </data>
-  <data name="FilterCannotChangeExpressionType" xml:space="preserve">
-    <value>Process cannot change the expression type.</value>
+  <data name="ProcessorCannotChangeExpressionType" xml:space="preserve">
+    <value>Processor cannot change the expression type.</value>
   </data>
   <data name="InspectionFailed" xml:space="preserve">
     <value>Inspection failed.</value>

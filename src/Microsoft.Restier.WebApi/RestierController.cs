@@ -305,7 +305,7 @@ namespace Microsoft.Restier.WebApi
                 RestierQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 edmEntityObject.CreatePropertyDictionary());
-            updateItem.IsFullReplaceUpdate = isFullReplaceUpdate;
+            updateItem.IsFullReplaceUpdateRequest = isFullReplaceUpdate;
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)

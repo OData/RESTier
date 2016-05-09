@@ -77,7 +77,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ServiceCollectionExtensions.cs" />
-    <Compile Include="Submit\ChangeSetPreparer.cs" />
+    <Compile Include="Submit\ChangeSetInitializer.cs" />
     <Compile Include="Submit\SubmitExecutor.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -39,7 +39,7 @@ namespace Microsoft.Restier.EntityFramework
                 .AddService<IQueryExpressionSourcer, QueryExpressionSourcer>()
                 .AddService<IQueryExecutor, QueryExecutor>()
                 .AddService<IQueryExpressionProcessor, QueryExpressionProcessor>()
-                .AddService<IChangeSetPreparer, ChangeSetPreparer>()
+                .AddService<IChangeSetInitializer, ChangeSetInitializer>()
                 .AddService<ISubmitExecutor, SubmitExecutor>();
         }
     }

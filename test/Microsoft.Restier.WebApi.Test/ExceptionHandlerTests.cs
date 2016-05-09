@@ -42,7 +42,7 @@ namespace Microsoft.Restier.WebApi.Test
 
         private class FakeSourcer : IQueryExpressionSourcer
         {
-            public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
+            public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
             {
                 throw new SecurityException();
             }

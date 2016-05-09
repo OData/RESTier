@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a change set entry authorizer.
+    /// Represents a change set item authorizer.
     /// </summary>
     public interface IChangeSetItemAuthorizer
     {
         /// <summary>
-        /// Asynchronously authorizes the ChangeSetEntry.
+        /// Asynchronously authorizes the ChangeSetItem.
         /// </summary>
         /// <param name="context">
         /// The submit context.

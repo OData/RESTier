@@ -55,15 +55,15 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestQuerySourcer : IQueryExpressionSourcer
         {
-            public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
+            public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
             {
                 return Expression.Constant(new[] {"Test"}.AsQueryable());
             }
         }
 
-        private class TestChangeSetPreparer : IChangeSetPreparer
+        private class TestChangeSetInitializer : IChangeSetInitializer
         {
-            public Task PrepareAsync(SubmitContext context, CancellationToken cancellationToken)
+            public Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
             {
                 context.ChangeSet = new ChangeSet();
                 return Task.FromResult<object>(null);
@@ -85,14 +85,14 @@ namespace Microsoft.Restier.Core.Tests
                 var modelBuilder = new TestModelBuilder();
                 var modelMapper = new TestModelMapper();
                 var querySourcer = new TestQuerySourcer();
-                var changeSetPreparer = new TestChangeSetPreparer();
+                var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
                 services.AddCoreServices(this.GetType());
                 services.AddService<IModelBuilder>((sp, next) => modelBuilder);
                 services.AddService<IModelMapper>((sp, next) => modelMapper);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => querySourcer);
-                services.AddService<IChangeSetPreparer>((sp, next) => changeSetPreparer);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
 
                 return services;
@@ -109,13 +109,13 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var arguments = new object[0];
 
-            var source = api.GetQueryableSourceStub("Test", arguments);
+            var source = api.GetQueryableSource("Test", arguments);
             Assert.Equal(typeof (string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -132,7 +132,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => context.GetQueryableSourceStub("Test", arguments));
+            Assert.Throws<NotSupportedException>(() => context.GetQueryableSource("Test", arguments));
         }
 
         [Fact]
@@ -142,13 +142,13 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSourceStub("Test", arguments);
+            var source = context.GetQueryableSource("Test", arguments);
             Assert.Equal(typeof (string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -164,13 +164,13 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var arguments = new object[0];
 
-            var source = api.GetQueryableSourceStub("Namespace", "Function", arguments);
+            var source = api.GetQueryableSource("Namespace", "Function", arguments);
             Assert.Equal(typeof (DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -189,7 +189,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => context.GetQueryableSourceStub("Namespace", "Function", arguments));
+            Assert.Throws<NotSupportedException>(() => context.GetQueryableSource("Namespace", "Function", arguments));
         }
 
         [Fact]
@@ -199,13 +199,13 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSourceStub("Namespace", "Function", arguments);
+            var source = context.GetQueryableSource("Namespace", "Function", arguments);
             Assert.Equal(typeof (DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -223,13 +223,13 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var arguments = new object[0];
 
-            var source = api.GetQueryableSourceStub<string>("Test", arguments);
+            var source = api.GetQueryableSource<string>("Test", arguments);
             Assert.Equal(typeof (string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -246,7 +246,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => context.GetQueryableSourceStub<object>("Test", arguments));
+            Assert.Throws<ArgumentException>(() => context.GetQueryableSource<object>("Test", arguments));
         }
 
         [Fact]
@@ -256,13 +256,13 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSourceStub<string>("Test", arguments);
+            var source = context.GetQueryableSource<string>("Test", arguments);
             Assert.Equal(typeof (string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -278,14 +278,14 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var arguments = new object[0];
 
-            var source = api.GetQueryableSourceStub<DateTime>(
+            var source = api.GetQueryableSource<DateTime>(
                 "Namespace", "Function", arguments);
             Assert.Equal(typeof (DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -304,7 +304,7 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => context.GetQueryableSourceStub<object>("Namespace", "Function", arguments));
+            Assert.Throws<ArgumentException>(() => context.GetQueryableSource<object>("Namespace", "Function", arguments));
         }
 
         [Fact]
@@ -314,13 +314,13 @@ namespace Microsoft.Restier.Core.Tests
             var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSourceStub<DateTime>("Namespace", "Function", arguments);
+            var source = context.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
             Assert.Equal(typeof (DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
             Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
-            Assert.Equal("GetQueryableSourceStub", methodCall.Method.Name);
+            Assert.Equal("GetQueryableSource", methodCall.Method.Name);
             Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
@@ -338,7 +338,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var context = api.Context;
 
-            var source = context.GetQueryableSourceStub<string>("Test");
+            var source = context.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.GetEnumerator());
         }
 
@@ -348,7 +348,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var context = api.Context;
 
-            var source = context.GetQueryableSourceStub<string>("Test");
+            var source = context.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => (source as IEnumerable).GetEnumerator());
         }
 
@@ -358,7 +358,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var context = api.Context;
 
-            var source = context.GetQueryableSourceStub<string>("Test");
+            var source = context.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute<string>(null));
         }
 
@@ -368,7 +368,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
             var context = api.Context;
 
-            var source = context.GetQueryableSourceStub<string>("Test");
+            var source = context.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute(null));
         }
 
@@ -377,7 +377,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var api = new TestApi();
 
-            var request = new QueryRequest(api.GetQueryableSourceStub<string>("Test"));
+            var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
             var result = await api.Context.QueryAsync(request);
             var results = result.Results.Cast<string>();
 
@@ -390,7 +390,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = new TestApi();
 
             var queryRequest = new QueryRequest(
-                api.GetQueryableSourceStub<string>("Test"));
+                api.GetQueryableSource<string>("Test"));
             var queryResult = await api.QueryAsync(queryRequest);
             Assert.True(queryResult.Results.Cast<string>()
                 .SequenceEqual(new[] {"Test"}));

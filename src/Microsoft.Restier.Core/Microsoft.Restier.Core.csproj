@@ -95,7 +95,7 @@
     <Compile Include="Submit\IChangeSetItemAuthorizer.cs" />
     <Compile Include="Submit\IChangeSetItemProcessor.cs" />
     <Compile Include="Submit\IChangeSetItemValidator.cs" />
-    <Compile Include="Submit\IChangeSetPreparer.cs" />
+    <Compile Include="Submit\IChangeSetInitializer.cs" />
     <Compile Include="Submit\ISubmitExecutor.cs" />
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />

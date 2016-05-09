@@ -22,7 +22,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
     /// </summary>
-    internal class ChangeSetPreparer : IChangeSetPreparer
+    internal class ChangeSetInitializer : IChangeSetInitializer
     {
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
         /// <param name="context">The submit context class used for preparation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public async Task PrepareAsync(
+        public async Task InitializeAsync(
             SubmitContext context,
             CancellationToken cancellationToken)
         {
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
                 object entity;
 
-                if (entry.IsNew)
+                if (entry.IsNewRequest)
                 {
                     entity = set.Create();
 
@@ -52,12 +52,12 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
                     set.Add(entity);
                 }
-                else if (entry.IsDelete)
+                else if (entry.IsDeleteRequest)
                 {
                     entity = await FindEntity(context, entry, cancellationToken);
                     set.Remove(entity);
                 }
-                else if (entry.IsUpdate)
+                else if (entry.IsUpdateRequest)
                 {
                     entity = await FindEntity(context, entry, cancellationToken);
 
@@ -78,7 +78,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.GetQueryableSourceStub(item.EntitySetName);
+            IQueryable query = context.ApiContext.GetQueryableSource(item.EntitySetName);
             query = item.ApplyTo(query);
 
             QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
         private static void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)
         {
-            if (item.IsFullReplaceUpdate)
+            if (item.IsFullReplaceUpdateRequest)
             {
                 // The algorithm for a "FullReplaceUpdate" is taken from ObjectContextServiceProvider.ResetResource
                 // in WCF DS, and works as follows:

@@ -43,7 +43,7 @@ namespace Microsoft.Restier.WebApi.Test
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
             services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer());
-            services.AddService<IChangeSetPreparer>((sp, next) => new TestChangeSetPreparer());
+            services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer());
             services.AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
             return services;
         }
@@ -126,7 +126,7 @@ namespace Microsoft.Restier.WebApi.Test
 
     class TestQueryExpressionSourcer : IQueryExpressionSourcer
     {
-        public Expression ReplaceQueryableSourceStub(QueryExpressionContext context, bool embedded)
+        public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
         {
             var a = new[] { new Product
             {
@@ -147,17 +147,17 @@ namespace Microsoft.Restier.WebApi.Test
 
             if (!embedded)
             {
-                if (context.VisitedNode.ToString() == "GetQueryableSourceStub(\"Products\", null)")
+                if (context.VisitedNode.ToString() == "GetQueryableSource(\"Products\", null)")
                 {
                     return Expression.Constant(a.AsQueryable());
                 }
 
-                if (context.VisitedNode.ToString() == "GetQueryableSourceStub(\"Customers\", null)")
+                if (context.VisitedNode.ToString() == "GetQueryableSource(\"Customers\", null)")
                 {
                     return Expression.Constant(b.AsQueryable());
                 }
 
-                if (context.VisitedNode.ToString() == "GetQueryableSourceStub(\"Stores\", null)")
+                if (context.VisitedNode.ToString() == "GetQueryableSource(\"Stores\", null)")
                 {
                     return Expression.Constant(c.AsQueryable());
                 }
@@ -167,9 +167,9 @@ namespace Microsoft.Restier.WebApi.Test
         }
     }
 
-    class TestChangeSetPreparer : IChangeSetPreparer
+    class TestChangeSetInitializer : IChangeSetInitializer
     {
-        public Task PrepareAsync(SubmitContext context, CancellationToken cancellationToken)
+        public Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {
             var changeSetEntry = context.ChangeSet.Entries.Single();
 

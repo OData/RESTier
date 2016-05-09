@@ -48,22 +48,22 @@ public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Linq.IQueryable GetQueryableSourceStub (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
+	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static IQueryable`1 GetQueryableSourceStub (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
+	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Linq.IQueryable GetQueryableSourceStub (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
+	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static IQueryable`1 GetQueryableSourceStub (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
+	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
@@ -149,22 +149,22 @@ public sealed class Microsoft.Restier.Core.ApiContextExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Linq.IQueryable GetQueryableSourceStub (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
+	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static IQueryable`1 GetQueryableSourceStub (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
+	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static System.Linq.IQueryable GetQueryableSourceStub (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
+	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static IQueryable`1 GetQueryableSourceStub (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
+	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
 
 	[
 	ExtensionAttribute(),
@@ -191,8 +191,8 @@ public sealed class Microsoft.Restier.Core.ApiContextExtensions {
 
 public sealed class Microsoft.Restier.Core.DataSourceStub {
 	public static TResult GetPropertyValue (object source, string propertyName)
-	public static IQueryable`1 GetQueryableSourceStub (string name, object[] arguments)
-	public static IQueryable`1 GetQueryableSourceStub (string namespaceName, string name, object[] arguments)
+	public static IQueryable`1 GetQueryableSource (string name, object[] arguments)
+	public static IQueryable`1 GetQueryableSource (string namespaceName, string name, object[] arguments)
 }
 
 [
@@ -380,7 +380,7 @@ public interface Microsoft.Restier.Core.Query.IQueryExpressionProcessor {
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
-	System.Linq.Expressions.Expression ReplaceQueryableSourceStub (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
+	System.Linq.Expressions.Expression ReplaceQueryableSource (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
 }
 
 public abstract class Microsoft.Restier.Core.Query.QueryModelReference {
@@ -461,6 +461,10 @@ public enum Microsoft.Restier.Core.Submit.ChangeSetItemAction : int {
 	Update = 1
 }
 
+public interface Microsoft.Restier.Core.Submit.IChangeSetInitializer {
+	System.Threading.Tasks.Task InitializeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
+}
+
 public interface Microsoft.Restier.Core.Submit.IChangeSetItemAuthorizer {
 	System.Threading.Tasks.Task`1[[System.Boolean]] AuthorizeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
 }
@@ -472,10 +476,6 @@ public interface Microsoft.Restier.Core.Submit.IChangeSetItemProcessor {
 
 public interface Microsoft.Restier.Core.Submit.IChangeSetItemValidator {
 	System.Threading.Tasks.Task ValidateChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Collections.ObjectModel.Collection`1[[Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult]] validationResults, System.Threading.CancellationToken cancellationToken)
-}
-
-public interface Microsoft.Restier.Core.Submit.IChangeSetPreparer {
-	System.Threading.Tasks.Task PrepareAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
 }
 
 public interface Microsoft.Restier.Core.Submit.ISubmitExecutor {
@@ -492,8 +492,6 @@ public class Microsoft.Restier.Core.Submit.ActionInvocationItem : Microsoft.Rest
 	string ActionName  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Collections.Generic.IDictionary`2[[System.String],[System.Object]] Arguments  { [CompilerGeneratedAttribute(),]public get; }
 	object Result  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-
-	public object[] GetArgumentArray ()
 }
 
 public class Microsoft.Restier.Core.Submit.ChangeSet {
@@ -530,10 +528,10 @@ public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Rest
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] EntityKey  { [CompilerGeneratedAttribute(),]public get; }
 	string EntitySetName  { [CompilerGeneratedAttribute(),]public get; }
 	string EntityTypeName  { [CompilerGeneratedAttribute(),]public get; }
-	bool IsDelete  { public get; }
-	bool IsFullReplaceUpdate  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	bool IsNew  { public get; }
-	bool IsUpdate  { public get; }
+	bool IsDeleteRequest  { public get; }
+	bool IsFullReplaceUpdateRequest  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	bool IsNewRequest  { public get; }
+	bool IsUpdateRequest  { public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] LocalValues  { [CompilerGeneratedAttribute(),]public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] OriginalValues  { [CompilerGeneratedAttribute(),]public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] ServerValues  { [CompilerGeneratedAttribute(),]public get; }
@@ -577,7 +575,7 @@ public class Microsoft.Restier.WebApi.Batch.RestierBatchHandler : System.Web.ODa
 
 	System.Func`1[[Microsoft.Restier.Core.ApiBase]] ApiFactory  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 
-	protected virtual System.Web.OData.Batch.ChangeSetRequestItem CreateBatchChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
+	protected virtual Microsoft.Restier.WebApi.Batch.RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
 	[
 	AsyncStateMachineAttribute(),
 	]
