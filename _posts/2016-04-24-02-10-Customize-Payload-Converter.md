@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "2.8 Customize Payload Converter [>=0.5.0]"
+title: "2.10 Customize Payload Converter [>=0.5.0]"
 description: ""
 category: "2. Features"
 ---
 
-RESTier supports to customize the payload to be read or written (a.k.a serialize and deserialize), user can extands the class RestierPayloadValueConverter to overwrite method ConvertToPayloadValue for payload writing and ConvertFromPayloadValue for payload reading.
+RESTier supports to customize the payload to be read or written (a.k.a serialize and deserialize), user can extend the class RestierPayloadValueConverter to overwrite method ConvertToPayloadValue for payload writing and ConvertFromPayloadValue for payload reading.
 
 This is an example on how to customize a specified string value to add some prefix and write into response, refer to this [**link**](https://github.com/OData/RESTier/blob/master/test/ODataEndToEndTests/Microsoft.Restier.WebApi.Test.Services.Trippin/Models/CustomizedPayloadValueConverter.cs) to see the end to end samples,
 
@@ -34,7 +34,7 @@ This is an example on how to customize a specified string value to add some pref
     }
 {% endhighlight %}
 
-**2.** Register customized converter into RESTier Depenedncy Injection framework as a service via overriding the ConfigureApi method in your Api class.
+**2.** Register customized converter into RESTier Dependency Injection framework as a service via overriding the ConfigureApi method in your Api class.
 
 {% highlight csharp %}
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
