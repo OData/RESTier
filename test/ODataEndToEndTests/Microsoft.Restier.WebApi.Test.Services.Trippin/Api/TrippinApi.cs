@@ -9,9 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.WebApi.Model;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Submit;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 {
@@ -142,8 +144,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-
-            // Add OData Query Settings and valiadtion settings
+            // Add customized OData valiadtion settings 
             Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = (sp) => new ODataValidationSettings
             {
                 MaxAnyAllExpressionDepth =3,
@@ -152,7 +153,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 
             return base.ConfigureApi(services)
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
-                .AddSingleton<ODataValidationSettings>(validationSettingFactory);
+                .AddSingleton<ODataValidationSettings>(validationSettingFactory)
+                .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>();
         }
     }
 }

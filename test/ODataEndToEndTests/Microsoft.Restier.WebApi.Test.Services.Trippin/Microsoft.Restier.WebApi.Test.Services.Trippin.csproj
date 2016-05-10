@@ -64,6 +64,7 @@
     <Compile Include="Models\Trip.cs" />
     <Compile Include="Models\TrippinModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Submit\CustomizedSubmitProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
