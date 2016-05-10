@@ -35,7 +35,7 @@ Then $expand with supported with max two nested $expand via only max one nested 
 
 **2. Customize Query Logic**
 
-RESTier supports built in conversion based query customized logic (refer to [section 2.2](http://odata.github.io/RESTier/#02-02-entity-set-filters-new)), besides this, RESTier has two interfaces IQueryExpressionAuthorizer and IQueryExpressionProcessor for end user to further customize the query process logic.
+RESTier supports built in convention based query customized logic (refer to [section 2.2](http://odata.github.io/RESTier/#02-02-entity-set-filters-new)), besides this, RESTier has two interfaces IQueryExpressionAuthorizer and IQueryExpressionProcessor for end user to further customize the query process logic.
 
 **Customized Authorize Logic**
 

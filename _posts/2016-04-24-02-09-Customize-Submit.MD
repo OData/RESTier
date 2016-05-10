@@ -5,7 +5,7 @@ description: ""
 category: "2. Features"
 ---
 
-RESTier supports built in conversion based logic (refer to [section 2.3](http://odata.github.io/RESTier/#02-02-Submit-Logic)) for submit, besides this, RESTier has three interfaces IChangeSetItemAuthorizer, IChangeSetItemValidator and IChangeSetItemProcessor for end user to customize the logic.
+RESTier supports built in convention based logic (refer to [section 2.3](http://odata.github.io/RESTier/#02-02-Submit-Logic)) for submit, besides this, RESTier has three interfaces IChangeSetItemAuthorizer, IChangeSetItemValidator and IChangeSetItemProcessor for end user to customize the logic.
 
 **Customized Authorize Logic**
 
