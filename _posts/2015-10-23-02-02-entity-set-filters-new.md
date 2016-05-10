@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace AdventureWorksLTSample.Models
 {
-    public class AdventureWorksApi : DbApi<AdventureWorksContext>
+    public class AdventureWorksApi : EntityFrameworkApi<AdventureWorksContext>
     {
         protected IQueryable<Product> OnFilterProducts(IQueryable<Product> entitySet)
         {

@@ -1,10 +1,15 @@
 ---
 layout: post
-title: "2.1 Role Based Security"
+title: "2.1 Security (>=0.4.0)"
 description: ""
 category: "2. Features"
 ---
 
-Currently the quality of the role-based security module is **NOT** guaranteed and this module will **NOT** be shipped with regular RESTier releases. Please use it at your own risk.
+**Authentication (>=0.4.0)**
+REStier is transparent to security now, any security configurations / methodology working for Web APi will work for RESTier. 
 
-For example code, please refer to [NorthwindApi](https://github.com/OData/RESTier/blob/master/src/Microsoft.Restier.Samples.Northwind/Models/NorthwindApi.cs#L14-L24).
+
+**RESTier Role Based Security [0.4.0-beta only]**
+Currently the quality of the RESTier role-based security module is **NOT** guaranteed and this module will **NOT** be shipped with regular RESTier releases and will not be part of first GA release. Please use it at your own risk.
+
+For example code, please refer to [NorthwindApi](https://github.com/OData/RESTier/blob/master/test/ODataEndToEndTests/Microsoft.Restier.Samples.Northwind/Models/NorthwindApi.cs#L22-L32).
