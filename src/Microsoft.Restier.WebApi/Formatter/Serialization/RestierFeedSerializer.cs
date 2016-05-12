@@ -2,8 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Web.OData.Formatter.Serialization;
+using System.Web.OData.Query.Expressions;
 using Microsoft.OData.Core;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.WebApi.Results;
 
 namespace Microsoft.Restier.WebApi.Formatter.Serialization
@@ -40,9 +43,35 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;
+                if (WriteAggregationResult(graph, type, messageWriter, writeContext, collectionResult.EdmType))
+                {
+                    return;
+                }
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);
+        }
+        
+        private bool WriteAggregationResult(
+            object graph,
+            Type type,
+            ODataMessageWriter messageWriter,
+            ODataSerializerContext writeContext,
+            IEdmTypeReference feedType)
+        {
+            if (typeof(IEnumerable<DynamicTypeWrapper>).IsAssignableFrom(type))
+            {
+                var entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
+                IEdmTypeReference elementType = feedType.AsCollection().ElementType();
+                if (elementType.IsEntity())
+                {
+                    IEdmEntityTypeReference entityType = elementType.AsEntity();
+                    ODataWriter writer = messageWriter.CreateODataFeedWriter(entitySet, entityType.EntityDefinition());
+                    base.WriteObjectInline(graph, feedType, writer, writeContext);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

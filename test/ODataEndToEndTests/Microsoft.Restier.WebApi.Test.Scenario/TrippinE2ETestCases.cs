@@ -1001,5 +1001,14 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             this.TestGetPayloadDoesNotContain(uriStringAfterServiceRoot, "@odata.count");
         }
+
+        [Theory]
+        [InlineData("People?$apply=aggregate(Concurrency with sum as Result)", "Result")]
+        [InlineData("People?$apply=aggregate(PersonId with sum as Total)/filter(Total eq 78)", "Total")]
+        [InlineData("People?$apply=groupby((FirstName), aggregate(PersonId with sum as Total))", "Total")]
+        public void TestApplyQueryOption(string uriStringAfterServiceRoot, string expectedSubString)
+        {
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
+        }
     }
 }
