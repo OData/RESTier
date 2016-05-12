@@ -43,7 +43,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;
-                if (WriteAggregationResult(graph, type, messageWriter, writeContext, collectionResult.EdmType))
+                if (TryWriteAggregationResult(graph, type, messageWriter, writeContext, collectionResult.EdmType))
                 {
                     return;
                 }
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             base.WriteObject(graph, type, messageWriter, writeContext);
         }
         
-        private bool WriteAggregationResult(
+        private bool TryWriteAggregationResult(
             object graph,
             Type type,
             ODataMessageWriter messageWriter,
@@ -61,16 +61,17 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         {
             if (typeof(IEnumerable<DynamicTypeWrapper>).IsAssignableFrom(type))
             {
-                var entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
                 IEdmTypeReference elementType = feedType.AsCollection().ElementType();
                 if (elementType.IsEntity())
                 {
+                    IEdmEntitySetBase entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
                     IEdmEntityTypeReference entityType = elementType.AsEntity();
                     ODataWriter writer = messageWriter.CreateODataFeedWriter(entitySet, entityType.EntityDefinition());
                     base.WriteObjectInline(graph, feedType, writer, writeContext);
                     return true;
                 }
             }
+
             return false;
         }
     }
