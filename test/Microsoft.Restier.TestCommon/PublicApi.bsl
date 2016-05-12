@@ -309,6 +309,17 @@ public class Microsoft.Restier.EntityFramework.EntityFrameworkApi`1 : Microsoft.
 	protected virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
+[
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.WebApi.ServiceCollectionExtensions {
+	[
+	CLSCompliantAttribute(),
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddODataServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+}
+
 public class Microsoft.Restier.WebApi.RestierPayloadValueConverter : Microsoft.OData.Core.ODataPayloadValueConverter {
 	public RestierPayloadValueConverter ()
 
@@ -354,12 +365,18 @@ public sealed class Microsoft.Restier.WebApi.RestierController : System.Web.ODat
 }
 
 public interface Microsoft.Restier.Core.Model.IModelBuilder {
-	System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.InvocationContext context, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.Model.ModelContext context, System.Threading.CancellationToken cancellationToken)
 }
 
 public interface Microsoft.Restier.Core.Model.IModelMapper {
 	bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string name, out System.Type& relevantType)
 	bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, out System.Type& relevantType)
+}
+
+public class Microsoft.Restier.Core.Model.ModelContext : Microsoft.Restier.Core.InvocationContext {
+	public ModelContext (Microsoft.Restier.Core.ApiContext apiContext)
+
+	System.Collections.ObjectModel.Collection`1[[System.Collections.Generic.KeyValuePair`2[[System.String],[System.Type]]]] EntitySetTypeMapCollection  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExecutor {
@@ -433,6 +450,7 @@ public class Microsoft.Restier.Core.Query.QueryExpressionContext {
 	Microsoft.Restier.Core.Query.QueryContext QueryContext  { [CompilerGeneratedAttribute(),]public get; }
 	System.Linq.Expressions.Expression VisitedNode  { public get; }
 
+	public Microsoft.Restier.Core.Query.QueryModelReference GetModelReferenceForNode (System.Linq.Expressions.Expression node)
 	public void PopVisitedNode ()
 	public void PushVisitedNode (System.Linq.Expressions.Expression visitedNode)
 	public void ReplaceVisitedNode (System.Linq.Expressions.Expression visitedNode)

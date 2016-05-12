@@ -144,7 +144,7 @@ namespace Microsoft.Restier.Core.Query
         /// A reference to the model element
         /// that represents the expression node.
         /// </returns>
-        private QueryModelReference GetModelReferenceForNode(Expression node)
+        public QueryModelReference GetModelReferenceForNode(Expression node)
         {
             QueryModelReference modelReference = null;
             if (node != null)

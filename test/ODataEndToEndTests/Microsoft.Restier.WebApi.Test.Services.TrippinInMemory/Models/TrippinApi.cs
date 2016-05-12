@@ -187,7 +187,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
 
         private class ModelBuilder : IModelBuilder
         {
-            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var services = new ODataConventionModelBuilder();
                 services.EntityType<Person>();

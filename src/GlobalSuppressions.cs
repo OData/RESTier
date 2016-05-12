@@ -29,7 +29,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#MakeScoped`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.Core.ServiceCollectionExtensions.#MakeTransient`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.EntityFramework.ServiceCollectionExtensions.#AddEfProviderServices`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.WebApi.ServiceCollectionExtensions.#AddWebApiServices`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.WebApi.ServiceCollectionExtensions.#AddODataServices`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.WebApi.Routing.HttpConfigurationExtensions.#MapRestierRoute`1(System.Web.Http.HttpConfiguration,System.String,System.String,System.Func`1<Microsoft.Restier.Core.ApiBase>,Microsoft.Restier.WebApi.Batch.RestierBatchHandler)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Scope = "member", Target = "Microsoft.Restier.WebApi.Routing.HttpConfigurationExtensions.#MapRestierRoute`1(System.Web.Http.HttpConfiguration,System.String,System.String,Microsoft.Restier.WebApi.Batch.RestierBatchHandler)")]
 #endregion
@@ -38,6 +38,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.ApiBaseExtensions.#QueryAsync`1(Microsoft.Restier.Core.ApiBase,System.Linq.IQueryable`1<!!0>,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.ApiBaseExtensions.#QueryAsync`2(Microsoft.Restier.Core.ApiBase,System.Linq.IQueryable`1<!!0>,System.Linq.Expressions.Expression`1<System.Func`2<System.Linq.IQueryable`1<!!0>,!!1>>,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.Query.QueryRequest.#Create`2(System.Linq.IQueryable`1<!!0>,System.Linq.Expressions.Expression`1<System.Func`2<System.Linq.IQueryable`1<!!0>,!!1>>,System.Nullable`1<System.Boolean>)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntitySetTypeMapCollection")]
 #endregion
 
 #region CA1020 Few types in namespace
@@ -110,6 +111,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Filters.ValidationResultDto.#PropertyName")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Filters.ValidationResultDto.#Message")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Filters.ValidationResultDto.#Id")]
+[assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Model.RestierModelBuilder.#InnerModelBuilder")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Model.RestierModelExtender+ModelBuilder.#.ctor(Microsoft.Restier.WebApi.Model.RestierModelExtender)")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Model.RestierModelExtender+ModelBuilder.#InnerModelBuilder")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.WebApi.Model.RestierModelExtender+ModelBuilder.#ModelCache")]
@@ -139,6 +141,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.ApiContext.#.ctor(Microsoft.Restier.Core.ApiConfiguration)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.QueryableSource.#System.Linq.IQueryProvider.CreateQuery`1(System.Linq.Expressions.Expression)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.QueryableSource.#System.Linq.IQueryProvider.CreateQuery(System.Linq.Expressions.Expression)")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntitySetTypeMapCollection")]
 #endregion
 
 #region CA1801 Unused Parameters
@@ -181,6 +184,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.ApiBase+ApiHolder")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.Conventions.ConventionBasedChangeSetItemValidator")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.PropertyBag")]
+[assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.EntityFramework.Model.ModelProducer")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.EntityFramework.Query.QueryExpressionProcessor")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.WebApi.Model.RestierModelExtender+QueryExpressionExpander")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.WebApi.Model.RestierModelExtender+QueryExpressionSourcer")]

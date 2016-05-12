@@ -66,6 +66,7 @@
     <Compile Include="ApiConfiguratorAttribute.cs" />
     <Compile Include="InvocationContext.cs" />
     <Compile Include="InvocationContextExtensions.cs" />
+    <Compile Include="Model\ModelContext.cs" />
     <Compile Include="ServiceCollectionExtensions.cs" />
     <Compile Include="Model\IModelBuilder.cs" />
     <Compile Include="Model\IModelMapper.cs" />

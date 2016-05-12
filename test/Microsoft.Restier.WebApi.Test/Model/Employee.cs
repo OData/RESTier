@@ -1,16 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System.Collections.Generic;
+using System;
 
-namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
+namespace Microsoft.Restier.WebApi.Test.Model
 {
-    class Publisher
+    class Employee
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
+
+        public string FullName { get; set; }
 
         public Address Addr { get; set; }
 
-        public virtual ICollection<Book> Books { get; set; }
+        public Universe Universe { get; set; }
     }
 }

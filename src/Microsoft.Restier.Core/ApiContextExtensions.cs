@@ -201,7 +201,7 @@ namespace Microsoft.Restier.Core
 
             try
             {
-                var buildContext = new InvocationContext(context);
+                var buildContext = new ModelContext(context);
                 var model = await builder.GetModelAsync(buildContext, cancellationToken);
                 source.SetResult(model);
                 return model;

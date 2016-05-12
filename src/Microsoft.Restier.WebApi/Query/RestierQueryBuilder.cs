@@ -275,7 +275,7 @@ namespace Microsoft.Restier.WebApi.Query
                 Expression.Property(entityParameterExpression, propertySegment.PropertyName);
 
             // Check whether property is null or not before futher selection
-            if (propertySegment.Property.Type.IsNullable)
+            if (propertySegment.Property.Type.IsNullable && !propertySegment.Property.Type.IsPrimitive())
             {
                 var whereExpression =
                     CreateNotEqualsNullExpression(structuralPropertyExpression, entityParameterExpression);

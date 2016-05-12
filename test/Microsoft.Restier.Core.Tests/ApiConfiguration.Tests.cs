@@ -120,7 +120,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestModelBuilder : IModelBuilder
         {
-            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
             }

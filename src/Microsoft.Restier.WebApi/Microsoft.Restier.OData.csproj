@@ -82,6 +82,7 @@
     <Compile Include="Formatter\Serialization\RestierSerializerProviderProxy.cs" />
     <Compile Include="Model\ApiConfigurationExtensions.cs" />
     <Compile Include="Model\OperationAttribute.cs" />
+    <Compile Include="Model\RestierModelBuilder.cs" />
     <Compile Include="Model\RestierModelExtender.cs" />
     <Compile Include="Model\RestierOperationModelBuilder.cs" />
     <Compile Include="Formatter\Deserialization\DefaultRestierDeserializerProvider.cs" />

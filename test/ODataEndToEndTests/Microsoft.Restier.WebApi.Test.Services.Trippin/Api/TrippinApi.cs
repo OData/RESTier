@@ -4,9 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.OData;
+using System.Web.OData.Builder;
 using System.Web.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
+using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm.Library.Annotations;
+using Microsoft.OData.Edm.Library.Values;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
@@ -154,7 +163,31 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
             return base.ConfigureApi(services)
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
-                .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>();
+                .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
+                .AddService<IModelBuilder, TrippinModelExtender>();
+        }
+
+
+        private class TrippinModelExtender : IModelBuilder
+        {
+            public IModelBuilder InnerHandler { get; set; }
+
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+            {
+                var model = await InnerHandler.GetModelAsync(context, cancellationToken);
+
+                // Set computed annotation
+                var tripType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Trip");
+                var trackGuidProperty = tripType.DeclaredProperties.Single(prop => prop.Name == "TrackGuid");
+                var timeStampValueProp= model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
+                var term = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
+                var anno1 = new EdmAnnotation(trackGuidProperty, term, new EdmBooleanConstant(true));
+                var anno2 = new EdmAnnotation(timeStampValueProp, term, new EdmBooleanConstant(true));
+                ((EdmModel)model).SetVocabularyAnnotation(anno1);
+                ((EdmModel)model).SetVocabularyAnnotation(anno2);
+
+                return model;
+            }
         }
     }
 }

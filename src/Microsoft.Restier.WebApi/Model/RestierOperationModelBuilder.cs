@@ -37,7 +37,7 @@ namespace Microsoft.Restier.WebApi.Model
             });
         }
 
-        public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+        public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             EdmModel model = null;
             if (this.InnerHandler != null)

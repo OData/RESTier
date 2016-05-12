@@ -68,17 +68,27 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
             // As per kb321843, manually handle dropping Friends constraint before cleaning up People table.
             instance.Database.ExecuteSqlCommand("DELETE FROM PersonFriends");
+
+            // Discard all local changes, and reload data from DB, them remove all
+            foreach (var x in instance.People)
+            {
+                // Discard local changes for the person..
+                instance.Entry(x).State = EntityState.Detached;
+            }
+
             instance.People.RemoveRange(instance.People);
             instance.Orders.RemoveRange(instance.Orders);
             instance.Flights.RemoveRange(instance.Flights);
             instance.Airlines.RemoveRange(instance.Airlines);
             instance.Airports.RemoveRange(instance.Airports);
             instance.Trips.RemoveRange(instance.Trips);
-            Instance.Events.RemoveRange(instance.Events);
+            instance.Events.RemoveRange(instance.Events);
+
             // This is to set the People Id from 0
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('People', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Flights', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('TripsTable', RESEED, 0)");
+
             instance.SaveChanges();
 
             #region Airports

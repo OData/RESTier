@@ -5,6 +5,7 @@ using System.Web.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.WebApi.Formatter.Deserialization;
 using Microsoft.Restier.WebApi.Formatter.Serialization;
@@ -13,9 +14,10 @@ using Microsoft.Restier.WebApi.Query;
 
 namespace Microsoft.Restier.WebApi
 {
-    internal static class ServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddWebApiServices<T>(this IServiceCollection services)
+        [CLSCompliant(false)]
+        public static IServiceCollection AddODataServices<T>(this IServiceCollection services)
         {
             if (services.HasService<RestierQueryExecutor>())
             {
@@ -23,6 +25,7 @@ namespace Microsoft.Restier.WebApi
                 return services;
             }
 
+            services.AddService<IModelBuilder, RestierModelBuilder>();
             RestierModelExtender.ApplyTo(services, typeof(T));
             RestierOperationModelBuilder.ApplyTo(services, typeof(T));
 

@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0-rc1-final\lib\net451\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
@@ -95,9 +98,17 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Model\Address.cs" />
+    <Compile Include="Model\Book.cs" />
+    <Compile Include="Model\LibraryApi.cs" />
+    <Compile Include="Model\LibraryContext.cs" />
+    <Compile Include="Model\RestierModelBuilderTests.cs" />
+    <Compile Include="Model\Employee.cs" />
+    <Compile Include="Model\Publisher.cs" />
     <Compile Include="Model\RestierModelExtender.Tests.cs" />
     <Compile Include="FallbackTests.cs" />
     <Compile Include="ExceptionHandlerTests.cs" />
+    <Compile Include="Model\Universe.cs" />
     <Compile Include="RestierQueryBuilderTests.cs" />
     <Compile Include="RestierControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -111,6 +122,10 @@
     <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</Project>
       <Name>Microsoft.Restier.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
+      <Project>{F7EC910E-17CE-4579-84C5-36D3777B3218}</Project>
+      <Name>Microsoft.Restier.EntityFramework</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
       <Project>{186F667E-54E5-4B57-9998-21D74CB77C24}</Project>

@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData;
+using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
@@ -81,10 +83,12 @@ namespace Microsoft.Restier.Samples.Northwind.Models
             services.AddEfProviderServices<NorthwindContext>();
 
             // Add customized services, after EF model builder and before WebApi operation model builder
+            // This can be added after base.ConfigureApi,
+            // add in middle just used as a sample on how to add service in middle of different RESTier services.
             services.AddService<IModelBuilder, NorthwindModelExtender>();
 
             // This is used to add the publisher's services
-            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
+            services.AddODataServices<NorthwindApi>();
 
             return services;
         }
@@ -115,9 +119,39 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         {
             public IModelBuilder InnerHandler { get; set; }
 
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var model = await InnerHandler.GetModelAsync(context, cancellationToken);
+
+                // EF Model builder does not build model any more but just entity set name and entity type map
+                if (model == null)
+                {
+                    var collection = context.EntitySetTypeMapCollection;
+                    if (collection == null || collection.Count == 0)
+                    {
+                        return null;
+                    }
+
+                    // Collection is set by EF now, and EF model producer will not build model any more
+                    var builder = new ODataConventionModelBuilder();
+                    MethodInfo method = typeof (ODataConventionModelBuilder).GetMethod("EntitySet",
+                        BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+
+                    foreach (var pair in collection)
+                    {
+                        //Build a method with the specific type argument you're interested in
+                        var specifiedMethod = method.MakeGenericMethod(pair.Value);
+                        var parameters = new object[]
+                        {
+                            pair.Key
+                        };
+                        specifiedMethod.Invoke(builder, parameters);
+                    }
+
+                    // Clear the map collection to make RESTier model builder will not build the model again.
+                    context.EntitySetTypeMapCollection.Clear();
+                    model = builder.GetEdmModel();
+                }
 
                 // Way 2: enable auto-expand through model annotation.
                 var orderType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Order");

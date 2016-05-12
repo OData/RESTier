@@ -3,10 +3,9 @@
 
 using System;
 using System.Data.Entity;
-using System.IO;
 using Microsoft.OData.Edm.Library;
 
-namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
+namespace Microsoft.Restier.WebApi.Test.Model
 {
     class LibraryContext : DbContext
     {
@@ -15,15 +14,19 @@ namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
         {
             Database.SetInitializer(new TestInitializer());
         }
-        
-        public IDbSet<Person> Readers { get; set; }
+
+        public IDbSet<Book> Books { get; set; }
+
+        public IDbSet<Publisher> Publishers { get; set; }
+
+        public IDbSet<Employee> Readers { get; set; }
     }
 
     class TestInitializer : DropCreateDatabaseAlways<LibraryContext>
     {
         protected override void Seed(LibraryContext context)
         {
-            context.Readers.Add(new Person
+            context.Readers.Add(new Employee
             {
                 Addr = new Address { Street = "street1" }, 
                 FullName = "p1",

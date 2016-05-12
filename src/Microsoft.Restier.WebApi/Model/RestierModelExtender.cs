@@ -310,7 +310,7 @@ namespace Microsoft.Restier.WebApi.Model
             private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 Ensure.NotNull(context, "context");
 
@@ -337,7 +337,7 @@ namespace Microsoft.Restier.WebApi.Model
             }
 
             private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(
-                InvocationContext context, CancellationToken cancellationToken)
+                ModelContext context, CancellationToken cancellationToken)
             {
                 var innerHandler = InnerModelBuilder;
                 if (innerHandler != null)

@@ -47,7 +47,7 @@ namespace Microsoft.Restier.WebApi.Routing
             // Callback is called by ApiBase.AddApiServices method to add real services.
             ApiConfiguration.AddPublisherServices<TApi>(services =>
             {
-                services.AddWebApiServices<TApi>();
+                services.AddODataServices<TApi>();
             });
             using (var api = apiFactory())
             {

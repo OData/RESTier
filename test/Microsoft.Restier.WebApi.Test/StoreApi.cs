@@ -118,7 +118,7 @@ namespace Microsoft.Restier.WebApi.Test
             this.model = model;
         }
 
-        public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+        public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             return Task.FromResult<IEdmModel>(model);
         }

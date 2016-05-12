@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private class TestModelProducer : IModelBuilder
         {
-            public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
                 var entityType = new EdmEntityType(
@@ -80,7 +80,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
             public IModelBuilder InnerHandler { get; set; }
 
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 IEdmModel innerModel = null;
                 if (this.InnerHandler != null)
@@ -129,7 +129,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             public int CalledCount;
 
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 await Task.Delay(30);
 
@@ -188,7 +188,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             public int CalledCount;
 
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 if (CalledCount++ == 0)
                 {

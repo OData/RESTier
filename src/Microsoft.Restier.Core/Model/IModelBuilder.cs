@@ -25,6 +25,6 @@ namespace Microsoft.Restier.Core.Model
         /// A task that represents the asynchronous
         /// operation whose result is the API model.
         /// </returns>
-        Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken);
+        Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken);
     }
 }
