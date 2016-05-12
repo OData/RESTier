@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a change set entry filter.
+    /// Represents a change set item processor.
     /// </summary>
     public interface IChangeSetItemProcessor
     {

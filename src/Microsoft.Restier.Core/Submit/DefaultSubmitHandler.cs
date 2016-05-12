@@ -186,29 +186,29 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            foreach (ChangeSetItem entry in changeSetItems)
+            foreach (ChangeSetItem item in changeSetItems)
             {
-                if (entry.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Validated)
+                if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Validated)
                 {
-                    entry.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
+                    item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
 
-                    var filter = context.GetApiService<IChangeSetItemProcessor>();
-                    if (filter != null)
+                    var processor = context.GetApiService<IChangeSetItemProcessor>();
+                    if (processor != null)
                     {
-                        await filter.OnProcessingChangeSetItemAsync(context, entry, cancellationToken);
+                        await processor.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
                     }
 
-                    if (entry.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
+                    if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
                     {
                         // if the state is still the intermediate state,
                         // the entity was not changed during processing
                         // and can move to the next step
-                        entry.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEvented;
+                        item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEvented;
                     }
-                    else if (entry.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Changed /*&&
+                    else if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Initialized /*&&
                         entity.Details.EntityState == originalEntityState*/)
                     {
-                        entry.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.ChangedWithinOwnPreEventing;
+                        item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.ChangedWithinOwnPreEventing;
                     }
                 }
             }
@@ -255,12 +255,12 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            foreach (ChangeSetItem entry in changeSetItems)
+            foreach (ChangeSetItem item in changeSetItems)
             {
-                var filter = context.GetApiService<IChangeSetItemProcessor>();
-                if (filter != null)
+                var processor = context.GetApiService<IChangeSetItemProcessor>();
+                if (processor != null)
                 {
-                    await filter.OnProcessedChangeSetItemAsync(context, entry, cancellationToken);
+                    await processor.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
                 }
             }
         }

@@ -32,9 +32,9 @@ namespace Microsoft.Restier.Core.Submit
     internal enum ChangeSetItemProcessingStage
     {
         /// <summary>
-        /// If an entity has changed it gets this state
+        /// If an new change set item is created
         /// </summary>
-        Changed,
+        Initialized,
 
         /// <summary>
         /// The entity has been validated.
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             this.Type = type;
 
-            this.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.Changed;
+            this.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.Initialized;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public bool HasChanged()
         {
-            return this.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Changed ||
+            return this.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Initialized ||
                 this.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.ChangedWithinOwnPreEventing;
         }
     }
