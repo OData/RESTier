@@ -36,6 +36,6 @@ namespace Microsoft.Restier.WebApi.Model
         /// If a operation does not have side effect, it means it is a function.
         /// If a operation has side effect, it means it is a action.
         /// </summary>
-        public bool HasSideEffects { get; set; } = false;
+        public bool HasSideEffects { get; set; }
     }
 }
