@@ -3,7 +3,7 @@
 
 namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
 {
-    class LibraryApi : DbApi<LibraryContext>
+    class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
     }
 }

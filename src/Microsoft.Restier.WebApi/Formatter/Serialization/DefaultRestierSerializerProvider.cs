@@ -21,7 +21,18 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
         private RestierComplexTypeSerializer complexTypeSerializer;
         private RestierCollectionSerializer collectionSerializer;
         private RestierEnumSerializer enumSerializer;
+        private static readonly DefaultRestierSerializerProvider _instance = new DefaultRestierSerializerProvider();
 
+        /// <summary>
+        /// Gets the default instance of the <see cref="DefaultRestierSerializerProvider"/>.
+        /// </summary>
+        internal static DefaultRestierSerializerProvider SingletonInstance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
         /// </summary>
@@ -48,38 +59,38 @@ namespace Microsoft.Restier.WebApi.Formatter.Serialization
             Type type,
             HttpRequestMessage request)
         {
-            ODataSerializer serializer = base.GetODataPayloadSerializer(model, type, request);
-
-            if (serializer == null)
+            ODataSerializer serializer = null;
+            if (type == typeof (EntityCollectionResult))
             {
-                if (type == typeof(EntityCollectionResult))
-                {
-                    serializer = this.feedSerializer;
-                }
-                else if (type == typeof(EntityResult))
-                {
-                    serializer = this.entityTypeSerializer;
-                }
-                else if (type == typeof(PrimitiveResult))
-                {
-                    serializer = this.primitiveSerializer;
-                }
-                else if (type == typeof(RawResult))
-                {
-                    serializer = this.rawSerializer;
-                }
-                else if (type == typeof(ComplexResult))
-                {
-                    serializer = this.complexTypeSerializer;
-                }
-                else if (type == typeof(NonEntityCollectionResult))
-                {
-                    serializer = this.collectionSerializer;
-                }
-                else if (type == typeof(EnumResult))
-                {
-                    serializer = this.enumSerializer;
-                }
+                serializer = this.feedSerializer;
+            }
+            else if (type == typeof (EntityResult))
+            {
+                serializer = this.entityTypeSerializer;
+            }
+            else if (type == typeof (PrimitiveResult))
+            {
+                serializer = this.primitiveSerializer;
+            }
+            else if (type == typeof (RawResult))
+            {
+                serializer = this.rawSerializer;
+            }
+            else if (type == typeof (ComplexResult))
+            {
+                serializer = this.complexTypeSerializer;
+            }
+            else if (type == typeof (NonEntityCollectionResult))
+            {
+                serializer = this.collectionSerializer;
+            }
+            else if (type == typeof (EnumResult))
+            {
+                serializer = this.enumSerializer;
+            }
+            else
+            {
+                serializer = base.GetODataPayloadSerializer(model, type, request);
             }
 
             return serializer;

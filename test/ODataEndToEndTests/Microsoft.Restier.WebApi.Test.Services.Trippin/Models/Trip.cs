@@ -16,7 +16,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public Guid? TrackGuid { get; set; }
 
-        public int? PersonId { get; set; }
+        public long? PersonId { get; set; }
 
         public Guid ShareId { get; set; }
 

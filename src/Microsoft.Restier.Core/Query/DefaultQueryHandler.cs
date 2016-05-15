@@ -80,11 +80,11 @@ namespace Microsoft.Restier.Core.Query
             else
             {
                 var method = typeof(IQueryExecutor)
-                    .GetMethod("ExecuteSingleAsync")
+                    .GetMethod("ExecuteExpressionAsync")
                     .MakeGenericMethod(expression.Type);
                 var parameters = new object[]
                 {
-                    context, visitor.BaseQuery, expression, cancellationToken
+                    context, visitor.BaseQuery.Provider, expression, cancellationToken
                 };
                 var task = method.Invoke(executor, parameters) as Task<QueryResult>;
                 result = await task;
@@ -102,9 +102,9 @@ namespace Microsoft.Restier.Core.Query
         {
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
-            private IQueryExpressionInspector inspector;
+            private IQueryExpressionAuthorizer authorizer;
             private IQueryExpressionExpander expander;
-            private IQueryExpressionFilter filter;
+            private IQueryExpressionProcessor processor;
             private IQueryExpressionSourcer sourcer;
 
             public QueryExpressionVisitor(QueryContext context)
@@ -155,8 +155,8 @@ namespace Microsoft.Restier.Core.Query
                         node = this.Expand(visited);
                     }
 
-                    // Filter the visited node
-                    node = this.Filter(visited, node);
+                    // Process the visited node
+                    node = this.Process(visited, node);
                 }
 
                 if (visited == node)
@@ -205,12 +205,12 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                if (this.inspector == null)
+                if (this.authorizer == null)
                 {
-                    this.inspector = this.context.QueryContext.GetApiService<IQueryExpressionInspector>();
+                    this.authorizer = this.context.QueryContext.GetApiService<IQueryExpressionAuthorizer>();
                 }
 
-                if (this.inspector != null && !this.inspector.Inspect(this.context))
+                if (this.authorizer != null && !this.authorizer.Authorize(this.context))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }
@@ -254,16 +254,16 @@ namespace Microsoft.Restier.Core.Query
                 return visited;
             }
 
-            private Expression Filter(Expression visited, Expression processed)
+            private Expression Process(Expression visited, Expression processed)
             {
-                if (this.filter == null)
+                if (this.processor == null)
                 {
-                    this.filter = this.context.QueryContext.GetApiService<IQueryExpressionFilter>();
+                    this.processor = this.context.QueryContext.GetApiService<IQueryExpressionProcessor>();
                 }
 
-                if (this.filter != null)
+                if (this.processor != null)
                 {
-                    var filtered = filter.Filter(this.context);
+                    var filtered = processor.Process(this.context);
                     var callback = this.context.AfterNestedVisitCallback;
                     this.context.AfterNestedVisitCallback = null;
                     if (filtered != null && filtered != visited)
@@ -271,7 +271,7 @@ namespace Microsoft.Restier.Core.Query
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
                             throw new InvalidOperationException(
-                                Resources.FilterCannotChangeExpressionType);
+                                Resources.ProcessorCannotChangeExpressionType);
                         }
 
                         this.processedExpressions.Add(visited, processed);
@@ -310,7 +310,7 @@ namespace Microsoft.Restier.Core.Query
                     throw new NotSupportedException(Resources.QuerySourcerMissing);
                 }
 
-                node = this.sourcer.Source(this.context, this.BaseQuery != null);
+                node = this.sourcer.ReplaceQueryableSource(this.context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression

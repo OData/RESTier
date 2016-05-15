@@ -7,21 +7,18 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a change set entry validator.
+    /// Represents a change set item authorizer.
     /// </summary>
-    public interface IChangeSetEntryValidator
+    public interface IChangeSetItemAuthorizer
     {
         /// <summary>
-        /// Asynchronously validates a change set entry.
+        /// Asynchronously authorizes the ChangeSetItem.
         /// </summary>
         /// <param name="context">
         /// The submit context.
         /// </param>
-        /// <param name="entry">
-        /// The change set entry to validate.
-        /// </param>
-        /// <param name="validationResults">
-        /// A set of validation results.
+        /// <param name="item">
+        /// A change set item to be authorized.
         /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
@@ -29,10 +26,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task ValidateEntityAsync(
+        Task<bool> AuthorizeAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
-            ValidationResults validationResults,
+            ChangeSetItem item,
             CancellationToken cancellationToken);
     }
 }

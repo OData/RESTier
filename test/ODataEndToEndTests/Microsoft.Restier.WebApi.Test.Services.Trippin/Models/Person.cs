@@ -16,7 +16,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 
         public virtual ICollection<Trip> Trips { get; set; }
 
-        public int PersonId { get; set; }
+        public long PersonId { get; set; }
 
         public string UserName { get; set; }
 
@@ -26,7 +26,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [MaxLength(26), MinLength(1)]
         public string LastName { get; set; }
 
-        public int? Age { get; set; }
+        public long? Age { get; set; }
 
         public long Concurrency { get; set; }
 

@@ -98,16 +98,16 @@ namespace Microsoft.Restier.WebApi.Test
     {
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.CutoffPrevious<IModelBuilder>(new TestModelProducer(FallbackModel.Model));
-            services.CutoffPrevious<IModelMapper>(new FallbackModelMapper());
-            services.CutoffPrevious<IQueryExpressionSourcer>(new FallbackQueryExpressionSourcer());
+            services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model));
+            services.AddService<IModelMapper>((sp, next) => new FallbackModelMapper());
+            services.AddService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer());
             services = base.ConfigureApi(services);
             return services;
         }
 
         public IQueryable<Order> PreservedOrders
         {
-            get { return this.Source<Order>("Orders").Where(o => o.Id > 123); }
+            get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
         }
     }
 
@@ -148,7 +148,7 @@ namespace Microsoft.Restier.WebApi.Test
 
     class FallbackQueryExpressionSourcer : IQueryExpressionSourcer
     {
-        public Expression Source(QueryExpressionContext context, bool embedded)
+        public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
         {
             var orders = new[]
             {
@@ -157,7 +157,7 @@ namespace Microsoft.Restier.WebApi.Test
 
             if (!embedded)
             {
-                if (context.VisitedNode.ToString().StartsWith("Source(\"Orders\""))
+                if (context.VisitedNode.ToString().StartsWith("GetQueryableSource(\"Orders\""))
                 {
                     return Expression.Constant(orders.AsQueryable());
                 }

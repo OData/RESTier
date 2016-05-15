@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Security
     public sealed class EnableRoleBasedSecurityAttribute : ApiConfiguratorAttribute
     {
         /// <summary>
-        /// Configures an API configuration.
+        /// Add API services into the DI container.
         /// </summary>
         /// <param name="services">
         /// The API services registration.

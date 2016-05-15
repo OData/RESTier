@@ -85,7 +85,7 @@ namespace Microsoft.Restier.TestCommon
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error loading types from assembly '{0}':", assemblyList[k]);
+                    Console.WriteLine("Exception loading types from assembly '{0}':", assemblyList[k]);
                     Console.WriteLine(e.ToString());
                     Environment.Exit(1);
                 }

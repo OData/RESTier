@@ -68,17 +68,17 @@ namespace Microsoft.Restier.Core
 
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
-            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
+            throw new NotSupportedException(Resources.CallQueryableSourceMethodNotSupported);
         }
 
         object IQueryProvider.Execute(Expression expression)
         {
-            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
+            throw new NotSupportedException(Resources.CallQueryableSourceMethodNotSupported);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
+            throw new NotSupportedException(Resources.CallQueryableSourceMethodNotSupported);
         }
     }
 
@@ -99,7 +99,7 @@ namespace Microsoft.Restier.Core
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            throw new NotSupportedException(Resources.CallQueryableSourceNotSupported);
+            throw new NotSupportedException(Resources.CallQueryableSourceMethodNotSupported);
         }
     }
 }

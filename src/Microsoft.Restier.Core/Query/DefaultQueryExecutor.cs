@@ -12,22 +12,8 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Default implementation for <see cref="IQueryExecutor"/>
     /// </summary>
-    public class DefaultQueryExecutor : IQueryExecutor
+    internal class DefaultQueryExecutor : IQueryExecutor
     {
-        static DefaultQueryExecutor()
-        {
-            Instance = new DefaultQueryExecutor();
-        }
-
-        private DefaultQueryExecutor()
-        {
-        }
-
-        /// <summary>
-        /// Gets the singleton Instance for <see cref="DefaultQueryExecutor"/>
-        /// </summary>
-        public static DefaultQueryExecutor Instance { get; private set; }
-
         /// <inheritdoc/>
         public Task<QueryResult> ExecuteQueryAsync<TElement>(
             QueryContext context,
@@ -40,14 +26,14 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <inheritdoc/>
-        public Task<QueryResult> ExecuteSingleAsync<TResult>(
+        public Task<QueryResult> ExecuteExpressionAsync<TResult>(
             QueryContext context,
-            IQueryable query,
+            IQueryProvider queryProvider,
             Expression expression,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(query, "query");
-            return Task.FromResult(new QueryResult(new[] { query.Provider.Execute(expression) }));
+            Ensure.NotNull(queryProvider, "queryProvider");
+            return Task.FromResult(new QueryResult(new[] { queryProvider.Execute(expression) }));
         }
     }
 }

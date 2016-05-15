@@ -40,17 +40,19 @@ namespace Microsoft.Restier.Tests
             Func<string, string> postProcessContentHandler = null,
             [CallerMemberName] string baselineFileName = "")
         {
-            using (HttpResponseMessage response = await GetResponse(requestUri, httpMethod, requestContent, registerOData, headers))
+            using (HttpResponseMessage response = await GetResponseWithContentValidation(requestUri, httpMethod, requestContent, registerOData, expectedStatusCode, baselineFileName, postProcessContentHandler,headers))
             {
-                await CheckResponse(response, expectedStatusCode, baselineFileName, postProcessContentHandler);
             }
         }
 
-        public static async Task<HttpResponseMessage> GetResponse(
+        public static async Task<HttpResponseMessage> GetResponseWithContentValidation(
             string requestUri,
             HttpMethod httpMethod,
             HttpContent requestContent,
             Action<HttpConfiguration, HttpServer> registerOData,
+            HttpStatusCode expectedStatusCode,
+            string baselineFileName,
+            Func<string, string> postProcessContentHandler = null,
             IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             using (HttpConfiguration config = new HttpConfiguration())
@@ -71,7 +73,9 @@ namespace Microsoft.Restier.Tests
                             }
                         }
 
-                        return await client.SendAsync(request, CancellationToken.None);
+                        var response = await client.SendAsync(request, CancellationToken.None);
+                        await CheckResponse(response, expectedStatusCode, baselineFileName, postProcessContentHandler);
+                        return response;
                     }
                     finally
                     {
@@ -82,12 +86,54 @@ namespace Microsoft.Restier.Tests
             }
         }
 
-        public static async Task<HttpResponseMessage> GetResponse(
+
+        public static async Task<HttpResponseMessage> GetResponseNoContentValidation(
+            string requestUri,
+            HttpMethod httpMethod,
+            HttpContent requestContent,
+            Action<HttpConfiguration, HttpServer> registerOData,
+            HttpStatusCode expectedStatusCode,
+            IEnumerable<KeyValuePair<string, string>> headers = null)
+        {
+            using (HttpConfiguration config = new HttpConfiguration())
+            {
+                using (HttpServer server = new HttpServer(config))
+                using (HttpMessageInvoker client = new HttpMessageInvoker(server))
+                {
+                    registerOData(config, server);
+                    HttpRequestMessage request = new HttpRequestMessage(httpMethod, requestUri);
+                    try
+                    {
+                        request.Content = requestContent;
+                        if (headers != null)
+                        {
+                            foreach (var header in headers)
+                            {
+                                request.Headers.Add(header.Key, header.Value);
+                            }
+                        }
+
+                        var response = await client.SendAsync(request, CancellationToken.None);
+                        Assert.Equal(expectedStatusCode, response.StatusCode);
+                        return response;
+                    }
+                    finally
+                    {
+                        request.DisposeRequestResources();
+                        request.Dispose();
+                    }
+                }
+            }
+        }
+
+        public static async Task<HttpResponseMessage> GetResponseWithConfig(
             string requestUri,
             HttpMethod httpMethod,
             HttpContent requestContent,
             HttpConfiguration config,
             Action<HttpConfiguration, HttpServer> registerOData,
+            HttpStatusCode expectedStatusCode,
+            string baselineFileName,
             IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             using (HttpServer server = new HttpServer(config))
@@ -106,7 +152,9 @@ namespace Microsoft.Restier.Tests
                         }
                     }
 
-                    return await client.SendAsync(request, CancellationToken.None);
+                    var response = await client.SendAsync(request, CancellationToken.None);
+                    await ODataTestHelpers.CheckResponse(response, HttpStatusCode.OK, baselineFileName, null);
+                    return response;
                 }
                 finally
                 {

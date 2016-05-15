@@ -16,7 +16,18 @@ namespace Microsoft.Restier.WebApi
     internal static class HttpRequestMessageExtensions
     {
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";
-        private const string ApiFactoryKey = "Microsoft.Restier.Core.ApiFactory";
+        private const string ApiInstanceKey = "Microsoft.Restier.Core.ApiInstance";
+
+        /// <summary>
+        /// Sets the <see cref="RestierChangeSetProperty"/> to the <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="changeSetProperty">The change set to be set.</param>
+        public static void SetChangeSet(this HttpRequestMessage request, RestierChangeSetProperty changeSetProperty)
+        {
+            Ensure.NotNull(request, "request");
+            request.Properties.Add(ChangeSetKey, changeSetProperty);
+        }
 
         /// <summary>
         /// Gets the <see cref="RestierChangeSetProperty"/> from the <see cref="HttpRequestMessage"/>.
@@ -37,34 +48,34 @@ namespace Microsoft.Restier.WebApi
         }
 
         /// <summary>
-        /// Gets the API factory from the <see cref="HttpRequestMessage"/>.
+        /// Gets the API instance from the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>
-        /// <returns>The API factory.</returns>
-        internal static Func<ApiBase> GetApiFactory(this HttpRequestMessage request)
+        /// <returns>The API instance.</returns>
+        internal static ApiBase GetApiInstance(this HttpRequestMessage request)
         {
             Ensure.NotNull(request, "request");
 
             object value;
-            if (request.Properties.TryGetValue(ApiFactoryKey, out value))
+            if (request.Properties.TryGetValue(ApiInstanceKey, out value))
             {
-                return value as Func<ApiBase>;
+                return value as ApiBase;
             }
 
             return null;
         }
 
         /// <summary>
-        /// Sets the API factory to the <see cref="HttpRequestMessage"/>.
+        /// Sets the API instance to the <see cref="HttpRequestMessage"/>.
         /// </summary>
         /// <param name="request">The HTTP request.</param>
-        /// <param name="apiFactory">The API factory.</param>
-        internal static void SetApiFactory(this HttpRequestMessage request, Func<ApiBase> apiFactory)
+        /// <param name="apiInstance">The API instance.</param>
+        internal static void SetApiInstance(this HttpRequestMessage request, ApiBase apiInstance)
         {
             Ensure.NotNull(request, "request");
-            Ensure.NotNull(apiFactory, "apiFactory");
+            Ensure.NotNull(apiInstance, "apiInstance");
 
-            request.Properties[ApiFactoryKey] = apiFactory;
+            request.Properties[ApiInstanceKey] = apiInstance;
         }
     }
 }

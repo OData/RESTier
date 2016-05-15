@@ -1,18 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.WebApi.Model;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.Restier.WebApi.Test.Services.Trippin.Submit;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 {
-    public class TrippinApi : DbApi<TrippinModel>
+    public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
         public new TrippinModel Context { get { return DbContext; } }
 
@@ -36,7 +41,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Implements an action import.
         /// TODO: This method is only for building the model.
         /// </summary>
-        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
         public void ResetDataSource()
         {
             TrippinModel.ResetDataSource();
@@ -45,7 +50,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// <summary>
         /// Action import - clean up all the expired trips.
         /// </summary>
-        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
         public void CleanUpExpiredTrips()
         {
             // DO NOT ACTUALLY REMOVE THE TRIPS.
@@ -56,7 +61,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="trip">The trip to update.</param>
         /// <returns>The trip updated.</returns>
-        [Action(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
         public Trip EndTrip(Trip trip)
         {
             // DO NOT ACTUALLY UPDATE THE TRIP.
@@ -68,7 +73,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="person">The key of the binding person.</param>
         /// <returns>The number of friends of the person.</returns>
-        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
         public int GetNumberOfFriends(Person person)
         {
             if (person == null)
@@ -84,7 +89,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
-        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", EntitySet = "People")]
         public Person GetPersonWithMostFriends()
         {
             Person result = null;
@@ -115,7 +120,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
         /// <returns>People with at least n friends.</returns>
-        [Function(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", EntitySet = "People")]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n)
         {
             foreach (var person in PeopleWithFriends)
@@ -139,8 +144,17 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
+            // Add customized OData valiadtion settings 
+            Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = (sp) => new ODataValidationSettings
+            {
+                MaxAnyAllExpressionDepth =3,
+                MaxExpansionDepth = 3
+            };
+
             return base.ConfigureApi(services)
-                .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>();
+                .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
+                .AddSingleton<ODataValidationSettings>(validationSettingFactory)
+                .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>();
         }
     }
 }

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
 using System.Security;
@@ -35,13 +37,13 @@ namespace Microsoft.Restier.Core.Submit
         {
             Ensure.NotNull(context, "context");
 
-            var preparer = context.GetApiService<IChangeSetPreparer>();
+            var preparer = context.GetApiService<IChangeSetInitializer>();
             if (preparer == null)
             {
                 throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
             }
 
-            await preparer.PrepareAsync(context, cancellationToken);
+            await preparer.InitializeAsync(context, cancellationToken);
 
             if (context.Result != null)
             {
@@ -50,7 +52,7 @@ namespace Microsoft.Restier.Core.Submit
 
             var eventsChangeSet = context.ChangeSet;
 
-            IEnumerable<ChangeSetEntry> currentChangeSetItems = eventsChangeSet.Entries.ToArray();
+            IEnumerable<ChangeSetItem> currentChangeSetItems = eventsChangeSet.Entries.ToArray();
 
             await PerformValidate(context, currentChangeSetItems, cancellationToken);
 
@@ -65,22 +67,22 @@ namespace Microsoft.Restier.Core.Submit
             return context.Result;
         }
 
-        private static string GetAuthorizeFailedMessage(ChangeSetEntry entry)
+        private static string GetAuthorizeFailedMessage(ChangeSetItem item)
         {
-            switch (entry.Type)
+            switch (item.Type)
             {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                case ChangeSetItemType.DataModification:
+                    DataModificationItem dataModification = (DataModificationItem)item;
                     string message = null;
-                    if (dataModification.IsNew)
+                    if (dataModification.IsNewRequest)
                     {
                         message = Resources.NoPermissionToInsertEntity;
                     }
-                    else if (dataModification.IsUpdate)
+                    else if (dataModification.IsUpdateRequest)
                     {
                         message = Resources.NoPermissionToUpdateEntity;
                     }
-                    else if (dataModification.IsDelete)
+                    else if (dataModification.IsDeleteRequest)
                     {
                         message = Resources.NoPermissionToDeleteEntity;
                     }
@@ -91,8 +93,8 @@ namespace Microsoft.Restier.Core.Submit
 
                     return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
 
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionInvocation = (ActionInvocationEntry)entry;
+                case ChangeSetItemType.ActionInvocation:
+                    ActionInvocationItem actionInvocation = (ActionInvocationItem)item;
                     return string.Format(
                         CultureInfo.InvariantCulture,
                         Resources.NoPermissionToInvokeAction,
@@ -102,48 +104,48 @@ namespace Microsoft.Restier.Core.Submit
                     throw new InvalidOperationException(string.Format(
                         CultureInfo.InvariantCulture,
                         Resources.InvalidChangeSetEntryType,
-                        entry.Type));
+                        item.Type));
             }
         }
 
         private static async Task PerformValidate(
             SubmitContext context,
-            IEnumerable<ChangeSetEntry> changeSetItems,
+            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
             await InvokeAuthorizers(context, changeSetItems, cancellationToken);
 
             await InvokeValidators(context, changeSetItems, cancellationToken);
 
-            foreach (ChangeSetEntry item in changeSetItems.Where(i => i.HasChanged()))
+            foreach (ChangeSetItem item in changeSetItems.Where(i => i.HasChanged()))
             {
-                if (item.ChangeSetEntityState == DynamicChangeSetEntityState.ChangedWithinOwnPreEventing)
+                if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.ChangedWithinOwnPreEventing)
                 {
-                    item.ChangeSetEntityState = DynamicChangeSetEntityState.PreEvented;
+                    item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEvented;
                 }
                 else
                 {
-                    item.ChangeSetEntityState = DynamicChangeSetEntityState.Validated;
+                    item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.Validated;
                 }
             }
         }
 
         private static async Task InvokeAuthorizers(
             SubmitContext context,
-            IEnumerable<ChangeSetEntry> changeSetItems,
+            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            var authorizer = context.GetApiService<IChangeSetEntryAuthorizer>();
+            var authorizer = context.GetApiService<IChangeSetItemAuthorizer>();
             if (authorizer == null)
             {
                 return;
             }
 
-            foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
+            foreach (ChangeSetItem item in changeSetItems.Where(i => i.HasChanged()))
             {
-                if (!await authorizer.AuthorizeAsync(context, entry, cancellationToken))
+                if (!await authorizer.AuthorizeAsync(context, item, cancellationToken))
                 {
-                    var message = DefaultSubmitHandler.GetAuthorizeFailedMessage(entry);
+                    var message = DefaultSubmitHandler.GetAuthorizeFailedMessage(item);
                     throw new SecurityException(message);
                 }
             }
@@ -151,60 +153,62 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task InvokeValidators(
             SubmitContext context,
-            IEnumerable<ChangeSetEntry> changeSetItems,
+            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            var validator = context.GetApiService<IChangeSetEntryValidator>();
+            var validator = context.GetApiService<IChangeSetItemValidator>();
             if (validator == null)
             {
                 return;
             }
 
-            ValidationResults validationResults = new ValidationResults();
+            Collection<ChangeSetItemValidationResult> validationResults = new Collection<ChangeSetItemValidationResult>();
 
-            foreach (ChangeSetEntry entry in changeSetItems.Where(i => i.HasChanged()))
+            foreach (ChangeSetItem entry in changeSetItems.Where(i => i.HasChanged()))
             {
-                await validator.ValidateEntityAsync(context, entry, validationResults, cancellationToken);
+                await validator.ValidateChangeSetItemAsync(context, entry, validationResults, cancellationToken);
             }
 
-            if (validationResults.HasErrors)
+            IEnumerable<ChangeSetItemValidationResult> errors = validationResults.Where(result => result.Severity == EventLevel.Error);
+
+            if (errors.Any())
             {
                 string validationErrorMessage = Resources.ValidationFailsTheOperation;
-                throw new ValidationException(validationErrorMessage)
+                throw new ChangeSetValidationException(validationErrorMessage)
                 {
-                    ValidationResults = validationResults.Errors
+                    ValidationResults = errors
                 };
             }
         }
 
         private static async Task PerformPreEvent(
             SubmitContext context,
-            IEnumerable<ChangeSetEntry> changeSetItems,
+            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            foreach (ChangeSetEntry entry in changeSetItems)
+            foreach (ChangeSetItem item in changeSetItems)
             {
-                if (entry.ChangeSetEntityState == DynamicChangeSetEntityState.Validated)
+                if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Validated)
                 {
-                    entry.ChangeSetEntityState = DynamicChangeSetEntityState.PreEventing;
+                    item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
 
-                    var filter = context.GetApiService<IChangeSetEntryFilter>();
-                    if (filter != null)
+                    var processor = context.GetApiService<IChangeSetItemProcessor>();
+                    if (processor != null)
                     {
-                        await filter.OnExecutingEntryAsync(context, entry, cancellationToken);
+                        await processor.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
                     }
 
-                    if (entry.ChangeSetEntityState == DynamicChangeSetEntityState.PreEventing)
+                    if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
                     {
                         // if the state is still the intermediate state,
                         // the entity was not changed during processing
                         // and can move to the next step
-                        entry.ChangeSetEntityState = DynamicChangeSetEntityState.PreEvented;
+                        item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEvented;
                     }
-                    else if (entry.ChangeSetEntityState == DynamicChangeSetEntityState.Changed /*&&
+                    else if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Initialized /*&&
                         entity.Details.EntityState == originalEntityState*/)
                     {
-                        entry.ChangeSetEntityState = DynamicChangeSetEntityState.ChangedWithinOwnPreEventing;
+                        item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.ChangedWithinOwnPreEventing;
                     }
                 }
             }
@@ -212,27 +216,27 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task PerformPersist(
             SubmitContext context,
-            IEnumerable<ChangeSetEntry> changeSetItems,
+            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
             // Once the change is persisted, the EntityState is lost.
             // In order to invoke the correct post-CUD event, remember which action was performed on the entity.
-            foreach (ChangeSetEntry item in changeSetItems)
+            foreach (ChangeSetItem item in changeSetItems)
             {
-                if (item.Type == ChangeSetEntryType.DataModification)
+                if (item.Type == ChangeSetItemType.DataModification)
                 {
-                    DataModificationEntry dataModification = (DataModificationEntry)item;
-                    if (dataModification.IsNew)
+                    DataModificationItem dataModification = (DataModificationItem)item;
+                    if (dataModification.IsNewRequest)
                     {
-                        dataModification.AddAction = AddAction.Inserting;
+                        dataModification.ChangeSetItemAction = ChangeSetItemAction.Insert;
                     }
-                    else if (dataModification.IsUpdate)
+                    else if (dataModification.IsUpdateRequest)
                     {
-                        dataModification.AddAction = AddAction.Updating;
+                        dataModification.ChangeSetItemAction = ChangeSetItemAction.Update;
                     }
-                    else if (dataModification.IsDelete)
+                    else if (dataModification.IsDeleteRequest)
                     {
-                        dataModification.AddAction = AddAction.Removing;
+                        dataModification.ChangeSetItemAction = ChangeSetItemAction.Remove;
                     }
                 }
             }
@@ -248,15 +252,15 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task PerformPostEvent(
             SubmitContext context,
-            IEnumerable<ChangeSetEntry> changeSetItems,
+            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            foreach (ChangeSetEntry entry in changeSetItems)
+            foreach (ChangeSetItem item in changeSetItems)
             {
-                var filter = context.GetApiService<IChangeSetEntryFilter>();
-                if (filter != null)
+                var processor = context.GetApiService<IChangeSetItemProcessor>();
+                if (processor != null)
                 {
-                    await filter.OnExecutedEntryAsync(context, entry, cancellationToken);
+                    await processor.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
                 }
             }
         }

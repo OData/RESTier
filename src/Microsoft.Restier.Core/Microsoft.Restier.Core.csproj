@@ -51,20 +51,18 @@
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
     <Compile Include="ApiConfiguratorAttributes.cs" />
-    <Compile Include="Model\FunctionAttribute.cs" />
-    <Compile Include="Model\ActionAttribute.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetAuthorizer.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetItemAuthorizer.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetConstants.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetEntryFilter.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetEntryValidator.cs" />
-    <Compile Include="Conventions\ConventionBasedEntitySetFilter.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetItemProcessor.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetItemValidator.cs" />
+    <Compile Include="Conventions\ConventionBasedEntitySetProcessor.cs" />
     <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="ApiBase.cs" />
     <Compile Include="ApiConfiguration.cs" />
     <Compile Include="ApiConfigurationExtensions.cs" />
     <Compile Include="ApiContext.cs" />
     <Compile Include="ApiContextExtensions.cs" />
-    <Compile Include="DataSourceStubs.cs" />
+    <Compile Include="DataSourceStub.cs" />
     <Compile Include="ApiConfiguratorAttribute.cs" />
     <Compile Include="InvocationContext.cs" />
     <Compile Include="InvocationContextExtensions.cs" />
@@ -83,8 +81,8 @@
     <Compile Include="Query\DefaultQueryHandler.cs" />
     <Compile Include="Query\IQueryExecutor.cs" />
     <Compile Include="Query\IQueryExpressionExpander.cs" />
-    <Compile Include="Query\IQueryExpressionFilter.cs" />
-    <Compile Include="Query\IQueryExpressionInspector.cs" />
+    <Compile Include="Query\IQueryExpressionProcessor.cs" />
+    <Compile Include="Query\IQueryExpressionAuthorizer.cs" />
     <Compile Include="Query\IQueryExpressionSourcer.cs" />
     <Compile Include="Query\QueryContext.cs" />
     <Compile Include="Query\QueryExpressionContext.cs" />
@@ -92,19 +90,17 @@
     <Compile Include="Query\QueryRequest.cs" />
     <Compile Include="Query\QueryResult.cs" />
     <Compile Include="Submit\ChangeSet.cs" />
-    <Compile Include="Submit\ChangeSetEntry.cs" />
+    <Compile Include="Submit\ChangeSetItem.cs" />
     <Compile Include="Submit\DefaultSubmitHandler.cs" />
-    <Compile Include="Submit\IChangeSetEntryAuthorizer.cs" />
-    <Compile Include="Submit\IChangeSetEntryFilter.cs" />
-    <Compile Include="Submit\IChangeSetEntryValidator.cs" />
-    <Compile Include="Submit\IChangeSetPreparer.cs" />
+    <Compile Include="Submit\IChangeSetItemAuthorizer.cs" />
+    <Compile Include="Submit\IChangeSetItemProcessor.cs" />
+    <Compile Include="Submit\IChangeSetItemValidator.cs" />
+    <Compile Include="Submit\IChangeSetInitializer.cs" />
     <Compile Include="Submit\ISubmitExecutor.cs" />
     <Compile Include="Submit\SubmitContext.cs" />
     <Compile Include="Submit\SubmitResult.cs" />
-    <Compile Include="Submit\ValidationException.cs" />
-    <Compile Include="Submit\ValidationResult.cs" />
-    <Compile Include="Submit\ValidationResults.cs" />
-    <Compile Include="Submit\ValidationSeverity.cs" />
+    <Compile Include="Submit\ChangeSetValidationException.cs" />
+    <Compile Include="Submit\ChangeSetItemValidationResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Microsoft.Restier.Core.nuspec" />

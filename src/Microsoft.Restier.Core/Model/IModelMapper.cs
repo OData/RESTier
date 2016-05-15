@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Restier.Core.Model
 {
     /// <summary>
-    /// Represents a hook point that maps between
+    /// Represents a service that maps between
     /// the model space and the object space.
     /// </summary>
     public interface IModelMapper
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core.Model
         /// </para>
         /// <para>
         /// This method can return true and assign <c>null</c> as the relevant
-        /// type when it is overriding a previously registered hook point and
+        /// type when it is overriding a previously registered service and
         /// specifically opting to not support the specified queryable source.
         /// </para>
         /// </remarks>
@@ -80,7 +80,7 @@ namespace Microsoft.Restier.Core.Model
         /// </para>
         /// <para>
         /// This method can return true and assign <c>null</c> as the relevant
-        /// type when it is overriding a previously registered hook point and
+        /// type when it is overriding a previously registered service and
         /// specifically opting to not support the specified composable function.
         /// </para>
         /// </remarks>

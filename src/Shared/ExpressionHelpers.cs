@@ -58,7 +58,7 @@ namespace System.Linq.Expressions
             object countQuery = query;
             var expression = query.Expression;
 
-            // This is stripping select of expand and top select method is Source
+            // This is stripping select, expand and top from input query
             expression = StripQueryMethod(expression, MethodNameOfQuerySelect);
             expression = StripQueryMethod(expression, MethodNameOfQueryTake);
             expression = StripQueryMethod(expression, MethodNameOfQuerySkip);

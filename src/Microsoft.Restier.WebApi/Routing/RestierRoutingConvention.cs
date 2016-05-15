@@ -57,7 +57,8 @@ namespace Microsoft.Restier.WebApi.Routing
                 return null;
             }
 
-            request.SetApiFactory(apiFactory);
+            // Create ApiBase instance
+            request.SetApiInstance(apiFactory.Invoke());
             return RestierControllerName;
         }
 

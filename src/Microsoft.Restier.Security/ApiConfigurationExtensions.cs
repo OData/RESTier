@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Security
         /// The API services registration.
         /// </param>
         /// <remarks>
-        /// This method adds hook points to the API configuration that
+        /// This method adds services to the API configuration that
         /// authorize according to roles assigned to the current principal
         /// along with any that have been asserted during an API flow.
         /// </remarks>
@@ -34,8 +34,8 @@ namespace Microsoft.Restier.Security
             this IServiceCollection services)
         {
             Ensure.NotNull(services, "services");
-            services.CutoffPrevious<IQueryExpressionInspector, RoleBasedAuthorizer>();
-            services.ChainPrevious<IQueryExpressionExpander, ApiPolicyActivator>();
+            services.AddService<IQueryExpressionAuthorizer, RoleBasedAuthorizer>();
+            services.AddService<IQueryExpressionExpander, ApiPolicyActivator>();
         }
     }
 }

@@ -240,6 +240,14 @@
       <Link>Baselines\TestBatch.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestCustomerKeyAsSegment.txt">
+      <Link>Baselines\TestCustomerKeyAsSegment.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestCustomersEntitySetCountQuery.txt">
+      <Link>Baselines\TestCustomersEntitySetCountQuery.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestCustomersEntitySetQuery.txt">
       <Link>Baselines\TestCustomersEntitySetQuery.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -250,6 +258,10 @@
     </Content>
     <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestGetNorthwindMetadata.txt">
       <Link>Baselines\TestGetNorthwindMetadata.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestOrdersEntitySetAutoExpandQuery.txt">
+      <Link>Baselines\TestOrdersEntitySetAutoExpandQuery.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\Microsoft.Restier.Samples.Northwind.Tests\Baselines\TestPatchProductReturnContent.txt">

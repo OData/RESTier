@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CallQueryableSourceNotSupported" xml:space="preserve">
+  <data name="CallQueryableSourceMethodNotSupported" xml:space="preserve">
     <value>Calling the methods in 'QueryableSource' or 'QueryableSource&lt;T&gt;' is not supported.</value>
   </data>
   <data name="CannotSetChangeSetIfThereIsResult" xml:space="preserve">
@@ -136,13 +136,13 @@
     <value>A DataModification must be either: IsNew, IsUpdate, or IsDelete.</value>
   </data>
   <data name="DataModificationNotSupportCreateEntity" xml:space="preserve">
-    <value>"DataModificationEntry.ApplyTo cannot be called on an IsNew entry.</value>
+    <value>"DataModificationItem.ApplyTo cannot be called on an IsNew item.</value>
   </data>
   <data name="DataModificationRequiresEntityKey" xml:space="preserve">
     <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
   </data>
-  <data name="DoNotCallDataSourceStubDirectly" xml:space="preserve">
-    <value>Do not call the methods in 'DataSourceStubs' directly.</value>
+  <data name="DoNotCallDataSourceStubMethodDirectly" xml:space="preserve">
+    <value>Do not call the methods in 'DataSourceStub' directly.</value>
   </data>
   <data name="ElementTypeNotFound" xml:space="preserve">
     <value>Element type cannot be found for '{0}'.</value>
@@ -156,14 +156,14 @@
   <data name="ExpressionMustBeQueryable" xml:space="preserve">
     <value>Expression must be queryable.</value>
   </data>
-  <data name="FilterCannotChangeExpressionType" xml:space="preserve">
-    <value>Filter cannot change the expression type.</value>
+  <data name="ProcessorCannotChangeExpressionType" xml:space="preserve">
+    <value>Processor cannot change the expression type.</value>
   </data>
   <data name="InspectionFailed" xml:space="preserve">
     <value>Inspection failed.</value>
   </data>
   <data name="InvalidChangeSetEntryType" xml:space="preserve">
-    <value>Invalid ChangeSetEntry Type: {0}.</value>
+    <value>Invalid ChangeSetItem Type: {0}.</value>
   </data>
   <data name="NoPermissionToDeleteEntity" xml:space="preserve">
     <value>The current user does not have permission to delete entities from the EntitySet '{0}'.</value>
@@ -205,7 +205,7 @@
     <value>Submit executor is missing.</value>
   </data>
   <data name="ValidationFailsTheOperation" xml:space="preserve">
-    <value>The operation cannot be performed because one or more objects are invalid.  Please inspect the ValidationException.ValidationResults property for more information.</value>
+    <value>The operation cannot be performed because one or more objects are invalid.  Please inspect the ChangeSetValidationException.ValidationResults property for more information.</value>
   </data>
   <data name="ModelBuilderNotRegistered" xml:space="preserve">
     <value>IEdmModel cannot be generated since API service IModelBuilder is not registered.</value>

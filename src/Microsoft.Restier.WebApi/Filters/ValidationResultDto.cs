@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics.Tracing;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.WebApi.Filters
@@ -11,19 +12,19 @@ namespace Microsoft.Restier.WebApi.Filters
     /// </summary>
     internal class ValidationResultDto
     {
-        private ValidationResult result;
+        private ChangeSetItemValidationResult result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationResultDto" /> class.
         /// </summary>
         /// <param name="result">The validation result.</param>
-        public ValidationResultDto(ValidationResult result)
+        public ValidationResultDto(ChangeSetItemValidationResult result)
         {
             this.result = result;
         }
 
         /// <summary>
-        /// Gets the id of the <see cref="ValidationResult"/> instance.
+        /// Gets the id of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string Id
         {
@@ -31,7 +32,7 @@ namespace Microsoft.Restier.WebApi.Filters
         }
 
         /// <summary>
-        /// Gets the message of the <see cref="ValidationResult"/> instance.
+        /// Gets the message of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string Message
         {
@@ -39,7 +40,7 @@ namespace Microsoft.Restier.WebApi.Filters
         }
 
         /// <summary>
-        /// Gets the property name of the <see cref="ValidationResult"/> instance.
+        /// Gets the property name of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string PropertyName
         {
@@ -53,11 +54,11 @@ namespace Microsoft.Restier.WebApi.Filters
         ////}
 
         /// <summary>
-        /// Gets the string that represents the severity of the <see cref="ValidationResult"/> instance.
+        /// Gets the string that represents the severity of the <see cref="ChangeSetItemValidationResult"/> instance.
         /// </summary>
         public string Severity
         {
-            get { return Enum.GetName(typeof(ValidationSeverity), this.result.Severity); }
+            get { return Enum.GetName(typeof(EventLevel), this.result.Severity); }
         }
     }
 }

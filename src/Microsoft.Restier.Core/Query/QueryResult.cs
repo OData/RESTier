@@ -13,20 +13,20 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryResult
     {
-        private Exception error;
+        private Exception exception;
         private IEdmEntitySet resultsSource;
         private IEnumerable results;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryResult" /> class with an error.
+        /// Initializes a new instance of the <see cref="QueryResult" /> class with an Exception.
         /// </summary>
-        /// <param name="error">
-        /// An error.
+        /// <param name="exception">
+        /// An Exception.
         /// </param>
-        public QueryResult(Exception error)
+        public QueryResult(Exception exception)
         {
-            Ensure.NotNull(error, "error");
-            this.Error = error;
+            Ensure.NotNull(exception, "exception");
+            this.Exception = exception;
         }
 
         /// <summary>
@@ -42,22 +42,22 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
-        /// Gets or sets an error to be returned.
+        /// Gets or sets an Exception to be returned.
         /// </summary>
         /// <remarks>
-        /// Setting this value will override any existing error or results.
+        /// Setting this value will override any existing Exception or results.
         /// </remarks>
-        public Exception Error
+        public Exception Exception
         {
             get
             {
-                return this.error;
+                return this.exception;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this.error = value;
+                this.exception = value;
                 this.resultsSource = null;
                 this.results = null;
             }
@@ -79,7 +79,7 @@ namespace Microsoft.Restier.Core.Query
 
             set
             {
-                if (this.error != null)
+                if (this.exception != null)
                 {
                     throw new InvalidOperationException(
                         Resources.CannotSetResultsSourceIfThereIsAnyError);
@@ -93,7 +93,7 @@ namespace Microsoft.Restier.Core.Query
         /// Gets or sets the in-memory results.
         /// </summary>
         /// <remarks>
-        /// Setting this value will override any existing error or results.
+        /// Setting this value will override any existing Exception or results.
         /// </remarks>
         public IEnumerable Results
         {
@@ -105,7 +105,7 @@ namespace Microsoft.Restier.Core.Query
             set
             {
                 Ensure.NotNull(value, "value");
-                this.error = null;
+                this.exception = null;
                 this.resultsSource = null;
                 this.results = value;
             }

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
-    /// Represents a hook point that sources a query expression.
+    /// Represents a service that replace queryable source of an expression.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core.Query
     public interface IQueryExpressionSourcer
     {
         /// <summary>
-        /// Sources an expression.
+        /// Replace queryable source of an expression.
         /// </summary>
         /// <param name="context">
         /// The query expression context.
@@ -55,6 +55,6 @@ namespace Microsoft.Restier.Core.Query
         /// applies is a constant expression whose value is the data object.
         /// </para>
         /// </remarks>
-        Expression Source(QueryExpressionContext context, bool embedded);
+        Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded);
     }
 }

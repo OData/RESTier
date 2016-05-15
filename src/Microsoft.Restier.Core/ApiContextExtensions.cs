@@ -29,12 +29,12 @@ namespace Microsoft.Restier.Core
             .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
             .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
 
-        private static readonly MethodInfo Source2Method = typeof(DataSourceStubs)
-            .GetMember("Source").Cast<MethodInfo>()
+        private static readonly MethodInfo Source2Method = typeof(DataSourceStub)
+            .GetMember("GetQueryableSource").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 2);
 
-        private static readonly MethodInfo Source3Method = typeof(DataSourceStubs)
-            .GetMember("Source").Cast<MethodInfo>()
+        private static readonly MethodInfo Source3Method = typeof(DataSourceStub)
+            .GetMember("GetQueryableSource").Cast<MethodInfo>()
             .Single(m => m.GetParameters().Length == 3);
 
         #region GetApiService<T>
@@ -220,7 +220,7 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
-        #region Source
+        #region GetQueryableSource
 
         /// <summary>
         /// Gets a queryable source of data using an API context.
@@ -249,7 +249,7 @@ namespace Microsoft.Restier.Core
         /// enumerated as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable Source(
+        public static IQueryable GetQueryableSource(
             this ApiContext context,
             string name,
             params object[] arguments)
@@ -289,7 +289,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable Source(
+        public static IQueryable GetQueryableSource(
             this ApiContext context,
             string namespaceName,
             string name,
@@ -332,7 +332,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable<TElement> Source<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             this ApiContext context,
             string name,
             params object[] arguments)
@@ -381,7 +381,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable<TElement> Source<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             this ApiContext context,
             string namespaceName,
             string name,
@@ -469,7 +469,7 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
-        #region Source Private
+        #region GetQueryableSource Private
 
         private static IQueryable SourceCore(
             this ApiContext context,

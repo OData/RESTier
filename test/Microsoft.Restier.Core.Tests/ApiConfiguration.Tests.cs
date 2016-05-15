@@ -17,68 +17,105 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void CachedConfigurationIsCachedCorrectly()
         {
-            ApiBase api = new TestApi();
+            ApiBase api = new TestApiA();
             var configuration = api.Context.Configuration;
 
-            ApiBase anotherApi = new TestApi();
+            ApiBase anotherApi = new TestApiA();
             var cached = anotherApi.Context.Configuration;
             Assert.Same(configuration, cached);
         }
 
         [Fact]
-        public void ConfigurationRegistersHookPointsCorrectly()
+        public void ConfigurationRegistersApiServicesCorrectly()
         {
-            IServiceCollection services = new ServiceCollection();
-            var configuration = services.BuildApiConfiguration();
+            var api = new TestApiA();
+            Assert.Null(api.Context.GetApiService<IServiceA>());
+            Assert.Null(api.Context.GetApiService<IServiceB>());
 
-            Assert.Null(configuration.GetApiService<IHookA>());
-            Assert.Null(configuration.GetApiService<IHookB>());
+            var apiB = new TestApiB();
+            
+            Assert.Same(apiB.serviceA, apiB.Context.GetApiService<IServiceA>());
 
-            var singletonHookPoint = new HookA();
-            services.CutoffPrevious<IHookA>(singletonHookPoint);
-            configuration = services.BuildApiConfiguration();
-            Assert.Same(singletonHookPoint, configuration.GetApiService<IHookA>());
-            Assert.Null(configuration.GetApiService<IHookB>());
+            var serviceBInstance = apiB.Context.GetApiService<ServiceB>();
+            var serviceBInterface = apiB.Context.GetApiService<IServiceB>();
+            Assert.Equal(serviceBInstance, serviceBInterface);
 
-            var multiCastHookPoint1 = new HookB();
-            services.CutoffPrevious<IHookB>(multiCastHookPoint1);
-            configuration = services.BuildApiConfiguration();
-            Assert.Same(singletonHookPoint, configuration.GetApiService<IHookA>());
-            Assert.Equal(multiCastHookPoint1, configuration.GetApiService<IHookB>());
+            // AddService will call services.TryAddTransient
+            Assert.Same(serviceBInstance, serviceBInterface);
 
-            services = new ServiceCollection()
-                .CutoffPrevious<IHookB>(multiCastHookPoint1)
-                .ChainPrevious<IHookB, HookB>()
-                .AddInstance(new HookB());
-            configuration = services.BuildApiConfiguration();
-            var multiCastHookPoint2 = configuration.GetApiService<HookB>();
-            var handler = configuration.GetApiService<IHookB>();
-            Assert.Equal(multiCastHookPoint2, handler);
-
-            var delegateHandler = handler as HookB;
-            Assert.NotNull(delegateHandler);
-            Assert.Equal(multiCastHookPoint1, delegateHandler.InnerHandler);
+            var serviceBFirst = serviceBInterface as ServiceB;
+            Assert.NotNull(serviceBFirst);
+            Assert.Same(apiB.serviceB, serviceBFirst.InnerHandler);
         }
 
         [Fact]
-        public void hookHandlerChainTest()
+        public void ServiceChainTest()
         {
-            var q1 = new HookB("q1Pre", "q1Post");
-            var q2 = new HookB("q2Pre", "q2Post");
-            var configuration = new ServiceCollection()
-                .CutoffPrevious<IHookB>(q1)
-                .ChainPrevious<IHookB>(next =>
-                {
-                    q2.InnerHandler = next;
-                    return q2;
-                }).BuildApiConfiguration();
+            var api = new TestApiC();
 
-            var handler = configuration.GetApiService<IHookB>();
+            var handler = api.Context.GetApiService<IServiceB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
         }
 
-        private class TestApi : ApiBase
+        private class TestApiA : ApiBase
         {
+        }
+
+        private class TestApiB : ApiBase
+        {
+            private ServiceA _serviceA;
+
+            private ServiceB _serviceB;
+
+            public ServiceA serviceA
+            {
+                get
+                {
+                    if (_serviceA == null)
+                    {
+                        _serviceA = new ServiceA();
+                    }
+                    return _serviceA;
+                }
+            }
+
+            public ServiceB serviceB
+            {
+                get
+                {
+                    if (_serviceB == null)
+                    {
+                        _serviceB = new ServiceB();
+                    }
+                    return _serviceB;
+                }
+            }
+
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.AddService<IServiceA>((sp, next) => serviceA);
+                services.AddService<IServiceB>((sp, next) => serviceB);
+                services.AddService<IServiceB, ServiceB>();
+                services.AddInstance(new ServiceB());
+
+                return services;
+            }
+        }
+        private class TestApiC : ApiBase
+        {
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                var q1 = new ServiceB("q1Pre", "q1Post");
+                var q2 = new ServiceB("q2Pre", "q2Post");
+                services.AddService<IServiceB>((sp, next) => q1)
+                    .AddService<IServiceB>((sp, next) =>
+                    {
+                        q2.InnerHandler = next;
+                        return q2;
+                    });
+
+                return services;
+            }
         }
 
         private class TestModelBuilder : IModelBuilder
@@ -89,28 +126,28 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        private interface IHookA
+        private interface IServiceA
         {
         }
 
-        private class HookA : IHookA
+        private class ServiceA : IServiceA
         {
         }
 
-        private interface IHookB
+        private interface IServiceB
         {
             string GetStr();
         }
 
-        private class HookB : IHookB
+        private class ServiceB : IServiceB
         {
-            public IHookB InnerHandler { get; set; }
+            public IServiceB InnerHandler { get; set; }
 
             private readonly string preStr;
 
             private readonly string postStr;
 
-            public HookB(string preStr = "DefaultPre", string postStr = "DefaultPost")
+            public ServiceB(string preStr = "DefaultPre", string postStr = "DefaultPost")
             {
                 this.preStr = preStr;
                 this.postStr = postStr;

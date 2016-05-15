@@ -4,7 +4,7 @@
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
-    /// Represents a hook point that inspects a query expression.
+    /// Represents a service that inspects a query expression.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -19,10 +19,10 @@ namespace Microsoft.Restier.Core.Query
     /// the exception of normalization of expressions identifying API data).
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionInspector
+    public interface IQueryExpressionAuthorizer
     {
         /// <summary>
-        /// Inspects an expression.
+        /// Check an expression to see whether it is authorized.
         /// </summary>
         /// <param name="context">
         /// The query expression context.
@@ -30,6 +30,6 @@ namespace Microsoft.Restier.Core.Query
         /// <returns>
         /// <c>true</c> if the inspection passed; otherwise, <c>false</c>.
         /// </returns>
-        bool Inspect(QueryExpressionContext context);
+        bool Authorize(QueryExpressionContext context);
     }
 }

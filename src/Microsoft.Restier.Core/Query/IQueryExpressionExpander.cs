@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
-    /// Represents a hook point that expands a query expression.
+    /// Represents a service that expands a query expression.
     /// </summary>
     /// <remarks>
     /// <para>

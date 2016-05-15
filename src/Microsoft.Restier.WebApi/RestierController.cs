@@ -36,7 +36,7 @@ namespace Microsoft.Restier.WebApi
     /// </summary>
     [RestierFormatting]
     [RestierExceptionFilter]
-    public class RestierController : ODataController
+    public sealed class RestierController : ODataController
     {
         private const string ETagGetterKey = "ETagGetter";
         private const string ETagHeaderKey = "@etag";
@@ -48,13 +48,13 @@ namespace Microsoft.Restier.WebApi
         /// <summary>
         /// Gets the API associated with this controller.
         /// </summary>
-        public ApiBase Api
+        private ApiBase Api
         {
             get
             {
                 if (this.api == null)
                 {
-                    this.api = this.Request.GetApiFactory().Invoke();
+                    this.api = this.Request.GetApiInstance();
                 }
 
                 return this.api;
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.WebApi
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
 
-            DataModificationEntry postEntry = new DataModificationEntry(
+            DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
                 null,
@@ -119,18 +119,18 @@ namespace Microsoft.Restier.WebApi
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(postEntry);
+                changeSet.Entries.Add(postItem);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(postEntry);
+                changeSetProperty.ChangeSet.Entries.Add(postItem);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            return this.CreateCreatedODataResult(postEntry.Entity);
+            return this.CreateCreatedODataResult(postItem.Entity);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Microsoft.Restier.WebApi
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
-            DataModificationEntry deleteEntry = new DataModificationEntry(
+            DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
                 RestierQueryBuilder.GetPathKeyValues(path),
@@ -190,13 +190,13 @@ namespace Microsoft.Restier.WebApi
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(deleteEntry);
+                changeSet.Entries.Add(deleteItem);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(deleteEntry);
+                changeSetProperty.ChangeSet.Entries.Add(deleteItem);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
@@ -218,26 +218,26 @@ namespace Microsoft.Restier.WebApi
                 throw new NotSupportedException(Resources.PostToUnboundActionNotSupported);
             }
 
-            ActionInvocationEntry entry = new ActionInvocationEntry(actionPathSegment.ActionName, null);
+            ActionInvocationItem item = new ActionInvocationItem(actionPathSegment.ActionName, null);
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(entry);
+                changeSet.Entries.Add(item);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(entry);
+                changeSetProperty.ChangeSet.Entries.Add(item);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            if (entry.Result != null)
+            if (item.Result != null)
             {
-                return this.CreateOKResult(entry.Result);
+                return this.CreateOKResult(item.Result);
             }
             else
             {
@@ -299,30 +299,30 @@ namespace Microsoft.Restier.WebApi
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
-            DataModificationEntry updateEntry = new DataModificationEntry(
+            DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.FullTypeName(),
                 RestierQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 edmEntityObject.CreatePropertyDictionary());
-            updateEntry.IsFullReplaceUpdate = isFullReplaceUpdate;
+            updateItem.IsFullReplaceUpdateRequest = isFullReplaceUpdate;
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
             {
                 ChangeSet changeSet = new ChangeSet();
-                changeSet.Entries.Add(updateEntry);
+                changeSet.Entries.Add(updateItem);
 
                 SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(updateEntry);
+                changeSetProperty.ChangeSet.Entries.Add(updateItem);
 
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            return this.CreateUpdatedODataResult(updateEntry.Entity);
+            return this.CreateUpdatedODataResult(updateItem.Entity);
         }
 
         private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType)
@@ -441,11 +441,7 @@ namespace Microsoft.Restier.WebApi
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
-            ODataQuerySettings settings = new ODataQuerySettings
-            {
-                HandleNullPropagation = HandleNullPropagationOption.False,
-                PageSize = null,  // no support for server enforced PageSize, yet
-            };
+            ODataQuerySettings settings = Api.Context.GetApiService<ODataQuerySettings>();
 
             if (this.shouldReturnCount)
             {
@@ -464,8 +460,7 @@ namespace Microsoft.Restier.WebApi
             }
 
             // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
-            // TODO GitHubIssue#359 : Allow user to customize the query and validation setting
-            ODataValidationSettings validationSettings = new ODataValidationSettings();
+            ODataValidationSettings validationSettings = Api.Context.GetApiService<ODataValidationSettings>();
             queryOptions.Validate(validationSettings);
 
             // Entity count can NOT be evaluated at this point of time because the source

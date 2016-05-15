@@ -19,7 +19,7 @@ namespace Microsoft.Restier.WebApi.Model
     internal class RestierOperationModelBuilder : IModelBuilder
     {
         private readonly Type targetType;
-        private readonly ICollection<ActionMethodInfo> actionInfos = new List<ActionMethodInfo>();
+        private readonly ICollection<FunctionMethodInfo> actionInfos = new List<FunctionMethodInfo>();
         private readonly ICollection<FunctionMethodInfo> functionInfos = new List<FunctionMethodInfo>();
 
         private RestierOperationModelBuilder(Type targetType)
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.WebApi.Model
 
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            services.ChainPrevious<IModelBuilder>(next => new RestierOperationModelBuilder(targetType)
+            services.AddService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType)
             {
                 InnerHandler = next,
             });
@@ -181,31 +181,32 @@ namespace Microsoft.Restier.WebApi.Model
 
             foreach (var method in methods)
             {
-                var functionAttribute = method.GetCustomAttributes<FunctionAttribute>(true).FirstOrDefault();
+                var functionAttribute = method.GetCustomAttributes<OperationAttribute>(true).FirstOrDefault();
                 if (functionAttribute != null)
                 {
-                    functionInfos.Add(new FunctionMethodInfo
+                    if (!functionAttribute.HasSideEffects)
                     {
-                        Method = method,
-                        FunctionAttribute = functionAttribute
-                    });
-                }
-
-                var actionAttribute = method.GetCustomAttributes<ActionAttribute>(true).FirstOrDefault();
-                if (actionAttribute != null)
-                {
-                    actionInfos.Add(new ActionMethodInfo
+                        functionInfos.Add(new FunctionMethodInfo
+                        {
+                            Method = method,
+                            OperationAttribute = functionAttribute
+                        });
+                    }
+                    else
                     {
-                        Method = method,
-                        ActionAttribute = actionAttribute
-                    });
+                        actionInfos.Add(new FunctionMethodInfo
+                        {
+                            Method = method,
+                            OperationAttribute = functionAttribute
+                        });
+                    }
                 }
             }
         }
 
         private void BuildActions(EdmModel model)
         {
-            foreach (ActionMethodInfo actionInfo in this.actionInfos)
+            foreach (FunctionMethodInfo actionInfo in this.actionInfos)
             {
                 var returnTypeReference = GetReturnTypeReference(actionInfo.Method.ReturnType, model);
 
@@ -262,52 +263,30 @@ namespace Microsoft.Restier.WebApi.Model
             }
         }
 
-        private class ActionMethodInfo
-        {
-            public MethodInfo Method { get; set; }
-
-            public ActionAttribute ActionAttribute { get; set; }
-
-            public string Name
-            {
-                get { return this.ActionAttribute.Name ?? this.Method.Name; }
-            }
-
-            public string Namespace
-            {
-                get { return this.ActionAttribute.Namespace ?? this.Method.DeclaringType.Namespace; }
-            }
-
-            public string EntitySet
-            {
-                get { return this.ActionAttribute.EntitySet;  }
-            }
-        }
-
         private class FunctionMethodInfo
         {
             public MethodInfo Method { get; set; }
 
-            public FunctionAttribute FunctionAttribute { get; set; }
+            public OperationAttribute OperationAttribute { get; set; }
 
             public string Name
             {
-                get { return this.FunctionAttribute.Name ?? this.Method.Name; }
+                get { return this.OperationAttribute.Name ?? this.Method.Name; }
             }
 
             public string Namespace
             {
-                get { return this.FunctionAttribute.Namespace ?? this.Method.DeclaringType.Namespace; }
+                get { return this.OperationAttribute.Namespace ?? this.Method.DeclaringType.Namespace; }
             }
 
             public string EntitySet
             {
-                get { return this.FunctionAttribute.EntitySet; }
+                get { return this.OperationAttribute.EntitySet; }
             }
 
             public bool IsComposable
             {
-                get { return this.FunctionAttribute.IsComposable; }
+                get { return this.OperationAttribute.IsComposable; }
             }
         }
     }

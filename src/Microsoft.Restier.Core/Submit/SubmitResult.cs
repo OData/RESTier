@@ -10,19 +10,19 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class SubmitResult
     {
-        private Exception error;
+        private Exception exception;
         private ChangeSet completedChangeSet;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubmitResult" /> class with an error.
         /// </summary>
-        /// <param name="error">
+        /// <param name="exception">
         /// An error.
         /// </param>
-        public SubmitResult(Exception error)
+        public SubmitResult(Exception exception)
         {
-            Ensure.NotNull(error, "error");
-            this.Error = error;
+            Ensure.NotNull(exception, "exception");
+            this.Exception = exception;
         }
 
         /// <summary>
@@ -44,17 +44,17 @@ namespace Microsoft.Restier.Core.Submit
         /// Setting this value will override any
         /// existing error or completed change set.
         /// </remarks>
-        public Exception Error
+        public Exception Exception
         {
             get
             {
-                return this.error;
+                return this.exception;
             }
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this.error = value;
+                this.exception = value;
                 this.completedChangeSet = null;
             }
         }

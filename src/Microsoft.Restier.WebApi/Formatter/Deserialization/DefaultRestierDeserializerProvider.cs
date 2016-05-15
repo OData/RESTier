@@ -11,11 +11,23 @@ using Microsoft.Restier.WebApi.Results;
 namespace Microsoft.Restier.WebApi.Formatter.Deserialization
 {
     /// <summary>
-    /// The default serializer provider.
+    /// The default deserializer provider.
     /// </summary>
-    internal class DefaultRestierDeserializerProvider : DefaultODataDeserializerProvider
+    public class DefaultRestierDeserializerProvider : DefaultODataDeserializerProvider
     {
         private RestierEnumDeserializer enumDeserializer;
+        private static readonly DefaultRestierDeserializerProvider _instance = new DefaultRestierDeserializerProvider();
+
+        /// <summary>
+        /// Gets the default instance of the <see cref="DefaultRestierDeserializerProvider"/>.
+        /// </summary>
+        internal static DefaultRestierDeserializerProvider SingletonInstance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRestierDeserializerProvider" /> class.

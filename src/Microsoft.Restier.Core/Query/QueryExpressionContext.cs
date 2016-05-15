@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryExpressionContext
     {
-        private const string MethodNameOfDataSourceStubValue = "Value";
+        private const string MethodNameOfDataSourceStubValue = "GetPropertyValue";
 
         private Stack<Expression> visitedNodes = new Stack<Expression>();
         private IDictionary<Expression, QueryModelReference> modelReferences =
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.Core.Query
         {
             var method = methodCall.Method;
 
-            // Source is a sequence of T and output is also a sequence of T
+            // source is a sequence of T and output is also a sequence of T
             var sourceType = method.GetParameters()[0]
                 .ParameterType.FindGenericType(typeof(IEnumerable<>));
             var resultType = method.ReturnType
@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Core.Query
                 return new DerivedDataReference(source);
             }
 
-            // Source is a sequence of T and output is a single T
+            // source is a sequence of T and output is a single T
             var sourceElementType = sourceType.GetGenericArguments()[0];
             if (method.ReturnType == sourceElementType)
             {
@@ -177,7 +177,7 @@ namespace Microsoft.Restier.Core.Query
             if (methodCall != null)
             {
                 var method = methodCall.Method;
-                if (method.DeclaringType == typeof(DataSourceStubs) &&
+                if (method.DeclaringType == typeof(DataSourceStub) &&
                     method.Name != MethodNameOfDataSourceStubValue)
                 {
                     modelReference = ComputeDataSourceStubReference(methodCall);

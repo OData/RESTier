@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Core
 
         #endregion
 
-        #region Source
+        #region GetQueryableSource
 
         /// <summary>
         /// Gets a queryable source of data exposed by an API.
@@ -74,14 +74,14 @@ namespace Microsoft.Restier.Core
         /// enumerated as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable Source(
+        public static IQueryable GetQueryableSource(
             this ApiBase api,
             string name,
             params object[] arguments)
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.Source(name, arguments);
+            return api.Context.GetQueryableSource(name, arguments);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable Source(
+        public static IQueryable GetQueryableSource(
             this ApiBase api,
             string namespaceName,
             string name,
@@ -121,7 +121,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.Source(namespaceName, name, arguments);
+            return api.Context.GetQueryableSource(namespaceName, name, arguments);
         }
 
         /// <summary>
@@ -154,14 +154,14 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable<TElement> Source<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             this ApiBase api,
             string name,
             params object[] arguments)
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.Source<TElement>(name, arguments);
+            return api.Context.GetQueryableSource<TElement>(name, arguments);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Microsoft.Restier.Core
         /// enumerated, as the API engine only operates asynchronously.
         /// </para>
         /// </remarks>
-        public static IQueryable<TElement> Source<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             this ApiBase api,
             string namespaceName,
             string name,
@@ -204,43 +204,12 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(api, "api");
 
-            return api.Context.Source<TElement>(namespaceName, name, arguments);
+            return api.Context.GetQueryableSource<TElement>(namespaceName, name, arguments);
         }
 
         #endregion
 
         #region Query
-
-        /// <summary>
-        /// Asynchronously queries for data exposed by an API.
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the query.
-        /// </typeparam>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="query">
-        /// A composed query that was derived from a queryable source.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// whose result is a sequence of the query results.
-        /// </returns>
-        public static async Task<IEnumerable<TElement>> QueryAsync<TElement>(
-            this ApiBase api,
-            IQueryable<TElement> query,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, "api");
-
-            var request = new QueryRequest(query);
-            var result = await api.Context.QueryAsync(request, cancellationToken);
-            return result.Results.Cast<TElement>();
-        }
 
         /// <summary>
         /// Asynchronously queries for data exposed by an API.

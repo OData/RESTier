@@ -16,20 +16,11 @@ namespace Microsoft.Restier.Core
     /// <remarks>
     /// <para>
     /// An API configuration defines the model and behavior of an API
-    /// through a set of registered hook points.
+    /// through a set of registered Api services in DI container.
     /// </para>
     /// <para>
-    /// Hook points may be singletons, meaning there is at most one instance of
-    /// the hook point registered, or multi-cast, in which case there can be
-    /// zero or more instances of the hook point that are registered. In the
-    /// multi-cast case, registration order is maintained, and such hook points
-    /// are normally used in the original or reverse order of registration.
-    /// </para>
-    /// <para>
-    /// In order to use an API configuration, it must first be committed.
-    /// This fixes the configuration so that its set of hook points are
-    /// immutable, ensuring that any active use of the configuration sees a
-    /// consistent set of hook points throughout a particular API flow.
+    /// Api services may be singletons, meaning there is at most one instance, 
+    /// or scoped, in which case there will be one instances of the services for each scope.
     /// </para>
     /// </remarks>
     public class ApiConfiguration
@@ -57,7 +48,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
         /// </summary>
-        public IServiceProvider ServiceProvider
+        internal IServiceProvider ServiceProvider
         {
             get { return serviceProvider; }
         }

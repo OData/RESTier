@@ -100,7 +100,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Person person = new Person()
             {
                 FirstName = "Sheldon",
-                UserName = "SheldonCooper"
+                UserName = "SheldonCooper",
+                Age = 12
             };
 
             this.TestClientContext.AddToPeople(person);
@@ -113,6 +114,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             // Update an entity
             person.LastName = "Lee";
+            person.Age = null;
             this.TestClientContext.UpdateObject(person);
             this.TestClientContext.SaveChanges();
 
@@ -998,6 +1000,15 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         public void TestCountQueryOptionIsFalse(string uriStringAfterServiceRoot)
         {
             this.TestGetPayloadDoesNotContain(uriStringAfterServiceRoot, "@odata.count");
+        }
+
+        [Theory]
+        [InlineData("People?$apply=aggregate(Concurrency with sum as Result)", "Result")]
+        [InlineData("People?$apply=aggregate(PersonId with sum as Total)/filter(Total eq 78)", "Total")]
+        [InlineData("People?$apply=groupby((FirstName), aggregate(PersonId with sum as Total))", "Total")]
+        public void TestApplyQueryOption(string uriStringAfterServiceRoot, string expectedSubString)
+        {
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
     }
 }

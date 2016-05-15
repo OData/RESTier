@@ -24,7 +24,7 @@ namespace Microsoft.Restier.WebApi.Query
             {
                 var countQuery = ExpressionHelpers.GetCountableQuery(query);
                 var expression = ExpressionHelpers.Count(countQuery.Expression, countQuery.ElementType);
-                var result = await ExecuteSingleAsync<long>(context, countQuery, expression, cancellationToken);
+                var result = await ExecuteExpressionAsync<long>(context, countQuery.Provider, expression, cancellationToken);
                 var totalCount = result.Results.Cast<long>().Single();
 
                 countOption.SetTotalCount(totalCount);
@@ -33,13 +33,13 @@ namespace Microsoft.Restier.WebApi.Query
             return await Inner.ExecuteQueryAsync<TElement>(context, query, cancellationToken);
         }
 
-        public Task<QueryResult> ExecuteSingleAsync<TResult>(
+        public Task<QueryResult> ExecuteExpressionAsync<TResult>(
             QueryContext context,
-            IQueryable query,
+            IQueryProvider queryProvider,
             Expression expression,
             CancellationToken cancellationToken)
         {
-            return Inner.ExecuteSingleAsync<TResult>(context, query, expression, cancellationToken);
+            return Inner.ExecuteExpressionAsync<TResult>(context, queryProvider, expression, cancellationToken);
         }
     }
 }

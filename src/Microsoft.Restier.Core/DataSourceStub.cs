@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Core
     /// data source in API. Later in the query pipeline the sourcer from
     /// the data provider will replace the stub with the actual data source.
     /// </remarks>
-    public static class DataSourceStubs
+    public static class DataSourceStub
     {
         /// <summary>
         /// Identifies an entity set, singleton or queryable data
@@ -37,10 +37,10 @@ namespace Microsoft.Restier.Core
         /// A representation of the entity set, singleton or queryable
         /// data resulting from a call to the composable function import.
         /// </returns>
-        public static IQueryable<TElement> Source<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
 
         /// <summary>
@@ -63,14 +63,15 @@ namespace Microsoft.Restier.Core
         /// A representation of the queryable data resulting
         /// from a call to the composable function.
         /// </returns>
-        public static IQueryable<TElement> Source<TElement>(
+        public static IQueryable<TElement> GetQueryableSource<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
 
         /// <summary>
         /// Identifies an entity set or results of a call to a function import.
+        /// TODO reserve for function/action supports
         /// </summary>
         /// <typeparam name="TElement">
         /// The type of the elements in the results.
@@ -86,15 +87,16 @@ namespace Microsoft.Restier.Core
         /// A representation of the entity set or
         /// results of a call to the function import.
         /// </returns>
-        public static IEnumerable<TElement> Results<TElement>(
+        internal static IEnumerable<TElement> Results<TElement>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
 
         /// <summary>
         /// Identifies a singleton or result of a
         /// call to a singular function import.
+        /// TODO reserve for function/action supports
         /// </summary>
         /// <typeparam name="TResult">
         /// The type of the result.
@@ -110,14 +112,15 @@ namespace Microsoft.Restier.Core
         /// A representation of the singleton or result
         /// of a call to the singular function import.
         /// </returns>
-        public static TResult Result<TResult>(
+        internal static TResult Result<TResult>(
             string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
 
         /// <summary>
         /// Identifies the results of a call to a function.
+        /// TODO reserve for function/action supports
         /// </summary>
         /// <typeparam name="TElement">
         /// The type of the elements in the results.
@@ -134,14 +137,15 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// A representation of the results of a call to the function.
         /// </returns>
-        public static IEnumerable<TElement> Results<TElement>(
+        internal static IEnumerable<TElement> Results<TElement>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
 
         /// <summary>
         /// Identifies the result of a call to a singular function.
+        /// TODO reserve for function/action supports
         /// </summary>
         /// <typeparam name="TResult">
         /// The type of the result.
@@ -158,10 +162,10 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// A representation of the result of a call to the singular function.
         /// </returns>
-        public static TResult Result<TResult>(
+        internal static TResult Result<TResult>(
             string namespaceName, string name, params object[] arguments)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
 
         /// <summary>
@@ -180,10 +184,10 @@ namespace Microsoft.Restier.Core
         /// A representation of the value of the
         /// extended property of the object.
         /// </returns>
-        public static TResult Value<TResult>(
+        public static TResult GetPropertyValue<TResult>(
             object source, string propertyName)
         {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubDirectly);
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }
     }
 }

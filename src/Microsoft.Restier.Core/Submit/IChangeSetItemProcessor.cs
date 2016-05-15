@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a change set entry filter.
+    /// Represents a change set item processor.
     /// </summary>
-    public interface IChangeSetEntryFilter
+    public interface IChangeSetItemProcessor
     {
         /// <summary>
-        /// Asynchronously applies logic before a change set entry is executed.
+        /// Asynchronously applies logic before a change set item is processed.
         /// </summary>
         /// <param name="context">
         /// The submit context.
         /// </param>
-        /// <param name="entry">
-        /// A change set entry.
+        /// <param name="item">
+        /// A change set item.
         /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
@@ -26,19 +26,19 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task OnExecutingEntryAsync(
+        Task OnProcessingChangeSetItemAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             CancellationToken cancellationToken);
 
         /// <summary>
-        /// Asynchronously applies logic after a change set entry is executed.
+        /// Asynchronously applies logic after a change set item is processed.
         /// </summary>
         /// <param name="context">
         /// The submit context.
         /// </param>
-        /// <param name="entry">
-        /// A change set entry.
+        /// <param name="item">
+        /// A change set item.
         /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
@@ -46,9 +46,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task OnExecutedEntryAsync(
+        Task OnProcessedChangeSetItemAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             CancellationToken cancellationToken);
     }
 }

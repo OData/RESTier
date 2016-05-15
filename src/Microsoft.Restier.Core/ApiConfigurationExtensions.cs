@@ -12,8 +12,6 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public static class ApiConfigurationExtensions
     {
-        private const string IgnoredPropertiesKey = "Microsoft.Restier.Core.IgnoredProperties";
-
         #region GetApiService<T>
 
         /// <summary>
@@ -118,54 +116,6 @@ namespace Microsoft.Restier.Core
         public static void ClearProperty(this ApiConfiguration configuration, string name)
         {
             configuration.GetPropertyBag().ClearProperty(name);
-        }
-
-        #endregion
-
-        #region IgnoreProperty
-
-        /// <summary>
-        /// Ignores the given property when building the model.
-        /// </summary>
-        /// <param name="configuration">An API configuration.</param>
-        /// <param name="propertyName">The name of the property to be ignored.</param>
-        /// <returns>The current API configuration instance.</returns>
-        public static ApiConfiguration IgnoreProperty(
-            this ApiConfiguration configuration,
-            string propertyName)
-        {
-            Ensure.NotNull(configuration, "configuration");
-            Ensure.NotNull(propertyName, "propertyName");
-
-            configuration.GetIgnoredPropertiesImplementation().Add(propertyName);
-            return configuration;
-        }
-
-        #endregion
-
-        #region IgnoreProperty Internal
-
-        public static bool IsPropertyIgnored(this ApiConfiguration configuration, string propertyName)
-        {
-            Ensure.NotNull(configuration, "configuration");
-
-            return configuration.GetIgnoredPropertiesImplementation().Contains(propertyName);
-        }
-
-        #endregion
-
-        #region IgnoreProperty Private
-
-        private static ICollection<string> GetIgnoredPropertiesImplementation(this ApiConfiguration configuration)
-        {
-            var ignoredProperties = configuration.GetProperty<ICollection<string>>(IgnoredPropertiesKey);
-            if (ignoredProperties == null)
-            {
-                ignoredProperties = new HashSet<string>();
-                configuration.SetProperty(IgnoredPropertiesKey, ignoredProperties);
-            }
-
-            return ignoredProperties;
         }
 
         #endregion

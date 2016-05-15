@@ -75,8 +75,8 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// <param name="context">
         /// The query context.
         /// </param>
-        /// <param name="query">
-        /// A base query.
+        /// <param name="queryProvider">
+        /// A query provider to execute expression.
         /// </param>
         /// <param name="expression">
         /// An expression to be composed on the base query.
@@ -88,16 +88,16 @@ namespace Microsoft.Restier.EntityFramework.Query
         /// A task that represents the asynchronous
         /// operation whose result is a query result.
         /// </returns>
-        public async Task<QueryResult> ExecuteSingleAsync<TResult>(
+        public async Task<QueryResult> ExecuteExpressionAsync<TResult>(
             QueryContext context,
-            IQueryable query,
+            IQueryProvider queryProvider,
             Expression expression,
             CancellationToken cancellationToken)
         {
 #if EF7
-            var provider = query.Provider as IAsyncQueryProvider;
+            var provider = queryProvider as IAsyncQueryProvider;
 #else
-            var provider = query.Provider as IDbAsyncQueryProvider;
+            var provider = queryProvider as IDbAsyncQueryProvider;
 #endif
             if (provider != null)
             {
@@ -106,7 +106,7 @@ namespace Microsoft.Restier.EntityFramework.Query
                 return new QueryResult(new TResult[] { result });
             }
 
-            return await Inner.ExecuteSingleAsync<TResult>(context, query, expression, cancellationToken);
+            return await Inner.ExecuteExpressionAsync<TResult>(context, queryProvider, expression, cancellationToken);
         }
     }
 }

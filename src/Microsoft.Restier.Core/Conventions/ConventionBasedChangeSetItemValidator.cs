@@ -3,34 +3,35 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 using DataAnnotations = System.ComponentModel.DataAnnotations;
-using ValidationResult = Microsoft.Restier.Core.Submit.ValidationResult;
 
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A convention-based change set entry validator.
+    /// A convention-based change set item validator.
     /// </summary>
-    internal class ConventionBasedChangeSetEntryValidator :
-        IChangeSetEntryValidator
+    internal class ConventionBasedChangeSetItemValidator :
+        IChangeSetItemValidator
     {
         /// <inheritdoc/>
-        public Task ValidateEntityAsync(
+        public Task ValidateChangeSetItemAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
-            ValidationResults validationResults,
+            ChangeSetItem item,
+            Collection<ChangeSetItemValidationResult> validationResults,
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(validationResults, "validationResults");
-            DataModificationEntry dataModificationEntry = entry as DataModificationEntry;
-            if (dataModificationEntry != null)
+            DataModificationItem dataModificationItem = item as DataModificationItem;
+            if (dataModificationItem != null)
             {
-                object entity = dataModificationEntry.Entity;
+                object entity = dataModificationItem.Entity;
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 PropertyDescriptorCollection properties =
@@ -52,11 +53,11 @@ namespace Microsoft.Restier.Core.Conventions
                             validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != DataAnnotations.ValidationResult.Success)
                         {
-                            validationResults.Add(new ValidationResult()
+                            validationResults.Add(new ChangeSetItemValidationResult()
                             {
                                 Id = validationAttribute.GetType().FullName,
                                 Message = validationResult.ErrorMessage,
-                                Severity = ValidationSeverity.Error,
+                                Severity = EventLevel.Error,
                                 Target = entity,
                                 PropertyName = property.Name
                             });

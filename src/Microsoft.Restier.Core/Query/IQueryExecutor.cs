@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
-    /// Represents a hook point that executes a query.
+    /// Represents a service that executes a query.
     /// </summary>
     /// <remarks>
     /// Data provider implemented IQueryExecutor should only handle queries against the specific
@@ -51,8 +51,8 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="context">
         /// The query context.
         /// </param>
-        /// <param name="query">
-        /// A base query.
+        /// <param name="queryProvider">
+        /// A query provider to execute the expression.
         /// </param>
         /// <param name="expression">
         /// An expression to be composed on the base query.
@@ -64,9 +64,9 @@ namespace Microsoft.Restier.Core.Query
         /// A task that represents the asynchronous
         /// operation whose result is a query result.
         /// </returns>
-        Task<QueryResult> ExecuteSingleAsync<TResult>(
+        Task<QueryResult> ExecuteExpressionAsync<TResult>(
             QueryContext context,
-            IQueryable query,
+            IQueryProvider queryProvider,
             Expression expression,
             CancellationToken cancellationToken);
     }

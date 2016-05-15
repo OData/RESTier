@@ -22,10 +22,7 @@ namespace Microsoft.Restier.EntityFramework
         public static IServiceCollection AddEfProviderServices<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
-            services.TryAddScoped<TDbContext>();
-            services.TryAddScoped(typeof(DbContext), sp => sp.GetService<TDbContext>());
-
-            services.AddScoped<TDbContext>(sp =>
+            services.AddScoped<DbContext>(sp =>
             {
                 var dbContext = Activator.CreateInstance<TDbContext>(); 
 #if EF7
@@ -37,13 +34,13 @@ namespace Microsoft.Restier.EntityFramework
             });
 
             return services
-                .CutoffPrevious<IModelBuilder>(ModelProducer.Instance)
-                .CutoffPrevious<IModelMapper>(new ModelMapper(typeof(TDbContext)))
-                .CutoffPrevious<IQueryExpressionSourcer, QueryExpressionSourcer>()
-                .ChainPrevious<IQueryExecutor, QueryExecutor>()
-                .ChainPrevious<IQueryExpressionFilter, QueryExpressionFilter>()
-                .CutoffPrevious<IChangeSetPreparer, ChangeSetPreparer>()
-                .CutoffPrevious<ISubmitExecutor>(SubmitExecutor.Instance);
+                .AddService<IModelBuilder, ModelProducer>()
+                .AddService<IModelMapper>((sp, next) => new ModelMapper(typeof(TDbContext)))
+                .AddService<IQueryExpressionSourcer, QueryExpressionSourcer>()
+                .AddService<IQueryExecutor, QueryExecutor>()
+                .AddService<IQueryExpressionProcessor, QueryExpressionProcessor>()
+                .AddService<IChangeSetInitializer, ChangeSetInitializer>()
+                .AddService<ISubmitExecutor, SubmitExecutor>();
         }
     }
 }

@@ -10,49 +10,49 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents an exception that indicates validation errors occurred on entities.
     /// </summary>
-    public class ValidationException : Exception
+    public class ChangeSetValidationException : Exception
     {
-        private IEnumerable<ValidationResult> validationResults;
+        private IEnumerable<ChangeSetItemValidationResult> errorValidationResults;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationException"/> class.
+        /// Initializes a new instance of the <see cref="ChangeSetValidationException"/> class.
         /// </summary>
         /// <param name="message">Message of the exception.</param>
-        public ValidationException(string message)
+        public ChangeSetValidationException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationException"/> class.
+        /// Initializes a new instance of the <see cref="ChangeSetValidationException"/> class.
         /// </summary>
         /// <param name="message">Message of the exception.</param>
         /// <param name="innerException">Inner exception.</param>
-        public ValidationException(string message, Exception innerException)
+        public ChangeSetValidationException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
         /// <summary>
-        /// Gets or sets the validation results.
+        /// Gets or sets the failed validation results.
         /// </summary>
-        public IEnumerable<ValidationResult> ValidationResults
+        public IEnumerable<ChangeSetItemValidationResult> ValidationResults
         {
             get
             {
-                if (this.validationResults == null)
+                if (this.errorValidationResults == null)
                 {
-                    return Enumerable.Empty<ValidationResult>();
+                    return Enumerable.Empty<ChangeSetItemValidationResult>();
                 }
                 else
                 {
-                    return this.validationResults;
+                    return this.errorValidationResults;
                 }
             }
 
             set
             {
-                this.validationResults = value;
+                this.errorValidationResults = value;
             }
         }
     }

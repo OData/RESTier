@@ -77,7 +77,11 @@
     </Compile>
     <Compile Include="Batch\RestierBatchHandler.cs" />
     <Compile Include="Batch\RestierChangeSetProperty.cs" />
-    <Compile Include="Batch\RestierChangeSetRequestItem.cs" />
+    <Compile Include="Batch\RestierBatchChangeSetRequestItem.cs" />
+    <Compile Include="Formatter\Deserialization\RestierDeserializerProviderProxy.cs" />
+    <Compile Include="Formatter\Serialization\RestierSerializerProviderProxy.cs" />
+    <Compile Include="Model\ApiConfigurationExtensions.cs" />
+    <Compile Include="Model\OperationAttribute.cs" />
     <Compile Include="Model\RestierModelExtender.cs" />
     <Compile Include="Model\RestierOperationModelBuilder.cs" />
     <Compile Include="Formatter\Deserialization\DefaultRestierDeserializerProvider.cs" />

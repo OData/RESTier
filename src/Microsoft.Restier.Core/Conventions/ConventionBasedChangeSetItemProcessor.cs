@@ -14,13 +14,13 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A convention-based change set entry filter.
+    /// A convention-based change set item filter.
     /// </summary>
-    internal class ConventionBasedChangeSetEntryFilter : IChangeSetEntryFilter
+    internal class ConventionBasedChangeSetItemProcessor : IChangeSetItemProcessor
     {
         private Type targetType;
 
-        private ConventionBasedChangeSetEntryFilter(Type targetType)
+        private ConventionBasedChangeSetItemProcessor(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
             this.targetType = targetType;
@@ -33,77 +33,77 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.CutoffPrevious<IChangeSetEntryFilter>(new ConventionBasedChangeSetEntryFilter(targetType));
+            services.AddService<IChangeSetItemProcessor>((sp, next) => new ConventionBasedChangeSetItemProcessor(targetType));
         }
 
         /// <inheritdoc/>
-        public Task OnExecutingEntryAsync(
+        public Task OnProcessingChangeSetItemAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             CancellationToken cancellationToken)
         {
             return this.InvokeFilterMethodAsync(
-                context, entry, ConventionBasedChangeSetConstants.FilterMethodNamePreFilterSuffix);
+                context, item, ConventionBasedChangeSetConstants.FilterMethodNamePreFilterSuffix);
         }
 
         /// <inheritdoc/>
-        public Task OnExecutedEntryAsync(
+        public Task OnProcessedChangeSetItemAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             CancellationToken cancellationToken)
         {
             return this.InvokeFilterMethodAsync(
-                context, entry, ConventionBasedChangeSetConstants.FilterMethodNamePostFilterSuffix);
+                context, item, ConventionBasedChangeSetConstants.FilterMethodNamePostFilterSuffix);
         }
 
-        private static string GetMethodName(ChangeSetEntry entry, string suffix)
+        private static string GetMethodName(ChangeSetItem item, string suffix)
         {
-            switch (entry.Type)
+            switch (item.Type)
             {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                case ChangeSetItemType.DataModification:
+                    DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
-                    if (dataModification.IsNew)
+                    if (dataModification.IsNewRequest)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
                     }
-                    else if (dataModification.IsUpdate)
+                    else if (dataModification.IsUpdateRequest)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
                     }
-                    else if (dataModification.IsDelete)
+                    else if (dataModification.IsDeleteRequest)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
                     }
 
                     return operationName + suffix + dataModification.EntitySetName;
 
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
+                case ChangeSetItemType.ActionInvocation:
+                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
                     return ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
-                           suffix + actionEntry.ActionName;
+                           suffix + actionItem.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, item.Type));
             }
         }
 
-        private static object[] GetParameters(ChangeSetEntry entry)
+        private static object[] GetParameters(ChangeSetItem item)
         {
-            switch (entry.Type)
+            switch (item.Type)
             {
-                case ChangeSetEntryType.DataModification:
-                    DataModificationEntry dataModification = (DataModificationEntry)entry;
+                case ChangeSetItemType.DataModification:
+                    DataModificationItem dataModification = (DataModificationItem)item;
                     return new object[] { dataModification.Entity };
 
-                case ChangeSetEntryType.ActionInvocation:
-                    ActionInvocationEntry actionEntry = (ActionInvocationEntry)entry;
-                    return actionEntry.GetArgumentArray();
+                case ChangeSetItemType.ActionInvocation:
+                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
+                    return actionItem.GetArgumentArray();
 
                 default:
                     throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, entry.Type));
+                        CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, item.Type));
             }
         }
 
@@ -115,11 +115,11 @@ namespace Microsoft.Restier.Core.Conventions
 
         private Task InvokeFilterMethodAsync(
             SubmitContext context,
-            ChangeSetEntry entry,
+            ChangeSetItem item,
             string methodNameSuffix)
         {
-            string methodName = ConventionBasedChangeSetEntryFilter.GetMethodName(entry, methodNameSuffix);
-            object[] parameters = ConventionBasedChangeSetEntryFilter.GetParameters(entry);
+            string methodName = ConventionBasedChangeSetItemProcessor.GetMethodName(item, methodNameSuffix);
+            object[] parameters = ConventionBasedChangeSetItemProcessor.GetParameters(item);
 
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
@@ -139,7 +139,7 @@ namespace Microsoft.Restier.Core.Conventions
                 }
 
                 ParameterInfo[] methodParameters = method.GetParameters();
-                if (ConventionBasedChangeSetEntryFilter.ParametersMatch(methodParameters, parameters))
+                if (ConventionBasedChangeSetItemProcessor.ParametersMatch(methodParameters, parameters))
                 {
                     object result = method.Invoke(target, parameters);
                     Task resultTask = result as Task;

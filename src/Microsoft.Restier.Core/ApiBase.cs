@@ -31,14 +31,6 @@ namespace Microsoft.Restier.Core
         private ApiContext apiContext;
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="ApiBase"/> class.
-        /// </summary>
-        ~ApiBase()
-        {
-            this.Dispose(false);
-        }
-
-        /// <summary>
         /// Gets the API context for this API.
         /// </summary>
         public ApiContext Context
@@ -110,13 +102,17 @@ namespace Microsoft.Restier.Core
                 return;
             }
 
+            this.IsDisposed = true;
+
             if (this.apiContext != null)
             {
                 ApiConfiguratorAttributes.ApplyDisposal(
                     this.GetType(), this, this.apiContext);
+
+                this.apiContext.DisposeScope();
+                this.apiContext = null;
             }
 
-            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -131,7 +127,7 @@ namespace Microsoft.Restier.Core
         protected virtual IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
-            // Add core and conversion's services
+            // Add core and convention's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)
                 .AddConventionBasedServices(apiType);
@@ -159,6 +155,7 @@ namespace Microsoft.Restier.Core
 
         /// <summary>
         /// Creates the API context for this API.
+        /// Descendants may further configure the built <see cref="ApiContext"/>.
         /// </summary>
         /// <param name="configuration">
         /// The API configuration to use.
@@ -170,24 +167,6 @@ namespace Microsoft.Restier.Core
             ApiConfiguration configuration)
         {
             return new ApiContext(configuration);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources that are used by the
-        /// object and, optionally, releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        /// <c>true</c> to release both managed and unmanaged resources;
-        /// <c>false</c> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            this.IsDisposed = true;
-            if (this.apiContext != null)
-            {
-                this.apiContext.DisposeScope();
-                this.apiContext = null;
-            }
         }
 
         // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.

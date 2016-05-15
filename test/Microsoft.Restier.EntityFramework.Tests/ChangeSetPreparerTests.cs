@@ -19,19 +19,19 @@ namespace Microsoft.Restier.EntityFramework.Tests
         {
             // Arrange
             var libraryApi = new LibraryApi();
-            var entry = new DataModificationEntry(
+            var item = new DataModificationItem(
                 "Readers",
                 "Person",
                 new Dictionary<string, object> { { "Id", new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461") } },
                 new Dictionary<string, object>(),
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });
-            var changeSet = new ChangeSet(new[] { entry });
+            var changeSet = new ChangeSet(new[] { item });
             var sc = new SubmitContext(libraryApi.Context, changeSet);
 
             // Act
-            var changeSetPreparer = libraryApi.Context.Configuration.GetApiService<IChangeSetPreparer>();
-            await changeSetPreparer.PrepareAsync(sc, CancellationToken.None);
-            var person = entry.Entity as Person;
+            var changeSetPreparer = libraryApi.Context.Configuration.GetApiService<IChangeSetInitializer>();
+            await changeSetPreparer.InitializeAsync(sc, CancellationToken.None);
+            var person = item.Entity as Person;
 
             // Assert
             Assert.NotNull(person);

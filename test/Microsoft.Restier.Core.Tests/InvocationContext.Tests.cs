@@ -8,33 +8,52 @@ namespace Microsoft.Restier.Core.Tests
 {
     public class InvocationContextTests
     {
+        private class TestApi : ApiBase
+        {
+            private static ApiServiceA _service;
+
+            public ApiServiceA ApiService
+            {
+                get
+                {
+                    if (_service == null)
+                    {
+                        _service = new ApiServiceA();
+                    }
+                    return _service;
+                }
+            }
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                services.AddService<IServiceA>((sp, next) => ApiService);
+
+                return services;
+            }
+        }
+
         [Fact]
         public void NewInvocationContextIsConfiguredCorrectly()
         {
-            var configuration = new ServiceCollection()
-                .BuildApiConfiguration();
-            var apiContext = new ApiContext(configuration);
+            var api = new TestApi();
+            var apiContext = api.Context;
             var context = new InvocationContext(apiContext);
             Assert.Same(apiContext, context.ApiContext);
         }
 
         [Fact]
-        public void InvocationContextGetsHookPointsCorrectly()
+        public void InvocationContextGetsApiServicesCorrectly()
         {
-            var hook = new HookA();
-            var configuration = new ServiceCollection()
-                .CutoffPrevious<IHookA>(hook)
-                .BuildApiConfiguration();
-            var apiContext = new ApiContext(configuration);
+            var api = new TestApi();
+            var apiContext = api.Context;
             var context = new InvocationContext(apiContext);
-            Assert.Same(hook, context.GetApiService<IHookA>());
+            Assert.Same(api.ApiService, context.GetApiService<IServiceA>());
         }
 
-        private interface IHookA
+        private interface IServiceA
         {
         }
 
-        private class HookA : IHookA
+        private class ApiServiceA : IServiceA
         {
         }
     }

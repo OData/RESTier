@@ -10,7 +10,7 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class ChangeSet
     {
-        private List<ChangeSetEntry> entries;
+        private List<ChangeSetItem> entries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeSet" /> class.
@@ -26,24 +26,24 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="entries">
         /// A set of change set entries.
         /// </param>
-        public ChangeSet(IEnumerable<ChangeSetEntry> entries)
+        public ChangeSet(IEnumerable<ChangeSetItem> entries)
         {
             if (entries != null)
             {
-                this.entries = new List<ChangeSetEntry>(entries);
+                this.entries = new List<ChangeSetItem>(entries);
             }
         }
 
         /// <summary>
         /// Gets the entries in this change set.
         /// </summary>
-        public IList<ChangeSetEntry> Entries
+        public IList<ChangeSetItem> Entries
         {
             get
             {
                 if (this.entries == null)
                 {
-                    this.entries = new List<ChangeSetEntry>();
+                    this.entries = new List<ChangeSetItem>();
                 }
 
                 return this.entries;

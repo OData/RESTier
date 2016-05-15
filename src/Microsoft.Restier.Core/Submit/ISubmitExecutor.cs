@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a hook point that executes a submission.
+    /// Represents a service that executes a submission.
     /// </summary>
     public interface ISubmitExecutor
     {

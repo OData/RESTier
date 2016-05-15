@@ -13,17 +13,17 @@ namespace Microsoft.Restier.Core.Conventions
     /// <summary>
     /// A convention-based query expression filter on entity set.
     /// </summary>
-    internal class ConventionBasedEntitySetFilter : IQueryExpressionFilter
+    internal class ConventionBasedEntitySetProcessor : IQueryExpressionProcessor
     {
         private Type targetType;
 
-        private ConventionBasedEntitySetFilter(Type targetType)
+        private ConventionBasedEntitySetProcessor(Type targetType)
         {
             this.targetType = targetType;
         }
 
         // Inner should be null unless user add one as inner most 
-        public IQueryExpressionFilter Inner { get; set; }
+        public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>
         public static void ApplyTo(
@@ -32,20 +32,20 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.ChainPrevious<IQueryExpressionFilter>(next => new ConventionBasedEntitySetFilter(targetType)
+            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedEntitySetProcessor(targetType)
             {
                 Inner = next,
             });
         }
 
         /// <inheritdoc/>
-        public Expression Filter(QueryExpressionContext context)
+        public Expression Process(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
 
             if (Inner != null)
             {
-                var innerFilteredExpression = Inner.Filter(context);
+                var innerFilteredExpression = Inner.Process(context);
                 if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
                 {
                     return innerFilteredExpression;
