@@ -206,6 +206,10 @@
       <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
       <Name>Microsoft.Restier.EntityFramework7</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
+      <Project>{34d96e52-2f9b-4497-9864-8a2b9cda4141}</Project>
+      <Name>Microsoft.Restier.OData</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Microsoft.Restier.Samples.Northwind.EF7\Microsoft.Restier.Samples.Northwind.EF7.csproj">
       <Project>{af007cef-19b7-426d-ae97-e7d99ecacbb9}</Project>
       <Name>Microsoft.Restier.Samples.Northwind.EF7</Name>
@@ -217,10 +221,6 @@
     <ProjectReference Include="..\..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
-      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>Microsoft.Restier.WebApi</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

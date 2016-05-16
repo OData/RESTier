@@ -112,8 +112,8 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\DbApi.cs">
-      <Link>DbApi.cs</Link>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\EntityFrameworkApi.cs">
+      <Link>EntityFrameworkApi.cs</Link>
     </Compile>
     <Compile Include="..\Microsoft.Restier.EntityFramework\Model\ModelMapper.cs">
       <Link>Model.Shared\ModelMapper.cs</Link>
@@ -121,8 +121,8 @@
     <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExecutor.cs">
       <Link>Query.Shared\QueryExecutor.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionFilter.cs">
-      <Link>Query.Shared\QueryExpressionFilter.cs</Link>
+    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionProcessor.cs">
+      <Link>Query.Shared\QueryExpressionProcessor.cs</Link>
     </Compile>
     <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionSourcer.cs">
       <Link>Query.Shared\QueryExpressionSourcer.cs</Link>

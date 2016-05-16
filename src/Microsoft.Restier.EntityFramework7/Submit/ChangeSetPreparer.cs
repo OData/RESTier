@@ -24,7 +24,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// For this class we cannot reuse EF6 ChangeSetPreparer code, since many types used here have their type name or
     /// member name changed.
     /// </summary>
-    public class ChangeSetPreparer : IChangeSetPreparer
+    public class ChangeSetPreparer : IChangeSetInitializer
     {
         private static MethodInfo prepareEntryGeneric = typeof(ChangeSetPreparer)
             .GetMethod("PrepareEntry", BindingFlags.Static | BindingFlags.NonPublic);
@@ -35,13 +35,13 @@ namespace Microsoft.Restier.EntityFramework.Submit
         /// <param name="context">The submit context class used for preparation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public async Task PrepareAsync(
+        public async Task InitializeAsync(
             SubmitContext context,
             CancellationToken cancellationToken)
         {
             DbContext dbContext = context.GetApiService<DbContext>();
 
-            foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationEntry>())
+            foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
                 object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
                 Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
@@ -57,14 +57,14 @@ namespace Microsoft.Restier.EntityFramework.Submit
         private static async Task PrepareEntry<TEntity>(
             SubmitContext context,
             DbContext dbContext,
-            DataModificationEntry entry,
+            DataModificationItem entry,
             DbSet<TEntity> set,
             CancellationToken cancellationToken) where TEntity : class
         {
             Type entityType = typeof(TEntity);
             TEntity entity;
 
-            if (entry.IsNew)
+            if (entry.IsNewRequest)
             {
                 // TODO: See if Create method is in DbSet<> in future EF7 releases, as the one EF6 has.
                 entity = (TEntity)Activator.CreateInstance(typeof(TEntity));
@@ -72,14 +72,14 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 ChangeSetPreparer.SetValues(entity, entityType, entry.LocalValues);
                 set.Add(entity);
             }
-            else if (entry.IsDelete)
+            else if (entry.IsDeleteRequest)
             {
                 entity = (TEntity)await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
                 set.Remove(entity);
             }
-            else if (entry.IsUpdate)
+            else if (entry.IsUpdateRequest)
             {
-                if (entry.IsFullReplaceUpdate)
+                if (entry.IsFullReplaceUpdateRequest)
                 {
                     entity = (TEntity)ChangeSetPreparer.CreateFullUpdateInstance(entry, entityType);
                     dbContext.Update(entity);
@@ -102,10 +102,10 @@ namespace Microsoft.Restier.EntityFramework.Submit
 
         private static async Task<object> FindEntity(
             SubmitContext context,
-            DataModificationEntry entry,
+            DataModificationItem entry,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.Source(entry.EntitySetName);
+            IQueryable query = context.ApiContext.GetQueryableSource(entry.EntitySetName);
             query = entry.ApplyTo(query);
 
             QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
@@ -133,7 +133,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             return entity;
         }
 
-        private static object CreateFullUpdateInstance(DataModificationEntry entry, Type entityType)
+        private static object CreateFullUpdateInstance(DataModificationItem entry, Type entityType)
         {
             // The algorithm for a "FullReplaceUpdate" is taken from ObjectContextServiceProvider.ResetResource
             // in WCF DS, and works as follows:
@@ -149,7 +149,7 @@ namespace Microsoft.Restier.EntityFramework.Submit
             return newInstance;
         }
 
-        private static void SetValues(EntityEntry dbEntry, DataModificationEntry entry)
+        private static void SetValues(EntityEntry dbEntry, DataModificationItem entry)
         {
             foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
             {

@@ -192,9 +192,9 @@
       <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
       <Name>Microsoft.Restier.EntityFramework7</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.WebApi.csproj">
-      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>Microsoft.Restier.WebApi</Name>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
+      <Project>{34d96e52-2f9b-4497-9864-8a2b9cda4141}</Project>
+      <Name>Microsoft.Restier.OData</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
