@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.Tests", "test\ODataEndToEndTests\Microsoft.Restier.Samples.Northwind.Tests\Microsoft.Restier.Samples.Northwind.Tests.csproj", "{B10AC223-BB61-4229-A063-353AD5D7E3C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.OData", "src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj", "{34D96E52-2F9B-4497-9864-8A2B9CDA4141}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.OData", "src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj", "{186F667E-54E5-4B57-9998-21D74CB77C24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,10 +121,10 @@ Global
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{34D96E52-2F9B-4497-9864-8A2B9CDA4141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34D96E52-2F9B-4497-9864-8A2B9CDA4141}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34D96E52-2F9B-4497-9864-8A2B9CDA4141}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34D96E52-2F9B-4497-9864-8A2B9CDA4141}.Release|Any CPU.Build.0 = Release|Any CPU
+		{186F667E-54E5-4B57-9998-21D74CB77C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{186F667E-54E5-4B57-9998-21D74CB77C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{186F667E-54E5-4B57-9998-21D74CB77C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{186F667E-54E5-4B57-9998-21D74CB77C24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +151,6 @@ Global
 		{6A88BA5D-50C7-46F3-873B-07040BF16B57} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
-		{34D96E52-2F9B-4497-9864-8A2B9CDA4141} = {432208D4-54DF-453E-96AE-CB7721461030}
+		{186F667E-54E5-4B57-9998-21D74CB77C24} = {432208D4-54DF-453E-96AE-CB7721461030}
 	EndGlobalSection
 EndGlobal

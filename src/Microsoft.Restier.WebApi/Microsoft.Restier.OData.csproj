@@ -2,7 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory),RESTier.sln))\tools\RESTier.settings.targets" />
   <PropertyGroup>
-    <ProjectGuid>{34D96E52-2F9B-4497-9864-8A2B9CDA4141}</ProjectGuid>
+    <ProjectGuid>{186F667E-54E5-4B57-9998-21D74CB77C24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Restier.WebApi</RootNamespace>
