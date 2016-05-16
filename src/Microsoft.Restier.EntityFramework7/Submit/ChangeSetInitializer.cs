@@ -24,9 +24,9 @@ namespace Microsoft.Restier.EntityFramework.Submit
     /// For this class we cannot reuse EF6 ChangeSetPreparer code, since many types used here have their type name or
     /// member name changed.
     /// </summary>
-    public class ChangeSetPreparer : IChangeSetInitializer
+    public class ChangeSetInitializer : IChangeSetInitializer
     {
-        private static MethodInfo prepareEntryGeneric = typeof(ChangeSetPreparer)
+        private static MethodInfo prepareEntryGeneric = typeof(ChangeSetInitializer)
             .GetMethod("PrepareEntry", BindingFlags.Static | BindingFlags.NonPublic);
 
         /// <summary>
@@ -69,27 +69,27 @@ namespace Microsoft.Restier.EntityFramework.Submit
                 // TODO: See if Create method is in DbSet<> in future EF7 releases, as the one EF6 has.
                 entity = (TEntity)Activator.CreateInstance(typeof(TEntity));
 
-                ChangeSetPreparer.SetValues(entity, entityType, entry.LocalValues);
+                ChangeSetInitializer.SetValues(entity, entityType, entry.LocalValues);
                 set.Add(entity);
             }
             else if (entry.IsDeleteRequest)
             {
-                entity = (TEntity)await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
+                entity = (TEntity)await ChangeSetInitializer.FindEntity(context, entry, cancellationToken);
                 set.Remove(entity);
             }
             else if (entry.IsUpdateRequest)
             {
                 if (entry.IsFullReplaceUpdateRequest)
                 {
-                    entity = (TEntity)ChangeSetPreparer.CreateFullUpdateInstance(entry, entityType);
+                    entity = (TEntity)ChangeSetInitializer.CreateFullUpdateInstance(entry, entityType);
                     dbContext.Update(entity);
                 }
                 else
                 {
-                    entity = (TEntity)await ChangeSetPreparer.FindEntity(context, entry, cancellationToken);
+                    entity = (TEntity)await ChangeSetInitializer.FindEntity(context, entry, cancellationToken);
 
                     var dbEntry = dbContext.Attach(entity);
-                    ChangeSetPreparer.SetValues(dbEntry, entry);
+                    ChangeSetInitializer.SetValues(dbEntry, entry);
                 }
             }
             else
@@ -143,8 +143,8 @@ namespace Microsoft.Restier.EntityFramework.Submit
             //    This will set any unspecified properties to their default value.
             object newInstance = Activator.CreateInstance(entityType);
 
-            ChangeSetPreparer.SetValues(newInstance, entityType, entry.EntityKey);
-            ChangeSetPreparer.SetValues(newInstance, entityType, entry.LocalValues);
+            ChangeSetInitializer.SetValues(newInstance, entityType, entry.EntityKey);
+            ChangeSetInitializer.SetValues(newInstance, entityType, entry.LocalValues);
 
             return newInstance;
         }

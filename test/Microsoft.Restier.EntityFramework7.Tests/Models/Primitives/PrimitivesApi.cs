@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Restier.EntityFramework.Tests.Models.Primitives
 {
-    class PrimitivesApi : DbApi<PrimitivesContext>
+    class PrimitivesApi : EntityFrameworkApi<PrimitivesContext>
     {
         internal PrimitivesContext DataContext
         {
