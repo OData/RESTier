@@ -4,7 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+#if EF7
+using Microsoft.EntityFrameworkCore;
+#else
 using System.Data.Entity;
+#endif
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
