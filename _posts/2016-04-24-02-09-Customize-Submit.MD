@@ -18,13 +18,16 @@ First create a class CustomizedAuthorizer implement IChangeSetItemAuthorizer, an
 
 public class CustomizedAuthorizer : IChangeSetItemAuthorizer
 {
+    // The inner handler will call CanUpdate/Insert/Delete<EntitySet> method
+    private IChangeSetItemProcessor Inner { get; set; }
+
     public Task<bool> AuthorizeAsync(
         SubmitContext context,
         ChangeSetItem item,
         CancellationToken cancellationToken)
     {
 	    // Add any customized logic here
-	}
+    }
 }
 
 {% endhighlight %}
@@ -38,7 +41,6 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
     {
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-
             return base.ConfigureApi(services)
                 .AddService<IChangeSetItemAuthorizer, CustomizedAuthorizer>();
         }
