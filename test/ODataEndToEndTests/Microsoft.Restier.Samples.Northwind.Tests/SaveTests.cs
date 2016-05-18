@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 #if EF7
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;

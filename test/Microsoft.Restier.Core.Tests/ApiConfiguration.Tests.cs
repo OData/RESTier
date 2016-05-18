@@ -96,7 +96,7 @@ namespace Microsoft.Restier.Core.Tests
                 services.AddService<IServiceA>((sp, next) => serviceA);
                 services.AddService<IServiceB>((sp, next) => serviceB);
                 services.AddService<IServiceB, ServiceB>();
-                services.AddInstance(new ServiceB());
+                services.AddSingleton(new ServiceB());
 
                 return services;
             }

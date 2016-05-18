@@ -92,7 +92,7 @@ namespace Microsoft.Restier.Core.Tests
                 services.MakeTransient<ISomeService>()
                     .AddService<ISomeService>((sp, next) => first)
                     .AddService<ISomeService, SomeService2>()
-                    .AddInstance("Text");
+                    .AddSingleton("Text");
 
                 return services;
             }
@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Core.Tests
                     Value = 1
                 })
                     .AddService<ISomeService, SomeService3>()
-                    .AddInstance(new SomeService
+                    .AddSingleton(new SomeService
                     {
                         Value = 2
                     })
@@ -160,7 +160,7 @@ namespace Microsoft.Restier.Core.Tests
                     {
                         Value = 2
                     })
-                    .AddInstance(new SomeService
+                    .AddSingleton(new SomeService
                     {
                         Value = 0
                     })

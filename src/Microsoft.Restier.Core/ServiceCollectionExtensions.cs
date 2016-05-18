@@ -250,7 +250,7 @@ namespace Microsoft.Restier.Core
         {
             // Services have singleton lifetime by default, call Make... to change.
             services.TryAddSingleton(typeof(TService), ChainedService<TService>.DefaultFactory);
-            services.AddInstance(contributor);
+            services.AddSingleton(contributor);
 
             return services;
         }

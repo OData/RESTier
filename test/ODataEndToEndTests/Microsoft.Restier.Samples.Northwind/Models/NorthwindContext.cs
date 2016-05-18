@@ -2,8 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 #if EF7
-using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.Metadata;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 #else
 using System.Data.Entity;
 #endif
@@ -81,7 +81,7 @@ namespace Microsoft.Restier.Samples.Northwind.Models
         }
 
 #if EF7
-        protected override void OnModelCreating(Data.Entity.ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 

@@ -71,7 +71,7 @@ namespace Microsoft.Restier.Security
                 this.OnNamespace,
                 this.On,
                 this.OnChild);
-            services.AddInstance(permission);
+            services.AddSingleton(permission);
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Microsoft.Restier.WebApi.Model
 
             // The model builder must maintain a singleton life time, for holding states and being injected into
             // some other services.
-            services.AddInstance(new RestierModelExtender(targetType));
+            services.AddSingleton(new RestierModelExtender(targetType));
 
             services.AddService<IModelBuilder, ModelBuilder>();
             services.AddService<IModelMapper, ModelMapper>();

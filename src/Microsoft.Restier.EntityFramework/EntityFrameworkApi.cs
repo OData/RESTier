@@ -3,7 +3,7 @@
 
 using System;
 #if EF7
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
