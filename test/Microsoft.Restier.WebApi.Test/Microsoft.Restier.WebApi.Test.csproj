@@ -124,13 +124,13 @@
       <Project>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
-      <Project>{F7EC910E-17CE-4579-84C5-36D3777B3218}</Project>
-      <Name>Microsoft.Restier.EntityFramework</Name>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Provider.EntityFramework\Microsoft.Restier.Provider.EntityFramework.csproj">
+      <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
+      <Name>Microsoft.Restier.Provider.EntityFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
-      <Project>{186F667E-54E5-4B57-9998-21D74CB77C24}</Project>
-      <Name>Microsoft.Restier.OData</Name>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Publisher.OData\Microsoft.Restier.Publisher.OData.csproj">
+      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
+      <Name>Microsoft.Restier.Publisher.OData</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -96,28 +96,29 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\EntityFrameworkApi.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\EntityFrameworkApi.cs">
       <Link>EntityFrameworkApi.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Model\ModelMapper.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Model\ModelMapper.cs">
       <Link>Model.Shared\ModelMapper.cs</Link>
     </Compile>
     <Compile Include="..\Microsoft.Restier.EntityFramework\Model\ModelProducer.cs">
       <Link>Model.Shared\ModelProducer.cs</Link>
     </Compile>
     <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExecutor.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExecutor.cs">
       <Link>Query.Shared\QueryExecutor.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionProcessor.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExpressionProcessor.cs">
       <Link>Query.Shared\QueryExpressionProcessor.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExpressionSourcer.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExpressionSourcer.cs">
       <Link>Query.Shared\QueryExpressionSourcer.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\ServiceCollectionExtensions.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\ServiceCollectionExtensions.cs">
       <Link>ServiceCollectionExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Submit\SubmitExecutor.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Submit\SubmitExecutor.cs">
       <Link>Submit.Shared\SubmitExecutor.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Ensure.cs">
@@ -159,7 +160,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Microsoft.Restier.EntityFramework.nuspec" />
+	<None Include="Microsoft.Restier.EntityFramework.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

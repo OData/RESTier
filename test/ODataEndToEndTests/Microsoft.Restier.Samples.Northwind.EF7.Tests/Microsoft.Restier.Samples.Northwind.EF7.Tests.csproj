@@ -186,13 +186,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.EntityFramework7\Microsoft.Restier.EntityFramework7.csproj">
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Provider.EntityFramework7\Microsoft.Restier.Provider.EntityFramework7.csproj">
       <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
-      <Name>Microsoft.Restier.EntityFramework7</Name>
+      <Name>Microsoft.Restier.Provider.EntityFramework7</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.WebApi\Microsoft.Restier.OData.csproj">
-      <Project>{34d96e52-2f9b-4497-9864-8a2b9cda4141}</Project>
-      <Name>Microsoft.Restier.OData</Name>
+    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Publisher.OData\Microsoft.Restier.Publisher.OData.csproj">
+      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
+      <Name>Microsoft.Restier.Publisher.OData</Name>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.Restier.Samples.Northwind.EF7\Microsoft.Restier.Samples.Northwind.EF7.csproj">
       <Project>{af007cef-19b7-426d-ae97-e7d99ecacbb9}</Project>

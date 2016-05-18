@@ -112,9 +112,9 @@
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Provider.EntityFramework\Microsoft.Restier.Provider.EntityFramework.csproj">
       <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
-      <Name>Microsoft.Restier.EntityFramework</Name>
+      <Name>Microsoft.Restier.Provider.EntityFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
