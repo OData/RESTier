@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
-    <AssemblyName>Microsoft.Restier.EntityFramework7</AssemblyName>
+    <AssemblyName>Microsoft.Restier.Provider.EntityFramework7</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -160,7 +160,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-	<None Include="Microsoft.Restier.EntityFramework.nuspec" />
+    <None Include="Microsoft.Restier.EntityFramework.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

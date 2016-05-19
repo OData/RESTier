@@ -121,7 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
-      <Project>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</Project>
+      <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Restier.Provider.EntityFramework\Microsoft.Restier.Provider.EntityFramework.csproj">

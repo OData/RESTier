@@ -11,7 +11,7 @@ using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.WebApi.Properties;
+using Microsoft.Restier.Publisher.OData.Properties;
 
 namespace Microsoft.Restier.WebApi.Query
 {

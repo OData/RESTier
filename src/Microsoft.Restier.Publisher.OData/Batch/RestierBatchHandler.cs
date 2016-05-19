@@ -11,7 +11,7 @@ using System.Web.Http.Batch;
 using System.Web.OData.Batch;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.WebApi.Properties;
+using Microsoft.Restier.Publisher.OData.Properties;
 
 namespace Microsoft.Restier.WebApi.Batch
 {

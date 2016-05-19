@@ -25,7 +25,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.WebApi.Batch;
 using Microsoft.Restier.WebApi.Filters;
 using Microsoft.Restier.WebApi.Formatter;
-using Microsoft.Restier.WebApi.Properties;
+using Microsoft.Restier.Publisher.OData.Properties;
 using Microsoft.Restier.WebApi.Query;
 using Microsoft.Restier.WebApi.Results;
 

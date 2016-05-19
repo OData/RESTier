@@ -5,8 +5,8 @@
     <ProjectGuid>{F7EC910E-17CE-4579-84C5-36D3777B3218}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
-    <AssemblyName>Microsoft.Restier.EntityFramework</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Provider.EntityFramework</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Provider.EntityFramework</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -87,7 +87,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.Restier.EntityFramework.nuspec" />
+    <None Include="Microsoft.Restier.Provider.EntityFramework.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

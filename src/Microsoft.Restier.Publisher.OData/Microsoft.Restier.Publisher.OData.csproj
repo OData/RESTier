@@ -5,8 +5,8 @@
     <ProjectGuid>{186F667E-54E5-4B57-9998-21D74CB77C24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.WebApi</RootNamespace>
-    <AssemblyName>Microsoft.Restier.WebApi</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Publisher.OData</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Publisher.OData</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
