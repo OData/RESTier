@@ -29,19 +29,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Provider.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Publisher.OData", "src\Microsoft.Restier.Publisher.OData\Microsoft.Restier.Publisher.OData.csproj", "{186F667E-54E5-4B57-9998-21D74CB77C24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind", "test\ODataEndToEnd\Microsoft.Restier.Samples.Northwind\Microsoft.Restier.Samples.Northwind.csproj", "{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Publisher.OData.Test", "test\Microsoft.Restier.Publisher.OData.Test\Microsoft.Restier.Publisher.OData.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test", "test\Microsoft.Restier.Publisher.OData.Test\Microsoft.Restier.WebApi.Test.csproj", "{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Provider.EntityFramework.Tests", "test\Microsoft.Restier.Provider.EntityFramework.Tests\Microsoft.Restier.Provider.EntityFramework.Tests.csproj", "{04B29D57-8004-45FF-8C41-C49E0F20707C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.EntityFramework.Tests", "test\Microsoft.Restier.Provider.EntityFramework.Tests\Microsoft.Restier.EntityFramework.Tests.csproj", "{04B29D57-8004-45FF-8C41-C49E0F20707C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OData.Service.Sample.Northwind", "test\ODataEndToEnd\Microsoft.OData.Service.Sample.Northwind\Microsoft.OData.Service.Sample.Northwind.csproj", "{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Services.Trippin", "test\ODataEndToEnd\Microsoft.Restier.WebApi.Test.Services.Trippin\Microsoft.Restier.WebApi.Test.Services.Trippin.csproj", "{B379640E-9064-438D-8DA5-6F7B394C2C46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OData.Service.Sample.Northwind.Tests", "test\ODataEndToEnd\Microsoft.OData.Service.Sample.Northwind.Tests\Microsoft.OData.Service.Sample.Northwind.Tests.csproj", "{B10AC223-BB61-4229-A063-353AD5D7E3C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory", "test\ODataEndToEnd\Microsoft.Restier.WebApi.Test.Services.TrippinInMemory\Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.csproj", "{B263C1E5-0184-4A1D-B438-8233559FD76B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OData.Service.Sample.TrippinInMemory", "test\ODataEndToEnd\Microsoft.OData.Service.Sample.TrippinInMemory\Microsoft.OData.Service.Sample.TrippinInMemory.csproj", "{B263C1E5-0184-4A1D-B438-8233559FD76B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.Tests", "test\ODataEndToEnd\Microsoft.Restier.Samples.Northwind.Tests\Microsoft.Restier.Samples.Northwind.Tests.csproj", "{B10AC223-BB61-4229-A063-353AD5D7E3C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OData.Service.Sample.Trippin", "test\ODataEndToEnd\Microsoft.OData.Service.Sample.Trippin\Microsoft.OData.Service.Sample.Trippin.csproj", "{B379640E-9064-438D-8DA5-6F7B394C2C46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.WebApi.Test.Scenario", "test\ODataEndToEnd\Microsoft.Restier.WebApi.Test.Scenario\Microsoft.Restier.WebApi.Test.Scenario.csproj", "{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OData.Service.Sample.Tests", "test\ODataEndToEnd\Microsoft.OData.Service.Sample.Tests\Microsoft.OData.Service.Sample.Tests.csproj", "{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,10 +73,6 @@ Global
 		{186F667E-54E5-4B57-9998-21D74CB77C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{186F667E-54E5-4B57-9998-21D74CB77C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{186F667E-54E5-4B57-9998-21D74CB77C24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -85,18 +81,22 @@ Global
 		{04B29D57-8004-45FF-8C41-C49E0F20707C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04B29D57-8004-45FF-8C41-C49E0F20707C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04B29D57-8004-45FF-8C41-C49E0F20707C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B263C1E5-0184-4A1D-B438-8233559FD76B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -117,12 +117,12 @@ Global
 		{C2CC463B-9F69-401E-89B3-FA1F9A44E253} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
 		{F7EC910E-17CE-4579-84C5-36D3777B3218} = {0355FEC8-17CF-44B4-9D24-685266A349FB}
 		{186F667E-54E5-4B57-9998-21D74CB77C24} = {432208D4-54DF-453E-96AE-CB7721461030}
-		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{31FE1F5B-7CD8-48F1-9CE3-4E57A0066440} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
 		{04B29D57-8004-45FF-8C41-C49E0F20707C} = {552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}
-		{B379640E-9064-438D-8DA5-6F7B394C2C46} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
-		{B263C1E5-0184-4A1D-B438-8233559FD76B} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
+		{BCE769AD-2D64-4EAD-B83D-1328621CF6E6} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{B10AC223-BB61-4229-A063-353AD5D7E3C6} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
+		{B263C1E5-0184-4A1D-B438-8233559FD76B} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
+		{B379640E-9064-438D-8DA5-6F7B394C2C46} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7} = {4AC28EC2-FBCF-44CA-A922-0B257F55DE0D}
 	EndGlobalSection
 EndGlobal
