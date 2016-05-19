@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <Target Name="DownloadNuGet" Condition=" '$(NotDownloadNuget)' != 'true' ">
-    <DownloadNuGet Condition="" OutputFileName="$(NuGetExe)" MinimumVersion="2.7.0" />
+    <DownloadNuGet Condition="" OutputFileName="$(NuGetExe)" MinimumVersion="3.4.0" />
   </Target>
 
   <Target Name="RestorePackages" DependsOnTargets="DownloadNuGet">

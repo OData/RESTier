@@ -102,10 +102,9 @@
     <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Model\ModelMapper.cs">
       <Link>Model.Shared\ModelMapper.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Model\ModelProducer.cs">
+    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Model\ModelProducer.cs">
       <Link>Model.Shared\ModelProducer.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.EntityFramework\Query\QueryExecutor.cs">
     <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExecutor.cs">
       <Link>Query.Shared\QueryExecutor.cs</Link>
     </Compile>

@@ -10,10 +10,12 @@ using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Service.Sample.Trippin.Models;
+using Microsoft.Restier.WebApi.Test.Services.Trippin;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Api;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Controllers
+namespace Microsoft.OData.Service.Sample.Trippin.Controllers
 {
     public class TrippinController : ODataController
     {

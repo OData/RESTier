@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
+using Microsoft.OData.Service.Sample.Tests;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario

@@ -216,6 +216,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Microsoft.OData.Service.Sample.Northwind.EF7\App_Data\instnwdb.sql">
+      <Link>App_Data\instnwdb.sql</Link>
+    </Content>
     <Content Include="..\Microsoft.OData.Service.Sample.Northwind.Tests\Baselines\TestBatch.txt">
       <Link>Baselines\TestBatch.txt</Link>
     </Content>
@@ -248,10 +251,6 @@
     </Content>
     <Content Include="..\Microsoft.OData.Service.Sample.Northwind.Tests\Baselines\TestPutProductReturnContent.txt">
       <Link>Baselines\TestPutProductReturnContent.txt</Link>
-    </Content>
-    <Content Include="..\Microsoft.Restier.Samples.Northwind.EF7\App_Data\instnwdb.sql">
-      <Link>App_Data\instnwdb.sql</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />

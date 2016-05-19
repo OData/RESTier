@@ -21,7 +21,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new TrippinModel object.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        public TrippinModel(global::System.Uri serviceRoot) :
+        public TrippinModel(global::System.Uri serviceRoot) : 
                 base(serviceRoot, global::Microsoft.OData.Client.ODataProtocolVersion.V4)
         {
             this.ResolveName = new global::System.Func<global::System.Type, string>(this.ResolveNameFromType);
@@ -510,22 +510,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new AirlineSingle object.
         /// </summary>
         public AirlineSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new AirlineSingle object.
         /// </summary>
         public AirlineSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new AirlineSingle object.
         /// </summary>
         public AirlineSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Airline> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -649,22 +646,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new AirportSingle object.
         /// </summary>
         public AirportSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new AirportSingle object.
         /// </summary>
         public AirportSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new AirportSingle object.
         /// </summary>
         public AirportSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Airport> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -833,22 +827,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new EventSingle object.
         /// </summary>
         public EventSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new EventSingle object.
         /// </summary>
         public EventSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new EventSingle object.
         /// </summary>
         public EventSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Event> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -976,22 +967,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new FlightSingle object.
         /// </summary>
         public FlightSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new FlightSingle object.
         /// </summary>
         public FlightSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new FlightSingle object.
         /// </summary>
         public FlightSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Flight> query)
-            : base(query)
-        { }
+            : base(query) {}
 
         /// <summary>
         /// There are no comments for Airline in the schema.
@@ -1415,22 +1403,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new OrderSingle object.
         /// </summary>
         public OrderSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new OrderSingle object.
         /// </summary>
         public OrderSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new OrderSingle object.
         /// </summary>
         public OrderSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Order> query)
-            : base(query)
-        { }
+            : base(query) {}
 
     }
     /// <summary>
@@ -1580,22 +1565,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new PersonSingle object.
         /// </summary>
         public PersonSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new PersonSingle object.
         /// </summary>
         public PersonSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new PersonSingle object.
         /// </summary>
         public PersonSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Person> query)
-            : base(query)
-        { }
+            : base(query) {}
 
         /// <summary>
         /// There are no comments for BestFriend in the schema.
@@ -1685,12 +1667,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="birthDateTime">Initial value of BirthDateTime.</param>
         /// <param name="favoriteFeature">Initial value of FavoriteFeature.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        public static Person CreatePerson(int personId,
-                    string firstName,
-                    long concurrency,
-                    global::Microsoft.OData.Edm.Library.Date birthDate,
-                    global::Microsoft.OData.Edm.Library.TimeOfDay birthTime,
-                    global::System.DateTimeOffset birthDateTime,
+        public static Person CreatePerson(int personId, 
+                    string firstName, 
+                    long concurrency, 
+                    global::Microsoft.OData.Edm.Library.Date birthDate, 
+                    global::Microsoft.OData.Edm.Library.TimeOfDay birthTime, 
+                    global::System.DateTimeOffset birthDateTime, 
                     global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature favoriteFeature)
         {
             Person person = new Person();
@@ -2115,7 +2097,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// There are no comments for GetNumberOfFriends in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetNumberOfFriends")]
-        public global::Microsoft.OData.Client.DataServiceQuerySingle<int> GetNumberOfFriends()
+        public  global::Microsoft.OData.Client.DataServiceQuerySingle<int> GetNumberOfFriends()
         {
             global::System.Uri requestUri;
             Context.TryGetUri(this, out requestUri);
@@ -2133,22 +2115,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// Initialize a new TripSingle object.
         /// </summary>
         public TripSingle(global::Microsoft.OData.Client.DataServiceContext context, string path)
-            : base(context, path)
-        { }
+            : base(context, path) {}
 
         /// <summary>
         /// Initialize a new TripSingle object.
         /// </summary>
         public TripSingle(global::Microsoft.OData.Client.DataServiceContext context, string path, bool isComposable)
-            : base(context, path, isComposable)
-        { }
+            : base(context, path, isComposable) {}
 
         /// <summary>
         /// Initialize a new TripSingle object.
         /// </summary>
         public TripSingle(global::Microsoft.OData.Client.DataServiceQuerySingle<Trip> query)
-            : base(query)
-        { }
+            : base(query) {}
 
         /// <summary>
         /// There are no comments for Events in the schema.
@@ -2216,11 +2195,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="endsAt">Initial value of EndsAt.</param>
         /// <param name="lastUpdated">Initial value of LastUpdated.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        public static Trip CreateTrip(int tripId,
-                    global::System.Guid shareId,
-                    float budget,
-                    global::System.DateTimeOffset startsAt,
-                    global::System.DateTimeOffset endsAt,
+        public static Trip CreateTrip(int tripId, 
+                    global::System.Guid shareId, 
+                    float budget, 
+                    global::System.DateTimeOffset startsAt, 
+                    global::System.DateTimeOffset endsAt, 
                     global::System.DateTimeOffset lastUpdated)
         {
             Trip trip = new Trip();
@@ -2668,12 +2647,12 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="personId">The value of personId</param>
         /// <param name="orderId">The value of orderId</param>
         public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order> source,
-            int personId,
+            int personId, 
             int orderId)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
-                { "PersonId", personId },
+                { "PersonId", personId }, 
                 { "OrderId", orderId }
             };
             return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));

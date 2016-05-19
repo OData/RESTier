@@ -18,8 +18,8 @@ namespace Microsoft.Restier.TestCommon
             string[] assemblyList =
             {
                 "Microsoft.Restier.Core.dll",
-                "Microsoft.Restier.EntityFramework.dll",
-                "Microsoft.Restier.WebApi.dll",
+                "Microsoft.Restier.Provider.EntityFramework.dll",
+                "Microsoft.Restier.Publisher.OData.dll",
             };
 
             using (var fs = new FileStream(OutputFileName, FileMode.Create))

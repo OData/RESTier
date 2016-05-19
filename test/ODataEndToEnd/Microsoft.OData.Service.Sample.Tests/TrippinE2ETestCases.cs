@@ -7,10 +7,11 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
+using Microsoft.Restier.WebApi.Test.Scenario;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test.Scenario
+namespace Microsoft.OData.Service.Sample.Tests
 {
     public class TrippinE2ETestCases : TrippinE2ETestBase
     {
@@ -128,7 +129,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -351,7 +352,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Filter this entity
             var persons = this.TestClientContext.People
@@ -392,7 +393,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.Equal(3, people2.Count);
 
             // skip
-            people2 = this.TestClientContext.People.Skip(personId - 1).ToList();
+            people2 = this.TestClientContext.People.Skip((int)(personId - 1)).ToList();
             Assert.Equal(personId, people2.First().PersonId);
             
             // count

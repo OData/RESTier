@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OData.Client;
+using Microsoft.OData.Service.Sample.Tests;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario

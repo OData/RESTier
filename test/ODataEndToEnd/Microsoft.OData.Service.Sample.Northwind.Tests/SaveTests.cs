@@ -3,19 +3,13 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-<<<<<<< 91b650a22a52558717a85b68a665844802887470:test/ODataEndToEnd/Microsoft.Restier.Samples.Northwind.Tests/SaveTests.cs
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
-=======
 using Microsoft.OData.Service.Sample.Northwind.Models;
->>>>>>> Change test cases folder:test/ODataEndToEnd/Microsoft.OData.Service.Sample.Northwind.Tests/SaveTests.cs
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Xunit;
-#if EF7
-using Microsoft.Data.Entity;
-#endif
 
 namespace Microsoft.OData.Service.Sample.Northwind.Tests
 {

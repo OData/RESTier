@@ -74,6 +74,14 @@
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Provider.EntityFramework\Microsoft.Restier.Provider.EntityFramework.csproj">
+      <Project>{f7ec910e-17ce-4579-84c5-36d3777b3218}</Project>
+      <Name>Microsoft.Restier.Provider.EntityFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Publisher.OData\Microsoft.Restier.Publisher.OData.csproj">
+      <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
+      <Name>Microsoft.Restier.Publisher.OData</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

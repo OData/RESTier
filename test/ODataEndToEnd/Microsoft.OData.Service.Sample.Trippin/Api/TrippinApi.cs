@@ -16,6 +16,7 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
+using Microsoft.OData.Service.Sample.Trippin.Models;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;

@@ -4,6 +4,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.OData.Client;
+using Microsoft.OData.Service.Sample.Tests;
 using Xunit;
 
 namespace Microsoft.Restier.WebApi.Test.Scenario

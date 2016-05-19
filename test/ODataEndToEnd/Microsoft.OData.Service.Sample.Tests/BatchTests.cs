@@ -4,10 +4,11 @@
 using System;
 using System.Linq;
 using Microsoft.OData.Client;
+using Microsoft.Restier.WebApi.Test.Scenario;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test.Scenario
+namespace Microsoft.OData.Service.Sample.Tests
 {
     public class BatchTests : TrippinE2ETestBase
     {

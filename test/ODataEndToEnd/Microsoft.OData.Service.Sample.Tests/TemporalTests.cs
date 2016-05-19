@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Service.Sample.Tests;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 using Xunit;
 
@@ -126,7 +127,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Filter this entity
             var persons = this.TestClientContext.People
@@ -182,7 +183,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.Equal(3, people2.Count);
 
             // skip
-            people2 = this.TestClientContext.People.Skip(personId - 1).ToList();
+            people2 = this.TestClientContext.People.Skip((int)(personId - 1)).ToList();
             Assert.Equal(birthDate, people2.First().BirthDate);
             Assert.Equal(birthDate, people2.First().BirthDate2);
 
@@ -210,7 +211,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -535,7 +536,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
             Assert.Equal(3, people2.Count);
 
             // skip
-            people2 = this.TestClientContext.People.Skip(personId - 1).ToList();
+            people2 = this.TestClientContext.People.Skip((int)(personId - 1)).ToList();
             Assert.Equal(birthDateTime, people2.First().BirthDateTime);
             Assert.Equal(birthDateTime, people2.First().BirthDateTime2);
 

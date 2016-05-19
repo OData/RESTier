@@ -10,7 +10,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 {
     public class TrippinServiceFixture
     {
-        private const string EigenString = "ODataEndToEndTests";
+        private const string EigenString = "ODataEndToEnd";
 
         private const string IISExpressProcessName = "iisexpress";
 
@@ -19,8 +19,8 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
 
         private static readonly Dictionary<string, int> Services = new Dictionary<string, int>
         {
-            {"Microsoft.Restier.WebApi.Test.Services.Trippin"           , 18384 },
-            {"Microsoft.Restier.WebApi.Test.Services.TrippinInMemory"   , 21248 }
+            {"Microsoft.OData.Service.Sample.Trippin"           , 18384 },
+            {"Microsoft.OData.Service.Sample.TrippinInMemory"   , 21248 }
         };
 
         static TrippinServiceFixture()

@@ -4,7 +4,7 @@
 using System.Web;
 using System.Web.Http;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin
+namespace Microsoft.OData.Service.Sample.Trippin
 {
     public class WebApiApplication : HttpApplication
     {
