@@ -15,7 +15,7 @@ Supposed that ~/AdventureWorksLT/Products can get all the Product entities, the 
 
 {% highlight csharp %}
 using Microsoft.Restier.Core;
-using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.Provider.EntityFramework;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;

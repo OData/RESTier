@@ -65,7 +65,7 @@ Example:
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.Provider.EntityFramework;
 using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
