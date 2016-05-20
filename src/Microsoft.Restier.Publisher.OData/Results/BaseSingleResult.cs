@@ -7,7 +7,7 @@ using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.WebApi.Results
+namespace Microsoft.Restier.Publisher.OData.Results
 {
     /// <summary>
     /// Represents a single object being returned from an action.

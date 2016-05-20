@@ -2,18 +2,17 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-#if !EF7
-using System.Data.Entity;
-#endif
 using System.Linq;
 using System.Linq.Expressions;
-#if EF7
-using Microsoft.EntityFrameworkCore;
-#endif
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
+#if EF7
+using Microsoft.EntityFrameworkCore;
+#else
+using System.Data.Entity;
+#endif
 
-namespace Microsoft.Restier.EntityFramework.Query
+namespace Microsoft.Restier.Provider.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query expression sourcer that uses a DbContext.

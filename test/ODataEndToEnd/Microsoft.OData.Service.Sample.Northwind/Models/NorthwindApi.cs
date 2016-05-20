@@ -14,10 +14,10 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.Provider.EntityFramework;
+using Microsoft.Restier.Publisher.OData;
+using Microsoft.Restier.Publisher.OData.Model;
 using Microsoft.Restier.Security;
-using Microsoft.Restier.WebApi;
-using Microsoft.Restier.WebApi.Model;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Models
 {

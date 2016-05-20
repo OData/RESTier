@@ -11,7 +11,7 @@ using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.WebApi.Routing
+namespace Microsoft.Restier.Publisher.OData.Routing
 {
     /// <summary>
     /// The default routing convention implementation.

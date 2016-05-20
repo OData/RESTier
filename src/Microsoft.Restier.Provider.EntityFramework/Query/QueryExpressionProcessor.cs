@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.EntityFramework.Query
+namespace Microsoft.Restier.Provider.EntityFramework.Query
 {
     /// <summary>
     /// A query expression filter to handle EF related logic.

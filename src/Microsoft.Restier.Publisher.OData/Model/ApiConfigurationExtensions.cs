@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.WebApi.Model
+namespace Microsoft.Restier.Publisher.OData.Model
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="ApiConfiguration"/>.

@@ -17,7 +17,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework.Properties;
 
-namespace Microsoft.Restier.EntityFramework.Submit
+namespace Microsoft.Restier.Provider.EntityFramework.Submit
 {
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.

@@ -7,9 +7,9 @@ using System.Web.OData.Formatter.Serialization;
 using System.Web.OData.Query.Expressions;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.WebApi.Results;
+using Microsoft.Restier.Publisher.OData.Results;
 
-namespace Microsoft.Restier.WebApi.Formatter.Serialization
+namespace Microsoft.Restier.Publisher.OData.Formatter.Serialization
 {
     /// <summary>
     /// The serializer for entity collection result.

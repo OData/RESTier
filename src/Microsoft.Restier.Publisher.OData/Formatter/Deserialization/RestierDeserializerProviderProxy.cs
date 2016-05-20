@@ -4,12 +4,10 @@
 using System;
 using System.Net.Http;
 using System.Web.OData.Formatter.Deserialization;
-using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.WebApi.Results;
 
-namespace Microsoft.Restier.WebApi.Formatter.Deserialization
+namespace Microsoft.Restier.Publisher.OData.Formatter.Deserialization
 {
     /// <summary>
     /// The deserializer provider proxy which get real provider to implement the logic.

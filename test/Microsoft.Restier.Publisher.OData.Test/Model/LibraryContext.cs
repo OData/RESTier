@@ -5,7 +5,7 @@ using System;
 using System.Data.Entity;
 using Microsoft.OData.Edm.Library;
 
-namespace Microsoft.Restier.WebApi.Test.Model
+namespace Microsoft.Restier.Publisher.OData.Test.Model
 {
     class LibraryContext : DbContext
     {

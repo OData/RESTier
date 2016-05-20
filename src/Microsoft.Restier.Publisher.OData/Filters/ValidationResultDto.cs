@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics.Tracing;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.WebApi.Filters
+namespace Microsoft.Restier.Publisher.OData.Filters
 {
     /// <summary>
     /// A data transfer object that is used to serialize ValidationResult instances to the client.

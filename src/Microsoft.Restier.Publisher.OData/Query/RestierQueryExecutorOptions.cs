@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Restier.WebApi.Query
+namespace Microsoft.Restier.Publisher.OData.Query
 {
     internal class RestierQueryExecutorOptions
     {

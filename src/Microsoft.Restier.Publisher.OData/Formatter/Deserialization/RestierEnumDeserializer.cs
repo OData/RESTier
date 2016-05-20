@@ -7,7 +7,7 @@ using System.Web.OData.Formatter.Deserialization;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Restier.WebApi.Formatter.Deserialization
+namespace Microsoft.Restier.Publisher.OData.Formatter.Deserialization
 {
     /// <summary>
     /// The serializer for enum result.

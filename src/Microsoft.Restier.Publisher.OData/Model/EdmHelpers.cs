@@ -8,7 +8,7 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Publisher.OData.Properties;
 
-namespace Microsoft.Restier.WebApi.Model
+namespace Microsoft.Restier.Publisher.OData.Model
 {
     internal static class EdmHelpers
     {

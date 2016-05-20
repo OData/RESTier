@@ -6,13 +6,13 @@ using System.Data.Entity;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.EntityFramework.Submit
+namespace Microsoft.Restier.Provider.EntityFramework.Submit
 {
     /// <summary>
     /// To execute submission of changes to database.

@@ -12,9 +12,9 @@ using System.Web.OData.Routing.Conventions;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.WebApi.Batch;
+using Microsoft.Restier.Publisher.OData.Batch;
 
-namespace Microsoft.Restier.WebApi.Routing
+namespace Microsoft.Restier.Publisher.OData.Routing
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpConfiguration"/>.

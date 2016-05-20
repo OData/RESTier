@@ -14,7 +14,7 @@ using Microsoft.OData.Edm.Library.Expressions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.WebApi.Model
+namespace Microsoft.Restier.Publisher.OData.Model
 {
     internal class RestierOperationModelBuilder : IModelBuilder
     {

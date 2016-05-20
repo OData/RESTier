@@ -1,15 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Restier.Core;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Provider.EntityFramework;
 
-namespace Microsoft.Restier.EntityFramework.Tests.Models.Primitives
+namespace Microsoft.Restier.Provider.EntityFramework7.Tests.Models.Primitives
 {
     class PrimitivesApi : EntityFrameworkApi<PrimitivesContext>
     {

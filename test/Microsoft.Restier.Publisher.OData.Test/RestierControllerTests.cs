@@ -7,10 +7,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Restier.WebApi.Routing;
+using Microsoft.Restier.Publisher.OData.Routing;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test
+namespace Microsoft.Restier.Publisher.OData.Test
 {
     public class RestierControllerTests
     {

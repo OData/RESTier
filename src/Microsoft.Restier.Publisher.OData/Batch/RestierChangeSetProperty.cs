@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.WebApi.Batch
+namespace Microsoft.Restier.Publisher.OData.Batch
 {
     /// <summary>
     /// Represents an API <see cref="ChangeSet"/> property.

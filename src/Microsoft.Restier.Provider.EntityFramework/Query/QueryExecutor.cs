@@ -9,15 +9,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Restier.Core.Query;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
-using Microsoft.Restier.Core.Query;
+
 #if EF7
 using IAsyncQueryProvider = Microsoft.EntityFrameworkCore.Query.Internal.IAsyncQueryProvider;
 #endif
 
-namespace Microsoft.Restier.EntityFramework.Query
+namespace Microsoft.Restier.Provider.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query executor that uses Entity Framework methods.

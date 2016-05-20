@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Controllers;
 using System.Web.OData.Formatter;
-using Microsoft.Restier.WebApi.Formatter.Deserialization;
-using Microsoft.Restier.WebApi.Formatter.Serialization;
+using Microsoft.Restier.Publisher.OData.Formatter.Deserialization;
+using Microsoft.Restier.Publisher.OData.Formatter.Serialization;
 
-namespace Microsoft.Restier.WebApi.Formatter
+namespace Microsoft.Restier.Publisher.OData.Formatter
 {
     /// <summary>
     /// Specifies the serializer and deserializer provider for the API controller.

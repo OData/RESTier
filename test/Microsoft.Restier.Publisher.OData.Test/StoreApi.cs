@@ -13,7 +13,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.WebApi.Test
+namespace Microsoft.Restier.Publisher.OData.Test
 {
     internal static class StoreModel
     {

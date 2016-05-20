@@ -10,7 +10,7 @@ using System.Web.OData.Batch;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.WebApi.Batch
+namespace Microsoft.Restier.Publisher.OData.Batch
 {
     /// <summary>
     /// Represents an API <see cref="ChangeSet"/> request.

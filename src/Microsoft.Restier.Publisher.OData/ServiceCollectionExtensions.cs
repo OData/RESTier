@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.WebApi.Formatter.Deserialization;
-using Microsoft.Restier.WebApi.Formatter.Serialization;
-using Microsoft.Restier.WebApi.Model;
-using Microsoft.Restier.WebApi.Query;
+using Microsoft.Restier.Publisher.OData.Formatter.Deserialization;
+using Microsoft.Restier.Publisher.OData.Formatter.Serialization;
+using Microsoft.Restier.Publisher.OData.Model;
+using Microsoft.Restier.Publisher.OData.Query;
 
-namespace Microsoft.Restier.WebApi
+namespace Microsoft.Restier.Publisher.OData
 {
     public static class ServiceCollectionExtensions
     {

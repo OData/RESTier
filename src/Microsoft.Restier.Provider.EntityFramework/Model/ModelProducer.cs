@@ -4,19 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if EF7
-using Microsoft.EntityFrameworkCore;
-#else
-using System.Data.Entity;
-#endif
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+#if EF7
+using Microsoft.EntityFrameworkCore;
+#else
+using System.Data.Entity;
+#endif
 
-namespace Microsoft.Restier.EntityFramework.Model
+namespace Microsoft.Restier.Provider.EntityFramework.Model
 {
     /// <summary>
     /// Represents a model producer that uses the

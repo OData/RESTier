@@ -8,7 +8,7 @@ using Microsoft.OData.Edm.Validation;
 using Microsoft.Restier.Core;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test.Model
+namespace Microsoft.Restier.Publisher.OData.Test.Model
 {
     public class RestierModelBuilderTests
     {

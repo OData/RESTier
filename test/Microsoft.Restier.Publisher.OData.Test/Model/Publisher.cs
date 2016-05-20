@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Restier.WebApi.Test.Model
+namespace Microsoft.Restier.Publisher.OData.Test.Model
 {
     class Publisher
     {

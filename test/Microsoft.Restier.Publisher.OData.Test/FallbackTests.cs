@@ -17,10 +17,10 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.WebApi.Routing;
+using Microsoft.Restier.Publisher.OData.Routing;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test
+namespace Microsoft.Restier.Publisher.OData.Test
 {
     public class FallbackTests
     {

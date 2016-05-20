@@ -1,12 +1,4 @@
-﻿using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.EntityFramework.Tests.Models.Primitives;
-using Microsoft.Restier.Tests;
-using Microsoft.Restier.WebApi.Batch;
-using Microsoft.Restier.WebApi.Routing;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
@@ -14,9 +6,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Provider.EntityFramework7.Tests.Models.Primitives;
+using Microsoft.Restier.Publisher.OData.Batch;
+using Microsoft.Restier.Publisher.OData.Routing;
+using Microsoft.Restier.Tests;
+using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.Restier.EntityFramework.Tests
+namespace Microsoft.Restier.Provider.EntityFramework7.Tests
 {
     public class DateTests
     {

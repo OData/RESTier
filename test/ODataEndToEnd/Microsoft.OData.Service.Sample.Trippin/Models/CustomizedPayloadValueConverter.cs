@@ -5,6 +5,7 @@ using System;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
+using Microsoft.Restier.Publisher.OData;
 
 namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
 {

@@ -1,20 +1,19 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Provider.EntityFramework.Model;
+using Microsoft.Restier.Provider.EntityFramework.Query;
+using Microsoft.Restier.Provider.EntityFramework.Submit;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework.Model;
-using Microsoft.Restier.EntityFramework.Query;
-using Microsoft.Restier.EntityFramework.Submit;
 
-namespace Microsoft.Restier.EntityFramework
+namespace Microsoft.Restier.Provider.EntityFramework
 {
     [CLSCompliant(false)]
     public static class ServiceCollectionExtensions

@@ -4,8 +4,8 @@
 using System.Web.Http;
 using System.Web.OData.Extensions;
 using Microsoft.OData.Service.Sample.Northwind.Models;
-using Microsoft.Restier.WebApi.Batch;
-using Microsoft.Restier.WebApi.Routing;
+using Microsoft.Restier.Publisher.OData.Batch;
+using Microsoft.Restier.Publisher.OData.Routing;
 
 namespace Microsoft.OData.Service.Sample.Northwind
 {

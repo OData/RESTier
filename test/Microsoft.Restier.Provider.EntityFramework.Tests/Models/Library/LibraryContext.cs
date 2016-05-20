@@ -3,10 +3,9 @@
 
 using System;
 using System.Data.Entity;
-using System.IO;
 using Microsoft.OData.Edm.Library;
 
-namespace Microsoft.Restier.EntityFramework.Tests.Models.Library
+namespace Microsoft.Restier.Provider.EntityFramework.Tests.Models.Library
 {
     class LibraryContext : DbContext
     {

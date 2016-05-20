@@ -13,7 +13,7 @@ using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publisher.OData.Properties;
 
-namespace Microsoft.Restier.WebApi.Batch
+namespace Microsoft.Restier.Publisher.OData.Batch
 {
     /// <summary>
     /// Default implementation of <see cref="ODataBatchHandler"/> in RESTier.

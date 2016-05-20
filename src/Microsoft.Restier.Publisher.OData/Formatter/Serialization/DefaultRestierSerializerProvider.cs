@@ -5,9 +5,9 @@ using System;
 using System.Net.Http;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.WebApi.Results;
+using Microsoft.Restier.Publisher.OData.Results;
 
-namespace Microsoft.Restier.WebApi.Formatter.Serialization
+namespace Microsoft.Restier.Publisher.OData.Formatter.Serialization
 {
     /// <summary>
     /// The default serializer provider.

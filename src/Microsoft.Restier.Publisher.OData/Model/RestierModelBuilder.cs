@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData;
 using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.WebApi.Model
+namespace Microsoft.Restier.Publisher.OData.Model
 {
     class RestierModelBuilder : IModelBuilder
     {

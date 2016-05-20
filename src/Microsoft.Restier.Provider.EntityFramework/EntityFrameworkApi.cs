@@ -2,15 +2,15 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.EntityFramework
+namespace Microsoft.Restier.Provider.EntityFramework
 {
     /// <summary>
     /// Represents an API over a DbContext.
