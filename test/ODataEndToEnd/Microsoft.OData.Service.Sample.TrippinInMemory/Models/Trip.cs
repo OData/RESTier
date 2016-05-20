@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
+namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
 {
     public class Trip
     {

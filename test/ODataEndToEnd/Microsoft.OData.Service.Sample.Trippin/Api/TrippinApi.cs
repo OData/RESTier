@@ -4,11 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData;
-using System.Web.OData.Builder;
 using System.Web.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
@@ -17,15 +14,14 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Service.Sample.Trippin.Models;
+using Microsoft.OData.Service.Sample.Trippin.Submit;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Provider.EntityFramework;
 using Microsoft.Restier.Publisher.OData.Model;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Submit;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
+namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
@@ -51,7 +47,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Implements an action import.
         /// TODO: This method is only for building the model.
         /// </summary>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
         public void ResetDataSource()
         {
             TrippinModel.ResetDataSource();
@@ -60,7 +56,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// <summary>
         /// Action import - clean up all the expired trips.
         /// </summary>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
         public void CleanUpExpiredTrips()
         {
             // DO NOT ACTUALLY REMOVE THE TRIPS.
@@ -71,7 +67,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="trip">The trip to update.</param>
         /// <returns>The trip updated.</returns>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
         public Trip EndTrip(Trip trip)
         {
             // DO NOT ACTUALLY UPDATE THE TRIP.
@@ -83,7 +79,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="person">The key of the binding person.</param>
         /// <returns>The number of friends of the person.</returns>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
         public int GetNumberOfFriends(Person person)
         {
             if (person == null)
@@ -99,7 +95,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", EntitySet = "People")]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
         public Person GetPersonWithMostFriends()
         {
             Person result = null;
@@ -130,7 +126,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
         /// <returns>People with at least n friends.</returns>
-        [Operation(Namespace = "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", EntitySet = "People")]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n)
         {
             foreach (var person in PeopleWithFriends)

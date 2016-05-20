@@ -4,10 +4,9 @@
 using System;
 using FluentAssertions;
 using Microsoft.OData.Client;
-using Microsoft.OData.Service.Sample.Tests;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test.Scenario
+namespace Microsoft.OData.Service.Sample.Tests
 {
     public class UrlConventionsTests : TrippinE2ETestBase
     {
@@ -69,7 +68,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         public void AddressingBoundFunction()
         {
             TestGetPayloadContains(
-                "People(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends",
+                "People(1)/Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends",
                 "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
         }
 
@@ -98,7 +97,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         public void AddressingBoundAction()
         {
             TestPostPayloadContains(
-                "Trips(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip",
+                "Trips(1)/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip",
                 "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
         }
 
@@ -106,7 +105,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         public void AddressingBoundActionWithParenthesis()
         {
             TestPostPayloadContains(
-                "Trips(1)/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip()",
+                "Trips(1)/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip()",
                 "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
         }
 

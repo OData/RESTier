@@ -7,11 +7,10 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Service.Sample.Tests;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.OData.Service.Sample.Tests.ServiceReference;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test.Scenario
+namespace Microsoft.OData.Service.Sample.Tests
 {
     public class TemporalTests : TrippinE2ETestBase
     {

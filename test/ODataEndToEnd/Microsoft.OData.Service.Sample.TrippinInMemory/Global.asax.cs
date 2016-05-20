@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-using Microsoft.Restier.WebApi.Test.Services.TrippinInMemory;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory
 {

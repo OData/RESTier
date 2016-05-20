@@ -7,7 +7,7 @@ using System.IO;
 using Microsoft.OData.Client;
 using Xunit;
 
-namespace Microsoft.Restier.WebApi.Test.Scenario
+namespace Microsoft.OData.Service.Sample.Tests
 {
     /// <summary>
     /// Summary description for E2ETestBase

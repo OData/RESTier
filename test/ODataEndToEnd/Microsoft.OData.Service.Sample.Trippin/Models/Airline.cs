@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
+namespace Microsoft.OData.Service.Sample.Trippin.Models
 {
     public class Airline
     {

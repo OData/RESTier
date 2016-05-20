@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
     "using ASP.NET Web API OData wired to an API provided by the RESTier.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft.Restier.WebApi")]
+[assembly: AssemblyProduct("Microsoft.Restier.Publisher.OData")]
 [assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

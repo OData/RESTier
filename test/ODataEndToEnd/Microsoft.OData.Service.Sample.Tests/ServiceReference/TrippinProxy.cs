@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 // Generation date: 4/13/2016 11:20:50 AM
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
+namespace Microsoft.OData.Service.Sample.Tests.ServiceReference
 {
     /// <summary>
     /// There are no comments for TrippinModel in the schema.
@@ -39,7 +39,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         protected global::System.Type ResolveTypeFromName(string typeName)
         {
-            global::System.Type resolvedType = this.DefaultResolveType(typeName, "Microsoft.Restier.WebApi.Test.Services.Trippin.Models", "Microsoft.Restier.WebApi.Test.Services.Trippin.Models");
+            global::System.Type resolvedType = this.DefaultResolveType(typeName, "Microsoft.OData.Service.Sample.Trippin.Models", "Microsoft.OData.Service.Sample.Trippin.Models");
             if ((resolvedType != null))
             {
                 return resolvedType;
@@ -55,13 +55,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         protected string ResolveNameFromType(global::System.Type clientType)
         {
             global::Microsoft.OData.Client.OriginalNameAttribute originalNameAttribute = (global::Microsoft.OData.Client.OriginalNameAttribute)global::System.Linq.Enumerable.SingleOrDefault(global::Microsoft.OData.Client.Utility.GetCustomAttributes(clientType, typeof(global::Microsoft.OData.Client.OriginalNameAttribute), true));
-            if (clientType.Namespace.Equals("Microsoft.Restier.WebApi.Test.Services.Trippin.Models", global::System.StringComparison.Ordinal))
+            if (clientType.Namespace.Equals("Microsoft.OData.Service.Sample.Trippin.Models", global::System.StringComparison.Ordinal))
             {
                 if (originalNameAttribute != null)
                 {
-                    return string.Concat("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.", originalNameAttribute.OriginalName);
+                    return string.Concat("Microsoft.OData.Service.Sample.Trippin.Models.", originalNameAttribute.OriginalName);
                 }
-                return string.Concat("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.", clientType.Name);
+                return string.Concat("Microsoft.OData.Service.Sample.Trippin.Models.", clientType.Name);
             }
             return null;
         }
@@ -273,7 +273,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
             private const string Edmx = @"<edmx:Edmx Version=""4.0"" xmlns:edmx=""http://docs.oasis-open.org/odata/ns/edmx"">
   <edmx:DataServices>
-    <Schema Namespace=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
+    <Schema Namespace=""Microsoft.OData.Service.Sample.Trippin.Models"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
       <EntityType Name=""Airline"">
         <Key>
           <PropertyRef Name=""AirlineCode"" />
@@ -300,7 +300,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
           <PropertyRef Name=""Id"" />
         </Key>
         <Property Name=""Id"" Type=""Edm.Int32"" Nullable=""false"" />
-        <Property Name=""OccursAt"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location"" Nullable=""false"" />
+        <Property Name=""OccursAt"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Location"" Nullable=""false"" />
         <Property Name=""Description"" Type=""Edm.String"" MaxLength=""max"" />
       </EntityType>
       <EntityType Name=""Flight"">
@@ -317,13 +317,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""FromId"" Type=""Edm.String"" MaxLength=""128"" />
         <Property Name=""ToId"" Type=""Edm.String"" MaxLength=""128"" />
         <Property Name=""AirlineId"" Type=""Edm.String"" MaxLength=""128"" />
-        <NavigationProperty Name=""Airline"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline"">
+        <NavigationProperty Name=""Airline"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Airline"">
           <ReferentialConstraint Property=""AirlineId"" ReferencedProperty=""AirlineCode"" />
         </NavigationProperty>
-        <NavigationProperty Name=""From"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport"">
+        <NavigationProperty Name=""From"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Airport"">
           <ReferentialConstraint Property=""FromId"" ReferencedProperty=""IcaoCode"" />
         </NavigationProperty>
-        <NavigationProperty Name=""To"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport"">
+        <NavigationProperty Name=""To"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Airport"">
           <ReferentialConstraint Property=""ToId"" ReferencedProperty=""IcaoCode"" />
         </NavigationProperty>
       </EntityType>
@@ -359,11 +359,11 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""BirthTime2"" Type=""Edm.TimeOfDay"" />
         <Property Name=""BirthDateTime"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <Property Name=""BirthDateTime2"" Type=""Edm.DateTimeOffset"" />
-        <Property Name=""FavoriteFeature"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" Nullable=""false"" />
-        <Property Name=""FavoriteFeature2"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature"" />
-        <NavigationProperty Name=""BestFriend"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
-        <NavigationProperty Name=""Friends"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
-        <NavigationProperty Name=""Trips"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip)"" />
+        <Property Name=""FavoriteFeature"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Feature"" Nullable=""false"" />
+        <Property Name=""FavoriteFeature2"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Feature"" />
+        <NavigationProperty Name=""BestFriend"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Person"" />
+        <NavigationProperty Name=""Friends"" Type=""Collection(Microsoft.OData.Service.Sample.Trippin.Models.Person)"" />
+        <NavigationProperty Name=""Trips"" Type=""Collection(Microsoft.OData.Service.Sample.Trippin.Models.Trip)"" />
       </EntityType>
       <EntityType Name=""Trip"">
         <Key>
@@ -381,48 +381,48 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         <Property Name=""StartsAt"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <Property Name=""EndsAt"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
         <Property Name=""LastUpdated"" Type=""Edm.DateTimeOffset"" Nullable=""false"" />
-        <NavigationProperty Name=""Events"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event)"" />
-        <NavigationProperty Name=""Flights"" Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight)"" />
+        <NavigationProperty Name=""Events"" Type=""Collection(Microsoft.OData.Service.Sample.Trippin.Models.Event)"" />
+        <NavigationProperty Name=""Flights"" Type=""Collection(Microsoft.OData.Service.Sample.Trippin.Models.Flight)"" />
       </EntityType>
       <Function Name=""GetNumberOfFriends"" IsBound=""true"">
-        <Parameter Name=""person"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
+        <Parameter Name=""person"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Person"" />
         <ReturnType Type=""Edm.Int32"" Nullable=""false"" />
       </Function>
       <Function Name=""GetPersonWithMostFriends"">
-        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"" />
+        <ReturnType Type=""Microsoft.OData.Service.Sample.Trippin.Models.Person"" />
       </Function>
       <Function Name=""GetPeopleWithFriendsAtLeast"">
         <Parameter Name=""n"" Type=""Edm.Int32"" Nullable=""false"" />
-        <ReturnType Type=""Collection(Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person)"" />
+        <ReturnType Type=""Collection(Microsoft.OData.Service.Sample.Trippin.Models.Person)"" />
       </Function>
       <Action Name=""ResetDataSource"" />
       <Action Name=""CleanUpExpiredTrips"" />
       <Action Name=""EndTrip"" IsBound=""true"" EntitySetPath=""trip"">
-        <Parameter Name=""trip"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" />
-        <ReturnType Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"" />
+        <Parameter Name=""trip"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Trip"" />
+        <ReturnType Type=""Microsoft.OData.Service.Sample.Trippin.Models.Trip"" />
       </Action>
       <EntityContainer Name=""TrippinModel"">
-        <EntitySet Name=""Airlines"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline"">
+        <EntitySet Name=""Airlines"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Airline"">
           <Annotation Term=""Org.OData.Core.V1.OptimisticConcurrency"">
             <Collection>
               <PropertyPath>TimeStampValue</PropertyPath>
             </Collection>
           </Annotation>
         </EntitySet>
-        <EntitySet Name=""Airports"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport"" />
-        <EntitySet Name=""Events"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event"" />
-        <EntitySet Name=""Flights"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight"">
+        <EntitySet Name=""Airports"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Airport"" />
+        <EntitySet Name=""Events"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Event"" />
+        <EntitySet Name=""Flights"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Flight"">
           <NavigationPropertyBinding Path=""Airline"" Target=""Airlines"" />
           <NavigationPropertyBinding Path=""From"" Target=""Airports"" />
           <NavigationPropertyBinding Path=""To"" Target=""Airports"" />
         </EntitySet>
-        <EntitySet Name=""Orders"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order"" />
-        <EntitySet Name=""People"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"">
+        <EntitySet Name=""Orders"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Order"" />
+        <EntitySet Name=""People"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Person"">
           <NavigationPropertyBinding Path=""BestFriend"" Target=""People"" />
           <NavigationPropertyBinding Path=""Friends"" Target=""People"" />
           <NavigationPropertyBinding Path=""Trips"" Target=""Trips"" />
         </EntitySet>
-        <EntitySet Name=""Trips"" EntityType=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip"">
+        <EntitySet Name=""Trips"" EntityType=""Microsoft.OData.Service.Sample.Trippin.Models.Trip"">
           <NavigationPropertyBinding Path=""Events"" Target=""Events"" />
           <NavigationPropertyBinding Path=""Flights"" Target=""Flights"" />
           <Annotation Term=""Org.OData.Core.V1.OptimisticConcurrency"">
@@ -431,14 +431,14 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             </Collection>
           </Annotation>
         </EntitySet>
-        <Singleton Name=""Me"" Type=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person"">
+        <Singleton Name=""Me"" Type=""Microsoft.OData.Service.Sample.Trippin.Models.Person"">
           <NavigationPropertyBinding Path=""Friends"" Target=""People"" />
           <NavigationPropertyBinding Path=""Trips"" Target=""Trips"" />
         </Singleton>
-        <FunctionImport Name=""GetPersonWithMostFriends"" Function=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetPersonWithMostFriends"" EntitySet=""People"" />
-        <FunctionImport Name=""GetPeopleWithFriendsAtLeast"" Function=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetPeopleWithFriendsAtLeast"" EntitySet=""People"" />
-        <ActionImport Name=""ResetDataSource"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.ResetDataSource"" />
-        <ActionImport Name=""CleanUpExpiredTrips"" Action=""Microsoft.Restier.WebApi.Test.Services.Trippin.Models.CleanUpExpiredTrips"" />
+        <FunctionImport Name=""GetPersonWithMostFriends"" Function=""Microsoft.OData.Service.Sample.Trippin.Models.GetPersonWithMostFriends"" EntitySet=""People"" />
+        <FunctionImport Name=""GetPeopleWithFriendsAtLeast"" Function=""Microsoft.OData.Service.Sample.Trippin.Models.GetPeopleWithFriendsAtLeast"" EntitySet=""People"" />
+        <ActionImport Name=""ResetDataSource"" Action=""Microsoft.OData.Service.Sample.Trippin.Models.ResetDataSource"" />
+        <ActionImport Name=""CleanUpExpiredTrips"" Action=""Microsoft.OData.Service.Sample.Trippin.Models.CleanUpExpiredTrips"" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>
@@ -471,17 +471,17 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// There are no comments for GetPersonWithMostFriends in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetPersonWithMostFriends")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle GetPersonWithMostFriends()
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle GetPersonWithMostFriends()
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(this.CreateFunctionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPersonWithMostFriends", false));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle(this.CreateFunctionQuerySingle<global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Person>("", "GetPersonWithMostFriends", false));
         }
         /// <summary>
         /// There are no comments for GetPeopleWithFriendsAtLeast in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetPeopleWithFriendsAtLeast")]
-        public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> GetPeopleWithFriendsAtLeast(int n)
+        public global::Microsoft.OData.Client.DataServiceQuery<Person> GetPeopleWithFriendsAtLeast(int n)
         {
-            return this.CreateFunctionQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>("", "GetPeopleWithFriendsAtLeast", false, new global::Microsoft.OData.Client.UriOperationParameter("n", n));
+            return this.CreateFunctionQuery<global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Person>("", "GetPeopleWithFriendsAtLeast", false, new global::Microsoft.OData.Client.UriOperationParameter("n", n));
         }
         /// <summary>
         /// There are no comments for ResetDataSource in the schema.
@@ -859,7 +859,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// <param name="ID">Initial value of Id.</param>
         /// <param name="occursAt">Initial value of OccursAt.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        public static Event CreateEvent(int ID, global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location occursAt)
+        public static Event CreateEvent(int ID, global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Location occursAt)
         {
             Event @event = new Event();
             @event.Id = ID;
@@ -898,7 +898,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("OccursAt")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location OccursAt
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Location OccursAt
         {
             get
             {
@@ -913,8 +913,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location _OccursAt;
-        partial void OnOccursAtChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Location value);
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Location _OccursAt;
+        partial void OnOccursAtChanging(global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Location value);
         partial void OnOccursAtChanged();
         /// <summary>
         /// There are no comments for Property Description in the schema.
@@ -986,7 +986,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Airline")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle Airline
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle Airline
         {
             get
             {
@@ -996,19 +996,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._Airline == null))
                 {
-                    this._Airline = new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle(this.Context, GetPath("Airline"));
+                    this._Airline = new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle(this.Context, GetPath("Airline"));
                 }
                 return this._Airline;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle _Airline;
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle _Airline;
         /// <summary>
         /// There are no comments for From in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("From")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle From
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle From
         {
             get
             {
@@ -1018,19 +1018,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._From == null))
                 {
-                    this._From = new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle(this.Context, GetPath("From"));
+                    this._From = new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle(this.Context, GetPath("From"));
                 }
                 return this._From;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle _From;
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle _From;
         /// <summary>
         /// There are no comments for To in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("To")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle To
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle To
         {
             get
             {
@@ -1040,13 +1040,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._To == null))
                 {
-                    this._To = new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle(this.Context, GetPath("To"));
+                    this._To = new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle(this.Context, GetPath("To"));
                 }
                 return this._To;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle _To;
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle _To;
     }
     /// <summary>
     /// There are no comments for Flight in the schema.
@@ -1311,7 +1311,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Airline")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline Airline
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airline Airline
         {
             get
             {
@@ -1326,15 +1326,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline _Airline;
-        partial void OnAirlineChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline value);
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airline _Airline;
+        partial void OnAirlineChanging(global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airline value);
         partial void OnAirlineChanged();
         /// <summary>
         /// There are no comments for Property From in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("From")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport From
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airport From
         {
             get
             {
@@ -1349,15 +1349,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport _From;
-        partial void OnFromChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport value);
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airport _From;
+        partial void OnFromChanging(global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airport value);
         partial void OnFromChanged();
         /// <summary>
         /// There are no comments for Property To in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("To")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport To
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airport To
         {
             get
             {
@@ -1372,8 +1372,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport _To;
-        partial void OnToChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport value);
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airport _To;
+        partial void OnToChanging(global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Airport value);
         partial void OnToChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
@@ -1584,7 +1584,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BestFriend")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle BestFriend
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle BestFriend
         {
             get
             {
@@ -1594,19 +1594,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._BestFriend == null))
                 {
-                    this._BestFriend = new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(this.Context, GetPath("BestFriend"));
+                    this._BestFriend = new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle(this.Context, GetPath("BestFriend"));
                 }
                 return this._BestFriend;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle _BestFriend;
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle _BestFriend;
         /// <summary>
         /// There are no comments for Friends in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Friends")]
-        public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> Friends
+        public global::Microsoft.OData.Client.DataServiceQuery<Person> Friends
         {
             get
             {
@@ -1616,19 +1616,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._Friends == null))
                 {
-                    this._Friends = Context.CreateQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>(GetPath("Friends"));
+                    this._Friends = Context.CreateQuery<global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Person>(GetPath("Friends"));
                 }
                 return this._Friends;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> _Friends;
+        private global::Microsoft.OData.Client.DataServiceQuery<Person> _Friends;
         /// <summary>
         /// There are no comments for Trips in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Trips")]
-        public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> Trips
+        public global::Microsoft.OData.Client.DataServiceQuery<Trip> Trips
         {
             get
             {
@@ -1638,13 +1638,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._Trips == null))
                 {
-                    this._Trips = Context.CreateQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip>(GetPath("Trips"));
+                    this._Trips = Context.CreateQuery<global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Trip>(GetPath("Trips"));
                 }
                 return this._Trips;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> _Trips;
+        private global::Microsoft.OData.Client.DataServiceQuery<Trip> _Trips;
     }
     /// <summary>
     /// There are no comments for Person in the schema.
@@ -1673,7 +1673,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                     global::Microsoft.OData.Edm.Library.Date birthDate, 
                     global::Microsoft.OData.Edm.Library.TimeOfDay birthTime, 
                     global::System.DateTimeOffset birthDateTime, 
-                    global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature favoriteFeature)
+                    global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Feature favoriteFeature)
         {
             Person person = new Person();
             person.PersonId = personId;
@@ -1966,7 +1966,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("FavoriteFeature")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature FavoriteFeature
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Feature FavoriteFeature
         {
             get
             {
@@ -1981,15 +1981,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature _FavoriteFeature;
-        partial void OnFavoriteFeatureChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature value);
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Feature _FavoriteFeature;
+        partial void OnFavoriteFeatureChanging(global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Feature value);
         partial void OnFavoriteFeatureChanged();
         /// <summary>
         /// There are no comments for Property FavoriteFeature2 in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("FavoriteFeature2")]
-        public global::System.Nullable<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature> FavoriteFeature2
+        public global::System.Nullable<Feature> FavoriteFeature2
         {
             get
             {
@@ -2004,15 +2004,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::System.Nullable<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature> _FavoriteFeature2;
-        partial void OnFavoriteFeature2Changing(global::System.Nullable<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Feature> value);
+        private global::System.Nullable<Feature> _FavoriteFeature2;
+        partial void OnFavoriteFeature2Changing(global::System.Nullable<Feature> value);
         partial void OnFavoriteFeature2Changed();
         /// <summary>
         /// There are no comments for Property BestFriend in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BestFriend")]
-        public global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person BestFriend
+        public global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Person BestFriend
         {
             get
             {
@@ -2027,15 +2027,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person _BestFriend;
-        partial void OnBestFriendChanging(global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person value);
+        private global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Person _BestFriend;
+        partial void OnBestFriendChanging(global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Person value);
         partial void OnBestFriendChanged();
         /// <summary>
         /// There are no comments for Property Friends in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Friends")]
-        public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> Friends
+        public global::Microsoft.OData.Client.DataServiceCollection<Person> Friends
         {
             get
             {
@@ -2050,15 +2050,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> _Friends = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person>(null, global::Microsoft.OData.Client.TrackingMode.None);
-        partial void OnFriendsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> value);
+        private global::Microsoft.OData.Client.DataServiceCollection<Person> _Friends = new global::Microsoft.OData.Client.DataServiceCollection<Person>(null, global::Microsoft.OData.Client.TrackingMode.None);
+        partial void OnFriendsChanging(global::Microsoft.OData.Client.DataServiceCollection<Person> value);
         partial void OnFriendsChanged();
         /// <summary>
         /// There are no comments for Property Trips in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Trips")]
-        public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> Trips
+        public global::Microsoft.OData.Client.DataServiceCollection<Trip> Trips
         {
             get
             {
@@ -2073,8 +2073,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> _Trips = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip>(null, global::Microsoft.OData.Client.TrackingMode.None);
-        partial void OnTripsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> value);
+        private global::Microsoft.OData.Client.DataServiceCollection<Trip> _Trips = new global::Microsoft.OData.Client.DataServiceCollection<Trip>(null, global::Microsoft.OData.Client.TrackingMode.None);
+        partial void OnTripsChanging(global::Microsoft.OData.Client.DataServiceCollection<Trip> value);
         partial void OnTripsChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
@@ -2102,7 +2102,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             global::System.Uri requestUri;
             Context.TryGetUri(this, out requestUri);
 
-            return this.Context.CreateFunctionQuerySingle<int>(string.Join("/", global::System.Linq.Enumerable.Select(global::System.Linq.Enumerable.Skip(requestUri.Segments, this.Context.BaseUri.Segments.Length), s => s.Trim('/'))), "Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", false);
+            return this.Context.CreateFunctionQuerySingle<int>(string.Join("/", global::System.Linq.Enumerable.Select(global::System.Linq.Enumerable.Skip(requestUri.Segments, this.Context.BaseUri.Segments.Length), s => s.Trim('/'))), "Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends", false);
         }
     }
     /// <summary>
@@ -2134,7 +2134,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Events")]
-        public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> Events
+        public global::Microsoft.OData.Client.DataServiceQuery<Event> Events
         {
             get
             {
@@ -2144,19 +2144,19 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._Events == null))
                 {
-                    this._Events = Context.CreateQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event>(GetPath("Events"));
+                    this._Events = Context.CreateQuery<global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Event>(GetPath("Events"));
                 }
                 return this._Events;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> _Events;
+        private global::Microsoft.OData.Client.DataServiceQuery<Event> _Events;
         /// <summary>
         /// There are no comments for Flights in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Flights")]
-        public global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> Flights
+        public global::Microsoft.OData.Client.DataServiceQuery<Flight> Flights
         {
             get
             {
@@ -2166,13 +2166,13 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 }
                 if ((this._Flights == null))
                 {
-                    this._Flights = Context.CreateQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight>(GetPath("Flights"));
+                    this._Flights = Context.CreateQuery<global::Microsoft.OData.Service.Sample.Tests.ServiceReference.Flight>(GetPath("Flights"));
                 }
                 return this._Flights;
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> _Flights;
+        private global::Microsoft.OData.Client.DataServiceQuery<Flight> _Flights;
     }
     /// <summary>
     /// There are no comments for Trip in the schema.
@@ -2446,7 +2446,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Events")]
-        public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> Events
+        public global::Microsoft.OData.Client.DataServiceCollection<Event> Events
         {
             get
             {
@@ -2461,15 +2461,15 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> _Events = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event>(null, global::Microsoft.OData.Client.TrackingMode.None);
-        partial void OnEventsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> value);
+        private global::Microsoft.OData.Client.DataServiceCollection<Event> _Events = new global::Microsoft.OData.Client.DataServiceCollection<Event>(null, global::Microsoft.OData.Client.TrackingMode.None);
+        partial void OnEventsChanging(global::Microsoft.OData.Client.DataServiceCollection<Event> value);
         partial void OnEventsChanged();
         /// <summary>
         /// There are no comments for Property Flights in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("Flights")]
-        public global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> Flights
+        public global::Microsoft.OData.Client.DataServiceCollection<Flight> Flights
         {
             get
             {
@@ -2484,8 +2484,8 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> _Flights = new global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight>(null, global::Microsoft.OData.Client.TrackingMode.None);
-        partial void OnFlightsChanging(global::Microsoft.OData.Client.DataServiceCollection<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> value);
+        private global::Microsoft.OData.Client.DataServiceCollection<Flight> _Flights = new global::Microsoft.OData.Client.DataServiceCollection<Flight>(null, global::Microsoft.OData.Client.TrackingMode.None);
+        partial void OnFlightsChanging(global::Microsoft.OData.Client.DataServiceCollection<Flight> value);
         partial void OnFlightsChanged();
         /// <summary>
         /// This event is raised when the value of the property is changed
@@ -2508,7 +2508,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
         /// There are no comments for EndTrip in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("EndTrip")]
-        public global::Microsoft.OData.Client.DataServiceActionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> EndTrip()
+        public global::Microsoft.OData.Client.DataServiceActionQuerySingle<Trip> EndTrip()
         {
             global::Microsoft.OData.Client.EntityDescriptor resource = Context.EntityTracker.TryGetEntityDescriptor(this);
             if (resource == null)
@@ -2516,7 +2516,7 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 throw new global::System.Exception("cannot find entity");
             }
 
-            return new global::Microsoft.OData.Client.DataServiceActionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip>(this.Context, resource.EditLink.OriginalString.Trim('/') + "/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip");
+            return new global::Microsoft.OData.Client.DataServiceActionQuerySingle<Trip>(this.Context, resource.EditLink.OriginalString.Trim('/') + "/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip");
         }
     }
     /// <summary>
@@ -2540,113 +2540,113 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Airline as global::Microsoft.OData.Service.Sample.Trippin.Models.AirlineSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Airline> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Airline as global::Microsoft.OData.Service.Sample.Trippin.Models.AirlineSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="airlineCode">The value of airlineCode</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airline> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Airline> source,
             string airlineCode)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
                 { "AirlineCode", airlineCode }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirlineSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirlineSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Airport as global::Microsoft.OData.Service.Sample.Trippin.Models.AirportSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Airport> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Airport as global::Microsoft.OData.Service.Sample.Trippin.Models.AirportSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="icaoCode">The value of icaoCode</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Airport> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Airport> source,
             string icaoCode)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
                 { "IcaoCode", icaoCode }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.AirportSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.AirportSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EventSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Event as global::Microsoft.OData.Service.Sample.Trippin.Models.EventSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EventSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.EventSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Event> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EventSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.EventSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EventSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Event as global::Microsoft.OData.Service.Sample.Trippin.Models.EventSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="id">The value of id</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EventSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Event> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.EventSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Event> source,
             int id)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
                 { "Id", id }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EventSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.EventSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.FlightSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Flight as global::Microsoft.OData.Service.Sample.Trippin.Models.FlightSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.FlightSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.FlightSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Flight> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.FlightSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.FlightSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.FlightSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Flight as global::Microsoft.OData.Service.Sample.Trippin.Models.FlightSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="flightId">The value of flightId</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.FlightSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Flight> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.FlightSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Flight> source,
             int flightId)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
                 { "FlightId", flightId }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.FlightSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.FlightSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Order as global::Microsoft.OData.Service.Sample.Trippin.Models.OrderSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.OrderSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Order> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.OrderSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Order as global::Microsoft.OData.Service.Sample.Trippin.Models.OrderSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="personId">The value of personId</param>
         /// <param name="orderId">The value of orderId</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.OrderSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Order> source,
             int personId, 
             int orderId)
         {
@@ -2655,79 +2655,79 @@ namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
                 { "PersonId", personId }, 
                 { "OrderId", orderId }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.OrderSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.OrderSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Person as global::Microsoft.OData.Service.Sample.Trippin.Models.PersonSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Person> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Person as global::Microsoft.OData.Service.Sample.Trippin.Models.PersonSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="personId">The value of personId</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Person> source,
             int personId)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
                 { "PersonId", personId }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.PersonSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.PersonSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.TripSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Trip as global::Microsoft.OData.Service.Sample.Trippin.Models.TripSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="keys">dictionary with the names and values of keys</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.TripSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> source, global::System.Collections.Generic.Dictionary<string, object> keys)
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.TripSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Trip> source, global::System.Collections.Generic.Dictionary<string, object> keys)
         {
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.TripSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.TripSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
-        /// Get an entity of type global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip as global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.TripSingle specified by key from an entity set
+        /// Get an entity of type global::Microsoft.OData.Service.Sample.Trippin.Models.Trip as global::Microsoft.OData.Service.Sample.Trippin.Models.TripSingle specified by key from an entity set
         /// </summary>
         /// <param name="source">source entity set</param>
         /// <param name="tripId">The value of tripId</param>
-        public static global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.TripSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> source,
+        public static global::Microsoft.OData.Service.Sample.Tests.ServiceReference.TripSingle ByKey(this global::Microsoft.OData.Client.DataServiceQuery<Trip> source,
             int tripId)
         {
             global::System.Collections.Generic.Dictionary<string, object> keys = new global::System.Collections.Generic.Dictionary<string, object>
             {
                 { "TripId", tripId }
             };
-            return new global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.TripSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
+            return new global::Microsoft.OData.Service.Sample.Tests.ServiceReference.TripSingle(source.Context, source.GetKeyPath(global::Microsoft.OData.Client.Serializer.GetKeyString(source.Context, keys)));
         }
         /// <summary>
         /// There are no comments for GetNumberOfFriends in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("GetNumberOfFriends")]
-        public static global::Microsoft.OData.Client.DataServiceQuerySingle<int> GetNumberOfFriends(this global::Microsoft.OData.Client.DataServiceQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person> source)
+        public static global::Microsoft.OData.Client.DataServiceQuerySingle<int> GetNumberOfFriends(this global::Microsoft.OData.Client.DataServiceQuerySingle<Person> source)
         {
             if (!source.IsComposable)
             {
                 throw new global::System.NotSupportedException("The previous function is not composable.");
             }
 
-            return source.CreateFunctionQuerySingle<int>("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends", false);
+            return source.CreateFunctionQuerySingle<int>("Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends", false);
         }
         /// <summary>
         /// There are no comments for EndTrip in the schema.
         /// </summary>
         [global::Microsoft.OData.Client.OriginalNameAttribute("EndTrip")]
-        public static global::Microsoft.OData.Client.DataServiceActionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> EndTrip(this global::Microsoft.OData.Client.DataServiceQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip> source)
+        public static global::Microsoft.OData.Client.DataServiceActionQuerySingle<Trip> EndTrip(this global::Microsoft.OData.Client.DataServiceQuerySingle<Trip> source)
         {
             if (!source.IsComposable)
             {
                 throw new global::System.NotSupportedException("The previous function is not composable.");
             }
 
-            return new global::Microsoft.OData.Client.DataServiceActionQuerySingle<global::Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Trip>(source.Context, source.AppendRequestUri("Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip"));
+            return new global::Microsoft.OData.Client.DataServiceActionQuerySingle<Trip>(source.Context, source.AppendRequestUri("Microsoft.OData.Service.Sample.Trippin.Models.EndTrip"));
         }
     }
 }

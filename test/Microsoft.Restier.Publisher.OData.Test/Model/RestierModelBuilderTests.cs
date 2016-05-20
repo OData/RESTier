@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Publisher.OData.Test.Model
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
 
-            var address = model.FindDeclaredType("Microsoft.Restier.WebApi.Test.Model.Address")
+            var address = model.FindDeclaredType("Microsoft.Restier.Publisher.OData.Test.Model.Address")
              as IEdmComplexType;
             Assert.NotNull(address);
             Assert.Equal(2, address.Properties().Count());
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Publisher.OData.Test.Model
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
 
-            var universe = model.FindDeclaredType("Microsoft.Restier.WebApi.Test.Model.Universe")
+            var universe = model.FindDeclaredType("Microsoft.Restier.Publisher.OData.Test.Model.Universe")
              as IEdmComplexType;
             Assert.NotNull(universe);
 

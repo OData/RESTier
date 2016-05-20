@@ -4,7 +4,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
+namespace Microsoft.OData.Service.Sample.Trippin.Models
 {
     public class Order
     {

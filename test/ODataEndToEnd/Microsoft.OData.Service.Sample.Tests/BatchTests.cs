@@ -4,8 +4,7 @@
 using System;
 using System.Linq;
 using Microsoft.OData.Client;
-using Microsoft.Restier.WebApi.Test.Scenario;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.OData.Service.Sample.Tests.ServiceReference;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests

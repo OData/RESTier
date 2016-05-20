@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Publisher.OData.Model
     /// </summary>
     public static class ApiConfigurationExtensions
     {
-        private const string IgnoredPropertiesKey = "Microsoft.Restier.WebApi.IgnoredProperties";
+        private const string IgnoredPropertiesKey = "Microsoft.Restier.Publisher.OData.IgnoredProperties";
 
         #region IgnoreProperty
 

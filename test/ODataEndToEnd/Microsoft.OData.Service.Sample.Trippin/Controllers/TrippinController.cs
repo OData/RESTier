@@ -10,10 +10,8 @@ using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Service.Sample.Trippin.Api;
 using Microsoft.OData.Service.Sample.Trippin.Models;
-using Microsoft.Restier.WebApi.Test.Services.Trippin;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Api;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Controllers
 {
@@ -57,7 +55,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Controllers
             Api.CleanUpExpiredTrips();
         }
 
-        [ODataRoute("Trips({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.EndTrip")]
+        [ODataRoute("Trips({key})/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip")]
         public IHttpActionResult EndTrip(int key)
         {
             var trip = DbContext.Trips.SingleOrDefault(t => t.TripId == key);
@@ -79,7 +77,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Controllers
             return serviceRootUri;
         }
 
-        [ODataRoute("People({key})/Microsoft.Restier.WebApi.Test.Services.Trippin.Models.GetNumberOfFriends")]
+        [ODataRoute("People({key})/Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends")]
         public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
         {
             var person = DbContext.People.SingleOrDefault(p => p.PersonId == key);

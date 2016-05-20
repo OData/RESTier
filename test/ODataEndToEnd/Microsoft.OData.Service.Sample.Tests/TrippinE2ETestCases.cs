@@ -7,8 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
-using Microsoft.Restier.WebApi.Test.Scenario;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.OData.Service.Sample.Tests.ServiceReference;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
@@ -108,9 +107,9 @@ namespace Microsoft.OData.Service.Sample.Tests
             using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
             {
                 var modelStr = r.ReadToEnd();
-                Assert.Contains("<EntityType Name=\"SpecialOrder\" BaseType=\"Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Order\">", modelStr, StringComparison.Ordinal);
-                Assert.Contains("<EntityType Name=\"Manager\" BaseType=\"Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
-                Assert.Contains("<EntityType Name=\"Employee\" BaseType=\"Microsoft.Restier.WebApi.Test.Services.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<EntityType Name=\"SpecialOrder\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Order\">", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<EntityType Name=\"Manager\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
+                Assert.Contains("<EntityType Name=\"Employee\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
             }
         }
 

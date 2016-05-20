@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
+namespace Microsoft.OData.Service.Sample.Trippin.Models
 {
     [Table("TripsTable")]
     public class Trip

@@ -2,9 +2,10 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.OData.Service.Sample.Tests.ServiceReference;
 using Xunit;
-namespace Microsoft.Restier.WebApi.Test.Scenario
+
+namespace Microsoft.OData.Service.Sample.Tests
 {
     public class TrippinInMemoryE2ETest : E2ETestBase<TrippinModel>, IClassFixture<TrippinServiceFixture>
     {
@@ -47,7 +48,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetPayloadContains("People(1)/Locations",
                 "\"@odata.context\":\"http://localhost:21248/api/Trippin/$metadata#Collection(" +
-                "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.Location)\"");
+                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Location)\"");
         }
 
         [Fact]
@@ -55,7 +56,7 @@ namespace Microsoft.Restier.WebApi.Test.Scenario
         {
             TestGetPayloadContains("People(1)/Features",
                 "\"@odata.context\":\"http://localhost:21248/api/Trippin/$metadata#Collection(" +
-                "Microsoft.Restier.WebApi.Test.Services.TrippinInMemory.Feature)\"");
+                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Feature)\"");
         }
 
         [Fact]

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Web.OData.Builder;
 
-namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
+namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
 {
     public class Person
     {

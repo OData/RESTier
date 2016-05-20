@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Submit
+namespace Microsoft.OData.Service.Sample.Trippin.Submit
 {
     public class CustomizedSubmitProcessor : IChangeSetItemProcessor
     {

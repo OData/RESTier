@@ -2,8 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Restier.WebApi.Test.Scenario;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
+using Microsoft.OData.Service.Sample.Tests.ServiceReference;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests

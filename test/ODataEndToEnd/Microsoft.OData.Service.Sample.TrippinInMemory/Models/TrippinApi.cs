@@ -9,7 +9,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.WebApi.Test.Services.TrippinInMemory
+namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
 {
     public class TrippinApi : ApiBase
     {

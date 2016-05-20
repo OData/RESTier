@@ -24,14 +24,14 @@ namespace Microsoft.Restier.Publisher.OData.Test
         static StoreModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.Namespace = "Microsoft.Restier.WebApi.Test";
+            builder.Namespace = "Microsoft.Restier.Publisher.OData.Test";
             builder.EntitySet<Product>("Products");
             builder.EntitySet<Customer>("Customers");
             builder.EntitySet<Store>("Stores");
             builder.Function("GetBestProduct").ReturnsFromEntitySet<Product>("Products");
             builder.Action("RemoveWorstProduct").ReturnsFromEntitySet<Product>("Products");
             Model = (EdmModel)builder.GetEdmModel();
-            Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.WebApi.Test.Product");
+            Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.Publisher.OData.Test.Product");
         }
     }
 

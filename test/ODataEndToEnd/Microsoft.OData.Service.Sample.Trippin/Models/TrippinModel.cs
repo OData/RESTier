@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
-using Microsoft.Restier.WebApi.Test.Services.Trippin.Models;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Models
 {

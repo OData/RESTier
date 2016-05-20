@@ -1,13 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
-using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Publisher.OData;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Models
+namespace Microsoft.OData.Service.Sample.Trippin.Models
 {
     /// <summary>
     /// The customized payload value converter for test only

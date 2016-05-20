@@ -87,7 +87,7 @@ namespace Microsoft.Restier.Publisher.OData.Test
         static FallbackModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.Namespace = "Microsoft.Restier.WebApi.Test";
+            builder.Namespace = "Microsoft.Restier.Publisher.OData.Test";
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Person>("People");
             Model = (EdmModel)builder.GetEdmModel();

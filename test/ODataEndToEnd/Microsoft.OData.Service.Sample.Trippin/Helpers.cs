@@ -11,7 +11,7 @@ using System.Web.OData.Routing;
 using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin
+namespace Microsoft.OData.Service.Sample.Trippin
 {
     public static class Helpers
     {
