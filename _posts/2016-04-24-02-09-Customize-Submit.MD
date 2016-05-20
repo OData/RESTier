@@ -35,7 +35,7 @@ public class CustomizedAuthorizer : IChangeSetItemAuthorizer
 Second, registering it into RESTier Dependency Injection framework as a service via overriding the ConfigureApi method in your Api class.
 
 {% highlight csharp %}
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Api
+namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
@@ -91,7 +91,7 @@ User can use interface IChangeSetItemProcessor to customize logic before or afte
 
 
 {% highlight csharp %}
-namespace Microsoft.Restier.WebApi.Test.Services.Trippin.Submit
+namespace Microsoft.OData.Service.Sample.Trippin.Submit
 {
     public class CustomizedSubmitProcessor : IChangeSetItemProcessor
     {
