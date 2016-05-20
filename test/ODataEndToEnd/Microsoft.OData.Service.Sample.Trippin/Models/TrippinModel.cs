@@ -435,23 +435,25 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                     BirthDateTime = new DateTime(1992, 8, 3, 16, 52, 8),
                     FavoriteFeature = Feature.Feature3,
                 },
-                new Person
+                new Employee
                 {
                     PersonId = 12,
                     FirstName = "Sallie",
                     LastName = "Sampson",
                     UserName = "salliesampson",
+                    Cost = 1000000,
                     BirthDate = new DateTime(1993, 9, 2),
                     BirthTime = new TimeSpan(15, 51, 9),
                     BirthDateTime = new DateTime(1993, 9, 2, 15, 51, 9),
                     FavoriteFeature = Feature.Feature4,
                 },
-                new Person
+                new Manager
                 {
                     PersonId = 13,
                     FirstName = "Joni",
                     LastName = "Rosales",
                     UserName = "jonirosales",
+                    Budget = 60000000,
                     BirthDate = new DateTime(1994, 10, 1),
                     BirthTime = new TimeSpan(14, 50, 10),
                     BirthDateTime = new DateTime(1994, 10, 1, 14, 50, 10),
