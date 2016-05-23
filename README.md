@@ -23,8 +23,8 @@ The project currently has two branches: [master](https://github.com/OData/RESTie
 
 The master branch has the following libraries:
 - [RESTier Core](https://www.nuget.org/packages/Microsoft.Restier.Core/) (namespace `Microsoft.Restier.Core`):<br />The RESTier Core contains framework classes like API-related logic, query inspector/filter/expander/sourcer/executor, convention-based logic like model builder.
-- [RESTier WebApi Publisher](https://www.nuget.org/packages/Microsoft.Restier.WebApi/) (namespace `Microsoft.Restier.WebApi`):<br />The RESTier WebApi Publisher contains classes to publish the data source as an OData service based on Web API OData.
-- [RESTier EntityFramework Provider](https://www.nuget.org/packages/Microsoft.Restier.EntityFramework/) (namespace `Microsoft.Restier.EntityFramework`):<br />The RESTier EntityFramework Provider contains classes to access data sources exposed with Entity Framework library.
+- [RESTier OData Publisher](https://www.nuget.org/packages/Microsoft.Restier.Publishers.Odata/) (namespace `Microsoft.Restier.Publishers.Odata`):<br />The RESTier OData Publisher contains classes to publish the data source as an OData service based on Web API OData.
+- [RESTier EntityFramework Provider](https://www.nuget.org/packages/Microsoft.Restier.Providers.EntityFramework/) (namespace `Microsoft.Restier.Providers.EntityFramework`):<br />The RESTier EntityFramework Provider contains classes to access data sources exposed with Entity Framework library.
 - [RESTier Security](https://www.nuget.org/packages/Microsoft.Restier.Security/) (namespace `Microsoft.Restier.Security`):<br />The RESTier Security contains classes and methods for security control, it is not in active development state and will not be part of first GA release.
 
 For these libraries, we accept bug reports, feature requirements and pull requests. 

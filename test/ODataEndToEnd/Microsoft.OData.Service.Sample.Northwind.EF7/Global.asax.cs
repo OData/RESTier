@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Http;
 using Microsoft.OData.Service.Sample.Northwind;
 
-namespace Microsoft.Restier.Samples.Northwind
+namespace Microsoft.OData.Service.Sample.Northwind
 {
     public class WebApiApplication : HttpApplication
     {

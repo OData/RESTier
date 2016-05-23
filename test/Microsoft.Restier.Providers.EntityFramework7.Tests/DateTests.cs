@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Providers.EntityFramework7.Tests
             var edmModel = await api.GetModelAsync();
 
             var entityType = (IEdmEntityType)
-                edmModel.FindDeclaredType(@"Microsoft.Restier.EntityFramework.Tests.Models.Primitives.DateItem");
+                edmModel.FindDeclaredType(@"Microsoft.Restier.Providers.EntityFramework.Tests.Models.Primitives.DateItem");
             Assert.NotNull(entityType);
 
             Assert.True(entityType.FindProperty("DTProperty").Type.IsDateTimeOffset());

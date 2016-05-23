@@ -147,7 +147,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Microsoft.Restier.WebApi.nuspec">
+    <None Include="Microsoft.Restier.Publishers.OData.nuspec">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

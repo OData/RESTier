@@ -6,8 +6,8 @@
     <ProjectGuid>{6A88BA5D-50C7-46F3-873B-07040BF16B57}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.Samples.Northwind.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Restier.Samples.Northwind.EF7.Tests</AssemblyName>
+    <RootNamespace>Microsoft.OData.Service.Sample.Northwind.Tests</RootNamespace>
+    <AssemblyName>Microsoft.OData.Service.Sample.Northwind.EF7.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
