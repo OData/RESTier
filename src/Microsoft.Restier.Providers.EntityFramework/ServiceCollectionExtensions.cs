@@ -4,16 +4,16 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Provider.EntityFramework.Model;
-using Microsoft.Restier.Provider.EntityFramework.Query;
-using Microsoft.Restier.Provider.EntityFramework.Submit;
+using Microsoft.Restier.Providers.EntityFramework.Model;
+using Microsoft.Restier.Providers.EntityFramework.Query;
+using Microsoft.Restier.Providers.EntityFramework.Submit;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
 
-namespace Microsoft.Restier.Provider.EntityFramework
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     [CLSCompliant(false)]
     public static class ServiceCollectionExtensions

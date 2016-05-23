@@ -3,8 +3,8 @@
 
 using System.Web.Http;
 using Microsoft.OData.Service.Sample.Trippin.Api;
-using Microsoft.Restier.Publisher.OData.Batch;
-using Microsoft.Restier.Publisher.OData.Routing;
+using Microsoft.Restier.Publishers.OData.Batch;
+using Microsoft.Restier.Publishers.OData.Routing;
 
 namespace Microsoft.OData.Service.Sample.Trippin
 {

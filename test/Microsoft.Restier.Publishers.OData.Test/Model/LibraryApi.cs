@@ -2,9 +2,9 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Provider.EntityFramework;
+using Microsoft.Restier.Providers.EntityFramework;
 
-namespace Microsoft.Restier.Publisher.OData.Test.Model
+namespace Microsoft.Restier.Publishers.OData.Test.Model
 {
     class LibraryApi : EntityFrameworkApi<LibraryContext>
     {

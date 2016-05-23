@@ -15,9 +15,9 @@ using System.Web.Http.Filters;
 using System.Web.Http.Results;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Publisher.OData.Query;
+using Microsoft.Restier.Publishers.OData.Query;
 
-namespace Microsoft.Restier.Publisher.OData.Filters
+namespace Microsoft.Restier.Publishers.OData.Filters
 {
     /// <summary>
     /// An ExceptionFilter that is capable of serializing well-known exceptions to the client.

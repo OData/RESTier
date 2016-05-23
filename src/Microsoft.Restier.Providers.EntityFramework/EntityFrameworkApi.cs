@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
 #endif
 
-namespace Microsoft.Restier.Provider.EntityFramework
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// Represents an API over a DbContext.

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Restier.Publisher.OData.Test.Model
+namespace Microsoft.Restier.Publishers.OData.Test.Model
 {
     class Publisher
     {

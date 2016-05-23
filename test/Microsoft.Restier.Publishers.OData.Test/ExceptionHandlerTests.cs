@@ -7,10 +7,10 @@ using System.Web.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Publisher.OData.Routing;
+using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
-namespace Microsoft.Restier.Publisher.OData.Test
+namespace Microsoft.Restier.Publishers.OData.Test
 {
     public class ExceptionHandlerTests
     {

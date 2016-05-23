@@ -9,7 +9,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Provider.EntityFramework.Tests.Models.Library
+namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
 {
     class LibraryApi : EntityFrameworkApi<LibraryContext>
     {

@@ -18,8 +18,8 @@ using Microsoft.OData.Service.Sample.Trippin.Submit;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Provider.EntityFramework;
-using Microsoft.Restier.Publisher.OData.Model;
+using Microsoft.Restier.Providers.EntityFramework;
+using Microsoft.Restier.Publishers.OData.Model;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {

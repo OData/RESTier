@@ -8,7 +8,7 @@ using Microsoft.OData.Edm.Validation;
 using Microsoft.Restier.Core;
 using Xunit;
 
-namespace Microsoft.Restier.Publisher.OData.Test.Model
+namespace Microsoft.Restier.Publishers.OData.Test.Model
 {
     public class RestierModelBuilderTests
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Publisher.OData.Test.Model
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
 
-            var address = model.FindDeclaredType("Microsoft.Restier.Publisher.OData.Test.Model.Address")
+            var address = model.FindDeclaredType("Microsoft.Restier.Publishers.OData.Test.Model.Address")
              as IEdmComplexType;
             Assert.NotNull(address);
             Assert.Equal(2, address.Properties().Count());
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Publisher.OData.Test.Model
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
 
-            var universe = model.FindDeclaredType("Microsoft.Restier.Publisher.OData.Test.Model.Universe")
+            var universe = model.FindDeclaredType("Microsoft.Restier.Publishers.OData.Test.Model.Universe")
              as IEdmComplexType;
             Assert.NotNull(universe);
 

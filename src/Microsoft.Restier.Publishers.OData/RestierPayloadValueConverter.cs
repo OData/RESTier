@@ -6,7 +6,7 @@ using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 
-namespace Microsoft.Restier.Publisher.OData
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// The default payload value converter in RESTier.

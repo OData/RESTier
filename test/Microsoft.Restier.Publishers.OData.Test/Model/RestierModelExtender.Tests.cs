@@ -9,11 +9,11 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Publisher.OData.Model;
-using Microsoft.Restier.Publisher.OData.Routing;
+using Microsoft.Restier.Publishers.OData.Model;
+using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
-namespace Microsoft.Restier.Publisher.OData.Test.Model
+namespace Microsoft.Restier.Publishers.OData.Test.Model
 {
     public class RestierModelExtenderTests
     {

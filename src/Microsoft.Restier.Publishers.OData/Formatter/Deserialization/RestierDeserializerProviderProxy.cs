@@ -7,7 +7,7 @@ using System.Web.OData.Formatter.Deserialization;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publisher.OData.Formatter.Deserialization
+namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
 {
     /// <summary>
     /// The deserializer provider proxy which get real provider to implement the logic.

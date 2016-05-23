@@ -6,9 +6,9 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Publisher.OData.Properties;
+using Microsoft.Restier.Publishers.OData.Properties;
 
-namespace Microsoft.Restier.Publisher.OData.Model
+namespace Microsoft.Restier.Publishers.OData.Model
 {
     internal static class EdmHelpers
     {

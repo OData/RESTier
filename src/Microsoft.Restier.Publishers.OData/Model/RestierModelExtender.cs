@@ -15,7 +15,7 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Publisher.OData.Model
+namespace Microsoft.Restier.Publishers.OData.Model
 {
     /// <summary>
     /// A convention-based API model builder that extends a model, maps between

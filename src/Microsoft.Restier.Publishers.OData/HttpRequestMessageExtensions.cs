@@ -5,9 +5,9 @@ using System;
 using System.ComponentModel;
 using System.Net.Http;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Publisher.OData.Batch;
+using Microsoft.Restier.Publishers.OData.Batch;
 
-namespace Microsoft.Restier.Publisher.OData
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpRequestMessage"/>.

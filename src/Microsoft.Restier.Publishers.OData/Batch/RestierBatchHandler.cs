@@ -11,9 +11,9 @@ using System.Web.Http.Batch;
 using System.Web.OData.Batch;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Publisher.OData.Properties;
+using Microsoft.Restier.Publishers.OData.Properties;
 
-namespace Microsoft.Restier.Publisher.OData.Batch
+namespace Microsoft.Restier.Publishers.OData.Batch
 {
     /// <summary>
     /// Default implementation of <see cref="ODataBatchHandler"/> in RESTier.

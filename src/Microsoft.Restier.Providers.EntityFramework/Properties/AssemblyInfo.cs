@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A module that connects the RESTier to an Entity Framework based data source proxy.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Microsoft.Restier.Provider.EntityFramework")]
+[assembly: AssemblyProduct("Microsoft.Restier.Providers.EntityFramework")]
 [assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

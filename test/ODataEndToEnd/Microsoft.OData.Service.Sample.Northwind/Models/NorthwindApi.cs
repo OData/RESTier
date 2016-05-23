@@ -14,9 +14,9 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Provider.EntityFramework;
-using Microsoft.Restier.Publisher.OData;
-using Microsoft.Restier.Publisher.OData.Model;
+using Microsoft.Restier.Providers.EntityFramework;
+using Microsoft.Restier.Publishers.OData;
+using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Security;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Models

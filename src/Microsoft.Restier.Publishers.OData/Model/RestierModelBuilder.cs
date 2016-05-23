@@ -5,7 +5,7 @@ using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Publisher.OData.Model
+namespace Microsoft.Restier.Publishers.OData.Model
 {
     class RestierModelBuilder : IModelBuilder
     {

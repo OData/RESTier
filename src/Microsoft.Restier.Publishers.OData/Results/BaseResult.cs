@@ -5,7 +5,7 @@ using System;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publisher.OData.Results
+namespace Microsoft.Restier.Publishers.OData.Results
 {
     /// <summary>
     /// Represents the result of an OData query.

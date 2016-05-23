@@ -4,9 +4,9 @@
 using System;
 using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
-using Microsoft.Restier.Publisher.OData.Results;
+using Microsoft.Restier.Publishers.OData.Results;
 
-namespace Microsoft.Restier.Publisher.OData.Formatter.Serialization
+namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
 {
     /// <summary>
     /// The serializer for complex result.

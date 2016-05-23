@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
 #endif
 
-namespace Microsoft.Restier.Provider.EntityFramework.Model
+namespace Microsoft.Restier.Providers.EntityFramework.Model
 {
     /// <summary>
     /// Represents a model producer that uses the

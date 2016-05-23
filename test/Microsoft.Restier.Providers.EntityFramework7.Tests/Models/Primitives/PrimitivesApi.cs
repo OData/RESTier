@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Restier.Provider.EntityFramework;
+using Microsoft.Restier.Providers.EntityFramework;
 
-namespace Microsoft.Restier.Provider.EntityFramework7.Tests.Models.Primitives
+namespace Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives
 {
     class PrimitivesApi : EntityFrameworkApi<PrimitivesContext>
     {

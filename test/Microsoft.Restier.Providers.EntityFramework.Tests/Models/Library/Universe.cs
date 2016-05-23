@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.OData.Edm.Library;
 
-namespace Microsoft.Restier.Provider.EntityFramework.Tests.Models.Library
+namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
 {
     [ComplexType]
     class Universe

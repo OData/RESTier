@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publisher.OData.Model
+namespace Microsoft.Restier.Publishers.OData.Model
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="ApiConfiguration"/>.
     /// </summary>
     public static class ApiConfigurationExtensions
     {
-        private const string IgnoredPropertiesKey = "Microsoft.Restier.Publisher.OData.IgnoredProperties";
+        private const string IgnoredPropertiesKey = "Microsoft.Restier.Publishers.OData.IgnoredProperties";
 
         #region IgnoreProperty
 

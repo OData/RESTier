@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Publisher.OData.Batch
+namespace Microsoft.Restier.Publishers.OData.Batch
 {
     /// <summary>
     /// Represents an API <see cref="ChangeSet"/> property.

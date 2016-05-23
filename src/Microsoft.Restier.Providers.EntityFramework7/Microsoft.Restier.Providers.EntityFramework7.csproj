@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
-    <AssemblyName>Microsoft.Restier.Provider.EntityFramework7</AssemblyName>
+    <AssemblyName>Microsoft.Restier.Providers.EntityFramework7</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
@@ -96,28 +96,28 @@
       <Link>GlobalSuppressions.cs</Link>
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\EntityFrameworkApi.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\EntityFrameworkApi.cs">
       <Link>EntityFrameworkApi.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Model\ModelMapper.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\Model\ModelMapper.cs">
       <Link>Model.Shared\ModelMapper.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Model\ModelProducer.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\Model\ModelProducer.cs">
       <Link>Model.Shared\ModelProducer.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExecutor.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\Query\QueryExecutor.cs">
       <Link>Query.Shared\QueryExecutor.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExpressionProcessor.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\Query\QueryExpressionProcessor.cs">
       <Link>Query.Shared\QueryExpressionProcessor.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Query\QueryExpressionSourcer.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\Query\QueryExpressionSourcer.cs">
       <Link>Query.Shared\QueryExpressionSourcer.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\ServiceCollectionExtensions.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\ServiceCollectionExtensions.cs">
       <Link>ServiceCollectionExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Microsoft.Restier.Provider.EntityFramework\Submit\SubmitExecutor.cs">
+    <Compile Include="..\Microsoft.Restier.Providers.EntityFramework\Submit\SubmitExecutor.cs">
       <Link>Submit.Shared\SubmitExecutor.cs</Link>
     </Compile>
     <Compile Include="..\Shared\Ensure.cs">

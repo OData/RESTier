@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using IAsyncQueryProvider = Microsoft.EntityFrameworkCore.Query.Internal.IAsyncQueryProvider;
 #endif
 
-namespace Microsoft.Restier.Provider.EntityFramework.Query
+namespace Microsoft.Restier.Providers.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query executor that uses Entity Framework methods.

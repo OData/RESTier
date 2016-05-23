@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Restier.Provider.EntityFramework.Tests.Models.Library
+namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
 {
     class Person
     {

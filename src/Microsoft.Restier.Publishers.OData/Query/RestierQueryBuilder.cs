@@ -11,9 +11,9 @@ using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Publisher.OData.Properties;
+using Microsoft.Restier.Publishers.OData.Properties;
 
-namespace Microsoft.Restier.Publisher.OData.Query
+namespace Microsoft.Restier.Publishers.OData.Query
 {
     internal class RestierQueryBuilder
     {

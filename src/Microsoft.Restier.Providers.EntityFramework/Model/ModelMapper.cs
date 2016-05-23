@@ -10,7 +10,7 @@ using System.Data.Entity;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Provider.EntityFramework.Model
+namespace Microsoft.Restier.Providers.EntityFramework.Model
 {
     /// <summary>
     /// Represents a model mapper based on a DbContext.

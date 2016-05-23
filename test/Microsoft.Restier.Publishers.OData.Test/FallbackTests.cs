@@ -17,10 +17,10 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Publisher.OData.Routing;
+using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
-namespace Microsoft.Restier.Publisher.OData.Test
+namespace Microsoft.Restier.Publishers.OData.Test
 {
     public class FallbackTests
     {
@@ -87,7 +87,7 @@ namespace Microsoft.Restier.Publisher.OData.Test
         static FallbackModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.Namespace = "Microsoft.Restier.Publisher.OData.Test";
+            builder.Namespace = "Microsoft.Restier.Publishers.OData.Test";
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Person>("People");
             Model = (EdmModel)builder.GetEdmModel();

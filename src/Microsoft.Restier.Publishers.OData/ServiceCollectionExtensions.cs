@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Publisher.OData.Formatter.Deserialization;
-using Microsoft.Restier.Publisher.OData.Formatter.Serialization;
-using Microsoft.Restier.Publisher.OData.Model;
-using Microsoft.Restier.Publisher.OData.Query;
+using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
+using Microsoft.Restier.Publishers.OData.Formatter.Serialization;
+using Microsoft.Restier.Publishers.OData.Model;
+using Microsoft.Restier.Publishers.OData.Query;
 
-namespace Microsoft.Restier.Publisher.OData
+namespace Microsoft.Restier.Publishers.OData
 {
     public static class ServiceCollectionExtensions
     {

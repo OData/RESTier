@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 
-namespace Microsoft.Restier.Publisher.OData
+namespace Microsoft.Restier.Publishers.OData
 {
     internal static class Extensions
     {

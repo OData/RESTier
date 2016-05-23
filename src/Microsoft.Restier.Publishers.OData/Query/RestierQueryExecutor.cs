@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Publisher.OData.Query
+namespace Microsoft.Restier.Publishers.OData.Query
 {
     internal class RestierQueryExecutor : IQueryExecutor
     {

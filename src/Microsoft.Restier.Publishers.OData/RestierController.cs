@@ -22,14 +22,14 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Publisher.OData.Batch;
-using Microsoft.Restier.Publisher.OData.Filters;
-using Microsoft.Restier.Publisher.OData.Formatter;
-using Microsoft.Restier.Publisher.OData.Properties;
-using Microsoft.Restier.Publisher.OData.Query;
-using Microsoft.Restier.Publisher.OData.Results;
+using Microsoft.Restier.Publishers.OData.Batch;
+using Microsoft.Restier.Publishers.OData.Filters;
+using Microsoft.Restier.Publishers.OData.Formatter;
+using Microsoft.Restier.Publishers.OData.Properties;
+using Microsoft.Restier.Publishers.OData.Query;
+using Microsoft.Restier.Publishers.OData.Results;
 
-namespace Microsoft.Restier.Publisher.OData
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// The all-in-one controller class to handle API requests.

@@ -13,7 +13,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Publisher.OData.Test
+namespace Microsoft.Restier.Publishers.OData.Test
 {
     internal static class StoreModel
     {
@@ -24,14 +24,14 @@ namespace Microsoft.Restier.Publisher.OData.Test
         static StoreModel()
         {
             var builder = new ODataConventionModelBuilder();
-            builder.Namespace = "Microsoft.Restier.Publisher.OData.Test";
+            builder.Namespace = "Microsoft.Restier.Publishers.OData.Test";
             builder.EntitySet<Product>("Products");
             builder.EntitySet<Customer>("Customers");
             builder.EntitySet<Store>("Stores");
             builder.Function("GetBestProduct").ReturnsFromEntitySet<Product>("Products");
             builder.Action("RemoveWorstProduct").ReturnsFromEntitySet<Product>("Products");
             Model = (EdmModel)builder.GetEdmModel();
-            Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.Publisher.OData.Test.Product");
+            Product = (IEdmEntityType)Model.FindType("Microsoft.Restier.Publishers.OData.Test.Product");
         }
     }
 

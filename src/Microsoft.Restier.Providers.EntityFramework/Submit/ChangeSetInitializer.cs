@@ -15,9 +15,9 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Provider.EntityFramework.Properties;
+using Microsoft.Restier.Providers.EntityFramework.Properties;
 
-namespace Microsoft.Restier.Provider.EntityFramework.Submit
+namespace Microsoft.Restier.Providers.EntityFramework.Submit
 {
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.

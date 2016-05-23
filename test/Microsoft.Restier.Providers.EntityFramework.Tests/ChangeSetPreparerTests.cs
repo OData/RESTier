@@ -7,10 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Provider.EntityFramework.Tests.Models.Library;
+using Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library;
 using Xunit;
 
-namespace Microsoft.Restier.Provider.EntityFramework.Tests
+namespace Microsoft.Restier.Providers.EntityFramework.Tests
 {
     public class ChangeSetPreparerTests
     {

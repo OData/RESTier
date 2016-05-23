@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publisher.OData.Results
+namespace Microsoft.Restier.Publishers.OData.Results
 {
     /// <summary>
     /// Represents a raw value being returned from an action.

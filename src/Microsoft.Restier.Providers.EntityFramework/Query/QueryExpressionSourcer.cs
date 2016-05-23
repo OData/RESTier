@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
 #endif
 
-namespace Microsoft.Restier.Provider.EntityFramework.Query
+namespace Microsoft.Restier.Providers.EntityFramework.Query
 {
     /// <summary>
     /// Represents a query expression sourcer that uses a DbContext.

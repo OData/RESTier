@@ -7,10 +7,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Restier.Publisher.OData.Routing;
+using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
-namespace Microsoft.Restier.Publisher.OData.Test
+namespace Microsoft.Restier.Publishers.OData.Test
 {
     public class RestierControllerTests
     {
@@ -29,16 +29,16 @@ namespace Microsoft.Restier.Publisher.OData.Test
             const string expected = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <edmx:Edmx Version=""4.0"" xmlns:edmx=""http://docs.oasis-open.org/odata/ns/edmx"">
   <edmx:DataServices>
-    <Schema Namespace=""Microsoft.Restier.Publisher.OData.Test"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
+    <Schema Namespace=""Microsoft.Restier.Publishers.OData.Test"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
       <EntityType Name=""Product"">
         <Key>
           <PropertyRef Name=""Id"" />
         </Key>
         <Property Name=""Id"" Type=""Edm.Int32"" Nullable=""false"" />
         <Property Name=""Name"" Type=""Edm.String"" />
-        <Property Name=""Addr"" Type=""Microsoft.Restier.Publisher.OData.Test.Address"" Nullable=""false"" />
-        <Property Name=""Addr2"" Type=""Microsoft.Restier.Publisher.OData.Test.Address"" />
-        <Property Name=""Addr3"" Type=""Microsoft.Restier.Publisher.OData.Test.Address"" />
+        <Property Name=""Addr"" Type=""Microsoft.Restier.Publishers.OData.Test.Address"" Nullable=""false"" />
+        <Property Name=""Addr2"" Type=""Microsoft.Restier.Publishers.OData.Test.Address"" />
+        <Property Name=""Addr3"" Type=""Microsoft.Restier.Publishers.OData.Test.Address"" />
       </EntityType>
       <EntityType Name=""Customer"">
         <Key>
@@ -56,17 +56,17 @@ namespace Microsoft.Restier.Publisher.OData.Test
         <Property Name=""Zip"" Type=""Edm.Int32"" Nullable=""false"" />
       </ComplexType>
       <Function Name=""GetBestProduct"">
-        <ReturnType Type=""Microsoft.Restier.Publisher.OData.Test.Product"" />
+        <ReturnType Type=""Microsoft.Restier.Publishers.OData.Test.Product"" />
       </Function>
       <Action Name=""RemoveWorstProduct"">
-        <ReturnType Type=""Microsoft.Restier.Publisher.OData.Test.Product"" />
+        <ReturnType Type=""Microsoft.Restier.Publishers.OData.Test.Product"" />
       </Action>
       <EntityContainer Name=""Container"">
-        <EntitySet Name=""Products"" EntityType=""Microsoft.Restier.Publisher.OData.Test.Product"" />
-        <EntitySet Name=""Customers"" EntityType=""Microsoft.Restier.Publisher.OData.Test.Customer"" />
-        <EntitySet Name=""Stores"" EntityType=""Microsoft.Restier.Publisher.OData.Test.Store"" />
-        <FunctionImport Name=""GetBestProduct"" Function=""Microsoft.Restier.Publisher.OData.Test.GetBestProduct"" EntitySet=""Products"" IncludeInServiceDocument=""true"" />
-        <ActionImport Name=""RemoveWorstProduct"" Action=""Microsoft.Restier.Publisher.OData.Test.RemoveWorstProduct"" EntitySet=""Products"" />
+        <EntitySet Name=""Products"" EntityType=""Microsoft.Restier.Publishers.OData.Test.Product"" />
+        <EntitySet Name=""Customers"" EntityType=""Microsoft.Restier.Publishers.OData.Test.Customer"" />
+        <EntitySet Name=""Stores"" EntityType=""Microsoft.Restier.Publishers.OData.Test.Store"" />
+        <FunctionImport Name=""GetBestProduct"" Function=""Microsoft.Restier.Publishers.OData.Test.GetBestProduct"" EntitySet=""Products"" IncludeInServiceDocument=""true"" />
+        <ActionImport Name=""RemoveWorstProduct"" Action=""Microsoft.Restier.Publishers.OData.Test.RemoveWorstProduct"" EntitySet=""Products"" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>

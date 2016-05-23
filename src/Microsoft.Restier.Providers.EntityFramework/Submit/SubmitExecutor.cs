@@ -12,7 +12,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.EntityFrameworkCore;
 #endif
 
-namespace Microsoft.Restier.Provider.EntityFramework.Submit
+namespace Microsoft.Restier.Providers.EntityFramework.Submit
 {
     /// <summary>
     /// To execute submission of changes to database.

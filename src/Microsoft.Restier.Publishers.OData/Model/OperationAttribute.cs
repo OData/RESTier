@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Restier.Publisher.OData.Model
+namespace Microsoft.Restier.Publishers.OData.Model
 {
     /// <summary>
     /// Attribute that indicates a method is an OData Operation (Function or Action).

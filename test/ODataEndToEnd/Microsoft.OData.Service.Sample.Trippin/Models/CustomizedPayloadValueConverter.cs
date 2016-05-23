@@ -2,7 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Publisher.OData;
+using Microsoft.Restier.Publishers.OData;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Models
 {
