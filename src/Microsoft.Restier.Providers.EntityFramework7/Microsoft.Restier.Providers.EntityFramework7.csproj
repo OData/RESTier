@@ -5,7 +5,7 @@
     <ProjectGuid>{D54A765E-4604-4C73-868B-0E0459B3A6B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.EntityFramework</RootNamespace>
+    <RootNamespace>Microsoft.Restier.Providers.EntityFramework</RootNamespace>
     <AssemblyName>Microsoft.Restier.Providers.EntityFramework7</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>

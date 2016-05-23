@@ -7,8 +7,8 @@
     <ProjectGuid>{16AC1EEC-D79C-49C1-9B85-728CF0079BED}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.Provider.EntityFramework7.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Restier.Provider.EntityFramework7.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Providers.EntityFramework7.Tests</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Providers.EntityFramework7.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

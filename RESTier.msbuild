@@ -27,8 +27,8 @@
   <ItemGroup>
     <TestAssembiles Include="test\Microsoft.Restier.TestCommon\bin\$(Configuration)\Microsoft.Restier.TestCommon.dll" />
     <TestAssembiles Include="test\Microsoft.Restier.Core.Tests\bin\$(Configuration)\Microsoft.Restier.Core.Tests.dll" />
-    <TestAssembiles Include="test\Microsoft.Restier.Publisher.OData.Test\bin\$(Configuration)\Microsoft.Restier.Publisher.OData.Test.dll" />
-    <TestAssembiles Include="test\Microsoft.Restier.Provider.EntityFramework.Tests\bin\$(Configuration)\Microsoft.Restier.Provider.EntityFramework.Tests.dll" />
+    <TestAssembiles Include="test\Microsoft.Restier.Publishers.OData.Test\bin\$(Configuration)\Microsoft.Restier.Publishers.OData.Test.dll" />
+    <TestAssembiles Include="test\Microsoft.Restier.Providers.EntityFramework.Tests\bin\$(Configuration)\Microsoft.Restier.Providers.EntityFramework.Tests.dll" />
     <TestAssembiles Include="test\ODataEndToEnd\Microsoft.OData.Service.Sample.Northwind.Tests\bin\$(Configuration)\Microsoft.OData.Service.Sample.Northwind.Tests.dll" />
     <TestAssembiles Include="test\ODataEndToEnd\Microsoft.OData.Service.Sample.Tests\bin\$(Configuration)\Microsoft.OData.Service.Sample.Tests.dll" />
   </ItemGroup>

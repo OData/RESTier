@@ -6,8 +6,8 @@
     <ProjectGuid>{04B29D57-8004-45FF-8C41-C49E0F20707C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.Provider.EntityFramework.Tests</RootNamespace>
-    <AssemblyName>Microsoft.Restier.Provider.EntityFramework.Tests</AssemblyName>
+    <RootNamespace>Microsoft.Restier.Providers.EntityFramework.Tests</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Providers.EntityFramework.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
