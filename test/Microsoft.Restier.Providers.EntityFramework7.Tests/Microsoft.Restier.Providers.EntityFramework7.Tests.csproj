@@ -172,13 +172,13 @@
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Provider.EntityFramework7\Microsoft.Restier.Provider.EntityFramework7.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Providers.EntityFramework7\Microsoft.Restier.Providers.EntityFramework7.csproj">
       <Project>{d54a765e-4604-4c73-868b-0e0459b3a6b6}</Project>
-      <Name>Microsoft.Restier.Provider.EntityFramework7</Name>
+      <Name>Microsoft.Restier.Providers.EntityFramework7</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Restier.Publisher.OData\Microsoft.Restier.Publisher.OData.csproj">
+    <ProjectReference Include="..\..\src\Microsoft.Restier.Publishers.OData\Microsoft.Restier.Publishers.OData.csproj">
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
-      <Name>Microsoft.Restier.Publisher.OData</Name>
+      <Name>Microsoft.Restier.Publishers.OData</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
