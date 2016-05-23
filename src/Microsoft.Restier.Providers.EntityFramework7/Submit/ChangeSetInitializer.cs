@@ -15,7 +15,7 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework.Properties;
+using Microsoft.Restier.Providers.EntityFramework.Properties;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Submit
 {
