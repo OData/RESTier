@@ -8,12 +8,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RESTier Entity Framework Module")]
-[assembly: AssemblyDescription("A module that connects the RESTier to an Entity Framework based data source proxy.")]
+[assembly: AssemblyTitle("RESTier Entity Framework Provider")]
+[assembly: AssemblyDescription("A provider that connects the RESTier to an Entity Framework based data source proxy.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("Microsoft.Restier.Providers.EntityFramework")]
-[assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2014")]
+[assembly: AssemblyCopyright("Copyright © Microsoft Corporation 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
