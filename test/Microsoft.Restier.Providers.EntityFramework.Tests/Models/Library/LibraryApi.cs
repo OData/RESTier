@@ -24,14 +24,12 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
 
         private class ModelBuilder : IModelBuilder
         {
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var builder = new ODataConventionModelBuilder();
                 builder.EntitySet<Person>("Readers");
                 var model = builder.GetEdmModel();
-                return model;
+                return Task.FromResult<IEdmModel>(model);
             }
         }
     }
