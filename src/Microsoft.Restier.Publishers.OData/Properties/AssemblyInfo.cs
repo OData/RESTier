@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Microsoft RESTier publishers for OData protocol")]
+[assembly: AssemblyTitle("RESTier publishers for OData protocol")]
 [assembly: AssemblyDescription("This package contains everything you need to create OData v4.0 services " +
     "using ASP.NET Web API OData wired to an API provided by the RESTier.")]
 [assembly: AssemblyConfiguration("")]
