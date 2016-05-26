@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Service.Sample.Tests.ServiceReference;
+using Microsoft.OData.Service.Sample.Trippin.Models;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
@@ -33,7 +33,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -87,7 +87,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Query a property
             var birthDate = this.TestClientContext.People
@@ -264,7 +264,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Query a property
             var birthTime = this.TestClientContext.People
@@ -303,7 +303,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Filter this entity
             var persons = this.TestClientContext.People
@@ -358,7 +358,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             Assert.Equal(3, people2.Count);
 
             // skip
-            people2 = this.TestClientContext.People.Skip(personId - 1).ToList();
+            people2 = this.TestClientContext.People.Skip((int)(personId - 1)).ToList();
             Assert.Equal(birthTime, people2.First().BirthTime);
             Assert.Equal(birthTime, people2.First().BirthTime2);
 
@@ -386,7 +386,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -440,7 +440,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Query a property
             var birthDateTime = this.TestClientContext.People
@@ -479,7 +479,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Filter this entity
             var persons = this.TestClientContext.People

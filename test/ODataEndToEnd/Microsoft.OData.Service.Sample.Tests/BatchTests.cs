@@ -4,7 +4,7 @@
 using System;
 using System.Linq;
 using Microsoft.OData.Client;
-using Microsoft.OData.Service.Sample.Tests.ServiceReference;
+using Microsoft.OData.Service.Sample.Trippin.Models;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests

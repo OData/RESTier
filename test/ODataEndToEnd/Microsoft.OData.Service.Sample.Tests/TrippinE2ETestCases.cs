@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
-using Microsoft.OData.Service.Sample.Tests.ServiceReference;
+using Microsoft.OData.Service.Sample.Trippin.Models;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
@@ -235,7 +235,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             // Query a property
             var lastName = this.TestClientContext.People
@@ -665,7 +665,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            int personId = person.PersonId;
+            long? personId = person.PersonId;
 
             var startDate = DateTime.Now;
             Trip trip1 = new Trip()

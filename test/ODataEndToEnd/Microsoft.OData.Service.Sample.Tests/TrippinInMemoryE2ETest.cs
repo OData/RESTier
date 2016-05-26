@@ -2,12 +2,12 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.OData.Service.Sample.Tests.ServiceReference;
+using Microsoft.OData.Service.Sample.Trippin.Models;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
 {
-    public class TrippinInMemoryE2ETest : E2ETestBase<TrippinModel>, IClassFixture<TrippinServiceFixture>
+    public class TrippinInMemoryE2ETest : E2ETestBase<TrippinDataServiceContext>, IClassFixture<TrippinServiceFixture>
     {
         private const string baseUri = "http://localhost:21248/api/Trippin/";
 
