@@ -337,6 +337,14 @@ namespace Microsoft.OData.Service.Sample.Tests
                 .AddQueryOption("$filter", "PersonId eq 3 and OrderId eq 1").ToList();
             Assert.Equal(0, orders.Count);
         }
+
+
+        [Fact]
+        public void DerivedTypeQuery()
+        {
+            // TODO
+        }
+
         [Fact]
         public void QueryOptions()
         {

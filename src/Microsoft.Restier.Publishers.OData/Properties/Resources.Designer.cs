@@ -106,6 +106,15 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Element type cannot be found for &apos;{0}&apos;..
+        /// </summary>
+        internal static string ElementTypeNotFound {
+            get {
+                return ResourceManager.GetString("ElementTypeNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to EntitySet is missing during serialization..
         /// </summary>
         internal static string EntitySetMissingForSerialization {

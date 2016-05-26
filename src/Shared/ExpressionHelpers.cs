@@ -38,6 +38,12 @@ namespace System.Linq.Expressions
             return whereMethod.Invoke(null, new object[] { query, where }) as IQueryable;
         }
 
+        public static IQueryable OfType(IQueryable query, Type type)
+        {
+            MethodInfo ofTypeMethod = ExpressionHelperMethods.QueryableOfTypeGeneric.MakeGenericMethod(type);
+            return ofTypeMethod.Invoke(null, new object[] { query }) as IQueryable;
+        }
+
         public static Expression Count(Expression queryExpression, Type elementType)
         {
             MethodInfo countMethod =

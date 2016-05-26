@@ -17,6 +17,9 @@ namespace System.Linq.Expressions
         private static MethodInfo whereMethod =
             GenericMethodOf(_ => Queryable.Where(default(IQueryable<int>), default(Expression<Func<int, bool>>)));
 
+        private static MethodInfo ofTypeMethod =
+            GenericMethodOf(_ => Queryable.OfType<int>(default(IQueryable)));
+
         private static MethodInfo countMethod =
             GenericMethodOf(_ => Queryable.LongCount(default(IQueryable<int>)));
 
@@ -33,6 +36,11 @@ namespace System.Linq.Expressions
         public static MethodInfo QueryableWhereGeneric
         {
             get { return whereMethod; }
+        }
+
+        public static MethodInfo QueryableOfTypeGeneric
+        {
+            get { return ofTypeMethod; }
         }
 
         public static MethodInfo QueryableCountGeneric

@@ -10,21 +10,44 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents a reference to query data in terms of a model.
     /// </summary>
-    public abstract class QueryModelReference
+    public class QueryModelReference
     {
+
+        private IEdmEntitySet edmEntitySet;
+
+        private IEdmType edmType;
+
         internal QueryModelReference()
         {
+        }
+
+        internal QueryModelReference(IEdmEntitySet entitySet, IEdmType type)
+        {
+            this.edmEntitySet = entitySet;
+            this.edmType = type;
         }
 
         /// <summary>
         /// Gets the entity set that ultimately contains the data.
         /// </summary>
-        public abstract IEdmEntitySet EntitySet { get; }
+        public virtual IEdmEntitySet EntitySet
+        {
+            get
+            {
+                return this.edmEntitySet;
+            }
+        }
 
         /// <summary>
         /// Gets the type of the data, if any.
         /// </summary>
-        public abstract IEdmType Type { get; }
+        public virtual IEdmType Type
+        {
+            get
+            {
+                return this.edmType;
+            }
+        }
     }
 
     /// <summary>
@@ -154,18 +177,26 @@ namespace Microsoft.Restier.Core.Query
     }
 
     /// <summary>
-    /// Represents a reference to derived data in terms of a model.
+    /// Represents a reference to property data in terms of a model.
     /// </summary>
-    public class DerivedDataReference : QueryModelReference
+    public class PropertyDataReference : QueryModelReference
     {
+        private readonly string propertyName;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="DerivedDataReference" /> class.
+        /// Initializes a new instance of the <see cref="PropertyDataReference" /> class.
         /// </summary>
         /// <param name="source">
         /// A source query model reference.
         /// </param>
-        public DerivedDataReference(QueryModelReference source)
+        /// <param name="propertyName">
+        /// The name of a property.
+        /// </param>
+        public PropertyDataReference(QueryModelReference source, string propertyName)
         {
+            Ensure.NotNull(propertyName, "propertyName");
+            this.propertyName = propertyName;
+
             Ensure.NotNull(source, "source");
             this.Source = source;
         }
@@ -184,75 +215,6 @@ namespace Microsoft.Restier.Core.Query
             {
                 return this.Source.EntitySet;
             }
-        }
-
-        /// <summary>
-        /// Gets the type of the data.
-        /// </summary>
-        public override IEdmType Type
-        {
-            get
-            {
-                return this.Source.Type;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a reference to element data in terms of a model.
-    /// </summary>
-    public class CollectionElementReference : DerivedDataReference
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionElementReference" /> class.
-        /// </summary>
-        /// <param name="source">
-        /// A source query model reference.
-        /// </param>
-        public CollectionElementReference(QueryModelReference source)
-            : base(source)
-        {
-        }
-
-        /// <summary>
-        /// Gets the type of the data.
-        /// </summary>
-        public override IEdmType Type
-        {
-            get
-            {
-                var collectionType = this.Source.Type as IEdmCollectionType;
-                if (collectionType != null)
-                {
-                    return collectionType.ElementType.Definition;
-                }
-
-                return null;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a reference to property data in terms of a model.
-    /// </summary>
-    public class PropertyDataReference : DerivedDataReference
-    {
-        private readonly string propertyName;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyDataReference" /> class.
-        /// </summary>
-        /// <param name="source">
-        /// A source query model reference.
-        /// </param>
-        /// <param name="propertyName">
-        /// The name of a property.
-        /// </param>
-        public PropertyDataReference(QueryModelReference source, string propertyName)
-            : base(source)
-        {
-            Ensure.NotNull(propertyName, "propertyName");
-            this.propertyName = propertyName;
         }
 
         /// <summary>

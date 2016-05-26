@@ -132,6 +132,9 @@
   <data name="EdmTypeNotSupported" xml:space="preserve">
     <value>{0} is not a supported EDM type.</value>
   </data>
+  <data name="ElementTypeNotFound" xml:space="preserve">
+    <value>Element type cannot be found for '{0}'.</value>
+  </data>
   <data name="EntitySetMissingForSerialization" xml:space="preserve">
     <value>EntitySet is missing during serialization.</value>
   </data>

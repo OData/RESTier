@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web.OData;
 using System.Web.OData.Routing;
 using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Query
@@ -45,6 +47,10 @@ namespace Microsoft.Restier.Publishers.OData.Query
             this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;
             this.handlers[ODataSegmentKinds.Navigation] = this.HandleNavigationPathSegment;
             this.handlers[ODataSegmentKinds.Property] = this.HandlePropertyAccessPathSegment;
+            this.handlers[ODataSegmentKinds.Cast] = this.HandleCastPathSegment;
+
+            // Complex cast is not supported by EF, and is not supported here
+            // this.handlers[ODataSegmentKinds.ComplexCast] = null;
         }
 
         public bool IsCountPathSegmentPresent { get; private set; }
@@ -304,6 +310,55 @@ namespace Microsoft.Restier.Publishers.OData.Query
                 this.queryable = ExpressionHelpers.Select(this.queryable, selectBody);
             }
         }
+
+        // This only covers entity type cast
+        // complex type cast uses ComplexCastPathSegment and is not supported by EF now
+        private void HandleCastPathSegment(ODataPathSegment segment)
+        {
+            var castSegment = (CastPathSegment)segment;
+            Type elementType = GetClrType(castSegment.CastType);
+            this.queryable = ExpressionHelpers.OfType(this.queryable, elementType);
+        }
+
+        private Type GetClrType(IEdmEntityType edmType)
+        {
+            IEdmModel edmModel = api.GetModelAsync().Result;
+
+            ClrTypeAnnotation annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
+            if (annotation != null)
+            {
+                return annotation.ClrType;
+            }
+
+            // In case user does not use Web Api OData conversion builder, fail back to IModelMapper
+            var name = edmType.Name;
+            var namespaceName = edmType.Namespace;
+            Type elementType = null;
+
+            var mapper = api.Context.GetApiService<IModelMapper>();
+            if (mapper != null)
+            {
+                if (namespaceName == null)
+                {
+                    mapper.TryGetRelevantType(api.Context, name, out elementType);
+                }
+                else
+                {
+                    mapper.TryGetRelevantType(api.Context, namespaceName, name, out elementType);
+                }
+            }
+
+            if (elementType == null)
+            {
+                throw new NotSupportedException(string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.ElementTypeNotFound,
+                    name));
+            }
+
+            return elementType;
+        }
+
         #endregion
     }
 }

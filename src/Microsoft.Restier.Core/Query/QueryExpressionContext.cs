@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -107,27 +108,26 @@ namespace Microsoft.Restier.Core.Query
             this.UpdateModelReference();
         }
 
-        private static QueryModelReference ComputeDerivedDataReference(
+        /// <summary>
+        /// This method is called by method call like Where/OfType/SelectMany and so on 
+        /// to create a model reference for whole function call.
+        /// </summary>
+        private static QueryModelReference ComputeQueryModelReference(
             MethodCallExpression methodCall, QueryModelReference source)
         {
             var method = methodCall.Method;
 
             // source is a sequence of T and output is also a sequence of T
-            var sourceType = method.GetParameters()[0]
-                .ParameterType.FindGenericType(typeof(IEnumerable<>));
-            var resultType = method.ReturnType
-                .FindGenericType(typeof(IEnumerable<>));
+            var sourceType = method.GetParameters()[0].ParameterType.FindGenericType(typeof(IEnumerable<>));
+            var resultType = method.ReturnType.FindGenericType(typeof(IEnumerable<>));
             if (sourceType == resultType)
             {
-                return new DerivedDataReference(source);
+                return new QueryModelReference(source.EntitySet,source.Type);
             }
 
-            // source is a sequence of T and output is a single T
-            var sourceElementType = sourceType.GetGenericArguments()[0];
-            if (method.ReturnType == sourceElementType)
-            {
-                return new CollectionElementReference(source);
-            }
+            // source is a sequence of T1 and output is a sequence of T2
+            // Like query People(key)/Trips or People/NS.DerivedPeople
+            // TODO Null is return in these cases now, need return correct value
 
             // TODO GitHubIssue#29 : Handle projection operators in query expression
             return null;
@@ -174,6 +174,9 @@ namespace Microsoft.Restier.Core.Query
             QueryModelReference modelReference = null;
 
             var methodCall = this.VisitedNode as MethodCallExpression;
+            var parameter = this.VisitedNode as ParameterExpression;
+            var member = this.VisitedNode as MemberExpression;
+
             if (methodCall != null)
             {
                 var method = methodCall.Method;
@@ -184,18 +187,14 @@ namespace Microsoft.Restier.Core.Query
                 }
                 else if (method.GetCustomAttributes<ExtensionAttribute>().Any())
                 {
-                    var thisModelReference = this.GetModelReferenceForNode(
-                        methodCall.Arguments[0]);
+                    var thisModelReference = this.GetModelReferenceForNode(methodCall.Arguments[0]);
                     if (thisModelReference != null)
                     {
-                        modelReference = ComputeDerivedDataReference(
-                            methodCall, thisModelReference);
+                        modelReference = ComputeQueryModelReference(methodCall, thisModelReference);
                     }
                 }
             }
-
-            var parameter = this.VisitedNode as ParameterExpression;
-            if (parameter != null)
+            else if (parameter != null)
             {
                 foreach (var node in this.GetExpressionTrail())
                 {
@@ -215,17 +214,19 @@ namespace Microsoft.Restier.Core.Query
                                 var typeOfT = sourceType.GetGenericArguments()[0];
                                 if (parameter.Type == typeOfT)
                                 {
-                                    modelReference = new CollectionElementReference(modelReference);
-                                    break;
+                                    var collectionType = modelReference.Type as IEdmCollectionType;
+                                    if (collectionType != null)
+                                    {
+                                        modelReference = new QueryModelReference(modelReference.EntitySet, collectionType.ElementType.Definition);
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-
-            var member = this.VisitedNode as MemberExpression;
-            if (member != null)
+            else if (member != null)
             {
                 modelReference = this.GetModelReferenceForNode(member.Expression);
                 if (modelReference != null)
