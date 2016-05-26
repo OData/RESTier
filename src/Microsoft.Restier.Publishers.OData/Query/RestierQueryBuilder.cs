@@ -317,6 +317,8 @@ namespace Microsoft.Restier.Publishers.OData.Query
         {
             var castSegment = (CastPathSegment)segment;
             Type elementType = GetClrType(castSegment.CastType);
+            this.currentEntityType = castSegment.CastType;
+            this.currentType = elementType;
             this.queryable = ExpressionHelpers.OfType(this.queryable, elementType);
         }
 

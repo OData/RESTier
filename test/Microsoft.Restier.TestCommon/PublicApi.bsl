@@ -323,17 +323,6 @@ public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
 	System.Linq.Expressions.Expression ReplaceQueryableSource (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
 }
 
-public abstract class Microsoft.Restier.Core.Query.QueryModelReference {
-	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public abstract get; }
-	Microsoft.OData.Edm.IEdmType Type  { public abstract get; }
-}
-
-public class Microsoft.Restier.Core.Query.CollectionElementReference : Microsoft.Restier.Core.Query.DerivedDataReference {
-	public CollectionElementReference (Microsoft.Restier.Core.Query.QueryModelReference source)
-
-	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
-}
-
 public class Microsoft.Restier.Core.Query.DataSourceStubReference : Microsoft.Restier.Core.Query.QueryModelReference {
 	public DataSourceStubReference (Microsoft.Restier.Core.Query.QueryContext context, string name)
 	public DataSourceStubReference (Microsoft.Restier.Core.Query.QueryContext context, string namespaceName, string name)
@@ -343,18 +332,12 @@ public class Microsoft.Restier.Core.Query.DataSourceStubReference : Microsoft.Re
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
 }
 
-public class Microsoft.Restier.Core.Query.DerivedDataReference : Microsoft.Restier.Core.Query.QueryModelReference {
-	public DerivedDataReference (Microsoft.Restier.Core.Query.QueryModelReference source)
-
-	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
-	Microsoft.Restier.Core.Query.QueryModelReference Source  { [CompilerGeneratedAttribute(),]public get; }
-	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
-}
-
-public class Microsoft.Restier.Core.Query.PropertyDataReference : Microsoft.Restier.Core.Query.DerivedDataReference {
+public class Microsoft.Restier.Core.Query.PropertyDataReference : Microsoft.Restier.Core.Query.QueryModelReference {
 	public PropertyDataReference (Microsoft.Restier.Core.Query.QueryModelReference source, string propertyName)
 
+	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
 	Microsoft.OData.Edm.IEdmProperty Property  { public get; }
+	Microsoft.Restier.Core.Query.QueryModelReference Source  { [CompilerGeneratedAttribute(),]public get; }
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
 }
 
@@ -377,6 +360,11 @@ public class Microsoft.Restier.Core.Query.QueryExpressionContext {
 	public void PopVisitedNode ()
 	public void PushVisitedNode (System.Linq.Expressions.Expression visitedNode)
 	public void ReplaceVisitedNode (System.Linq.Expressions.Expression visitedNode)
+}
+
+public class Microsoft.Restier.Core.Query.QueryModelReference {
+	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
+	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
 }
 
 public class Microsoft.Restier.Core.Query.QueryRequest {

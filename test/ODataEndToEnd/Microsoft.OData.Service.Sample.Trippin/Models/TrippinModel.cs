@@ -291,9 +291,10 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             #region People
 
             #region Friends russellwhyte & scottketchum & ronaldmundy
-            var person1 = new Person
+
+            var person0 = new Person
             {
-                PersonId = 1,
+                PersonId = 0,
                 FirstName = "Russell",
                 LastName = "Whyte",
                 UserName = "russellwhyte",
@@ -303,9 +304,9 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 FavoriteFeature = Feature.Feature1,
             };
 
-            var person2 = new Person
+            var person1 = new Person
             {
-                PersonId = 2,
+                PersonId = 1,
                 FirstName = "Scott",
                 LastName = "Ketchum",
                 UserName = "scottketchum",
@@ -313,12 +314,12 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 BirthTime = new TimeSpan(1, 2, 3),
                 BirthDateTime = new DateTime(1983, 11, 12, 1, 2, 3),
                 FavoriteFeature = Feature.Feature2,
-                Friends = new Collection<Person> { person1 }
+                Friends = new Collection<Person> { person0 }
             };
 
-            var person3 = new Person
+            var person2 = new Person
             {
-                PersonId = 3,
+                PersonId = 2,
                 FirstName = "Ronald",
                 LastName = "Mundy",
                 UserName = "ronaldmundy",
@@ -326,12 +327,12 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 BirthTime = new TimeSpan(0, 1, 2),
                 BirthDateTime = new DateTime(1984, 12, 11, 0, 1, 2),
                 FavoriteFeature = Feature.Feature3,
-                Friends = new Collection<Person> { person1, person2 }
+                Friends = new Collection<Person> { person0, person1 }
             };
 
-            var person4 = new Person
+            var person3 = new Person
             {
-                PersonId = 4,
+                PersonId = 3,
                 FirstName = "Javier",
                 UserName = "javieralfred",
                 BirthDate = new DateTime(1985, 1, 10),
@@ -344,121 +345,132 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 FavoriteFeature2 = Feature.Feature4,
             };
 
-            person1.Friends = new Collection<Person> { person2 };
+
+            var person4 = new Person
+            {
+                PersonId = 4,
+                FirstName = "Willie",
+                LastName = "Ashmore",
+                UserName = "willieashmore",
+                BirthDate = new DateTime(1986, 2, 9),
+                BirthTime = new TimeSpan(22, 58, 2),
+                BirthDateTime = new DateTime(1986, 2, 9, 22, 58, 2),
+                FavoriteFeature = Feature.Feature1,
+                BestFriend = person3,
+                Friends = new Collection<Person>()
+            };
+            var person5 = new Person
+            {
+                PersonId = 5,
+                FirstName = "Vincent",
+                LastName = "Calabrese",
+                UserName = "vincentcalabrese",
+                BirthDate = new DateTime(1987, 3, 8),
+                BirthTime = new TimeSpan(21, 57, 3),
+                BirthDateTime = new DateTime(1987, 3, 8, 21, 57, 3),
+                FavoriteFeature = Feature.Feature2,
+                BestFriend = person4,
+                Friends = new Collection<Person>()
+            };
+            var person6 = new Person
+            {
+                PersonId = 6,
+                FirstName = "Clyde",
+                LastName = "Guess",
+                UserName = "clydeguess",
+                BirthDate = new DateTime(1988, 4, 7),
+                BirthTime = new TimeSpan(20, 56, 4),
+                BirthDateTime = new DateTime(1988, 4, 7, 20, 56, 4),
+                FavoriteFeature = Feature.Feature3,
+            };
+            var person7 = new Person
+            {
+                PersonId = 7,
+                FirstName = "Keith",
+                LastName = "Pinckney",
+                UserName = "keithpinckney",
+                BirthDate = new DateTime(1989, 5, 6),
+                BirthTime = new TimeSpan(19, 55, 5),
+                BirthDateTime = new DateTime(1989, 5, 6, 19, 55, 5),
+                FavoriteFeature = Feature.Feature4,
+            };
+            var person8 = new Person
+            {
+                PersonId = 8,
+                FirstName = "Marshall",
+                LastName = "Garay",
+                UserName = "marshallgaray",
+                BirthDate = new DateTime(1990, 6, 5),
+                BirthTime = new TimeSpan(18, 54, 6),
+                BirthDateTime = new DateTime(1990, 6, 5, 18, 54, 6),
+                FavoriteFeature = Feature.Feature1,
+            };
+            var person9 = new Person
+            {
+                PersonId = 9,
+                FirstName = "Ryan",
+                LastName = "Theriault",
+                UserName = "ryantheriault",
+                BirthDate = new DateTime(1991, 7, 4),
+                BirthTime = new TimeSpan(17, 53, 7),
+                BirthDateTime = new DateTime(1991, 7, 4, 17, 53, 7),
+                FavoriteFeature = Feature.Feature2,
+            };
+            var person10 = new Person
+            {
+                PersonId = 10,
+                FirstName = "Elaine",
+                LastName = "Stewart",
+                UserName = "elainestewart",
+                BirthDate = new DateTime(1992, 8, 3),
+                BirthTime = new TimeSpan(16, 52, 8),
+                BirthDateTime = new DateTime(1992, 8, 3, 16, 52, 8),
+                FavoriteFeature = Feature.Feature3,
+            };
+            var person11 = new Employee
+            {
+                PersonId = 11,
+                FirstName = "Sallie",
+                LastName = "Sampson",
+                UserName = "salliesampson",
+                Cost = 1000000,
+                BirthDate = new DateTime(1993, 9, 2),
+                BirthTime = new TimeSpan(15, 51, 9),
+                BirthDateTime = new DateTime(1993, 9, 2, 15, 51, 9),
+                FavoriteFeature = Feature.Feature4,
+            };
+            var person12 = new Manager
+            {
+                PersonId = 12,
+                FirstName = "Joni",
+                LastName = "Rosales",
+                UserName = "jonirosales",
+                Budget = 60000000,
+                BirthDate = new DateTime(1994, 10, 1),
+                BirthTime = new TimeSpan(14, 50, 10),
+                BirthDateTime = new DateTime(1994, 10, 1, 14, 50, 10),
+                FavoriteFeature = Feature.Feature1,
+            };
+
+            person0.Friends = new Collection<Person> { person1 };
+            person10.Friends = new Collection<Person> { person11 };
             #endregion
 
             instance.People.AddRange(new List<Person>
             {
+                person0,
                 person1,
                 person2,
                 person3,
                 person4,
-
-                new Person
-                {
-                    PersonId = 5,
-                    FirstName = "Willie",
-                    LastName = "Ashmore",
-                    UserName = "willieashmore",
-                    BirthDate = new DateTime(1986, 2, 9),
-                    BirthTime = new TimeSpan(22, 58, 2),
-                    BirthDateTime = new DateTime(1986, 2, 9, 22, 58, 2),
-                    FavoriteFeature = Feature.Feature1,
-                    BestFriend = person4,
-                    Friends = new Collection<Person>()
-                },
-                new Person
-                {
-                    PersonId = 6,
-                    FirstName = "Vincent",
-                    LastName = "Calabrese",
-                    UserName = "vincentcalabrese",
-                    BirthDate = new DateTime(1987, 3, 8),
-                    BirthTime = new TimeSpan(21, 57, 3),
-                    BirthDateTime = new DateTime(1987, 3, 8, 21, 57, 3),
-                    FavoriteFeature = Feature.Feature2,
-                    BestFriend = person4,
-                    Friends = new Collection<Person>()
-                },
-                new Person
-                {
-                    PersonId = 7,
-                    FirstName = "Clyde",
-                    LastName = "Guess",
-                    UserName = "clydeguess",
-                    BirthDate = new DateTime(1988, 4, 7),
-                    BirthTime = new TimeSpan(20, 56, 4),
-                    BirthDateTime = new DateTime(1988, 4, 7, 20, 56, 4),
-                    FavoriteFeature = Feature.Feature3,
-                },
-                new Person
-                {
-                    PersonId = 8,
-                    FirstName = "Keith",
-                    LastName = "Pinckney",
-                    UserName = "keithpinckney",
-                    BirthDate = new DateTime(1989, 5, 6),
-                    BirthTime = new TimeSpan(19, 55, 5),
-                    BirthDateTime = new DateTime(1989, 5, 6, 19, 55, 5),
-                    FavoriteFeature = Feature.Feature4,
-                },
-                new Person
-                {
-                    PersonId = 9,
-                    FirstName = "Marshall",
-                    LastName = "Garay",
-                    UserName = "marshallgaray",
-                    BirthDate = new DateTime(1990, 6, 5),
-                    BirthTime = new TimeSpan(18, 54, 6),
-                    BirthDateTime = new DateTime(1990, 6, 5, 18, 54, 6),
-                    FavoriteFeature = Feature.Feature1,
-                },
-                new Person
-                {
-                    PersonId = 10,
-                    FirstName = "Ryan",
-                    LastName = "Theriault",
-                    UserName = "ryantheriault",
-                    BirthDate = new DateTime(1991, 7, 4),
-                    BirthTime = new TimeSpan(17, 53, 7),
-                    BirthDateTime = new DateTime(1991, 7, 4, 17, 53, 7),
-                    FavoriteFeature = Feature.Feature2,
-                },
-                new Person
-                {
-                    PersonId = 11,
-                    FirstName = "Elaine",
-                    LastName = "Stewart",
-                    UserName = "elainestewart",
-                    BirthDate = new DateTime(1992, 8, 3),
-                    BirthTime = new TimeSpan(16, 52, 8),
-                    BirthDateTime = new DateTime(1992, 8, 3, 16, 52, 8),
-                    FavoriteFeature = Feature.Feature3,
-                },
-                new Employee
-                {
-                    PersonId = 12,
-                    FirstName = "Sallie",
-                    LastName = "Sampson",
-                    UserName = "salliesampson",
-                    Cost = 1000000,
-                    BirthDate = new DateTime(1993, 9, 2),
-                    BirthTime = new TimeSpan(15, 51, 9),
-                    BirthDateTime = new DateTime(1993, 9, 2, 15, 51, 9),
-                    FavoriteFeature = Feature.Feature4,
-                },
-                new Manager
-                {
-                    PersonId = 13,
-                    FirstName = "Joni",
-                    LastName = "Rosales",
-                    UserName = "jonirosales",
-                    Budget = 60000000,
-                    BirthDate = new DateTime(1994, 10, 1),
-                    BirthTime = new TimeSpan(14, 50, 10),
-                    BirthDateTime = new DateTime(1994, 10, 1, 14, 50, 10),
-                    FavoriteFeature = Feature.Feature1,
-                }
+                person5,
+                person6,
+                person7,
+                person8,
+                person9,
+                person10,
+                person11,
+                person12,
             });
 
             #endregion

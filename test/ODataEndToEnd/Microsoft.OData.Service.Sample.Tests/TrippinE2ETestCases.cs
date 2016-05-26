@@ -292,6 +292,10 @@ namespace Microsoft.OData.Service.Sample.Tests
                     Assert.Equal(expectedPayload, content);
                 }
             }
+
+            // Delete the entity to make data unchanged
+            this.TestClientContext.DeleteObject(person);
+            this.TestClientContext.SaveChanges();
         }
 
 
@@ -336,13 +340,6 @@ namespace Microsoft.OData.Service.Sample.Tests
             orders = this.TestClientContext.Orders
                 .AddQueryOption("$filter", "PersonId eq 3 and OrderId eq 1").ToList();
             Assert.Equal(0, orders.Count);
-        }
-
-
-        [Fact]
-        public void DerivedTypeQuery()
-        {
-            // TODO
         }
 
         [Fact]
@@ -412,6 +409,10 @@ namespace Microsoft.OData.Service.Sample.Tests
             countQuery = this.TestClientContext.People.IncludeTotalCount().Expand("Friends").Skip(1).Take(2) as DataServiceQuery<Person>;
             response = countQuery.Execute() as QueryOperationResponse<Person>;
             Assert.Equal(response.TotalCount, 14);
+
+            // Delete the entity to make data unchanged
+            this.TestClientContext.DeleteObject(person);
+            this.TestClientContext.SaveChanges();
         }
 
         [Fact]
@@ -960,90 +961,6 @@ namespace Microsoft.OData.Service.Sample.Tests
             Assert.Contains(
                 "The current user does not have permission to delete entities from the EntitySet 'Trips'.",
                 clientException.Message);
-        }
-
-        [Theory]
-        [InlineData("People/$count", "13")]
-        [InlineData("People(1)/Friends/$count", "1")]
-        [InlineData("Flights/$count", "4")]
-        [InlineData("People/$count?$filter=indexof(FirstName,'R') eq 0", "3")]
-        [InlineData("People/$count?$filter=indexof(FirstName,'R') eq 0&$top(1)", "3")]
-        [InlineData("People/$count?$filter=indexof(FirstName,'R') eq 0&$skip(1)&$top(1)", "3")]
-        public void TestCountEntities(string uriStringAfterServiceRoot, string expectedString)
-        {
-            this.TestGetPayloadIs(uriStringAfterServiceRoot, expectedString);
-        }
-
-        [Theory]
-        [InlineData("Me", "http://localhost:18384/api/Trippin/$metadata#Me")]
-        public void TestSingleton(string uriStringAfterServiceRoot, string expectedSubString)
-        {
-            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
-        }
-
-        [Theory]
-        [InlineData("Me/UserName", "http://localhost:18384/api/Trippin/$metadata#Me/UserName")]
-        [InlineData("Me/FavoriteFeature", "http://localhost:18384/api/Trippin/$metadata#Me/FavoriteFeature")]
-        [InlineData("Me/Friends", "http://localhost:18384/api/Trippin/$metadata#People")]
-        [InlineData("Me/Trips", "http://localhost:18384/api/Trippin/$metadata#Trips")]
-        public void TestSingletonPropertyAccess(string uriStringAfterServiceRoot, string expectedSubString)
-        {
-            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
-        }
-
-        [Theory]
-        [InlineData("Me/FavoriteFeature2", 204)]
-        public void TestSingletonPropertyAccessStatus(string uriStringAfterServiceRoot, int statusCode)
-        {
-            this.TestGetStatusCodeIs(uriStringAfterServiceRoot, statusCode);
-        }
-
-        [Theory]
-        [InlineData("Me/PersonId/$value", "1")]
-        public void TestSingletonPropertyRawValueAccess(string uriStringAfterServiceRoot, string expectedString)
-        {
-            this.TestGetPayloadIs(uriStringAfterServiceRoot, expectedString);
-        }
-
-        [Theory]
-        [InlineData("Me?$expand=Friends", ",\"Friends\":[")]
-        [InlineData("Me?$select=UserName,PersonId", "http://localhost:18384/api/Trippin/$metadata#Me(UserName,PersonId)")]
-        public void TestSingletonWithQueryOptions(string uriStringAfterServiceRoot, string expectedSubString)
-        {
-            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
-        }
-
-        [Theory]
-        [InlineData("People?$count=true")]
-        [InlineData("People(1)/Friends?$count=true")]
-        [InlineData("People?$filter=PersonId gt 5&$count=true")]
-        [InlineData("Me/Friends?$count=true")]
-        [InlineData("GetPeopleWithFriendsAtLeast(n=1)?$count=true")]
-        public void TestCountQueryOptionIsTrue(string uriStringAfterServiceRoot)
-        {
-            this.TestGetPayloadContains(uriStringAfterServiceRoot, "@odata.count");
-        }
-
-        [Theory]
-        [InlineData("People?$count=false")]
-        [InlineData("People(1)/Friends?$count=false")]
-        [InlineData("GetPeopleWithFriendsAtLeast(n=1)?$count=false")]
-        [InlineData("People")]
-        [InlineData("People(1)/Friends")]
-        [InlineData("GetPeopleWithFriendsAtLeast(n=1)")]
-        [InlineData("Me?$count=true")]
-        public void TestCountQueryOptionIsFalse(string uriStringAfterServiceRoot)
-        {
-            this.TestGetPayloadDoesNotContain(uriStringAfterServiceRoot, "@odata.count");
-        }
-
-        [Theory]
-        [InlineData("People?$apply=aggregate(Concurrency with sum as Result)", "Result")]
-        [InlineData("People?$apply=aggregate(PersonId with sum as Total)/filter(Total eq 78)", "Total")]
-        [InlineData("People?$apply=groupby((FirstName), aggregate(PersonId with sum as Total))", "Total")]
-        public void TestApplyQueryOption(string uriStringAfterServiceRoot, string expectedSubString)
-        {
-            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
     }
 }

@@ -36,6 +36,7 @@
     <Compile Include="PropertyAccessTests.cs" />
     <Compile Include="TrippinE2ETestBase.cs" />
     <Compile Include="TemporalTests.cs" />
+    <Compile Include="TrippinE2EQueryTestCases.cs" />
     <Compile Include="TrippinE2ETestCases.cs" />
     <Compile Include="TrippinInMemoryE2ETest.cs" />
     <Compile Include="TrippinServiceFixture.cs" />
