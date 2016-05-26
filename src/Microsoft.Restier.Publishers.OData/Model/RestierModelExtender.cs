@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 return null;
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
             if (dataSourceStubReference == null)
             {
                 return null;
@@ -118,7 +118,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 return null;
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
             if (dataSourceStubReference == null)
             {
                 return null;
@@ -433,7 +433,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
 
                 // Ensure this query constructs from DataSourceStub.
-                if (context.ModelReference is DataSourceStubReference)
+                if (context.ModelReference is DataSourceStubModelReference)
                 {
                     // Only expand entity set query which returns IQueryable<T>.
                     var query = ModelCache.GetEntitySetQuery(context);

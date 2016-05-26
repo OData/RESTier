@@ -450,6 +450,10 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 BirthTime = new TimeSpan(14, 50, 10),
                 BirthDateTime = new DateTime(1994, 10, 1, 14, 50, 10),
                 FavoriteFeature = Feature.Feature1,
+                BossOffice = new Location()
+                {
+                    Address = "ROOM 1001"
+                }
             };
 
             person0.Friends = new Collection<Person> { person1 };

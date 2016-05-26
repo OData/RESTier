@@ -53,14 +53,14 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents a reference to data source stub in terms of a model.
     /// </summary>
-    public class DataSourceStubReference : QueryModelReference
+    public class DataSourceStubModelReference : QueryModelReference
     {
         private readonly QueryContext context;
         private readonly string namespaceName;
         private readonly string name;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSourceStubReference" /> class.
+        /// Initializes a new instance of the <see cref="DataSourceStubModelReference" /> class.
         /// </summary>
         /// <param name="context">
         /// A query context.
@@ -68,7 +68,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of an entity set, singleton or function import.
         /// </param>
-        public DataSourceStubReference(QueryContext context, string name)
+        public DataSourceStubModelReference(QueryContext context, string name)
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(name, "name");
@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSourceStubReference" /> class referring to a function.
+        /// Initializes a new instance of the <see cref="DataSourceStubModelReference" /> class referring to a function.
         /// </summary>
         /// <param name="context">
         /// A query context.
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of a function.
         /// </param>
-        public DataSourceStubReference(
+        public DataSourceStubModelReference(
             QueryContext context,
             string namespaceName,
             string name)
@@ -179,12 +179,12 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents a reference to property data in terms of a model.
     /// </summary>
-    public class PropertyDataReference : QueryModelReference
+    public class PropertyModelReference : QueryModelReference
     {
         private readonly string propertyName;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyDataReference" /> class.
+        /// Initializes a new instance of the <see cref="PropertyModelReference" /> class.
         /// </summary>
         /// <param name="source">
         /// A source query model reference.
@@ -192,7 +192,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="propertyName">
         /// The name of a property.
         /// </param>
-        public PropertyDataReference(QueryModelReference source, string propertyName)
+        public PropertyModelReference(QueryModelReference source, string propertyName)
         {
             Ensure.NotNull(propertyName, "propertyName");
             this.propertyName = propertyName;

@@ -10,5 +10,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         public virtual ICollection<Person> DirectReports { get; set; }
         
         public long Budget { get; set; }
+
+        public Location BossOffice { get; set; }
     }
 }

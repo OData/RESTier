@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Security
                 return true;
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
             if (dataSourceStubReference == null)
             {
                 return true;

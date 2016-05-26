@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core.Conventions
                 }
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubReference;
+            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
             if (dataSourceStubReference == null)
             {
                 return null;

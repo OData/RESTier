@@ -31,6 +31,16 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Theory]
+        [InlineData("People?$filter=Microsoft.OData.Service.Sample.Trippin.Models.Manager/Budget gt 1000", "\"UserName\":\"jonirosales\"")]
+        [InlineData("People?$filter=Microsoft.OData.Service.Sample.Trippin.Models.Manager/BossOffice/Address eq 'ROOM 1001'", "\"UserName\":\"jonirosales\"")]
+        [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Manager?$filter=Budget gt 1000", "\"UserName\":\"jonirosales\"")]
+        [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Manager?$filter=BossOffice/Address eq 'ROOM 1001'", "\"UserName\":\"jonirosales\"")]
+        public void DerivedTypeQueryOprions(string uriStringAfterServiceRoot, string expectedSubString)
+        {
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
+        }
+
+        [Theory]
         [InlineData("People/$count", "13")]
         [InlineData("People(1)/Friends/$count", "1")]
         [InlineData("Flights/$count", "4")]

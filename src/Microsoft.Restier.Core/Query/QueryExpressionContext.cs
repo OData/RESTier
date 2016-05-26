@@ -231,7 +231,7 @@ namespace Microsoft.Restier.Core.Query
                 modelReference = this.GetModelReferenceForNode(member.Expression);
                 if (modelReference != null)
                 {
-                    modelReference = new PropertyDataReference(
+                    modelReference = new PropertyModelReference(
                         modelReference, member.Member.Name);
                 }
             }
@@ -239,10 +239,10 @@ namespace Microsoft.Restier.Core.Query
             return modelReference;
         }
 
-        private DataSourceStubReference ComputeDataSourceStubReference(
+        private DataSourceStubModelReference ComputeDataSourceStubReference(
             MethodCallExpression methodCall)
         {
-            DataSourceStubReference modelReference = null;
+            DataSourceStubModelReference modelReference = null;
             ConstantExpression namespaceName = null;
             ConstantExpression name = null;
             var argumentIndex = 0;
@@ -259,12 +259,12 @@ namespace Microsoft.Restier.Core.Query
                 {
                     if (namespaceName == null)
                     {
-                        modelReference = new DataSourceStubReference(
+                        modelReference = new DataSourceStubModelReference(
                             this.QueryContext, nameValue);
                     }
                     else
                     {
-                        modelReference = new DataSourceStubReference(
+                        modelReference = new DataSourceStubModelReference(
                             this.QueryContext,
                             namespaceName.Value as string,
                             nameValue);
