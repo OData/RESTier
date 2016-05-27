@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Core.Query
             var resultType = method.ReturnType.FindGenericType(typeof(IEnumerable<>));
             if (sourceType == resultType)
             {
-                return new QueryModelReference(source.EntitySet,source.Type);
+                return new QueryModelReference(source.EntitySet, source.Type);
             }
 
             // source is a sequence of T1 and output is a sequence of T2
@@ -199,29 +199,33 @@ namespace Microsoft.Restier.Core.Query
                 foreach (var node in this.GetExpressionTrail())
                 {
                     methodCall = node as MethodCallExpression;
-                    if (methodCall != null)
+                    if (methodCall == null)
                     {
-                        modelReference = this.GetModelReferenceForNode(node);
-                        if (modelReference != null)
+                        continue;
+                    }
+                    modelReference = this.GetModelReferenceForNode(node);
+
+                    if (modelReference == null)
+                    {
+                        continue;
+                    }
+                    var method = methodCall.Method;
+                    var sourceType = method.GetParameters()[0]
+                        .ParameterType.FindGenericType(typeof(IEnumerable<>));
+                    var resultType = method.ReturnType
+                        .FindGenericType(typeof(IEnumerable<>));
+                    if (sourceType != resultType)
+                    {
+                        continue;
+                    }
+                    var typeOfT = sourceType.GetGenericArguments()[0];
+                    if (parameter.Type == typeOfT)
+                    {
+                        var collectionType = modelReference.Type as IEdmCollectionType;
+                        if (collectionType != null)
                         {
-                            var method = methodCall.Method;
-                            var sourceType = method.GetParameters()[0]
-                                .ParameterType.FindGenericType(typeof(IEnumerable<>));
-                            var resultType = method.ReturnType
-                                .FindGenericType(typeof(IEnumerable<>));
-                            if (sourceType == resultType)
-                            {
-                                var typeOfT = sourceType.GetGenericArguments()[0];
-                                if (parameter.Type == typeOfT)
-                                {
-                                    var collectionType = modelReference.Type as IEdmCollectionType;
-                                    if (collectionType != null)
-                                    {
-                                        modelReference = new QueryModelReference(modelReference.EntitySet, collectionType.ElementType.Definition);
-                                        break;
-                                    }
-                                }
-                            }
+                            modelReference = new QueryModelReference(modelReference.EntitySet, collectionType.ElementType.Definition);
+                            break;
                         }
                     }
                 }

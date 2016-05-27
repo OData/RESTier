@@ -317,7 +317,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
         private void HandleCastPathSegment(ODataPathSegment segment)
         {
             var castSegment = (CastPathSegment)segment;
-            Type elementType = castSegment.CastType.GetClrType(api);
+            var elementType = castSegment.CastType.GetClrType(api);
             this.currentEntityType = castSegment.CastType;
             this.currentType = elementType;
             this.queryable = ExpressionHelpers.OfType(this.queryable, elementType);
