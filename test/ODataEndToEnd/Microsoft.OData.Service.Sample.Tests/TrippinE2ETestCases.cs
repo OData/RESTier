@@ -157,6 +157,56 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Fact]
+        public void CURDDerivedEntity()
+        {
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
+
+            // Post an entity
+            Employee employee = new Employee()
+            {
+                FirstName = "Vincent",
+                UserName = "SheldonCooper",
+                Age = 12,
+                Cost = 10000
+            };
+
+            this.TestClientContext.AddToPeople(employee);
+            this.TestClientContext.SaveChanges();
+            long? personId = employee.PersonId;
+
+            // Count this entity
+            var count = this.TestClientContext.People.Count();
+            Assert.Equal(personId, count);
+
+            // Query an entity
+            this.TestClientContext.Detach(employee);
+            employee = this.TestClientContext.People.OfType<Employee>().Where(e => e.PersonId == personId).First();
+            Assert.Equal("SheldonCooper", employee.UserName);
+
+            // Update an entity
+            employee.LastName = "Lee";
+            employee.Cost = 20000;
+            employee.Age = null;
+            this.TestClientContext.UpdateObject(employee);
+            this.TestClientContext.SaveChanges();
+
+            // Query an entity
+            this.TestClientContext.Detach(employee);
+            employee = this.TestClientContext.People.OfType<Employee>().Where(e =>e.PersonId ==personId).First();
+            Assert.Equal("Lee", employee.LastName);
+            Assert.Equal(20000, employee.Cost);
+
+            // Delete an entity
+            this.TestClientContext.DeleteObject(employee);
+            this.TestClientContext.SaveChanges();
+
+            // Filter this entity
+            var persons = this.TestClientContext.People
+                .AddQueryOption("$filter", string.Format("PersonId eq {0}", personId)).ToList();
+            Assert.Equal(0, persons.Count);
+        }
+
+        [Fact]
         public void CURDEntityWithComplexType()
         {
             this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;

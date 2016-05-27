@@ -313,54 +313,15 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
         // This only covers entity type cast
         // complex type cast uses ComplexCastPathSegment and is not supported by EF now
+        // CLR type is got from model annotation, which means model must include that annotation.
         private void HandleCastPathSegment(ODataPathSegment segment)
         {
             var castSegment = (CastPathSegment)segment;
-            Type elementType = GetClrType(castSegment.CastType);
+            Type elementType = castSegment.CastType.GetClrType(api);
             this.currentEntityType = castSegment.CastType;
             this.currentType = elementType;
             this.queryable = ExpressionHelpers.OfType(this.queryable, elementType);
         }
-
-        private Type GetClrType(IEdmEntityType edmType)
-        {
-            IEdmModel edmModel = api.GetModelAsync().Result;
-
-            ClrTypeAnnotation annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
-            if (annotation != null)
-            {
-                return annotation.ClrType;
-            }
-
-            // In case user does not use Web Api OData conversion builder, fail back to IModelMapper
-            var name = edmType.Name;
-            var namespaceName = edmType.Namespace;
-            Type elementType = null;
-
-            var mapper = api.Context.GetApiService<IModelMapper>();
-            if (mapper != null)
-            {
-                if (namespaceName == null)
-                {
-                    mapper.TryGetRelevantType(api.Context, name, out elementType);
-                }
-                else
-                {
-                    mapper.TryGetRelevantType(api.Context, namespaceName, name, out elementType);
-                }
-            }
-
-            if (elementType == null)
-            {
-                throw new NotSupportedException(string.Format(
-                    CultureInfo.InvariantCulture,
-                    Resources.ElementTypeNotFound,
-                    name));
-            }
-
-            return elementType;
-        }
-
         #endregion
     }
 }

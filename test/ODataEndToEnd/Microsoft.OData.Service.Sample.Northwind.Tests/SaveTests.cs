@@ -33,7 +33,8 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
             DataModificationItem<Customer> createCustomer = new DataModificationItem<Customer>(
                 "Customers",
-                "Customer",
+                typeof(Customer),
+                null,
                 null,
                 null,
                 new Dictionary<string, object>()

@@ -40,6 +40,13 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             {
                 object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
                 Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
+
+                // This means request entity is sub type of entity type
+                if (entry.ActualEntityType != null && entityType != entry.ActualEntityType)
+                {
+                    entityType = entry.ActualEntityType;
+                }
+
                 DbSet set = dbContext.Set(entityType);
 
                 object entity;

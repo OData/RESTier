@@ -1,10 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Web.OData;
 using System.Web.OData.Formatter;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData
 {
@@ -47,6 +52,22 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             return propertyValues;
+        }
+
+        public static Type GetClrType(this IEdmType edmType, ApiBase api)
+        {
+            IEdmModel edmModel = api.GetModelAsync().Result;
+
+            ClrTypeAnnotation annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
+            if (annotation != null)
+            {
+                return annotation.ClrType;
+            }
+            
+            throw new NotSupportedException(string.Format(
+                CultureInfo.InvariantCulture,
+                Resources.ElementTypeNotFound,
+                edmType.FullTypeName()));
         }
     }
 }
