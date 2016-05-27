@@ -13,9 +13,9 @@ namespace Microsoft.Restier.Core.Query
     public class QueryModelReference
     {
 
-        private IEdmEntitySet edmEntitySet;
+        private readonly IEdmEntitySet edmEntitySet;
 
-        private IEdmType edmType;
+        private readonly IEdmType edmType;
 
         internal QueryModelReference()
         {
@@ -68,7 +68,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of an entity set, singleton or function import.
         /// </param>
-        public DataSourceStubModelReference(QueryContext context, string name)
+        internal DataSourceStubModelReference(QueryContext context, string name)
         {
             Ensure.NotNull(context, "context");
             Ensure.NotNull(name, "name");
@@ -192,7 +192,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="propertyName">
         /// The name of a property.
         /// </param>
-        public PropertyModelReference(QueryModelReference source, string propertyName)
+        internal PropertyModelReference(QueryModelReference source, string propertyName)
         {
             Ensure.NotNull(propertyName, "propertyName");
             this.propertyName = propertyName;

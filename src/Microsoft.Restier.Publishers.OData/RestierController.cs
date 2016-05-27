@@ -188,7 +188,7 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
-            
+
             DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
                 path.EdmType.GetClrType(Api),

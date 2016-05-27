@@ -324,7 +324,6 @@ public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
 }
 
 public class Microsoft.Restier.Core.Query.DataSourceStubModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
-	public DataSourceStubModelReference (Microsoft.Restier.Core.Query.QueryContext context, string name)
 	public DataSourceStubModelReference (Microsoft.Restier.Core.Query.QueryContext context, string namespaceName, string name)
 
 	Microsoft.OData.Edm.IEdmElement Element  { public get; }
@@ -333,8 +332,6 @@ public class Microsoft.Restier.Core.Query.DataSourceStubModelReference : Microso
 }
 
 public class Microsoft.Restier.Core.Query.PropertyModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
-	public PropertyModelReference (Microsoft.Restier.Core.Query.QueryModelReference source, string propertyName)
-
 	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
 	Microsoft.OData.Edm.IEdmProperty Property  { public get; }
 	Microsoft.Restier.Core.Query.QueryModelReference Source  { [CompilerGeneratedAttribute(),]public get; }
