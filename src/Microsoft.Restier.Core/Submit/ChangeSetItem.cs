@@ -134,8 +134,11 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="entitySetName">
         /// The name of the entity set in question.
         /// </param>
-        /// <param name="entityTypeName">
-        /// The name of the entity type in question.
+        /// <param name="entityType">
+        /// The type of the entity type in question.
+        /// </param>
+        /// <param name="actualEntityType">
+        /// The type of the actual entity type in question.
         /// </param>
         /// <param name="entityKey">
         /// The key of the entity being modified.
@@ -148,16 +151,18 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         public DataModificationItem(
             string entitySetName,
-            string entityTypeName,
+            Type entityType,
+            Type actualEntityType,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
             : base(ChangeSetItemType.DataModification)
         {
             Ensure.NotNull(entitySetName, "entitySetName");
-            Ensure.NotNull(entityTypeName, "entityTypeName");
+            Ensure.NotNull(entityType, "entityType");
             this.EntitySetName = entitySetName;
-            this.EntityTypeName = entityTypeName;
+            this.EntityType = entityType;
+            this.ActualEntityType = actualEntityType;
             this.EntityKey = entityKey;
             this.OriginalValues = originalValues;
             this.LocalValues = localValues;
@@ -172,7 +177,13 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets the name of the entity type in question.
         /// </summary>
-        public string EntityTypeName { get; private set; }
+        public Type EntityType { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the actual entity type in question.
+        /// In type inheriance case, this is different from entityType
+        /// </summary>
+        public Type ActualEntityType { get; private set; }
 
         /// <summary>
         /// Gets the key of the entity being modified.
@@ -356,8 +367,11 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="entitySetName">
         /// The name of the entity set in question.
         /// </param>
-        /// <param name="entityTypeName">
-        /// The name of the entity type in question.
+        /// <param name="entityType">
+        /// The type of the entity type in question.
+        /// </param>
+        /// <param name="actualEntityType">
+        /// The type of the actual entity type in question.
         /// </param>
         /// <param name="entityKey">
         /// The key of the entity being modified.
@@ -370,11 +384,12 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         public DataModificationItem(
             string entitySetName,
-            string entityTypeName,
+            Type entityType,
+            Type actualEntityType,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
-            : base(entitySetName, entityTypeName, entityKey, originalValues, localValues)
+            : base(entitySetName, entityType, actualEntityType, entityKey, originalValues, localValues)
         {
         }
 

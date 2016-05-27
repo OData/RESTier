@@ -108,9 +108,19 @@ namespace Microsoft.Restier.Publishers.OData
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
 
+            // In case of type inherience, the actual type will be different from entity type
+            var entityType = path.EdmType;
+            var actualEntityType = path.EdmType;
+            if (edmEntityObject.ActualEdmType != null)
+            {
+                entityType = edmEntityObject.ExpectedEdmType;
+                actualEntityType = edmEntityObject.ActualEdmType;
+            }
+
             DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.FullTypeName(),
+                entityType.GetClrType(Api),
+                actualEntityType.GetClrType(Api),
                 null,
                 null,
                 edmEntityObject.CreatePropertyDictionary());
@@ -178,10 +188,11 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
-
+            
             DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.FullTypeName(),
+                path.EdmType.GetClrType(Api),
+                null,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 null);
@@ -299,9 +310,20 @@ namespace Microsoft.Restier.Publishers.OData
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
+            // In case of type inherience, the actual type will be different from entity type
+            // This is only needed for put case, and does not for patch case
+            var entityType = path.EdmType;
+            var actualEntityType = path.EdmType;
+            if (edmEntityObject.ActualEdmType != null)
+            {
+                entityType = edmEntityObject.ExpectedEdmType;
+                actualEntityType = edmEntityObject.ActualEdmType;
+            }
+
             DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.FullTypeName(),
+                entityType.GetClrType(Api),
+                actualEntityType.GetClrType(Api),
                 RestierQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
                 edmEntityObject.CreatePropertyDictionary());
