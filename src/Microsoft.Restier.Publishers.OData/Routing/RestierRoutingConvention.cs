@@ -20,6 +20,10 @@ namespace Microsoft.Restier.Publishers.OData.Routing
     {
         private const string RestierControllerName = "Restier";
         private const string MethodNameOfGet = "Get";
+        private const string MethodNameOfPost = "Post";
+        private const string MethodNameOfPut = "Put";
+        private const string MethodNameOfPatch = "Patch";
+        private const string MethodNameOfDelete = "Delete";
         private const string MethodNameOfPostAction = "PostAction";
 
         private readonly Func<ApiBase> apiFactory;
@@ -53,7 +57,7 @@ namespace Microsoft.Restier.Publishers.OData.Routing
             // we should let the request being routed to that controller.
             if (HasControllerForEntitySetOrSingleton(odataPath, request))
             {
-                // Fallback to routing conventions defined by OData Web API.
+                // Fall back to routing conventions defined by OData Web API.
                 return null;
             }
 
@@ -98,7 +102,26 @@ namespace Microsoft.Restier.Publishers.OData.Routing
                 return MethodNameOfPostAction;
             }
 
-            // Let WebAPI select default action
+            if (method == HttpMethod.Post)
+            {
+                return MethodNameOfPost;
+            }
+
+            if (method == HttpMethod.Delete)
+            {
+                return MethodNameOfDelete;
+            }
+
+            if (method == HttpMethod.Put)
+            {
+                return MethodNameOfPut;
+            }
+
+            if (method == new HttpMethod("PATCH"))
+            {
+                return MethodNameOfPatch;
+            }
+
             return null;
         }
 

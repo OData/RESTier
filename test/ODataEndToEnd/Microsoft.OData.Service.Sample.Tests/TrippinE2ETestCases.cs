@@ -178,9 +178,9 @@ namespace Microsoft.OData.Service.Sample.Tests
             var count = this.TestClientContext.People.Count();
             Assert.Equal(personId, count);
 
-            // Query an entity
+            // Query an entity, generate URI will like /entity(key)/cast
             this.TestClientContext.Detach(employee);
-            employee = this.TestClientContext.People.OfType<Employee>().Where(e => e.PersonId == personId).First();
+            employee = this.TestClientContext.People.Where(e => e.PersonId == personId).OfType<Employee>().First();
             Assert.Equal("SheldonCooper", employee.UserName);
 
             // Update an entity
@@ -190,7 +190,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             this.TestClientContext.UpdateObject(employee);
             this.TestClientContext.SaveChanges();
 
-            // Query an entity
+            // Query an entity, generate URI will like /entity/cast(key)
             this.TestClientContext.Detach(employee);
             employee = this.TestClientContext.People.OfType<Employee>().Where(e =>e.PersonId ==personId).First();
             Assert.Equal("Lee", employee.LastName);
@@ -479,7 +479,7 @@ namespace Microsoft.OData.Service.Sample.Tests
                 FlightNumber = "MU589",
                 StartsAt = startDate,
                 EndsAt = endDate,
-                // TODO GitHubIssue#47 : SQL issue when duration lenght greater than 1 day
+                // TODO GitHubIssue#47 : SQL issue when duration length greater than 1 day
                 // How to describe a timespan equal to or greater than 1 day.
                 Duration = duration,
                 AirlineId = "MU",

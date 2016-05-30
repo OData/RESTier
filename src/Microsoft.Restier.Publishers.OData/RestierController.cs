@@ -108,18 +108,18 @@ namespace Microsoft.Restier.Publishers.OData
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
 
-            // In case of type inherience, the actual type will be different from entity type
-            var entityType = path.EdmType;
+            // In case of type inheritance, the actual type will be different from entity type
+            var expectedEntityType = path.EdmType;
             var actualEntityType = path.EdmType;
             if (edmEntityObject.ActualEdmType != null)
             {
-                entityType = edmEntityObject.ExpectedEdmType;
+                expectedEntityType = edmEntityObject.ExpectedEdmType;
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
             DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
-                entityType.GetClrType(Api),
+                expectedEntityType.GetClrType(Api),
                 actualEntityType.GetClrType(Api),
                 null,
                 null,
@@ -310,19 +310,19 @@ namespace Microsoft.Restier.Publishers.OData
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
-            // In case of type inherience, the actual type will be different from entity type
+            // In case of type inheritance, the actual type will be different from entity type
             // This is only needed for put case, and does not for patch case
-            var entityType = path.EdmType;
+            var expectedEntityType = path.EdmType;
             var actualEntityType = path.EdmType;
             if (edmEntityObject.ActualEdmType != null)
             {
-                entityType = edmEntityObject.ExpectedEdmType;
+                expectedEntityType = edmEntityObject.ExpectedEdmType;
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
             DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
-                entityType.GetClrType(Api),
+                expectedEntityType.GetClrType(Api),
                 actualEntityType.GetClrType(Api),
                 RestierQueryBuilder.GetPathKeyValues(path),
                 this.GetOriginalValues(),
@@ -422,7 +422,7 @@ namespace Microsoft.Restier.Publishers.OData
             var entityResult = new EntityResult(query, typeReference, this.Api.Context);
             if (entityResult.Result == null)
             {
-                // TODO GitHubIssue#288: 204 expected when requesting single nav propery which has null value
+                // TODO GitHubIssue#288: 204 expected when requesting single nav property which has null value
                 // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
                 // ~/People(key)/BestFriend, and BestFriend is null, expected 204
                 throw new HttpResponseException(

@@ -174,8 +174,6 @@ namespace Microsoft.Restier.Core.Query
             QueryModelReference modelReference = null;
 
             var methodCall = this.VisitedNode as MethodCallExpression;
-            var parameter = this.VisitedNode as ParameterExpression;
-            var member = this.VisitedNode as MemberExpression;
 
             if (methodCall != null)
             {
@@ -193,8 +191,12 @@ namespace Microsoft.Restier.Core.Query
                         modelReference = ComputeQueryModelReference(methodCall, thisModelReference);
                     }
                 }
+
+                return modelReference;
             }
-            else if (parameter != null)
+
+            var parameter = this.VisitedNode as ParameterExpression;
+            if (parameter != null)
             {
                 foreach (var node in this.GetExpressionTrail())
                 {
@@ -203,12 +205,13 @@ namespace Microsoft.Restier.Core.Query
                     {
                         continue;
                     }
-                    modelReference = this.GetModelReferenceForNode(node);
 
+                    modelReference = this.GetModelReferenceForNode(node);
                     if (modelReference == null)
                     {
                         continue;
                     }
+
                     var method = methodCall.Method;
                     var sourceType = method.GetParameters()[0]
                         .ParameterType.FindGenericType(typeof(IEnumerable<>));
@@ -218,6 +221,7 @@ namespace Microsoft.Restier.Core.Query
                     {
                         continue;
                     }
+
                     var typeOfT = sourceType.GetGenericArguments()[0];
                     if (parameter.Type == typeOfT)
                     {
@@ -229,8 +233,12 @@ namespace Microsoft.Restier.Core.Query
                         }
                     }
                 }
+
+                return modelReference;
             }
-            else if (member != null)
+
+            var member = this.VisitedNode as MemberExpression;
+            if (member != null)
             {
                 modelReference = this.GetModelReferenceForNode(member.Expression);
                 if (modelReference != null)

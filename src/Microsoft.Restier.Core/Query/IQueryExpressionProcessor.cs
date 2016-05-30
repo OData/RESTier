@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Core.Query
     public interface IQueryExpressionProcessor
     {
         /// <summary>
-        /// Procsses an expression.
+        /// Processes an expression.
         /// </summary>
         /// <param name="context">
         /// The query expression context.

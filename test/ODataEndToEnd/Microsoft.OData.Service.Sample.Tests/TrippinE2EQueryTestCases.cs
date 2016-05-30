@@ -11,6 +11,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("People", "#Microsoft.OData.Service.Sample.Trippin.Models.Employee")]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Employee", "$metadata#People/Microsoft.OData.Service.Sample.Trippin.Models.Employee")]
         [InlineData("People(12)/Microsoft.OData.Service.Sample.Trippin.Models.Employee", "$metadata#People/Microsoft.OData.Service.Sample.Trippin.Models.Employee")]
+        [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Employee(12)", "$metadata#People/Microsoft.OData.Service.Sample.Trippin.Models.Employee")]
         [InlineData("People(11)/Friends/Microsoft.OData.Service.Sample.Trippin.Models.Employee", "\"UserName\":\"salliesampson\"")]
         // Next call returns empty collection
         [InlineData("People(1)/Friends/Microsoft.OData.Service.Sample.Trippin.Models.Employee", "$metadata#People/Microsoft.OData.Service.Sample.Trippin.Models.Employee\",\"value\":[")]

@@ -164,7 +164,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/GetBestProduct");
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
             HttpResponseMessage response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
     }
 }

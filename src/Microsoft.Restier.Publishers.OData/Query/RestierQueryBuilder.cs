@@ -85,6 +85,11 @@ namespace Microsoft.Restier.Publishers.OData.Query
                 KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
                 return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
             }
+            else if (path.PathTemplate == "~/entityset/cast/key")
+            {
+                KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[2];
+                return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
+            }
             else
             {
                 throw new InvalidOperationException(string.Format(

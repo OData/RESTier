@@ -134,8 +134,8 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="entitySetName">
         /// The name of the entity set in question.
         /// </param>
-        /// <param name="entityType">
-        /// The type of the entity type in question.
+        /// <param name="expectedEntityType">
+        /// The type of the expected entity type in question.
         /// </param>
         /// <param name="actualEntityType">
         /// The type of the actual entity type in question.
@@ -151,7 +151,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         public DataModificationItem(
             string entitySetName,
-            Type entityType,
+            Type expectedEntityType,
             Type actualEntityType,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
@@ -159,9 +159,9 @@ namespace Microsoft.Restier.Core.Submit
             : base(ChangeSetItemType.DataModification)
         {
             Ensure.NotNull(entitySetName, "entitySetName");
-            Ensure.NotNull(entityType, "entityType");
+            Ensure.NotNull(expectedEntityType, "expectedEntityType");
             this.EntitySetName = entitySetName;
-            this.EntityType = entityType;
+            this.ExpectedEntityType = expectedEntityType;
             this.ActualEntityType = actualEntityType;
             this.EntityKey = entityKey;
             this.OriginalValues = originalValues;
@@ -175,13 +175,13 @@ namespace Microsoft.Restier.Core.Submit
         public string EntitySetName { get; private set; }
 
         /// <summary>
-        /// Gets the name of the entity type in question.
+        /// Gets the name of the expected entity type in question.
         /// </summary>
-        public Type EntityType { get; private set; }
+        public Type ExpectedEntityType { get; private set; }
 
         /// <summary>
         /// Gets the name of the actual entity type in question.
-        /// In type inheriance case, this is different from entityType
+        /// In type inheritance case, this is different from expectedEntityType
         /// </summary>
         public Type ActualEntityType { get; private set; }
 
@@ -367,8 +367,8 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="entitySetName">
         /// The name of the entity set in question.
         /// </param>
-        /// <param name="entityType">
-        /// The type of the entity type in question.
+        /// <param name="expectedEntityType">
+        /// The type of the expected entity type in question.
         /// </param>
         /// <param name="actualEntityType">
         /// The type of the actual entity type in question.
@@ -384,12 +384,12 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         public DataModificationItem(
             string entitySetName,
-            Type entityType,
+            Type expectedEntityType,
             Type actualEntityType,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
-            : base(entitySetName, entityType, actualEntityType, entityKey, originalValues, localValues)
+            : base(entitySetName, expectedEntityType, actualEntityType, entityKey, originalValues, localValues)
         {
         }
 
