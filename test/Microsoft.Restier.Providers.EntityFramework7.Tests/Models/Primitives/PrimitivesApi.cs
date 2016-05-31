@@ -23,15 +23,6 @@ namespace Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives
             base.OnConfiguring(optionsBuilder);
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<DateItem>().HasKey(e => e.RowId);
-            modelBuilder.Entity<DateItem>().Property(e => e.DateProperty).HasColumnType("date");
-            modelBuilder.Entity<DateItem>().Property(e => e.TODProperty).HasColumnType("time");
-        }
-
         public DbSet<DateItem> Dates { get; set; }
     }
 

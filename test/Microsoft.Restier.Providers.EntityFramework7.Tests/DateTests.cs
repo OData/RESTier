@@ -10,6 +10,7 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives;
+using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;
 using Microsoft.Restier.Publishers.OData.Routing;
 using Microsoft.Restier.Tests;
@@ -23,11 +24,15 @@ namespace Microsoft.Restier.Providers.EntityFramework7.Tests
         [Fact]
         public async Task VerifyMetadataPropertyType()
         {
+            ApiConfiguration.AddPublisherServices<PrimitivesApi>(services =>
+            {
+                services.AddODataServices<PrimitivesApi>();
+            });
             var api = new PrimitivesApi();
             var edmModel = await api.GetModelAsync();
 
             var entityType = (IEdmEntityType)
-                edmModel.FindDeclaredType(@"Microsoft.Restier.Providers.EntityFramework.Tests.Models.Primitives.DateItem");
+                edmModel.FindDeclaredType(@"Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives.DateItem");
             Assert.NotNull(entityType);
 
             Assert.True(entityType.FindProperty("DTProperty").Type.IsDateTimeOffset());

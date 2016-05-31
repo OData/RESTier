@@ -91,64 +91,8 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
             // After EF7 adds support for DataAnnotation, some of following configuration could be deprecated.
 
-            modelBuilder.Entity<Category>(entityBuilder =>
-            {
-                entityBuilder.ToTable("Categories");
-                entityBuilder.Property(e => e.CategoryName).IsRequired().HasMaxLength(15);
-                entityBuilder.Property(e => e.Description).HasColumnType("ntext");
-                entityBuilder.Property(e => e.Picture).HasColumnType("image");
-                entityBuilder.Property(e => e.CategoryName).HasMaxLength(15);
-                entityBuilder.HasKey(e => e.CategoryID);
-            });
-
-
-            modelBuilder.Entity<Contact>(entityBuilder =>
-            {
-                entityBuilder.ToTable("Contacts");
-                entityBuilder.Property(e => e.HomePage).HasColumnType("ntext");
-                entityBuilder.Property(e => e.Photo).HasColumnType("image");
-                //entityBuilder.Key(e => e.ContactID);
-            });
-
-            modelBuilder.Entity<Customer>(entityBuilder =>
-            {
-                entityBuilder.ToTable("Customers");
-                entityBuilder.Property(e => e.CompanyName).IsRequired().HasMaxLength(40);
-                entityBuilder.HasKey(e => e.CustomerID);
-            });
-
-            modelBuilder.Entity<CustomerDemographic>(entityBuilder =>
-            {
-                entityBuilder.ToTable("CustomerDemographics");
-            });
-
-            modelBuilder.Entity<Employee>(entityBuilder =>
-            {
-                entityBuilder.ToTable("Employees");
-                entityBuilder.Property(e => e.LastName).IsRequired().HasMaxLength(20);
-                entityBuilder.Property(e => e.FirstName).IsRequired().HasMaxLength(10);
-				entityBuilder.Property(e => e.BirthDate).HasColumnType("date");
-				entityBuilder.Property(e => e.HireDate).HasColumnType("date");
-				entityBuilder.HasMany(e => e.Employees1)
-                    .WithOne(e => e.Employee1)
-                    .IsRequired(false)
-                    .HasForeignKey(e => e.ReportsTo);
-            });
-
-            modelBuilder.Entity<Order>(entityBuilder =>
-            {
-                entityBuilder.ToTable("Orders");
-				entityBuilder.Property(e => e.OrderDate).HasColumnType("date");
-				entityBuilder.Property(e => e.RequiredDate).HasColumnType("date");
-				entityBuilder.Property(e => e.ShippedDate).HasColumnType("date");
-				entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order)
-                    .IsRequired()
-                    .HasForeignKey(e => e.OrderID).OnDelete(DeleteBehavior.Cascade);
-            });
-
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
             {
-                entityBuilder.ToTable("Order Details");
                 entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
                 entityBuilder.HasKey(e => new
                 {
@@ -157,44 +101,28 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
                 });
             });
 
-            modelBuilder.Entity<Product>(entityBuilder =>
-            {
-                entityBuilder.ToTable("Products");
-                entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
-                entityBuilder.HasMany(e => e.Order_Details)
-                    .WithOne(e => e.Product)
-                    .IsRequired()
-                    .HasForeignKey(e => e.ProductID)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
-
-            modelBuilder.Entity<Region>(entityBuilder =>
-            {
-                entityBuilder.Property(e => e.RegionDescription).IsRequired();
-                entityBuilder.HasKey(e => e.RegionID);
-            });
-
             modelBuilder.Entity<Shipper>(entityBuilder =>
             {
-                entityBuilder.ToTable("Shippers");
                 entityBuilder.HasMany(e => e.Orders)
                     .WithOne(e => e.Shipper)
                     .HasForeignKey(e => e.ShipVia)
                     .IsRequired(false);
             });
 
-            modelBuilder.Entity<Supplier>(entityBuilder =>
+            modelBuilder.Entity<Order>(entityBuilder =>
             {
+                entityBuilder.HasMany(e => e.Order_Details).WithOne(e => e.Order)
+                    .IsRequired()
+                    .HasForeignKey(e => e.OrderID).OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Territory>(entityBuilder =>
+            modelBuilder.Entity<Product>(entityBuilder =>
             {
-                entityBuilder.ToTable("Territories");
-                entityBuilder.HasOne(e => e.Region)
-                    .WithMany(e => e.Territories)
-                    .HasForeignKey(e => e.RegionID)
+                entityBuilder.HasMany(e => e.Order_Details)
+                    .WithOne(e => e.Product)
                     .IsRequired()
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(e => e.ProductID)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
