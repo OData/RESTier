@@ -88,9 +88,6 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
 
             modelBuilder.ForSqlServerUseIdentityColumns();
 
-            // TODO GitHubIssue#57: Complete EF7 to EDM model mapping
-            // After EF7 adds support for DataAnnotation, some of following configuration could be deprecated.
-
             modelBuilder.Entity<Order_Detail>(entityBuilder =>
             {
                 entityBuilder.Property(e => e.UnitPrice).HasColumnType("money");
