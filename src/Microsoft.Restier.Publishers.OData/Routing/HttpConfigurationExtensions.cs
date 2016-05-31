@@ -60,8 +60,17 @@ namespace Microsoft.Restier.Publishers.OData.Routing
                     batchHandler.ApiFactory = apiFactory;
                 }
 
+
+                // Customized path handler should be added in ConfigureApi as service
+                // Allow to handle URL encoded slash (%2F), and backslash(%5C) with customized handler
+                var handler = api.Context.GetApiService<IODataPathHandler>();
+                if (handler == null)
+                {
+                    handler = new DefaultODataPathHandler();
+                }
+
                 var route = config.MapODataServiceRoute(
-                    routeName, routePrefix, model, new DefaultODataPathHandler(), conventions, batchHandler);
+                    routeName, routePrefix, model, handler, conventions, batchHandler);
 
                 // Customized converter should be added in ConfigureApi as service
                 var converter = api.Context.GetApiService<ODataPayloadValueConverter>();

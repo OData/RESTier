@@ -135,6 +135,24 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Fact]
+        public void AddressingKeyWithSlash()
+        {
+            TestGetStatusCodeIs("Airlines(AirlineCode='S%2F')", 200);
+        }
+
+        [Fact]
+        public void AddressingKeyWithSlashDoubleEscape()
+        {
+            TestGetStatusCodeIs("Airlines(AirlineCode='S%252F')", 200);
+        }
+
+        [Fact]
+        public void AddressingKeyWithBackSlash()
+        {
+            TestGetStatusCodeIs("Airlines(AirlineCode='BS%255C')", 200);
+        }
+
+        [Fact]
         public void AddressingCollectionCount()
         {
             TestGetStatusCodeIs("People/$count", 200);

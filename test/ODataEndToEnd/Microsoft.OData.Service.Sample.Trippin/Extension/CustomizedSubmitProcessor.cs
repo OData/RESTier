@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.OData.Service.Sample.Trippin.Submit
+namespace Microsoft.OData.Service.Sample.Trippin.Extension
 {
     public class CustomizedSubmitProcessor : IChangeSetItemProcessor
     {
