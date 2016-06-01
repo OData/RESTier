@@ -5,10 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData
@@ -68,6 +71,53 @@ namespace Microsoft.Restier.Publishers.OData
                 CultureInfo.InvariantCulture,
                 Resources.ElementTypeNotFound,
                 edmType.FullTypeName()));
+        }
+
+        public static IEdmTypeReference GetReturnTypeReference(this Type type, IEdmModel model)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                // if the action returns a Task<T>, map that to just be returning a T
+                type = type.GetGenericArguments()[0];
+            }
+            else if (type == typeof(Task))
+            {
+                // if the action returns a concrete Task, map that to being a void return type.
+                type = typeof(void);
+            }
+
+            return GetTypeReference(type, model);
+        }
+
+        public static IEdmTypeReference GetTypeReference(this Type type, IEdmModel model)
+        {
+            Type elementType;
+            if (type.TryGetElementType(out elementType))
+            {
+                return EdmCoreModel.GetCollection(GetTypeReference(elementType, model));
+            }
+
+            var edmType = model.FindDeclaredType(type.FullName);
+
+            var enumType = edmType as IEdmEnumType;
+            if (enumType != null)
+            {
+                return new EdmEnumTypeReference(enumType, true);
+            }
+
+            var complexType = edmType as IEdmComplexType;
+            if (complexType != null)
+            {
+                return new EdmComplexTypeReference(complexType, true);
+            }
+
+            var entityType = edmType as IEdmEntityType;
+            if (entityType != null)
+            {
+                return new EdmEntityTypeReference(entityType, true);
+            }
+
+            return type.GetPrimitiveTypeReference();
         }
     }
 }

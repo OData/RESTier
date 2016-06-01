@@ -57,18 +57,12 @@ namespace Microsoft.Restier.Publishers.OData.Model
             return model;
         }
 
-        private static bool TryGetEntityType(IEdmModel model, Type type, out IEdmEntityType entityType)
-        {
-            var edmType = model.FindDeclaredType(type.FullName);
-            entityType = edmType as IEdmEntityType;
-            return entityType != null;
-        }
 
         private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
         {
             foreach (ParameterInfo parameter in method.GetParameters())
             {
-                var parameterTypeReference = GetTypeReference(parameter.ParameterType, model);
+                var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
                 var operationParam = new EdmOperationParameter(
                     operation,
                     parameter.Name,
@@ -94,7 +88,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 parameterType = firstParameter.ParameterType;
             }
 
-            if (!GetTypeReference(parameterType, model).IsEntity())
+            if (!parameterType.GetTypeReference(model).IsEntity())
             {
                 return false;
             }
@@ -103,38 +97,6 @@ namespace Microsoft.Restier.Publishers.OData.Model
             return true;
         }
 
-        private static IEdmTypeReference GetReturnTypeReference(Type type, IEdmModel model)
-        {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>))
-            {
-                // if the action returns a Task<T>, map that to just be returning a T
-                type = type.GetGenericArguments()[0];
-            }
-            else if (type == typeof(Task))
-            {
-                // if the action returns a concrete Task, map that to being a void return type.
-                type = typeof(void);
-            }
-
-            return GetTypeReference(type, model);
-        }
-
-        private static IEdmTypeReference GetTypeReference(Type type, IEdmModel model)
-        {
-            Type elementType;
-            if (type.TryGetElementType(out elementType))
-            {
-                return EdmCoreModel.GetCollection(GetTypeReference(elementType, model));
-            }
-
-            IEdmEntityType entityType;
-            if (TryGetEntityType(model, type, out entityType))
-            {
-                return new EdmEntityTypeReference(entityType, true);
-            }
-
-            return type.GetPrimitiveTypeReference();
-        }
 
         private static EdmPathExpression BuildEntitySetPathExpression(
             IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter)
@@ -208,7 +170,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
         {
             foreach (FunctionMethodInfo actionInfo in this.actionInfos)
             {
-                var returnTypeReference = GetReturnTypeReference(actionInfo.Method.ReturnType, model);
+                var returnTypeReference = actionInfo.Method.ReturnType.GetReturnTypeReference(model);
 
                 ParameterInfo bindingParameter;
                 bool isBound = TryGetBindingParameter(actionInfo.Method, model, out bindingParameter);
@@ -237,7 +199,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
         {
             foreach (FunctionMethodInfo functionInfo in this.functionInfos)
             {
-                var returnTypeReference = GetReturnTypeReference(functionInfo.Method.ReturnType, model);
+                var returnTypeReference = functionInfo.Method.ReturnType.GetReturnTypeReference(model);
 
                 ParameterInfo bindingParameter;
                 bool isBound = TryGetBindingParameter(functionInfo.Method, model, out bindingParameter);

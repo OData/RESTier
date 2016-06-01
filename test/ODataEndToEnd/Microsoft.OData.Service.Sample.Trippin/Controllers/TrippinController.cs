@@ -77,26 +77,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Controllers
             return serviceRootUri;
         }
 
-        [ODataRoute("People({key})/Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends")]
-        public IHttpActionResult GetNumberOfFriends([FromODataUri]int key)
-        {
-            var person = DbContext.People.SingleOrDefault(p => p.PersonId == key);
-            return Ok(Api.GetNumberOfFriends(person));
-        }
-
-        [ODataRoute("GetPersonWithMostFriends")]
-        public IHttpActionResult GetPersonWithMostFriends()
-        {
-            return Ok(Api.GetPersonWithMostFriends());
-        }
-
-        [EnableQuery]
-        [ODataRoute("GetPeopleWithFriendsAtLeast(n={n})")]
-        public IHttpActionResult GetPeopleWithFriendsAtLeast(int n)
-        {
-            return Ok(Api.GetPeopleWithFriendsAtLeast(n));
-        }
-
         [HttpPut]
         [ODataRoute("People({key})/LastName")]
         public IHttpActionResult UpdatePersonLastName([FromODataUri]int key, [FromBody]string name)

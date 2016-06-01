@@ -42,6 +42,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
             this.handlers[ODataSegmentKinds.Singleton] = this.HandleSingletonPathSegment;
             this.handlers[ODataSegmentKinds.UnboundFunction] = this.HandleUnboundFunctionPathSegment;
+            this.handlers[ODataSegmentKinds.Function] = this.HandleBoundFunctionPathSegment;
             this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
             this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
             this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;
@@ -195,20 +196,12 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
         private void HandleUnboundFunctionPathSegment(ODataPathSegment segment)
         {
-            var unboundFunctionPathSegment = (UnboundFunctionPathSegment)segment;
-            var functionImport = unboundFunctionPathSegment.Function;
-            var entityTypeRef = functionImport.Function.ReturnType.AsEntity();
-            this.currentEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
+            // Nothing will be done
+        }
 
-            object[] queryArgs = null;
-            if (functionImport.Function.Parameters.Any())
-            {
-                queryArgs = functionImport.Function.Parameters.Select(
-                    p => unboundFunctionPathSegment.GetParameterValue(p.Name)).ToArray();
-            }
-
-            this.queryable = this.api.GetQueryableSource(functionImport.Name, queryArgs);
-            this.currentType = queryable.ElementType;
+        private void HandleBoundFunctionPathSegment(ODataPathSegment segment)
+        {
+            // Nothing will be done
         }
 
         private void HandleCountPathSegment(ODataPathSegment segment)

@@ -65,7 +65,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Fact]
-        public void AddressingBoundFunction()
+        public void EntityBoundFunction()
         {
             TestGetPayloadContains(
                 "People(1)/Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends",
@@ -73,24 +73,240 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Fact]
-        public void AddressingFunctionImport()
+        public void EntitySetBoundFunctionIEnumerable()
+        {
+            TestGetPayloadContains(
+                "People/Microsoft.OData.Service.Sample.Trippin.Models.GetBoundEntitySetIEnumerable(n=10)",
+                "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
+        [Fact]
+        public void EntitySetBoundFunctionICollection()
+        {
+            TestGetPayloadContains(
+                "People/Microsoft.OData.Service.Sample.Trippin.Models.GetBoundEntitySetICollection(n=2,m=5)",
+                "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
+        [Fact]
+        public void EntitySetBoundFunctionArray()
+        {
+            TestGetPayloadContains(
+                "People/Microsoft.OData.Service.Sample.Trippin.Models.GetBoundEntitySetArray(n=2,m=5)",
+                "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
+        [Fact]
+        public void FunctionImportPrimitive()
+        {
+            TestGetPayloadContains(
+                "GetPrimitive","http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
+        [Fact]
+        public void FunctionImportNullPrimitive()
+        {
+            TestGetStatusCodeIs("GetNullPrimitive", 204);
+        }
+
+        [Fact]
+        public void FunctionImportEnum()
+        {
+            TestGetPayloadContains(
+                "GetEnum(f=Microsoft.OData.Service.Sample.Trippin.Models.Feature'Feature1')", "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Feature");
+        }
+
+        [Fact]
+        public void FunctionImportEnumParameter()
+        {
+            // A default value is returned.
+            TestGetPayloadContains(
+                "GetEnum(f=null)", "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Feature");
+        }
+
+        [Fact]
+        public void FunctionImportComplex()
+        {
+            TestGetPayloadContains(
+                "GetComplex(l=@x)?@x={\"Address\":\"NE 24th St.\"}", "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Location");
+        }
+
+        [Fact]
+        public void FunctionImportNullComplex()
+        {
+            TestGetStatusCodeIs("GetComplex(l=null)", 204);
+        }
+
+        [Fact]
+        public void FunctionImportSingleEntity()
         {
             TestGetPayloadContains(
                 "GetPersonWithMostFriends", "http://localhost:18384/api/Trippin/$metadata#People/$entity");
         }
 
         [Fact]
-        public void AddressingFunctionImportWithNamedArgument()
+        public void FunctionImportNullSingleEntity()
+        {
+            // TODO GitHubIssue#288: 204 expected when requesting single nav property which has null value
+            // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
+            // ~/People(key)/BestFriend, and BestFriend is null, expected 204
+            TestGetStatusCodeIs("GetNullEntity", 404);
+        }
+
+        [Fact]
+        public void FunctionImportWithNamedArgument()
         {
             TestGetPayloadContains(
                 "GetPeopleWithFriendsAtLeast(n=1)", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
         [Fact]
-        public void AddressingFunctionImportUsingParameterAlias()
+        public void FunctionImportUsingParameterAlias()
         {
             TestGetPayloadContains(
-                "GetPeopleWithFriendsAtLeast(n=@n)?@n=1", "http://localhost:18384/api/Trippin/$metadata#People");
+                "GetPeopleWithFriendsAtLeast(n=@x)?@x=1", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void FunctionImportTwoNamedParametersInOrder()
+        {
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeastMost(n=1,m=4)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void FunctionImportTwoNamedParametersNotInOrder()
+        {
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeastMost(m=4, n=1)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void FunctionImportEmptyEntityCollection()
+        {
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeast(n=10)", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void FunctionImportNullEntityCollection()
+        {
+            TestGetPayloadContains(
+                "GetNullEntityCollection", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void FunctionImportPrimitiveIEnumerable()
+        {
+            TestGetPayloadContains(
+                "GetIEnumerable(intEnumerable=[1,2,3])", "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void FunctionImportPrimitiveIEnumerableEmpty()
+        {
+            TestGetPayloadContains(
+                "GetIEnumerable(intEnumerable=[])", "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void FunctionImportNullPrimitiveIEnumerable()
+        {
+            // Primitive collection can not be null
+            TestGetStatusCodeIs("GetIEnumerable(intEnumerable=null)", 400);
+        }
+
+        [Fact]
+        public void FunctionImportPrimitiveICollection()
+        {
+            TestGetPayloadContains(
+                "GetICollection(intColl=[1,2,3])", "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void FunctionImportPrimitiveICollectionEmpty()
+        {
+            TestGetPayloadContains(
+                "GetICollection(intColl=[])", "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void FunctionImportNullPrimitiveICollection()
+        {
+            // Primitive collection can not be null
+            TestGetStatusCodeIs("GetICollection(intColl=null)", 400);
+        }
+
+        [Fact]
+        public void FunctionImportPrimitiveArray()
+        {
+            TestGetPayloadContains(
+                "GetArray(intArray=[1,2,3])", "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void FunctionImportPrimitiveArrayEmpty()
+        {
+            TestGetPayloadContains(
+                "GetArray(intArray=[])", "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void FunctionImportNullPrimitiveArray()
+        {
+            // Primitive collection can not be null
+            TestGetStatusCodeIs("GetArray(intArray=null)", 400);
+        }
+
+        [Fact]
+        public void FunctionImportEnumICollection()
+        {
+            TestGetPayloadContains(
+                "GetEnumCollection(coll=['Feature1','Feature2'])", "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Feature)");
+        }
+
+        [Fact]
+        public void FunctionImportEnumEmptyICollection()
+        {
+            TestGetPayloadContains(
+                "GetEnumCollection(coll=[])", "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Feature)");
+        }
+
+        [Fact]
+        public void FunctionImportNullEnumICollection()
+        {
+            TestGetPayloadContains(
+                "GetEnumCollection(coll=null)", "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Feature)");
+        }
+
+        [Fact]
+        public void FunctionImportComplexICollection()
+        {
+            TestGetPayloadContains(
+                "GetComplexCollection(coll=@x)?@x=[{\"Address\":\"NE 24th St.\"},{\"Address\":\"NE 25th St.\"}]", 
+                "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Location)");
+        }
+
+        [Fact]
+        public void FunctionImportComplexEmptyICollection()
+        {
+            TestGetPayloadContains(
+                "GetComplexCollection(coll=@x)?@x=[]",
+                "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Location)");
+        }
+
+        [Fact]
+        public void FunctionImportNullComplexICollection()
+        {
+            TestGetPayloadContains(
+                "GetComplexCollection(coll=null)", 
+                "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Location)");
+        }
+
+        [Fact]
+        public void FunctionImportException()
+        {
+            TestGetStatusCodeIs("GetWithException", 500);
         }
 
         [Fact]

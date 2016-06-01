@@ -93,6 +93,86 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         }
 
         /// <summary>
+        /// Bound function - bound to entity set with one parameter.
+        /// </summary>
+        /// <param name="people">The binding entity set.</param>
+        /// <param name="n">Test parameter.</param>
+        /// <returns>Single value.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public int GetBoundEntitySetIEnumerable(IEnumerable<Person> people, int n)
+        {
+            return n*10;
+        }
+
+        /// <summary>
+        /// Bound function - bound to entity set with two parameters.
+        /// </summary>
+        /// <param name="people">The binding entity set.</param>
+        /// <param name="n">Test parameter.</param>
+        /// <param name="m">Test parameter.</param>
+        /// <returns>Single value.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public int GetBoundEntitySetICollection(ICollection<Person> people, int n, int m)
+        {
+            return n*m;
+        }
+
+        /// <summary>
+        /// Bound function - bound to entity set with two parameters.
+        /// </summary>
+        /// <param name="people">The binding entity set.</param>
+        /// <param name="n">Test parameter.</param>
+        /// <param name="m">Test parameter.</param>
+        /// <returns>Single value.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public int GetBoundEntitySetArray(Person[] people, int n, int m)
+        {
+            return n * m;
+        }
+
+        /// <summary>
+        /// Function import - For non-null primitive test cases
+        /// </summary>
+        /// <returns>value</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public int GetPrimitive()
+        {
+            return 100;
+        }
+
+        /// <summary>
+        /// Function import - Return null for primitive type null test cases
+        /// </summary>
+        /// <returns>The value.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public int? GetNullPrimitive()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Function import - Test parameter is enum and return type is enum.
+        /// </summary>
+        /// <param name="f">Feature.</param>
+        /// <returns>An enum.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public Feature GetEnum(Feature f)
+        {
+            return f;
+        }
+
+        /// <summary>
+        /// Function import - Test parameter is complex and return type is complex.
+        /// </summary>
+        /// <param name="l">The complex type.</param>
+        /// <returns>A complex.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public Location GetComplex(Location l)
+        {
+            return l;
+        }
+
+        /// <summary>
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
@@ -123,6 +203,16 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         }
 
         /// <summary>
+        /// Function import -  Return null for entity null case testing
+        /// </summary>
+        /// <returns>null.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        public Person GetNullEntity()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Function import - gets people with at least n friends.
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
@@ -144,6 +234,111 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        /// <summary>
+        /// Function import - gets people with at least n friends and most of m friends.
+        /// </summary>
+        /// <param name="n">The minimum number of friends.</param>
+        /// <param name="m">The maximum number of friends.</param>
+        /// <returns>People with at least n friends.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        public IEnumerable<Person> GetPeopleWithFriendsAtLeastMost(int n, int m)
+        {
+            if (n > m)
+            {
+                yield return null;
+            }
+
+            foreach (var person in PeopleWithFriends)
+            {
+                if (person.Friends == null)
+                {
+                    continue;
+                }
+
+                if (person.Friends.Count >= n && person.Friends.Count <= m)
+                {
+                    yield return person;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Test null collection case
+        /// </summary>
+        /// <returns>null for test only.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        public IEnumerable<Person> GetNullEntityCollection()
+        {
+            return null;
+        }
+
+
+        /// <summary>
+        /// Function import - Test parameter is IEnumerable of int and return type is IEnumerable of int.
+        /// </summary>
+        /// <param name="intEnumerable">The IEnumerable of int.</param>
+        /// <returns>A IEnumerable of int.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public IEnumerable<int> GetIEnumerable(IEnumerable<int> intEnumerable)
+        {
+            return intEnumerable;
+        }
+
+        /// <summary>
+        /// Function import - Test parameter is ICollection of int and return type is ICollection of int.
+        /// </summary>
+        /// <param name="intColl">The ICollection of int.</param>
+        /// <returns>A ICollection of int.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public ICollection<int> GetICollection(ICollection<int> intColl)
+        {
+            return intColl;
+        }
+
+        /// <summary>
+        /// Function import - Test parameter is Array of int and return type is Array of int.
+        /// </summary>
+        /// <param name="intArray">The Array of int.</param>
+        /// <returns>A Array of int.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public int[] GetArray(int[] intArray)
+        {
+            return intArray;
+        }
+
+        /// <summary>
+        /// Function import - Test parameter is enum collection and return type is enum collection.
+        /// </summary>
+        /// <param name="coll">Feature collection.</param>
+        /// <returns>An enum collection.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public ICollection<Feature> GetEnumCollection(ICollection<Feature> coll)
+        {
+            return coll;
+        }
+
+        /// <summary>
+        /// Function import - Test parameter is complex collection and return type is complex collection.
+        /// </summary>
+        /// <param name="coll">The complex type collection.</param>
+        /// <returns>A complex collection.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public ICollection<Location> GetComplexCollection(ICollection<Location> coll)
+        {
+            return coll;
+        }
+
+        /// <summary>
+        /// Test function exception case
+        /// </summary>
+        /// <returns>null for test only.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public IEnumerable<Person> GetWithException()
+        {
+            throw new ArgumentException("Test get function throw exception");
+        }
+
         protected bool CanDeleteTrips()
         {
             return false;
@@ -152,7 +347,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             // Add customized OData validation settings 
-            Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = (sp) => new ODataValidationSettings
+            Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = sp => new ODataValidationSettings
             {
                 MaxAnyAllExpressionDepth =3,
                 MaxExpansionDepth = 3
