@@ -48,6 +48,10 @@ The example below demonstrates how both types of `{TargetName}` can be used.
 - The third method shows how to prevent execution a custom Action.
 
 ```cs
+using Microsoft.Restier.Providers.EntityFramework;
+using System;
+using System.Security.Claims;
+
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
 
@@ -74,11 +78,11 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         ///</summary>
         protected internal bool CanUpdateTrips()
         {
-            // Use legacy role-based security
-            return HttpContext.Current.User.IsInRole("admin");
+            // Use claims-based security
+            return ClaimsPrincipal.Current.IsInRole("admin");
 
-            // You can also use claims-based security.
-            // return ClaimsPrincipal.Current.IsInRole("admin");
+            // You can also use legacy role-based security, though it's harder to test.
+            //return HttpContext.Current.User.IsInRole("admin");
         }
         
         ///<summary>
@@ -110,6 +114,9 @@ There are two steps to plug in the centralized authorization logic.
 ### Example
 
 ```cs
+using Microsoft.OData.Core;
+using Microsoft.Restier.Providers.EntityFramework;
+
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
 
@@ -156,6 +163,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 }
 ```
 
+NEEDS CLARIFICATION:
 In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic,
 user can defined a property like "private IChangeSetItemAuthorizer Inner {get; set;}" in class CustomizedAuthorizer,
 then call Inner.Inspect() to call RESTier logic which call Authorize part logic defined in section 2.3.
@@ -167,4 +175,124 @@ logic is easily testable, without having to fire up the entire Web API + RESTier
 
 ### Setting up your Unit Test
 
-If you don't have a unit test project for your API project already, start by creating one.
+If you don't have a unit test project for your API project already, start by creating one. Repeat the process
+outlined in "Getting Started" to install the RESTier packages into your Unit Test project. The add the FluentAssertions
+package.
+
+Next, go back to your API. Expand Properties, double-click AssemblyInfo.cs, and add the following line to the very end:
+`[assembly: InternalsVisibleTo("{TestProjectAssembly}")]`, making sure you replace {TestProjectAssembly} with the actual
+assembly name. This is important, because otherwise the tests won't be able to see the `protected internal` methods the
+authorization conventions use.
+
+### Example
+
+Given the [Convention-Based Authorization](#convention-based-authorization) example, the tests below should have 100% code 
+
+coverage, and should pass without any required changes.
+
+```cs
+using FluentAssertions;
+using Microsoft.OData.Core;
+using Microsoft.OData.Service.Sample.Trippin.Api;
+using Microsoft.Restier.Providers.EntityFramework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Security.Claims;
+
+namespace Trippin.Tests.Api
+{
+
+    /// <summary>
+    /// Test cases for the RESTier Method Authorizers.
+    /// </summary>
+    [TestClass]
+    public class TrippinApiTests
+    {
+
+        #region Trips EntitySet
+
+        /// <summary>
+        /// Tests if the Trips EntitySet is properly configured to reject delete requests.
+        /// </summary>
+        [TestMethod]
+        public void TrippinApi_Trips_CanDelete_IsConfigured()
+        {
+            var api = new TrippinApi();
+            api.CanDeleteTrips.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// Tests if the Trips EntitySet is properly configured to accept Admin update requests.
+        /// </summary>
+        [TestMethod]
+        public void TrippinApi_Trips_CanUpdate_IsAdmin()
+        {
+            var api = new TrippinApi();
+
+            // We won't be testing HttpContext-related security here, because that requires mocking,
+            // which is outside the scope of this document.
+            AuthenticateAsAdmin();
+            api.CanUpdateTrips.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// Tests if the Trips EntitySet is properly configured to reject non-Admin update requests.
+        /// </summary>
+        [TestMethod]
+        public void TrippinApi_Trips_CanUpdate_IsNotAdmin()
+        {
+            var api = new TrippinApi();
+            // We won't be testing HttpContext-related security here, because that requires mocking,
+            // which is outside the scope of this document.
+            AuthenticateAsNonAdmin();
+            api.CanUpdateTrips.Should().BeFalse();
+        }
+
+        #endregion
+
+        #region Actions
+
+        /// <summary>
+        /// Tests if the Trips EntitySet is properly configured to reject delete requests.
+        /// </summary>
+        [TestMethod]
+        public void TrippinApi_CanExecuteResetDataSource_IsConfigured()
+        {
+            var api = new TrippinApi();
+            api.CanExecuteResetDataSource.Should().BeFalse();
+        }
+
+        #endregion
+
+        #region Test Helpers
+
+        /// <summary>
+        /// Sets the Thread.CurrentPrincipal to a test user with an "admin" Role Claim.
+        /// </summary>
+        internal static void AuthenticateAsAdmin()
+        {
+            var claimsCollection = new List<Claim>
+            {
+                new Claim(ClaimTypes.Role, "admin")
+            };
+            var claimsIdentity = new ClaimsIdentity(claimsCollection, "Test User");
+            Thread.CurrentPrincipal = new ClaimsPrincipal(claimsIdentity);
+        }
+
+        /// <summary>
+        /// Sets the Thread.CurrentPrincipal to a test user without an "admin" Role Claim.
+        /// </summary>
+        internal static void AuthenticateAsNonAdmin()
+        {
+            var claimsCollection = new List<Claim>();
+            var claimsIdentity = new ClaimsIdentity(claimsCollection, "Test User");
+            Thread.CurrentPrincipal = new ClaimsPrincipal(claimsIdentity);
+        }
+
+        #endregion
+
+    }
+
+}
+
+```
