@@ -1,7 +1,5 @@
 /*
-
 Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
-
 */
 .hljs {
   display: block;
@@ -67,3 +65,12 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
   font-weight: bold;
 }
 
+code
+{
+ font-size: 80%;
+}
+
+td code
+{
+  font-size: 100%;
+}

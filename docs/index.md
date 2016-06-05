@@ -27,16 +27,15 @@ It has since been submitted to and ratified by OASIS as an industry standard for
 Special thanks to everyone involved in making RESTier the best API development platform for .NET. The following people
 have made various contributions to the codebase:
 
-- Lewis Cheng [MS]
-- Dong Liu [MS]
-- Ray Yao [MS]
-- Congyong Su [MS]
-- Vincent He [MS]
-- Layla Liu [MS]
-- Challenh [MS]
-- Mark Stafford [MS]
-- Fan Ouyang [MS]
-- Eric Erhardt [MS]
-- Kemal M
-- Cengiz Ilerler
-- Robert McLaws
+| Microsoft     | External       |
+|---------------|----------------|
+| Lewis Cheng   | Cengiz Ilerler |
+| Challenh      | Kemal M        |
+| Eric Erhardt  | Robert McLaws  |
+| Vincent He    |                |
+| Dong Liu      |                |
+| Layla Liu     |                |
+| Fan Ouyang    |                |
+| Congyong S    |                |
+| Mark Stafford |                |
+| Ray Yao       |                |
