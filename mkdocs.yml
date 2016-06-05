@@ -4,7 +4,7 @@ theme: readthedocs
 pages:
 - Home:
     - 'Introduction': 'index.md'
-    - 'Installation': 'installation.md'
+    - 'Getting Started': 'getting-started.md'
 - Building the Service:
     - 'Entity Set Filters': 'server/filters.md'
     - 'Method Authorization': 'server/method-authorization.md'
