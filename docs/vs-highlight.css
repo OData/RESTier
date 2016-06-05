@@ -65,12 +65,17 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
   font-weight: bold;
 }
 
-code
-{
+code {
  font-size: 80%;
 }
 
-td code
-{
+td code {
   font-size: 100%;
+}
+
+.wy-menu-vertical li.current > a {
+    padding-left: 2.42em;
+}
+.wy-menu-vertical li.current > ul li a {
+    padding-left: 3.23em;
 }
