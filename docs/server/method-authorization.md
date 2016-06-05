@@ -1,17 +1,46 @@
-# Welcome to MkDocs
+# Method Authorization
 
-For full documentation visit [mkdocs.org](http://mkdocs.org).
+Submit logic convention allows users to authorize a submit operation or plug in user logic (such as logging) before 
+and after a submit operation. Usually a submit operation can be inserting an entity, deleting an entity, updating 
+an entity or executing an OData action.
 
-## Commands
+### Convention-Based Authorization
+Users can control if one of the four submit operations is allowed on some entity set or action by putting some 
+**protected** methods into the `Api` class. The method signatures must exactly match the following examples. The 
+method name must conform to `Can{Operation}{TargetName}`.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
+The possible values for {Operation} are:
 
-## Project layout
++  Insert
++  Update
++  Delete
++  Execute
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+Possible values for {TargetName} are:
+
++ *EntitySetName*
++ *ActionName*
+
+```cs
+namespace Microsoft.OData.Service.Sample.Trippin.Api
+{
+    public class TrippinApi : EntityFrameworkApi<TrippinModel>
+    {
+        ...
+        // Can delete an entity from the entity set Trips?
+        protected bool CanDeleteTrips()
+        {
+            return false;
+        }
+        
+        // Can execute an action named ResetDataSource?
+        protected bool CanExecuteResetDataSource()
+        {
+            return false;
+        }
+    }
+}
+```
+
+### Centralized Authorization
+[section 2.9](http://odata.github.io/RESTier/#02-09-Customize-Submit)

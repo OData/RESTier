@@ -1,17 +1,34 @@
-# Welcome to MkDocs
+# Entity Set Filters
 
-For full documentation visit [mkdocs.org](http://mkdocs.org).
+Entity set filter convention helps plug in a piece of filtering logic for entity set. It is done via adding an 
+`OnFilter[entity set name](IQueryable<T> entityset)` method to the `Api` class.
 
-## Commands
+1. The filter method name must be OnFilter[entity set name], ending with the target entity set name.
+2. It must be a **protected** method on the `Api` class.
+3. It should accept an IQueryable<T> parameter and return an IQueryable<T> result where T is the entity type. 
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
+Supposed that ~/AdventureWorksLT/Products can get all the Product entities, the below OnFilterProducts method will filter some Product entities by checking the ProductID.
 
-## Project layout
+```cs
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Provider.EntityFramework;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+namespace AdventureWorksLTSample.Models
+{
+    public class AdventureWorksApi : EntityFrameworkApi<AdventureWorksContext>
+    {
+        protected IQueryable<Product> OnFilterProducts(IQueryable<Product> entitySet)
+        {
+            return entitySet.Where(s => s.ProductID % 3 == 0).AsQueryable();
+        }
+    }
+}
+```
+
+Now some testings will show that:
+
+1. ~/AdventureWorksLT/Products will only get the Product entities whose ProductID is  3,6,9,12,15,... 
+2. ~/AdventureWorksLT/Products([product id]) will only be able to get a Product entity whose ProductID mod 3 results a zero. 
