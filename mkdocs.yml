@@ -1,0 +1,21 @@
+site_name: RESTier Documentation
+site_description: How to use the RESTier framework for .NET.
+theme: readthedocs
+pages:
+- Home:
+    - 'Introduction': 'index.md'
+    - 'Installation': 'installation.md'
+- Building the Service:
+    - 'Entity Set Filters': 'server/filters.md'
+    - 'Method Authorization': 'server/method-authorization.md'
+    - 'Interceptors': 'server/interceptors.md'
+    - 'Model Building': 'server/model-building.md'
+- Extending RESTier:
+    - 'Temporal Types': 'extending-restier/temporal-types.md'
+- Building the Client:
+    - '.NET': 'clients/dot-net.md'
+- Release Notes:
+    - 0.4.0-rc: 'release-notes/0-4-0-rc.md'
+- About:
+    - 'License': 'license.md'
+    - 'Contributing': 'contribution-guidelines.md'
