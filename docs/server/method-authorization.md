@@ -179,15 +179,14 @@ If you don't have a unit test project for your API project already, start by cre
 outlined in "Getting Started" to install the RESTier packages into your Unit Test project. The add the FluentAssertions
 package.
 
-Next, go back to your API. Expand Properties, double-click AssemblyInfo.cs, and add the following line to the very end:
-`[assembly: InternalsVisibleTo("{TestProjectAssembly}")]`, making sure you replace {TestProjectAssembly} with the actual
-assembly name. This is important, because otherwise the tests won't be able to see the `protected internal` methods the
-authorization conventions use.
+Next, go back to your API project. Expand the "Properties" node, double-click AssemblyInfo.cs, and add the following line
+to the very end of the file: `[assembly: InternalsVisibleTo("{TestProjectAssembly}")]`, making sure you replace 
+{TestProjectAssembly} with the actual assembly name. This is important, because otherwise the tests won't be able to see 
+the `protected internal` methods the authorization conventions use.
 
 ### Example
 
 Given the [Convention-Based Authorization](#convention-based-authorization) example, the tests below should have 100% code 
-
 coverage, and should pass without any required changes.
 
 ```cs

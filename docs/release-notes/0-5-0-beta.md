@@ -1,7 +1,7 @@
 ## Downloads
 
- - NuGet: 
- - [Source (Zip)](https://github.com/OData/RESTier/archive/0.4.0-rc.zip)
+ - NuGet: `Install-Package Microsoft.Restier -Pre` [[Website](http://www.nuget.org/packages/Microsoft.Restier/0.5.0-beta)]
+ - Source: [[Zip](https://github.com/OData/RESTier/archive/0.5.0-beta.zip)] [[Tarball](https://github.com/OData/RESTier/archive/0.5.0-beta.tar.gz)]
 
 ## New Features
 
