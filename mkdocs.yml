@@ -12,6 +12,8 @@ pages:
     - 'Model Building': 'server/model-building.md'
 - Extending RESTier:
     - 'Temporal Types': 'extending-restier/temporal-types.md'
+    - 'In-Memory Provider': 'extending-restier/in-memory-provider.md'
+    - 'Additinal Operations': 'extending-restier/additional-operations.md'
 - Building the Client:
     - '.NET': 'clients/dot-net.md'
 - Release Notes:
@@ -19,3 +21,6 @@ pages:
 - About:
     - 'License': 'license.md'
     - 'Contributing': 'contribution-guidelines.md'
+markdown_extensions:
+    - toc:
+        baselevel: "1"

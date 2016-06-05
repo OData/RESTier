@@ -1,3 +1,5 @@
+## Temporal Types
+
 When using Microsoft.Restier.Providers.EntityFramework, temporal types are now supported. The table below shows how Temporal Types map to SQL Types:
 
 |        EF Type        |      SQL Type      |      Edm Type      | Need ColumnAttribute? |
