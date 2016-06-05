@@ -24,6 +24,7 @@ pages:
 - About:
     - 'License': 'license.md'
     - 'Contributing': 'contribution-guidelines.md'
+extra_css: [vs-highlight.css]
 markdown_extensions:
     - toc:
         baselevel: "1"
