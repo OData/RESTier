@@ -1,6 +1,7 @@
-## Temporal Types
+# Temporal Types
 
-When using Microsoft.Restier.Providers.EntityFramework, temporal types are now supported. The table below shows how Temporal Types map to SQL Types:
+When using the Microsoft.Restier.Providers.EntityFramework provider, temporal types are now supported. The table below 
+shows how Temporal Types map to SQL Types:
 
 |        EF Type        |      SQL Type      |      Edm Type      | Need ColumnAttribute? |
 |:---------------------:|:------------------:|:------------------:|:---------------------:|
@@ -12,8 +13,10 @@ When using Microsoft.Restier.Providers.EntityFramework, temporal types are now s
 
 The next sections illustrate how to use use temporal types in various scenarios.
 
-### Add Edm.DateTimeOffset property
-Suppose you have an entity class `Person`, all the following code define `Edm.DateTimeOffset` properties in the EDM model though the underlying SQL types are different (see the value of the `TypeName` property). You can see Column attribute is optional here.
+## Edm.DateTimeOffset
+Suppose you have an entity class `Person`, all the following code define `Edm.DateTimeOffset` properties in the 
+EDM model though the underlying SQL types are different (see the value of the `TypeName` property). You can see 
+Column attribute is optional here.
 
 
     using System;
@@ -33,7 +36,7 @@ Suppose you have an entity class `Person`, all the following code define `Edm.Da
     }
 
 
-### Add Edm.Date property
+## Edm.Date
 The following code define an `Edm.Date` property in the EDM model.
 
     using System;
@@ -45,7 +48,7 @@ The following code define an `Edm.Date` property in the EDM model.
         public DateTime BirthDate { get; set; }
     }
 
-### Add Edm.Duration property
+## Edm.Duration
 The following code define an `Edm.Duration` property in the EDM model.
 
     using System;
@@ -56,8 +59,9 @@ The following code define an `Edm.Duration` property in the EDM model.
         public TimeSpan WorkingHours { get; set; }
     }
 
-### Add Edm.TimeOfDay property
-The following code define an `Edm.TimeOfDay` property in the EDM model. Please note that you MUST NOT omit the `ColumnTypeAttribute` on a `TimeSpan` property otherwise it will be recognized as an `Edm.Duration` as described above.
+## Edm.TimeOfDay
+The following code define an `Edm.TimeOfDay` property in the EDM model. Please note that you MUST NOT omit the 
+`ColumnTypeAttribute` on a `TimeSpan` property otherwise it will be recognized as an `Edm.Duration` as described above.
 
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -68,4 +72,6 @@ The following code define an `Edm.TimeOfDay` property in the EDM model. Please n
         public TimeSpan BirthTime { get; set; }
     }
 
-As before, if you have the need to override `ODataPayloadValueConverter`, please now change to override `RestierPayloadValueConverter` instead in order not to break the payload value conversion specialized for these temporal types.
+As before, if you have the need to override `ODataPayloadValueConverter`, please now change to override 
+`RestierPayloadValueConverter` instead in order not to break the payload value conversion specialized for these 
+temporal types.

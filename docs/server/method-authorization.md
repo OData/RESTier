@@ -12,9 +12,9 @@ No matter what approach you chose, the concept is simple. Either technique uses 
 Return `true`, and processing continues normally. Return `false`, and RESTier returns a 403 Unauthorized to the client.
 
 ## Convention-Based Authorization
-Users can control if one of the four submit operations is allowed on some entity set or action by putting some 
-`protected internal` methods into the `Api` class. The method signatures must exactly match the following examples. The 
-method name must conform to the convention `Can{Operation}{TargetName}`.
+Users can control if one of the four submit operations is allowed on some EntitySet or Action by putting some 
+`protected internal` methods into the `Api` class. The method name must conform to the convention
+`Can{Operation}{TargetName}`.
 
 <table style="width: 100%;">
     <tr>
