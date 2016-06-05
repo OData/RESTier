@@ -3,11 +3,11 @@
 RESTier is a RESTful API development framework for building standardized, OData V4 based RESTful services on .NET 
 platform. It can be seen as a middle-ware on top of [**Web API OData**](http://odata.github.io/WebApi/). 
 
-RESTier is the spiritual successor to WCF Data Services. Instead of generating endless boilerplate code with the current
-Web API + OData toolchain, RESTier helps you boostrap a standardized, queryable HTTP-based REST interface in literally
-minutes. And that's just the beginning.
+RESTier is the spiritual successor to [WCF Data Services](https://en.wikipedia.org/wiki/WCF_Data_Services). Instead of 
+generating endless boilerplate code with the current Web API + OData toolchain, RESTier helps you boostrap a standardized, 
+queryable HTTP-based REST interface in literally minutes. And that's just the beginning.
 
-Like WCF Data Services, RESTier provides simple and straightforward ways to shape queries and intercept submissions
+Like WCF Data Services before it, RESTier provides simple and straightforward ways to shape queries and intercept submissions
 before and after they hit the database. And like Web API + OData, you still have the flexibility to add your own
 custom queries and actions with techniques you're already familiar with.
 
