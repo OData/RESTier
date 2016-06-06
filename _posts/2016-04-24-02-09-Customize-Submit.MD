@@ -18,8 +18,8 @@ First create a class CustomizedAuthorizer implement IChangeSetItemAuthorizer, an
 
 public class CustomizedAuthorizer : IChangeSetItemAuthorizer
 {
-    // The inner handler will call CanUpdate/Insert/Delete<EntitySet> method
-    private IChangeSetItemProcessor Inner { get; set; }
+    // The inner Authorizer will call CanUpdate/Insert/Delete<EntitySet> method
+    private IChangeSetItemAuthorizer InnerAuthorizer { get; set; }
 
     public Task<bool> AuthorizeAsync(
         SubmitContext context,
@@ -48,7 +48,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 }
 {% endhighlight %}
 
-In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic, user can defined a property like "private IChangeSetItemAuthorizer Inner {get; set;}" in class CustomizedAuthorizer, then call Inner.Inspect() to call RESTier logic which call Authorize part logic defined in section 2.3.
+In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic, user can defined a property like "private IChangeSetItemAuthorizer InnerAuthorizer {get; set;}" in class CustomizedAuthorizer, then call InnerAuthorizer.AuthorizeAsync() to call RESTier logic which call Authorize part logic defined in section 2.3.
 
 
 **Customized Validation Logic**
@@ -86,7 +86,7 @@ The steps to plugin the logic is same as above.
 
 **Customized Process Logic**
 
-User can use interface IChangeSetItemProcessor to customize logic before or after submit, PreProcess logic is called before submit and PostProcess logic is called after submit, RESTier default logic is defined in section 2.3 plugin user logic part. Default logic can be called via defined a property with type IChangeSetItemProcessor like "private IChangeSetItemProcessor Inner {get; set;}", and user call Inner.PreProcess or PostProcess to call RESTier logic, if in CustomizedProcessor, there is no such property defined or inner is not used, then RESTier logic will not be called.
+User can use interface IChangeSetItemProcessor to customize logic before or after submit, OnProcessingChangeSetItemAsync logic is called before submit and OnProcessedChangeSetItemAsync logic is called after submit, RESTier default logic is defined in section 2.3 plugin user logic part. Default logic can be called via defined a property with type IChangeSetItemProcessor like "private IChangeSetItemProcessor InnerProcessor {get; set;}", and user call InnerProcessor.OnProcessingChangeSetItemAsync or OnProcessedChangeSetItemAsync to call RESTier logic, if in CustomizedProcessor, there is no such property defined or InnerProcessor is not used, then RESTier logic will not be called.
 
 
 
@@ -95,17 +95,17 @@ namespace Microsoft.OData.Service.Sample.Trippin.Submit
 {
     public class CustomizedSubmitProcessor : IChangeSetItemProcessor
     {
-        private IChangeSetItemProcessor Inner { get; set; }
+        private IChangeSetItemProcessor InnerProcessor { get; set; }
 
         // Any customized logic needed before persist called can be added here.
-        // Inner call related OnUpdating|Inseting|Deleting<EntitySet> methods
+        // InnerProcessor call related OnUpdating|Inseting|Deleting<EntitySet> methods
         public Task OnProcessingChangeSetItemAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
-            return Inner.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
+            return InnerProcessor.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
         }
 
         // Any customized logic needed after persist called can be added here.
-        // Inner call related OnUpdated|Inseted|Deleted<EntitySet> methods
+        // InnerProcessor call related OnUpdated|Inseted|Deleted<EntitySet> methods
         public Task OnProcessedChangeSetItemAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
             var dataModificationItem = item as DataModificationItem;
@@ -150,7 +150,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Submit
                     // Key is defined based on convention
                 }
             }
-            return Inner.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
+            return InnerProcessor.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
         }
     }
 }
