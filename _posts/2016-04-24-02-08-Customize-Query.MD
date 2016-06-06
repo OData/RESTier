@@ -56,7 +56,7 @@ Second, registering it into RESTier Dependency Injection framework as a service 
         }
 {% endhighlight %}
 
-In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic, user can defined a property like "private IQueryExpressionAuthorizer Inner {get; set;}" in class CustomizedAuthorizer, then call Inner.Authorize() to call RESTier logic.
+In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic, user can defined a property like "private IQueryExpressionAuthorizer InnerAuthorizer {get; set;}" in class CustomizedAuthorizer, then call InnerAuthorizer.Authorize() to call RESTier logic.
 
 
 **Customized Process Logic**
