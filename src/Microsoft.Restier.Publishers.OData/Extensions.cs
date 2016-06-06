@@ -75,6 +75,9 @@ namespace Microsoft.Restier.Publishers.OData
 
         public static IEdmTypeReference GetReturnTypeReference(this Type type, IEdmModel model)
         {
+            // In case it is a nullable type, get the underlying type
+            type = TypeHelper.GetUnderlyingTypeOrSelf(type);
+
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>))
             {
                 // if the action returns a Task<T>, map that to just be returning a T

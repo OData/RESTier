@@ -162,6 +162,16 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         }
 
         /// <summary>
+        /// Function import - Test return null enum.
+        /// </summary>
+        /// <returns>null.</returns>
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        public Feature? GetNullEnum()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Function import - Test parameter is complex and return type is complex.
         /// </summary>
         /// <param name="l">The complex type.</param>

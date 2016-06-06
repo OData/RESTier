@@ -199,7 +199,9 @@ namespace Microsoft.Restier.Publishers.OData.Model
         {
             foreach (FunctionMethodInfo functionInfo in this.functionInfos)
             {
-                var returnTypeReference = functionInfo.Method.ReturnType.GetReturnTypeReference(model);
+                // With this method, if return type is nullable type,it will get underlying type
+                var returnType = TypeHelper.GetUnderlyingTypeOrSelf(functionInfo.Method.ReturnType);
+                var returnTypeReference = returnType.GetReturnTypeReference(model);
 
                 ParameterInfo bindingParameter;
                 bool isBound = TryGetBindingParameter(functionInfo.Method, model, out bindingParameter);

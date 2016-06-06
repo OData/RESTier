@@ -97,8 +97,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("People(1)/Friends?$count=true")]
         [InlineData("People?$filter=PersonId gt 5&$count=true")]
         [InlineData("Me/Friends?$count=true")]
-        // TODO this will enable with other operation's query option and $count&$value path segment
-        // [InlineData("GetPeopleWithFriendsAtLeast(n=1)?$count=true")]
+        [InlineData("GetPeopleWithFriendsAtLeast(n=1)?$count=true")]
         public void TestCountQueryOptionIsTrue(string uriStringAfterServiceRoot)
         {
             this.TestGetPayloadContains(uriStringAfterServiceRoot, "@odata.count");

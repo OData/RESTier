@@ -41,8 +41,8 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
             this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
             this.handlers[ODataSegmentKinds.Singleton] = this.HandleSingletonPathSegment;
-            this.handlers[ODataSegmentKinds.UnboundFunction] = this.HandleUnboundFunctionPathSegment;
-            this.handlers[ODataSegmentKinds.Function] = this.HandleBoundFunctionPathSegment;
+            this.handlers[ODataSegmentKinds.UnboundFunction] = this.EmptyHandler;
+            this.handlers[ODataSegmentKinds.Function] = this.EmptyHandler;
             this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
             this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
             this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;
@@ -194,12 +194,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             this.currentType = this.queryable.ElementType;
         }
 
-        private void HandleUnboundFunctionPathSegment(ODataPathSegment segment)
-        {
-            // Nothing will be done
-        }
-
-        private void HandleBoundFunctionPathSegment(ODataPathSegment segment)
+        private void EmptyHandler(ODataPathSegment segment)
         {
             // Nothing will be done
         }

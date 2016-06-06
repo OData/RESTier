@@ -96,6 +96,20 @@ namespace Microsoft.OData.Service.Sample.Tests
                 "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
         }
 
+        public void EntitySetBoundFunctionTypeCast()
+        {
+            TestGetPayloadContains(
+                "People/Microsoft.OData.Service.Sample.Trippin.Models.Employee/Microsoft.OData.Service.Sample.Trippin.Models.GetBoundEntitySetIEnumerable(n=10)",
+                "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
+        public void EntitySetBoundFunctionCollectionNavigation()
+        {
+            TestGetPayloadContains(
+                "People(0)/Friends/Microsoft.OData.Service.Sample.Trippin.Models.GetBoundEntitySetIEnumerable(n=10)",
+                "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
         [Fact]
         public void FunctionImportPrimitive()
         {
@@ -122,6 +136,13 @@ namespace Microsoft.OData.Service.Sample.Tests
             // A default value is returned.
             TestGetPayloadContains(
                 "GetEnum(f=null)", "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Feature");
+        }
+
+        [Fact]
+        public void FunctionImportNullEnumParameter()
+        {
+            // A default value is returned.
+            TestGetStatusCodeIs("GetNullEnum", 204);
         }
 
         [Fact]
@@ -301,6 +322,27 @@ namespace Microsoft.OData.Service.Sample.Tests
             TestGetPayloadContains(
                 "GetComplexCollection(coll=null)", 
                 "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Location)");
+        }
+
+        [Fact]
+        public void FunctionImportQueryOptionsFilter()
+        {
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeast(n=1)?$filter=FirstName eq 'Scott'", "http://localhost:18384/api/Trippin/$metadata#People");
+        }
+
+        [Fact]
+        public void FunctionImportQueryOptionsCount()
+        {
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeast(n=1)?$count=true", "@odata.count");
+        }
+
+        [Fact]
+        public void FunctionImportQueryOptionsFilterAndCount()
+        {
+            TestGetPayloadContains(
+                "GetPeopleWithFriendsAtLeast(n=1)?$filter=FirstName eq 'Scott'&$count=true", "http://localhost:18384/api/Trippin/$metadata#People");
         }
 
         [Fact]

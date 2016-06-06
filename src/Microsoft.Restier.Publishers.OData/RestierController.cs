@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -20,7 +21,6 @@ using System.Web.OData.Formatter;
 using System.Web.OData.Query;
 using System.Web.OData.Results;
 using System.Web.OData.Routing;
-using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
@@ -32,7 +32,6 @@ using Microsoft.Restier.Publishers.OData.Formatter;
 using Microsoft.Restier.Publishers.OData.Properties;
 using Microsoft.Restier.Publishers.OData.Query;
 using Microsoft.Restier.Publishers.OData.Results;
-using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
 
 namespace Microsoft.Restier.Publishers.OData
@@ -75,39 +74,52 @@ namespace Microsoft.Restier.Publishers.OData
         public async Task<HttpResponseMessage> Get(
             CancellationToken cancellationToken)
         {
-            HttpRequestMessageProperties odataProperties = this.Request.ODataProperties();
-            ODataPath path = odataProperties.Path;
-            if (path == null)
+            ODataPath path = this.GetPath();
+            ODataPathSegment lastSegment = path.Segments.LastOrDefault();
+            if (lastSegment == null)
             {
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
             }
 
-            var result = default(IQueryable);
+            IQueryable result = null;
 
-            // If it is a unbound function, call Api function directly
-            ODataPathSegment lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment != null && lastSegment.SegmentKind != ODataSegmentKinds.UnboundFunction)
-            {
-                IQueryable queryable = this.GetQuery();
-                QueryRequest queryRequest = new QueryRequest(queryable)
-                {
-                    ShouldReturnCount = this.shouldReturnCount
-                };
-
-                QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
-
-                this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
-                result = queryResult.Results.AsQueryable();
-            }
+            // Get queryable path builder to builder
+            IQueryable queryable = this.GetQuery(path);
 
             // TODO #365 Do not support additional path segment after function call now
-            if (lastSegment != null && lastSegment.SegmentKind == ODataSegmentKinds.UnboundFunction)
+            if (lastSegment.SegmentKind == ODataSegmentKinds.UnboundFunction)
             {
-                result = ExecuteUnboundFunction((UnboundFunctionPathSegment)lastSegment, cancellationToken);
+                var unboundSegment = (UnboundFunctionPathSegment) lastSegment;
+                Func<string, object> getParaValueFunc = p => unboundSegment.GetParameterValue(p);
+                result = await ExecuteFunction(getParaValueFunc, unboundSegment.FunctionName, cancellationToken, null);
+
+                result = ApplyQueryOptions(result, path, true);
             }
-            else if (lastSegment != null && lastSegment.SegmentKind == ODataSegmentKinds.Function)
+            else
             {
-                result = ExecuteBoundFunction((BoundFunctionPathSegment)lastSegment, cancellationToken, result);
+                if (queryable == null)
+                {
+                    throw new HttpResponseException(
+                        this.Request.CreateErrorResponse(
+                            HttpStatusCode.NotFound,
+                            Resources.ResourceNotFound));
+                }
+
+                if (lastSegment.SegmentKind == ODataSegmentKinds.Function)
+                {
+                    result = await ExecuteQuery(queryable, cancellationToken);
+
+                    var boundSeg = (BoundFunctionPathSegment) lastSegment;
+                    Func<string, object> getParaValueFunc = p => boundSeg.GetParameterValue(p);
+                    result = await ExecuteFunction(getParaValueFunc, boundSeg.Function.Name, cancellationToken, result);
+
+                    result = ApplyQueryOptions(result, path, true);
+                }
+                else
+                {
+                    queryable = ApplyQueryOptions(queryable, path, false);
+                    result = await ExecuteQuery(queryable, cancellationToken);
+                }
             }
 
             return this.CreateQueryResponse(result, path.EdmType);
@@ -460,22 +472,18 @@ namespace Microsoft.Restier.Publishers.OData
             return this.Request.CreateResponse(HttpStatusCode.OK, entityResult);
         }
 
-        private IQueryable GetQuery()
+        private IQueryable GetQuery(ODataPath path)
         {
-            ODataPath path = this.GetPath();
-
             RestierQueryBuilder builder = new RestierQueryBuilder(this.Api, path);
             IQueryable queryable = builder.BuildQuery();
             this.shouldReturnCount = builder.IsCountPathSegmentPresent;
             this.shouldWriteRawValue = builder.IsValuePathSegmentPresent;
-            if (queryable == null)
-            {
-                throw new HttpResponseException(
-                    this.Request.CreateErrorResponse(
-                        HttpStatusCode.NotFound,
-                        Resources.ResourceNotFound));
-            }
 
+            return queryable;
+        }
+
+        private IQueryable ApplyQueryOptions(IQueryable queryable, ODataPath path, bool applyCount)
+        {
             if (this.shouldWriteRawValue)
             {
                 // Query options don't apply to $value.
@@ -498,7 +506,7 @@ namespace Microsoft.Restier.Publishers.OData
                 return queryable;
             }
 
-            if (queryOptions.Count != null)
+            if (queryOptions.Count != null && !applyCount)
             {
                 RestierQueryExecutorOptions queryExecutorOptions =
                     Api.Context.GetApiService<RestierQueryExecutorOptions>();
@@ -512,9 +520,30 @@ namespace Microsoft.Restier.Publishers.OData
 
             // Entity count can NOT be evaluated at this point of time because the source
             // expression is just a placeholder to be replaced by the expression sourcer.
-            queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.Count);
+            if (!applyCount)
+            {
+                queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.Count);
+            }
+            else
+            {
+                queryable = queryOptions.ApplyTo(queryable, settings);
+            }
 
             return queryable;
+        }
+
+        private async Task<IQueryable> ExecuteQuery(IQueryable queryable, CancellationToken cancellationToken)
+        {
+            QueryRequest queryRequest = new QueryRequest(queryable)
+            {
+                ShouldReturnCount = this.shouldReturnCount
+            };
+
+            QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
+
+            this.Request.Properties[ETagGetterKey] = this.Api.Context.GetProperty(ETagGetterKey);
+            var result = queryResult.Results.AsQueryable();
+            return result;
         }
 
         private ODataPath GetPath()
@@ -550,114 +579,86 @@ namespace Microsoft.Restier.Publishers.OData
             return originalValues;
         }
 
-        private IQueryable ExecuteUnboundFunction(UnboundFunctionPathSegment segment,
-            CancellationToken cancellationToken)
-        {
-            // model build does not support operation with same name
-            // So method with same name but different signature is not considered.
-            MethodInfo method = Api.GetType().GetMethod(segment.FunctionName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-            var parameterArray = method.GetParameters();
-
-            var model = Api.GetModelAsync(cancellationToken).Result;
-
-            // Parameters of method and model is exactly mapped or there is parsing error
-            var parameters = new Collection<object>();
-            foreach (var parameter in parameterArray)
-            {
-                var currentParameterValue = segment.GetParameterValue(parameter.Name);
-                var parameterTypeRef = parameter.ParameterType.GetTypeReference(model);
-
-                // Change to right CLR class for collection/Enum/Complex/Entity
-                var convertedValue = DeserializationHelpers.ConvertValue(currentParameterValue, parameter.ParameterType, ref parameterTypeRef, Api);
-                parameters.Add(convertedValue);
-            }
-
-            return ExecuteFunction(method, parameters, cancellationToken);
-        }
-
-
-        private IQueryable ExecuteBoundFunction(BoundFunctionPathSegment segment,
+        private async Task<IQueryable> ExecuteFunction(Func<string, object> getParaValueFunc, string functionName,
             CancellationToken cancellationToken, IQueryable bindingParameterValue)
         {
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
-            MethodInfo method = Api.GetType().GetMethod(segment.Function.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            MethodInfo method = Api.GetType().GetMethod(functionName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             var parameterArray = method.GetParameters();
 
-            var model = Api.GetModelAsync(cancellationToken).Result;
+            var model = await Api.GetModelAsync(cancellationToken);
 
             // Parameters of method and model is exactly mapped or there is parsing error
-            var parameters = new Collection<object>();
+            var parameters = new object[parameterArray.Length];
 
-            // Add binding parameter which is first parameter of method
-            var enumerableType = parameterArray[0].ParameterType.FindGenericType(typeof (IEnumerable<>));
-            if (enumerableType != null)
+            int paraIndex = 0;
+            if (bindingParameterValue != null)
             {
-                // This means function is bound to an entity set.
-                // IQueryable should always have generic type argument
-                var elementClrType = enumerableType.GenericTypeArguments[0];
-
-                // For entity set, user can write as ICollection<> or IEnumerable<> or array as method parameters
-                if (parameterArray[0].ParameterType.IsArray)
-                {
-                    var toListMethodInfo = typeof(Enumerable).GetMethod("ToArray").MakeGenericMethod(elementClrType);
-                    var listResult1 = toListMethodInfo.Invoke(null, new object[] { bindingParameterValue });
-                    parameters.Add(listResult1);
-                }
-                else if (parameterArray[0].ParameterType.FindGenericType(typeof (ICollection<>)) != null)
-                {
-                    var toListMethodInfo = typeof (Enumerable).GetMethod("ToList").MakeGenericMethod(elementClrType);
-                    var listResult = toListMethodInfo.Invoke(null, new object[] {bindingParameterValue});
-                    parameters.Add(listResult);
-                }
-                else
-                {
-                    parameters.Add(bindingParameterValue);
-                }
-            }
-            else
-            {
-                parameters.Add(bindingParameterValue.SingleOrDefault());
+                // Add binding parameter which is first parameter of method
+                parameters[0] = PrepareBindingParameter(parameterArray[0].ParameterType, bindingParameterValue);
+                paraIndex = 1;
             }
 
-            for (int i=1;i< parameterArray.Length;i++)
+            for (; paraIndex < parameterArray.Length; paraIndex++)
             {
-                var parameter =parameterArray[i];
-                var currentParameterValue = segment.GetParameterValue(parameter.Name);
+                var parameter = parameterArray[paraIndex];
+                var currentParameterValue = getParaValueFunc(parameter.Name);
                 var parameterTypeRef = parameter.ParameterType.GetTypeReference(model);
-                var convertedValue = DeserializationHelpers.ConvertValue(currentParameterValue, parameter.ParameterType, ref parameterTypeRef, Api);
-                parameters.Add(convertedValue);
+
+                // Change to right CLR class for collection/Enum/Complex/Entity
+                var convertedValue = DeserializationHelpers.ConvertValue(currentParameterValue, parameter.ParameterType, parameterTypeRef, model, Api);
+                parameters[paraIndex] = convertedValue;
             }
 
-            return ExecuteFunction(method, parameters, cancellationToken);
+            return InvokeFunction(method, parameters, model);
         }
 
-        private IQueryable ExecuteFunction(MethodInfo method, Collection<object> parameters, CancellationToken cancellationToken)
+        private static object PrepareBindingParameter(Type bindingType, IQueryable bindingParameterValue)
         {
-            object result = method.Invoke(Api, parameters.ToArray());
-            var model = Api.GetModelAsync(cancellationToken).Result;
-            IEdmTypeReference returnType = method.ReturnType.GetReturnTypeReference(model);
+            var enumerableType = bindingType.FindGenericType(typeof(IEnumerable<>));
 
-            if (returnType.IsCollection())
+            // This means binding to a single entity
+            if (enumerableType == null)
             {
+                return bindingParameterValue.SingleOrDefault();
+            }
+
+            // This means function is bound to an entity set.
+            // IQueryable should always have generic type argument
+            var elementClrType = enumerableType.GenericTypeArguments[0];
+
+            // For entity set, user can write as ICollection<> or IEnumerable<> or array as method parameters
+            if (bindingType.IsArray)
+            {
+                var toArrayMethodInfo = ExpressionHelperMethods.EnumerableToArrayGeneric.MakeGenericMethod(elementClrType);
+                var arrayResult = toArrayMethodInfo.Invoke(null, new object[] { bindingParameterValue });
+                return arrayResult;
+            }
+
+            if (bindingType.FindGenericType(typeof(ICollection<>)) != null)
+            {
+                var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric.MakeGenericMethod(elementClrType);
+                var listResult = toListMethodInfo.Invoke(null, new object[] { bindingParameterValue });
+                return listResult;
+            }
+
+            return bindingParameterValue;
+        }
+
+        private IQueryable InvokeFunction(MethodInfo method, object[] parameters, IEdmModel model)
+        {
+            object result = method.Invoke(Api, parameters);
+            var returnType = method.ReturnType;
+            IEdmTypeReference edmReturnType = method.ReturnType.GetReturnTypeReference(model);
+
+            if (edmReturnType.IsCollection())
+            {
+                var elementClrType = returnType.GetElementType() ??
+                                     returnType.GenericTypeArguments[0];
                 if (result == null)
                 {
-                    var elementClrType = method.ReturnType.GetElementType() ??
-                                         method.ReturnType.GenericTypeArguments[0];
-                    
-                    var constructor = typeof(List<>).MakeGenericType(elementClrType).GetConstructor(Type.EmptyTypes);
-                    if (constructor != null)
-                    {
-                        var instance = constructor.Invoke(new object[] {});
-                        var asQueryableMethod = typeof(Queryable).GetMethod(
-                            "AsQueryable",
-                            BindingFlags.Static | BindingFlags.Public,
-                            null,
-                            new[] { typeof(IEnumerable<>) },
-                            null);
-                        var emptyQuerable = asQueryableMethod.Invoke(null, new object[] { instance }) as IQueryable;
-                        return emptyQuerable;
-                    }
+                    return ExpressionHelpers.CreateEmptyQueryable(elementClrType);
                 }
 
                 var enumerableType = result.GetType().FindGenericType(typeof(IEnumerable<>));
@@ -665,11 +666,19 @@ namespace Microsoft.Restier.Publishers.OData
                 {
                     return ((IEnumerable)result).AsQueryable();
                 }
+
+                // Should never hint this path, add here to make sure collection result will not hint single result part
+                return ExpressionHelpers.CreateEmptyQueryable(elementClrType);
             }
 
-            // Single result and result could be null
-            var output = new[] { result }.AsQueryable();
-            return output;
+            // This means this is single result
+            // cannot return new[] { result }.AsQueryable(); as need to return in its own type but not object type
+            var objectQueryable = new[] { result }.AsQueryable();
+            var castMethodInfo = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(method.ReturnType);
+            var castedResult = castMethodInfo.Invoke(null, new object[] { objectQueryable });
+            var typedQueryable = ExpressionHelperMethods.QueryableAsQueryable.Invoke(null, new object[] { castedResult }) as IQueryable;
+
+            return typedQueryable;
         }
 
         private IHttpActionResult CreateCreatedODataResult(object entity)
