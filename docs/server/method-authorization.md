@@ -121,13 +121,10 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
 
     ///<summary>
-    ///
+    /// Provides global ChangeSet Authorization for a RESTier API. 
     ///</summary>
     public class CustomAuthorizer : IChangeSetItemAuthorizer
     {
-
-        // The inner handler will call CanUpdate/Insert/Delete<EntitySet> method
-        private IChangeSetItemProcessor Inner { get; set; }
 
         ///<summary>
         ///
@@ -163,10 +160,68 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 }
 ```
 
-NEEDS CLARIFICATION:
-In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic,
-user can defined a property like "private IChangeSetItemAuthorizer Inner {get; set;}" in class CustomizedAuthorizer,
-then call Inner.Inspect() to call RESTier logic which call Authorize part logic defined in section 2.3.
+## Leveraging Both Techniques
+
+There may be certain situations where you want to have a global interceptor, and then pass requests off to the individual
+convention-based interceptors. For example, if you need to authenticate a Bearer token. The example below shows you
+exactly how this type of scenario would work.
+
+### Example
+
+```cs
+using Microsoft.OData.Core;
+using Microsoft.Restier.Providers.EntityFramework;
+
+namespace Microsoft.OData.Service.Sample.Trippin.Api
+{
+
+    ///<summary>
+    /// Provides global ChangeSet Authorization for a RESTier API. 
+    ///</summary>
+    public class CustomAuthorizer : IChangeSetItemAuthorizer
+    {
+
+        ///<summary>
+        /// The built-in ChangeSetItemAuthorizer instance that will be set by RESTier.
+        ///<summary>
+        private IChangeSetItemAuthorizer InnerAuthorizer {get; set;}
+
+        ///<summary>
+        ///
+        ///</summary>
+        public Task<bool> AuthorizeAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
+        {
+	        // TODO: RWM: Provide legitimate samples here, along with parameter documentation.
+
+            // Hand off processing to the appropriate convention-based function.
+            await InnerAuthorizer.AuthorizeAsync(context, item, cancellationToken);
+        }
+
+    }
+
+    ///<summary>
+    /// Customizations to the EntityFrameworkApi for the TripPin service.
+    ///</summary>
+    ///<example>
+    /// Add the following line in WebApiConfig.cs to register this code:
+    /// await config.MapRestierRoute<TrippinApi>("Trippin", "api", new RestierBatchHandler(GlobalConfiguration.DefaultServer));
+    ///</example>
+    public class TrippinApi : EntityFrameworkApi<TrippinModel>
+    {
+
+        ///<summary>
+        /// Allows us to leverage DI to inject additional capabilities into RESTier.
+        ///</summary>
+        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        {
+            return base.ConfigureApi(services)
+                .AddService<IChangeSetItemAuthorizer, CustomizedAuthorizer>();
+        }
+
+    }
+
+}
+```
 
 ## Unit Testing Considerations
 

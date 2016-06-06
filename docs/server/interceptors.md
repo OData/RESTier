@@ -76,29 +76,25 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         ///<summary>
         /// Specifies whether or not a Trip can be deleted from an EntitySet.
         ///</summary>
-        protected internal bool CanDeleteTrips()
+        protected void OnInsertingTrip(Trip trip)
         {
-            return false;
+            Trace.WriteLine($"{DateTime.Now.ToString()}: {trip.TripId} is being Inserted.");
+            
+            if (string.IsNullOrWhiteSpace(trip.Description))
+            {
+                throw new ODataException("The Trip Description cannot be blank.");
+            }
         }
 
         ///<summary>
-        /// User role-based security to specifies whether or not a updated Trip can be sent to an EntitySet.
+        /// Specifies whether or not a Trip can be deleted from an EntitySet.
         ///</summary>
-        protected internal bool CanUpdateTrips()
+        protected void OnInsertedTrip(Trip trip)
         {
-            // Use claims-based security
-            return ClaimsPrincipal.Current.IsInRole("admin");
+            Trace.WriteLine($"{DateTime.Now.ToString()}: {trip.tripId} has been Inserted.");
 
-            // You can also use legacy role-based security, though it's harder to test.
-            //return HttpContext.Current.User.IsInRole("admin");
-        }
-        
-        ///<summary>
-        /// Specifies whether or not an Action called ResetDataSource can be executed through the API.
-        ///</summary>
-        protected internal bool CanExecuteResetDataSource()
-        {
-            return false;
+            // Pseudocode that represents a real business process.
+            // EmailManager.SendTripWelcome(trip);
         }
 
     }
