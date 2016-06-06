@@ -59,4 +59,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 }
 ```
 
-    ## Centralized Filtering
+## Centralized Filtering
+
+TODO: Pull content from Section 2.8.
