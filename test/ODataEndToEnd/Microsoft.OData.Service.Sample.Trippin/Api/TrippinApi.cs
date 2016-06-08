@@ -7,14 +7,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Query;
+using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.OData.Edm.Library.Annotations;
 using Microsoft.OData.Edm.Library.Values;
+using Microsoft.OData.Service.Sample.Trippin.Extension;
 using Microsoft.OData.Service.Sample.Trippin.Models;
-using Microsoft.OData.Service.Sample.Trippin.Submit;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
@@ -150,7 +151,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            // Add customized OData valiadtion settings 
+            // Add customized OData validation settings 
             Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = (sp) => new ODataValidationSettings
             {
                 MaxAnyAllExpressionDepth =3,
@@ -160,6 +161,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             return base.ConfigureApi(services)
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
+                .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()
                 .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
                 .AddService<IModelBuilder, TrippinModelExtender>();
         }

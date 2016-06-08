@@ -282,6 +282,18 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 {
                     Name = "Emirates",
                     AirlineCode = "EK"
+                },
+
+                new Airline
+                {
+                    Name = "Slash%2F",
+                    AirlineCode = "S/"
+                },
+
+                new Airline
+                {
+                    Name = "BackSlash%5C",
+                    AirlineCode = "BS\\"
                 }
             };
             instance.Airlines.AddRange(airlines);

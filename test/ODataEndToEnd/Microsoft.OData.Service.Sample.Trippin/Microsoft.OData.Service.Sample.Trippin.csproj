@@ -49,6 +49,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\TrippinController.cs" />
     <Compile Include="Api\TrippinApi.cs" />
+    <Compile Include="Extension\PathAndSlashEscapeODataPathHandler.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -68,7 +69,7 @@
     <Compile Include="Models\Trip.cs" />
     <Compile Include="Models\TrippinModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Submit\CustomizedSubmitProcessor.cs" />
+    <Compile Include="Extension\CustomizedSubmitProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
