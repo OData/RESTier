@@ -14,6 +14,8 @@ custom queries and actions with techniques you're already familiar with.
 But RESTier isn't just for OData and the Entity Framework. It also supports adding additional publishers to support other 
 protocols and additional providers to support other data sources.
 
+Hi quick change!
+
 ## What is OData?
 
 OData stands for the Open Data Protocol. OData enables the creation and consumption of RESTful APIs, which allow 
