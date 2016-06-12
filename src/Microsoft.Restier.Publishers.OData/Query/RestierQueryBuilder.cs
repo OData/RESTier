@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web.OData;
 using System.Web.OData.Routing;
 using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Query
@@ -237,7 +235,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
             this.currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
 
-            // Check whether property is null or not before futher selection
+            // Check whether property is null or not before further selection
             var whereExpression =
                 CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
             this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
@@ -273,7 +271,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             var structuralPropertyExpression =
                 Expression.Property(entityParameterExpression, propertySegment.PropertyName);
 
-            // Check whether property is null or not before futher selection
+            // Check whether property is null or not before further selection
             if (propertySegment.Property.Type.IsNullable && !propertySegment.Property.Type.IsPrimitive())
             {
                 var whereExpression =

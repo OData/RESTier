@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -113,7 +114,7 @@ namespace Microsoft.Restier.Core.Query
         /// to create a model reference for whole function call.
         /// </summary>
         private static QueryModelReference ComputeQueryModelReference(
-            MethodCallExpression methodCall, QueryModelReference source)
+            MethodCallExpression methodCall, QueryModelReference source, IEdmModel model)
         {
             var method = methodCall.Method;
 
@@ -125,9 +126,69 @@ namespace Microsoft.Restier.Core.Query
                 return new QueryModelReference(source.EntitySet, source.Type);
             }
 
-            // source is a sequence of T1 and output is a sequence of T2
-            // Like query People(key)/Trips or People/NS.DerivedPeople
-            // TODO Null is return in these cases now, need return correct value
+            // In case sourceType IEnumerable<Person> and resultType is IEnumerable<SelectExpandBinder.SelectAllAndExpand<Person>>
+            // or IEnumerable<SelectExpandBinder.SelectAll<Person>> or IEnumerable<SelectExpandBinder.SelectSome<Person>>
+            // or IEnumerable<SelectExpandBinder.SelectSomeAndInheritance<Person>>
+            if (sourceType != null && resultType != null)
+            {
+                var resultGenericType = resultType.GenericTypeArguments[0];
+                if (resultGenericType.IsGenericType)
+                {
+                    var resultElementType = resultGenericType.GenericTypeArguments[0];
+                    var sourceElementType = sourceType.GenericTypeArguments[0];
+
+                    // Handle source is type of sub class and result is a base class
+                    if (resultElementType == sourceElementType || sourceElementType.IsSubclassOf(resultElementType))
+                    {
+                        return new QueryModelReference(source.EntitySet, source.Type);
+                    }
+                }
+            }
+
+            // In this case, the sourceType is null
+            if (method.Name.Equals("OfType"))
+            {
+                // Did not consider multiple namespaces have same entity type case
+                var entityName = resultType.GenericTypeArguments[0].Name;
+                var emdEntityType = model.SchemaElements.SingleOrDefault(e => e.Name == entityName);
+                var collType = new EdmCollectionType(new EdmEntityTypeReference((IEdmEntityType)emdEntityType, false));
+                return new QueryModelReference(source.EntitySet, collType);
+            }
+
+            // Till here, it means different result set
+            // This mean result is a collection
+            if (resultType != null)
+            {
+                // Did not consider multiple namespaces have same entity type case
+                var typeName = resultType.GenericTypeArguments[0].Name;
+                var emdType = model.SchemaElements.SingleOrDefault(e => e.Name == typeName);
+                
+                // This means Entity/Complex/Enum
+                IEdmTypeReference edmTypeReference = null;
+                if (emdType != null)
+                {
+                    if ((emdType as IEdmEntityType) != null)
+                    {
+                        edmTypeReference = new EdmEntityTypeReference((IEdmEntityType) emdType, false);
+                    }
+                    else if ((emdType as IEdmComplexType) != null)
+                    {
+
+                        edmTypeReference = new EdmComplexTypeReference((IEdmComplexType)emdType, false);
+                    }
+                    else if ((emdType as IEdmEnumType) != null)
+                    {
+
+                        edmTypeReference = new EdmEnumTypeReference((IEdmEnumType)emdType, false);
+                    }
+                    var collType = new EdmCollectionType(edmTypeReference);
+                    return new QueryModelReference(null, collType);
+                }
+
+                // TODO Here means a collection of primitive type
+            }
+
+            // TODO Need to handle single result case
 
             // TODO GitHubIssue#29 : Handle projection operators in query expression
             return null;
@@ -188,7 +249,7 @@ namespace Microsoft.Restier.Core.Query
                     var thisModelReference = this.GetModelReferenceForNode(methodCall.Arguments[0]);
                     if (thisModelReference != null)
                     {
-                        modelReference = ComputeQueryModelReference(methodCall, thisModelReference);
+                        modelReference = ComputeQueryModelReference(methodCall, thisModelReference, this.QueryContext.Model);
                     }
                 }
 
@@ -198,54 +259,113 @@ namespace Microsoft.Restier.Core.Query
             var parameter = this.VisitedNode as ParameterExpression;
             if (parameter != null)
             {
-                foreach (var node in this.GetExpressionTrail())
-                {
-                    methodCall = node as MethodCallExpression;
-                    if (methodCall == null)
-                    {
-                        continue;
-                    }
-
-                    modelReference = this.GetModelReferenceForNode(node);
-                    if (modelReference == null)
-                    {
-                        continue;
-                    }
-
-                    var method = methodCall.Method;
-                    var sourceType = method.GetParameters()[0]
-                        .ParameterType.FindGenericType(typeof(IEnumerable<>));
-                    var resultType = method.ReturnType
-                        .FindGenericType(typeof(IEnumerable<>));
-                    if (sourceType != resultType)
-                    {
-                        continue;
-                    }
-
-                    var typeOfT = sourceType.GetGenericArguments()[0];
-                    if (parameter.Type == typeOfT)
-                    {
-                        var collectionType = modelReference.Type as IEdmCollectionType;
-                        if (collectionType != null)
-                        {
-                            modelReference = new QueryModelReference(modelReference.EntitySet, collectionType.ElementType.Definition);
-                            break;
-                        }
-                    }
-                }
-
-                return modelReference;
+                return ComputeParameterModelReference(parameter);
             }
 
             var member = this.VisitedNode as MemberExpression;
             if (member != null)
             {
-                modelReference = this.GetModelReferenceForNode(member.Expression);
-                if (modelReference != null)
+                return ComputeMemberModelReference(member);
+            }
+
+            return null;
+        }
+
+        private QueryModelReference ComputeParameterModelReference(ParameterExpression parameter)
+        {
+
+            QueryModelReference modelReference = null;
+            foreach (var node in this.GetExpressionTrail())
+            {
+                var methodCall = node as MethodCallExpression;
+                if (methodCall == null)
                 {
-                    modelReference = new PropertyModelReference(
-                        modelReference, member.Member.Name);
+                    continue;
                 }
+
+                modelReference = this.GetModelReferenceForNode(node);
+                if (modelReference == null)
+                {
+                    continue;
+                }
+
+                var method = methodCall.Method;
+                var sourceType = method.GetParameters()[0].ParameterType.FindGenericType(typeof(IEnumerable<>));
+                var resultType = method.ReturnType.FindGenericType(typeof(IEnumerable<>));
+                if (sourceType != resultType)
+                {
+                    // In case sourceType IEnumerable<Person> and resultType is IEnumerable<SelectExpandBinder.SelectAllAndExpand<Person>>
+                    // or IEnumerable<SelectExpandBinder.SelectAll<Person>> or IEnumerable<SelectExpandBinder.SelectSome<Person>>
+                    // or IEnumerable<SelectExpandBinder.SelectSomeAndInheritance<Person>>
+                    if (sourceType != null && resultType != null)
+                    {
+                        var resultGenericType = resultType.GenericTypeArguments[0];
+                        if (!resultGenericType.IsGenericType ||
+                            resultGenericType.GenericTypeArguments[0] != sourceType.GenericTypeArguments[0])
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                var typeOfT = sourceType.GetGenericArguments()[0];
+                if (parameter.Type == typeOfT)
+                {
+                    var collectionType = modelReference.Type as IEdmCollectionType;
+                    if (collectionType != null)
+                    {
+                        modelReference = new ParameterModelReference(modelReference.EntitySet, collectionType.ElementType.Definition);
+                        break;
+                    }
+                }
+            }
+
+            return modelReference;
+        }
+
+        private QueryModelReference ComputeMemberModelReference(MemberExpression member)
+        {
+            QueryModelReference modelReference = null;
+            var memberExp = member.Expression;
+            if (memberExp.NodeType == ExpressionType.Parameter)
+            {
+                modelReference = this.GetModelReferenceForNode(memberExp);
+            }
+            else if (memberExp.NodeType == ExpressionType.TypeAs)
+            {
+                var resultType = memberExp.Type;
+                var parameterExpression = (memberExp as UnaryExpression).Operand;
+
+                // Handle result is employee, and get person's property case
+                // member expression will be "Param_0 As Person"
+                if (parameterExpression.Type.IsSubclassOf(resultType))
+                {
+                    modelReference = this.GetModelReferenceForNode(parameterExpression);
+                }
+                // member expression will be "Param_0 As Employee"
+                else
+                {
+                    var emdEntityType = this.QueryContext.Model.SchemaElements.SingleOrDefault(e => e.Name == resultType.Name);
+
+                    var structuredType = emdEntityType as IEdmStructuredType;
+                    if (structuredType != null)
+                    {
+                        var property = structuredType.FindProperty(member.Member.Name);
+                        modelReference = this.GetModelReferenceForNode(parameterExpression);
+                        modelReference = new PropertyModelReference(member.Member.Name, property, modelReference);
+                        return modelReference;
+                    }
+                }
+            }
+
+            if (modelReference != null)
+            {
+                modelReference = new PropertyModelReference(
+                    modelReference, member.Member.Name);
             }
 
             return modelReference;

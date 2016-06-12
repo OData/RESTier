@@ -270,8 +270,17 @@ namespace Microsoft.Restier.Core.Query
                     {
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
-                            throw new InvalidOperationException(
-                                Resources.ProcessorCannotChangeExpressionType);
+                            // In order to filter on the navigation properties, the type is changed from ICollection<> to IQueryable<>
+                            var collectionType = visited.Type.FindGenericType(typeof(ICollection<>));
+                            var queryableType = filtered.Type.FindGenericType(typeof(IQueryable<>));
+                            if (collectionType == null 
+                                || queryableType == null 
+                                || (collectionType.GenericTypeArguments[0] != queryableType.GenericTypeArguments[0] 
+                                && !queryableType.GenericTypeArguments[0].IsAssignableFrom(collectionType.GenericTypeArguments[0])))
+                            {
+                                throw new InvalidOperationException(
+                                    Resources.ProcessorCannotChangeExpressionType);
+                            }
                         }
 
                         this.processedExpressions.Add(visited, processed);

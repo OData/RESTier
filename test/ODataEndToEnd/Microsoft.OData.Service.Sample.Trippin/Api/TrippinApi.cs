@@ -39,6 +39,26 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        protected IQueryable<Person> OnFilterPeople(IQueryable<Person> entitySet)
+        {
+            return entitySet.Where(s => s.PersonId % 2 == 0).AsQueryable();
+        }
+
+        protected IQueryable<Person> OnFilterPerson(IQueryable<Person> entitySet)
+        {
+            return entitySet.Where(s => s.PersonId % 2 == 0).AsQueryable();
+        }
+
+        protected IQueryable<Trip> OnFilterTrips(IQueryable<Trip> entitySet)
+        {
+            return entitySet.Where(s => s.TripId % 2 == 0).AsQueryable();
+        }
+
+        protected IQueryable<Trip> OnFilterTrip(IQueryable<Trip> entitySet)
+        {
+            return entitySet.Where(s => s.TripId % 2 == 0).AsQueryable();
+        }
+
         private IQueryable<Person> PeopleWithFriends
         {
             get { return Context.People.Include("Friends"); }

@@ -37,6 +37,9 @@ namespace System.Linq.Expressions
 
         private static MethodInfo enumerableToListMethod = typeof(Enumerable).GetMethod("ToList");
 
+        private static MethodInfo asQueryableMethodGeneric = 
+            GenericMethodOf(_ => Queryable.AsQueryable<int>(default(IEnumerable<int>)));
+
         public static MethodInfo QueryableSelectGeneric
         {
             get { return selectMethod; }
@@ -65,6 +68,12 @@ namespace System.Linq.Expressions
         public static MethodInfo QueryableAsQueryable
         {
             get { return asQueryableMethod; }
+
+        }
+
+        public static MethodInfo QueryableAsQueryableGeneric
+        {
+            get { return asQueryableMethodGeneric; }
         }
 
         public static MethodInfo EnumerableCastGeneric
@@ -81,7 +90,7 @@ namespace System.Linq.Expressions
         {
             get { return enumerableToArrayMethod; }
         }
-
+ 
         private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression)
         {
             return GenericMethodOf(expression as Expression);

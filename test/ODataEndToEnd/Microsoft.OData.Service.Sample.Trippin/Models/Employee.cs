@@ -8,7 +8,9 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
     public class Employee : Person
     {
         public virtual ICollection<Person> Peers { get; set; }
-        
+
+        public virtual ICollection<Manager> Bosses { get; set; }
+
         public long Cost { get; set; }
     }
 }
