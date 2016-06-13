@@ -1,30 +1,38 @@
-# Building the EDM Model
+# Customizing the Entity Model
 
-RESTier supports various ways to build EDM model. Users may first get an initial model from the EF provider. 
-Then RESTier's `RestierModelExtender` can further extend the model with additional entity sets, singletons 
-and operations from the public properties and methods defined in the `Api` class. 
+OData and the Entity Framework are based on the same underlying concept for mapping the idea of an Entity with
+its representation in the database. That "mapping" layer is called the Entity Data Model, or EDM for short.
 
-This subsection mainly talks about how to build an initial EDM model and then the convention RESTier adopts to 
-extend an EDM model from an `Api` class.
+Part of the beautiy of RESTier is that, for the majority of API builders, it can construct your EDM for you
+*automagically*. But there are times where you have to take charge of the process. And as with many things in RESTier,
+the intrepid developers at Microsoft provide you with two ways to do so.
 
-## Build an initial EDM model
-The `RestierModelExtender` requires EDM types to be present in the initial model because it is only responsible 
-for building entity sets, singletons and operations **NOT types**. So anyway users need to build an initial EDM 
-model with adequate types added in advance. The typical way to do so is to write a custom model builder implementing 
-`IModelBuilder` and register it to the `Api` class. Here is an example using the 
-[`**ODataConventionModelBuilder**`](http://odata.github.io/WebApi/#02-04-convention-model-builder) in OData Web API 
-to build an initial model only containing the `Person` type.
+The first method allows you to completely relpace the automagic model construction with your own, in a manner
+very similar to Web API OData.
 
-Any model building methods supported by Web API OData can be used here, refer to 
-**[Web API OData Model builder ](http://odata.github.io/WebApi/#02-01-model-builder-abstract)**document for more information.
+The second method lets RESTier do the initial work for you, and then you manipulate the resulting EDM metadata.
+
+Let's take a look at how each of these methods work.
+
+## ModelBuilder Takeover
+
+There are several situations where you are likely going to want to use this approach to create your Model.
+For example, if you're migrating from an existing Web API OData v3 or v4 implementation, and needed to
+customize that model, you will be able to copy/paste your existing code over, with just a few small changes.
+If you're building a new model, but you're using Entity Framework Model First + SQL Views, then you'll
+likely need to define a primary key, or omit the View from your service.
+
+With the Entity Framework provider, the model is built with the
+[**ODataConventionModelBuilder**](http://odata.github.io/WebApi/#02-04-convention-model-builder). To 
+understand how this ModelBuilder works, please take a few minutes and review that documentation.
+
+# Example
 
 ```cs
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +43,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
 
     internal class CustomizedModelBuilder : IModelBuilder
     {
-        public Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+        public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             var builder = new ODataConventionModelBuilder();
             builder.EntityType<Person>();
@@ -54,8 +62,8 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
         ///</summary>
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            services.AddService<IModelBuilder, CustomizedModelBuilder>();
-            return base.ConfigureApi(services);
+            return base.ConfigureApi(services)
+                .AddService<IModelBuilder, CustomizedModelBuilder>();
         }
 
     }
@@ -67,10 +75,7 @@ If RESTier entity framework provider is used and user has no additional types ot
 custom model builder or even the `Api` class is required because the provider will take over to build the model instead. 
 But what the provider does behind the scene is similar.
 
-With entity framework provider, the model by default is built with 
-[**ODataConventionModelBuilder**](http://odata.github.io/WebApi/#02-04-convention-model-builder), refer to 
-[document](http://odata.github.io/WebApi/#02-04-convention-model-builder) on the conversions been used like how the 
-builder identifies keys for entity type and so on. 
+
 
 ## Extend a model from Api class
 The `RestierModelExtender` will further extend the EDM model passed in using the public properties and methods defined in the 
