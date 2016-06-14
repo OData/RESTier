@@ -210,8 +210,6 @@
         <Parameter Name="diff" Type="Edm.Int32" Nullable="false" />
       </Action>
       <Action Name="ResetDataSource" />
-    </Schema>
-    <Schema Namespace="Default" xmlns="http://docs.oasis-open.org/odata/ns/edm">
       <EntityContainer Name="Container">
         <EntitySet Name="Categories" EntityType="Microsoft.OData.Service.Sample.Northwind.Models.Category">
           <NavigationPropertyBinding Path="Products" Target="Products" />

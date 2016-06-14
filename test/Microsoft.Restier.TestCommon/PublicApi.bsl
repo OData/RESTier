@@ -615,6 +615,16 @@ public sealed class Microsoft.Restier.Publishers.OData.Model.ApiConfigurationExt
 	public static Microsoft.Restier.Core.ApiConfiguration IgnoreProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
 }
 
+public class Microsoft.Restier.Publishers.OData.Model.RestierModelBuilder : IModelBuilder {
+	public RestierModelBuilder ()
+
+	public virtual void ExtendModel (System.Web.OData.Builder.ODataConventionModelBuilder builder)
+	[
+	AsyncStateMachineAttribute(),
+	]
+	public virtual System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.Model.ModelContext context, System.Threading.CancellationToken cancellationToken)
+}
+
 [
 AttributeUsageAttribute(),
 ]

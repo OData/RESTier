@@ -73,24 +73,8 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
 
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
-            Type apiType = this.GetType();
-            // Add core and convention's services
-            services = services.AddCoreServices(apiType)
-                .AddAttributeServices(apiType)
-                .AddConventionBasedServices(apiType);
-
-            // Add EF related services
-            services.AddEfProviderServices<NorthwindContext>();
-
-            // Add customized services, after EF model builder and before WebApi operation model builder
-            // This can be added after base.ConfigureApi,
-            // add in middle just used as a sample on how to add service in middle of different RESTier services.
-            services.AddService<IModelBuilder, NorthwindModelExtender>();
-
-            // This is used to add the publisher's services
-            services.AddODataServices<NorthwindApi>();
-
-            return services;
+            return base.ConfigureApi(services)
+                .AddService<IModelBuilder, NorthwindModelExtender>();
         }
 
         // Entity set filter
@@ -123,37 +107,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             {
                 var model = await InnerHandler.GetModelAsync(context, cancellationToken);
 
-                // EF Model builder does not build model any more but just entity set name and entity type map
-                if (model == null)
-                {
-                    var collection = context.EntitySetTypeMap;
-                    if (collection == null || collection.Count == 0)
-                    {
-                        return null;
-                    }
-
-                    // Collection is set by EF now, and EF model producer will not build model any more
-                    var builder = new ODataConventionModelBuilder();
-                    MethodInfo method = typeof(ODataConventionModelBuilder).GetMethod("EntitySet",
-                        BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-
-                    foreach (var pair in collection)
-                    {
-                        //Build a method with the specific type argument you're interested in
-                        var specifiedMethod = method.MakeGenericMethod(pair.Value);
-                        var parameters = new object[]
-                        {
-                            pair.Key
-                        };
-                        specifiedMethod.Invoke(builder, parameters);
-                    }
-
-                    // Clear the map collection to make RESTier model builder will not build the model again.
-                    collection.Clear();
-                    model = builder.GetEdmModel();
-                }
-
-                // Way 2: enable auto-expand through model annotation.
+                // enable auto-expand through model annotation.
                 var orderType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Order");
                 var orderDetailsProperty = (EdmNavigationProperty)orderType.DeclaredProperties
                     .Single(prop => prop.Name == "Order_Details");

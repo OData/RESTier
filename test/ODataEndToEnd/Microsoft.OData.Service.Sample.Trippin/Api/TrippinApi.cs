@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.OData.Builder;
 using System.Web.OData.Query;
 using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework;
 using Microsoft.Restier.Publishers.OData.Model;
+using System.Reflection;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
@@ -61,8 +63,9 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         /// <summary>
         /// Implements an action import.
+        /// Default namespace will be same as the namespace of entity set and entity type
         /// </summary>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        [Operation(HasSideEffects = true)]
         public void ResetDataSource()
         {
             TrippinModel.ResetDataSource();
@@ -70,8 +73,9 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         /// <summary>
         /// Action import - clean up all the expired trips.
+        /// Specified namespace will be used.
         /// </summary>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Different.Namespace", HasSideEffects = true)]
         public void CleanUpExpiredTrips()
         {
             // DO NOT ACTUALLY REMOVE THE TRIPS.
@@ -199,7 +203,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// </summary>
         /// <param name="person">The key of the binding person.</param>
         /// <returns>The number of friends of the person.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        [Operation]
         public int GetNumberOfFriends(Person person)
         {
             if (person == null)
@@ -305,7 +309,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// Function import - gets the person with most friends.
         /// </summary>
         /// <returns>The person with most friends.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        [Operation(EntitySet = "People")]
         public Person GetPersonWithMostFriends()
         {
             Person result = null;
@@ -346,7 +350,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// </summary>
         /// <param name="n">The minimum number of friends.</param>
         /// <returns>People with at least n friends.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        [Operation]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n)
         {
             foreach (var person in PeopleWithFriends)
@@ -487,11 +491,22 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
                 .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()
                 .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
-                .AddService<IModelBuilder, TrippinModelExtender>();
+                .AddTransient<RestierModelBuilder, TrippinModelExtender>()
+                .AddService<IModelBuilder, TrippinModelCustomizer>();
         }
 
 
-        private class TrippinModelExtender : IModelBuilder
+        private class TrippinModelExtender : RestierModelBuilder
+        {
+            public override void ExtendModel(ODataConventionModelBuilder builder)
+            {
+                // Add additional entity set and entity type before operation model builder is called
+                // Existing builder content be can be customized too here before it is built.
+                builder.EntitySet<Extender>("Extenders");
+            }
+        }
+
+        private class TrippinModelCustomizer : IModelBuilder
         {
             public IModelBuilder InnerHandler { get; set; }
 
@@ -508,6 +523,15 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 var anno2 = new EdmAnnotation(timeStampValueProp, term, new EdmBooleanConstant(true));
                 ((EdmModel)model).SetVocabularyAnnotation(anno1);
                 ((EdmModel)model).SetVocabularyAnnotation(anno2);
+
+                var personType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Person");
+                var type = personType.FindProperty("PersonId").Type;
+
+                var isNullableField = typeof(EdmTypeReference).GetField("isNullable",BindingFlags.Instance | BindingFlags.NonPublic);
+                if (isNullableField != null)
+                {
+                    isNullableField.SetValue(type, false);
+                }
 
                 return model;
             }

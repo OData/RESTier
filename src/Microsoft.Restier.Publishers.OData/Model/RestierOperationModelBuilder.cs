@@ -19,8 +19,8 @@ namespace Microsoft.Restier.Publishers.OData.Model
     internal class RestierOperationModelBuilder : IModelBuilder
     {
         private readonly Type targetType;
-        private readonly ICollection<FunctionMethodInfo> actionInfos = new List<FunctionMethodInfo>();
-        private readonly ICollection<FunctionMethodInfo> functionInfos = new List<FunctionMethodInfo>();
+        private readonly ICollection<OperationMethodInfo> actionInfos = new List<OperationMethodInfo>();
+        private readonly ICollection<OperationMethodInfo> functionInfos = new List<OperationMethodInfo>();
 
         private RestierOperationModelBuilder(Type targetType)
         {
@@ -52,8 +52,15 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
 
             this.ScanForOperations();
-            this.BuildFunctions(model);
-            this.BuildActions(model);
+
+            string existingNamespace = null;
+            if (model.DeclaredNamespaces != null)
+            {
+                existingNamespace = model.DeclaredNamespaces.FirstOrDefault();
+            }
+            
+            this.BuildFunctions(model, existingNamespace);
+            this.BuildActions(model, existingNamespace);
             return model;
         }
 
@@ -146,7 +153,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 {
                     if (!functionAttribute.HasSideEffects)
                     {
-                        functionInfos.Add(new FunctionMethodInfo
+                        functionInfos.Add(new OperationMethodInfo
                         {
                             Method = method,
                             OperationAttribute = functionAttribute
@@ -154,7 +161,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                     }
                     else
                     {
-                        actionInfos.Add(new FunctionMethodInfo
+                        actionInfos.Add(new OperationMethodInfo
                         {
                             Method = method,
                             OperationAttribute = functionAttribute
@@ -164,17 +171,19 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private void BuildActions(EdmModel model)
+        private void BuildActions(EdmModel model, string modelNamespace)
         {
-            foreach (FunctionMethodInfo actionInfo in this.actionInfos)
+            foreach (OperationMethodInfo actionInfo in this.actionInfos)
             {
                 var returnTypeReference = actionInfo.Method.ReturnType.GetReturnTypeReference(model);
 
                 ParameterInfo bindingParameter;
                 bool isBound = TryGetBindingParameter(actionInfo.Method, model, out bindingParameter);
 
+                string namespaceName = GetNamespaceName(actionInfo, modelNamespace);
+
                 var action = new EdmAction(
-                    actionInfo.Namespace,
+                    namespaceName,
                     actionInfo.Name,
                     returnTypeReference,
                     isBound,
@@ -193,9 +202,9 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private void BuildFunctions(EdmModel model)
+        private void BuildFunctions(EdmModel model, string modelNamespace)
         {
-            foreach (FunctionMethodInfo functionInfo in this.functionInfos)
+            foreach (OperationMethodInfo functionInfo in this.functionInfos)
             {
                 // With this method, if return type is nullable type,it will get underlying type
                 var returnType = TypeHelper.GetUnderlyingTypeOrSelf(functionInfo.Method.ReturnType);
@@ -204,8 +213,10 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 ParameterInfo bindingParameter;
                 bool isBound = TryGetBindingParameter(functionInfo.Method, model, out bindingParameter);
 
+                string namespaceName = GetNamespaceName(functionInfo, modelNamespace);
+
                 var function = new EdmFunction(
-                    functionInfo.Namespace,
+                    namespaceName,
                     functionInfo.Name,
                     returnTypeReference,
                     isBound,
@@ -225,7 +236,26 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private class FunctionMethodInfo
+        private static string GetNamespaceName(OperationMethodInfo methodInfo, string modelNamespace)
+        {
+            // customized the namespace logic, customized namespace is P0
+            string namespaceName = methodInfo.OperationAttribute.Namespace;
+
+            if (namespaceName != null)
+            {
+                return namespaceName;
+            }
+
+            if (modelNamespace != null)
+            {
+                return modelNamespace;
+            }
+
+            // This returns defined class namespace
+            return methodInfo.Namespace;
+        }
+
+        private class OperationMethodInfo
         {
             public MethodInfo Method { get; set; }
 

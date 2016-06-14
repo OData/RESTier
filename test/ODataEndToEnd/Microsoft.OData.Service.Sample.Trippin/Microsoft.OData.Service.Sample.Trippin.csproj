@@ -60,6 +60,7 @@
     <Compile Include="Models\Conference.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\Event.cs" />
+    <Compile Include="Models\Extender.cs" />
     <Compile Include="Models\Feature.cs" />
     <Compile Include="Models\Flight.cs" />
     <Compile Include="Models\GlodSponsor.cs" />
