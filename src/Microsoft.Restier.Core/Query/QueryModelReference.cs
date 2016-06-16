@@ -176,7 +176,6 @@ namespace Microsoft.Restier.Core.Query
         }
     }
 
-
     /// <summary>
     /// Represents a reference to parameter data in terms of a model.
     /// It does not have special logic

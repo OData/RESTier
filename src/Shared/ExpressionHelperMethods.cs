@@ -31,14 +31,14 @@ namespace System.Linq.Expressions
                             new[] { typeof(IEnumerable<>) },
                             null);
 
+        private static MethodInfo asQueryableMethodGeneric =
+            GenericMethodOf(_ => Queryable.AsQueryable<int>(default(IEnumerable<int>)));
+
         private static MethodInfo enumerableCastMethod = typeof(Enumerable).GetMethod("Cast");
 
         private static MethodInfo enumerableToArrayMethod = typeof(Enumerable).GetMethod("ToArray");
 
         private static MethodInfo enumerableToListMethod = typeof(Enumerable).GetMethod("ToList");
-
-        private static MethodInfo asQueryableMethodGeneric = 
-            GenericMethodOf(_ => Queryable.AsQueryable<int>(default(IEnumerable<int>)));
 
         public static MethodInfo QueryableSelectGeneric
         {

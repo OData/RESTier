@@ -71,11 +71,11 @@ namespace Microsoft.Restier.Core.Conventions
                     return null;
                 }
 
-                return AppendOnFilter(context, entityType.Name);
+                return AppendOnFilterExpression(context, entityType.Name);
             }
 
             var propertyModelReference = context.ModelReference as PropertyModelReference;
-            if (propertyModelReference != null)
+            if (propertyModelReference != null && propertyModelReference.Property != null)
             {
                 // Could be a single navigation property or a collection navigation property
                 var propType = propertyModelReference.Property.Type;
@@ -104,13 +104,13 @@ namespace Microsoft.Restier.Core.Conventions
                     currentType = (EdmEntityType) currentType.BaseType;
                 }
 
-                return AppendOnFilter(context, currentType.Name);
+                return AppendOnFilterExpression(context, currentType.Name);
             }
 
             return null;
         }
 
-        private Expression AppendOnFilter(QueryExpressionContext context, string entityTypeName)
+        private Expression AppendOnFilterExpression(QueryExpressionContext context, string entityTypeName)
         {
             var methodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
             var method = this.targetType.GetQualifiedMethod(methodName);
@@ -162,8 +162,7 @@ namespace Microsoft.Restier.Core.Conventions
                 elementType = returnType.GetGenericArguments()[0];
             }
             
-            var queryType = typeof(EnumerableQuery<>)
-                    .MakeGenericType(elementType);
+            var queryType = typeof(EnumerableQuery<>).MakeGenericType(elementType);
             var query = Activator.CreateInstance(queryType, enumerableQueryPara);
             var result = method.Invoke(apiBase, new object[] { query }) as IQueryable;
             if (method.ReturnType == returnType)
@@ -176,7 +175,7 @@ namespace Microsoft.Restier.Core.Conventions
             else
             {
                 // This means calling onFilter against derived type and based type is returned
-                // Need to convert back to derived type
+                // Need to convert back to derived type with OfType
                 if (result != null)
                 {
                     result = ExpressionHelpers.OfType(result, elementType);

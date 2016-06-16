@@ -107,7 +107,6 @@ namespace Microsoft.OData.Service.Sample.Tests
             using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
             {
                 var modelStr = r.ReadToEnd();
-                Assert.Contains("<EntityType Name=\"SpecialOrder\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Order\">", modelStr, StringComparison.Ordinal);
                 Assert.Contains("<EntityType Name=\"Manager\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
                 Assert.Contains("<EntityType Name=\"Employee\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
             }

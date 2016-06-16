@@ -26,25 +26,25 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("Staffs?$expand=PeerStaffs", "OnfilterSimpleExpand1")]
         [InlineData("Staffs?$expand=Conferences", "OnfilterSimpleExpand2")]
         [InlineData("Staffs?$expand=PeerStaffs,Conferences", "OnfilterSimpleExpand3")]
-        // Path plus navigation cases
+        // Navigation property with expand clause cases
         [InlineData("Staffs(2)/PeerStaffs?$expand=PeerStaffs", "OnFilterPathExpand1")]
         [InlineData("Staffs(2)/PeerStaffs?$expand=Conferences", "OnFilterPathExpand2")]
         [InlineData("Staffs(2)/PeerStaffs?$expand=PeerStaffs,Conferences", "OnFilterPathExpand3")]
         [InlineData("Staffs(2)/Conferences?$expand=Sponsors", "OnFilterPathExpand4")]
-        //Type cast in path expand cases
+        //Type cast in path with expand clause cases
         [InlineData("Staffs/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff?$expand=PeerStaffs", "OnFilterCastPath1")]
         [InlineData("Staffs/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff?$expand=Conferences", "OnFilterCastPath2")]
         [InlineData("Staffs/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff?$expand=PeerSeniorStaffs", "OnFilterCastPath3")]
         [InlineData("Staffs/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff?$expand=HighEndConferences", "OnFilterCastPath4")]
         [InlineData("Staffs/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff?$expand=PeerStaffs, Conferences, PeerSeniorStaffs, HighEndConferences", "OnFilterCastPath5")]
         [InlineData("Staffs(2)/Conferences/Microsoft.OData.Service.Sample.Trippin.Models.HighEndConference?$expand=Sponsors, GlodSponsors", "OnFilterCastPath6")]
-        // Type cast in expand cases
+        // Type cast in expand clause cases
         [InlineData("Staffs?$expand=Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/PeerStaffs", "OnFilterCastExpand1")]
         [InlineData("Staffs?$expand=Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/Conferences", "OnFilterCastExpand2")]
         [InlineData("Staffs?$expand=Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/PeerSeniorStaffs", "OnFilterCastExpand3")]
         [InlineData("Staffs?$expand=Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/HighEndConferences", "OnFilterCastExpand4")]
         [InlineData("Staffs?$expand=PeerStaffs, Conferences, Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/PeerSeniorStaffs, Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/HighEndConferences", "OnFilterCastExpand5")]
-        // Type cast path property expand case
+        // Type cast in path property with expand clause cases
         [InlineData("Staffs(6)/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/PeerStaffs?$expand=PeerStaffs", "OnFilterCastPropExpand1")]
         [InlineData("Staffs(6)/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/PeerStaffs?$expand=Conferences", "OnFilterCastPropExpand2")]
         [InlineData("Staffs(6)/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/PeerSeniorStaffs?$expand=PeerStaffs", "OnFilterCastPropExpand3")]
@@ -54,12 +54,14 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("Staffs(6)/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/Conferences?$expand=Sponsors", "OnFilterCastPropExpand7")]
         [InlineData("Staffs(6)/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/HighEndConferences?$expand=Sponsors", "OnFilterCastPropExpand8")]
         [InlineData("Staffs(6)/Microsoft.OData.Service.Sample.Trippin.Models.SeniorStaff/HighEndConferences?$expand=GlodSponsors", "OnFilterCastPropExpand9")]
-        // Query options
+        // Query options with onfilter case
         // These two are place holder, need new version of ODL
         //[InlineData("Staffs?$expand=PeerStaffs/$count ln 5", "OnFilterQueryOption1")]
         //[InlineData("Staffs?$expand=Conferences/$count ln 5", "OnFilterQueryOption2")]
+        // Staff with FirstName 'Ronald' is filtered, so the result is empty
         [InlineData("Staffs?$filter=PeerStaffs/any(d:d/FirstName eq 'Ronald')&$expand=PeerStaffs", "OnFilterQueryOption3")]
         [InlineData("Staffs?$filter=PeerStaffs/any(d:d/FirstName eq 'Vincent')&$expand=Conferences", "OnFilterQueryOption4")]
+        // Conference with Name 'conference4' is filtered, so the result is empty
         [InlineData("Staffs?$filter=Conferences/any(d:d/Name eq 'conference4')&$expand=PeerStaffs", "OnFilterQueryOption5")]
         [InlineData("Staffs?$filter=Conferences/any(d:d/Name eq 'conference5')&$expand=PeerStaffs", "OnFilterQueryOption6")]
         // Nested Expand case

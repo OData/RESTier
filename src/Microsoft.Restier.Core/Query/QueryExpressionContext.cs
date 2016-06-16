@@ -156,8 +156,8 @@ namespace Microsoft.Restier.Core.Query
                 return new QueryModelReference(source.EntitySet, collType);
             }
 
-            // Till here, it means different result set
-            // This mean result is a collection
+            // Till here, it means the result is not part of previous result and entity set will be null
+            // This mean result is a collection as resultType is IEnumerable<>
             if (resultType != null)
             {
                 // Did not consider multiple namespaces have same entity type case
@@ -165,7 +165,7 @@ namespace Microsoft.Restier.Core.Query
                 var emdSchemaType = model.SchemaElements.SingleOrDefault(e => e.Name == typeName 
                     && e.SchemaElementKind == EdmSchemaElementKind.TypeDefinition);
                 
-                // This means Entity/Complex/Enum
+                // This means result is collection of Entity/Complex/Enum
                 IEdmTypeReference edmTypeReference = null;
                 if (emdSchemaType != null)
                 {
@@ -184,6 +184,7 @@ namespace Microsoft.Restier.Core.Query
                         default:
                             break;
                     }
+
                     if (edmTypeReference != null)
                     {
                         var collType = new EdmCollectionType(edmTypeReference);
@@ -303,16 +304,14 @@ namespace Microsoft.Restier.Core.Query
                     // In case sourceType IEnumerable<Person> and resultType is IEnumerable<SelectExpandBinder.SelectAllAndExpand<Person>>
                     // or IEnumerable<SelectExpandBinder.SelectAll<Person>> or IEnumerable<SelectExpandBinder.SelectSome<Person>>
                     // or IEnumerable<SelectExpandBinder.SelectSomeAndInheritance<Person>>
-                    if (sourceType != null && resultType != null)
+                    if (sourceType == null || resultType == null)
                     {
-                        var resultGenericType = resultType.GenericTypeArguments[0];
-                        if (!resultGenericType.IsGenericType ||
-                            resultGenericType.GenericTypeArguments[0] != sourceType.GenericTypeArguments[0])
-                        {
-                            continue;
-                        }
+                        continue;
                     }
-                    else
+
+                    var resultGenericType = resultType.GenericTypeArguments[0];
+                    if (!resultGenericType.IsGenericType ||
+                        resultGenericType.GenericTypeArguments[0] != sourceType.GenericTypeArguments[0])
                     {
                         continue;
                     }

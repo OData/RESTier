@@ -94,7 +94,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         }
 
         // Entity set filter
-        protected IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
+        protected IQueryable<Customer> OnFilterCustomer(IQueryable<Customer> customers)
         {
             return customers.Where(c => c.CountryRegion == "France");
         }
