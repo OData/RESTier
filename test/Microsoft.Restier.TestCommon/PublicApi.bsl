@@ -331,6 +331,9 @@ public class Microsoft.Restier.Core.Query.DataSourceStubModelReference : Microso
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
 }
 
+public class Microsoft.Restier.Core.Query.ParameterModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
+}
+
 public class Microsoft.Restier.Core.Query.PropertyModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
 	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
 	Microsoft.OData.Edm.IEdmProperty Property  { public get; }

@@ -150,7 +150,8 @@ namespace Microsoft.Restier.Core.Query
             {
                 // Did not consider multiple namespaces have same entity type case
                 var entityName = resultType.GenericTypeArguments[0].Name;
-                var emdEntityType = model.SchemaElements.SingleOrDefault(e => e.Name == entityName);
+                var emdEntityType = model.SchemaElements.SingleOrDefault(e => e.Name == entityName 
+                    && e.SchemaElementKind == EdmSchemaElementKind.TypeDefinition);
                 var collType = new EdmCollectionType(new EdmEntityTypeReference((IEdmEntityType)emdEntityType, false));
                 return new QueryModelReference(source.EntitySet, collType);
             }
@@ -161,28 +162,33 @@ namespace Microsoft.Restier.Core.Query
             {
                 // Did not consider multiple namespaces have same entity type case
                 var typeName = resultType.GenericTypeArguments[0].Name;
-                var emdType = model.SchemaElements.SingleOrDefault(e => e.Name == typeName);
+                var emdSchemaType = model.SchemaElements.SingleOrDefault(e => e.Name == typeName 
+                    && e.SchemaElementKind == EdmSchemaElementKind.TypeDefinition);
                 
                 // This means Entity/Complex/Enum
                 IEdmTypeReference edmTypeReference = null;
-                if (emdType != null)
+                if (emdSchemaType != null)
                 {
-                    if ((emdType as IEdmEntityType) != null)
+                    var edmType = emdSchemaType as IEdmType;
+                    switch (edmType.TypeKind)
                     {
-                        edmTypeReference = new EdmEntityTypeReference((IEdmEntityType) emdType, false);
+                        case EdmTypeKind.Entity:
+                            edmTypeReference = new EdmEntityTypeReference((IEdmEntityType)edmType, false);
+                            break;
+                        case EdmTypeKind.Complex:
+                            edmTypeReference = new EdmComplexTypeReference((IEdmComplexType)edmType, false);
+                            break;
+                        case EdmTypeKind.Enum:
+                            edmTypeReference = new EdmEnumTypeReference((IEdmEnumType)edmType, false);
+                            break;
+                        default:
+                            break;
                     }
-                    else if ((emdType as IEdmComplexType) != null)
+                    if (edmTypeReference != null)
                     {
-
-                        edmTypeReference = new EdmComplexTypeReference((IEdmComplexType)emdType, false);
+                        var collType = new EdmCollectionType(edmTypeReference);
+                        return new QueryModelReference(null, collType);
                     }
-                    else if ((emdType as IEdmEnumType) != null)
-                    {
-
-                        edmTypeReference = new EdmEnumTypeReference((IEdmEnumType)emdType, false);
-                    }
-                    var collType = new EdmCollectionType(edmTypeReference);
-                    return new QueryModelReference(null, collType);
                 }
 
                 // TODO Here means a collection of primitive type
@@ -349,7 +355,10 @@ namespace Microsoft.Restier.Core.Query
                 // member expression will be "Param_0 As Employee"
                 else
                 {
-                    var emdEntityType = this.QueryContext.Model.SchemaElements.SingleOrDefault(e => e.Name == resultType.Name);
+                    var emdEntityType = this.QueryContext.Model.SchemaElements
+                        .SingleOrDefault(e =>
+                            e.Name == resultType.Name
+                            && e.SchemaElementKind == EdmSchemaElementKind.TypeDefinition);
 
                     var structuredType = emdEntityType as IEdmStructuredType;
                     if (structuredType != null)

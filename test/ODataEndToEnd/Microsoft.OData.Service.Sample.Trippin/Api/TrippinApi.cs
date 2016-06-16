@@ -39,24 +39,19 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
-        protected IQueryable<Person> OnFilterPeople(IQueryable<Person> entitySet)
+        protected IQueryable<Staff> OnFilterStaff(IQueryable<Staff> entitySet)
         {
-            return entitySet.Where(s => s.PersonId % 2 == 0).AsQueryable();
+            return entitySet.Where(s => s.StaffId % 2 == 0).AsQueryable();
         }
 
-        protected IQueryable<Person> OnFilterPerson(IQueryable<Person> entitySet)
+        protected IQueryable<Conference> OnFilterConference(IQueryable<Conference> entitySet)
         {
-            return entitySet.Where(s => s.PersonId % 2 == 0).AsQueryable();
+            return entitySet.Where(c => c.ConferenceId % 2 == 0).AsQueryable();
         }
 
-        protected IQueryable<Trip> OnFilterTrips(IQueryable<Trip> entitySet)
+        protected IQueryable<Sponsor> OnFilterSponsor(IQueryable<Sponsor> entitySet)
         {
-            return entitySet.Where(s => s.TripId % 2 == 0).AsQueryable();
-        }
-
-        protected IQueryable<Trip> OnFilterTrip(IQueryable<Trip> entitySet)
-        {
-            return entitySet.Where(s => s.TripId % 2 == 0).AsQueryable();
+            return entitySet.Where(s => s.SponsorId % 2 == 0).AsQueryable();
         }
 
         private IQueryable<Person> PeopleWithFriends

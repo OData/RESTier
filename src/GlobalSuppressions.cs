@@ -184,10 +184,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler404(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 #endregion
 
-#region CA1800 Unnecessary casts
-[assembly: SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Routing.RestierRoutingConvention.#HasControllerForEntitySetOrSingleton(System.Web.OData.Routing.ODataPath,System.Net.Http.HttpRequestMessage)")]
-#endregion
-
 #region CA1812 Uninstantiated internal classes
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.ApiBase+ApiHolder")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Scope = "type", Target = "Microsoft.Restier.Core.Conventions.ConventionBasedChangeSetItemValidator")]

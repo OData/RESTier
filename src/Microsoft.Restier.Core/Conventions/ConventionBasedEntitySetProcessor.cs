@@ -58,12 +58,19 @@ namespace Microsoft.Restier.Core.Conventions
             var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
             if (dataSourceStubReference != null)
             {
-                var entityType = dataSourceStubReference.Type as EdmEntityType;
+                var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
+                if (entitySet == null)
+                {
+                    return null;
+                }
+
+                var collectionType = entitySet.Type as EdmCollectionType;
+                var entityType = collectionType?.ElementType.Definition as EdmEntityType;
                 if (entityType == null)
                 {
                     return null;
                 }
-                
+
                 return AppendOnFilter(context, entityType.Name);
             }
 
