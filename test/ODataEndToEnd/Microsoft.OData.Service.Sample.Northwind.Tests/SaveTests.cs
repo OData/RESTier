@@ -1,14 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.OData.Service.Sample.Northwind.Models;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Providers.EntityFramework;
+using Microsoft.Restier.Publishers.OData;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Tests
@@ -17,6 +22,26 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
     {
         private class TestEntityFilterReturnsTaskApi : NorthwindApi
         {
+            /// <summary>
+            /// Need to override the method here as the calling here does not call map restier route and does not get right services added.
+            /// </summary>
+            /// <param name="services"></param>
+            /// <returns></returns>
+            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            {
+                Type apiType = this.GetType();
+                // Add core and convention's services
+                services = services.AddCoreServices(apiType)
+                    .AddAttributeServices(apiType)
+                    .AddConventionBasedServices(apiType);
+                // Add EF related services
+                services.AddEfProviderServices<NorthwindContext>();
+
+                // This is used to add the publisher's services
+                services.AddODataServices<NorthwindApi>();
+                return services;
+            }
+
             protected async Task OnInsertingCustomers(Customer customer)
             {
                 await Task.Delay(10);

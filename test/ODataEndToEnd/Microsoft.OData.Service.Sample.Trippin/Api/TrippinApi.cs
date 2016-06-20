@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData.Builder;
 using System.Web.OData.Query;
 using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +27,10 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
-        public new TrippinModel Context { get { return DbContext; } }
+        public new TrippinModel Context
+        {
+            get { return DbContext; }
+        }
 
         public Person Me
         {
@@ -96,37 +98,49 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// <summary>
         /// Bound action - set the end-up time of a trip.
         /// </summary>
-        /// <param name="trip">The trip to update.</param>
+        /// <param name="passedInTrip">The trip to update.</param>
         /// <returns>The trip updated.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
-        public Trip EndTrip(Trip trip)
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true, HasSideEffects = true)]
+        public Trip EndTrip(Trip passedInTrip)
         {
             // DO NOT ACTUALLY UPDATE THE TRIP.
-            return trip;
+            return passedInTrip;
         }
 
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        [Operation(IsBound = true)]
+        public ICollection<Person> GetPersonFriends(Person person)
+        {
+            if (person == null)
+            {
+                return null;
+            }
+
+            var personWithFriends = PeopleWithFriends.Single(p => p.PersonId == person.PersonId);
+            return personWithFriends.Friends;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true, HasSideEffects = true)]
         public Location EndTripWithPara(Trip trip, int id, Location location, Feature feature)
         {
             // Test kinds of different passed in parameters
             return location;
         }
 
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true, HasSideEffects = true)]
         public IEnumerable<Trip> EndTripsIEnumerable(IEnumerable<Trip> trips, IEnumerable<int> ids, IEnumerable<Location> locations, IEnumerable<Feature> features)
         {
             // Test kinds of different passed in parameters
             return trips;
         }
 
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true, HasSideEffects = true)]
         public ICollection<int> EndTripsICollection(ICollection<Trip> trips, ICollection<int> ids, ICollection<Location> locations, ICollection<Feature> features)
         {
             // Test kinds of different passed in parameters
             return ids;
         }
 
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true, HasSideEffects = true)]
         public Location[] EndTripsArray(Trip[] trips, int[] ids, Location[] locations, Feature[] features)
         {
             // Test kinds of different passed in parameters
@@ -203,7 +217,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// </summary>
         /// <param name="person">The key of the binding person.</param>
         /// <returns>The number of friends of the person.</returns>
-        [Operation]
+        [Operation(IsBound = true)]
         public int GetNumberOfFriends(Person person)
         {
             if (person == null)
@@ -221,7 +235,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// <param name="people">The binding entity set.</param>
         /// <param name="n">Test parameter.</param>
         /// <returns>Single value.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetIEnumerable(IEnumerable<Person> people, int n)
         {
             return n*10;
@@ -234,7 +248,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// <param name="n">Test parameter.</param>
         /// <param name="m">Test parameter.</param>
         /// <returns>Single value.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetICollection(ICollection<Person> people, int n, int m)
         {
             return n*m;
@@ -247,7 +261,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         /// <param name="n">Test parameter.</param>
         /// <param name="m">Test parameter.</param>
         /// <returns>Single value.</returns>
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models")]
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetArray(Person[] people, int n, int m)
         {
             return n * m;
@@ -395,7 +409,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
-
         /// <summary>
         /// Test null collection case
         /// </summary>
@@ -405,7 +418,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         {
             return null;
         }
-
 
         /// <summary>
         /// Function import - Test parameter is IEnumerable of int and return type is IEnumerable of int.
@@ -472,6 +484,27 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             throw new ArgumentException("Test get function throw exception");
         }
 
+        /// <summary>
+        /// Bound Function - For bound flag testing
+        /// </summary>
+        /// <returns>value</returns>
+        [Operation(IsBound = true)]
+        public int GetBoundPrimitive(int i)
+        {
+            return i*100;
+        }
+
+        /// <summary>
+        /// Bound Function - For bound flag testing
+        /// </summary>
+        /// <param name="l">The complex type.</param>
+        /// <returns>A complex.</returns>
+        [Operation(IsBound = true)]
+        public Location GetBoundComplex(Location l)
+        {
+            return l;
+        }
+
         protected bool CanDeleteTrips()
         {
             return false;
@@ -491,19 +524,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
                 .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()
                 .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
-                .AddTransient<RestierModelBuilder, TrippinModelExtender>()
                 .AddService<IModelBuilder, TrippinModelCustomizer>();
-        }
-
-
-        private class TrippinModelExtender : RestierModelBuilder
-        {
-            public override void ExtendModel(ODataConventionModelBuilder builder)
-            {
-                // Add additional entity set and entity type before operation model builder is called
-                // Existing builder content be can be customized too here before it is built.
-                builder.EntitySet<Extender>("Extenders");
-            }
         }
 
         private class TrippinModelCustomizer : IModelBuilder

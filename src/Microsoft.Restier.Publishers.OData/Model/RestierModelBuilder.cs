@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,9 +11,13 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Publishers.OData.Model
 {
-    public class RestierModelBuilder : IModelBuilder
+    /// <summary>
+    /// This is a RESTier model build which retrieve information from providers like entity framework provider,
+    /// then build entity set and entity type based on retrieved information.
+    /// </summary>
+    internal class RestierModelBuilder : IModelBuilder
     {
-        internal IModelBuilder InnerModelBuilder { get; set; }
+        public IModelBuilder InnerModelBuilder { get; set; }
 
         /// <inheritdoc/>
         public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
@@ -34,15 +39,14 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 return null;
             }
 
-            string namespaceName = collection[0].Value.Namespace;
-
-            // Collection of entity type and set name is set by EF now, and EF provider will not build model any more
+            // Collection of entity type and set name is set by EF now,
+            // and EF model producer will not build model any more
             // Web Api OData conversion model built is been used here,
             // refer to Web Api OData document for the detail conversions been used for model built.
             var builder = new ODataConventionModelBuilder();
 
             // This namespace is used by container
-            builder.Namespace = namespaceName;
+            builder.Namespace = entitySetTypeMap.First().Value.Namespace;
 
             MethodInfo method = typeof(ODataConventionModelBuilder)
                 .GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
@@ -81,19 +85,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 entityTypeKeyPropertiesMap.Clear();
             }
 
-            ExtendModel(builder);
-
             return builder.GetEdmModel();
-        }
-
-        /// <summary>
-        /// This method allow user to extend the model with more entity type and entity set before operation model builder starts
-        /// A sub class need to be implemented and register as DI service like "AddTransient&lt;RestierModelBuilder, CustomizedRestierModelBuilder&gt;"
-        /// </summary>
-        /// <param name="builder"></param>
-        public virtual void ExtendModel(ODataConventionModelBuilder builder)
-        {
-            
         }
     }
 }

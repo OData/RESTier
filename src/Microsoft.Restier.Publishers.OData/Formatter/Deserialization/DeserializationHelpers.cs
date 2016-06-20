@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using System.Web.OData.Formatter.Deserialization;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;

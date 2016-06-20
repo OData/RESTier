@@ -201,15 +201,15 @@
         <Property Name="PhotoPath" Type="Edm.String" />
         <Property Name="Photo" Type="Edm.Binary" />
       </EntityType>
-      <Function Name="MostExpensive" IsBound="true">
-        <Parameter Name="bindingParameter" Type="Collection(Microsoft.OData.Service.Sample.Northwind.Models.Product)" />
-        <ReturnType Type="Edm.Double" Nullable="false" />
-      </Function>
       <Action Name="IncreasePrice" IsBound="true">
         <Parameter Name="bindingParameter" Type="Microsoft.OData.Service.Sample.Northwind.Models.Product" />
         <Parameter Name="diff" Type="Edm.Int32" Nullable="false" />
       </Action>
       <Action Name="ResetDataSource" />
+      <Function Name="MostExpensive" IsBound="true">
+        <Parameter Name="bindingParameter" Type="Collection(Microsoft.OData.Service.Sample.Northwind.Models.Product)" />
+        <ReturnType Type="Edm.Double" Nullable="false" />
+      </Function>
       <EntityContainer Name="Container">
         <EntitySet Name="Categories" EntityType="Microsoft.OData.Service.Sample.Northwind.Models.Category">
           <NavigationPropertyBinding Path="Products" Target="Products" />

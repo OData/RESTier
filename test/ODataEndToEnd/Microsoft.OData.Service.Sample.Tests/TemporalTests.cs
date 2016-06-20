@@ -87,7 +87,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            long? personId = person.PersonId;
+            long personId = person.PersonId;
 
             // Query a property
             var birthDate = this.TestClientContext.People
@@ -210,7 +210,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            long? personId = person.PersonId;
+            long personId = person.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -264,7 +264,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            long? personId = person.PersonId;
+            long personId = person.PersonId;
 
             // Query a property
             var birthTime = this.TestClientContext.People
@@ -440,7 +440,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            long? personId = person.PersonId;
+            long personId = person.PersonId;
 
             // Query a property
             var birthDateTime = this.TestClientContext.People

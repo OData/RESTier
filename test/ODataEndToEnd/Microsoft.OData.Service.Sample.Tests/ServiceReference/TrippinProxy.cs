@@ -669,7 +669,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("PersonId")]
-        public global::System.Nullable<long> PersonId
+        public long PersonId
         {
             get
             {
@@ -684,7 +684,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::System.Nullable<long> _PersonId;
+        private long _PersonId;
         partial void OnPersonIdChanging(global::System.Nullable<long> value);
         partial void OnPersonIdChanged();
         /// <summary>

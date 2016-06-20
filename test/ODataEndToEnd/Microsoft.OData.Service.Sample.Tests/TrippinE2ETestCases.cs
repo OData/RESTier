@@ -171,7 +171,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(employee);
             this.TestClientContext.SaveChanges();
-            long? personId = employee.PersonId;
+            long personId = employee.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -284,7 +284,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            long? personId = person.PersonId;
+            long personId = person.PersonId;
 
             // Query a property
             var lastName = this.TestClientContext.People

@@ -55,7 +55,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             }
         }
 
-        [Operation(HasSideEffects = true)]
+        [Operation(IsBound = true, HasSideEffects = true)]
         public void IncreasePrice(Product bindingParameter, int diff)
         {
         }
@@ -65,7 +65,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         {
         }
 
-        [Operation]
+        [Operation(IsBound = true)]
         public double MostExpensive(IEnumerable<Product> bindingParameter)
         {
             return 0.0;
