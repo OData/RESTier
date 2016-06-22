@@ -101,6 +101,7 @@
     <Compile Include="Formatter\Serialization\RestierPrimitiveSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierEntityTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
+    <Compile Include="Operation\OperationExecutor.cs" />
     <Compile Include="Routing\HttpConfigurationExtensions.cs" />
     <Compile Include="HttpRequestMessageExtensions.cs" />
     <Compile Include="Query\RestierQueryExecutor.cs" />
@@ -168,6 +169,7 @@
       <Link>CodeAnalysisDictionary.xml</Link>
     </CodeAnalysisDictionary>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(StyleCopTargets)" Condition="Exists('$(StyleCopTargets)')" />
 </Project>

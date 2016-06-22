@@ -29,7 +29,8 @@ namespace Microsoft.Restier.Publishers.OData.Filters
             {
                 Handler400,
                 Handler403,
-                Handler404
+                Handler404,
+                Handler501
             };
 
         private delegate Task<HttpResponseMessage> ExceptionHandlerDelegate(
@@ -109,6 +110,27 @@ namespace Microsoft.Restier.Publishers.OData.Filters
                         HttpStatusCode.NotFound,
                         notSupportedException.Message));
                 }
+            }
+
+            return Task.FromResult<HttpResponseMessage>(null);
+        }
+
+        private static Task<HttpResponseMessage> Handler501(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            if (context.Exception is NotImplementedException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.NotImplemented, context.Exception));
+            }
+
+            // For async call, the exception is wrapped.
+            if (context.Exception is AggregateException
+                && context.Exception.InnerException is NotImplementedException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.NotImplemented, context.Exception));
             }
 
             return Task.FromResult<HttpResponseMessage>(null);

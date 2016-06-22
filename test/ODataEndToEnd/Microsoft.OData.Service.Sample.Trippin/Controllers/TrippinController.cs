@@ -38,28 +38,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Controllers
             }
         }
 
-        /// <summary>
-        /// TODO: This method is for actual executing.
-        /// </summary>
-        [ODataRoute("ResetDataSource")]
-        public void ResetDataSource()
-        {
-            TrippinModel.ResetDataSource();
-        }
-
-        [ODataRoute("CleanUpExpiredTrips")]
-        public void CleanUpExpiredTrips()
-        {
-            Api.CleanUpExpiredTrips();
-        }
-
-        [ODataRoute("Trips({key})/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip")]
-        public IHttpActionResult EndTrip(int key)
-        {
-            var trip = DbContext.Trips.SingleOrDefault(t => t.TripId == key);
-            return Ok(Api.EndTrip(trip));
-        }
-
         [HttpGet]
         [ODataRoute("Flights({key})/Airline/$ref")]
         public IHttpActionResult GetRefToAirlineFromFlight([FromODataUri]int key)

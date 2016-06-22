@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Core.Submit
         public SubmitContext(ApiContext apiContext, ChangeSet changeSet)
             : base(apiContext)
         {
-            this.ChangeSet = changeSet;
+            this.changeSet = changeSet;
         }
 
         /// <summary>

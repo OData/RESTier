@@ -46,7 +46,7 @@ namespace Microsoft.Restier.Core.Conventions
             bool result = true;
 
             Type returnType = typeof(bool);
-            string methodName = ConventionBasedChangeSetItemAuthorizer.GetAuthorizeMethodName(item);
+            string methodName = GetAuthorizeMethodName(item);
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsFamily &&

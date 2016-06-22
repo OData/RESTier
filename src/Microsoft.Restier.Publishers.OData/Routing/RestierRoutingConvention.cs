@@ -102,7 +102,9 @@ namespace Microsoft.Restier.Publishers.OData.Routing
             }
 
             ODataPathSegment lastSegment = odataPath.Segments.LastOrDefault();
-            if (lastSegment != null && lastSegment.SegmentKind == ODataSegmentKinds.UnboundAction)
+            if (lastSegment != null
+                && (lastSegment.SegmentKind == ODataSegmentKinds.UnboundAction
+                || lastSegment.SegmentKind == ODataSegmentKinds.Action))
             {
                 return MethodNameOfPostAction;
             }

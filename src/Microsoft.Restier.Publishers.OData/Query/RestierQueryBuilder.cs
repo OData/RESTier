@@ -41,6 +41,8 @@ namespace Microsoft.Restier.Publishers.OData.Query
             this.handlers[ODataSegmentKinds.Singleton] = this.HandleSingletonPathSegment;
             this.handlers[ODataSegmentKinds.UnboundFunction] = this.EmptyHandler;
             this.handlers[ODataSegmentKinds.Function] = this.EmptyHandler;
+            this.handlers[ODataSegmentKinds.Action] = this.EmptyHandler;
+            this.handlers[ODataSegmentKinds.UnboundAction] = this.EmptyHandler;
             this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
             this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
             this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;

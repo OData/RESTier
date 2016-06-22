@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Net;
 using FluentAssertions;
 using Microsoft.OData.Client;
 using Xunit;
@@ -379,6 +380,193 @@ namespace Microsoft.OData.Service.Sample.Tests
             TestPostStatusCodeIs("CleanUpExpiredTrips()", 204);
         }
 
+        [Fact]
+        public void AddressingActionWithNonCollectionParameters()
+        {
+            string payload = @"{
+                ""id"": 7,
+                ""location"": { ""Address"":""NE 24th St.""},
+                ""feature"": ""Feature1""
+            }";
+
+            TestPostStatusCodeIs("CleanUpTrip", payload, HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public void AddressingActionWithCollectionParameters()
+        {
+            string payload = @"{
+                ""ids"": [7,9,10],
+                ""locations"": [{""Address"":""NE 24th St.""},{""Address"":""NE 25th St.""}],
+                ""features"": [""Feature1"",""Feature2""]
+            }";
+
+            TestPostStatusCodeIs("CleanUpTrips", payload, HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public void AddressingActionImportWithNonCollectionParameters()
+        {
+            string payload = @"{
+                ""id"": 7,
+                ""location"": { ""Address"":""NE 24th St.""},
+                ""feature"": ""Feature1""
+            }";
+
+            TestPostPayloadContains("Trips(1)/Microsoft.OData.Service.Sample.Trippin.Models.EndTripWithPara", payload, "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Location");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithIEnumerableParameters()
+        {
+            string payload = @"{
+                ""ids"": [7,9,10],
+                ""locations"": [{""Address"":""NE 24th St.""},{""Address"":""NE 25th St.""}],
+                ""features"": [""Feature1"",""Feature2""]
+            }";
+
+            TestPostPayloadContains("Trips/Microsoft.OData.Service.Sample.Trippin.Models.EndTripsIEnumerable", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Trip)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithICollectionParameters()
+        {
+            string payload = @"{
+                ""ids"": [7,9,10],
+                ""locations"": [{""Address"":""NE 24th St.""},{""Address"":""NE 25th St.""}],
+                ""features"": [""Feature1"",""Feature2""]
+            }";
+
+            TestPostPayloadContains("Trips/Microsoft.OData.Service.Sample.Trippin.Models.EndTripsICollection", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithArrayParameters()
+        {
+            string payload = @"{
+                ""ids"": [7,9,10],
+                ""locations"": [{""Address"":""NE 24th St.""},{""Address"":""NE 25th St.""}],
+                ""features"": [""Feature1"",""Feature2""]
+            }";
+
+            TestPostPayloadContains("Trips/Microsoft.OData.Service.Sample.Trippin.Models.EndTripsArray", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Location)");
+        }
+
+        [Fact]
+        public void AddressingActionImportPrimitive()
+        {
+            TestPostPayloadContains("ActionPrimitive", "http://localhost:18384/api/Trippin/$metadata#Edm.Int32");
+        }
+
+        [Fact]
+        public void AddressingActionImportNullPrimitive()
+        {
+            TestPostStatusCodeIs("ActionNullPrimitive", 204);
+        }
+
+        [Fact]
+        public void AddressingActionImportEnum()
+        {
+            string payload = @"{
+                ""f"": ""Feature1""
+            }";
+            TestPostPayloadContains("ActionEnum", payload, "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Feature");
+        }
+
+        [Fact]
+        public void AddressingActionImportNullEnum()
+        {
+            TestPostStatusCodeIs("ActionNullEnum", 204);
+        }
+
+        [Fact]
+        public void AddressingActionImportComplex()
+        {
+            string payload = @"{
+                ""l"": { ""Address"":""NE 24th St.""}
+            }";
+
+            TestPostPayloadContains("ActionComplex", payload, "http://localhost:18384/api/Trippin/$metadata#Microsoft.OData.Service.Sample.Trippin.Models.Location");
+        }
+
+        [Fact]
+        public void AddressingActionImportNullComplex()
+        {
+            string payload = @"{
+                ""l"": null
+            }";
+
+            TestPostStatusCodeIs("ActionComplex", payload,  HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public void AddressingActionImportNoComplex()
+        {
+            string payload = "";
+
+            TestPostStatusCodeIs("ActionComplex", payload, HttpStatusCode.NoContent);
+        }
+
+        [Fact]
+        public void AddressingActionImportWithPrimitiveCollection()
+        {
+            string payload = @"{
+                ""intArray"": [7,9,10]
+            }";
+
+            TestPostPayloadContains("ActionPrimitiveArray", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Edm.Int32)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithEnumCollection()
+        {
+            string payload = @"{
+                ""coll"": [""Feature1"",""Feature2""]
+            }";
+
+            TestPostPayloadContains("ActionEnumCollection", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Feature)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithNoEnumCollection()
+        {
+            string payload = "";
+
+            TestPostPayloadContains("ActionEnumCollection", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Feature)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithNullEnumCollection()
+        {
+            string payload = @"{
+                ""coll"": null
+            }";
+
+            TestPostPayloadContains("ActionEnumCollection", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Feature)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithComplexCollection()
+        {
+            string payload = @"{
+                ""coll"": [{""Address"":""NE 24th St.""},{""Address"":""NE 25th St.""}]
+            }";
+
+            TestPostPayloadContains("ActionComplexCollection", payload, "http://localhost:18384/api/Trippin/$metadata#Collection(Microsoft.OData.Service.Sample.Trippin.Models.Location)");
+        }
+
+        [Fact]
+        public void AddressingActionImportWithException()
+        {
+            TestPostStatusCodeIs("ActionWithException", 500);
+        }
+
+        [Fact]
+        public void AddressingActionImportUnAuthorization()
+        {
+            TestPostStatusCodeIs("ActionForAuthorization", 403);
+        }
+        
         [Fact]
         public void AddressingProperty()
         {

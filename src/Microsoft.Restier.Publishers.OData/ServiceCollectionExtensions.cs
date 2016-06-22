@@ -9,10 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
 using Microsoft.Restier.Publishers.OData.Formatter.Serialization;
 using Microsoft.Restier.Publishers.OData.Model;
+using Microsoft.Restier.Publishers.OData.Operation;
 using Microsoft.Restier.Publishers.OData.Query;
 
 namespace Microsoft.Restier.Publishers.OData
@@ -42,7 +44,7 @@ namespace Microsoft.Restier.Publishers.OData
             RestierModelExtender.ApplyTo(services, typeof(T));
             RestierOperationModelBuilder.ApplyTo(services, typeof(T));
 
-            // Add OData Query Settings and valiadtion settings
+            // Add OData Query Settings and validation settings
             Func<IServiceProvider, ODataQuerySettings> querySettingFactory = (sp) => new ODataQuerySettings
             {
                 HandleNullPropagation = HandleNullPropagationOption.False,
@@ -55,6 +57,8 @@ namespace Microsoft.Restier.Publishers.OData
             // Make serializer and deserializer provider as DI services
             services.TryAddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
             services.TryAddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
+
+            services.TryAddSingleton<IOperationExecutor, OperationExecutor>();
 
             return
                 services.AddScoped<RestierQueryExecutorOptions>()

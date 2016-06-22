@@ -61,7 +61,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         /// <summary>
         /// Implements an action import.
-        /// TODO: This method is only for building the model.
         /// </summary>
         [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
         public void ResetDataSource()
@@ -78,6 +77,18 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             // DO NOT ACTUALLY REMOVE THE TRIPS.
         }
 
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public void CleanUpTrip(int id, Location location, Feature feature)
+        {
+            // Only for testing passed in parameters
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public void CleanUpTrips(IEnumerable<int> ids, IEnumerable<Location> locations, IEnumerable<Feature> features)
+        {
+            // Only for testing passed in parameters
+        }
+
         /// <summary>
         /// Bound action - set the end-up time of a trip.
         /// </summary>
@@ -88,6 +99,99 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         {
             // DO NOT ACTUALLY UPDATE THE TRIP.
             return trip;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public Location EndTripWithPara(Trip trip, int id, Location location, Feature feature)
+        {
+            // Test kinds of different passed in parameters
+            return location;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public IEnumerable<Trip> EndTripsIEnumerable(IEnumerable<Trip> trips, IEnumerable<int> ids, IEnumerable<Location> locations, IEnumerable<Feature> features)
+        {
+            // Test kinds of different passed in parameters
+            return trips;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public ICollection<int> EndTripsICollection(ICollection<Trip> trips, ICollection<int> ids, ICollection<Location> locations, ICollection<Feature> features)
+        {
+            // Test kinds of different passed in parameters
+            return ids;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public Location[] EndTripsArray(Trip[] trips, int[] ids, Location[] locations, Feature[] features)
+        {
+            // Test kinds of different passed in parameters
+            return locations;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public int ActionPrimitive()
+        {
+            return 100;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public int? ActionNullPrimitive()
+        {
+            return null;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public Feature ActionEnum(Feature f)
+        {
+            return f;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public Feature? ActionNullEnum()
+        {
+            return null;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public Location ActionComplex(Location l)
+        {
+            return l;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public int[] ActionPrimitiveArray(int[] intArray)
+        {
+            return intArray;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public ICollection<Feature> ActionEnumCollection(ICollection<Feature> coll)
+        {
+            return coll;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public ICollection<Location> ActionComplexCollection(ICollection<Location> coll)
+        {
+            return coll;
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public IEnumerable<Person> ActionWithException()
+        {
+            throw new ArgumentException("Test get function throw exception");
+        }
+
+        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        public void ActionForAuthorization()
+        {
+        }
+
+        protected bool CanExecuteActionForAuthorization()
+        {
+            // Can be checked based on current login user
+            return false;
         }
 
         /// <summary>

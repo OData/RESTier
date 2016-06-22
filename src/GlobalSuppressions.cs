@@ -44,6 +44,7 @@ using System.Diagnostics.CodeAnalysis;
 #region CA1020 Few types in namespace
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core.Model")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core.Operation")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Providers.EntityFramework")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Providers.EntityFramework.Model")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Providers.EntityFramework.Query")]
@@ -183,6 +184,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#GetQuery()")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler403(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler404(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
+[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler501(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 #endregion
 
 #region CA1812 Uninstantiated internal classes

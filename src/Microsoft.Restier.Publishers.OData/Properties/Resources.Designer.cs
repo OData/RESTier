@@ -196,6 +196,24 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The requested operation is not implemented in Api class..
+        /// </summary>
+        internal static string OperationNotImplemented {
+            get {
+                return ResourceManager.GetString("OperationNotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user is not authorized to execute operation {0}..
+        /// </summary>
+        internal static string OperationUnAuthorizationExecution {
+            get {
+                return ResourceManager.GetString("OperationUnAuthorizationExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path segment not supported: {0}.
         /// </summary>
         internal static string PathSegmentNotSupported {

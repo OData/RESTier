@@ -303,6 +303,23 @@ public class Microsoft.Restier.Core.Model.ModelContext : Microsoft.Restier.Core.
 	System.Collections.Generic.IDictionary`2[[System.Type],[System.Collections.Generic.ICollection`1[[System.Reflection.PropertyInfo]]]] EntityTypeKeyPropertiesMap  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 
+public interface Microsoft.Restier.Core.Operation.IOperationAuthorizer {
+	System.Threading.Tasks.Task`1[[System.Boolean]] AuthorizeAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+}
+
+public interface Microsoft.Restier.Core.Operation.IOperationExecutor {
+	System.Threading.Tasks.Task`1[[System.Linq.IQueryable]] ExecuteOperationAsync (object instanceImplementMethod, Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+}
+
+public class Microsoft.Restier.Core.Operation.OperationContext : Microsoft.Restier.Core.InvocationContext {
+	public OperationContext (Microsoft.Restier.Core.ApiContext apiContext, System.Func`2[[System.String],[System.Object]] getParameterValueFunc, string operationName, bool isFunction, System.Linq.IQueryable bindingParameterValue)
+
+	System.Linq.IQueryable BindingParameterValue  { public get; }
+	System.Func`2[[System.String],[System.Object]] GetParameterValueFunc  { public get; }
+	bool IsFunction  { public get; }
+	string OperationName  { public get; }
+}
+
 public interface Microsoft.Restier.Core.Query.IQueryExecutor {
 	System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteExpressionAsync (Microsoft.Restier.Core.Query.QueryContext context, System.Linq.IQueryProvider queryProvider, System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
 	System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] ExecuteQueryAsync (Microsoft.Restier.Core.Query.QueryContext context, IQueryable`1 query, System.Threading.CancellationToken cancellationToken)
@@ -559,7 +576,7 @@ public sealed class Microsoft.Restier.Publishers.OData.RestierController : Syste
 	[
 	AsyncStateMachineAttribute(),
 	]
-	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] PostAction (System.Threading.CancellationToken cancellationToken)
+	public System.Threading.Tasks.Task`1[[System.Net.Http.HttpResponseMessage]] PostAction (System.Web.OData.ODataActionParameters parameters, System.Threading.CancellationToken cancellationToken)
 
 	[
 	AsyncStateMachineAttribute(),

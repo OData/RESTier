@@ -261,6 +261,7 @@ namespace Microsoft.Restier.Core
             ConventionBasedChangeSetItemProcessor.ApplyTo(services, apiType);
             services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
             ConventionBasedEntitySetProcessor.ApplyTo(services, apiType);
+            ConventionBasedOperationAuthorizer.ApplyTo(services, apiType);
             return services;
         }
 
