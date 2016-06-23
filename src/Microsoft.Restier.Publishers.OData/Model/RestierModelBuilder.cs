@@ -35,6 +35,8 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
 
             // Collection is set by EF now, and EF model producer will not build model any more
+            // Web Api OData conversion model built is been used here,
+            // refer to Web Api OData document for the detail conversions been used for model built.
             var builder = new ODataConventionModelBuilder();
             MethodInfo method = typeof(ODataConventionModelBuilder)
                 .GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
