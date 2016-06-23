@@ -66,7 +66,7 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 return annotation.ClrType;
             }
-            
+
             throw new NotSupportedException(string.Format(
                 CultureInfo.InvariantCulture,
                 Resources.ElementTypeNotFound,

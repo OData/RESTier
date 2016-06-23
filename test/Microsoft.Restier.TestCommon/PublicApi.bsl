@@ -324,8 +324,6 @@ public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
 }
 
 public class Microsoft.Restier.Core.Query.DataSourceStubModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
-	public DataSourceStubModelReference (Microsoft.Restier.Core.Query.QueryContext context, string namespaceName, string name)
-
 	Microsoft.OData.Edm.IEdmElement Element  { public get; }
 	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }

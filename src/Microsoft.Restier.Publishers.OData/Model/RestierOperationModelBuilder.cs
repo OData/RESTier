@@ -57,7 +57,6 @@ namespace Microsoft.Restier.Publishers.OData.Model
             return model;
         }
 
-
         private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
         {
             foreach (ParameterInfo parameter in method.GetParameters())
@@ -96,7 +95,6 @@ namespace Microsoft.Restier.Publishers.OData.Model
             bindingParameter = firstParameter;
             return true;
         }
-
 
         private static EdmPathExpression BuildEntitySetPathExpression(
             IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter)

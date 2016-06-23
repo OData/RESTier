@@ -11,6 +11,36 @@ using Microsoft.Restier.Core.Properties;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
+    /// This enum controls the actions requested for an entity.
+    /// </summary>
+    /// <remarks>
+    /// This is required because during the post-CUD events, the EntityState has been lost.
+    /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
+    /// </remarks>
+    public enum ChangeSetItemAction
+    {
+        /// <summary>
+        /// Specifies an undefined action.
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
+        /// Specifies the entity is being updated.
+        /// </summary>
+        Update,
+
+        /// <summary>
+        /// Specifies the entity is being inserted.
+        /// </summary>
+        Insert,
+
+        /// <summary>
+        /// Specifies the entity is being removed.
+        /// </summary>
+        Remove
+    }
+
+    /// <summary>
     /// Specifies the type of a change set item.
     /// </summary>
     internal enum ChangeSetItemType
@@ -56,36 +86,6 @@ namespace Microsoft.Restier.Core.Submit
         /// The entity's pre events have been raised
         /// </summary>
         PreEvented
-    }
-
-    /// <summary>
-    /// This enum controls the actions requested for an entity.
-    /// </summary>
-    /// <remarks>
-    /// This is required because during the post-CUD events, the EntityState has been lost.
-    /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
-    /// </remarks>
-    public enum ChangeSetItemAction
-    {
-        /// <summary>
-        /// Specifies an undefined action.
-        /// </summary>
-        Undefined = 0,
-
-        /// <summary>
-        /// Specifies the entity is being updated.
-        /// </summary>
-        Update,
-
-        /// <summary>
-        /// Specifies the entity is being inserted.
-        /// </summary>
-        Insert,
-
-        /// <summary>
-        /// Specifies the entity is being removed.
-        /// </summary>
-        Remove
     }
 
     /// <summary>

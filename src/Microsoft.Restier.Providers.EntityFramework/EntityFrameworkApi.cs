@@ -2,12 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+#if !EF7
+using System.Data.Entity;
+#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 #if EF7
 using Microsoft.EntityFrameworkCore;
-#else
-using System.Data.Entity;
 #endif
 
 namespace Microsoft.Restier.Providers.EntityFramework
@@ -54,6 +55,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         protected override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
+
             // Add core and convention's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)

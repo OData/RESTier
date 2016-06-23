@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core.Model
         }
 
         /// <summary>
-        /// Gets Entity set and entiy type map collection, it will be used by publisher for model build.
+        /// Gets or sets Entity set and entity type map collection, it will be used by publisher for model build.
         /// </summary>
         public Collection<KeyValuePair<string, Type>> EntitySetTypeMapCollection { get; set; }
     }

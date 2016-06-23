@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Core.Conventions
             this.targetType = targetType;
         }
 
-        // Inner should be null unless user add one as inner most 
+        // Inner should be null unless user add one as inner most
         public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>
@@ -35,7 +35,8 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedEntitySetProcessor(targetType)
+            services.AddService<IQueryExpressionProcessor>(
+                (sp, next) => new ConventionBasedEntitySetProcessor(targetType)
             {
                 Inner = next,
             });
@@ -64,8 +65,13 @@ namespace Microsoft.Restier.Core.Conventions
                     return null;
                 }
 
-                var collectionType = entitySet.Type as EdmCollectionType;
-                var entityType = collectionType?.ElementType.Definition as EdmEntityType;
+                var collectionType = entitySet.Type as IEdmCollectionType;
+                if (collectionType == null)
+                {
+                    return null;
+                }
+
+                var entityType = collectionType.ElementType.Definition as IEdmEntityType;
                 if (entityType == null)
                 {
                     return null;
@@ -79,32 +85,26 @@ namespace Microsoft.Restier.Core.Conventions
             {
                 // Could be a single navigation property or a collection navigation property
                 var propType = propertyModelReference.Property.Type;
-                var collectoinTypeRef = propType as IEdmCollectionTypeReference;
-                if (collectoinTypeRef != null)
+                var collectionTypeReference = propType as IEdmCollectionTypeReference;
+                if (collectionTypeReference != null)
                 {
-                    var collectionType = collectoinTypeRef.Definition as IEdmCollectionType;
+                    var collectionType = collectionTypeReference.Definition as IEdmCollectionType;
                     propType = collectionType.ElementType;
                 }
 
-                if (propType.TypeKind() != EdmTypeKind.Entity)
-                {
-                    return null;
-                }
-
-                var entityType = propType.Definition as EdmEntityType;
+                var entityType = propType.Definition as IEdmEntityType;
                 if (entityType == null)
                 {
                     return null;
                 }
 
                 // In case of type inheritance, get the base type
-                var currentType = entityType;
-                while (currentType.BaseType != null)
+                while (entityType.BaseType != null)
                 {
-                    currentType = (EdmEntityType) currentType.BaseType;
+                    entityType = (IEdmEntityType)entityType.BaseType;
                 }
 
-                return AppendOnFilterExpression(context, currentType.Name);
+                return AppendOnFilterExpression(context, entityType.Name);
             }
 
             return null;
@@ -114,14 +114,14 @@ namespace Microsoft.Restier.Core.Conventions
         {
             var methodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
             var method = this.targetType.GetQualifiedMethod(methodName);
-            if (method == null || ! method.IsFamily)
+            if (method == null || !method.IsFamily)
             {
                 return null;
             }
 
-            var parameters = method.GetParameters();
-            if (parameters.Length != 1 ||
-                parameters[0].ParameterType != method.ReturnType)
+            var parameter = method.GetParameters().SingleOrDefault();
+            if (parameter == null ||
+                parameter.ParameterType != method.ReturnType)
             {
                 return null;
             }
@@ -137,23 +137,27 @@ namespace Microsoft.Restier.Core.Conventions
                 }
             }
 
+            // The LINQ expression built below has three cases
+            // For navigation property, just add a where condition from OnFilter method
+            // For collection property, will be like "Param_0.Prop.AsQueryable().Where(...)"
+            // For collection property of derived type, will be like "Param_0.Prop.AsQueryable().Where(...).OfType()"
             var returnType = context.VisitedNode.Type.FindGenericType(typeof(IQueryable<>));
-            var enumerableQueryPara = (object)context.VisitedNode;
+            var enumerableQueryParameter = (object)context.VisitedNode;
             Type elementType = null;
 
             if (returnType == null)
             {
                 // This means append for properties model reference
-                var collType = context.VisitedNode.Type.FindGenericType(typeof (ICollection<>));
-                if (collType == null)
+                var collectionType = context.VisitedNode.Type.FindGenericType(typeof(ICollection<>));
+                if (collectionType == null)
                 {
                     return null;
                 }
 
-                elementType = collType.GetGenericArguments()[0];
+                elementType = collectionType.GetGenericArguments()[0];
                 returnType = typeof(IQueryable<>).MakeGenericType(elementType);
 
-                enumerableQueryPara = Expression.Call(
+                enumerableQueryParameter = Expression.Call(
                     ExpressionHelperMethods.QueryableAsQueryableGeneric.MakeGenericMethod(elementType),
                     context.VisitedNode);
             }
@@ -161,13 +165,18 @@ namespace Microsoft.Restier.Core.Conventions
             {
                 elementType = returnType.GetGenericArguments()[0];
             }
-            
+
             var queryType = typeof(EnumerableQuery<>).MakeGenericType(elementType);
-            var query = Activator.CreateInstance(queryType, enumerableQueryPara);
+            var query = Activator.CreateInstance(queryType, enumerableQueryParameter);
             var result = method.Invoke(apiBase, new object[] { query }) as IQueryable;
+            if (result == null)
+            {
+                return null;
+            }
+
             if (method.ReturnType == returnType)
             {
-                if (result != null && result != query)
+                if (result != query)
                 {
                     return result.Expression;
                 }
@@ -176,11 +185,8 @@ namespace Microsoft.Restier.Core.Conventions
             {
                 // This means calling onFilter against derived type and based type is returned
                 // Need to convert back to derived type with OfType
-                if (result != null)
-                {
-                    result = ExpressionHelpers.OfType(result, elementType);
-                    return result.Expression;
-                }
+                result = ExpressionHelpers.OfType(result, elementType);
+                return result.Expression;
             }
 
             return null;

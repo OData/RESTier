@@ -110,13 +110,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = api.GetQueryableSource("Test", arguments);
-            Assert.Equal(typeof (string), source.ElementType);
+            Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -143,13 +143,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = context.GetQueryableSource("Test", arguments);
-            Assert.Equal(typeof (string), source.ElementType);
+            Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -165,13 +165,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = api.GetQueryableSource("Namespace", "Function", arguments);
-            Assert.Equal(typeof (DateTime), source.ElementType);
+            Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -200,13 +200,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = context.GetQueryableSource("Namespace", "Function", arguments);
-            Assert.Equal(typeof (DateTime), source.ElementType);
+            Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -224,13 +224,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = api.GetQueryableSource<string>("Test", arguments);
-            Assert.Equal(typeof (string), source.ElementType);
+            Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -257,13 +257,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = context.GetQueryableSource<string>("Test", arguments);
-            Assert.Equal(typeof (string), source.ElementType);
+            Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (string), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(string), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(2, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Test", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -280,13 +280,13 @@ namespace Microsoft.Restier.Core.Tests
 
             var source = api.GetQueryableSource<DateTime>(
                 "Namespace", "Function", arguments);
-            Assert.Equal(typeof (DateTime), source.ElementType);
+            Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);
@@ -315,13 +315,13 @@ namespace Microsoft.Restier.Core.Tests
             var arguments = new object[0];
 
             var source = context.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
-            Assert.Equal(typeof (DateTime), source.ElementType);
+            Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
             Assert.Null(methodCall.Object);
-            Assert.Equal(typeof (DataSourceStub), methodCall.Method.DeclaringType);
+            Assert.Equal(typeof(DataSourceStub), methodCall.Method.DeclaringType);
             Assert.Equal("GetQueryableSource", methodCall.Method.Name);
-            Assert.Equal(typeof (DateTime), methodCall.Method.GetGenericArguments()[0]);
+            Assert.Equal(typeof(DateTime), methodCall.Method.GetGenericArguments()[0]);
             Assert.Equal(3, methodCall.Arguments.Count);
             Assert.True(methodCall.Arguments[0] is ConstantExpression);
             Assert.Equal("Namespace", (methodCall.Arguments[0] as ConstantExpression).Value);

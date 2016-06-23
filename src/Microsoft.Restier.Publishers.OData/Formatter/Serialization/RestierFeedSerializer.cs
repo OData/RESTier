@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
 
             base.WriteObject(graph, type, messageWriter, writeContext);
         }
-        
+
         private bool TryWriteAggregationResult(
             object graph,
             Type type,
@@ -67,7 +67,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
                     IEdmEntitySetBase entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
                     IEdmEntityTypeReference entityType = elementType.AsEntity();
                     ODataWriter writer = messageWriter.CreateODataFeedWriter(entitySet, entityType.EntityDefinition());
-                    base.WriteObjectInline(graph, feedType, writer, writeContext);
+                    WriteObjectInline(graph, feedType, writer, writeContext);
                     return true;
                 }
             }

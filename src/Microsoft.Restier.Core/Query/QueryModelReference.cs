@@ -12,7 +12,6 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryModelReference
     {
-
         private readonly IEdmEntitySet edmEntitySet;
 
         private readonly IEdmType edmType;
@@ -88,7 +87,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of a function.
         /// </param>
-        public DataSourceStubModelReference(
+        internal DataSourceStubModelReference(
             QueryContext context,
             string namespaceName,
             string name)
@@ -182,7 +181,7 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class ParameterModelReference : QueryModelReference
     {
-        internal ParameterModelReference(IEdmEntitySet entitySet, IEdmType type) 
+        internal ParameterModelReference(IEdmEntitySet entitySet, IEdmType type)
             : base(entitySet, type)
         {
         }

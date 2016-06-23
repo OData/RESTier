@@ -11,19 +11,10 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
     /// </summary>
     public class DefaultRestierDeserializerProvider : DefaultODataDeserializerProvider
     {
-        private RestierEnumDeserializer enumDeserializer;
-        private static readonly DefaultRestierDeserializerProvider _instance = new DefaultRestierDeserializerProvider();
+        private static readonly DefaultRestierDeserializerProvider SingletonInstanceField
+            = new DefaultRestierDeserializerProvider();
 
-        /// <summary>
-        /// Gets the default instance of the <see cref="DefaultRestierDeserializerProvider"/>.
-        /// </summary>
-        internal static DefaultRestierDeserializerProvider SingletonInstance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
+        private RestierEnumDeserializer enumDeserializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRestierDeserializerProvider" /> class.
@@ -33,6 +24,18 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
             this.enumDeserializer = new RestierEnumDeserializer();
         }
 
+        /// <summary>
+        /// Gets the default instance of the <see cref="DefaultRestierDeserializerProvider"/>.
+        /// </summary>
+        internal static DefaultRestierDeserializerProvider SingletonInstance
+        {
+            get
+            {
+                return SingletonInstanceField;
+            }
+        }
+
+        /// <inheritdoc />
         public override ODataEdmTypeDeserializer GetEdmTypeDeserializer(IEdmTypeReference edmType)
         {
             if (edmType.IsEnum())

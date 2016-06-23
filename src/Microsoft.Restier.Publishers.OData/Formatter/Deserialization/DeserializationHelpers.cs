@@ -18,7 +18,12 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
     /// </summary>
     internal static class DeserializationHelpers
     {
-        internal static object ConvertValue(object oDataValue, Type expectedReturnType, IEdmTypeReference propertyType, IEdmModel model, ApiBase api)
+        internal static object ConvertValue(
+            object odataValue,
+            Type expectedReturnType,
+            IEdmTypeReference propertyType,
+            IEdmModel model,
+            ApiBase api)
         {
             ODataDeserializerContext readContext = new ODataDeserializerContext
             {
@@ -27,35 +32,38 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
 
             ODataDeserializerProvider deserializerProvider = api.Context.GetApiService<ODataDeserializerProvider>();
 
-            if (oDataValue == null)
+            if (odataValue == null)
             {
                 return null;
             }
 
-            ODataNullValue nullValue = oDataValue as ODataNullValue;
+            ODataNullValue nullValue = odataValue as ODataNullValue;
             if (nullValue != null)
             {
                 return null;
             }
 
-            ODataComplexValue complexValue = oDataValue as ODataComplexValue;
+            ODataComplexValue complexValue = odataValue as ODataComplexValue;
             if (complexValue != null)
             {
-                ODataEdmTypeDeserializer deserializer = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsComplex());
+                ODataEdmTypeDeserializer deserializer
+                    = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsComplex());
                 return deserializer.ReadInline(complexValue, propertyType, readContext);
             }
 
-            ODataEnumValue enumValue = oDataValue as ODataEnumValue;
+            ODataEnumValue enumValue = odataValue as ODataEnumValue;
             if (enumValue != null)
             {
-                ODataEdmTypeDeserializer deserializer = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsEnum());
+                ODataEdmTypeDeserializer deserializer
+                    = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsEnum());
                 return deserializer.ReadInline(enumValue, propertyType, readContext);
             }
 
-            ODataCollectionValue collection = oDataValue as ODataCollectionValue;
+            ODataCollectionValue collection = odataValue as ODataCollectionValue;
             if (collection != null)
             {
-                ODataEdmTypeDeserializer deserializer = deserializerProvider.GetEdmTypeDeserializer(propertyType as IEdmCollectionTypeReference);
+                ODataEdmTypeDeserializer deserializer
+                    = deserializerProvider.GetEdmTypeDeserializer(propertyType as IEdmCollectionTypeReference);
                 var collectionResult = deserializer.ReadInline(collection, propertyType, readContext);
 
                 var genericType = expectedReturnType.FindGenericType(typeof(ICollection<>));
@@ -63,18 +71,21 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
                 {
                     var elementClrType = expectedReturnType.GetElementType() ??
                                          expectedReturnType.GenericTypeArguments[0];
-                    var castMethodInfo = ExpressionHelperMethods.EnumerableCastGeneric.MakeGenericMethod(elementClrType);
+                    var castMethodInfo = ExpressionHelperMethods.EnumerableCastGeneric
+                        .MakeGenericMethod(elementClrType);
                     var castedResult = castMethodInfo.Invoke(null, new object[] { collectionResult });
 
                     if (expectedReturnType.IsArray)
                     {
-                        var toArrayMethodInfo = ExpressionHelperMethods.EnumerableToArrayGeneric.MakeGenericMethod(elementClrType);
+                        var toArrayMethodInfo = ExpressionHelperMethods.EnumerableToArrayGeneric
+                            .MakeGenericMethod(elementClrType);
                         var arrayResult = toArrayMethodInfo.Invoke(null, new object[] { castedResult });
                         return arrayResult;
                     }
                     else if (genericType != null)
                     {
-                        var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric.MakeGenericMethod(elementClrType);
+                        var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric
+                            .MakeGenericMethod(elementClrType);
                         var listResult = toListMethodInfo.Invoke(null, new object[] { castedResult });
                         return listResult;
                     }
@@ -84,7 +95,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
                 return collectionResult;
             }
 
-            return oDataValue;
+            return odataValue;
         }
     }
 }

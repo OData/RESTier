@@ -134,7 +134,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
 
                     // Collection is set by EF now, and EF model producer will not build model any more
                     var builder = new ODataConventionModelBuilder();
-                    MethodInfo method = typeof (ODataConventionModelBuilder).GetMethod("EntitySet",
+                    MethodInfo method = typeof(ODataConventionModelBuilder).GetMethod("EntitySet",
                         BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
                     foreach (var pair in collection)

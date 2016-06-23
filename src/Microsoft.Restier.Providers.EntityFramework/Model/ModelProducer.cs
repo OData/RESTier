@@ -4,17 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+#if !EF7
+using System.Data.Entity;
+#endif
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 #if EF7
 using Microsoft.EntityFrameworkCore;
-#else
-using System.Data.Entity;
 #endif
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Model
 {
@@ -25,7 +26,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
     internal class ModelProducer : IModelBuilder
     {
         /// <summary>
-        /// This class will not real build a model, but only get entityset name and eitity map from data source
+        /// This class will not real build a model, but only get entity set name and entity map from data source
         /// Then pass the information to publisher layer to build the model.
         /// </summary>
         /// <param name="context">
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
             var apiContext = context.ApiContext;
             var dbContext = apiContext.GetApiService<DbContext>();
 
-            List<PropertyInfo> props =GetDbSetProperties(dbContext);
+            List<PropertyInfo> props = GetDbSetProperties(dbContext);
             foreach (var prop in props)
             {
                 var type = prop.PropertyType.GenericTypeArguments[0];

@@ -70,6 +70,28 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
+        /// Identifies the value of an extended property of an object.
+        /// </summary>
+        /// <typeparam name="TResult">
+        /// The type of the result.
+        /// </typeparam>
+        /// <param name="source">
+        /// A source object.
+        /// </param>
+        /// <param name="propertyName">
+        /// The name of a property.
+        /// </param>
+        /// <returns>
+        /// A representation of the value of the
+        /// extended property of the object.
+        /// </returns>
+        public static TResult GetPropertyValue<TResult>(
+            object source, string propertyName)
+        {
+            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
+        }
+
+        /// <summary>
         /// Identifies an entity set or results of a call to a function import.
         /// TODO reserve for function/action supports
         /// </summary>
@@ -164,28 +186,6 @@ namespace Microsoft.Restier.Core
         /// </returns>
         internal static TResult Result<TResult>(
             string namespaceName, string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
-
-        /// <summary>
-        /// Identifies the value of an extended property of an object.
-        /// </summary>
-        /// <typeparam name="TResult">
-        /// The type of the result.
-        /// </typeparam>
-        /// <param name="source">
-        /// A source object.
-        /// </param>
-        /// <param name="propertyName">
-        /// The name of a property.
-        /// </param>
-        /// <returns>
-        /// A representation of the value of the
-        /// extended property of the object.
-        /// </returns>
-        public static TResult GetPropertyValue<TResult>(
-            object source, string propertyName)
         {
             throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
         }

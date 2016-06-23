@@ -33,7 +33,8 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IChangeSetItemProcessor>((sp, next) => new ConventionBasedChangeSetItemProcessor(targetType));
+            services.AddService<IChangeSetItemProcessor>(
+                (sp, next) => new ConventionBasedChangeSetItemProcessor(targetType));
         }
 
         /// <inheritdoc/>

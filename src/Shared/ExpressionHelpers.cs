@@ -100,7 +100,8 @@ namespace System.Linq.Expressions
         {
             var constructor = typeof(List<>).MakeGenericType(elementType).GetConstructor(Type.EmptyTypes);
             var instance = constructor.Invoke(new object[] { });
-            var emptyQuerable = ExpressionHelperMethods.QueryableAsQueryable.Invoke(null, new object[] { instance }) as IQueryable;
+            var emptyQuerable = ExpressionHelperMethods.QueryableAsQueryable
+                .Invoke(null, new object[] { instance }) as IQueryable;
             return emptyQuerable;
         }
 

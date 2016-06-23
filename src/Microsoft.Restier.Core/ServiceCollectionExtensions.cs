@@ -35,7 +35,8 @@ namespace Microsoft.Restier.Core
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Return true if the <see cref="IServiceCollection"/> has any <typeparamref name="TService"/> service registered.
+        /// Return true if the <see cref="IServiceCollection"/> has any <typeparamref name="TService"/> service
+        /// registered.
         /// </summary>
         /// <typeparam name="TService">The API service type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Adds a service contributor, which has a chance to chain previously registered service instances.
         /// If want to cutoff previous registration, not define a property with type of TService or do not use it.
-        /// The first TService in Func is the service of inner, and the second TService is the service returned.
+        /// The first TService in function is the service of inner, and the second TService is the service returned.
         /// </summary>
         /// <typeparam name="TService">The service type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -165,7 +166,8 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TService">The service type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeSingleton<TService>(this IServiceCollection services) where TService : class
+        public static IServiceCollection MakeSingleton<TService>(this IServiceCollection services)
+            where TService : class
         {
             Ensure.NotNull(services, "services");
             services.AddSingleton<TService>(ChainedService<TService>.DefaultFactory);
@@ -191,13 +193,24 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TService">The service type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeTransient<TService>(this IServiceCollection services) where TService : class
+        public static IServiceCollection MakeTransient<TService>(this IServiceCollection services)
+            where TService : class
         {
             Ensure.NotNull(services, "services");
             services.AddTransient<TService>(ChainedService<TService>.DefaultFactory);
             return services;
         }
 
+        /// <summary>
+        /// Add core services.
+        /// </summary>
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> containing API service registrations.
+        /// </param>
+        /// <param name="apiType">
+        /// The type of a class on which code-based conventions are used.
+        /// </param>
+        /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
         {
             if (!services.HasService<ApiBase>())
@@ -213,8 +226,15 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Add services of enabled abbtributes.
+        /// Add services of enabled attributes.
         /// </summary>
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> containing API service registrations.
+        /// </param>
+        /// <param name="apiType">
+        /// The type of a class on which code-based conventions are used.
+        /// </param>
+        /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddAttributeServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(apiType, "apiType");
@@ -232,6 +252,7 @@ namespace Microsoft.Restier.Core
         /// <param name="apiType">
         /// The type of a class on which code-based conventions are used.
         /// </param>
+        /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddConventionBasedServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(apiType, "apiType");
@@ -240,18 +261,6 @@ namespace Microsoft.Restier.Core
             ConventionBasedChangeSetItemProcessor.ApplyTo(services, apiType);
             services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
             ConventionBasedEntitySetProcessor.ApplyTo(services, apiType);
-            return services;
-        }
-
-        private static IServiceCollection AddContributorNoCheck<TService>(
-            this IServiceCollection services,
-            ApiServiceContributor<TService> contributor)
-            where TService : class
-        {
-            // Services have singleton lifetime by default, call Make... to change.
-            services.TryAddSingleton(typeof(TService), ChainedService<TService>.DefaultFactory);
-            services.AddSingleton(contributor);
-
             return services;
         }
 
@@ -285,6 +294,18 @@ namespace Microsoft.Restier.Core
             var serviceProvider = serviceProviderFactory != null ?
                 serviceProviderFactory(services) : services.BuildServiceProvider();
             return serviceProvider.GetService<ApiConfiguration>();
+        }
+
+        private static IServiceCollection AddContributorNoCheck<TService>(
+            this IServiceCollection services,
+            ApiServiceContributor<TService> contributor)
+            where TService : class
+        {
+            // Services have singleton lifetime by default, call Make... to change.
+            services.TryAddSingleton(typeof(TService), ChainedService<TService>.DefaultFactory);
+            services.AddSingleton(contributor);
+
+            return services;
         }
 
         private static MemberInfo FindInnerMemberAndInject<TService, TImplement>(

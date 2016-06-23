@@ -68,7 +68,6 @@ namespace System.Linq.Expressions
         public static MethodInfo QueryableAsQueryable
         {
             get { return asQueryableMethod; }
-
         }
 
         public static MethodInfo QueryableAsQueryableGeneric
@@ -90,7 +89,7 @@ namespace System.Linq.Expressions
         {
             get { return enumerableToArrayMethod; }
         }
- 
+
         private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression)
         {
             return GenericMethodOf(expression as Expression);
