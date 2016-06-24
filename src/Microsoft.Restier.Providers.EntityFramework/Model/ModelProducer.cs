@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 #if !EF7
 using System.Data.Entity;
 #endif
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,43 +45,35 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         {
             Ensure.NotNull(context, "context");
 
-            var entitySetTypeMapCollection = new Collection<KeyValuePair<string, Type>>();
-            var apiContext = context.ApiContext;
-            var dbContext = apiContext.GetApiService<DbContext>();
+            var entitySetTypeMapDictionary = new Dictionary<string, Type>();
+            var entityTypeKeyPropertiesMapDictionary = new Dictionary<Type, ICollection<PropertyInfo>>();
+            var dbContext = context.ApiContext.GetApiService<DbContext>();
 
-            List<PropertyInfo> props = GetDbSetProperties(dbContext);
-            foreach (var prop in props)
+            var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
+            var efEntityContainer = efModel.GetItems<EntityContainer>(DataSpace.CSpace).Single();
+            var itemCollection = (ObjectItemCollection)efModel.GetItemCollection(DataSpace.OSpace);
+
+            foreach (var efEntitySet in efEntityContainer.EntitySets)
             {
-                var type = prop.PropertyType.GenericTypeArguments[0];
-                var pair = new KeyValuePair<string, Type>(prop.Name, type);
-                entitySetTypeMapCollection.Add(pair);
-            }
+                var efEntityType = efEntitySet.ElementType;
+                var objectSpaceType = efModel.GetObjectSpaceType(efEntityType);
+                Type clrType = itemCollection.GetClrType(objectSpaceType);
 
-            context.EntitySetTypeMapCollection = entitySetTypeMapCollection;
-            return Task.FromResult<IEdmModel>(null);
-        }
+                // As entity set name and type map
+                entitySetTypeMapDictionary.Add(efEntitySet.Name, clrType);
 
-        internal static List<PropertyInfo> GetDbSetProperties(DbContext dbContext)
-        {
-            var dbSetProperties = new List<PropertyInfo>();
-            var properties = dbContext.GetType().GetProperties();
-
-            foreach (var property in properties)
-            {
-                var type = property.PropertyType;
-#if EF7
-                var genericType = type.FindGenericType(typeof(DbSet<>));
-#else
-                var genericType = type.FindGenericType(typeof(IDbSet<>));
-#endif
-
-                if (genericType != null)
+                ICollection<PropertyInfo> keyProperties = new List<PropertyInfo>();
+                foreach (var property in efEntityType.KeyProperties)
                 {
-                    dbSetProperties.Add(property);
+                    keyProperties.Add(clrType.GetProperty(property.Name));
                 }
+
+                entityTypeKeyPropertiesMapDictionary.Add(clrType, keyProperties);
             }
 
-            return dbSetProperties;
+            context.EntitySetTypeMapDictionary = entitySetTypeMapDictionary;
+            context.EntityTypeKeyPropertiesMapDictionary = entityTypeKeyPropertiesMapDictionary;
+            return Task.FromResult<IEdmModel>(null);
         }
     }
 }

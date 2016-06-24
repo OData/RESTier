@@ -126,7 +126,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
                 // EF Model builder does not build model any more but just entity set name and entity type map
                 if (model == null)
                 {
-                    var collection = context.EntitySetTypeMapCollection;
+                    var collection = context.EntitySetTypeMapDictionary;
                     if (collection == null || collection.Count == 0)
                     {
                         return null;
@@ -149,7 +149,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
                     }
 
                     // Clear the map collection to make RESTier model builder will not build the model again.
-                    context.EntitySetTypeMapCollection.Clear();
+                    collection.Clear();
                     model = builder.GetEdmModel();
                 }
 

@@ -37,8 +37,8 @@ using System.Diagnostics.CodeAnalysis;
 #region CA1006 Nested Generic Type
 [assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.ApiBaseExtensions.#QueryAsync`1(Microsoft.Restier.Core.ApiBase,System.Linq.IQueryable`1<!!0>,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.ApiBaseExtensions.#QueryAsync`2(Microsoft.Restier.Core.ApiBase,System.Linq.IQueryable`1<!!0>,System.Linq.Expressions.Expression`1<System.Func`2<System.Linq.IQueryable`1<!!0>,!!1>>,System.Threading.CancellationToken)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntityTypeKeyPropertiesMapDictionary")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.Query.QueryRequest.#Create`2(System.Linq.IQueryable`1<!!0>,System.Linq.Expressions.Expression`1<System.Func`2<System.Linq.IQueryable`1<!!0>,!!1>>,System.Nullable`1<System.Boolean>)")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntitySetTypeMapCollection")]
 #endregion
 
 #region CA1020 Few types in namespace
@@ -149,7 +149,8 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.ApiContext.#.ctor(Microsoft.Restier.Core.ApiConfiguration)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.QueryableSource.#System.Linq.IQueryProvider.CreateQuery`1(System.Linq.Expressions.Expression)")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Scope = "member", Target = "Microsoft.Restier.Core.QueryableSource.#System.Linq.IQueryProvider.CreateQuery(System.Linq.Expressions.Expression)")]
-[assembly: SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntitySetTypeMapCollection")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntitySetTypeMapDictionary")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Scope = "member", Target = "Microsoft.Restier.Core.Model.ModelContext.#EntityTypeKeyPropertiesMapDictionary")]
 #endregion
 
 #region CA1801 Unused Parameters

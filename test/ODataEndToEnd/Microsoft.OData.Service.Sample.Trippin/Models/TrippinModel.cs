@@ -22,6 +22,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Airline>().HasKey(a =>a.AirlineCode);
+
             modelBuilder.Entity<Trip>().HasMany<Flight>(s => s.Flights).WithMany().Map(c =>
             {
                 c.MapLeftKey("TripId");

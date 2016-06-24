@@ -28,8 +28,8 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
             }
 
-            var collection = context.EntitySetTypeMapCollection;
-            if (collection == null || collection.Count == 0)
+            var entitySetTypeMapDictionary = context.EntitySetTypeMapDictionary;
+            if (entitySetTypeMapDictionary == null || entitySetTypeMapDictionary.Count == 0)
             {
                 return null;
             }
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
             MethodInfo method = typeof(ODataConventionModelBuilder)
                 .GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
-            foreach (var pair in collection)
+            foreach (var pair in entitySetTypeMapDictionary)
             {
                 // Build a method with the specific type argument
                 var specifiedMethod = method.MakeGenericMethod(pair.Value);
@@ -53,7 +53,27 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 specifiedMethod.Invoke(builder, parameters);
             }
 
-            context.EntitySetTypeMapCollection.Clear();
+            entitySetTypeMapDictionary.Clear();
+
+            var entityTypeKeyPropertiesMapDictionary = context.EntityTypeKeyPropertiesMapDictionary;
+            if (entityTypeKeyPropertiesMapDictionary != null)
+            {
+                foreach (var pair in entityTypeKeyPropertiesMapDictionary)
+                {
+                    var edmTypeConfiguration = builder.GetTypeConfigurationOrNull(pair.Key) as EntityTypeConfiguration;
+                    if (edmTypeConfiguration == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var property in pair.Value)
+                    {
+                        edmTypeConfiguration.HasKey(property);
+                    }
+                }
+
+                entityTypeKeyPropertiesMapDictionary.Clear();
+            }
 
             return builder.GetEdmModel();
         }
