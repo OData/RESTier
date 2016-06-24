@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
@@ -29,7 +30,7 @@ namespace Microsoft.Restier.Security
         /// An expanded expression of the same type as the visited node, or
         /// if expansion did not apply, the visited node or <c>null</c>.
         /// </returns>
-        public Expression Expand(QueryExpressionContext context)
+        public Task<Expression> ExpandAsync(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
 
@@ -79,11 +80,11 @@ namespace Microsoft.Restier.Security
             return CallInner(context);
         }
 
-        private Expression CallInner(QueryExpressionContext context)
+        private Task<Expression> CallInner(QueryExpressionContext context)
         {
             if (this.InnerHandler != null)
             {
-                return this.InnerHandler.Expand(context);
+                return this.InnerHandler.ExpandAsync(context);
             }
 
             return null;

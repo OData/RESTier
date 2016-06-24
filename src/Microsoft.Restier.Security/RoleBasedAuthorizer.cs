@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
@@ -31,26 +32,26 @@ namespace Microsoft.Restier.Security
         /// <returns>
         /// <c>true</c> if the inspection passed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Authorize(QueryExpressionContext context)
+        public Task<bool> AuthorizeAsync(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
 
             // TODO GitHubIssue#35 : Support Inspect more elements in authorization
             if (context.ModelReference == null)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
             var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
             if (dataSourceStubReference == null)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
             var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
             if (entitySet == null)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
             var assertedRoles = context.QueryContext.ApiContext.GetProperty<List<string>>(AssertedRoles);
@@ -74,7 +75,7 @@ namespace Microsoft.Restier.Security
                     string.Format(CultureInfo.InvariantCulture, Resources.ReadDeniedOnEntitySet, entitySet.Name));
             }
 
-            return true;
+            return Task.FromResult(true);
         }
 
         /// <summary>

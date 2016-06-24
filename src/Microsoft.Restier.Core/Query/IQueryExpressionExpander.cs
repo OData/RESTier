@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -34,6 +35,6 @@ namespace Microsoft.Restier.Core.Query
         /// An expanded expression of the same type as the visited node, or
         /// if expansion did not apply, the visited node or <c>null</c>.
         /// </returns>
-        Expression Expand(QueryExpressionContext context);
+        Task<Expression> ExpandAsync(QueryExpressionContext context);
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
@@ -18,13 +19,13 @@ namespace Microsoft.Restier.Providers.EntityFramework.Query
         public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>
-        public Expression Process(QueryExpressionContext context)
+        public async Task<Expression> ProcessAsync(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
 
             if (Inner != null)
             {
-                var innerFilteredExpression = Inner.Process(context);
+                var innerFilteredExpression = await Inner.ProcessAsync(context);
                 if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
                 {
                     return innerFilteredExpression;

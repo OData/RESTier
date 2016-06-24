@@ -126,7 +126,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class TestQueryExpressionSourcer : IQueryExpressionSourcer
     {
-        public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
+        public Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded)
         {
             var a = new[] { new Product
             {
@@ -145,25 +145,30 @@ namespace Microsoft.Restier.Publishers.OData.Test
                 Id = 1,
             } };
 
+            Expression expression;
             if (!embedded)
             {
                 if (context.VisitedNode.ToString() == "GetQueryableSource(\"Products\", null)")
                 {
-                    return Expression.Constant(a.AsQueryable());
+                    expression = Expression.Constant(a.AsQueryable());
+                    return Task.FromResult(expression);
                 }
 
                 if (context.VisitedNode.ToString() == "GetQueryableSource(\"Customers\", null)")
                 {
-                    return Expression.Constant(b.AsQueryable());
+                    expression = Expression.Constant(b.AsQueryable());
+                    return Task.FromResult(expression);
                 }
 
                 if (context.VisitedNode.ToString() == "GetQueryableSource(\"Stores\", null)")
                 {
-                    return Expression.Constant(c.AsQueryable());
+                    expression = Expression.Constant(c.AsQueryable());
+                    return Task.FromResult(expression);
                 }
             }
 
-            return context.VisitedNode;
+            expression = context.VisitedNode;
+            return Task.FromResult(expression);
         }
     }
 

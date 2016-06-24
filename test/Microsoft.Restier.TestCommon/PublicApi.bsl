@@ -359,19 +359,19 @@ public interface Microsoft.Restier.Core.Query.IQueryExecutor {
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExpressionAuthorizer {
-	bool Authorize (Microsoft.Restier.Core.Query.QueryExpressionContext context)
+	System.Threading.Tasks.Task`1[[System.Boolean]] AuthorizeAsync (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExpressionExpander {
-	System.Linq.Expressions.Expression Expand (Microsoft.Restier.Core.Query.QueryExpressionContext context)
+	System.Threading.Tasks.Task`1[[System.Linq.Expressions.Expression]] ExpandAsync (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExpressionProcessor {
-	System.Linq.Expressions.Expression Process (Microsoft.Restier.Core.Query.QueryExpressionContext context)
+	System.Threading.Tasks.Task`1[[System.Linq.Expressions.Expression]] ProcessAsync (Microsoft.Restier.Core.Query.QueryExpressionContext context)
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
-	System.Linq.Expressions.Expression ReplaceQueryableSource (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
+	System.Threading.Tasks.Task`1[[System.Linq.Expressions.Expression]] ReplaceQueryableSourceAsync (Microsoft.Restier.Core.Query.QueryExpressionContext context, bool embedded)
 }
 
 public class Microsoft.Restier.Core.Query.DataSourceStubModelReference : Microsoft.Restier.Core.Query.QueryModelReference {

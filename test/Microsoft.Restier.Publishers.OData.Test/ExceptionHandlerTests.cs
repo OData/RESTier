@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
         private class FakeSourcer : IQueryExpressionSourcer
         {
-            public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
+            public Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded)
             {
                 throw new SecurityException();
             }

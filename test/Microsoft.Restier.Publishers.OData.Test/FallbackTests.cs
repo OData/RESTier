@@ -148,7 +148,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class FallbackQueryExpressionSourcer : IQueryExpressionSourcer
     {
-        public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
+        public Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded)
         {
             var orders = new[]
             {
@@ -159,11 +159,12 @@ namespace Microsoft.Restier.Publishers.OData.Test
             {
                 if (context.VisitedNode.ToString().StartsWith("GetQueryableSource(\"Orders\""))
                 {
-                    return Expression.Constant(orders.AsQueryable());
+                    Expression expression = Expression.Constant(orders.AsQueryable());
+                    return Task.FromResult(expression);
                 }
             }
 
-            return context.VisitedNode;
+            return Task.FromResult(context.VisitedNode);
         }
     }
 

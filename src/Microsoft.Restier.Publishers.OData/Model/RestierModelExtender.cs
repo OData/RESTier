@@ -422,7 +422,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
             private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
-            public Expression Expand(QueryExpressionContext context)
+            public Task<Expression> ExpandAsync(QueryExpressionContext context)
             {
                 Ensure.NotNull(context, "context");
 
@@ -439,19 +439,19 @@ namespace Microsoft.Restier.Publishers.OData.Model
                     var query = ModelCache.GetEntitySetQuery(context);
                     if (query != null)
                     {
-                        return query.Expression;
+                        return Task.FromResult(query.Expression);
                     }
                 }
 
                 // No expansion happened just return the node itself.
-                return context.VisitedNode;
+                return Task.FromResult(context.VisitedNode);
             }
 
-            private Expression CallInner(QueryExpressionContext context)
+            private Task<Expression> CallInner(QueryExpressionContext context)
             {
                 if (this.InnerHandler != null)
                 {
-                    return this.InnerHandler.Expand(context);
+                    return this.InnerHandler.ExpandAsync(context);
                 }
 
                 return null;
@@ -470,7 +470,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
             private RestierModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
-            public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
+            public Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded)
             {
                 var result = CallInner(context, embedded);
                 if (result != null)
@@ -484,17 +484,18 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 var query = ModelCache.GetEntitySetQuery(context) ?? ModelCache.GetSingletonQuery(context);
                 if (query != null)
                 {
-                    return Expression.Constant(query);
+                    Expression expression = Expression.Constant(query);
+                    return Task.FromResult(expression);
                 }
 
                 return null;
             }
 
-            private Expression CallInner(QueryExpressionContext context, bool embedded)
+            private Task<Expression> CallInner(QueryExpressionContext context, bool embedded)
             {
                 if (this.InnerHandler != null)
                 {
-                    return this.InnerHandler.ReplaceQueryableSource(context, embedded);
+                    return this.InnerHandler.ReplaceQueryableSourceAsync(context, embedded);
                 }
 
                 return null;
