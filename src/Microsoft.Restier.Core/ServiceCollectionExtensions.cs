@@ -133,7 +133,7 @@ namespace Microsoft.Restier.Core
 
                     var value = Expression.Variable(typeof(TImplement));
                     var getService = Expression.Call(
-                        typeof(ServiceProviderExtensions),
+                        typeof(ServiceProviderServiceExtensions),
                         "GetRequiredService",
                         new[] { typeof(TImplement) },
                         serviceProviderParam);

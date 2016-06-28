@@ -63,12 +63,12 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.3.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.4.3.2\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=4.9.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.4.9.1\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.3.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.4.3.2\lib\net45\FluentAssertions.Core.dll</HintPath>
+    <Reference Include="FluentAssertions.Core, Version=4.9.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.4.9.1\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.OData.Client, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -111,118 +111,118 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Baselines\OnFilterCastExpand1.txt" >
+    <Content Include="Baselines\OnFilterCastExpand1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastExpand2.txt" >
+    <Content Include="Baselines\OnFilterCastExpand2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastExpand3.txt" >
+    <Content Include="Baselines\OnFilterCastExpand3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastExpand4.txt" >
+    <Content Include="Baselines\OnFilterCastExpand4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastExpand5.txt" >
+    <Content Include="Baselines\OnFilterCastExpand5.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPath1.txt" >
+    <Content Include="Baselines\OnFilterCastPath1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPath2.txt" >
+    <Content Include="Baselines\OnFilterCastPath2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPath3.txt" >
+    <Content Include="Baselines\OnFilterCastPath3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPath4.txt" >
+    <Content Include="Baselines\OnFilterCastPath4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPath5.txt" >
+    <Content Include="Baselines\OnFilterCastPath5.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPath6.txt" >
+    <Content Include="Baselines\OnFilterCastPath6.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand1.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand2.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand3.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand4.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand5.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand5.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand6.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand6.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand7.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand7.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand8.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand8.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterCastPropExpand9.txt" >
+    <Content Include="Baselines\OnFilterCastPropExpand9.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterNestedExpand1.txt" >
+    <Content Include="Baselines\OnfilterNestedExpand1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterNestedExpand2.txt" >
+    <Content Include="Baselines\OnfilterNestedExpand2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterPathExpand1.txt" >
+    <Content Include="Baselines\OnFilterPathExpand1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterPathExpand2.txt" >
+    <Content Include="Baselines\OnFilterPathExpand2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterPathExpand3.txt" >
+    <Content Include="Baselines\OnFilterPathExpand3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterPathExpand4.txt" >
+    <Content Include="Baselines\OnFilterPathExpand4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterPathSeg1.txt" >
+    <Content Include="Baselines\OnfilterPathSeg1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterPathSeg3.txt" >
+    <Content Include="Baselines\OnfilterPathSeg3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterPathSeg4.txt" >
+    <Content Include="Baselines\OnfilterPathSeg4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterPathSeg5.txt" >
+    <Content Include="Baselines\OnfilterPathSeg5.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterPathSeg6.txt" >
+    <Content Include="Baselines\OnfilterPathSeg6.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterQueryOption3.txt" >
+    <Content Include="Baselines\OnFilterQueryOption3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterQueryOption4.txt" >
+    <Content Include="Baselines\OnFilterQueryOption4.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterQueryOption5.txt" >
+    <Content Include="Baselines\OnFilterQueryOption5.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnFilterQueryOption6.txt" >
+    <Content Include="Baselines\OnFilterQueryOption6.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterSimpleExpand1.txt" >
+    <Content Include="Baselines\OnfilterSimpleExpand1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterSimpleExpand2.txt" >
+    <Content Include="Baselines\OnfilterSimpleExpand2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Baselines\OnfilterSimpleExpand3.txt" >
+    <Content Include="Baselines\OnfilterSimpleExpand3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

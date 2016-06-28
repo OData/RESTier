@@ -13,7 +13,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>
-      <dependency id="Microsoft.Restier.Core" version="[0.6.0-beta]" />
+      <dependency id="Microsoft.Restier.Core" version="[0.6.0]" />
     </dependencies>
   </metadata>
 </package>

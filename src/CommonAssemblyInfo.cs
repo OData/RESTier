@@ -12,5 +12,5 @@ using System.Resources;
 
 [assembly: AssemblyVersion("0.6.0.0")]
 [assembly: AssemblyFileVersion("0.6.0.0")]
-[assembly: AssemblyInformationalVersion("0.6.0-beta")]
+[assembly: AssemblyInformationalVersion("0.6.0")]
 [assembly: AssemblyMetadata("Serviceable", "True")]
