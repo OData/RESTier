@@ -6,11 +6,11 @@ using System.Data.Entity;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Submit
 {

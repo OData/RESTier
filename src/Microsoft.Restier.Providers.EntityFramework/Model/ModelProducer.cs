@@ -6,17 +6,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 #if !EF7
 using System.Data.Entity;
-#endif
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
+#endif
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.OData.Edm;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
@@ -45,6 +45,16 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         {
             Ensure.NotNull(context, "context");
 
+#if EF7
+            var dbContext = context.ApiContext.GetApiService<DbContext>();
+            context.EntitySetTypeMap = dbContext.GetType().GetProperties()
+                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
+                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);
+            context.EntityTypeKeyPropertiesMap = dbContext.Model.GetEntityTypes().ToDictionary(
+                e => e.ClrType,
+                e => ((ICollection<PropertyInfo>)
+                    e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
+#else
             var entitySetTypeMap = new Dictionary<string, Type>();
             var entityTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
             var dbContext = context.ApiContext.GetApiService<DbContext>();
@@ -73,6 +83,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
 
             context.EntitySetTypeMap = entitySetTypeMap;
             context.EntityTypeKeyPropertiesMap = entityTypeKeyPropertiesMap;
+#endif
             return Task.FromResult<IEdmModel>(null);
         }
     }
