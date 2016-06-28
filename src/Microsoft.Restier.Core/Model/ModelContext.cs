@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core.Model
         /// <summary>
         /// Gets or sets Entity set and entity type map dictionary, it will be used by publisher for model build.
         /// </summary>
-        public IDictionary<string, Type> EntitySetTypeMapDictionary { get; set; }
+        public IDictionary<string, Type> EntitySetTypeMap { get; set; }
 
         /// <summary>
         /// Gets or sets entity type and its key properties map dictionary, and used by publisher for model build.
@@ -34,6 +34,6 @@ namespace Microsoft.Restier.Core.Model
         /// or follow Web Api OData key property naming convention.
         /// Otherwise, this collection is not needed.
         /// </summary>
-        public IDictionary<Type, ICollection<PropertyInfo>> EntityTypeKeyPropertiesMapDictionary { get; set; }
+        public IDictionary<Type, ICollection<PropertyInfo>> EntityTypeKeyPropertiesMap { get; set; }
     }
 }

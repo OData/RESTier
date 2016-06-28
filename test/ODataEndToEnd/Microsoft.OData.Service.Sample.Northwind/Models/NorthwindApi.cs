@@ -126,7 +126,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
                 // EF Model builder does not build model any more but just entity set name and entity type map
                 if (model == null)
                 {
-                    var collection = context.EntitySetTypeMapDictionary;
+                    var collection = context.EntitySetTypeMap;
                     if (collection == null || collection.Count == 0)
                     {
                         return null;

@@ -45,8 +45,8 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         {
             Ensure.NotNull(context, "context");
 
-            var entitySetTypeMapDictionary = new Dictionary<string, Type>();
-            var entityTypeKeyPropertiesMapDictionary = new Dictionary<Type, ICollection<PropertyInfo>>();
+            var entitySetTypeMap = new Dictionary<string, Type>();
+            var entityTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
             var dbContext = context.ApiContext.GetApiService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
@@ -60,7 +60,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
                 Type clrType = itemCollection.GetClrType(objectSpaceType);
 
                 // As entity set name and type map
-                entitySetTypeMapDictionary.Add(efEntitySet.Name, clrType);
+                entitySetTypeMap.Add(efEntitySet.Name, clrType);
 
                 ICollection<PropertyInfo> keyProperties = new List<PropertyInfo>();
                 foreach (var property in efEntityType.KeyProperties)
@@ -68,11 +68,11 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
                     keyProperties.Add(clrType.GetProperty(property.Name));
                 }
 
-                entityTypeKeyPropertiesMapDictionary.Add(clrType, keyProperties);
+                entityTypeKeyPropertiesMap.Add(clrType, keyProperties);
             }
 
-            context.EntitySetTypeMapDictionary = entitySetTypeMapDictionary;
-            context.EntityTypeKeyPropertiesMapDictionary = entityTypeKeyPropertiesMapDictionary;
+            context.EntitySetTypeMap = entitySetTypeMap;
+            context.EntityTypeKeyPropertiesMap = entityTypeKeyPropertiesMap;
             return Task.FromResult<IEdmModel>(null);
         }
     }

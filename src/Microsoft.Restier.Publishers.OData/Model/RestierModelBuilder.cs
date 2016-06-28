@@ -28,8 +28,8 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
             }
 
-            var entitySetTypeMapDictionary = context.EntitySetTypeMapDictionary;
-            if (entitySetTypeMapDictionary == null || entitySetTypeMapDictionary.Count == 0)
+            var entitySetTypeMap = context.EntitySetTypeMap;
+            if (entitySetTypeMap == null || entitySetTypeMap.Count == 0)
             {
                 return null;
             }
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
             MethodInfo method = typeof(ODataConventionModelBuilder)
                 .GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
-            foreach (var pair in entitySetTypeMapDictionary)
+            foreach (var pair in entitySetTypeMap)
             {
                 // Build a method with the specific type argument
                 var specifiedMethod = method.MakeGenericMethod(pair.Value);
@@ -53,12 +53,12 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 specifiedMethod.Invoke(builder, parameters);
             }
 
-            entitySetTypeMapDictionary.Clear();
+            entitySetTypeMap.Clear();
 
-            var entityTypeKeyPropertiesMapDictionary = context.EntityTypeKeyPropertiesMapDictionary;
-            if (entityTypeKeyPropertiesMapDictionary != null)
+            var entityTypeKeyPropertiesMap = context.EntityTypeKeyPropertiesMap;
+            if (entityTypeKeyPropertiesMap != null)
             {
-                foreach (var pair in entityTypeKeyPropertiesMapDictionary)
+                foreach (var pair in entityTypeKeyPropertiesMap)
                 {
                     var edmTypeConfiguration = builder.GetTypeConfigurationOrNull(pair.Key) as EntityTypeConfiguration;
                     if (edmTypeConfiguration == null)
@@ -72,7 +72,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                     }
                 }
 
-                entityTypeKeyPropertiesMapDictionary.Clear();
+                entityTypeKeyPropertiesMap.Clear();
             }
 
             return builder.GetEdmModel();
