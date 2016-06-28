@@ -7,6 +7,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using System.Web.Http.Routing;
+using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
 using Microsoft.Restier.Core;
@@ -54,7 +56,10 @@ namespace Microsoft.Restier.Publishers.OData.Routing
             }
 
             // If user has defined something like PeopleController for the entity set People,
-            // we should let the request being routed to that controller.
+            // Then whether there is an action in that controller is checked
+            // If controller has action for request, will be routed to that controller.
+            // Cannot mark EntitySetRoutingConversion has higher priority as there will no way
+            // to route to RESTier controller if there is EntitySet controller but no related action.
             if (HasControllerForEntitySetOrSingleton(odataPath, request))
             {
                 // Fall back to routing conventions defined by OData Web API.
@@ -156,13 +161,48 @@ namespace Microsoft.Restier.Publishers.OData.Routing
 
             if (controllerName != null)
             {
-                IDictionary<string, HttpControllerDescriptor> controllers =
-                    request.GetConfiguration().Services.GetHttpControllerSelector().GetControllerMapping();
+                var services = request.GetConfiguration().Services;
+
+                var controllers = services.GetHttpControllerSelector().GetControllerMapping();
                 HttpControllerDescriptor descriptor;
                 if (controllers.TryGetValue(controllerName, out descriptor) && descriptor != null)
                 {
+                    // If there is a controller, check whether there is an action
+                    if (HasSelectableAction(request, descriptor))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasSelectableAction(HttpRequestMessage request, HttpControllerDescriptor descriptor)
+        {
+            var configuration = request.GetConfiguration();
+            var actionSelector = configuration.Services.GetActionSelector();
+
+            // Empty route as this is must and route data is not used by OData routing conversion
+            var route = new HttpRoute();
+            var routeData = new HttpRouteData(route);
+
+            var context = new HttpControllerContext(configuration, routeData, request)
+            {
+                ControllerDescriptor = descriptor
+            };
+
+            try
+            {
+                var action = actionSelector.SelectAction(context);
+                if (action != null)
+                {
                     return true;
                 }
+            }
+            catch (HttpResponseException)
+            {
+                // ignored
             }
 
             return false;

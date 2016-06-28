@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\PeopleController.cs" />
     <Compile Include="Controllers\TrippinController.cs" />
     <Compile Include="Api\TrippinApi.cs" />
     <Compile Include="Extension\PathAndSlashEscapeODataPathHandler.cs" />
