@@ -67,7 +67,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
                 Action<ODataPathSegment> handler;
                 if (!this.handlers.TryGetValue(segment.SegmentKind, out handler))
                 {
-                    throw new NotSupportedException(
+                    throw new NotImplementedException(
                         string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment));
                 }
 

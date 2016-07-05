@@ -80,15 +80,15 @@ namespace Microsoft.Restier.Core.Conventions
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
-                    if (dataModification.IsNewRequest)
+                    if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Insert)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationInsert;
                     }
-                    else if (dataModification.IsUpdateRequest)
+                    else if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Update)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationUpdate;
                     }
-                    else if (dataModification.IsDeleteRequest)
+                    else if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Remove)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }

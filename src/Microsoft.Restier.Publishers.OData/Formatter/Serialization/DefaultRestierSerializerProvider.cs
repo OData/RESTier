@@ -18,7 +18,6 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             = new DefaultRestierSerializerProvider();
 
         private RestierFeedSerializer feedSerializer;
-        private RestierEntityTypeSerializer entityTypeSerializer;
         private RestierPrimitiveSerializer primitiveSerializer;
         private RestierRawSerializer rawSerializer;
         private RestierComplexTypeSerializer complexTypeSerializer;
@@ -31,7 +30,6 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
         public DefaultRestierSerializerProvider()
         {
             this.feedSerializer = new RestierFeedSerializer(this);
-            this.entityTypeSerializer = new RestierEntityTypeSerializer(this);
             this.primitiveSerializer = new RestierPrimitiveSerializer();
             this.rawSerializer = new RestierRawSerializer();
             this.complexTypeSerializer = new RestierComplexTypeSerializer(this);
@@ -66,10 +64,6 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             if (type == typeof(EntityCollectionResult))
             {
                 serializer = this.feedSerializer;
-            }
-            else if (type == typeof(EntityResult))
-            {
-                serializer = this.entityTypeSerializer;
             }
             else if (type == typeof(PrimitiveResult))
             {
@@ -106,11 +100,6 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
         /// <returns>The serializer instance.</returns>
         public override ODataEdmTypeSerializer GetEdmTypeSerializer(IEdmTypeReference edmType)
         {
-            if (edmType.IsEntity())
-            {
-                return this.entityTypeSerializer;
-            }
-
             if (edmType.IsComplex())
             {
                 return this.complexTypeSerializer;

@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
                 "Readers",
                 typeof(Person),
                 null,
+                ChangeSetItemAction.Update, 
                 new Dictionary<string, object> { { "Id", new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461") } },
                 new Dictionary<string, object>(),
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });

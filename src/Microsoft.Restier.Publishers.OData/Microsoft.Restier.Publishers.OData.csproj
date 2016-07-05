@@ -43,6 +43,7 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
+      <Aliases>Net</Aliases>
     </Reference>
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
@@ -99,7 +100,6 @@
     <Compile Include="Formatter\Serialization\RestierComplexTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierRawSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierPrimitiveSerializer.cs" />
-    <Compile Include="Formatter\Serialization\RestierEntityTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
     <Compile Include="Operation\OperationExecutor.cs" />
     <Compile Include="Routing\HttpConfigurationExtensions.cs" />
@@ -126,7 +126,6 @@
     <Compile Include="Results\PrimitiveResult.cs" />
     <Compile Include="Results\BaseSingleResult.cs" />
     <Compile Include="Results\BaseResult.cs" />
-    <Compile Include="Results\EntityResult.cs" />
     <Compile Include="Routing\RestierRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
     <Compile Include="..\Shared\SharedResources\SharedResources.WebApi.Designer.cs">

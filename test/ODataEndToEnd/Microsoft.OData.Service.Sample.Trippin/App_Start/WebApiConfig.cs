@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Web.Http;
+using System.Web.OData;
 using Microsoft.OData.Service.Sample.Trippin.Api;
 using Microsoft.Restier.Publishers.OData.Batch;
 using Microsoft.Restier.Publishers.OData.Routing;
@@ -13,6 +14,7 @@ namespace Microsoft.OData.Service.Sample.Trippin
         public static void Register(HttpConfiguration config)
         {
             RegisterTrippin(config, GlobalConfiguration.DefaultServer);
+            config.MessageHandlers.Add(new ETagMessageHandler());
         }
 
         public static async void RegisterTrippin(

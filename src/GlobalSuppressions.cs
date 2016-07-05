@@ -43,6 +43,7 @@ using System.Diagnostics.CodeAnalysis;
 
 #region CA1020 Few types in namespace
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core.Exceptions")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core.Model")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Core.Operation")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Microsoft.Restier.Providers.EntityFramework")]
@@ -78,12 +79,15 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Routing.HttpConfigurationExtensions.#MapRestierRoute`1(System.Web.Http.HttpConfiguration,System.String,System.String,System.Func`1<Microsoft.Restier.Core.ApiBase>,Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Routing.HttpConfigurationExtensions.#MapRestierRoute`1(System.Web.Http.HttpConfiguration,System.String,System.String,Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler.#.ctor(System.Web.Http.HttpServer,System.Func`1<Microsoft.Restier.Core.ApiContext>)")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Scope = "type", Target = "Microsoft.Restier.Core.Exceptions.PreconditionFailedException")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Scope = "type", Target = "Microsoft.Restier.Core.Exceptions.ResourceNotFoundException")]
 #endregion
 
 #region CA1704 Identifiers spelling
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sourcer", Scope = "type", Target = "Microsoft.Restier.Core.Query.IQueryExpressionSourcer")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sourcer", Scope = "type", Target = "Microsoft.Restier.Providers.EntityFramework.Query.QueryExpressionSourcer")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ef", Scope = "member", Target = "Microsoft.Restier.Providers.EntityFramework.ServiceCollectionExtensions.#AddEfProviderServices`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Etag", Scope = "member", Target = "Microsoft.Restier.Core.Submit.DataModificationItem.#ApplyEtag(System.Linq.IQueryable)")]
 #endregion
 
 #region CA1709 Identifiers case
@@ -176,14 +180,10 @@ using System.Diagnostics.CodeAnalysis;
 #endregion
 
 #region CA2000 Dispose objects
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController`1.#GetSource(System.Web.OData.Routing.ODataPath,Microsoft.OData.Edm.IEdmEntityType&)")]
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController`1.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType)")]
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType)")]
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#GetQuery(System.Web.OData.Extensions.HttpRequestMessageProperties)")]
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#GetSource(System.Web.OData.Routing.ODataPath,Microsoft.OData.Edm.IEdmEntityType&)")]
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#GetQuery()")]
+[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType,System.Boolean,System.Web.OData.Formatter.ETag)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler403(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler404(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
+[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler412(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.RestierExceptionFilterAttribute.#Handler501(System.Web.Http.Filters.HttpActionExecutedContext,System.Threading.CancellationToken)")]
 #endregion
 

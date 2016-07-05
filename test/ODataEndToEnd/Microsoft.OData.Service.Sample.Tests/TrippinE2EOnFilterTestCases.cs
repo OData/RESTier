@@ -67,7 +67,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         // Nested Expand case
         [InlineData("Staffs?$expand=PeerStaffs($expand=Conferences)", "OnfilterNestedExpand1")]
         [InlineData("Staffs?$expand=Conferences($expand=Sponsors)", "OnfilterNestedExpand2")]
-        public void DerivedTypeQuery(string uriStringAfterServiceRoot, string baselineFileName)
+        public void OnFilterQueryTest(string uriStringAfterServiceRoot, string baselineFileName)
         {
             Action<string> validationAction = content => VerifyBaseline(baselineFileName, content);
             this.TestGetPayload(uriStringAfterServiceRoot, validationAction);

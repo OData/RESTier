@@ -2,14 +2,18 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Annotations;
 using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
@@ -23,6 +27,9 @@ namespace Microsoft.Restier.Publishers.OData
         private static PropertyInfo etagConcurrencyPropertiesProperty = typeof(ETag).GetProperty(
             PropertyNameOfConcurrencyProperties, BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static ConcurrentDictionary<IEdmEntitySet, bool> concurrencyCheckFlags
+            = new ConcurrentDictionary<IEdmEntitySet, bool>();
+
         public static void ApplyTo(this ETag etag, IDictionary<string, object> propertyValues)
         {
             if (etag != null)
@@ -34,6 +41,27 @@ namespace Microsoft.Restier.Publishers.OData
                     propertyValues.Add(item.Key, item.Value);
                 }
             }
+        }
+
+        public static bool IsConcurrencyCheckEnabled(this IEdmModel model, IEdmEntitySet entitySet)
+        {
+            bool needCurrencyCheck;
+            if (concurrencyCheckFlags.TryGetValue(entitySet, out needCurrencyCheck))
+            {
+                return needCurrencyCheck;
+            }
+
+            needCurrencyCheck = false;
+            var annotations = model.FindVocabularyAnnotations<IEdmValueAnnotation>(
+                entitySet, CoreVocabularyModel.ConcurrencyTerm);
+            IEdmValueAnnotation annotation = annotations.FirstOrDefault();
+            if (annotation != null)
+            {
+                needCurrencyCheck = true;
+            }
+
+            concurrencyCheckFlags[entitySet] = needCurrencyCheck;
+            return needCurrencyCheck;
         }
 
         public static IReadOnlyDictionary<string, object> CreatePropertyDictionary(this Delta entity)

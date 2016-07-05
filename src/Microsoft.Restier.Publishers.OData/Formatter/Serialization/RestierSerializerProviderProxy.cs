@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
         /// <returns>The serializer instance.</returns>
         public override ODataEdmTypeSerializer GetEdmTypeSerializer(IEdmTypeReference edmType)
         {
-            if (this.api != null)
+            if (this.api != null && !this.api.IsDisposed)
             {
                 ODataSerializerProvider provider = api.Context.GetApiService<ODataSerializerProvider>();
                 if (provider != null)
