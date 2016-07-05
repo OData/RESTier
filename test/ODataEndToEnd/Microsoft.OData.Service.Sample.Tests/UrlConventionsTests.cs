@@ -74,6 +74,12 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Fact]
+        public void EntityBoundFunctionNonExist()
+        {
+            TestGetStatusCodeIs("People(111)/Microsoft.OData.Service.Sample.Trippin.Models.GetNumberOfFriends", 404);
+        }
+
+        [Fact]
         public void EntitySetBoundFunctionIEnumerable()
         {
             TestGetPayloadContains(
@@ -358,6 +364,12 @@ namespace Microsoft.OData.Service.Sample.Tests
             TestPostPayloadContains(
                 "Trips(1)/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip",
                 "http://localhost:18384/api/Trippin/$metadata#Trips/$entity");
+        }
+
+        [Fact]
+        public void AddressingBoundActionNonExist()
+        {
+            TestPostStatusCodeIs("Trips(111)/Microsoft.OData.Service.Sample.Trippin.Models.EndTrip", 404);
         }
 
         [Fact]

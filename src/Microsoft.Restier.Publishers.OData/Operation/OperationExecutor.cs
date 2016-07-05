@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
 using Microsoft.Restier.Publishers.OData.Properties;
@@ -91,7 +92,13 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             // This means binding to a single entity
             if (enumerableType == null)
             {
-                return bindingParameterValue.SingleOrDefault();
+                var entity = bindingParameterValue.SingleOrDefault();
+                if (entity == null)
+                {
+                    throw new ResourceNotFoundException(Resources.ResourceNotFound);
+                }
+
+                return entity;
             }
 
             // This means function is bound to an entity set.
