@@ -21,6 +21,7 @@ using System.Web.OData.Routing;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -235,7 +236,7 @@ namespace Microsoft.Restier.Publishers.OData
             var propertiesInEtag = await this.GetOriginalValues(entitySet);
             if (propertiesInEtag == null)
             {
-                return this.StatusCode((HttpStatusCode)428);
+                throw new PreconditionRequiredException(Resources.PreconditionRequired);
             }
 
             DataModificationItem deleteItem = new DataModificationItem(
@@ -387,7 +388,7 @@ namespace Microsoft.Restier.Publishers.OData
             var propertiesInEtag = await this.GetOriginalValues(entitySet);
             if (propertiesInEtag == null)
             {
-                return this.StatusCode((HttpStatusCode)428);
+               throw new PreconditionRequiredException(Resources.PreconditionRequired);
             }
 
             // In case of type inheritance, the actual type will be different from entity type

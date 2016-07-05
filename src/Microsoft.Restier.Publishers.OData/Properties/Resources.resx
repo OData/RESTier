@@ -174,6 +174,9 @@
   <data name="PostToUnboundActionNotSupported" xml:space="preserve">
     <value>Post to unbound action is not supported by `RestierController`.</value>
   </data>
+  <data name="PreconditionRequired" xml:space="preserve">
+    <value>The request need to have If-Match or If-None-Match header.</value>
+  </data>
   <data name="ResourceNotFound" xml:space="preserve">
     <value>The resource you requested is not found.</value>
   </data>

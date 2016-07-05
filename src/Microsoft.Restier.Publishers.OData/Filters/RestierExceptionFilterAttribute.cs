@@ -34,6 +34,7 @@ namespace Microsoft.Restier.Publishers.OData.Filters
                 Handler403,
                 Handler404,
                 Handler412,
+                Handler428,
                 Handler501
             };
 
@@ -123,6 +124,19 @@ namespace Microsoft.Restier.Publishers.OData.Filters
             {
                 return Task.FromResult(
                     context.Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, context.Exception));
+            }
+
+            return Task.FromResult<HttpResponseMessage>(null);
+        }
+
+        private static Task<HttpResponseMessage> Handler428(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            if (context.Exception is PreconditionRequiredException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse((HttpStatusCode)428, context.Exception));
             }
 
             return Task.FromResult<HttpResponseMessage>(null);

@@ -6,34 +6,34 @@ using System;
 namespace Microsoft.Restier.Core.Exceptions
 {
     /// <summary>
-    /// This exception is used for 404 Not found response.
+    /// This exception is used for 428 Precondition required response.
     /// </summary>
     [Serializable]
-    public class ResourceNotFoundException : System.Exception
+    public class PreconditionRequiredException : System.Exception
     {
         /// <summary>
-        /// Initializes a new instance of the ResourceNotFoundException class.
+        /// Initializes a new instance of the PreconditionRequiredException class.
         /// </summary>
-        public ResourceNotFoundException()
+        public PreconditionRequiredException()
             : this(null, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ResourceNotFoundException class.
+        /// Initializes a new instance of the PreconditionRequiredException class.
         /// </summary>
         /// <param name="message">Plain text error message for this exception.</param>
-        public ResourceNotFoundException(string message)
+        public PreconditionRequiredException(string message)
             : this(message, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ResourceNotFoundException class.
+        /// Initializes a new instance of the PreconditionRequiredException class.
         /// </summary>
         /// <param name="message">Plain text error message for this exception.</param>
         /// <param name="innerException">Exception that caused this exception to be thrown.</param>
-        public ResourceNotFoundException(string message, Exception innerException)
+        public PreconditionRequiredException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

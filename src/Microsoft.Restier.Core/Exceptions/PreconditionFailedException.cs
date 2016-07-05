@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Core.Exceptions
         /// </summary>
         /// <param name="message">Plain text error message for this exception.</param>
         /// <param name="innerException">Exception that caused this exception to be thrown.</param>
-        public PreconditionFailedException(string message, System.Exception innerException)
+        public PreconditionFailedException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

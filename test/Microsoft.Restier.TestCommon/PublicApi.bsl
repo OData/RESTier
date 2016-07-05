@@ -299,6 +299,15 @@ public class Microsoft.Restier.Core.Exceptions.PreconditionFailedException : Sys
 [
 SerializableAttribute(),
 ]
+public class Microsoft.Restier.Core.Exceptions.PreconditionRequiredException : System.Exception, _Exception, ISerializable {
+	public PreconditionRequiredException ()
+	public PreconditionRequiredException (string message)
+	public PreconditionRequiredException (string message, System.Exception innerException)
+}
+
+[
+SerializableAttribute(),
+]
 public class Microsoft.Restier.Core.Exceptions.ResourceNotFoundException : System.Exception, _Exception, ISerializable {
 	public ResourceNotFoundException ()
 	public ResourceNotFoundException (string message)

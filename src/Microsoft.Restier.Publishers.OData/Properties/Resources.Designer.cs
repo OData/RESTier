@@ -232,6 +232,15 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The request need to have If-Match or If-None-Match header..
+        /// </summary>
+        internal static string PreconditionRequired {
+            get {
+                return ResourceManager.GetString("PreconditionRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The resource you requested is not found..
         /// </summary>
         internal static string ResourceNotFound {

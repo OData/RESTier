@@ -65,6 +65,7 @@
     <Compile Include="ApiContextExtensions.cs" />
     <Compile Include="DataSourceStub.cs" />
     <Compile Include="ApiConfiguratorAttribute.cs" />
+    <Compile Include="Exceptions\PreconditionRequiredException.cs" />
     <Compile Include="Exceptions\PreconditionFailedException.cs" />
     <Compile Include="Exceptions\ResourceNotFoundException.cs" />
     <Compile Include="InvocationContext.cs" />
