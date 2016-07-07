@@ -66,6 +66,7 @@
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Manager.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\PersonWithAge.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\SeniorStaff.cs" />
     <Compile Include="Models\Sponsor.cs" />

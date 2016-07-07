@@ -109,6 +109,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.ValidationResultDto.#PropertyName")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.ValidationResultDto.#Message")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Filters.ValidationResultDto.#Id")]
+[assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Model.ModelMapper.#InnerMapper")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Model.RestierModelBuilder.#InnerModelBuilder")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Model.RestierModelExtender+ModelBuilder.#.ctor(Microsoft.Restier.Publishers.OData.Model.RestierModelExtender)")]
 [assembly: SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Model.RestierModelExtender+ModelBuilder.#InnerModelBuilder")]

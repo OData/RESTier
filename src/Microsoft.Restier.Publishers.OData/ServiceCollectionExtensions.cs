@@ -60,6 +60,8 @@ namespace Microsoft.Restier.Publishers.OData
 
             services.TryAddSingleton<IOperationExecutor, OperationExecutor>();
 
+            services.AddService<IModelMapper, ModelMapper>();
+
             return
                 services.AddScoped<RestierQueryExecutorOptions>()
                     .AddService<IQueryExecutor, RestierQueryExecutor>();

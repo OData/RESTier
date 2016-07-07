@@ -28,6 +28,8 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
     /// </summary>
     internal class ModelProducer : IModelBuilder
     {
+        public IModelBuilder InnerModelBuilder { get; set; }
+
         /// <summary>
         /// This class will not real build a model, but only get entity set name and entity map from data source
         /// Then pass the information to publisher layer to build the model.
@@ -84,6 +86,11 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
             context.EntitySetTypeMap = entitySetTypeMap;
             context.EntityTypeKeyPropertiesMap = entityTypeKeyPropertiesMap;
 #endif
+            if (InnerModelBuilder != null)
+            {
+                return InnerModelBuilder.GetModelAsync(context, cancellationToken);
+            }
+
             return Task.FromResult<IEdmModel>(null);
         }
     }

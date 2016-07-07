@@ -22,6 +22,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework;
 using Microsoft.Restier.Publishers.OData.Model;
 using System.Reflection;
+using System.Web.OData.Builder;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
@@ -36,10 +37,63 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         {
             get
             {
+                // Cannot use this.GetQueryableSource<Person>("People") as this should be return a single value
                 return DbContext.People
                     .Include("Friends")
                     .Include("Trips")
                     .Single(p => p.PersonId == 1);
+            }
+        }
+
+        public IQueryable<Flight> Flights1
+        {
+            get { return DbContext.Flights; }
+        }
+
+        public IQueryable<Flight> Flights2
+        {
+            get { return this.GetQueryableSource<Flight>("Flights"); }
+        }
+
+        public IQueryable<PersonWithAge> PeopleWithAge
+        {
+            get
+            {
+                return DbContext.People.Select(p => new PersonWithAge
+                {
+                    Id = p.PersonId,
+                    UserName = p.UserName,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName
+                });
+            }
+        }
+
+        public IQueryable<PersonWithAge> PeopleWithAge1
+        {
+            get
+            {
+                return this.GetQueryableSource<Person>("People").Select(p => new PersonWithAge
+                {
+                    Id = p.PersonId,
+                    UserName = p.UserName,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName
+                });
+            }
+        }
+
+        public PersonWithAge PeopleWithAgeMe
+        {
+            get
+            {
+                return Context.People.Select(p => new PersonWithAge
+                {
+                    Id = p.PersonId,
+                    UserName = p.UserName,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName
+                }).Single(p => p.Id == 1);
             }
         }
 
@@ -519,12 +573,25 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 MaxExpansionDepth = 3
             };
 
+            services.AddService<IModelBuilder, TrippinModelExtender>();
+
             return base.ConfigureApi(services)
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
                 .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()
                 .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
                 .AddService<IModelBuilder, TrippinModelCustomizer>();
+        }
+
+
+        private class TrippinModelExtender : IModelBuilder
+        {
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+            {
+                var builder = new ODataConventionModelBuilder();
+                builder.EntityType<PersonWithAge>();
+                return builder.GetEdmModel();
+            }
         }
 
         private class TrippinModelCustomizer : IModelBuilder

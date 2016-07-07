@@ -124,5 +124,17 @@ namespace Microsoft.OData.Service.Sample.Tests
         {
             this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
+
+        [Theory]
+        [InlineData("Me", "http://localhost:18384/api/Trippin/$metadata#Me")]
+        [InlineData("Flights1", "http://localhost:18384/api/Trippin/$metadata#Flights1")]
+        [InlineData("Flights2", "http://localhost:18384/api/Trippin/$metadata#Flights2")]
+        [InlineData("PeopleWithAge", "http://localhost:18384/api/Trippin/$metadata#PeopleWithAge")]
+        [InlineData("PeopleWithAge1", "http://localhost:18384/api/Trippin/$metadata#PeopleWithAge1")]
+        [InlineData("PeopleWithAgeMe", "http://localhost:18384/api/Trippin/$metadata#PeopleWithAgeMe")]
+        public void TestCustomizedEntitySetSingleton(string uriStringAfterServiceRoot, string expectedString)
+        {
+            this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedString);
+        }
     }
 }

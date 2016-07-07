@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Builder;
 using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Publishers.OData.Model
@@ -22,21 +23,18 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// <inheritdoc/>
         public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
-            // This means user build a model with customized model builder registered as inner most,
-            // no logic will be done here
+            // This means user build a model with customized model builder registered as inner most
+            // Its element will be added to built model.
+            IEdmModel innerModel = null;
             if (InnerModelBuilder != null)
             {
-                var innerModel = await InnerModelBuilder.GetModelAsync(context, cancellationToken);
-                if (innerModel != null)
-                {
-                    return innerModel;
-                }
+                innerModel = await InnerModelBuilder.GetModelAsync(context, cancellationToken);
             }
 
             var entitySetTypeMap = context.EntitySetTypeMap;
             if (entitySetTypeMap == null || entitySetTypeMap.Count == 0)
             {
-                return null;
+                return innerModel;
             }
 
             // Collection of entity type and set name is set by EF now,
@@ -85,7 +83,65 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 entityTypeKeyPropertiesMap.Clear();
             }
 
-            return builder.GetEdmModel();
+            var model = (EdmModel)builder.GetEdmModel();
+
+            // Add all Inner model content into existing model
+            // When WebApi OData make conversion model builder accept an existing model, this can be removed.
+            if (innerModel != null)
+            {
+                foreach (var element in innerModel.SchemaElements)
+                {
+                    if (!(element is EdmEntityContainer))
+                    {
+                        model.AddElement(element);
+                    }
+                }
+
+                foreach (var annotation in innerModel.VocabularyAnnotations)
+                {
+                    model.AddVocabularyAnnotation(annotation);
+                }
+
+                var entityContainer = (EdmEntityContainer)model.EntityContainer;
+                var innerEntityContainer = (EdmEntityContainer)innerModel.EntityContainer;
+                if (innerEntityContainer != null)
+                {
+                    foreach (var entityset in innerEntityContainer.EntitySets())
+                    {
+                        if (entityContainer.FindEntitySet(entityset.Name) == null)
+                        {
+                            entityContainer.AddEntitySet(entityset.Name, entityset.EntityType());
+                        }
+                    }
+
+                    foreach (var singleton in innerEntityContainer.Singletons())
+                    {
+                        if (entityContainer.FindEntitySet(singleton.Name) == null)
+                        {
+                            entityContainer.AddSingleton(singleton.Name, singleton.EntityType());
+                        }
+                    }
+
+                    foreach (var operation in innerEntityContainer.OperationImports())
+                    {
+                        if (entityContainer.FindOperationImports(operation.Name) == null)
+                        {
+                            if (operation.IsFunctionImport())
+                            {
+                                entityContainer.AddFunctionImport(
+                                    operation.Name, (EdmFunction)operation.Operation, operation.EntitySet);
+                            }
+                            else
+                            {
+                                entityContainer.AddActionImport(
+                                    operation.Name, (EdmAction)operation.Operation, operation.EntitySet);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return model;
         }
     }
 }
