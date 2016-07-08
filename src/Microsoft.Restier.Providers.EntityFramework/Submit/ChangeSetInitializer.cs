@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
                 object entity;
 
-                if (entry.ChangeSetItemAction == ChangeSetItemAction.Insert)
+                if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
                 {
                     entity = set.Create();
 
@@ -60,12 +60,12 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
                     set.Add(entity);
                 }
-                else if (entry.ChangeSetItemAction == ChangeSetItemAction.Remove)
+                else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
                 {
                     entity = await FindEntity(context, entry, cancellationToken);
                     set.Remove(entity);
                 }
-                else if (entry.ChangeSetItemAction == ChangeSetItemAction.Update)
+                else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
                 {
                     entity = await FindEntity(context, entry, cancellationToken);
 
@@ -110,7 +110,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 var message = string.Format(
                     CultureInfo.InvariantCulture,
                     Resources.PreconditionCheckFailed,
-                    new object[] { item.ChangeSetItemAction, entity });
+                    new object[] { item.DataModificationItemAction, entity });
                 throw new PreconditionFailedException(message);
             }
 

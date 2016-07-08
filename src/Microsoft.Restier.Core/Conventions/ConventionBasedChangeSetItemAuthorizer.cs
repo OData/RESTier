@@ -80,25 +80,20 @@ namespace Microsoft.Restier.Core.Conventions
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
-                    if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Insert)
+                    if (dataModification.DataModificationItemAction == DataModificationItemAction.Insert)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationInsert;
                     }
-                    else if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Update)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Update)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationUpdate;
                     }
-                    else if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Remove)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Remove)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
                     return operationName + dataModification.EntitySetName;
-
-                case ChangeSetItemType.ActionInvocation:
-                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
-                    return ConventionBasedChangeSetConstants.AuthorizeMethodActionInvocationExecute +
-                        actionItem.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(

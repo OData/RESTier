@@ -15,6 +15,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
 using Microsoft.Restier.Publishers.OData.Properties;
 
@@ -26,13 +27,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             object instanceImplementMethod, OperationContext context, CancellationToken cancellationToken)
         {
             // Authorization check
-            var authorizor = context.GetApiService<IOperationAuthorizer>();
-
-            if (!await authorizor.AuthorizeAsync(context, cancellationToken))
-            {
-                throw new SecurityException(string.Format(
-                    CultureInfo.InvariantCulture, Resources.OperationUnAuthorizationExecution, context.OperationName));
-            }
+            await InvokeAuthorizers(context, cancellationToken);
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
@@ -82,7 +77,16 @@ namespace Microsoft.Restier.Publishers.OData.Operation
                 parameters[paraIndex] = convertedValue;
             }
 
-            return InvokeOperation(instanceImplementMethod, method, parameters, model);
+            context.ParametersValue = parameters;
+
+            // Invoke preprocessing on the operation execution
+            PerformPreEvent(context, cancellationToken);
+
+            var result = InvokeOperation(instanceImplementMethod, method, parameters, model);
+
+            // Invoke preprocessing on the operation execution
+            PerformPostEvent(context, cancellationToken);
+            return result;
         }
 
         private static object PrepareBindingParameter(Type bindingType, IQueryable bindingParameterValue)
@@ -166,6 +170,41 @@ namespace Microsoft.Restier.Publishers.OData.Operation
                 .Invoke(null, new object[] { castedResult }) as IQueryable;
 
             return typedQueryable;
+        }
+
+        private static async Task InvokeAuthorizers(
+            OperationContext context,
+            CancellationToken cancellationToken)
+        {
+            var authorizor = context.GetApiService<IOperationAuthorizer>();
+            if (authorizor == null)
+            {
+                return;
+            }
+
+            if (!await authorizor.AuthorizeAsync(context, cancellationToken))
+            {
+                throw new SecurityException(string.Format(
+                    CultureInfo.InvariantCulture, Resources.OperationUnAuthorizationExecution, context.OperationName));
+            }
+        }
+
+        private static void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
+        {
+            var processor = context.GetApiService<IOperationProcessor>();
+            if (processor != null)
+            {
+                processor.OnExecutingOperationAsync(context, cancellationToken);
+            }
+        }
+
+        private static void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
+        {
+            var processor = context.GetApiService<IOperationProcessor>();
+            if (processor != null)
+            {
+                processor.OnExecutedOperationAsync(context, cancellationToken);
+            }
         }
     }
 }

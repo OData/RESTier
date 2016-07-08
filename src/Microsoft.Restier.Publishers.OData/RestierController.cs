@@ -164,7 +164,7 @@ namespace Microsoft.Restier.Publishers.OData
                 entitySet.Name,
                 expectedEntityType.GetClrType(Api),
                 actualEntityType.GetClrType(Api),
-                ChangeSetItemAction.Insert,
+                DataModificationItemAction.Insert,
                 null,
                 null,
                 edmEntityObject.CreatePropertyDictionary());
@@ -243,7 +243,7 @@ namespace Microsoft.Restier.Publishers.OData
                 entitySet.Name,
                 path.EdmType.GetClrType(Api),
                 null,
-                ChangeSetItemAction.Remove,
+                DataModificationItemAction.Remove,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
                 null);
@@ -405,7 +405,7 @@ namespace Microsoft.Restier.Publishers.OData
                 entitySet.Name,
                 expectedEntityType.GetClrType(Api),
                 actualEntityType.GetClrType(Api),
-                ChangeSetItemAction.Update,
+                DataModificationItemAction.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
                 edmEntityObject.CreatePropertyDictionary());

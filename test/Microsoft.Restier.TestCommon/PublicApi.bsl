@@ -338,6 +338,11 @@ public interface Microsoft.Restier.Core.Operation.IOperationExecutor {
 	System.Threading.Tasks.Task`1[[System.Linq.IQueryable]] ExecuteOperationAsync (object instanceImplementMethod, Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
 }
 
+public interface Microsoft.Restier.Core.Operation.IOperationProcessor {
+	System.Threading.Tasks.Task OnExecutedOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task OnExecutingOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+}
+
 public class Microsoft.Restier.Core.Operation.OperationContext : Microsoft.Restier.Core.InvocationContext {
 	public OperationContext (Microsoft.Restier.Core.ApiContext apiContext, System.Func`2[[System.String],[System.Object]] getParameterValueFunc, string operationName, bool isFunction, System.Linq.IQueryable bindingParameterValue)
 
@@ -345,6 +350,7 @@ public class Microsoft.Restier.Core.Operation.OperationContext : Microsoft.Resti
 	System.Func`2[[System.String],[System.Object]] GetParameterValueFunc  { public get; }
 	bool IsFunction  { public get; }
 	string OperationName  { public get; }
+	System.Collections.Generic.ICollection`1[[System.Object]] ParametersValue  { public get; public set; }
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExecutor {
@@ -426,7 +432,7 @@ public class Microsoft.Restier.Core.Query.QueryResult {
 	Microsoft.OData.Edm.IEdmEntitySet ResultsSource  { public get; public set; }
 }
 
-public enum Microsoft.Restier.Core.Submit.ChangeSetItemAction : int {
+public enum Microsoft.Restier.Core.Submit.DataModificationItemAction : int {
 	Insert = 2
 	Remove = 3
 	Undefined = 0
@@ -458,14 +464,6 @@ public abstract class Microsoft.Restier.Core.Submit.ChangeSetItem {
 	public bool HasChanged ()
 }
 
-public class Microsoft.Restier.Core.Submit.ActionInvocationItem : Microsoft.Restier.Core.Submit.ChangeSetItem {
-	public ActionInvocationItem (string actionName, System.Collections.Generic.IDictionary`2[[System.String],[System.Object]] arguments)
-
-	string ActionName  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	System.Collections.Generic.IDictionary`2[[System.String],[System.Object]] Arguments  { [CompilerGeneratedAttribute(),]public get; }
-	object Result  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-}
-
 public class Microsoft.Restier.Core.Submit.ChangeSet {
 	public ChangeSet ()
 	public ChangeSet (System.Collections.Generic.IEnumerable`1[[Microsoft.Restier.Core.Submit.ChangeSetItem]] entries)
@@ -493,10 +491,10 @@ public class Microsoft.Restier.Core.Submit.ChangeSetValidationException : System
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Restier.Core.Submit.ChangeSetItem {
-	public DataModificationItem (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, Microsoft.Restier.Core.Submit.ChangeSetItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
+	public DataModificationItem (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
 
 	System.Type ActualEntityType  { [CompilerGeneratedAttribute(),]public get; }
-	Microsoft.Restier.Core.Submit.ChangeSetItemAction ChangeSetItemAction  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	Microsoft.Restier.Core.Submit.DataModificationItemAction DataModificationItemAction  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	object Entity  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] EntityKey  { [CompilerGeneratedAttribute(),]public get; }
 	string EntitySetName  { [CompilerGeneratedAttribute(),]public get; }
@@ -511,7 +509,7 @@ public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Rest
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem`1 : Microsoft.Restier.Core.Submit.DataModificationItem {
-	public DataModificationItem`1 (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, Microsoft.Restier.Core.Submit.ChangeSetItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
+	public DataModificationItem`1 (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
 
 	T Entity  { public get; public set; }
 }

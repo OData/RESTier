@@ -60,7 +60,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 "Customers",
                 typeof(Customer),
                 null,
-                ChangeSetItemAction.Insert,
+                DataModificationItemAction.Insert,
                 null,
                 null,
                 new Dictionary<string, object>()

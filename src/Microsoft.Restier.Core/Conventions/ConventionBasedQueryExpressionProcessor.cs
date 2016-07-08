@@ -5,22 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A convention-based query expression filter on entity set.
+    /// A convention-based query expression processor which will apply OnFilter logic into query expression.
     /// </summary>
-    internal class ConventionBasedEntitySetProcessor : IQueryExpressionProcessor
+    internal class ConventionBasedQueryExpressionProcessor : IQueryExpressionProcessor
     {
         private Type targetType;
 
-        private ConventionBasedEntitySetProcessor(Type targetType)
+        private ConventionBasedQueryExpressionProcessor(Type targetType)
         {
             this.targetType = targetType;
         }
@@ -36,7 +34,7 @@ namespace Microsoft.Restier.Core.Conventions
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
             services.AddService<IQueryExpressionProcessor>(
-                (sp, next) => new ConventionBasedEntitySetProcessor(targetType)
+                (sp, next) => new ConventionBasedQueryExpressionProcessor(targetType)
             {
                 Inner = next,
             });

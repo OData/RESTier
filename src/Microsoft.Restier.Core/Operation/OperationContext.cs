@@ -2,12 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Restier.Core.Operation
 {
     /// <summary>
     /// Represents context under which a operation is executed.
+    /// One instance created for one execution of one operation.
     /// </summary>
     public class OperationContext : InvocationContext
     {
@@ -15,6 +17,7 @@ namespace Microsoft.Restier.Core.Operation
         private readonly Func<string, object> getParameterValueFunc;
         private readonly bool isFunction;
         private readonly IQueryable bindingParameterValue;
+        private ICollection<object> parametersValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationContext" /> class.
@@ -90,6 +93,23 @@ namespace Microsoft.Restier.Core.Operation
             get
             {
                 return this.bindingParameterValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the parameters value array used by method,
+        /// It is only set after parameters are prepared.
+        /// </summary>
+        public ICollection<object> ParametersValue
+        {
+            get
+            {
+                return this.parametersValue;
+            }
+
+            set
+            {
+                this.parametersValue = value;
             }
         }
     }

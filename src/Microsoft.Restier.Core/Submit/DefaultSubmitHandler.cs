@@ -74,15 +74,15 @@ namespace Microsoft.Restier.Core.Submit
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string message = null;
-                    if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Insert)
+                    if (dataModification.DataModificationItemAction == DataModificationItemAction.Insert)
                     {
                         message = Resources.NoPermissionToInsertEntity;
                     }
-                    else if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Update)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Update)
                     {
                         message = Resources.NoPermissionToUpdateEntity;
                     }
-                    else if (dataModification.ChangeSetItemAction == ChangeSetItemAction.Remove)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Remove)
                     {
                         message = Resources.NoPermissionToDeleteEntity;
                     }
@@ -92,13 +92,6 @@ namespace Microsoft.Restier.Core.Submit
                     }
 
                     return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
-
-                case ChangeSetItemType.ActionInvocation:
-                    ActionInvocationItem actionInvocation = (ActionInvocationItem)item;
-                    return string.Format(
-                        CultureInfo.InvariantCulture,
-                        Resources.NoPermissionToInvokeAction,
-                        actionInvocation.ActionName);
 
                 default:
                     throw new InvalidOperationException(string.Format(

@@ -51,12 +51,13 @@
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
     <Compile Include="ApiConfiguratorAttributes.cs" />
+    <Compile Include="Conventions\ConventionBasedOperationProcessor.cs" />
     <Compile Include="Conventions\ConventionBasedOperationAuthorizer.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetItemAuthorizer.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetConstants.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetItemProcessor.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetItemValidator.cs" />
-    <Compile Include="Conventions\ConventionBasedEntitySetProcessor.cs" />
+    <Compile Include="Conventions\ConventionBasedQueryExpressionProcessor.cs" />
     <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="ApiBase.cs" />
     <Compile Include="ApiConfiguration.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="InvocationContextExtensions.cs" />
     <Compile Include="Model\EdmHelpers.cs" />
     <Compile Include="Model\ModelContext.cs" />
+    <Compile Include="Operation\IOperationProcessor.cs" />
     <Compile Include="Operation\IOperationAuthorizer.cs" />
     <Compile Include="Operation\IOperationExecutor.cs" />
     <Compile Include="Operation\OperationContext.cs" />

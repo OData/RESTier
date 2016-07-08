@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Core.Submit
     /// This is required because during the post-CUD events, the EntityState has been lost.
     /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
     /// </remarks>
-    public enum ChangeSetItemAction
+    public enum DataModificationItemAction
     {
         /// <summary>
         /// Specifies an undefined action.
@@ -48,12 +48,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Specifies a data modification item.
         /// </summary>
-        DataModification,
-
-        /// <summary>
-        /// Specifies an action invocation item.
-        /// </summary>
-        ActionInvocation
+        DataModification
     }
 
     /// <summary>
@@ -96,7 +91,6 @@ namespace Microsoft.Restier.Core.Submit
         internal ChangeSetItem(ChangeSetItemType type)
         {
             this.Type = type;
-
             this.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.Initialized;
         }
 
@@ -143,7 +137,7 @@ namespace Microsoft.Restier.Core.Submit
         /// The type of the actual entity type in question.
         /// </param>
         /// <param name="action">
-        /// The ChangeSetItemAction for the request.
+        /// The DataModificationItemAction for the request.
         /// </param>
         /// <param name="entityKey">
         /// The key of the entity being modified.
@@ -158,7 +152,7 @@ namespace Microsoft.Restier.Core.Submit
             string entitySetName,
             Type expectedEntityType,
             Type actualEntityType,
-            ChangeSetItemAction action,
+            DataModificationItemAction action,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
@@ -172,7 +166,7 @@ namespace Microsoft.Restier.Core.Submit
             this.EntityKey = entityKey;
             this.OriginalValues = originalValues;
             this.LocalValues = localValues;
-            this.ChangeSetItemAction = action;
+            this.DataModificationItemAction = action;
         }
 
         /// <summary>
@@ -199,7 +193,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets the action to be taken.
         /// </summary>
-        public ChangeSetItemAction ChangeSetItemAction { get; set; }
+        public DataModificationItemAction DataModificationItemAction { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity should be fully replaced by the modification.
@@ -267,7 +261,7 @@ namespace Microsoft.Restier.Core.Submit
         public IQueryable ApplyTo(IQueryable query)
         {
             Ensure.NotNull(query, "query");
-            if (this.ChangeSetItemAction == ChangeSetItemAction.Insert)
+            if (this.DataModificationItemAction == DataModificationItemAction.Insert)
             {
                 throw new InvalidOperationException(Resources.DataModificationNotSupportCreateEntity);
             }
@@ -371,7 +365,7 @@ namespace Microsoft.Restier.Core.Submit
         /// The type of the actual entity type in question.
         /// </param>
         /// <param name="action">
-        /// The ChangeSetItemAction for the request.
+        /// The DataModificationItemAction for the request.
         /// </param>
         /// <param name="entityKey">
         /// The key of the entity being modified.
@@ -386,7 +380,7 @@ namespace Microsoft.Restier.Core.Submit
             string entitySetName,
             Type expectedEntityType,
             Type actualEntityType,
-            ChangeSetItemAction action,
+            DataModificationItemAction action,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
@@ -411,68 +405,6 @@ namespace Microsoft.Restier.Core.Submit
             set
             {
                 base.Entity = value;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents an action invocation item in a change set.
-    /// </summary>
-    public class ActionInvocationItem : ChangeSetItem
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ActionInvocationItem" /> class.
-        /// </summary>
-        /// <param name="actionName">
-        /// An action name.
-        /// </param>
-        /// <param name="arguments">
-        /// A set of arguments to pass to the action.
-        /// </param>
-        public ActionInvocationItem(
-            string actionName,
-            IDictionary<string, object> arguments)
-            : base(ChangeSetItemType.ActionInvocation)
-        {
-            Ensure.NotNull(actionName, "actionName");
-            this.ActionName = actionName;
-            this.Arguments = arguments;
-        }
-
-        /// <summary>
-        /// Gets or sets the operation (action) request.
-        /// </summary>
-        public string ActionName { get; set; }
-
-        /// <summary>
-        /// Gets the set of arguments to pass to the action.
-        /// </summary>
-        public IDictionary<string, object> Arguments { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the result of the action.
-        /// </summary>
-        /// <remarks>
-        /// Initially this will be <c>null</c>, however after the action
-        /// has been invoked it will contain the result.
-        /// </remarks>
-        public object Result { get; set; }
-
-        /// <summary>
-        /// Gets an array of the arguments to pass to the action.
-        /// </summary>
-        /// <returns>
-        /// An array of the arguments to pass to the action.
-        /// </returns>
-        internal object[] GetArgumentArray()
-        {
-            if (this.Arguments == null)
-            {
-                return new object[] { };
-            }
-            else
-            {
-                return this.Arguments.Select(a => a.Value).ToArray();
             }
         }
     }
