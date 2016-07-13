@@ -15,7 +15,6 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
-using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
 using Microsoft.Restier.Publishers.OData.Properties;
 

@@ -177,7 +177,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private void BuildEntitySetsAndSingletons(InvocationContext context, EdmModel model)
+        private void BuildEntitySetsAndSingletons(ModelContext context, EdmModel model)
         {
             var configuration = context.ApiContext.Configuration;
             foreach (var property in this.publicProperties)
