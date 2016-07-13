@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -55,6 +56,6 @@ namespace Microsoft.Restier.Core.Query
         /// applies is a constant expression whose value is the data object.
         /// </para>
         /// </remarks>
-        Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded);
+        Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded);
     }
 }

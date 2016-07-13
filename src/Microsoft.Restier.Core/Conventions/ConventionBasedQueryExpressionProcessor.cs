@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
@@ -41,13 +42,13 @@ namespace Microsoft.Restier.Core.Conventions
         }
 
         /// <inheritdoc/>
-        public Expression Process(QueryExpressionContext context)
+        public async Task<Expression> ProcessAsync(QueryExpressionContext context)
         {
             Ensure.NotNull(context, "context");
 
             if (Inner != null)
             {
-                var innerFilteredExpression = Inner.Process(context);
+                var innerFilteredExpression = await Inner.ProcessAsync(context);
                 if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
                 {
                     return innerFilteredExpression;
@@ -102,7 +103,8 @@ namespace Microsoft.Restier.Core.Conventions
                     entityType = (IEdmEntityType)entityType.BaseType;
                 }
 
-                return AppendOnFilterExpression(context, entityType.Name);
+                var expression = AppendOnFilterExpression(context, entityType.Name);
+                return expression;
             }
 
             return null;

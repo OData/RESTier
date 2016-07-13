@@ -99,6 +99,13 @@ namespace Microsoft.Restier.Publishers.OData.Filters
                     context.Request.CreateErrorResponse(HttpStatusCode.Forbidden, context.Exception));
             }
 
+            if (context.Exception is AggregateException
+                && context.Exception.InnerException is SecurityException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.Forbidden, context.Exception));
+            }
+
             return Task.FromResult<HttpResponseMessage>(null);
         }
 

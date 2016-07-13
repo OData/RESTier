@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Core.Query
 {
@@ -36,6 +37,6 @@ namespace Microsoft.Restier.Core.Query
         /// A processed expression of the same type as the visited node, or
         /// if processing did not apply, the visited node.
         /// </returns>
-        Expression Process(QueryExpressionContext context);
+        Task<Expression> ProcessAsync(QueryExpressionContext context);
     }
 }

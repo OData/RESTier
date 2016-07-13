@@ -117,6 +117,11 @@ namespace Microsoft.Restier.Core.Query
 
             public IEdmEntitySet EntitySet { get; private set; }
 
+            /// <summary>
+            /// The method can not be marked as async and return Task as it overwrites super class methods.
+            /// </summary>
+            /// <param name="node">The node to be visited</param>
+            /// <returns>The expression after visitor</returns>
             public override Expression Visit(Expression node)
             {
                 if (node == null)
@@ -146,17 +151,19 @@ namespace Microsoft.Restier.Core.Query
                     }
 
                     // Inspect the visited node
-                    this.Inspect();
+                    this.InspectAsync();
 
                     // Try to expand the visited node
                     // if it represents API data
                     if (this.context.ModelReference is DataSourceStubModelReference)
                     {
-                        node = this.Expand(visited);
+                        // Can not use await here as the method cannot be async
+                        node = this.ExpandAsync(visited).Result;
                     }
 
                     // Process the visited node
-                    node = this.Process(visited, node);
+                    // Can not use await here as the method cannot be async
+                    node = this.ProcessAsync(visited, node).Result;
                 }
 
                 if (visited == node)
@@ -166,7 +173,7 @@ namespace Microsoft.Restier.Core.Query
                         // If no processing occurred on the visited node
                         // and it represents API data, then it must be
                         // in its most primitive form, so source the node
-                        node = this.Source(node);
+                        node = this.SourceAsync(node).Result;
                     }
 
                     if (this.BaseQuery == null)
@@ -203,20 +210,20 @@ namespace Microsoft.Restier.Core.Query
                 return node;
             }
 
-            private void Inspect()
+            private async void InspectAsync()
             {
                 if (this.authorizer == null)
                 {
                     this.authorizer = this.context.QueryContext.GetApiService<IQueryExpressionAuthorizer>();
                 }
 
-                if (this.authorizer != null && !this.authorizer.Authorize(this.context))
+                if (this.authorizer != null && !await this.authorizer.AuthorizeAsync(this.context))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }
             }
 
-            private Expression Expand(Expression visited)
+            private async Task<Expression> ExpandAsync(Expression visited)
             {
                 if (this.expander == null)
                 {
@@ -229,7 +236,7 @@ namespace Microsoft.Restier.Core.Query
                     return visited;
                 }
 
-                var expanded = expander.Expand(this.context);
+                var expanded = await expander.ExpandAsync(this.context);
                 var callback = this.context.AfterNestedVisitCallback;
                 this.context.AfterNestedVisitCallback = null;
                 if (expanded != null && expanded != visited)
@@ -254,7 +261,7 @@ namespace Microsoft.Restier.Core.Query
                 return visited;
             }
 
-            private Expression Process(Expression visited, Expression processed)
+            private async Task<Expression> ProcessAsync(Expression visited, Expression processed)
             {
                 if (this.processor == null)
                 {
@@ -263,7 +270,7 @@ namespace Microsoft.Restier.Core.Query
 
                 if (this.processor != null)
                 {
-                    var filtered = processor.Process(this.context);
+                    var filtered = await processor.ProcessAsync(this.context);
                     var callback = this.context.AfterNestedVisitCallback;
                     this.context.AfterNestedVisitCallback = null;
                     if (filtered != null && filtered != visited)
@@ -312,7 +319,7 @@ namespace Microsoft.Restier.Core.Query
                 return processed;
             }
 
-            private Expression Source(Expression node)
+            private async Task<Expression> SourceAsync(Expression node)
             {
                 if (this.sourcer == null)
                 {
@@ -326,7 +333,7 @@ namespace Microsoft.Restier.Core.Query
                     throw new NotSupportedException(Resources.QuerySourcerMissing);
                 }
 
-                node = this.sourcer.ReplaceQueryableSource(this.context, this.BaseQuery != null);
+                node = await this.sourcer.ReplaceQueryableSourceAsync(this.context, this.BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression

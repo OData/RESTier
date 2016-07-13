@@ -7,6 +7,7 @@ using System.Data.Entity;
 #endif
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
@@ -32,7 +33,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Query
         /// <returns>
         /// A data source expression that represents the visited node.
         /// </returns>
-        public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
+        public Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded)
         {
             Ensure.NotNull(context, "context");
 
@@ -58,13 +59,15 @@ namespace Microsoft.Restier.Providers.EntityFramework.Query
                 var dbSet = dbSetProperty.GetValue(dbContext);
 
                 ////dbSet = dbSet.GetType().GetMethod("AsNoTracking").Invoke(dbSet, null);
-                return Expression.Constant(dbSet);
+                Expression expression = Expression.Constant(dbSet);
+                return Task.FromResult(expression);
             }
             else
             {
-                return Expression.MakeMemberAccess(
+                Expression expression = Expression.MakeMemberAccess(
                     Expression.Constant(dbContext),
                     dbSetProperty);
+                return Task.FromResult(expression);
             }
         }
     }

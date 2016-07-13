@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Threading.Tasks;
+
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
@@ -30,6 +32,6 @@ namespace Microsoft.Restier.Core.Query
         /// <returns>
         /// <c>true</c> if the inspection passed; otherwise, <c>false</c>.
         /// </returns>
-        bool Authorize(QueryExpressionContext context);
+        Task<bool> AuthorizeAsync(QueryExpressionContext context);
     }
 }

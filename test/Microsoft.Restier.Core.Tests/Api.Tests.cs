@@ -55,9 +55,10 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestQuerySourcer : IQueryExpressionSourcer
         {
-            public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
+            public Task<Expression> ReplaceQueryableSourceAsync(QueryExpressionContext context, bool embedded)
             {
-                return Expression.Constant(new[] {"Test"}.AsQueryable());
+                Expression expression = Expression.Constant(new[] {"Test"}.AsQueryable());
+                return Task.FromResult(expression);
             }
         }
 
