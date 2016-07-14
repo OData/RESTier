@@ -34,7 +34,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Controllers
         {
             get
             {
-                return Api.Context;
+                return Api.ModelContext;
             }
         }
 

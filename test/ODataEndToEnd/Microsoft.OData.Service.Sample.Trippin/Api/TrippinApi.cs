@@ -28,7 +28,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
-        public new TrippinModel Context
+        public TrippinModel ModelContext
         {
             get { return DbContext; }
         }
@@ -87,7 +87,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         {
             get
             {
-                return Context.People.Select(p => new PersonWithAge
+                return ModelContext.People.Select(p => new PersonWithAge
                 {
                     Id = p.PersonId,
                     UserName = p.UserName,
@@ -114,7 +114,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         private IQueryable<Person> PeopleWithFriends
         {
-            get { return Context.People.Include("Friends"); }
+            get { return ModelContext.People.Include("Friends"); }
         }
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetIEnumerable(IEnumerable<Person> people, int n)
         {
-            return n*10;
+            return n * 10;
         }
 
         /// <summary>
@@ -305,7 +305,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetICollection(ICollection<Person> people, int n, int m)
         {
-            return n*m;
+            return n * m;
         }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Operation(IsBound = true)]
         public int GetBoundPrimitive(int i)
         {
-            return i*100;
+            return i * 100;
         }
 
         /// <summary>
@@ -605,7 +605,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 // Set computed annotation
                 var tripType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Trip");
                 var trackGuidProperty = tripType.DeclaredProperties.Single(prop => prop.Name == "TrackGuid");
-                var timeStampValueProp= model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
+                var timeStampValueProp = model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
                 var term = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
                 var anno1 = new EdmAnnotation(trackGuidProperty, term, new EdmBooleanConstant(true));
                 var anno2 = new EdmAnnotation(timeStampValueProp, term, new EdmBooleanConstant(true));
@@ -615,7 +615,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 var personType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Person");
                 var type = personType.FindProperty("PersonId").Type;
 
-                var isNullableField = typeof(EdmTypeReference).GetField("isNullable",BindingFlags.Instance | BindingFlags.NonPublic);
+                var isNullableField = typeof(EdmTypeReference).GetField("isNullable", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (isNullableField != null)
                 {
                     isNullableField.SetValue(type, false);
