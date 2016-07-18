@@ -12,6 +12,9 @@ namespace System.Linq.Expressions
         private const string MethodNameOfQueryTake = "Take";
         private const string MethodNameOfQuerySelect = "Select";
         private const string MethodNameOfQuerySkip = "Skip";
+        private const string MethodNameOfQueryWhere = "Where";
+        private const string MethodNameOfQueryOrderBy = "OrderBy";
+        private const string InterfaceNameISelectExpandWrapper = "ISelectExpandWrapper";
         private const string ExpandClauseReflectedTypeName = "SelectExpandBinder";
 
         public static IQueryable Select(IQueryable query, LambdaExpression select)
@@ -114,6 +117,112 @@ namespace System.Linq.Expressions
             }
 
             return enumerableType;
+        }
+
+        internal static MethodCallExpression RemoveUnneededStatement(this MethodCallExpression methodCallExpression)
+        {
+            if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+            {
+                return methodCallExpression;
+            }
+
+            if (methodCallExpression.Method.Name == MethodNameOfQuerySelect)
+            {
+                // Check where it is expand case or select, if yes, need to get rid of last select
+                methodCallExpression = RemoveSelectExpandStatement(methodCallExpression);
+                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                {
+                    return methodCallExpression;
+                }
+            }
+
+            if (methodCallExpression.Method.Name == MethodNameOfQueryTake)
+            {
+                // Check where it is top query option, and if yes, remove it.
+                methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
+                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                {
+                    return methodCallExpression;
+                }
+            }
+
+            if (methodCallExpression.Method.Name == MethodNameOfQuerySkip)
+            {
+                // Check where it is skip query option, and if yes, remove it.
+                methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
+                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                {
+                    return methodCallExpression;
+                }
+            }
+
+            if (methodCallExpression.Method.Name == MethodNameOfQueryOrderBy)
+            {
+                // Check where it is orderby query option, and if yes, remove it.
+                methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
+                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                {
+                    return methodCallExpression;
+                }
+            }
+
+            return methodCallExpression;
+        }
+
+        internal static MethodCallExpression RemoveSelectExpandStatement(this MethodCallExpression methodCallExpression)
+        {
+            // This means a select for expand is appended, will remove it for resource existing check
+            var expandSelect = methodCallExpression.Arguments[1] as UnaryExpression;
+            var lambdaExpression = expandSelect.Operand as LambdaExpression;
+            if (lambdaExpression == null)
+            {
+                return methodCallExpression;
+            }
+
+            var memberInitExpression = lambdaExpression.Body as MemberInitExpression;
+            if (memberInitExpression == null)
+            {
+                return methodCallExpression;
+            }
+
+            Type returnType = lambdaExpression.ReturnType;
+            var wrapperInterface = returnType.GetInterface(InterfaceNameISelectExpandWrapper);
+            if (wrapperInterface != null)
+            {
+                methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
+            }
+
+            return methodCallExpression;
+        }
+
+        internal static Expression RemoveAppendWhereStatement(this Expression expression)
+        {
+            var methodCallExpression = expression as MethodCallExpression;
+            if (methodCallExpression == null || methodCallExpression.Method.Name != MethodNameOfQueryWhere)
+            {
+                return expression;
+            }
+
+            // This means there may be an appended statement Where(Param_0 => (Param_0.Prop != null))
+            var appendedWhere = methodCallExpression.Arguments[1] as UnaryExpression;
+            var lambdaExpression = appendedWhere.Operand as LambdaExpression;
+            if (lambdaExpression == null)
+            {
+                return expression;
+            }
+
+            var binaryExpression = lambdaExpression.Body as BinaryExpression;
+            if (binaryExpression != null && binaryExpression.NodeType == ExpressionType.NotEqual)
+            {
+                var rightExpression = binaryExpression.Right as ConstantExpression;
+                if (rightExpression != null && rightExpression.Value == null)
+                {
+                    // remove statement like Where(Param_0 => (Param_0.Prop != null))
+                    expression = methodCallExpression.Arguments[0];
+                }
+            }
+
+            return expression;
         }
 
         private static Expression StripQueryMethod(Expression expression, string methodName)

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Microsoft.Restier</id>
-    <version>0.6.0-beta</version>
+    <version>0.6.0</version>
     <title>RESTier</title>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>

@@ -213,4 +213,7 @@
   <data name="EdmTypeNotSupported" xml:space="preserve">
     <value>{0} is not a supported EDM type.</value>
   </data>
+  <data name="ResourceNotFound" xml:space="preserve">
+    <value>The request resource is not found.</value>
+  </data>
 </root>

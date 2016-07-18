@@ -250,22 +250,48 @@ namespace Microsoft.OData.Service.Sample.Tests
         /// Note: 1. No test case of collection with primitive/enum/complex as EF does not support
         /// 2. Complex can not be null in EF
         [Theory]
+        // Filter with no result, them empty collection returned. 
+        [InlineData("/People?$filter=LastName eq 'xxx'", 200)]
+        // Filter cause no result returned. 
+        [InlineData("/People(1)?$filter=LastName eq 'xxx'", 204)]
         // Single primitive property with null value 
         [InlineData("/People(4)/LastName", 204)]
         // Single primitive property $value with null value 
         [InlineData("/People(4)/LastName/$value", 204)]
         // single navigation property with null value
-        // TODO Should be 204, cannot differentiate ~/People(nonexistkey) vs /People(5)/NullSingNav now
-        [InlineData("/People(4)/BestFriend", 404)]
+        [InlineData("/People(4)/BestFriend", 204)]
+        // single navigation property with null value
+        [InlineData("/People(4)/BestFriend?$expand=Friends", 204)]
         // single navigation property's propery and navigation property has null value
-        // TODO should be 404
-        [InlineData("/People(4)/BestFriend/LastName", 204)]
+        [InlineData("/People(4)/BestFriend/LastName", 404)]
         // single navigation property's property with null value
         [InlineData("/People(5)/BestFriend/LastName", 204)]
         // collection of navigation property with empty collection value
         [InlineData("/People(5)/Friends", 200)]
+        // Filter on empty collection
+        [InlineData("/People(5)/Friends?$filter=LastName eq 'xxx'", 200)]
+        // collection of navigation property with empty collection value
+        [InlineData("/People(5)/Friends?$expand=Friends", 200)]
+        // collection of navigation property with empty collection value
+        [InlineData("/People(5)/Friends?$expand=Friends($select=FirstName,LastName)", 200)]
         // collection of navigation property with null collection value
         [InlineData("/People(7)/Friends", 200)]
+        // Non exist entity
+        [InlineData("/People(77)", 404)]
+        // Non exist entity
+        [InlineData("/People(77)?$expand=Friends", 404)]
+        // Non exist entity
+        [InlineData("/People(77)?$filter=LastName eq 'xxx'", 404)]
+        // Non exist entity
+        [InlineData("/People(77)?$expand=Friends&&$filter=LastName eq 'xxx'", 404)]
+        // Non exist entity
+        [InlineData("/People(77)/Friends", 404)]
+        // Non exist entity
+        [InlineData("/People(77)/Friends?$filter=LastName eq 'xxx'", 404)]
+        // Non exist entity
+        [InlineData("/People(77)/Friends?$skip=1&$top=1&$filter=LastName eq 'xxx'&$select=FirstName,LastName", 404)]
+        // Non exist entity
+        [InlineData("/People(77)/Friends?$skip=1&$top=1&$filter=LastName eq 'xxx'&$expand=Friends&$select=FirstName,LastName", 404)]
         public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);

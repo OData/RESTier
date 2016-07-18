@@ -72,7 +72,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "flightId", flightId } }).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(412, statusCode);
@@ -101,7 +101,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -125,7 +125,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -171,7 +171,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             Assert.Equal(412, statusCode);
@@ -197,7 +197,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "flightId", flightId } }).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(404, statusCode);
@@ -255,7 +255,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() {{"flightId", flightId}}).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(304, statusCode);
@@ -285,7 +285,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -313,7 +313,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -361,7 +361,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             Assert.Equal(412, statusCode);
@@ -381,13 +381,13 @@ namespace Microsoft.OData.Service.Sample.Tests
             this.TestClientContext.SaveChanges();
             Assert.Equal(204, statusCode);
 
-            // Query the flight again and entiy does not exist.
+            // Query the flight again and entity does not exist.
             this.TestClientContext.SendingRequest2 -= sendRequestEvent;
             try
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "flightId", flightId } }).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(404, statusCode);

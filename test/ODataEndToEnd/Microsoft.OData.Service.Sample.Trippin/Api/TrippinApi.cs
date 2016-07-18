@@ -586,11 +586,11 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         private class TrippinModelExtender : IModelBuilder
         {
-            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var builder = new ODataConventionModelBuilder();
                 builder.EntityType<PersonWithAge>();
-                return builder.GetEdmModel();
+                return Task.FromResult(builder.GetEdmModel());
             }
         }
 

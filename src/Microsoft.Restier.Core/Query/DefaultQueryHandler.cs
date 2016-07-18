@@ -2,12 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Query
@@ -17,6 +19,10 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     internal static class DefaultQueryHandler
     {
+        private const string ExpressionMethodNameOfWhere = "Where";
+        private const string ExpressionMethodNameOfSelect = "Select";
+        private const string ExpressionMethodNameOfSelectMany = "SelectMany";
+
         /// <summary>
         /// Asynchronously executes the query flow.
         /// </summary>
@@ -76,6 +82,9 @@ namespace Microsoft.Restier.Core.Query
                 };
                 var task = method.Invoke(executor, parameters) as Task<QueryResult>;
                 result = await task;
+
+                await CheckSubExpressionResult(
+                    context, cancellationToken, result.Results, visitor, executor, expression);
             }
             else
             {
@@ -96,6 +105,123 @@ namespace Microsoft.Restier.Core.Query
             }
 
             return result;
+        }
+
+        private static async Task CheckSubExpressionResult(
+            QueryContext context,
+            CancellationToken cancellationToken,
+            IEnumerable enumerableResult,
+            QueryExpressionVisitor visitor,
+            IQueryExecutor executor,
+            Expression expression)
+        {
+            if (enumerableResult.GetEnumerator().MoveNext())
+            {
+                // If there is some result, will not have additional processing
+                return;
+            }
+
+            var methodCallExpression = expression as MethodCallExpression;
+
+            // This will remove unneeded statement which includes $expand, $select,$top,$skip,$orderby
+            methodCallExpression = methodCallExpression.RemoveUnneededStatement();
+            if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+            {
+                return;
+            }
+
+            if (methodCallExpression.Method.Name == ExpressionMethodNameOfWhere)
+            {
+                // Throw exception if key as last where statement, or remove $filter where statement
+                methodCallExpression = CheckWhereCondition(methodCallExpression);
+                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                {
+                    return;
+                }
+
+                // Call without $filter where statement and with Key where statement
+                if (methodCallExpression.Method.Name == ExpressionMethodNameOfWhere)
+                {
+                    // The last where from $filter is removed and run with key where statement
+                    await ExecuteSubExpression(context, cancellationToken, visitor, executor, methodCallExpression);
+                    return;
+                }
+            }
+
+            if (methodCallExpression.Method.Name != ExpressionMethodNameOfSelect
+                && methodCallExpression.Method.Name != ExpressionMethodNameOfSelectMany)
+            {
+                // If last statement is not select property, will no further checking
+                return;
+            }
+
+            var subExpression = methodCallExpression.Arguments[0];
+
+            // Remove appended statement like Where(Param_0 => (Param_0.Prop != null)) if there is one
+            subExpression = subExpression.RemoveAppendWhereStatement();
+
+            await ExecuteSubExpression(context, cancellationToken, visitor, executor, subExpression);
+        }
+
+        private static async Task ExecuteSubExpression(
+            QueryContext context,
+            CancellationToken cancellationToken,
+            QueryExpressionVisitor visitor,
+            IQueryExecutor executor,
+            Expression expression)
+        {
+            // get element type
+            Type elementType = null;
+            var queryType = expression.Type.FindGenericType(typeof(IQueryable<>));
+            if (queryType != null)
+            {
+                elementType = queryType.GetGenericArguments()[0];
+            }
+
+            var query = visitor.BaseQuery.Provider.CreateQuery(expression);
+            var method = typeof(IQueryExecutor)
+                .GetMethod("ExecuteQueryAsync")
+                .MakeGenericMethod(elementType);
+            var parameters = new object[]
+            {
+                context, query, cancellationToken
+            };
+            var task = method.Invoke(executor, parameters) as Task<QueryResult>;
+            var result = await task;
+
+            var any = result.Results.Cast<object>().Any();
+            if (!any)
+            {
+                // Which means previous expression does not have result, and should throw ResourceNotFoundException.
+                throw new ResourceNotFoundException(Resources.ResourceNotFound);
+            }
+        }
+
+        private static MethodCallExpression CheckWhereCondition(MethodCallExpression methodCallExpression)
+        {
+            // This means a select for expand is appended, will remove it for resource existing check
+            var lastWhere = methodCallExpression.Arguments[1] as UnaryExpression;
+            var lambdaExpression = lastWhere.Operand as LambdaExpression;
+            if (lambdaExpression == null)
+            {
+                return null;
+            }
+
+            var binaryExpression = lambdaExpression.Body as BinaryExpression;
+            if (binaryExpression == null)
+            {
+                return null;
+            }
+
+            // Key segment will have ConstantExpression but $filter will not have ConstantExpression
+            var rightExpression = binaryExpression.Right as ConstantExpression;
+            if (rightExpression != null)
+            {
+                // This means where statement is key segment but not for $filter
+                throw new ResourceNotFoundException(Resources.ResourceNotFound);
+            }
+
+            return methodCallExpression.Arguments[0] as MethodCallExpression;
         }
 
         private class QueryExpressionVisitor : ExpressionVisitor

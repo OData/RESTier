@@ -101,8 +101,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         // single complex property with null value
         [InlineData("/People(5)/HomeAddress", 204)]
         // single complex property's propery and complex property has null value
-        // TODO should be 404
-        [InlineData("/People(5)/HomeAddress/Address", 204)]
+        [InlineData("/People(5)/HomeAddress/Address", 404)]
         // single complex property's property with null value 
         [InlineData("/People(6)/HomeAddress/Address", 204)]
         // collection of complex property with empty collection value
@@ -113,11 +112,9 @@ namespace Microsoft.OData.Service.Sample.Tests
         // Collection of complex property with null collection
         [InlineData("/People(7)/Locations", 200)]
         // single navigation property with null value
-        // TODO Should be 204, cannot differentiate ~/People(nonexistkey) vs /People(5)/NullSingNav now
-        [InlineData("/People(5)/BestFriend", 404)]
+        [InlineData("/People(5)/BestFriend", 204)]
         // single navigation property's propery and navigation property has null value
-        // TODO should be 404
-        [InlineData("/People(5)/BestFriend/MiddleName", 204)]
+        [InlineData("/People(5)/BestFriend/MiddleName", 404)]
         // single navigation property's property with null value
         [InlineData("/People(6)/BestFriend/MiddleName", 204)]
         // collection of navigation property with empty collection value
@@ -134,37 +131,29 @@ namespace Microsoft.OData.Service.Sample.Tests
 
         [Theory]
         // Single primitive property
-        // TODO should be 404
-        [InlineData("/People(15)/MiddleName", 204)]
+        [InlineData("/People(15)/MiddleName", 404)]
         // Single primitive property $value
-        // TODO should be 404
-        [InlineData("/People(15)/MiddleName/$value", 204)]
+        [InlineData("/People(15)/MiddleName/$value", 404)]
         // Collection of primitive property 
-        // TODO should be 404
-        [InlineData("/People(15)/Emails", 200)]
+        [InlineData("/People(15)/Emails", 404)]
         // Collection of primitive property $value
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
         [InlineData("/People(15)/Emails/$value", 404)]
         // single complex property
-        // TODO should be 404
-        [InlineData("/People(15)/HomeAddress", 204)]
+        [InlineData("/People(15)/HomeAddress", 404)]
         // single complex property's property
-        // TODO should be 404
-        [InlineData("/People(15)/HomeAddress/Address", 204)]
+        [InlineData("/People(15)/HomeAddress/Address", 404)]
         // collection of complex property
-        // TODO should be 404
-        [InlineData("/People(15)/Locations", 200)]
+        [InlineData("/People(15)/Locations", 404)]
         // collection of complex property's propery
         // TODO should be bad request 400 as this is not allowed?? 404 is returned by WebApi Route Match method
         [InlineData("/People(15)/Locations/Address", 404)]
         // single navigation property
         [InlineData("/People(15)/BestFriend", 404)]
         // single navigation property's propery
-        // TODO should be 404
-        [InlineData("/People(15)/BestFriend/MiddleName", 204)]
+        [InlineData("/People(15)/BestFriend/MiddleName", 404)]
         // collection of navigation property
-        // TODO should be 404
-        [InlineData("/People(15)/Friends", 200)]
+        [InlineData("/People(15)/Friends", 404)]
         // collection of navigation property's property
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
         [InlineData("/People(15)/Friends/MiddleName", 404)]

@@ -433,8 +433,6 @@ namespace Microsoft.Restier.Publishers.OData
             IQueryable query, IEdmType edmType, bool isIfNoneMatch, ETag etag)
         {
             IEdmTypeReference typeReference = GetTypeReference(edmType);
-
-            // TODO, GitHubIssue#328 : 404 should be returned when requesting property of non-exist entity
             BaseSingleResult singleResult = null;
             HttpResponseMessage response = null;
 
@@ -505,13 +503,7 @@ namespace Microsoft.Restier.Publishers.OData
             var entityResult = query.SingleOrDefault();
             if (entityResult == null)
             {
-                // TODO GitHubIssue#288: 204 expected when requesting single nav property which has null value
-                // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
-                // ~/People(key)/BestFriend, and BestFriend is null, expected 204
-                throw new HttpResponseException(
-                    this.Request.CreateErrorResponse(
-                        HttpStatusCode.NotFound,
-                        Resources.ResourceNotFound));
+                return this.Request.CreateResponse(HttpStatusCode.NoContent);
             }
 
             // Check the ETag here

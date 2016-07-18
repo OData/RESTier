@@ -175,10 +175,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         [Fact]
         public void FunctionImportNullSingleEntity()
         {
-            // TODO GitHubIssue#288: 204 expected when requesting single nav property which has null value
-            // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
-            // ~/People(key)/BestFriend, and BestFriend is null, expected 204
-            TestGetStatusCodeIs("GetNullEntity", 404);
+            TestGetStatusCodeIs("GetNullEntity", 204);
         }
 
         [Fact]
