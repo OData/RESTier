@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.2 Entity Set Filters [>=0.4.0]"
+title: "2.2 Entity Set Filters"
 description: ""
 category: "2. Features"
 ---

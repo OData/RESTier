@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.9 Customize Submit [>=0.5.0]"
+title: "2.9 Customize Submit"
 description: ""
 category: "2. Features"
 ---

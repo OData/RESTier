@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.11 Customize Serializer and Deserializer Provider [>=0.5.0]"
+title: "2.11 Customize Serializer and Deserializer Provider"
 description: ""
 category: "2. Features"
 ---

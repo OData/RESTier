@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2.10 Customize Payload Converter [>=0.5.0]"
+title: "2.10 Customize Payload Converter"
 description: ""
 category: "2. Features"
 ---
