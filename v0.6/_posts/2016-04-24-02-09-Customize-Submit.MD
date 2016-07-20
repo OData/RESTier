@@ -5,7 +5,7 @@ description: ""
 category: "2. Features"
 ---
 
-RESTier supports built in convention based logic (refer to [section 2.3](http://odata.github.io/RESTier/#02-02-Submit-Logic)) for submit, besides this, RESTier has three interfaces IChangeSetItemAuthorizer, IChangeSetItemValidator and IChangeSetItemProcessor for end user to customize the logic.
+RESTier supports built in convention based logic (refer to [section 2.3](http://odata.github.io/RESTier/v0.6/#02-03-Submit-Logic)) for submit, besides this, RESTier has three interfaces IChangeSetItemAuthorizer, IChangeSetItemValidator and IChangeSetItemProcessor for end user to customize the logic.
 
 **Customized Authorize Logic**
 
@@ -48,7 +48,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 }
 {% endhighlight %}
 
-In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic, user can defined a property like "private IChangeSetItemAuthorizer InnerAuthorizer {get; set;}" in class CustomizedAuthorizer, then call InnerAuthorizer.AuthorizeAsync() to call RESTier logic which call Authorize part logic defined in section 2.3.
+In CustomizedAuthorizer, user can decide whether to call the RESTier logic, if user decide to call the RESTier logic, user can defined a property like "private IChangeSetItemAuthorizer InnerAuthorizer {get; set;}" in class CustomizedAuthorizer, then call InnerAuthorizer.AuthorizeAsync() to call RESTier logic which call Authorize part logic defined in [section 2.3](http://odata.github.io/RESTier/v0.6/#02-03-Submit-Logic).
 
 
 **Customized Validation Logic**
