@@ -16,10 +16,15 @@ namespace Microsoft.Restier.Providers.EntityFramework.Spatial
     /// </summary>
     public static class GeographyConverter
     {
-        private static readonly CultureInfo DefaultCulture = CultureInfo.GetCultureInfo("En-Us");
         private const string GeographyTypeNamePoint = "Point";
         private const string GeographyTypeNameLineString = "LineString";
+        private static readonly CultureInfo DefaultCulture = CultureInfo.GetCultureInfo("En-Us");
 
+        /// <summary>
+        /// Convert a DbGeography to Edm GeographyPoint
+        /// </summary>
+        /// <param name="geography"> The DbGeography to be converted</param>
+        /// <returns>A Edm GeographyPoint</returns>
         public static GeographyPoint ToGeographyPoint(this DbGeography geography)
         {
             if (geography == null)
@@ -42,6 +47,11 @@ namespace Microsoft.Restier.Providers.EntityFramework.Spatial
             return GeographyPoint.Create(lat, lon, alt, m);
         }
 
+        /// <summary>
+        /// Convert a Edm GeographyPoint to DbGeography
+        /// </summary>
+        /// <param name="point">The Edm GeographyPoint to be converted</param>
+        /// <returns>A DbGeography</returns>
         public static DbGeography ToDbGeography(this GeographyPoint point)
         {
             if (point == null)
@@ -67,6 +77,11 @@ namespace Microsoft.Restier.Providers.EntityFramework.Spatial
             return DbGeography.FromText(text);
         }
 
+        /// <summary>
+        /// Convert a DbGeography to Edm GeographyPoint
+        /// </summary>
+        /// <param name="geography"> The DbGeography to be converted</param>
+        /// <returns>A Edm GeographyLineString</returns>
         public static GeographyLineString ToGeographyLineString(this DbGeography geography)
         {
             if (geography == null)
@@ -91,12 +106,14 @@ namespace Microsoft.Restier.Providers.EntityFramework.Spatial
             if (numPoints > 0)
             {
                 DbGeography point = geography.PointAt(1);
-                pipleLine.BeginFigure(new GeographyPosition(point.Latitude ?? 0, point.Latitude ?? 0, point.Elevation, point.Measure));
+                pipleLine.BeginFigure(new GeographyPosition(
+                    point.Latitude ?? 0, point.Latitude ?? 0, point.Elevation, point.Measure));
 
                 for (int n = 2; n <= numPoints; n++)
                 {
                     point = geography.PointAt(n);
-                    pipleLine.LineTo(new GeographyPosition(point.Latitude ?? 0, point.Latitude ?? 0, point.Elevation, point.Measure));
+                    pipleLine.LineTo(new GeographyPosition(
+                        point.Latitude ?? 0, point.Latitude ?? 0, point.Elevation, point.Measure));
                 }
 
                 pipleLine.EndFigure();
@@ -107,6 +124,11 @@ namespace Microsoft.Restier.Providers.EntityFramework.Spatial
             return lineString;
         }
 
+        /// <summary>
+        /// Convert a Edm GeographyLineString to DbGeography
+        /// </summary>
+        /// <param name="lineString">The Edm GeographyLineString to be converted</param>
+        /// <returns>A DbGeography</returns>
         public static DbGeography ToDbGeography(this GeographyLineString lineString)
         {
             if (lineString == null)
@@ -142,6 +164,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Spatial
                     sb.Append(",");
                 }
             }
+
             sb.Append(")");
 
             return DbGeography.FromText(sb.ToString());

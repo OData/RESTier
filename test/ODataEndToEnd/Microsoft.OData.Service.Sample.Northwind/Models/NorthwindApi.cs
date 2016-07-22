@@ -8,30 +8,16 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData;
-using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Providers.EntityFramework;
-using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Model;
-using Microsoft.Restier.Security;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Models
 {
-    [EnableRoleBasedSecurity]
-    [Grant(ApiPermissionType.All, On = "Customers")]
-    [Grant(ApiPermissionType.All, On = "Products")]
-    [Grant(ApiPermissionType.All, On = "CurrentOrders")]
-    [Grant(ApiPermissionType.All, On = "ExpensiveProducts")]
-    [Grant(ApiPermissionType.All, On = "Orders")]
-    [Grant(ApiPermissionType.All, On = "Employees")]
-    [Grant(ApiPermissionType.All, On = "Regions")]
-    [Grant(ApiPermissionType.Inspect, On = "Suppliers")]
-    [Grant(ApiPermissionType.Read, On = "Suppliers")]
-    [Grant(ApiPermissionType.All, On = "ResetDataSource")]
     public class NorthwindApi : EntityFrameworkApi<NorthwindContext>
     {
         public new NorthwindContext Context { get { return DbContext; } }
