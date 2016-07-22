@@ -120,6 +120,12 @@
   <data name="DataModificationMustBeCUD" xml:space="preserve">
     <value>A DataModificationEntry must be either New, Update or Delete.</value>
   </data>
+  <data name="InvalidLineStringGeographyType" xml:space="preserve">
+    <value>Need 'LineString type', while input is {0}.</value>
+  </data>
+  <data name="InvalidPointGeographyType" xml:space="preserve">
+    <value>Need 'Point type', while input is {0}.</value>
+  </data>
   <data name="PreconditionCheckFailed" xml:space="preserve">
     <value>The precondition check for request {0} on resource {1} is failed.</value>
   </data>

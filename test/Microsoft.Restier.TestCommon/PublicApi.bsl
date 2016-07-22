@@ -608,6 +608,31 @@ public class Microsoft.Restier.Publishers.OData.RestierPayloadValueConverter : M
 	public virtual object ConvertToPayloadValue (object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
 }
 
+[
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.Providers.EntityFramework.Spatial.GeographyConverter {
+	[
+	ExtensionAttribute(),
+	]
+	public static DbGeography ToDbGeography (Microsoft.Spatial.GeographyLineString lineString)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static DbGeography ToDbGeography (Microsoft.Spatial.GeographyPoint point)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Spatial.GeographyLineString ToGeographyLineString (DbGeography geography)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.Spatial.GeographyPoint ToGeographyPoint (DbGeography geography)
+}
+
 public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
 	public RestierBatchChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
 
