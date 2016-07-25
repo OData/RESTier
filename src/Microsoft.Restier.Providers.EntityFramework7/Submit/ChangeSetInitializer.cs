@@ -71,7 +71,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             Type entityType = typeof(TEntity);
             TEntity entity;
 
-            if (entry.IsNewRequest)
+            if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
             {
                 // TODO: See if Create method is in DbSet<> in future EF7 releases, as the one EF6 has.
                 entity = (TEntity)Activator.CreateInstance(typeof(TEntity));
@@ -79,12 +79,12 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 ChangeSetInitializer.SetValues(entity, entityType, entry.LocalValues);
                 set.Add(entity);
             }
-            else if (entry.IsDeleteRequest)
+            else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
             {
                 entity = (TEntity)await ChangeSetInitializer.FindEntity(context, entry, cancellationToken);
                 set.Remove(entity);
             }
-            else if (entry.IsUpdateRequest)
+            else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
             {
                 if (entry.IsFullReplaceUpdateRequest)
                 {
