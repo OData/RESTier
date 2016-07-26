@@ -32,7 +32,7 @@ namespace AdventureWorksLTSample.Models
 }
 {% endhighlight %}
 
-Now some testings will show that:
+Then replace the `EntityFrameworkApi<AdventureWorksLT>` in WebApiConfig with `AdventureWorksApi`, Now some testings will show that:
 
 	1. ~/AdventureWorksLT/Products will only get the Product entities whose ProductID is  3,6,9,12,15,... 
 	2. ~/AdventureWorksLT/Products([product id]) will only be able to get a Product entity whose ProductID mod 3 results a zero. 
