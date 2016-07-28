@@ -215,7 +215,7 @@ namespace Microsoft.Restier.Core.Query
 
             // Key segment will have ConstantExpression but $filter will not have ConstantExpression
             var rightExpression = binaryExpression.Right as ConstantExpression;
-            if (rightExpression != null)
+            if (rightExpression != null && rightExpression.Value != null)
             {
                 // This means where statement is key segment but not for $filter
                 throw new ResourceNotFoundException(Resources.ResourceNotFound);

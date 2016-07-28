@@ -252,6 +252,8 @@ namespace Microsoft.OData.Service.Sample.Tests
         [Theory]
         // Filter with no result, them empty collection returned. 
         [InlineData("/People?$filter=LastName eq 'xxx'", 200)]
+        // No result, should return empty collection
+        [InlineData("/People?$filter=LastName eq null", 200)]
         // Filter cause no result returned. 
         [InlineData("/People(1)?$filter=LastName eq 'xxx'", 204)]
         // Single primitive property with null value 
