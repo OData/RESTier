@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Spatial;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -17,6 +18,8 @@ using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework.Properties;
+using Microsoft.Restier.Providers.EntityFramework.Spatial;
+using Microsoft.Spatial;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Submit
 {
@@ -245,6 +248,21 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             if (value is int && type == typeof(long))
             {
                 return Convert.ToInt64(value, CultureInfo.InvariantCulture);
+            }
+
+            if (type == typeof(DbGeography))
+            {
+                var point = value as GeographyPoint;
+                if (point != null)
+                {
+                    return point.ToDbGeography();
+                }
+
+                var s = value as GeographyLineString;
+                if (s != null)
+                {
+                    return s.ToDbGeography();
+                }
             }
 
             return value;
