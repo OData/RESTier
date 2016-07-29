@@ -89,11 +89,13 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sourcer", Scope = "type", Target = "Microsoft.Restier.Core.Query.IQueryExpressionSourcer")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Sourcer", Scope = "type", Target = "Microsoft.Restier.Providers.EntityFramework.Query.QueryExpressionSourcer")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ef", Scope = "member", Target = "Microsoft.Restier.Providers.EntityFramework.ServiceCollectionExtensions.#AddEfProviderServices`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ef", Scope = "member", Target = "Microsoft.Restier.Providers.EntityFramework.Submit.ChangeSetInitializer.#ConvertToEfValue(System.Type,System.Object)")]
 [assembly: SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Etag", Scope = "member", Target = "Microsoft.Restier.Core.Submit.DataModificationItem.#ApplyEtag(System.Linq.IQueryable)")]
 #endregion
 
 #region CA1709 Identifiers case
 [assembly: SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ef", Scope = "member", Target = "Microsoft.Restier.Providers.EntityFramework.ServiceCollectionExtensions.#AddEfProviderServices`1(Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
+[assembly: SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ef", Scope = "member", Target = "Microsoft.Restier.Providers.EntityFramework.Submit.ChangeSetInitializer.#ConvertToEfValue(System.Type,System.Object)")]
 #endregion
 
 #endregion

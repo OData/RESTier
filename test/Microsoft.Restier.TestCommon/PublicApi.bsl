@@ -633,6 +633,16 @@ public sealed class Microsoft.Restier.Providers.EntityFramework.Spatial.Geograph
 	public static Microsoft.Spatial.GeographyPoint ToGeographyPoint (DbGeography geography)
 }
 
+public class Microsoft.Restier.Providers.EntityFramework.Submit.ChangeSetInitializer : IChangeSetInitializer {
+	public ChangeSetInitializer ()
+
+	public virtual object ConvertToEfValue (System.Type type, object value)
+	[
+	AsyncStateMachineAttribute(),
+	]
+	public virtual System.Threading.Tasks.Task InitializeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
+}
+
 public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
 	public RestierBatchChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
 

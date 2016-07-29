@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
     /// </summary>
-    internal class ChangeSetInitializer : IChangeSetInitializer
+    public class ChangeSetInitializer : IChangeSetInitializer
     {
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -84,6 +84,65 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             }
         }
 
+        /// <summary>
+        /// Convert a Edm type value to Entity Framework supported value type
+        /// </summary>
+        /// <param name="type">The type of the property defined in CLR class</param>
+        /// <param name="value">The value from OData deserializer and in type of Edm</param>
+        /// <returns>The converted value object</returns>
+        public virtual object ConvertToEfValue(Type type, object value)
+        {
+            // string[EdmType = Enum] => System.Enum
+            if (TypeHelper.IsEnum(type))
+            {
+                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
+            }
+
+            // Edm.Date => System.DateTime[SqlType = Date]
+            if (value is Date)
+            {
+                var dateValue = (Date)value;
+                return (DateTime)dateValue;
+            }
+
+            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
+            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
+            {
+                var dateTimeOffsetValue = (DateTimeOffset)value;
+                return dateTimeOffsetValue.DateTime;
+            }
+
+            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
+            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
+            {
+                var timeOfDayValue = (TimeOfDay)value;
+                return (TimeSpan)timeOfDayValue;
+            }
+
+            // In case key is long type, when put an entity, key value will be from key parsing which is type of int
+            if (value is int && type == typeof(long))
+            {
+                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
+            }
+
+            if (type == typeof(DbGeography))
+            {
+                var point = value as GeographyPoint;
+                if (point != null)
+                {
+                    return point.ToDbGeography();
+                }
+
+                var s = value as GeographyLineString;
+                if (s != null)
+                {
+                    return s.ToDbGeography();
+                }
+            }
+
+            return value;
+        }
+
         private static async Task<object> FindEntity(
             SubmitContext context,
             DataModificationItem item,
@@ -120,7 +179,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             return etagEntity;
         }
 
-        private static void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)
+        private void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)
         {
             if (item.IsFullReplaceUpdateRequest)
             {
@@ -182,7 +241,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             }
         }
 
-        private static void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
+        private void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
@@ -213,59 +272,6 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
                 propertyInfo.SetValue(instance, value);
             }
-        }
-
-        private static object ConvertToEfValue(Type type, object value)
-        {
-            // string[EdmType = Enum] => System.Enum
-            if (TypeHelper.IsEnum(type))
-            {
-                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
-            }
-
-            // Edm.Date => System.DateTime[SqlType = Date]
-            if (value is Date)
-            {
-                var dateValue = (Date)value;
-                return (DateTime)dateValue;
-            }
-
-            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
-            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
-            {
-                var dateTimeOffsetValue = (DateTimeOffset)value;
-                return dateTimeOffsetValue.DateTime;
-            }
-
-            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
-            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
-            {
-                var timeOfDayValue = (TimeOfDay)value;
-                return (TimeSpan)timeOfDayValue;
-            }
-
-            // In case key is long type, when put an entity, key value will be from key parsing which is type of int
-            if (value is int && type == typeof(long))
-            {
-                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
-            }
-
-            if (type == typeof(DbGeography))
-            {
-                var point = value as GeographyPoint;
-                if (point != null)
-                {
-                    return point.ToDbGeography();
-                }
-
-                var s = value as GeographyLineString;
-                if (s != null)
-                {
-                    return s.ToDbGeography();
-                }
-            }
-
-            return value;
         }
     }
 }
