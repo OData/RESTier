@@ -16,7 +16,7 @@
       <dependency id="Microsoft.Restier.Core" version="[0.6.0]" />
       <dependency id="Microsoft.OData.Core" version="[6.15.0, 7.0.0)" />
       <dependency id="Microsoft.Spatial" version="[6.15.0, 7.0.0)" />
-      <dependency id="Microsoft.AspNet.OData" version="[5.9.0,6.0.0)" />
+      <dependency id="Microsoft.AspNet.OData" version="[5.9.1,6.0.0)" />
     </dependencies>
   </metadata>
 </package>
