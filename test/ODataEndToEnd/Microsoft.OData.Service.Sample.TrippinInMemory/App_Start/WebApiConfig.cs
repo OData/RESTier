@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using Microsoft.OData.Service.Sample.TrippinInMemory.Models;
+using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;
-using Microsoft.Restier.Publishers.OData.Routing;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory
 {

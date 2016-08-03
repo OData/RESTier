@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Extensions;
@@ -13,8 +14,9 @@ using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Batch;
+using Microsoft.Restier.Publishers.OData.Properties;
 
-namespace Microsoft.Restier.Publishers.OData.Routing
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpConfiguration"/>.
@@ -22,6 +24,8 @@ namespace Microsoft.Restier.Publishers.OData.Routing
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions
     {
+        private const string UseVerboseErrorsFlagKey = "Microsoft.Restier.UseVerboseErrorsFlag";
+
         /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
         /// Maps the API routes to the RestierController.
@@ -102,6 +106,47 @@ namespace Microsoft.Restier.Publishers.OData.Routing
         {
             return MapRestierRoute<TApi>(
                 config, routeName, routePrefix, () => new TApi(), batchHandler);
+        }
+
+        /// <summary>
+        /// Gets the UseVerboseErrors flag from the configuration.
+        /// </summary>
+        /// <param name="configuration">The server configuration.</param>
+        /// <returns>The flag of UseVerboseErrors for the configuration.</returns>
+        public static bool GetUseVerboseErrors(this HttpConfiguration configuration)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.ArguementsCannotbeNull, "configuration"));
+            }
+
+            object value;
+            bool useVerboseErrorsFlag = false;
+            if (configuration.Properties.TryGetValue(UseVerboseErrorsFlagKey, out value))
+            {
+                useVerboseErrorsFlag = value is bool ? (bool)value : false;
+            }
+
+            return useVerboseErrorsFlag;
+        }
+
+        /// <summary>
+        /// Sets the UseVerboseErrors flag on the configuration.
+        /// If this is set to true (suggest for debug model only),
+        /// then the whole exception stack will be returned in case there is some error.
+        /// </summary>
+        /// <param name="configuration">The server configuration.</param>
+        /// <param name="useVerboseErrors">The UseVerboseErrors flag for the configuration.</param>
+        public static void SetUseVerboseErrors(this HttpConfiguration configuration, bool useVerboseErrors)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.ArguementsCannotbeNull, "configuration"));
+            }
+
+            configuration.Properties[useVerboseErrors] = useVerboseErrors;
         }
 
         /// <summary>

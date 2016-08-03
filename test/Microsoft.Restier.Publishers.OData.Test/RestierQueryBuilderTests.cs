@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.Publishers.OData.Test

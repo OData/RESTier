@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 #if !EF7
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;

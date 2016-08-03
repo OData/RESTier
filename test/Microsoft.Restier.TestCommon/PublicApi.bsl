@@ -578,6 +578,32 @@ public class Microsoft.Restier.Providers.EntityFramework.EntityFrameworkApi`1 : 
 }
 
 [
+EditorBrowsableAttribute(),
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.Publishers.OData.HttpConfigurationExtensions {
+	[
+	ExtensionAttribute(),
+	]
+	public static bool GetUseVerboseErrors (System.Web.Http.HttpConfiguration configuration)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler batchHandler)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler batchHandler)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static void SetUseVerboseErrors (System.Web.Http.HttpConfiguration configuration, bool useVerboseErrors)
+}
+
+[
 ExtensionAttribute(),
 ]
 public sealed class Microsoft.Restier.Publishers.OData.ServiceCollectionExtensions {
@@ -736,21 +762,5 @@ public sealed class Microsoft.Restier.Publishers.OData.Model.OperationAttribute 
 	bool IsComposable  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Name  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Namespace  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-}
-
-[
-EditorBrowsableAttribute(),
-ExtensionAttribute(),
-]
-public sealed class Microsoft.Restier.Publishers.OData.Routing.HttpConfigurationExtensions {
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler batchHandler)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler batchHandler)
 }
 

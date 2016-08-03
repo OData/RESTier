@@ -61,6 +61,15 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The argument with name {0} cannot be null..
+        /// </summary>
+        internal static string ArguementsCannotbeNull {
+            get {
+                return ResourceManager.GetString("ArguementsCannotbeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RestierBatchHandler was called without an ApiContext Factory..
         /// </summary>
         internal static string BatchHandlerRequiresApiContextFactory {

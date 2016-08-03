@@ -7,7 +7,6 @@ using System.Web.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.Publishers.OData.Test
