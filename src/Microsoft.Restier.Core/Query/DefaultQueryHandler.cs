@@ -9,7 +9,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Query

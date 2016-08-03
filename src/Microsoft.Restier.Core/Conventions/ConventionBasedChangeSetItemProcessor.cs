@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Core.Conventions
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
                     }
 
-                    return operationName + suffix + dataModification.EntitySetName;
+                    return operationName + suffix + dataModification.ResourceSetName;
 
                 default:
                     throw new InvalidOperationException(string.Format(
@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Core.Conventions
             {
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
-                    return new object[] { dataModification.Entity };
+                    return new object[] { dataModification.Resource };
 
                 default:
                     throw new InvalidOperationException(string.Format(

@@ -129,7 +129,7 @@
     <Compile Include="Results\BaseResult.cs" />
     <Compile Include="Routing\RestierRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
-    <Compile Include="..\Shared\SharedResources\SharedResources.WebApi.Designer.cs">
+    <Compile Include="..\Shared\SharedResources\SharedResources.OData.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SharedResources.resx</DependentUpon>

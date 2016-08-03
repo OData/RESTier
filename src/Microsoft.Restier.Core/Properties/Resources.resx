@@ -216,4 +216,7 @@
   <data name="ResourceNotFound" xml:space="preserve">
     <value>The request resource is not found.</value>
   </data>
+  <data name="PreconditionCheckFailed" xml:space="preserve">
+    <value>The precondition check for request {0} on resource {1} is failed.</value>
+  </data>
 </root>

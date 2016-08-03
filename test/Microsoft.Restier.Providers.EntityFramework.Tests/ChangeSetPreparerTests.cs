@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
             // Act
             var changeSetPreparer = libraryApi.Context.Configuration.GetApiService<IChangeSetInitializer>();
             await changeSetPreparer.InitializeAsync(sc, CancellationToken.None);
-            var person = item.Entity as Person;
+            var person = item.Resource as Person;
 
             // Assert
             Assert.NotNull(person);

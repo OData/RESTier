@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,8 +17,8 @@ namespace Microsoft.Restier.Core.Operation
         private readonly string operationName;
         private readonly Func<string, object> getParameterValueFunc;
         private readonly bool isFunction;
-        private readonly IQueryable bindingParameterValue;
-        private ICollection<object> parametersValue;
+        private readonly IEnumerable bindingParameterValue;
+        private ICollection<object> parameterValues;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationContext" /> class.
@@ -42,7 +43,7 @@ namespace Microsoft.Restier.Core.Operation
             Func<string, object> getParameterValueFunc,
             string operationName,
             bool isFunction,
-            IQueryable bindingParameterValue)
+            IEnumerable bindingParameterValue)
             : base(apiContext)
         {
             this.getParameterValueFunc = getParameterValueFunc;
@@ -88,7 +89,7 @@ namespace Microsoft.Restier.Core.Operation
         /// Gets the queryable for binding parameter value,
         /// and if it is function/action import, the value will be null.
         /// </summary>
-        public IQueryable BindingParameterValue
+        public IEnumerable BindingParameterValue
         {
             get
             {
@@ -100,16 +101,16 @@ namespace Microsoft.Restier.Core.Operation
         /// Gets or sets the parameters value array used by method,
         /// It is only set after parameters are prepared.
         /// </summary>
-        public ICollection<object> ParametersValue
+        public ICollection<object> ParameterValues
         {
             get
             {
-                return this.parametersValue;
+                return this.parameterValues;
             }
 
             set
             {
-                this.parametersValue = value;
+                this.parameterValues = value;
             }
         }
     }

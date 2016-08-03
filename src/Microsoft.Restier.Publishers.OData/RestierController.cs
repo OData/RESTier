@@ -21,7 +21,6 @@ using System.Web.OData.Routing;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -184,7 +183,7 @@ namespace Microsoft.Restier.Publishers.OData
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            return this.CreateCreatedODataResult(postItem.Entity);
+            return this.CreateCreatedODataResult(postItem.Resource);
         }
 
         /// <summary>
@@ -426,7 +425,7 @@ namespace Microsoft.Restier.Publishers.OData
                 await changeSetProperty.OnChangeSetCompleted();
             }
 
-            return this.CreateUpdatedODataResult(updateItem.Entity);
+            return this.CreateUpdatedODataResult(updateItem.Resource);
         }
 
         private HttpResponseMessage CreateQueryResponse(

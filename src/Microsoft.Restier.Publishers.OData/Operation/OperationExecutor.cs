@@ -13,9 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
-using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
+using Microsoft.Restier.Publishers.OData.Formatter;
 using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Operation
@@ -76,7 +75,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
                 parameters[paraIndex] = convertedValue;
             }
 
-            context.ParametersValue = parameters;
+            context.ParameterValues = parameters;
 
             // Invoke preprocessing on the operation execution
             PerformPreEvent(context, cancellationToken);
@@ -88,7 +87,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             return result;
         }
 
-        private static object PrepareBindingParameter(Type bindingType, IQueryable bindingParameterValue)
+        private static object PrepareBindingParameter(Type bindingType, IEnumerable bindingParameterValue)
         {
             var enumerableType = bindingType.FindGenericType(typeof(IEnumerable<>));
 

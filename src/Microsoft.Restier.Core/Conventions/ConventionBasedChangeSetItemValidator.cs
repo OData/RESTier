@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Core.Conventions
             DataModificationItem dataModificationItem = item as DataModificationItem;
             if (dataModificationItem != null)
             {
-                object entity = dataModificationItem.Entity;
+                object entity = dataModificationItem.Resource;
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 PropertyDescriptorCollection properties =

@@ -3,13 +3,13 @@
 
 using System;
 
-namespace Microsoft.Restier.Core.Exceptions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// This exception is used for 404 Not found response.
     /// </summary>
     [Serializable]
-    public class ResourceNotFoundException : System.Exception
+    public class ResourceNotFoundException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the ResourceNotFoundException class.

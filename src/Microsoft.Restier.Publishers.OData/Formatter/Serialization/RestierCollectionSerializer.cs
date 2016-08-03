@@ -6,7 +6,7 @@ using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Publishers.OData.Results;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The serializer for collection result.

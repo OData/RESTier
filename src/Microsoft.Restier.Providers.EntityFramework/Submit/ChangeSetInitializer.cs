@@ -14,11 +14,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework.Properties;
-using Microsoft.Restier.Providers.EntityFramework.Spatial;
 using Microsoft.Spatial;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Submit
@@ -42,50 +40,50 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
-                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
-                Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
+                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
+                Type resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
                 // This means request entity is sub type of entity type
-                if (entry.ActualEntityType != null && entityType != entry.ActualEntityType)
+                if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
                 {
-                    entityType = entry.ActualEntityType;
+                    resourceType = entry.ActualResourceType;
                 }
 
-                DbSet set = dbContext.Set(entityType);
+                DbSet set = dbContext.Set(resourceType);
 
-                object entity;
+                object resource;
 
                 if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
                 {
-                    entity = set.Create();
+                    resource = set.Create();
 
-                    SetValues(entity, entityType, entry.LocalValues);
+                    SetValues(resource, resourceType, entry.LocalValues);
 
-                    set.Add(entity);
+                    set.Add(resource);
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
                 {
-                    entity = await FindEntity(context, entry, cancellationToken);
-                    set.Remove(entity);
+                    resource = await FindEntity(context, entry, cancellationToken);
+                    set.Remove(resource);
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
                 {
-                    entity = await FindEntity(context, entry, cancellationToken);
+                    resource = await FindEntity(context, entry, cancellationToken);
 
-                    DbEntityEntry dbEntry = dbContext.Entry(entity);
-                    SetValues(dbEntry, entry, entityType);
+                    DbEntityEntry dbEntry = dbContext.Entry(resource);
+                    SetValues(dbEntry, entry, resourceType);
                 }
                 else
                 {
                     throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                 }
 
-                entry.Entity = entity;
+                entry.Resource = resource;
             }
         }
 
         /// <summary>
-        /// Convert a Edm type value to Entity Framework supported value type
+        /// Convert a Edm type value to Resource Framework supported value type
         /// </summary>
         /// <param name="type">The type of the property defined in CLR class</param>
         /// <param name="value">The value from OData deserializer and in type of Edm</param>
@@ -148,7 +146,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.GetQueryableSource(item.EntitySetName);
+            IQueryable query = context.ApiContext.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
             QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
@@ -165,17 +163,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 return entity;
             }
 
-            var etagEntity = item.ApplyEtag(result.Results.AsQueryable()).SingleOrDefault();
-            if (etagEntity == null)
-            {
-                // If ETAG does not match, should return 412 Precondition Failed
-                var message = string.Format(
-                    CultureInfo.InvariantCulture,
-                    Resources.PreconditionCheckFailed,
-                    new object[] { item.DataModificationItemAction, entity });
-                throw new PreconditionFailedException(message);
-            }
-
+            var etagEntity = item.ValidateEtag(result.Results.AsQueryable());
             return etagEntity;
         }
 

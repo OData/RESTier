@@ -41,6 +41,9 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\EnumerableExtensions.cs">
+      <Link>Shared\EnumerableExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\ExpressionHelperMethods.cs">
       <Link>Shared\ExpressionHelperMethods.cs</Link>
     </Compile>
@@ -49,6 +52,11 @@
     </Compile>
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
+    </Compile>
+	<Compile Include="..\Shared\SharedResources\SharedResources.Core.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SharedResources.resx</DependentUpon>
     </Compile>
     <Compile Include="ApiConfiguratorAttributes.cs" />
     <Compile Include="Conventions\ConventionBasedOperationProcessor.cs" />

@@ -4,7 +4,7 @@
 using System.Web.OData.Formatter.Deserialization;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The default deserializer provider.

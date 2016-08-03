@@ -66,9 +66,9 @@ namespace Microsoft.Restier.Core.Conventions
             string methodName = ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
                     methodNameSuffix + context.OperationName;
             object[] parameters = null;
-            if (context.ParametersValue != null)
+            if (context.ParameterValues != null)
             {
-                context.ParametersValue.ToArray();
+                context.ParameterValues.ToArray();
             }
 
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);

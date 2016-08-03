@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     /// <remarks>
     /// This is required because during the post-CUD events, the EntityState has been lost.
-    /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
+    /// This enum allows the API to remember which pre-CUD event was raised for the Resource.
     /// </remarks>
     public enum DataModificationItemAction
     {
@@ -127,13 +128,13 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Initializes a new instance of the <see cref="DataModificationItem" /> class.
         /// </summary>
-        /// <param name="entitySetName">
+        /// <param name="resourceSetName">
         /// The name of the entity set in question.
         /// </param>
-        /// <param name="expectedEntityType">
+        /// <param name="expectedResourceType">
         /// The type of the expected entity type in question.
         /// </param>
-        /// <param name="actualEntityType">
+        /// <param name="actualResourceType">
         /// The type of the actual entity type in question.
         /// </param>
         /// <param name="action">
@@ -149,20 +150,20 @@ namespace Microsoft.Restier.Core.Submit
         /// The local values of the entity.
         /// </param>
         public DataModificationItem(
-            string entitySetName,
-            Type expectedEntityType,
-            Type actualEntityType,
+            string resourceSetName,
+            Type expectedResourceType,
+            Type actualResourceType,
             DataModificationItemAction action,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
             : base(ChangeSetItemType.DataModification)
         {
-            Ensure.NotNull(entitySetName, "entitySetName");
-            Ensure.NotNull(expectedEntityType, "expectedEntityType");
-            this.EntitySetName = entitySetName;
-            this.ExpectedEntityType = expectedEntityType;
-            this.ActualEntityType = actualEntityType;
+            Ensure.NotNull(resourceSetName, "resourceSetName");
+            Ensure.NotNull(expectedResourceType, "expectedResourceType");
+            this.ResourceSetName = resourceSetName;
+            this.ExpectedEntityType = expectedResourceType;
+            this.ActualResourceType = actualResourceType;
             this.EntityKey = entityKey;
             this.OriginalValues = originalValues;
             this.LocalValues = localValues;
@@ -172,7 +173,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets the name of the entity set in question.
         /// </summary>
-        public string EntitySetName { get; private set; }
+        public string ResourceSetName { get; private set; }
 
         /// <summary>
         /// Gets the name of the expected entity type in question.
@@ -183,7 +184,7 @@ namespace Microsoft.Restier.Core.Submit
         /// Gets the name of the actual entity type in question.
         /// In type inheritance case, this is different from expectedEntityType
         /// </summary>
-        public Type ActualEntityType { get; private set; }
+        public Type ActualResourceType { get; private set; }
 
         /// <summary>
         /// Gets the key of the entity being modified.
@@ -205,13 +206,13 @@ namespace Microsoft.Restier.Core.Submit
         public bool IsFullReplaceUpdateRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity object in question.
+        /// Gets or sets the resource object in question.
         /// </summary>
         /// <remarks>
         /// Initially this will be <c>null</c>, however after the change
         /// set has been prepared it will represent the pending entity.
         /// </remarks>
-        public object Entity { get; set; }
+        public object Resource { get; set; }
 
         /// <summary>
         /// Gets the original values for properties that have changed.
@@ -288,14 +289,14 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Applies the current DataModificationItem's OriginalValues to the
-        /// specified query and returns the new query.
+        /// Validate the e-tag via applies the current DataModificationItem's OriginalValues to the
+        /// specified query and returns result.
         /// </summary>
         /// <param name="query">The IQueryable to apply the property values to.</param>
         /// <returns>
-        /// The new IQueryable with the property values applied to it in a Where condition.
+        /// The object is e-tag checked passed.
         /// </returns>
-        public IQueryable ApplyEtag(IQueryable query)
+        public object ValidateEtag(IQueryable query)
         {
             Ensure.NotNull(query, "query");
             Type type = query.ElementType;
@@ -319,7 +320,20 @@ namespace Microsoft.Restier.Core.Submit
             }
 
             LambdaExpression whereLambda = Expression.Lambda(where, param);
-            return ExpressionHelpers.Where(query, whereLambda, type);
+            var queryable = ExpressionHelpers.Where(query, whereLambda, type);
+
+            var etagEntity = queryable.SingleOrDefault();
+            if (etagEntity == null)
+            {
+                // If ETAG does not match, should return 412 Precondition Failed
+                var message = string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.PreconditionCheckFailed,
+                    new object[] { this.DataModificationItemAction, query.SingleOrDefault() });
+                throw new PreconditionFailedException(message);
+            }
+
+            return etagEntity;
         }
 
         private static Expression ApplyPredicate(
@@ -355,14 +369,14 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Initializes a new instance of the <see cref="DataModificationItem{T}" /> class.
         /// </summary>
-        /// <param name="entitySetName">
-        /// The name of the entity set in question.
+        /// <param name="resourceSetName">
+        /// The name of the resource set in question.
         /// </param>
-        /// <param name="expectedEntityType">
-        /// The type of the expected entity type in question.
+        /// <param name="expectedResourceType">
+        /// The type of the expected resource type in question.
         /// </param>
-        /// <param name="actualEntityType">
-        /// The type of the actual entity type in question.
+        /// <param name="actualResourceType">
+        /// The type of the actual resource type in question.
         /// </param>
         /// <param name="action">
         /// The DataModificationItemAction for the request.
@@ -377,14 +391,21 @@ namespace Microsoft.Restier.Core.Submit
         /// The local values of the entity.
         /// </param>
         public DataModificationItem(
-            string entitySetName,
-            Type expectedEntityType,
-            Type actualEntityType,
+            string resourceSetName,
+            Type expectedResourceType,
+            Type actualResourceType,
             DataModificationItemAction action,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
-            : base(entitySetName, expectedEntityType, actualEntityType, action, entityKey, originalValues, localValues)
+            : base(
+                  resourceSetName,
+                  expectedResourceType,
+                  actualResourceType,
+                  action,
+                  entityKey,
+                  originalValues,
+                  localValues)
         {
         }
 
@@ -395,16 +416,16 @@ namespace Microsoft.Restier.Core.Submit
         /// Initially this will be <c>null</c>, however after the change
         /// set has been prepared it will represent the pending entity.
         /// </remarks>
-        public new T Entity
+        public new T Resource
         {
             get
             {
-                return base.Entity as T;
+                return base.Resource as T;
             }
 
             set
             {
-                base.Entity = value;
+                base.Resource = value;
             }
         }
     }

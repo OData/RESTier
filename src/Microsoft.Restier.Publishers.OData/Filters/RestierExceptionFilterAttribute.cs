@@ -15,9 +15,8 @@ using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
 using Microsoft.OData.Core;
-using Microsoft.Restier.Core.Exceptions;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Publishers.OData.Query;
 using Net::System.Net.Http.Formatting;
 
 namespace Microsoft.Restier.Publishers.OData.Filters

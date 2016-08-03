@@ -49,10 +49,10 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
 
 #if EF7
             var dbContext = context.ApiContext.GetApiService<DbContext>();
-            context.EntitySetTypeMap = dbContext.GetType().GetProperties()
+            context.ResourceSetTypeMap = dbContext.GetType().GetProperties()
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);
-            context.EntityTypeKeyPropertiesMap = dbContext.Model.GetEntityTypes().ToDictionary(
+            context.ResourceTypeKeyPropertiesMap = dbContext.Model.GetEntityTypes().ToDictionary(
                 e => e.ClrType,
                 e => ((ICollection<PropertyInfo>)
                     e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
@@ -83,8 +83,8 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
                 entityTypeKeyPropertiesMap.Add(clrType, keyProperties);
             }
 
-            context.EntitySetTypeMap = entitySetTypeMap;
-            context.EntityTypeKeyPropertiesMap = entityTypeKeyPropertiesMap;
+            context.ResourceSetTypeMap = entitySetTypeMap;
+            context.ResourceTypeKeyPropertiesMap = entityTypeKeyPropertiesMap;
 #endif
             if (InnerModelBuilder != null)
             {

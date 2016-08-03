@@ -9,7 +9,7 @@ using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// Get clr type from payload.

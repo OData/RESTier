@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Core.Submit
                         throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                     }
 
-                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
+                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.ResourceSetName);
 
                 default:
                     throw new InvalidOperationException(string.Format(

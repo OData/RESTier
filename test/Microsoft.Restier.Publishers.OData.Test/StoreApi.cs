@@ -176,7 +176,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             var dataModificationEntry = changeSetEntry as DataModificationItem;
             if (dataModificationEntry != null)
             {
-                dataModificationEntry.Entity = new Product()
+                dataModificationEntry.Resource = new Product()
                 {
                     Name = "var1",
                     Addr = new Address()

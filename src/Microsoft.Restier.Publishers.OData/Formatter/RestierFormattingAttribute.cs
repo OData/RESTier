@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Controllers;
 using System.Web.OData.Formatter;
-using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
-using Microsoft.Restier.Publishers.OData.Formatter.Serialization;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {

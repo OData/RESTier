@@ -8,7 +8,7 @@ using System.Text;
 using Microsoft.Restier.Providers.EntityFramework.Properties;
 using Microsoft.Spatial;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Spatial
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// The class defined conversion between GeographyPoint and DbGeography,

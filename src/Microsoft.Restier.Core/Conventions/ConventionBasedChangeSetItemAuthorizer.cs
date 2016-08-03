@@ -93,7 +93,7 @@ namespace Microsoft.Restier.Core.Conventions
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
-                    return operationName + dataModification.EntitySetName;
+                    return operationName + dataModification.ResourceSetName;
 
                 default:
                     throw new InvalidOperationException(string.Format(

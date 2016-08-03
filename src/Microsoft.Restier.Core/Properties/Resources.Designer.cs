@@ -277,6 +277,15 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The precondition check for request {0} on resource {1} is failed..
+        /// </summary>
+        internal static string PreconditionCheckFailed {
+            get {
+                return ResourceManager.GetString("PreconditionCheckFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processor cannot change the expression type..
         /// </summary>
         internal static string ProcessorCannotChangeExpressionType {

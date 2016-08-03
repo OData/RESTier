@@ -3,13 +3,13 @@
 
 using System;
 
-namespace Microsoft.Restier.Core.Exceptions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// This exception is used for 412 Precondition Failed response.
     /// </summary>
     [Serializable]
-    public class PreconditionFailedException : System.Exception
+    public class PreconditionFailedException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the PreconditionFailedException class.

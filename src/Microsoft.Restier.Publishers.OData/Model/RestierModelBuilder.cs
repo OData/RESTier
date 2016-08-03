@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 innerModel = await InnerModelBuilder.GetModelAsync(context, cancellationToken);
             }
 
-            var entitySetTypeMap = context.EntitySetTypeMap;
+            var entitySetTypeMap = context.ResourceSetTypeMap;
             if (entitySetTypeMap == null || entitySetTypeMap.Count == 0)
             {
                 return innerModel;
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             entitySetTypeMap.Clear();
 
-            var entityTypeKeyPropertiesMap = context.EntityTypeKeyPropertiesMap;
+            var entityTypeKeyPropertiesMap = context.ResourceTypeKeyPropertiesMap;
             if (entityTypeKeyPropertiesMap != null)
             {
                 foreach (var pair in entityTypeKeyPropertiesMap)
