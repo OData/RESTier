@@ -3,11 +3,12 @@
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
 {
-    public enum Feature
+    public class City
     {
-        Feature1,
-        Feature2,
-        Feature3,
-        Feature4
+        public string Name { get; set; }
+
+        public string CountryRegion { get; set; }
+
+        public string Region { get; set; }
     }
 }
