@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {

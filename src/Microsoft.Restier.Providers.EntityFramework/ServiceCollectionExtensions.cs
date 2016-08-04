@@ -12,9 +12,6 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Providers.EntityFramework.Model;
-using Microsoft.Restier.Providers.EntityFramework.Query;
-using Microsoft.Restier.Providers.EntityFramework.Submit;
 
 namespace Microsoft.Restier.Providers.EntityFramework
 {

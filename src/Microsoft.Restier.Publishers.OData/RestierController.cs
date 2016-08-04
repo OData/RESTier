@@ -26,9 +26,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Batch;
 using Microsoft.Restier.Publishers.OData.Formatter;
-using Microsoft.Restier.Publishers.OData.Properties;
 using Microsoft.Restier.Publishers.OData.Query;
-using Microsoft.Restier.Publishers.OData.Results;
 
 // This is a must for creating response with correct extension method
 using Net::System.Net.Http;

@@ -7,8 +7,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core.Conventions;
-using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 

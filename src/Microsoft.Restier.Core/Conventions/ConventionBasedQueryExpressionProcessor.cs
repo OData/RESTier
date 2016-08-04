@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A convention-based query expression processor which will apply OnFilter logic into query expression.

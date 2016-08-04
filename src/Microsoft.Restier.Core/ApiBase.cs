@@ -4,9 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core.Conventions;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {

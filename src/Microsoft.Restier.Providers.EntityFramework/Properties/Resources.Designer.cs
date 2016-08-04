@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Restier.Providers.EntityFramework.Properties {
+namespace Microsoft.Restier.Providers.EntityFramework {
     using System;
     
     

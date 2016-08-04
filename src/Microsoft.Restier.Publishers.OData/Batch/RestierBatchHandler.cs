@@ -11,7 +11,6 @@ using System.Web.Http.Batch;
 using System.Web.OData.Batch;
 using Microsoft.OData.Core;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Batch
 {

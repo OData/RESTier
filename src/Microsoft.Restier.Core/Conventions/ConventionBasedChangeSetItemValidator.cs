@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 using DataAnnotations = System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A convention-based change set item validator.
@@ -31,14 +31,14 @@ namespace Microsoft.Restier.Core.Conventions
             DataModificationItem dataModificationItem = item as DataModificationItem;
             if (dataModificationItem != null)
             {
-                object entity = dataModificationItem.Resource;
+                object resource = dataModificationItem.Resource;
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 PropertyDescriptorCollection properties =
-                    new DataAnnotations.AssociatedMetadataTypeTypeDescriptionProvider(entity.GetType())
-                    .GetTypeDescriptor(entity).GetProperties();
+                    new DataAnnotations.AssociatedMetadataTypeTypeDescriptionProvider(resource.GetType())
+                    .GetTypeDescriptor(resource).GetProperties();
 
-                DataAnnotations.ValidationContext validationContext = new DataAnnotations.ValidationContext(entity);
+                DataAnnotations.ValidationContext validationContext = new DataAnnotations.ValidationContext(resource);
 
                 foreach (PropertyDescriptor property in properties)
                 {
@@ -48,7 +48,7 @@ namespace Microsoft.Restier.Core.Conventions
                         property.Attributes.OfType<DataAnnotations.ValidationAttribute>();
                     foreach (DataAnnotations.ValidationAttribute validationAttribute in validationAttributes)
                     {
-                        object value = property.GetValue(entity);
+                        object value = property.GetValue(resource);
                         DataAnnotations.ValidationResult validationResult =
                             validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != DataAnnotations.ValidationResult.Success)
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core.Conventions
                                 Id = validationAttribute.GetType().FullName,
                                 Message = validationResult.ErrorMessage,
                                 Severity = EventLevel.Error,
-                                Target = entity,
+                                Target = resource,
                                 PropertyName = property.Name
                             });
                         }

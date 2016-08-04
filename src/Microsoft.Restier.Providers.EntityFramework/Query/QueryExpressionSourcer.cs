@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Query
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// Represents a query expression sourcer that uses a DbContext.
@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Query
 
             if (context.ModelReference.EntitySet == null)
             {
-                // EF provider can only source *EntitySet*.
+                // EF provider can only source *ResourceSet*.
                 return null;
             }
 

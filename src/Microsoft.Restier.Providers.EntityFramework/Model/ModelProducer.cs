@@ -19,7 +19,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Model
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// Represents a model producer that uses the
@@ -56,8 +56,8 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
                 e => ((ICollection<PropertyInfo>)
                     e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
 #else
-            var entitySetTypeMap = new Dictionary<string, Type>();
-            var entityTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
+            var resourceSetTypeMap = new Dictionary<string, Type>();
+            var resourceTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
             var dbContext = context.ApiContext.GetApiService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
@@ -71,7 +71,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
                 Type clrType = itemCollection.GetClrType(objectSpaceType);
 
                 // As entity set name and type map
-                entitySetTypeMap.Add(efEntitySet.Name, clrType);
+                resourceSetTypeMap.Add(efEntitySet.Name, clrType);
 
                 ICollection<PropertyInfo> keyProperties = new List<PropertyInfo>();
                 foreach (var property in efEntityType.KeyProperties)
@@ -79,11 +79,11 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
                     keyProperties.Add(clrType.GetProperty(property.Name));
                 }
 
-                entityTypeKeyPropertiesMap.Add(clrType, keyProperties);
+                resourceTypeKeyPropertiesMap.Add(clrType, keyProperties);
             }
 
-            context.ResourceSetTypeMap = entitySetTypeMap;
-            context.ResourceTypeKeyPropertiesMap = entityTypeKeyPropertiesMap;
+            context.ResourceSetTypeMap = resourceSetTypeMap;
+            context.ResourceTypeKeyPropertiesMap = resourceTypeKeyPropertiesMap;
 #endif
             if (InnerModelBuilder != null)
             {

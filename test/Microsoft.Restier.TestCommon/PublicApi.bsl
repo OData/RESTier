@@ -491,16 +491,16 @@ public class Microsoft.Restier.Core.Submit.ChangeSetValidationException : System
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Restier.Core.Submit.ChangeSetItem {
-	public DataModificationItem (string resourceSetName, System.Type expectedResourceType, System.Type actualResourceType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
+	public DataModificationItem (string resourceSetName, System.Type expectedResourceType, System.Type actualResourceType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] resourceKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
 
 	System.Type ActualResourceType  { [CompilerGeneratedAttribute(),]public get; }
 	Microsoft.Restier.Core.Submit.DataModificationItemAction DataModificationItemAction  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] EntityKey  { [CompilerGeneratedAttribute(),]public get; }
-	System.Type ExpectedEntityType  { [CompilerGeneratedAttribute(),]public get; }
+	System.Type ExpectedResourceType  { [CompilerGeneratedAttribute(),]public get; }
 	bool IsFullReplaceUpdateRequest  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] LocalValues  { [CompilerGeneratedAttribute(),]public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] OriginalValues  { [CompilerGeneratedAttribute(),]public get; }
 	object Resource  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] ResourceKey  { [CompilerGeneratedAttribute(),]public get; }
 	string ResourceSetName  { [CompilerGeneratedAttribute(),]public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] ServerValues  { [CompilerGeneratedAttribute(),]public get; }
 
@@ -509,7 +509,7 @@ public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Rest
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem`1 : Microsoft.Restier.Core.Submit.DataModificationItem {
-	public DataModificationItem`1 (string resourceSetName, System.Type expectedResourceType, System.Type actualResourceType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
+	public DataModificationItem`1 (string resourceSetName, System.Type expectedResourceType, System.Type actualResourceType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] resourceKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
 
 	T Resource  { public get; public set; }
 }
@@ -564,6 +564,16 @@ public sealed class Microsoft.Restier.Providers.EntityFramework.ServiceCollectio
 	ExtensionAttribute(),
 	]
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddEfProviderServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+}
+
+public class Microsoft.Restier.Providers.EntityFramework.ChangeSetInitializer : IChangeSetInitializer {
+	public ChangeSetInitializer ()
+
+	public virtual object ConvertToEfValue (System.Type type, object value)
+	[
+	AsyncStateMachineAttribute(),
+	]
+	public virtual System.Threading.Tasks.Task InitializeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
 }
 
 public class Microsoft.Restier.Providers.EntityFramework.EntityFrameworkApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
@@ -657,16 +667,6 @@ public class Microsoft.Restier.Publishers.OData.RestierPayloadValueConverter : M
 	public RestierPayloadValueConverter ()
 
 	public virtual object ConvertToPayloadValue (object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
-}
-
-public class Microsoft.Restier.Providers.EntityFramework.Submit.ChangeSetInitializer : IChangeSetInitializer {
-	public ChangeSetInitializer ()
-
-	public virtual object ConvertToEfValue (System.Type type, object value)
-	[
-	AsyncStateMachineAttribute(),
-	]
-	public virtual System.Threading.Tasks.Task InitializeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
 }
 
 public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {

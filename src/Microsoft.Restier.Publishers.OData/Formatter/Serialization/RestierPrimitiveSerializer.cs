@@ -6,7 +6,6 @@ using System.Web.OData.Formatter.Serialization;
 using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Publishers.OData.Results;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {

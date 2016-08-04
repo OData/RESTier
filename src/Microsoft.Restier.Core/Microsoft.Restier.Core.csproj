@@ -53,7 +53,7 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-	<Compile Include="..\Shared\SharedResources\SharedResources.Core.Designer.cs">
+    <Compile Include="..\Shared\SharedResources\SharedResources.Core.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SharedResources.resx</DependentUpon>

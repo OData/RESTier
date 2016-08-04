@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 

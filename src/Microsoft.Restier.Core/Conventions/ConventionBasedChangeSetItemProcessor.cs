@@ -8,10 +8,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A convention-based change set item processor which calls logic like OnInserting and OnInserted.

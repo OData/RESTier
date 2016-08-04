@@ -16,10 +16,9 @@ using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Providers.EntityFramework.Properties;
 using Microsoft.Spatial;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Submit
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
@@ -43,7 +42,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 object strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
                 Type resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
-                // This means request entity is sub type of entity type
+                // This means request resource is sub type of resource type
                 if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
                 {
                     resourceType = entry.ActualResourceType;
@@ -63,12 +62,12 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
                 {
-                    resource = await FindEntity(context, entry, cancellationToken);
+                    resource = await FindResource(context, entry, cancellationToken);
                     set.Remove(resource);
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
                 {
-                    resource = await FindEntity(context, entry, cancellationToken);
+                    resource = await FindResource(context, entry, cancellationToken);
 
                     DbEntityEntry dbEntry = dbContext.Entry(resource);
                     SetValues(dbEntry, entry, resourceType);
@@ -117,7 +116,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 return (TimeSpan)timeOfDayValue;
             }
 
-            // In case key is long type, when put an entity, key value will be from key parsing which is type of int
+            // In case key is long type, when put an resource, key value will be from key parsing which is type of int
             if (value is int && type == typeof(long))
             {
                 return Convert.ToInt64(value, CultureInfo.InvariantCulture);
@@ -141,7 +140,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             return value;
         }
 
-        private static async Task<object> FindEntity(
+        private static async Task<object> FindResource(
             SubmitContext context,
             DataModificationItem item,
             CancellationToken cancellationToken)
@@ -151,8 +150,8 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
             QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
 
-            object entity = result.Results.SingleOrDefault();
-            if (entity == null)
+            object resource = result.Results.SingleOrDefault();
+            if (resource == null)
             {
                 throw new ResourceNotFoundException(Resources.ResourceNotFound);
             }
@@ -160,14 +159,14 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             // This means no If-Match or If-None-Match header
             if (item.OriginalValues == null || item.OriginalValues.Count == 0)
             {
-                return entity;
+                return resource;
             }
 
-            var etagEntity = item.ValidateEtag(result.Results.AsQueryable());
-            return etagEntity;
+            resource = item.ValidateEtag(result.Results.AsQueryable());
+            return resource;
         }
 
-        private void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)
+        private void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type resourceType)
         {
             if (item.IsFullReplaceUpdateRequest)
             {
@@ -177,10 +176,10 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 //  - Copy over the key values and set any updated values from the client on the new instance.
                 //  - Then apply all the properties of the new instance to the instance to be updated.
                 //    This will set any unspecified properties to their default value.
-                object newInstance = Activator.CreateInstance(entityType);
+                object newInstance = Activator.CreateInstance(resourceType);
 
-                SetValues(newInstance, entityType, item.EntityKey);
-                SetValues(newInstance, entityType, item.LocalValues);
+                SetValues(newInstance, resourceType, item.ResourceKey);
+                SetValues(newInstance, resourceType, item.LocalValues);
 
                 dbEntry.CurrentValues.SetValues(newInstance);
             }

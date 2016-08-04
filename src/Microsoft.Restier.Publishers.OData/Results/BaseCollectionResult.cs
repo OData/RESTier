@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publishers.OData.Results
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Represents a collection of objects being returned from an action.

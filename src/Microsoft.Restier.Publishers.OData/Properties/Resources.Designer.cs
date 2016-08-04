@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Restier.Publishers.OData.Properties {
+namespace Microsoft.Restier.Publishers.OData {
     using System;
     
     

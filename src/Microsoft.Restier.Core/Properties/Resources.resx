@@ -135,11 +135,11 @@
   <data name="DataModificationMustBeCUD" xml:space="preserve">
     <value>A DataModification must be either: IsNew, IsUpdate, or IsDelete.</value>
   </data>
-  <data name="DataModificationNotSupportCreateEntity" xml:space="preserve">
-    <value>"DataModificationItem.ApplyTo cannot be called on an IsNew item.</value>
+  <data name="DataModificationNotSupportCreateResource" xml:space="preserve">
+    <value>"DataModificationItem.ApplyTo cannot be called on an new resource.</value>
   </data>
-  <data name="DataModificationRequiresEntityKey" xml:space="preserve">
-    <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
+  <data name="DataModificationRequiresResourceKey" xml:space="preserve">
+    <value>There should have been at least one predicate applied to the query from the resource key.  Ensure there is at least one resource key.</value>
   </data>
   <data name="DoNotCallDataSourceStubMethodDirectly" xml:space="preserve">
     <value>Do not call the methods in 'DataSourceStub' directly.</value>

@@ -5,7 +5,6 @@ using System;
 using System.Data.Entity.Spatial;
 using System.Globalization;
 using System.Text;
-using Microsoft.Restier.Providers.EntityFramework.Properties;
 using Microsoft.Spatial;
 
 namespace Microsoft.Restier.Providers.EntityFramework
