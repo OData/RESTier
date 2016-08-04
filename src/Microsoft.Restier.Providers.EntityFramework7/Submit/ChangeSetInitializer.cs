@@ -17,7 +17,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework.Properties;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Submit
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
@@ -43,13 +43,13 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
-                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
+                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
                 Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
-                // This means request entity is sub type of entity type
-                if (entry.ActualEntityType != null && entityType != entry.ActualEntityType)
+                // This means request resource is sub type of resource type
+                if (entry.ActualResourceType != null && entityType != entry.ActualResourceType)
                 {
-                    entityType = entry.ActualEntityType;
+                    entityType = entry.ActualResourceType;
                 }
 
                 MethodInfo prepareEntryMethod = prepareEntryGeneric.MakeGenericMethod(entityType);
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 throw new NotSupportedException(Resources.DataModificationMustBeCUD);
             }
 
-            entry.Entity = entity;
+            entry.Resource = entity;
         }
 
         private static async Task<object> FindEntity(
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             DataModificationItem entry,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.GetQueryableSource(entry.EntitySetName);
+            IQueryable query = context.ApiContext.GetQueryableSource(entry.ResourceSetName);
             query = entry.ApplyTo(query);
 
             QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
@@ -150,7 +150,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             //    This will set any unspecified properties to their default value.
             object newInstance = Activator.CreateInstance(entityType);
 
-            ChangeSetInitializer.SetValues(newInstance, entityType, entry.EntityKey);
+            ChangeSetInitializer.SetValues(newInstance, entityType, entry.ResourceKey);
             ChangeSetInitializer.SetValues(newInstance, entityType, entry.LocalValues);
 
             return newInstance;
