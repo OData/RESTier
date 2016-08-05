@@ -149,7 +149,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             // In case of type inheritance, the actual type will be different from entity type
             var expectedEntityType = path.EdmType;
-            var actualEntityType = path.EdmType;
+            var actualEntityType = path.EdmType as IEdmStructuredType;
             if (edmEntityObject.ActualEdmType != null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
@@ -163,7 +163,7 @@ namespace Microsoft.Restier.Publishers.OData
                 DataModificationItemAction.Insert,
                 null,
                 null,
-                edmEntityObject.CreatePropertyDictionary());
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
@@ -384,13 +384,17 @@ namespace Microsoft.Restier.Publishers.OData
             var propertiesInEtag = await this.GetOriginalValues(entitySet);
             if (propertiesInEtag == null)
             {
-               throw new PreconditionRequiredException(Resources.PreconditionRequired);
+                throw new PreconditionRequiredException(Resources.PreconditionRequired);
             }
 
             // In case of type inheritance, the actual type will be different from entity type
-            // This is only needed for put case, and does not for patch case
+            // This is only needed for put case, and does not need for patch case
+            // For put request, it will create a new, blank instance of the entity.
+            // copy over the key values and set any updated values from the client on the new instance.
+            // Then apply all the properties of the new instance to the instance to be updated.
+            // This will set any unspecified properties to their default value.
             var expectedEntityType = path.EdmType;
-            var actualEntityType = path.EdmType;
+            var actualEntityType = path.EdmType as IEdmStructuredType;
             if (edmEntityObject.ActualEdmType != null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
@@ -404,7 +408,7 @@ namespace Microsoft.Restier.Publishers.OData
                 DataModificationItemAction.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
-                edmEntityObject.CreatePropertyDictionary());
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false));
             updateItem.IsFullReplaceUpdateRequest = isFullReplaceUpdate;
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();

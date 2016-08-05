@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Timers;
 
@@ -11,22 +10,28 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
     /// <summary>
     /// Default resource management class to manage resources.
     /// Use a dictionary to easily access the resource by <see cref="TKey"/> and make a constraint on the total number of resources.
-    /// Use a timer for each reasource, when the resource live longer than <see cref="MaxDataStoreInstanceLifeTime"/>, it will be destroyed automatically.
+    /// Use a timer for each resource, when the resource live longer than <see cref="MaxDataStoreInstanceLifeTime"/>, it will be destroyed automatically.
     /// </summary>
     public class DefaultDataStoreManager<TKey, TDataStoreType> :IDataStoreManager<TKey, TDataStoreType> where TDataStoreType : class, new()
     {
         /// <summary>
         /// The max capacity of the resource container, this is a constraint for memory cost.
         /// </summary>
-        public int MaxDataStoreInstanceCapacity { get; set; } = 1000;
+        public int MaxDataStoreInstanceCapacity { get; set; }
 
         /// <summary>
         /// The max life time of each resource. When the resource lives longer than that, it will be destroyed automatically.
         /// Besides, when the resource container is full, the resource live longest will be destroyed.
         /// </summary>
-        public TimeSpan MaxDataStoreInstanceLifeTime { get; set; } = new TimeSpan(0, 15, 0);
+        public TimeSpan MaxDataStoreInstanceLifeTime { get; set; }
 
         private Dictionary<TKey, DataStoreUnit> _dataStoreDict = new Dictionary<TKey, DataStoreUnit>();
+
+        public DefaultDataStoreManager()
+        {
+            MaxDataStoreInstanceCapacity = 1000;
+            MaxDataStoreInstanceLifeTime = new TimeSpan(0, 15, 0);
+        }
 
         public TDataStoreType ResetDataStoreInstance(TKey key)
         {

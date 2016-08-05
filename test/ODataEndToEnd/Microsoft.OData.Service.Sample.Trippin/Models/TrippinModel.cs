@@ -562,28 +562,40 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                     PersonId = 1,
                     OrderId = 1,
                     Description = "Person 1 Order 1",
-                    Price = 200
+                    Price = 200,
+                    NormalOrderDetail = new OrderDetail(),
+                    ComputedOrderDetail = new OrderDetail(),
+                    ImmutableOrderDetail = new OrderDetail()
                 },
                 new Order
                 {
                     PersonId = 1,
                     OrderId = 2,
                     Description = "Person 1 Order 2",
-                    Price = 400
+                    Price = 400,
+                    NormalOrderDetail = new OrderDetail(),
+                    ComputedOrderDetail = new OrderDetail(),
+                    ImmutableOrderDetail = new OrderDetail()
                 },
                 new Order
                 {
                     PersonId = 2,
                     OrderId = 1,
                     Description = "Person 2 Order 1",
-                    Price = 600
+                    Price = 600,
+                    NormalOrderDetail = new OrderDetail(),
+                    ComputedOrderDetail = new OrderDetail(),
+                    ImmutableOrderDetail = new OrderDetail()
                 },
                 new Order
                 {
                     PersonId = 2,
                     OrderId = 2,
                     Description = "Person 2 Order 2",
-                    Price = 800
+                    Price = 800,
+                    NormalOrderDetail = new OrderDetail(),
+                    ComputedOrderDetail = new OrderDetail(),
+                    ImmutableOrderDetail = new OrderDetail()
                 },
             };
             instance.Orders.AddRange(orders);

@@ -45,6 +45,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
                 // This means request resource is sub type of resource type
                 if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
                 {
+                    // Set type to derived type
                     resourceType = entry.ActualResourceType;
                 }
 
@@ -55,9 +56,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
                 if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
                 {
                     resource = set.Create();
-
                     SetValues(resource, resourceType, entry.LocalValues);
-
                     set.Add(resource);
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)

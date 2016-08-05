@@ -13,6 +13,8 @@ using System.Web.OData.Formatter;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Annotations;
 using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm.Library.Annotations;
+using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Model;
@@ -28,6 +30,10 @@ namespace Microsoft.Restier.Publishers.OData
 
         private static ConcurrentDictionary<IEdmEntitySet, bool> concurrencyCheckFlags
             = new ConcurrentDictionary<IEdmEntitySet, bool>();
+
+        private static ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>
+            typePropertiesAttributes
+            = new ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>();
 
         public static void ApplyTo(this ETag etag, IDictionary<string, object> propertyValues)
         {
@@ -63,18 +69,31 @@ namespace Microsoft.Restier.Publishers.OData
             return needCurrencyCheck;
         }
 
-        public static IReadOnlyDictionary<string, object> CreatePropertyDictionary(this Delta entity)
+        public static IReadOnlyDictionary<string, object> CreatePropertyDictionary(
+            this Delta entity, IEdmStructuredType edmType, ApiBase api, bool isCreation)
         {
+            var propertiesAttributes = RetrievePropertiesAttributes(edmType, api);
+
             Dictionary<string, object> propertyValues = new Dictionary<string, object>();
             foreach (string propertyName in entity.GetChangedPropertyNames())
             {
+                PropertyAttributes attributes;
+                if (propertiesAttributes != null && propertiesAttributes.TryGetValue(propertyName, out attributes))
+                {
+                    if ((isCreation && attributes.IgnoreForCreation) || (!isCreation && attributes.IgnoreForUpdate))
+                    {
+                        // Will not get the properties for update or creation
+                        continue;
+                    }
+                }
+
                 object value;
                 if (entity.TryGetPropertyValue(propertyName, out value))
                 {
                     var complexObj = value as EdmComplexObject;
                     if (complexObj != null)
                     {
-                        value = CreatePropertyDictionary(complexObj);
+                        value = CreatePropertyDictionary(complexObj, complexObj.ActualEdmType, api, isCreation);
                     }
 
                     propertyValues.Add(propertyName, value);
@@ -82,6 +101,79 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             return propertyValues;
+        }
+
+        public static IDictionary<string, PropertyAttributes> RetrievePropertiesAttributes(
+            IEdmStructuredType edmType, ApiBase api)
+        {
+            IDictionary<string, PropertyAttributes> propertiesAttributes;
+            if (typePropertiesAttributes.TryGetValue(edmType, out propertiesAttributes))
+            {
+                return propertiesAttributes;
+            }
+
+            var model = api.Context.GetModelAsync().Result;
+            foreach (var property in edmType.DeclaredProperties)
+            {
+                var annotations = model.FindVocabularyAnnotations(property);
+                PropertyAttributes attributes = null;
+                foreach (var annotation in annotations)
+                {
+                    var valueAnnotation = annotation as EdmAnnotation;
+                    if (valueAnnotation == null)
+                    {
+                        continue;
+                    }
+
+                    if (valueAnnotation.Term.Namespace == CoreVocabularyModel.ImmutableTerm.Namespace
+                        && valueAnnotation.Term.Name == CoreVocabularyModel.ImmutableTerm.Name)
+                    {
+                        var value = valueAnnotation.Value as EdmBooleanConstant;
+                        if (value != null && value.Value)
+                        {
+                            if (attributes == null)
+                            {
+                                attributes = new PropertyAttributes();
+                            }
+
+                            attributes.IgnoreForUpdate = true;
+                        }
+                    }
+
+                    if (valueAnnotation.Term.Namespace == CoreVocabularyModel.ComputedTerm.Namespace
+                        && valueAnnotation.Term.Name == CoreVocabularyModel.ComputedTerm.Name)
+                    {
+                        var value = valueAnnotation.Value as EdmBooleanConstant;
+                        if (value != null && value.Value)
+                        {
+                            if (attributes == null)
+                            {
+                                attributes = new PropertyAttributes();
+                            }
+
+                            attributes.IgnoreForUpdate = true;
+                            attributes.IgnoreForCreation = true;
+                        }
+                    }
+
+                    // TODO add permission annotation check
+                    // CoreVocabularyModel has no permission yet, will add with #480
+                }
+
+                // Add property attributes to the dictionary
+                if (attributes != null)
+                {
+                    if (propertiesAttributes == null)
+                    {
+                        propertiesAttributes = new Dictionary<string, PropertyAttributes>();
+                        typePropertiesAttributes[edmType] = propertiesAttributes;
+                    }
+
+                    propertiesAttributes.Add(property.Name, attributes);
+                }
+            }
+
+            return propertiesAttributes;
         }
 
         public static Type GetClrType(this IEdmType edmType, ApiBase api)

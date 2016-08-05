@@ -206,6 +206,122 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Fact]
+        public void CURDComputedImmutableProperty()
+        {
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
+
+            // Post an entity
+            Order employee = new Order()
+            {
+                PersonId = 1,
+                OrderId = 11,
+                Price = 300,
+                ComputedProperty = "ShouldBeIgnored",
+                ImmutableProperty = "ShouldNotBeIgnored",
+                NormalOrderDetail = new OrderDetail()
+                {
+                    NormalProperty = "ShouldNotBeIgnored",
+                    ComputedProperty = "ShouldBeIgnored",
+                    ImmutableProperty = "ShouldNotBeIgnored"
+                },
+                ComputedOrderDetail = new OrderDetail()
+                {
+                    NormalProperty = "IgnoredAsParentIgnored",
+                    ComputedProperty = "IgnoredAsParentIgnored",
+                    ImmutableProperty = "IgnoredAsParentIgnored"
+                },
+                ImmutableOrderDetail = new OrderDetail()
+                {
+                    NormalProperty = "ShouldNotBeIgnored",
+                    ComputedProperty = "ShouldBeIgnored",
+                    ImmutableProperty = "ShouldNotBeIgnored"
+                },
+            };
+
+            this.TestClientContext.AddToOrders(employee);
+            this.TestClientContext.SaveChanges();
+            long personId = employee.PersonId;
+            long orderId = employee.OrderId;
+
+            // Query the new added entity
+            this.TestClientContext.Detach(employee);
+            employee = this.TestClientContext.Orders.Where(e => e.PersonId == personId && e.OrderId == orderId).First();
+            // computed property should not have new value but Immutable property should have new value
+            Assert.Equal(300, employee.Price);
+            Assert.NotEqual("ShouldBeIgnored", employee.ComputedProperty);
+            Assert.Equal("ShouldNotBeIgnored", employee.ImmutableProperty);
+
+            Assert.Equal("ShouldNotBeIgnored", employee.NormalOrderDetail.NormalProperty);
+            Assert.NotEqual("ShouldBeIgnored", employee.NormalOrderDetail.ComputedProperty);
+            Assert.Equal("ShouldNotBeIgnored", employee.NormalOrderDetail.ImmutableProperty);
+
+            Assert.NotEqual("IgnoredAsParentIgnored", employee.ComputedOrderDetail.NormalProperty);
+            Assert.NotEqual("IgnoredAsParentIgnored", employee.ComputedOrderDetail.ComputedProperty);
+            Assert.NotEqual("IgnoredAsParentIgnored", employee.ComputedOrderDetail.ImmutableProperty);
+
+            Assert.Equal("ShouldNotBeIgnored", employee.ImmutableOrderDetail.NormalProperty);
+            Assert.NotEqual("ShouldBeIgnored", employee.ImmutableOrderDetail.ComputedProperty);
+            Assert.Equal("ShouldNotBeIgnored", employee.ImmutableOrderDetail.ImmutableProperty);
+
+            // Update an entity
+            employee.Price = 400;
+            employee.ComputedProperty = "ShouldBeIgnored2";
+            employee.ImmutableProperty = "ShouldBeIgnored2";
+
+            employee.NormalOrderDetail = new OrderDetail()
+            {
+                NormalProperty = "ShouldNotBeIgnored2",
+                ComputedProperty = "ShouldBeIgnored2",
+                ImmutableProperty = "ShouldBeIgnored2"
+            };
+
+            employee.ComputedOrderDetail = new OrderDetail()
+            {
+                NormalProperty = "IgnoredAsParentIgnored2",
+                ComputedProperty = "IgnoredAsParentIgnored2",
+                ImmutableProperty = "IgnoredAsParentIgnored2"
+            };
+
+            employee.ImmutableOrderDetail = new OrderDetail()
+            {
+                NormalProperty = "ShouldBeIgnored2",
+                ComputedProperty = "ShouldBeIgnored2",
+                ImmutableProperty = "ShouldBeIgnored2"
+            };
+
+            this.TestClientContext.UpdateObject(employee);
+            this.TestClientContext.SaveChanges();
+
+            // Query the updated entity
+            this.TestClientContext.Detach(employee);
+            employee = this.TestClientContext.Orders.Where(e => e.PersonId == personId && e.OrderId == orderId).First();
+            
+            // both computed property and immutable property should not have new value
+            Assert.Equal(400, employee.Price);
+            Assert.NotEqual("ShouldBeIgnored2", employee.ComputedProperty);
+            
+            // Immutable property has value set during insert.
+            Assert.NotEqual("ShouldBeIgnored2", employee.ImmutableProperty);
+            Assert.Equal("ShouldNotBeIgnored", employee.ImmutableProperty);
+
+            Assert.Equal("ShouldNotBeIgnored2", employee.NormalOrderDetail.NormalProperty);
+            Assert.NotEqual("ShouldBeIgnored2", employee.NormalOrderDetail.ComputedProperty);
+            Assert.NotEqual("ShouldBeIgnored2", employee.NormalOrderDetail.ImmutableProperty);
+
+            Assert.NotEqual("IgnoredAsParentIgnored2", employee.ComputedOrderDetail.NormalProperty);
+            Assert.NotEqual("IgnoredAsParentIgnored2", employee.ComputedOrderDetail.ComputedProperty);
+            Assert.NotEqual("IgnoredAsParentIgnored2", employee.ComputedOrderDetail.ImmutableProperty);
+
+            Assert.NotEqual("ShouldBeIgnored2", employee.ImmutableOrderDetail.NormalProperty);
+            Assert.NotEqual("ShouldBeIgnored2", employee.ImmutableOrderDetail.ComputedProperty);
+            Assert.NotEqual("ShouldBeIgnored2", employee.ImmutableOrderDetail.ImmutableProperty);
+
+            // Delete an entity
+            this.TestClientContext.DeleteObject(employee);
+            this.TestClientContext.SaveChanges();
+        }
+
+        [Fact]
         public void CURDEntityWithComplexType()
         {
             this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
@@ -359,7 +475,9 @@ namespace Microsoft.OData.Service.Sample.Tests
                 PersonId = 3,
                 OrderId = 1,
                 Description = "Person 3 order 1",
-                Price = 1000
+                Price = 1000,
+                NormalOrderDetail = new OrderDetail(),
+                ImmutableOrderDetail = new OrderDetail()
             };
 
             this.TestClientContext.AddToOrders(order);

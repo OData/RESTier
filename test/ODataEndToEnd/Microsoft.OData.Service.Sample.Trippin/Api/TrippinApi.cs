@@ -602,15 +602,37 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             {
                 var model = await InnerHandler.GetModelAsync(context, cancellationToken);
 
+                var trueConstant = new EdmBooleanConstant(true);
+
                 // Set computed annotation
                 var tripType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Trip");
                 var trackGuidProperty = tripType.DeclaredProperties.Single(prop => prop.Name == "TrackGuid");
                 var timeStampValueProp = model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
-                var term = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
-                var anno1 = new EdmAnnotation(trackGuidProperty, term, new EdmBooleanConstant(true));
-                var anno2 = new EdmAnnotation(timeStampValueProp, term, new EdmBooleanConstant(true));
+                var computedTerm = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
+                var anno1 = new EdmAnnotation(trackGuidProperty, computedTerm, trueConstant);
+                var anno2 = new EdmAnnotation(timeStampValueProp, computedTerm, trueConstant);
                 ((EdmModel)model).SetVocabularyAnnotation(anno1);
                 ((EdmModel)model).SetVocabularyAnnotation(anno2);
+
+
+                var immutableTerm = new EdmTerm("Org.OData.Core.V1", "Immutable", EdmPrimitiveTypeKind.Boolean);
+
+                var orderType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Order");
+                var orderProp1 = orderType.DeclaredProperties.Single(prop => prop.Name == "ComputedProperty");
+                var orderProp2 = orderType.DeclaredProperties.Single(prop => prop.Name == "ImmutableProperty");
+                var orderProp3 = orderType.DeclaredProperties.Single(prop => prop.Name == "ComputedOrderDetail");
+                var orderProp4 = orderType.DeclaredProperties.Single(prop => prop.Name == "ImmutableOrderDetail");
+
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp1, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp2, immutableTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp3, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp4, immutableTerm, trueConstant));
+
+                var orderDetailType = (EdmComplexType)model.SchemaElements.Single(e => e.Name == "OrderDetail");
+                var detailProp1 = orderDetailType.DeclaredProperties.Single(prop => prop.Name == "ComputedProperty");
+                var detailProp2 = orderDetailType.DeclaredProperties.Single(prop => prop.Name == "ImmutableProperty");
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(detailProp1, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(detailProp2, immutableTerm, trueConstant));
 
                 var personType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Person");
                 var type = personType.FindProperty("PersonId").Type;

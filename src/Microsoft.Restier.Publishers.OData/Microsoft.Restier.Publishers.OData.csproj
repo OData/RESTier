@@ -90,6 +90,7 @@
     <Compile Include="Model\ApiConfigurationExtensions.cs" />
     <Compile Include="Model\ModelMapper.cs" />
     <Compile Include="Model\OperationAttribute.cs" />
+    <Compile Include="Model\PropertyAttributes.cs" />
     <Compile Include="Model\RestierModelBuilder.cs" />
     <Compile Include="Model\RestierModelExtender.cs" />
     <Compile Include="Model\RestierOperationModelBuilder.cs" />
