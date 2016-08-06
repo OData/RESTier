@@ -245,10 +245,6 @@
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
       <Name>Microsoft.Restier.Publishers.OData</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
-      <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
-      <Name>Microsoft.Restier.Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>

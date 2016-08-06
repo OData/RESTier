@@ -203,10 +203,6 @@
       <Project>{af007cef-19b7-426d-ae97-e7d99ecacbb9}</Project>
       <Name>Microsoft.OData.Service.Sample.Northwind.EF7</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
-      <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
-      <Name>Microsoft.Restier.Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>
       <Name>Microsoft.Restier.Core</Name>
