@@ -52,6 +52,15 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             }
         }
 
+        public IQueryable<Person> NewComePeople
+        {
+            get
+            {
+                var datasource = _dataStoreManager.GetDataStoreInstance(Key);
+                return datasource?.People.AsQueryable();
+            }
+        }
+
         public Person Me
         {
             get
@@ -176,7 +185,6 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
 
             return Airlines.Single(a => a.AirlineCode.Equals(favoriteAirlineCode));
         }
-
 
         /// <summary>
         ///     Bound Function, get the trips of one friend with userName
@@ -427,15 +435,29 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
                     if (!propertyInfo.PropertyType.IsInstanceOfType(value))
                     {
                         var dic = value as IReadOnlyDictionary<string, object>;
-                        if (dic == null)
+                        var col = value as System.Web.OData.EdmComplexObjectCollection;
+
+                        if (dic != null)
+                        {
+                            value = Activator.CreateInstance(propertyInfo.PropertyType);
+                            SetValues(value, propertyInfo.PropertyType, dic);
+                        }
+                        else if (col != null)
+                        {
+                            var realType = propertyInfo.PropertyType.GenericTypeArguments[0];
+                            var valueType = typeof(Collection<>).MakeGenericType(realType);
+                            value = Activator.CreateInstance(valueType);
+                            foreach (var c in col)
+                            {
+                                value.GetType().GetMethod("Add").Invoke(value, new[] {c});
+                            }
+                        }
+                        else
                         {
                             throw new NotSupportedException(string.Format(
                                 CultureInfo.InvariantCulture,
                                 propertyPair.Key));
                         }
-
-                        value = Activator.CreateInstance(propertyInfo.PropertyType);
-                        SetValues(value, propertyInfo.PropertyType, dic);
                     }
 
                     propertyInfo.SetValue(instance, value);

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Web.OData.Builder;
 using Microsoft.Spatial;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
@@ -302,7 +301,13 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                             StartsAt = new DateTime(2014, 2, 1),
                             EndsAt = new DateTime(2014, 2, 4)
                         }
-                    }
+                    },
+                    Features = new List<Feature>
+                    {
+                        Feature.Feature1,
+                        Feature.Feature2
+                    },
+                    FavoriteFeature = Feature.Feature1
                 },
                 new Person()
                 {
@@ -518,20 +523,8 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                     LastName = "Ashmore",
                     UserName = "willieashmore",
                     Gender = PersonGender.Male,
-                    Emails = new List<string> { "Willie@example.com", "Willie@contoso.com" },
-                    AddressInfo = new List<Location>
-                    {
-                      new Location()
-                      {
-                          Address = "89 Jefferson Way Suite 2",
-                          City = new City()
-                          {
-                              CountryRegion = "United States",
-                              Name = "Portland",
-                              Region = "WA"
-                          }
-                      }
-                    },
+                    Emails = new List<string>(),
+                    AddressInfo = new List<Location>(),
                     Trips = new List<Trip>
                     {
                         new Trip()
@@ -599,34 +592,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                     LastName = "Guess",
                     UserName = "clydeguess",
                     Gender = PersonGender.Male,
-                    Emails = new List<string> { "Clyde@example.com" },
-                    AddressInfo = new List<Location>
-                    {
-                      new Location()
-                      {
-                          Address = "55 Grizzly Peak Rd.",
-                          City = new City()
-                          {
-                              CountryRegion = "United States",
-                              Name = "Butte",
-                              Region = "MT"
-                          }
-                      }
-                    },
-                    Trips = new List<Trip>
-                    {
-                        new Trip()
-                        {
-                            TripId = 10,
-                            ShareId = new Guid("a88f675d-9199-4392-9656-b08e3b46df8a"),
-                            Name = "Study trip",
-                            Budget = 1550.3f,
-                            Description = "This is a 2 weeks study trip",
-                            Tags = new List<string>{"study"},
-                            StartsAt = new DateTimeOffset(new DateTime(2014, 1, 1)),
-                            EndsAt = new DateTimeOffset(new DateTime(2014, 1, 14))
-                        }
-                    }
+                    HomeAddress = new Location()
                 },
                 new Person()
                 {
@@ -1100,6 +1066,10 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                     People.Single(p => p.UserName == "ronaldmundy"),
                     People.Single(p => p.UserName == "javieralfred")
                 };
+
+            People.Single(p => p.UserName == "russellwhyte").BestFriend=
+                People.Single(p => p.UserName == "scottketchum");
+
             People.Single(p => p.UserName == "scottketchum").Friends = new Collection<Person>()
                 {
                     People.Single(p => p.UserName == "russellwhyte"),
