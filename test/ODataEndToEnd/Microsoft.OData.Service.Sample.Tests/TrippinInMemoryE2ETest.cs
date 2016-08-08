@@ -89,11 +89,9 @@ namespace Microsoft.OData.Service.Sample.Tests
         {
             TestGetPayloadIs("People('russellwhyte')/Emails/$count", "2");
             TestGetPayloadIs("People('russellwhyte')/AddressInfo/$count", "1");
+            TestGetPayloadIs("People('russellwhyte')/Features/$count", "2");
         }
 
-        /// <summary>
-        /// TODO t-pewang, this case cannot pass, since my navigation property doesn't auto expand
-        /// </summary>
         [Fact]
         public void TestAutoExpandedNavigationProperty()
         {
@@ -107,9 +105,9 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("/People('willieashmore')/MiddleName/$value", 204)]
         // Collection of primitive property with empty value
         [InlineData("/People('willieashmore')/Emails", 200)]
-        //// Collection of primitive property $value with null value, should throw exception
-        //// TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
-        //[InlineData("/People('willieashmore')/Emails/$value", 404)]
+        // Collection of primitive property $value with null value, should throw exception
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
+        [InlineData("/People('willieashmore')/Emails/$value", 500)]
         // Collection of primitive property with null collection
         [InlineData("/People('clydeguess')/Emails", 200)]
         // single complex property with null value
@@ -120,9 +118,9 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("/People('clydeguess')/HomeAddress/Address", 204)]
         // collection of complex property with empty collection value
         [InlineData("/People('willieashmore')/AddressInfo", 200)]
-        //// collection of complex property's propery and collection of complex property has null value
-        //// TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
-        //[InlineData("/People(5)/AddressInfo/Address", 404)]
+        // collection of complex property's propery and collection of complex property has null value
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
+        [InlineData("/People(5)/AddressInfo/Address", 500)]
         // Collection of complex property with null collection
         [InlineData("/People('clydeguess')/AddressInfo", 200)]
         // single navigation property with null value
@@ -135,9 +133,9 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("/People('willieashmore')/Friends", 200)]
         // collection of navigation property with null collection value
         [InlineData("/People('clydeguess')/Trips", 200)]
-        //// collection of navigation property's property and navigation property has null value
-        //// TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
-        //[InlineData("/People('willieashmore')/Friends/MiddleName", 404)]
+        // collection of navigation property's property and navigation property has null value
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
+        [InlineData("/People('willieashmore')/Friends/MiddleName", 500)]
         public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
@@ -150,27 +148,27 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("/People('NoneExist')/MiddleName/$value", 404)]
         // Collection of primitive property
         [InlineData("/People('NoneExist')/Emails", 404)]
-        //// Collection of primitive property $value
-        //// TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
-        //[InlineData("/People('NoneExist')/Emails/$value", 404)]
+        // Collection of primitive property $value
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
+        [InlineData("/People('NoneExist')/Emails/$value", 500)]
         // single complex property
         [InlineData("/People('NoneExist')/HomeAddress", 404)]
         // single complex property's property
         [InlineData("/People('NoneExist')/HomeAddress/Address", 404)]
         // collection of complex property
         [InlineData("/People('NoneExist')/AddressInfo", 404)]
-        //// collection of complex property's propery
-        //// TODO should be bad request 400 as this is not allowed?? 404 is returned by WebApi Route Match method
-        //[InlineData("/People('NoneExist')/Locations/Address", 404)]
+        // collection of complex property's propery
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
+        [InlineData("/People('NoneExist')/Locations/Address", 500)]
         // single navigation property
         [InlineData("/People('NoneExist')/BestFriend", 404)]
         // single navigation property's propery
         [InlineData("/People('NoneExist')/BestFriend/MiddleName", 404)]
         // collection of navigation property
         [InlineData("/People('NoneExist')/Friends", 404)]
-        //// collection of navigation property's property
-        //// TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method
-        //[InlineData("/People('NoneExist')/Friends/MiddleName", 404)]
+        // collection of navigation property's property
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
+        [InlineData("/People('NoneExist')/Friends/MiddleName", 500)]
         public void QueryPropertyWithNonExistEntity(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
