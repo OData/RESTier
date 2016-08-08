@@ -14,6 +14,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
         public static void Register(HttpConfiguration config)
         {
             RegisterTrippin(config, GlobalConfiguration.DefaultServer);
+            config.SetUseVerboseErrors(true);
             config.MessageHandlers.Add(new ETagMessageHandler());
         }
 
@@ -21,8 +22,8 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
             HttpConfiguration config, HttpServer server)
         {
             await config.MapRestierRoute<TrippinApi>(
-                "TrippinApi", 
-                null, //"api/Trippin",
+                "TrippinApi",
+                 "api/Trippin",
                 new RestierBatchHandler(server));
         }
     }
