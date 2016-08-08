@@ -186,10 +186,10 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
 
-                    var processor = context.GetApiService<IChangeSetItemProcessor>();
+                    var processor = context.GetApiService<IChangeSetItemFilter>();
                     if (processor != null)
                     {
-                        await processor.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
+                        await processor.OnChangeSetItemProcessingAsync(context, item, cancellationToken);
                     }
 
                     if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
@@ -229,10 +229,10 @@ namespace Microsoft.Restier.Core.Submit
         {
             foreach (ChangeSetItem item in changeSetItems)
             {
-                var processor = context.GetApiService<IChangeSetItemProcessor>();
+                var processor = context.GetApiService<IChangeSetItemFilter>();
                 if (processor != null)
                 {
-                    await processor.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
+                    await processor.OnChangeSetItemProcessedAsync(context, item, cancellationToken);
                 }
             }
         }

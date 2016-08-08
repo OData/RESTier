@@ -75,7 +75,7 @@
     <Compile Include="Models\TrippinModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extension\CustomizedPayloadValueConverter.cs" />
-    <Compile Include="Extension\CustomizedSubmitProcessor.cs" />
+    <Compile Include="Extension\CustomizedSubmitFilter.cs" />
     <Compile Include="Extension\PathAndSlashEscapeODataPathHandler.cs" />
   </ItemGroup>
   <ItemGroup>

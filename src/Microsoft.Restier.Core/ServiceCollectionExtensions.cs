@@ -256,11 +256,11 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(apiType, "apiType");
 
             ConventionBasedChangeSetItemAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedChangeSetItemProcessor.ApplyTo(services, apiType);
+            ConventionBasedChangeSetItemFilter.ApplyTo(services, apiType);
             services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
             ConventionBasedQueryExpressionProcessor.ApplyTo(services, apiType);
             ConventionBasedOperationAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedOperationProcessor.ApplyTo(services, apiType);
+            ConventionBasedOperationFilter.ApplyTo(services, apiType);
             return services;
         }
 

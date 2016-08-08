@@ -338,9 +338,9 @@ public interface Microsoft.Restier.Core.Operation.IOperationExecutor {
 	System.Threading.Tasks.Task`1[[System.Linq.IQueryable]] ExecuteOperationAsync (object instanceImplementMethod, Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Operation.IOperationProcessor {
-	System.Threading.Tasks.Task OnExecutedOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
-	System.Threading.Tasks.Task OnExecutingOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+public interface Microsoft.Restier.Core.Operation.IOperationFilter {
+	System.Threading.Tasks.Task OnOperationExecutedAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task OnOperationExecutingAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
 }
 
 public class Microsoft.Restier.Core.Operation.OperationContext : Microsoft.Restier.Core.InvocationContext {
@@ -447,9 +447,9 @@ public interface Microsoft.Restier.Core.Submit.IChangeSetItemAuthorizer {
 	System.Threading.Tasks.Task`1[[System.Boolean]] AuthorizeAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
 }
 
-public interface Microsoft.Restier.Core.Submit.IChangeSetItemProcessor {
-	System.Threading.Tasks.Task OnProcessedChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
-	System.Threading.Tasks.Task OnProcessingChangeSetItemAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+public interface Microsoft.Restier.Core.Submit.IChangeSetItemFilter {
+	System.Threading.Tasks.Task OnChangeSetItemProcessedAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task OnChangeSetItemProcessingAsync (Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
 }
 
 public interface Microsoft.Restier.Core.Submit.IChangeSetItemValidator {

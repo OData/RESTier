@@ -579,7 +579,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
                 .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()
-                .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
+                .AddService<IChangeSetItemFilter, CustomizedSubmitFilter>()
                 .AddService<IModelBuilder, TrippinModelCustomizer>();
         }
 

@@ -188,19 +188,19 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
         private static void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationProcessor>();
+            var processor = context.GetApiService<IOperationFilter>();
             if (processor != null)
             {
-                processor.OnExecutingOperationAsync(context, cancellationToken);
+                processor.OnOperationExecutingAsync(context, cancellationToken);
             }
         }
 
         private static void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationProcessor>();
+            var processor = context.GetApiService<IOperationFilter>();
             if (processor != null)
             {
-                processor.OnExecutedOperationAsync(context, cancellationToken);
+                processor.OnOperationExecutedAsync(context, cancellationToken);
             }
         }
     }

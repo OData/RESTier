@@ -4,21 +4,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Restier.Core.Submit
+namespace Microsoft.Restier.Core.Operation
 {
     /// <summary>
-    /// Represents a change set item processor.
+    /// Represents a operation processor.
     /// </summary>
-    public interface IChangeSetItemProcessor
+    public interface IOperationFilter
     {
         /// <summary>
-        /// Asynchronously applies logic before a change set item is processed.
+        /// Asynchronously applies logic before a operation is executed.
         /// </summary>
         /// <param name="context">
-        /// The submit context.
-        /// </param>
-        /// <param name="item">
-        /// A change set item.
+        /// The operation context.
         /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
@@ -26,19 +23,15 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task OnProcessingChangeSetItemAsync(
-            SubmitContext context,
-            ChangeSetItem item,
+        Task OnOperationExecutingAsync(
+            OperationContext context,
             CancellationToken cancellationToken);
 
         /// <summary>
-        /// Asynchronously applies logic after a change set item is processed.
+        /// Asynchronously applies logic after an operation is executed.
         /// </summary>
         /// <param name="context">
         /// The submit context.
-        /// </param>
-        /// <param name="item">
-        /// A change set item.
         /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
@@ -46,9 +39,8 @@ namespace Microsoft.Restier.Core.Submit
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task OnProcessedChangeSetItemAsync(
-            SubmitContext context,
-            ChangeSetItem item,
+        Task OnOperationExecutedAsync(
+            OperationContext context,
             CancellationToken cancellationToken);
     }
 }

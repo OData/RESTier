@@ -15,11 +15,11 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based change set item processor which calls logic like OnInserting and OnInserted.
     /// </summary>
-    internal class ConventionBasedChangeSetItemProcessor : IChangeSetItemProcessor
+    internal class ConventionBasedChangeSetItemFilter : IChangeSetItemFilter
     {
         private Type targetType;
 
-        private ConventionBasedChangeSetItemProcessor(Type targetType)
+        private ConventionBasedChangeSetItemFilter(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
             this.targetType = targetType;
@@ -32,12 +32,12 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IChangeSetItemProcessor>(
-                (sp, next) => new ConventionBasedChangeSetItemProcessor(targetType));
+            services.AddService<IChangeSetItemFilter>(
+                (sp, next) => new ConventionBasedChangeSetItemFilter(targetType));
         }
 
         /// <inheritdoc/>
-        public Task OnProcessingChangeSetItemAsync(
+        public Task OnChangeSetItemProcessingAsync(
             SubmitContext context,
             ChangeSetItem item,
             CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <inheritdoc/>
-        public Task OnProcessedChangeSetItemAsync(
+        public Task OnChangeSetItemProcessedAsync(
             SubmitContext context,
             ChangeSetItem item,
             CancellationToken cancellationToken)

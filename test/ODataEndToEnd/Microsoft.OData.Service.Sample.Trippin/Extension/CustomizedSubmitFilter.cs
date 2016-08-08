@@ -8,16 +8,16 @@ using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Extension
 {
-    public class CustomizedSubmitProcessor : IChangeSetItemProcessor
+    public class CustomizedSubmitFilter : IChangeSetItemFilter
     {
-        private IChangeSetItemProcessor Inner { get; set; }
+        private IChangeSetItemFilter Inner { get; set; }
 
-        public Task OnProcessingChangeSetItemAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
+        public Task OnChangeSetItemProcessingAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
-            return Inner.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
+            return Inner.OnChangeSetItemProcessingAsync(context, item, cancellationToken);
         }
 
-        public Task OnProcessedChangeSetItemAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
+        public Task OnChangeSetItemProcessedAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
             var dataModificationItem = item as DataModificationItem;
             if (dataModificationItem != null)
@@ -61,7 +61,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Extension
                     // Key is defined based on convention
                 }
             }
-            return Inner.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
+            return Inner.OnChangeSetItemProcessedAsync(context, item, cancellationToken);
         }
     }
 }

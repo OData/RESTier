@@ -4,43 +4,51 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Restier.Core.Operation
+namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
-    /// Represents a operation processor.
+    /// Represents a change set item filter to have logic before and after change set item processed.
     /// </summary>
-    public interface IOperationProcessor
+    public interface IChangeSetItemFilter
     {
         /// <summary>
-        /// Asynchronously applies logic before a operation is executed.
-        /// </summary>
-        /// <param name="context">
-        /// The operation context.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// A cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous operation.
-        /// </returns>
-        Task OnExecutingOperationAsync(
-            OperationContext context,
-            CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Asynchronously applies logic after an operation is executed.
+        /// Asynchronously applies logic before a change set item is processed.
         /// </summary>
         /// <param name="context">
         /// The submit context.
         /// </param>
+        /// <param name="item">
+        /// A change set item.
+        /// </param>
         /// <param name="cancellationToken">
         /// A cancellation token.
         /// </param>
         /// <returns>
         /// A task that represents the asynchronous operation.
         /// </returns>
-        Task OnExecutedOperationAsync(
-            OperationContext context,
+        Task OnChangeSetItemProcessingAsync(
+            SubmitContext context,
+            ChangeSetItem item,
+            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Asynchronously applies logic after a change set item is processed.
+        /// </summary>
+        /// <param name="context">
+        /// The submit context.
+        /// </param>
+        /// <param name="item">
+        /// A change set item.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// A cancellation token.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous operation.
+        /// </returns>
+        Task OnChangeSetItemProcessedAsync(
+            SubmitContext context,
+            ChangeSetItem item,
             CancellationToken cancellationToken);
     }
 }
