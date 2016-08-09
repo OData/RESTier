@@ -48,7 +48,12 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             get
             {
                 var datasource = _dataStoreManager.GetDataStoreInstance(Key);
-                return datasource?.People.AsQueryable();
+                if (datasource != null)
+                {
+                    return datasource.People.AsQueryable();
+                }
+
+                return null;
             }
         }
 
@@ -57,7 +62,12 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             get
             {
                 var datasource = _dataStoreManager.GetDataStoreInstance(Key);
-                return datasource?.People.AsQueryable();
+                if (datasource != null)
+                {
+                    return datasource.People.AsQueryable();
+                }
+
+                return null;
             }
         }
 
@@ -66,7 +76,12 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             get
             {
                 var datasource = _dataStoreManager.GetDataStoreInstance(Key);
-                return datasource?.Me;
+                if (datasource != null)
+                {
+                    return datasource.Me;
+                }
+
+                return null;
             }
         }
 
@@ -75,7 +90,12 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             get
             {
                 var datasource = _dataStoreManager.GetDataStoreInstance(Key);
-                return datasource?.Airlines.AsQueryable();
+                if (datasource != null)
+                {
+                    return datasource.Airlines.AsQueryable();
+                }
+
+                return null;
             }
         }
 
@@ -84,7 +104,12 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             get
             {
                 var datasource = _dataStoreManager.GetDataStoreInstance(Key);
-                return datasource?.Airports.AsQueryable();
+                if (datasource != null)
+                {
+                    return datasource.Airports.AsQueryable();
+                }
+
+                return null;
             }
         }
 
@@ -349,7 +374,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
         /// </summary>
         private class CustomerizedChangeSetInitializer : IChangeSetInitializer
         {
-            public async Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
+            public Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
             {
                 var key = LibraryUtils.GetSessionId();
                 var dataSource = _dataStoreManager.GetDataStoreInstance(key);
@@ -417,6 +442,8 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
                         }
                     }
                 }
+
+                return Task.WhenAll();
             }
 
             private static void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
