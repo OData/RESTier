@@ -1,28 +1,36 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+
 namespace Microsoft.Restier.Publishers.OData
 {
-    internal class PropertyAttributes
+    [Flags]
+    internal enum PropertyAttributes
     {
+        /// <summary>
+        /// No flag is set for the property
+        /// </summary>
+        None = 0x0,
+
         /// <summary>
         /// Gets or sets a value indicating whether the property should be ignored during update
         /// </summary>
-        public bool IgnoreForUpdate { get; set; }
+        IgnoreForUpdate = 0x1,
 
         /// <summary>
         /// Gets or sets a value indicating whether the property should be ignored during creation
         /// </summary>
-        public bool IgnoreForCreation { get; set; }
+        IgnoreForCreation = 0x2,
 
         /// <summary>
         /// Gets or sets a value indicating whether there is permission to read the property
         /// </summary>
-        public bool NoReadPermission { get; set; }
+        NoReadPermission = 0x4,
 
         /// <summary>
         /// Gets or sets a value indicating whether there is permission to write the property
         /// </summary>
-        public bool NoWritePermission { get; set; }
+        NoWritePermission = 0x8
     }
 }

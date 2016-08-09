@@ -110,9 +110,9 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
 
         private class DataStoreUnit
         {
-            public TKey DatastoreKey { get; }
+            public TKey DatastoreKey { get; private set; }
 
-            public TDataStoreType DataStore { get; }
+            public TDataStoreType DataStore { get; private set; }
 
             public DateTime DataStoreLastUsedDateTime { get; private set; }
 

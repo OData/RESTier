@@ -28,9 +28,11 @@ namespace Microsoft.Restier.Publishers.OData
         private static PropertyInfo etagConcurrencyPropertiesProperty = typeof(ETag).GetProperty(
             PropertyNameOfConcurrencyProperties, BindingFlags.NonPublic | BindingFlags.Instance);
 
+        // TODO GithubIssue#485 considering move to API class DI instance
         private static ConcurrentDictionary<IEdmEntitySet, bool> concurrencyCheckFlags
             = new ConcurrentDictionary<IEdmEntitySet, bool>();
 
+        // TODO GithubIssue#485 considering move to API class DI instance
         private static ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>
             typePropertiesAttributes
             = new ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>();
@@ -80,7 +82,8 @@ namespace Microsoft.Restier.Publishers.OData
                 PropertyAttributes attributes;
                 if (propertiesAttributes != null && propertiesAttributes.TryGetValue(propertyName, out attributes))
                 {
-                    if ((isCreation && attributes.IgnoreForCreation) || (!isCreation && attributes.IgnoreForUpdate))
+                    if ((isCreation && (attributes & PropertyAttributes.IgnoreForCreation) != PropertyAttributes.None)
+                      || (!isCreation && (attributes & PropertyAttributes.IgnoreForUpdate) != PropertyAttributes.None))
                     {
                         // Will not get the properties for update or creation
                         continue;
@@ -116,7 +119,7 @@ namespace Microsoft.Restier.Publishers.OData
             foreach (var property in edmType.DeclaredProperties)
             {
                 var annotations = model.FindVocabularyAnnotations(property);
-                PropertyAttributes attributes = null;
+                var attributes = PropertyAttributes.None;
                 foreach (var annotation in annotations)
                 {
                     var valueAnnotation = annotation as EdmAnnotation;
@@ -125,34 +128,22 @@ namespace Microsoft.Restier.Publishers.OData
                         continue;
                     }
 
-                    if (valueAnnotation.Term.Namespace == CoreVocabularyModel.ImmutableTerm.Namespace
-                        && valueAnnotation.Term.Name == CoreVocabularyModel.ImmutableTerm.Name)
+                    if (valueAnnotation.Term.IsSameTerm(CoreVocabularyModel.ImmutableTerm))
                     {
                         var value = valueAnnotation.Value as EdmBooleanConstant;
                         if (value != null && value.Value)
                         {
-                            if (attributes == null)
-                            {
-                                attributes = new PropertyAttributes();
-                            }
-
-                            attributes.IgnoreForUpdate = true;
+                            attributes |= PropertyAttributes.IgnoreForUpdate;
                         }
                     }
 
-                    if (valueAnnotation.Term.Namespace == CoreVocabularyModel.ComputedTerm.Namespace
-                        && valueAnnotation.Term.Name == CoreVocabularyModel.ComputedTerm.Name)
+                    if (valueAnnotation.Term.IsSameTerm(CoreVocabularyModel.ComputedTerm))
                     {
                         var value = valueAnnotation.Value as EdmBooleanConstant;
                         if (value != null && value.Value)
                         {
-                            if (attributes == null)
-                            {
-                                attributes = new PropertyAttributes();
-                            }
-
-                            attributes.IgnoreForUpdate = true;
-                            attributes.IgnoreForCreation = true;
+                            attributes |= PropertyAttributes.IgnoreForUpdate;
+                            attributes |= PropertyAttributes.IgnoreForCreation;
                         }
                     }
 
@@ -161,7 +152,7 @@ namespace Microsoft.Restier.Publishers.OData
                 }
 
                 // Add property attributes to the dictionary
-                if (attributes != null)
+                if (attributes != PropertyAttributes.None)
                 {
                     if (propertiesAttributes == null)
                     {
@@ -240,6 +231,16 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             return type.GetPrimitiveTypeReference();
+        }
+
+        public static bool IsSameTerm(this IEdmTerm sourceTerm, IEdmTerm targetTerm)
+        {
+            if (sourceTerm.Namespace == targetTerm.Namespace && sourceTerm.Name == targetTerm.Name)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
