@@ -8,7 +8,12 @@ namespace Microsoft.OData.Service.Library.Utils
         static public string GetSessionId()
         {
             var session = System.Web.HttpContext.Current.Session;
-            return session?.SessionID;
+            if (session != null)
+            {
+                return session.SessionID;
+            }
+
+            return null;
         }
     }
 }

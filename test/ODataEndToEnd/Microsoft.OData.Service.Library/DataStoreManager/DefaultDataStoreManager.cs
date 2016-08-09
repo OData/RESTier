@@ -147,7 +147,13 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
             private Timer InitTimer()
             {
                 DataStoreTimer = new Timer(_dataStoreLifeTime);
-                DataStoreTimer.Elapsed += (sender, args) => { _timerTimeoutHandler?.Invoke(this, args); };
+                DataStoreTimer.Elapsed += (sender, args) =>
+                {
+                    if (_timerTimeoutHandler != null)
+                    {
+                        _timerTimeoutHandler.Invoke(this, args);
+                    }
+                };
                 DataStoreTimer.Start();
                 return DataStoreTimer;
             }
