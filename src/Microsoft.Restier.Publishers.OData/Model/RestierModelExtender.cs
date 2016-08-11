@@ -218,6 +218,17 @@ namespace Microsoft.Restier.Publishers.OData.Model
                         var addedEntitySet = container.AddEntitySet(property.Name, entityType);
                         this.addedNavigationSources.Add(addedEntitySet);
                     }
+                    else
+                    {
+                        // If ODataConventionModelBuilder is used to build the model, and a entity set is added,
+                        // i.e. the entity set is already in the container,
+                        // we should add it into entitySetProperties and addedNavigationSources
+                        if (!this.entitySetProperties.Contains(property))
+                        {
+                            this.entitySetProperties.Add(property);
+                            this.addedNavigationSources.Add(container.FindEntitySet(property.Name) as EdmEntitySet);
+                        }
+                    }
                 }
                 else
                 {

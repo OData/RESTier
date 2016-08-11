@@ -34,6 +34,13 @@
     <Compile Include="BatchTests.cs" />
     <Compile Include="HttpResponseCodeTests.cs" />
     <Compile Include="PropertyAccessTests.cs" />
+    <Compile Include="ServiceReference\TrippinInMemoryProxy.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TrippinInMemoryProxy.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TrippinInMemoryE2ETestBase.cs" />
+    <Compile Include="TrippinInMemoryE2EEtagTestCases.cs" />
     <Compile Include="TrippinE2EEtagTestCases.cs" />
     <Compile Include="TrippinE2EOnFilterTestCases.cs" />
     <Compile Include="TrippinE2ETestBase.cs" />
@@ -53,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="ServiceReference\TrippinInMemoryProxy.ttinclude" />
     <None Include="ServiceReference\TrippinProxy.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TrippinProxy.cs</LastGenOutput>
@@ -110,7 +118,6 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Baselines\OnFilterCastExpand1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -225,6 +232,10 @@
     </Content>
     <Content Include="Baselines\OnfilterSimpleExpand3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ServiceReference\TrippinInMemoryProxy.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TrippinInMemoryProxy.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

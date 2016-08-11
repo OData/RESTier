@@ -107,9 +107,11 @@
     <Compile Include="Models\Airline.cs" />
     <Compile Include="Models\Airport.cs" />
     <Compile Include="Models\City.cs" />
+    <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\Flight.cs" />
     <Compile Include="Models\Location.cs" />
+    <Compile Include="Models\Manager.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\PlanItem.cs" />
     <Compile Include="Models\PublicTransportation.cs" />
@@ -139,9 +141,9 @@
       <Project>{186f667e-54e5-4b57-9998-21d74cb77c24}</Project>
       <Name>Microsoft.Restier.Publishers.OData</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.OData.Service.Library\Microsoft.OData.Service.Library.csproj">
+    <ProjectReference Include="..\Microsoft.Restier.Providers.InMemory\Microsoft.Restier.Providers.InMemory.csproj">
       <Project>{1ca9b17f-d3f8-4fc3-a992-5135dccab9de}</Project>
-      <Name>Microsoft.OData.Service.Library</Name>
+      <Name>Microsoft.Restier.Providers.InMemory</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

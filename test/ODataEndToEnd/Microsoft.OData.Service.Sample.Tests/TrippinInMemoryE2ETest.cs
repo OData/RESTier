@@ -1,103 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
-using Microsoft.OData.Service.Sample.Trippin.Models;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
 {
-    public class TrippinInMemoryE2ETest : E2ETestBase<TrippinDataServiceContext>, IClassFixture<TrippinServiceFixture>
+    public class TrippinInMemoryE2ETest : TrippinInMemoryE2ETestBase
     {
-        private const string baseUri = "http://localhost:21248/api/Trippin/";
-
-        public TrippinInMemoryE2ETest()
-            : base(new Uri(baseUri))
-        {
-        }
-
-        [Fact]
-        public void TestMetadata()
-        {
-            TestGetPayloadContains("$metadata", "<EntitySet Name=\"People\"");
-        }
-
-        [Fact]
-        public void TestEntitySet()
-        {
-            TestGetPayloadContains("People", "FirstName");
-        }
-
-        [Fact]
-        public void TestImperativeViewEntitySet()
-        {
-            TestGetPayloadContains("NewComePeople", "FirstName");
-        }
-
-        [Fact]
-        public void TestCollectionOfPrimitivePropertyAccess()
-        {
-            TestGetPayloadContains("People('russellwhyte')/Emails",
-                "\"@odata.context\":\"http://localhost:21248/");
-            TestGetPayloadContains("People('russellwhyte')/Emails",
-                "api/Trippin/$metadata#Collection(Edm.String)\"");
-
-            TestGetPayloadContains("People('russellwhyte')/Emails",
-                "\"value\":[");
-        }
-
-        [Fact]
-        public void TestCollectionOfComplexPropertyAccess()
-        {
-            var reqStr = "People('russellwhyte')/AddressInfo";
-            TestGetPayloadContains(reqStr,
-                "\"@odata.context\":\"http://localhost:21248/");
-            TestGetPayloadContains(reqStr,
-                "api/Trippin/$metadata#Collection(" +
-                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Location)\"");
-        }
-
-        [Fact]
-        public void TestCollectionOfEnumPropertyAccess()
-        {
-            var reqStr = "People('russellwhyte')/Features";
-            TestGetPayloadContains(reqStr,
-                "\"@odata.context\":\"http://localhost:21248/");
-            TestGetPayloadContains(reqStr,
-                "$metadata#Collection(" +
-                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Feature)\"");
-        }
-
-        [Fact]
-        public void TestEnumPropertyAccess()
-        {
-            var reqStr = "People('russellwhyte')/FavoriteFeature";
-            TestGetPayloadContains(reqStr,
-                "\"@odata.context\":\"http://localhost:21248/");
-            TestGetPayloadContains(reqStr,
-                "$metadata#" + reqStr);
-        }
-
-        [Fact]
-        public void TestRawValuedEnumPropertyAccess()
-        {
-            TestGetPayloadIs("People('russellwhyte')/FavoriteFeature/$value", "Feature1");
-        }
-
-        [Fact]
-        public void TestCountCollectionOfStructuralProperty()
-        {
-            TestGetPayloadIs("People('russellwhyte')/Emails/$count", "2");
-            TestGetPayloadIs("People('russellwhyte')/AddressInfo/$count", "1");
-            TestGetPayloadIs("People('russellwhyte')/Features/$count", "2");
-        }
-
-        [Fact]
-        public void TestAutoExpandedNavigationProperty()
-        {
-            TestGetPayloadContains("People", "\"Friends\":[");
-        }
-
         [Theory]
         // Single primitive property with null value
         [InlineData("/People('willieashmore')/MiddleName", 204)]
@@ -172,6 +81,88 @@ namespace Microsoft.OData.Service.Sample.Tests
         public void QueryPropertyWithNonExistEntity(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
+        }
+
+        [Fact]
+        public void TestAutoExpandedNavigationProperty()
+        {
+            TestGetPayloadContains("People", "\"Friends\":[");
+        }
+
+        [Fact]
+        public void TestCollectionOfComplexPropertyAccess()
+        {
+            var reqStr = "People('russellwhyte')/AddressInfo";
+            TestGetPayloadContains(reqStr,
+                "\"@odata.context\":\"http://localhost:21248/");
+            TestGetPayloadContains(reqStr,
+                "api/Trippin/$metadata#Collection(" +
+                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Location)\"");
+        }
+
+        [Fact]
+        public void TestCollectionOfEnumPropertyAccess()
+        {
+            var reqStr = "People('russellwhyte')/Features";
+            TestGetPayloadContains(reqStr,
+                "\"@odata.context\":\"http://localhost:21248/");
+            TestGetPayloadContains(reqStr,
+                "$metadata#Collection(" +
+                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Feature)\"");
+        }
+
+        [Fact]
+        public void TestCollectionOfPrimitivePropertyAccess()
+        {
+            TestGetPayloadContains("People('russellwhyte')/Emails",
+                "\"@odata.context\":\"http://localhost:21248/");
+            TestGetPayloadContains("People('russellwhyte')/Emails",
+                "api/Trippin/$metadata#Collection(Edm.String)\"");
+
+            TestGetPayloadContains("People('russellwhyte')/Emails",
+                "\"value\":[");
+        }
+
+        [Fact]
+        public void TestCountCollectionOfStructuralProperty()
+        {
+            TestGetPayloadIs("People('russellwhyte')/Emails/$count", "2");
+            TestGetPayloadIs("People('russellwhyte')/AddressInfo/$count", "1");
+            TestGetPayloadIs("People('russellwhyte')/Features/$count", "2");
+        }
+
+        [Fact]
+        public void TestEntitySet()
+        {
+            TestGetPayloadContains("People", "FirstName");
+        }
+
+        [Fact]
+        public void TestEnumPropertyAccess()
+        {
+            var reqStr = "People('russellwhyte')/FavoriteFeature";
+            TestGetPayloadContains(reqStr,
+                "\"@odata.context\":\"http://localhost:21248/");
+            TestGetPayloadContains(reqStr,
+                "$metadata#" + reqStr);
+        }
+
+        [Fact]
+        public void TestImperativeViewEntitySet()
+        {
+            TestGetPayloadContains("NewComePeople", "FirstName");
+        }
+
+        [Fact]
+        public void TestMetadata()
+        {
+            TestGetPayloadContains("$metadata", "<EntitySet Name=\"People\"");
+        }
+
+        [Fact]
+        public void TestRawValuedEnumPropertyAccess()
+        {
+            TestGetPayloadIs("People('russellwhyte')/FavoriteFeature/$value", "Feature1");
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.SessionState;
 
-namespace Microsoft.OData.Service.Library.Utils
+namespace Microsoft.Restier.Providers.InMemory.Utils
 {
     /// <summary>
     /// The default SessionIdManager in Azure will cause to loop 302, use custom SessionIdManager to avoid this.

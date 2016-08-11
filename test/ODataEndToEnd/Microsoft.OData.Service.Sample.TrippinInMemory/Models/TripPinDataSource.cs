@@ -63,7 +63,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                         City = new City()
                         {
                             Name = "Los Angeles",
-                            CountryRegion = "United States", 
+                            CountryRegion = "United States",
                             Region = "California"
                         },
                         Loc = GeographyPoint.Create(33.9425, -118.408055555556)
@@ -247,7 +247,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                             {
                                 new Flight()
                                 {
-                                    PlanItemId = 21,
+                                    PlanItemId = 14,
                                     ConfirmationCode = "JH58494",
                                     FlightNumber = "FM1930",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 1, 8, 0, 0)),
@@ -259,7 +259,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                                 },
                                 new Flight()
                                 {
-                                    PlanItemId = 32,
+                                    PlanItemId = 15,
                                     ConfirmationCode = "JH58495",
                                     FlightNumber = "MU1930",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 10, 15, 30, 0)),
@@ -271,7 +271,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                                 },
                                 new Event()
                                 {
-                                    PlanItemId = 5,
+                                    PlanItemId = 16,
                                     Description = "Dinner",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 2, 18, 0, 0)),
                                     EndsAt = new DateTimeOffset(new DateTime(2014, 2, 2, 21, 0, 0)),
@@ -345,7 +345,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                             {
                                 new Flight()
                                 {
-                                    PlanItemId = 11,
+                                    PlanItemId = 17,
                                     ConfirmationCode = "JH58493",
                                     FlightNumber = "VA1930",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 1, 1, 8, 0, 0)),
@@ -357,7 +357,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                                 },
                                 new Event()
                                 {
-                                    PlanItemId = 12,
+                                    PlanItemId = 18,
                                     Description = "Client Meeting",
                                     ConfirmationCode = "4372899DD",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 1, 2, 13, 0, 0)),
@@ -377,7 +377,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                                 },
                                 new Flight()
                                 {
-                                    PlanItemId = 13,
+                                    PlanItemId = 19,
                                     ConfirmationCode = "JH58493",
                                     FlightNumber = "VA1930",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 1, 4, 13, 0, 0)),
@@ -402,7 +402,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                             {
                                 new Flight()
                                 {
-                                    PlanItemId = 21,
+                                    PlanItemId = 20,
                                     ConfirmationCode = "JH58494",
                                     FlightNumber = "FM1930",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 1, 8, 0, 0)),
@@ -414,7 +414,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                                 },
                                 new Flight()
                                 {
-                                    PlanItemId = 32,
+                                    PlanItemId = 21,
                                     ConfirmationCode = "JH58495",
                                     FlightNumber = "MU1930",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 10, 16, 30, 0)),
@@ -426,7 +426,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                                 },
                                 new Event()
                                 {
-                                    PlanItemId = 5,
+                                    PlanItemId = 22,
                                     Description = "Dinner",
                                     StartsAt = new DateTimeOffset(new DateTime(2014, 2, 2, 18, 0, 0)),
                                     EndsAt = new DateTimeOffset(new DateTime(2014, 2, 2, 21, 0, 0)),
@@ -988,7 +988,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                         }
                     }
                 },
-                new Person()
+                new Manager()
                 {
                     FirstName = "Genevieve",
                     LastName = "Reeves",
@@ -1023,7 +1023,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                         }
                     }
                 },
-                new Person()
+                new Employee()
                 {
                     FirstName = "Krista",
                     LastName = "Kemp",

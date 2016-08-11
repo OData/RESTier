@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 
-namespace Microsoft.OData.Service.Library.DataStoreManager
+namespace Microsoft.Restier.Providers.InMemory.DataStoreManager
 {
     /// <summary>
     /// Default resource management class to manage resources.
@@ -25,7 +25,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
         /// </summary>
         public TimeSpan MaxDataStoreInstanceLifeTime { get; set; }
 
-        private Dictionary<TKey, DataStoreUnit> _dataStoreDict = new Dictionary<TKey, DataStoreUnit>();
+        private Dictionary<TKey, DataStoreInstanceWrapper> _dataStoreDict = new Dictionary<TKey, DataStoreInstanceWrapper>();
 
         public DefaultDataStoreManager()
         {
@@ -37,7 +37,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
         {
             if (_dataStoreDict.ContainsKey(key))
             {
-                _dataStoreDict[key] = new DataStoreUnit(key, MaxDataStoreInstanceLifeTime.TotalMilliseconds, ResouceTimeoutHandler);
+                _dataStoreDict[key] = new DataStoreInstanceWrapper(key, MaxDataStoreInstanceLifeTime.TotalMilliseconds, ResouceTimeoutHandler);
             }
             else
             {
@@ -83,7 +83,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
             }
 
             System.Diagnostics.Trace.TraceInformation("The resouce dictionary size right now is {0}", _dataStoreDict.Count);
-            _dataStoreDict.Add(key, new DataStoreUnit(key, MaxDataStoreInstanceLifeTime.TotalMilliseconds, ResouceTimeoutHandler));
+            _dataStoreDict.Add(key, new DataStoreInstanceWrapper(key, MaxDataStoreInstanceLifeTime.TotalMilliseconds, ResouceTimeoutHandler));
             return _dataStoreDict[key].DataStore;
         }
 
@@ -100,7 +100,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
 
         private void ResouceTimeoutHandler(object source, EventArgs e)
         {
-            var resouceUnit = source as DataStoreUnit;
+            var resouceUnit = source as DataStoreInstanceWrapper;
             if (resouceUnit != null)
             {
                 System.Diagnostics.Trace.TraceInformation(resouceUnit.DatastoreKey + " timeout occured, now destroy it!");
@@ -108,7 +108,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
             }
         }
 
-        private class DataStoreUnit
+        private class DataStoreInstanceWrapper
         {
             public TKey DatastoreKey { get; private set; }
 
@@ -122,7 +122,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
 
             private EventHandler _timerTimeoutHandler;
 
-            public DataStoreUnit(TKey key, double dataStoreLifeTime, EventHandler dataStoreTimeoutHandler)
+            public DataStoreInstanceWrapper(TKey key, double dataStoreLifeTime, EventHandler dataStoreTimeoutHandler)
             {
                 DatastoreKey = key;
                 DataStore = new TDataStoreType();
@@ -132,7 +132,7 @@ namespace Microsoft.OData.Service.Library.DataStoreManager
                 InitTimer();
             }
 
-            public DataStoreUnit UpdateLastUsedDateTime()
+            public DataStoreInstanceWrapper UpdateLastUsedDateTime()
             {
                 UpdateTimer();
                 DataStoreLastUsedDateTime = DateTime.Now;
