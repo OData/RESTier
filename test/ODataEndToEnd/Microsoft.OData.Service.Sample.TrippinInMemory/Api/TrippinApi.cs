@@ -332,7 +332,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
 
         #endregion
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Func<IServiceProvider, IDataStoreManager<string, TripPinDataSource>> defaultDataStoreManager =
                 sp => new DefaultDataStoreManager<string, TripPinDataSource>()

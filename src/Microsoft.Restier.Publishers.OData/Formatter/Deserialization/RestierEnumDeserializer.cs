@@ -4,7 +4,7 @@
 using System;
 using System.Web.OData;
 using System.Web.OData.Formatter.Deserialization;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter

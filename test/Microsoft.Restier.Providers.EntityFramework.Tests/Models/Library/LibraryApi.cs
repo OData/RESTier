@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
     class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             base.ConfigureApi(services);
             services.AddService<IModelBuilder, ModelBuilder>();

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Publishers.OData.Model;
@@ -210,7 +209,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
                 .IgnoreProperty("Invisible");
         }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
@@ -257,7 +256,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public IQueryable<Person> People { get; set; }
         public IQueryable<Order> Orders { get; set; }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
@@ -268,7 +267,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
     {
         public IQueryable<Customer> VipCustomers { get; set; }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);
@@ -286,7 +285,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public IQueryable<Customer> Customers { get; set; }
         public Customer Me2 { get; set; }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return base.ConfigureApi(services);

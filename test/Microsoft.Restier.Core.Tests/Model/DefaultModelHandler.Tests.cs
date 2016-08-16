@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 using Xunit;
 
@@ -17,7 +16,7 @@ namespace Microsoft.Restier.Core.Tests.Model
     {
         private class TestApiA : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
                 services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
@@ -34,7 +33,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private class TestApiB : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var service = new TestSingleCallModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
@@ -44,7 +43,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private class TestApiC : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var service = new TestRetryModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);

@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
         private class ExcApi : StoreApi
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 return base.ConfigureApi(services)
                     .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());

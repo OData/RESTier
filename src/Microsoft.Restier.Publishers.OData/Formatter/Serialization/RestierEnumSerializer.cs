@@ -3,7 +3,7 @@
 
 using System;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {
@@ -12,6 +12,14 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
     /// </summary>
     public class RestierEnumSerializer : ODataEnumSerializer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestierEnumSerializer" /> class.
+        /// </summary>
+        /// <param name="provider">The serializer provider.</param>
+        public RestierEnumSerializer(ODataSerializerProvider provider) : base(provider)
+        {
+        }
+
         /// <summary>
         /// Writes the enum result to the response message.
         /// </summary>

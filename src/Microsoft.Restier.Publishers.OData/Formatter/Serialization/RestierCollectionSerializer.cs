@@ -3,7 +3,7 @@
 
 using System;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {

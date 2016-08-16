@@ -9,11 +9,7 @@ using System.Threading.Tasks;
 using System.Web.OData.Query;
 using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Edm.Library.Annotations;
-using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Service.Sample.Trippin.Extension;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 using Microsoft.Restier.Core;
@@ -23,6 +19,7 @@ using Microsoft.Restier.Providers.EntityFramework;
 using Microsoft.Restier.Publishers.OData.Model;
 using System.Reflection;
 using System.Web.OData.Builder;
+using Microsoft.OData.Edm.Vocabularies;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
@@ -564,7 +561,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             return false;
         }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             // Add customized OData validation settings 
             Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = sp => new ODataValidationSettings
@@ -609,11 +606,10 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 var trackGuidProperty = tripType.DeclaredProperties.Single(prop => prop.Name == "TrackGuid");
                 var timeStampValueProp = model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
                 var computedTerm = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
-                var anno1 = new EdmAnnotation(trackGuidProperty, computedTerm, trueConstant);
-                var anno2 = new EdmAnnotation(timeStampValueProp, computedTerm, trueConstant);
+                var anno1 = new EdmVocabularyAnnotation(trackGuidProperty, computedTerm, trueConstant);
+                var anno2 = new EdmVocabularyAnnotation(timeStampValueProp, computedTerm, trueConstant);
                 ((EdmModel)model).SetVocabularyAnnotation(anno1);
                 ((EdmModel)model).SetVocabularyAnnotation(anno2);
-
 
                 var immutableTerm = new EdmTerm("Org.OData.Core.V1", "Immutable", EdmPrimitiveTypeKind.Boolean);
 
@@ -623,16 +619,16 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 var orderProp3 = orderType.DeclaredProperties.Single(prop => prop.Name == "ComputedOrderDetail");
                 var orderProp4 = orderType.DeclaredProperties.Single(prop => prop.Name == "ImmutableOrderDetail");
 
-                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp1, computedTerm, trueConstant));
-                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp2, immutableTerm, trueConstant));
-                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp3, computedTerm, trueConstant));
-                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(orderProp4, immutableTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp1, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp2, immutableTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp3, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp4, immutableTerm, trueConstant));
 
                 var orderDetailType = (EdmComplexType)model.SchemaElements.Single(e => e.Name == "OrderDetail");
                 var detailProp1 = orderDetailType.DeclaredProperties.Single(prop => prop.Name == "ComputedProperty");
                 var detailProp2 = orderDetailType.DeclaredProperties.Single(prop => prop.Name == "ImmutableProperty");
-                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(detailProp1, computedTerm, trueConstant));
-                ((EdmModel)model).SetVocabularyAnnotation(new EdmAnnotation(detailProp2, immutableTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(detailProp1, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(detailProp2, immutableTerm, trueConstant));
 
                 var personType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Person");
                 var type = personType.FindProperty("PersonId").Type;

@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -80,7 +79,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApi : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var modelBuilder = new TestModelBuilder();
                 var modelMapper = new TestModelMapper();

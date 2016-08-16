@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Annotations;
-using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Edm.Library.Annotations;
-using Microsoft.OData.Edm.Library.Values;
+using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Model;
@@ -59,9 +56,9 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             needCurrencyCheck = false;
-            var annotations = model.FindVocabularyAnnotations<IEdmValueAnnotation>(
+            var annotations = model.FindVocabularyAnnotations<IEdmVocabularyAnnotation>(
                 entitySet, CoreVocabularyModel.ConcurrencyTerm);
-            IEdmValueAnnotation annotation = annotations.FirstOrDefault();
+            var annotation = annotations.FirstOrDefault();
             if (annotation != null)
             {
                 needCurrencyCheck = true;
@@ -122,7 +119,7 @@ namespace Microsoft.Restier.Publishers.OData
                 var attributes = PropertyAttributes.None;
                 foreach (var annotation in annotations)
                 {
-                    var valueAnnotation = annotation as EdmAnnotation;
+                    var valueAnnotation = annotation as EdmVocabularyAnnotation;
                     if (valueAnnotation == null)
                     {
                         continue;

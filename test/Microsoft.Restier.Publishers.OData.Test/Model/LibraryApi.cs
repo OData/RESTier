@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
     class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
         // Need to register publisher services as MapRestierRoute is not called
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             base.ConfigureApi(services);
             services.AddODataServices<LibraryApi>();

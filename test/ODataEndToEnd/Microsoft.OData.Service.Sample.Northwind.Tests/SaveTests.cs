@@ -27,7 +27,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             /// </summary>
             /// <param name="services"></param>
             /// <returns></returns>
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 Type apiType = this.GetType();
                 // Add core and convention's services

@@ -54,8 +54,9 @@ namespace Microsoft.Restier.Publishers.OData
             services.TryAddSingleton<ODataValidationSettings>();
 
             // Make serializer and deserializer provider as DI services
-            services.TryAddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
-            services.TryAddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
+            // WebApi OData service provider will be added first, need to overwrite.
+            services.AddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
+            services.AddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
 
             services.TryAddSingleton<IOperationExecutor, OperationExecutor>();
 

@@ -5,21 +5,21 @@ using System;
 using System.Collections.Generic;
 using System.Web.OData.Formatter.Serialization;
 using System.Web.OData.Query.Expressions;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
-    /// The serializer for entity collection result.
+    /// The serializer for resource set result.
     /// </summary>
-    public class RestierFeedSerializer : ODataFeedSerializer
+    public class RestierResourceSetSerializer : ODataResourceSetSerializer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestierFeedSerializer" /> class.
+        /// Initializes a new instance of the <see cref="RestierResourceSetSerializer" /> class.
         /// </summary>
         /// <param name="provider">The serializer provider.</param>
-        public RestierFeedSerializer(ODataSerializerProvider provider)
+        public RestierResourceSetSerializer(ODataSerializerProvider provider)
             : base(provider)
         {
         }
@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
                 {
                     IEdmEntitySetBase entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
                     IEdmEntityTypeReference entityType = elementType.AsEntity();
-                    ODataWriter writer = messageWriter.CreateODataFeedWriter(entitySet, entityType.EntityDefinition());
+                    ODataWriter writer = messageWriter.CreateODataResourceSetWriter(entitySet, entityType.EntityDefinition());
                     WriteObjectInline(graph, feedType, writer, writeContext);
                     return true;
                 }

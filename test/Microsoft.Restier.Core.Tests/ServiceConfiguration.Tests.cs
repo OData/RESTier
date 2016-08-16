@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApiA : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var i = 0;
                 services.AddService<ISomeService>((sp, next) => new SomeService
@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiB : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiC : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.MakeScoped<ISomeService>()
                     .AddService<ISomeService>((sp, next) => new SomeService());
@@ -68,7 +68,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiD : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
@@ -83,7 +83,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiE : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var first = new SomeService
                 {
@@ -100,7 +100,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiF : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiG : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
@@ -136,7 +136,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiH : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
@@ -153,7 +153,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiI : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.MakeTransient<ISomeService>()
                     .AddService<ISomeService>((sp, next) => new SomeService

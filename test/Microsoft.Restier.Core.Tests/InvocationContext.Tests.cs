@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core.Tests
                     return _service;
                 }
             }
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<IServiceA>((sp, next) => ApiService);
 

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -37,7 +36,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class StoreApi : ApiBase
     {
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services = base.ConfigureApi(services);
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));

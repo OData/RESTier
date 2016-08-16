@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApi : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 return base.ConfigureApi(services)
                     .MakeScoped<IService>()

@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// The <see cref="IServiceCollection"/>.
         /// </returns>
         [CLSCompliant(false)]
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
 

@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Core.Tests
                 }
             }
 
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 services.AddService<IServiceA>((sp, next) => serviceA);
                 services.AddService<IServiceB>((sp, next) => serviceB);
@@ -103,7 +103,7 @@ namespace Microsoft.Restier.Core.Tests
         }
         private class TestApiC : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public override IServiceCollection ConfigureApi(IServiceCollection services)
             {
                 var q1 = new ServiceB("q1Pre", "q1Post");
                 var q2 = new ServiceB("q2Pre", "q2Post");

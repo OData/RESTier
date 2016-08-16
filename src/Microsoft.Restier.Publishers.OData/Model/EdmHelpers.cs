@@ -5,7 +5,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.Publishers.OData.Model
 {

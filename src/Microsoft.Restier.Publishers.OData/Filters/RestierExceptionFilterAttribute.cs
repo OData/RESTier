@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Net::System.Net.Http.Formatting;

@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Web.OData;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 

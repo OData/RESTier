@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web.OData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Providers.EntityFramework;
@@ -57,7 +56,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             return 0.0;
         }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             return base.ConfigureApi(services)
                 .AddService<IModelBuilder, NorthwindModelExtender>();

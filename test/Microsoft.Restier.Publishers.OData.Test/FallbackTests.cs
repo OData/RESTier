@@ -13,7 +13,7 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class FallbackApi : ApiBase
     {
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public override IServiceCollection ConfigureApi(IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model));
             services.AddService<IModelMapper>((sp, next) => new FallbackModelMapper());
