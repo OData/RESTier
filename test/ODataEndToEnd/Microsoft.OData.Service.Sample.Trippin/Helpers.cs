@@ -8,8 +8,7 @@ using System.Net.Http;
 using System.Web.Http.Routing;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
-using Microsoft.OData.Core;
-using Microsoft.OData.Core.UriParser;
+using Microsoft.OData.UriParser;
 
 namespace Microsoft.OData.Service.Sample.Trippin
 {
@@ -24,20 +23,20 @@ namespace Microsoft.OData.Service.Sample.Trippin
 
             var urlHelper = request.GetUrlHelper() ?? new UrlHelper(request);
 
+            var pathHandler = (IODataPathHandler)request.GetRequestContainer().GetService(typeof(IODataPathHandler));
+
             string serviceRoot = urlHelper.CreateODataLink(
                 request.ODataProperties().RouteName,
-                request.ODataProperties().PathHandler, new List<ODataPathSegment>());
-            var odataPath = request.ODataProperties().PathHandler.Parse(
-                request.ODataProperties().Model,
-                serviceRoot, uri.LocalPath);
+                pathHandler, new List<ODataPathSegment>());
+            var odataPath = pathHandler.Parse(serviceRoot, uri.LocalPath, request.GetRequestContainer());
 
-            var keySegment = odataPath.Segments.OfType<KeyValuePathSegment>().FirstOrDefault();
+            var keySegment = odataPath.Segments.OfType<KeySegment>().FirstOrDefault();
             if (keySegment == null)
             {
                 throw new InvalidOperationException("The link does not contain a key.");
             }
 
-            var value = ODataUriUtils.ConvertFromUriLiteral(keySegment.Value, ODataVersion.V4);
+            var value = keySegment.Keys.FirstOrDefault().Value;
             return (TKey)value;
         }
     }

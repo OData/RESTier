@@ -19,6 +19,9 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
         {
             // Arrange
             var libraryApi = new LibraryApi();
+            var container = new RestierContainerBuilder(libraryApi);
+            libraryApi.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var item = new DataModificationItem(
                 "Readers",
                 typeof(Person),

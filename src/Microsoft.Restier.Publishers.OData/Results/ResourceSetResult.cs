@@ -10,15 +10,15 @@ namespace Microsoft.Restier.Publishers.OData
     /// <summary>
     /// Represents a collection of entity instances being returned from an action.
     /// </summary>
-    internal class EntityCollectionResult : BaseCollectionResult
+    internal class ResourceSetResult : BaseCollectionResult
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityCollectionResult" /> class.
+        /// Initializes a new instance of the <see cref="ResourceSetResult" /> class.
         /// </summary>
-        /// <param name="query">The query that returns a collection of entities.</param>
-        /// <param name="edmType">The EDM type reference of the entities.</param>
+        /// <param name="query">The query that returns a collection of resources.</param>
+        /// <param name="edmType">The EDM type reference of the entities or complex.</param>
         /// <param name="context">The context where the action is executed.</param>
-        public EntityCollectionResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
+        public ResourceSetResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
             : base(query, edmType, context)
         {
         }

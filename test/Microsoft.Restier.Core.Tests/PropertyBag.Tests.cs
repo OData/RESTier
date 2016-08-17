@@ -12,7 +12,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void PropertyBagManipulatesPropertiesCorrectly()
         {
-            var context = new TestApi().Context;
+            var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var context =api.Context;
 
             Assert.False(context.HasProperty("Test"));
             Assert.Null(context.GetProperty("Test"));
@@ -35,6 +38,9 @@ namespace Microsoft.Restier.Core.Tests
         public void DifferentPropertyBagsDoNotConflict()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var context = api.Context;
             var configuration = context.Configuration;
 
@@ -49,6 +55,8 @@ namespace Microsoft.Restier.Core.Tests
         public void PropertyBagsAreDisposedCorrectly()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
             var configuration = context.Configuration;
 

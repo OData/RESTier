@@ -35,6 +35,8 @@ namespace Microsoft.Restier.Core.Tests
         public void NewInvocationContextIsConfiguredCorrectly()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var apiContext = api.Context;
             var context = new InvocationContext(apiContext);
             Assert.Same(apiContext, context.ApiContext);
@@ -44,6 +46,8 @@ namespace Microsoft.Restier.Core.Tests
         public void InvocationContextGetsApiServicesCorrectly()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var apiContext = api.Context;
             var context = new InvocationContext(apiContext);
             Assert.Same(api.ApiService, context.GetApiService<IServiceA>());

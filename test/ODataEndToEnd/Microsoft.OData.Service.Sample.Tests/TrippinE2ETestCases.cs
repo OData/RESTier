@@ -728,13 +728,11 @@ namespace Microsoft.OData.Service.Sample.Tests
                 {
                     StreamReader reader = new StreamReader(stream);
                     var expectedPayload = "{"
-                        + "\r\n"
                         + @"  ""@odata.context"":""http://localhost:18384/api/Trippin/$metadata#$ref"","
                         + string.Format(@"""@odata.id"":""http://localhost:18384/api/Trippin/Airlines('{0}')""", airline2.AirlineCode)
-                        + "\r\n"
                         + "}";
                     var content = reader.ReadToEnd();
-                    Assert.Equal(expectedPayload, content);
+                    Assert.Equal(expectedPayload.Replace(" ", ""), content);
                 }
             }
 
@@ -894,24 +892,16 @@ namespace Microsoft.OData.Service.Sample.Tests
                 {
                     StreamReader reader = new StreamReader(stream);
                     var expectedPayload = "{"
-                        + "\r\n"
                         + @"  ""@odata.context"":""http://localhost:18384/api/Trippin/$metadata#Collection($ref)"",""value"":["
-                        + "\r\n"
                         + @"    {"
-                        + "\r\n"
                         + string.Format(@"      ""@odata.id"":""http://localhost:18384/api/Trippin/Trips({0})""", trip1.TripId)
-                        + "\r\n"
                         + "    },{"
-                        + "\r\n"
                         + string.Format(@"      ""@odata.id"":""http://localhost:18384/api/Trippin/Trips({0})""", trip2.TripId)
-                        + "\r\n"
                         + "    }"
-                        + "\r\n"
                         + "  ]"
-                        + "\r\n"
                         + "}";
                     var content = reader.ReadToEnd();
-                    Assert.Equal(expectedPayload, content);
+                    Assert.Equal(expectedPayload.Replace(" ", ""), content);
                 }
             }
 

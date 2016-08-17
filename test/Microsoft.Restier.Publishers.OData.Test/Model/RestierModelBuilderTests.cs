@@ -15,7 +15,11 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         [Fact]
         public void ComplexTypeShoudWork()
         {
-            var model = new LibraryApi().Context.GetModelAsync().Result;
+            var api = new LibraryApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var model = api.Context.GetModelAsync().Result;
+
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
@@ -29,7 +33,11 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         [Fact]
         public void PrimitiveTypesShouldWork()
         {
-            var model = new LibraryApi().Context.GetModelAsync().Result;
+            var api = new LibraryApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var model = api.Context.GetModelAsync().Result;
+
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);

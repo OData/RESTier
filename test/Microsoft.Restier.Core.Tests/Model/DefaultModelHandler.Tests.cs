@@ -105,6 +105,8 @@ namespace Microsoft.Restier.Core.Tests.Model
         public async Task GetModelUsingDefaultModelHandler()
         {
             var api = new TestApiA();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
 
             var model = await context.GetModelAsync();
@@ -149,6 +151,9 @@ namespace Microsoft.Restier.Core.Tests.Model
                     wait.Wait();
 
                     var api = (ApiBase)Activator.CreateInstance(apiType);
+                    var container = new RestierContainerBuilder(api);
+                    api.Configuration = new ApiConfiguration(container.BuildContainer());
+
                     var context = api.Context;
                     try
                     {

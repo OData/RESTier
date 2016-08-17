@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Extensions;
-using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Service.Sample.Northwind.Models;
 using Microsoft.Restier.Tests;
 using Newtonsoft.Json;
@@ -64,7 +63,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
 
             //Enable Key as Segment
             HttpConfiguration httpConfig = new HttpConfiguration();
-            httpConfig.SetUrlConventions(ODataUrlConventions.ODataSimplified);
+            httpConfig.SetUrlKeyDelimiter(ODataUrlKeyDelimiter.Slash);
 
             Action<HttpConfiguration, HttpServer> registerOData = (config, server) => WebApiConfig.RegisterNorthwind(config, server);
             string baselineFileName = "TestCustomerKeyAsSegment";

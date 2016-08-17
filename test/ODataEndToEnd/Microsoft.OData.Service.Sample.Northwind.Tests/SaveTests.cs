@@ -56,6 +56,8 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         public async Task TestEntityFilterReturnsTask()
         {
             TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             DataModificationItem<Customer> createCustomer = new DataModificationItem<Customer>(
                 "Customers",
                 typeof(Customer),

@@ -2,10 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Web.OData.Extensions;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {
@@ -93,7 +94,8 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
                 }
             }
 
-            var payloadValueConverter = writeContext.Model.GetPayloadValueConverter();
+            var payloadValueConverter
+                = writeContext.Request.GetRequestContainer().GetService<ODataPayloadValueConverter>();
             return payloadValueConverter.ConvertToPayloadValue(value, edmTypeReference);
         }
     }

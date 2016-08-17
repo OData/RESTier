@@ -7,9 +7,11 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
-using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
+using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
+using ODataPath = System.Web.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData
 {
@@ -93,16 +95,15 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             HttpMethod method = controllerContext.Request.Method;
+            ODataPathSegment lastSegment = odataPath.Segments.LastOrDefault();
+            bool isAction = IsAction(lastSegment);
 
-            if (method == HttpMethod.Get && !IsMetadataPath(odataPath))
+            if (method == HttpMethod.Get && !IsMetadataPath(odataPath) && !isAction)
             {
                 return MethodNameOfGet;
             }
 
-            ODataPathSegment lastSegment = odataPath.Segments.LastOrDefault();
-            if (lastSegment != null
-                && (lastSegment.SegmentKind == ODataSegmentKinds.UnboundAction
-                || lastSegment.SegmentKind == ODataSegmentKinds.Action))
+            if (method == HttpMethod.Post && isAction)
             {
                 return MethodNameOfPostAction;
             }
@@ -144,17 +145,17 @@ namespace Microsoft.Restier.Publishers.OData
             ODataPathSegment firstSegment = odataPath.Segments.FirstOrDefault();
             if (firstSegment != null)
             {
-                var entitySetSegment = firstSegment as EntitySetPathSegment;
+                var entitySetSegment = firstSegment as EntitySetSegment;
                 if (entitySetSegment != null)
                 {
-                    controllerName = entitySetSegment.EntitySetName;
+                    controllerName = entitySetSegment.EntitySet.Name;
                 }
                 else
                 {
-                    var singletonSegment = firstSegment as SingletonPathSegment;
+                    var singletonSegment = firstSegment as SingletonSegment;
                     if (singletonSegment != null)
                     {
-                        controllerName = singletonSegment.SingletonName;
+                        controllerName = singletonSegment.Singleton.Name;
                     }
                 }
             }
@@ -203,6 +204,31 @@ namespace Microsoft.Restier.Publishers.OData
             catch (HttpResponseException)
             {
                 // ignored
+            }
+
+            return false;
+        }
+
+        private static bool IsAction(ODataPathSegment lastSegment)
+        {
+            var operationSeg = lastSegment as OperationSegment;
+            if (operationSeg != null)
+            {
+                var action = operationSeg.Operations.FirstOrDefault() as IEdmAction;
+                if (action != null)
+                {
+                    return true;
+                }
+            }
+
+            var operationImportSeg = lastSegment as OperationImportSegment;
+            if (operationImportSeg != null)
+            {
+                var actionImport = operationImportSeg.OperationImports.FirstOrDefault() as IEdmActionImport;
+                if (actionImport != null)
+                {
+                    return true;
+                }
             }
 
             return false;

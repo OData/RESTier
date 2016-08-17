@@ -101,7 +101,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.OData, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.6.0.0-Nightly160815\lib\net45\System.Web.OData.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.6.0.0-Nightly160819\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />

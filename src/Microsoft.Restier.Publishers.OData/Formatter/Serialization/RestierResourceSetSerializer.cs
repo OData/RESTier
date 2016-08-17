@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            EntityCollectionResult collectionResult = graph as EntityCollectionResult;
+            ResourceSetResult collectionResult = graph as ResourceSetResult;
             if (collectionResult != null)
             {
                 graph = collectionResult.Query;
@@ -63,9 +63,9 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
                 IEdmTypeReference elementType = feedType.AsCollection().ElementType();
                 if (elementType.IsEntity())
                 {
-                    IEdmEntitySetBase entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
-                    IEdmEntityTypeReference entityType = elementType.AsEntity();
-                    ODataWriter writer = messageWriter.CreateODataResourceSetWriter(entitySet, entityType.EntityDefinition());
+                    var entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
+                    var entityType = elementType.AsEntity();
+                    var writer = messageWriter.CreateODataResourceSetWriter(entitySet, entityType.EntityDefinition());
                     WriteObjectInline(graph, feedType, writer, writeContext);
                     return true;
                 }

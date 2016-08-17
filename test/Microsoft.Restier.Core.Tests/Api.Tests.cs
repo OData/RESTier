@@ -106,6 +106,9 @@ namespace Microsoft.Restier.Core.Tests
         public void ApiSourceOfEntityContainerElementIsCorrect()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource("Test", arguments);
@@ -128,6 +131,8 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
             var api = new TestApiEmpty();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
             var arguments = new object[0];
 
@@ -161,6 +166,9 @@ namespace Microsoft.Restier.Core.Tests
         public void ApiSourceOfComposableFunctionIsCorrect()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource("Namespace", "Function", arguments);
@@ -185,6 +193,8 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
             var api = new TestApiEmpty();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
             var arguments = new object[0];
 
@@ -195,6 +205,9 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfComposableFunctionIsCorrect()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var context = api.Context;
             var arguments = new object[0];
 
@@ -252,6 +265,9 @@ namespace Microsoft.Restier.Core.Tests
         public void GenericSourceOfEntityContainerElementIsCorrect()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var context = api.Context;
             var arguments = new object[0];
 
@@ -300,6 +316,9 @@ namespace Microsoft.Restier.Core.Tests
         public void GenericSourceOfComposableFunctionThrowsIfWrongType()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var context = api.Context;
             var arguments = new object[0];
 
@@ -365,6 +384,8 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceQueryProviderCannotExecute()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
 
             var source = context.GetQueryableSource<string>("Test");
@@ -375,6 +396,8 @@ namespace Microsoft.Restier.Core.Tests
         public async Task ApiQueryAsyncWithQueryReturnsResults()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
             var result = await api.Context.QueryAsync(request);
@@ -387,6 +410,8 @@ namespace Microsoft.Restier.Core.Tests
         public async Task ApiQueryAsyncCorrectlyForwardsCall()
         {
             var api = new TestApi();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var queryRequest = new QueryRequest(
                 api.GetQueryableSource<string>("Test"));

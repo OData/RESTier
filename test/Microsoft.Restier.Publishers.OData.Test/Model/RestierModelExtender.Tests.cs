@@ -180,10 +180,9 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             get { return base.Configuration; }
         }
 
-        protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
+        protected override void UpdateApiConfiguration(ApiConfiguration config)
         {
-            return base.CreateApiConfiguration(services)
-                .IgnoreProperty("ApiConfiguration")
+            config.IgnoreProperty("ApiConfiguration")
                 .IgnoreProperty("ApiContext");
         }
     }
@@ -203,10 +202,10 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
-        protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
+        protected override void UpdateApiConfiguration(ApiConfiguration config)
         {
-            return base.CreateApiConfiguration(services)
-                .IgnoreProperty("Invisible");
+            base.UpdateApiConfiguration(config);
+            config.IgnoreProperty("Invisible");
         }
 
         public override IServiceCollection ConfigureApi(IServiceCollection services)
@@ -240,9 +239,10 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
 
     public class ApiD : ApiC
     {
-        protected override ApiConfiguration CreateApiConfiguration(IServiceCollection services)
+        protected override void UpdateApiConfiguration(ApiConfiguration config)
         {
-            return base.CreateApiConfiguration(services).IgnoreProperty("People");
+            base.UpdateApiConfiguration(config);
+            config.IgnoreProperty("People");
         }
     }
 

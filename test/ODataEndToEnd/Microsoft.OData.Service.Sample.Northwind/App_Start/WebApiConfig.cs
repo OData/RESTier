@@ -4,6 +4,7 @@
 using System.Web.Http;
 using System.Web.OData.Extensions;
 using Microsoft.OData.Service.Sample.Northwind.Models;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;
 
@@ -18,7 +19,7 @@ namespace Microsoft.OData.Service.Sample.Northwind
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-            config.EnableUnqualifiedNameCall(true);
+            config.SetUriResolver(new UnqualifiedODataUriResolver());
             RegisterNorthwind(config, GlobalConfiguration.DefaultServer);
 
             config.Routes.MapHttpRoute(

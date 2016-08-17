@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             var result = await response.Content.ReadAsStringAsync();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(expected, result);
+            Assert.Equal(expected.Replace(" ","").Replace("\r\n", ""), result.Replace(" ", ""));
         }
 
         [Fact]

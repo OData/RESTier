@@ -53,6 +53,9 @@ namespace Microsoft.Restier.Core.Tests
         {
             using (var api = new TestApi())
             {
+                var container = new RestierContainerBuilder(api);
+                api.Configuration = new ApiConfiguration(container.BuildContainer());
+
                 var context = api.Context;
                 var svc = context.GetApiService<IService>();
 
@@ -114,6 +117,8 @@ namespace Microsoft.Restier.Core.Tests
         public void TestApiAppliesApiParticipantsCorrectly()
         {
             ApiBase api = new TestApiWithParticipants();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var configuration = api.Context.Configuration;
             Assert.True(configuration.GetProperty<bool>("Test1"));

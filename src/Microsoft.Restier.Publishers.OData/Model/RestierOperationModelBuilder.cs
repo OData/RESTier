@@ -9,10 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Edm.Library.Expressions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using EdmPathExpression = Microsoft.OData.Edm.EdmPathExpression;
 
 namespace Microsoft.Restier.Publishers.OData.Model
 {
@@ -76,7 +75,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private static EdmPathExpression BuildEntitySetPathExpression(
+        private static EdmPathExpression BuildBoundOperationReturnTypePathExpression(
             IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter)
         {
             // Bound actions or functions that return an entity or a collection of entities
@@ -96,23 +95,21 @@ namespace Microsoft.Restier.Publishers.OData.Model
             return null;
         }
 
-        private static EdmEntitySetReferenceExpression BuildEntitySetReferenceExpression(
+        private static IEdmExpression BuildEntitySetExpression(
             IEdmModel model, string entitySetName, IEdmTypeReference returnTypeReference)
         {
-            IEdmEntitySet entitySet = null;
+            if (entitySetName == null && returnTypeReference != null)
+            {
+                var entitySet = model.FindDeclaredEntitySetByTypeReference(returnTypeReference);
+                if (entitySet != null)
+                {
+                    entitySetName = entitySet.Name;
+                }
+            }
+
             if (entitySetName != null)
             {
-                entitySet = model.EntityContainer.FindEntitySet(entitySetName);
-            }
-
-            if (entitySet == null && returnTypeReference != null)
-            {
-                entitySet = model.FindDeclaredEntitySetByTypeReference(returnTypeReference);
-            }
-
-            if (entitySet != null)
-            {
-                return new EdmEntitySetReferenceExpression(entitySet);
+                return new EdmPathExpression(entitySetName);
             }
 
             return null;
@@ -182,7 +179,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 if (isBound)
                 {
                     // Unbound actions or functions should not have EntitySetPath attribute
-                    path = BuildEntitySetPathExpression(returnTypeReference, bindingParameter);
+                    path = BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter);
                 }
 
                 if (operationMethodInfo.HasSideEffects)
@@ -212,18 +209,17 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 {
                     // entitySetReferenceExpression refer to an entity set containing entities returned
                     // by this function/action import.
-                    var entitySetReferenceExpression = BuildEntitySetReferenceExpression(
+                    var entitySetExpression = BuildEntitySetExpression(
                         model, operationMethodInfo.EntitySet, returnTypeReference);
                     var entityContainer = model.EnsureEntityContainer(this.targetType);
                     if (operationMethodInfo.HasSideEffects)
                     {
-                        entityContainer.AddActionImport(
-                            operation.Name, (EdmAction)operation, entitySetReferenceExpression);
+                        entityContainer.AddActionImport(operation.Name, (EdmAction)operation, entitySetExpression);
                     }
                     else
                     {
                         entityContainer.AddFunctionImport(
-                            operation.Name, (EdmFunction)operation, entitySetReferenceExpression);
+                            operation.Name, (EdmFunction)operation, entitySetExpression);
                     }
                 }
             }

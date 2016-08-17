@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Extensions;
 using Microsoft.OData.Service.Sample.Northwind.Models;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Tests;
 using Xunit;
 
@@ -25,7 +26,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await FunctionCall(false, (config, server) =>
                 {
-                    config.EnableUnqualifiedNameCall(true);
+                    config.SetUriResolver(new UnqualifiedODataUriResolver());
                     WebApiConfig.RegisterNorthwind(config, server);
                 });
         }
@@ -52,7 +53,11 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         [Fact]
         public async Task ActionCallWithUnqualifiedName()
         {
-            await ActionCall(true, (config, server) => { config.EnableUnqualifiedNameCall(true); WebApiConfig.RegisterNorthwind(config, server); });
+            await ActionCall(true, (config, server) =>
+            {
+                config.SetUriResolver(new UnqualifiedODataUriResolver());
+                WebApiConfig.RegisterNorthwind(config, server);
+            });
         }
 
         private async Task ActionCall(bool isqualified, Action<HttpConfiguration, HttpServer> registerOData)

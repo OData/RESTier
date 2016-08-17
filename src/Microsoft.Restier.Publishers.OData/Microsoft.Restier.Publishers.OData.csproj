@@ -50,7 +50,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.OData, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.AspNet.OData.6.0.0-Nightly160815\lib\net45\System.Web.OData.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.OData.6.0.0-Nightly160819\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -85,8 +85,7 @@
     <Compile Include="Batch\RestierChangeSetProperty.cs" />
     <Compile Include="Batch\RestierBatchChangeSetRequestItem.cs" />
     <Compile Include="Formatter\Deserialization\DeserializationHelpers.cs" />
-    <Compile Include="Formatter\Deserialization\RestierDeserializerProviderProxy.cs" />
-    <Compile Include="Formatter\Serialization\RestierSerializerProviderProxy.cs" />
+    <Compile Include="Formatter\Serialization\RestierResourceSerializer.cs" />
     <Compile Include="Model\ApiConfigurationExtensions.cs" />
     <Compile Include="Model\ModelMapper.cs" />
     <Compile Include="Model\OperationAttribute.cs" />
@@ -99,17 +98,17 @@
     <Compile Include="Formatter\Serialization\DefaultRestierSerializerProvider.cs" />
     <Compile Include="Formatter\Serialization\RestierCollectionSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierEnumSerializer.cs" />
-    <Compile Include="Formatter\Serialization\RestierComplexTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierRawSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierPrimitiveSerializer.cs" />
-    <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierResourceSetSerializer.cs" />
     <Compile Include="Operation\OperationExecutor.cs" />
+    <Compile Include="Results\NonResourceCollectionResult.cs" />
+    <Compile Include="Results\ResourceSetResult.cs" />
     <Compile Include="Routing\HttpConfigurationExtensions.cs" />
     <Compile Include="HttpRequestMessageExtensions.cs" />
     <Compile Include="Query\RestierQueryExecutor.cs" />
     <Compile Include="Query\RestierQueryBuilder.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Formatter\RestierFormattingAttribute.cs" />
     <Compile Include="Filters\RestierExceptionFilterAttribute.cs" />
     <Compile Include="RestierPayloadValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,14 +120,11 @@
     <Compile Include="RestierController.cs" />
     <Compile Include="Results\BaseCollectionResult.cs" />
     <Compile Include="Results\EnumResult.cs" />
-    <Compile Include="Results\NonEntityCollectionResult.cs" />
-    <Compile Include="Results\EntityCollectionResult.cs" />
     <Compile Include="Results\ComplexResult.cs" />
     <Compile Include="Results\RawResult.cs" />
     <Compile Include="Results\PrimitiveResult.cs" />
     <Compile Include="Results\BaseSingleResult.cs" />
     <Compile Include="Results\BaseResult.cs" />
-    <Compile Include="Routing\RestierContainerBuilder.cs" />
     <Compile Include="Routing\RestierRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
     <Compile Include="..\Shared\SharedResources\SharedResources.OData.Designer.cs">

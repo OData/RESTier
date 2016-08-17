@@ -18,6 +18,9 @@ namespace Microsoft.Restier.Core.Tests
         public void CachedConfigurationIsCachedCorrectly()
         {
             ApiBase api = new TestApiA();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var configuration = api.Context.Configuration;
 
             ApiBase anotherApi = new TestApiA();
@@ -29,11 +32,16 @@ namespace Microsoft.Restier.Core.Tests
         public void ConfigurationRegistersApiServicesCorrectly()
         {
             var api = new TestApiA();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
+
             Assert.Null(api.Context.GetApiService<IServiceA>());
             Assert.Null(api.Context.GetApiService<IServiceB>());
 
             var apiB = new TestApiB();
-            
+            container = new RestierContainerBuilder(apiB);
+            apiB.Configuration = new ApiConfiguration(container.BuildContainer());
+
             Assert.Same(apiB.serviceA, apiB.Context.GetApiService<IServiceA>());
 
             var serviceBInstance = apiB.Context.GetApiService<ServiceB>();
@@ -52,6 +60,8 @@ namespace Microsoft.Restier.Core.Tests
         public void ServiceChainTest()
         {
             var api = new TestApiC();
+            var container = new RestierContainerBuilder(api);
+            api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var handler = api.Context.GetApiService<IServiceB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());

@@ -91,8 +91,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             TestGetPayloadContains(reqStr,
                 "\"@odata.context\":\"http://localhost:21248/");
             TestGetPayloadContains(reqStr,
-                "api/Trippin/$metadata#Collection(" +
-                "Microsoft.OData.Service.Sample.TrippinInMemory.Models.Location)\"");
+                "$metadata#People('russellwhyte')/AddressInfo");
         }
 
         [Fact]

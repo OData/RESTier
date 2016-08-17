@@ -3,21 +3,22 @@
 
 using System;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
-    /// The serializer for complex result.
+    /// The serializer for resource result, and now for complex only,
+    /// for entity type, WebApi OData resource serializer will be used.
     /// </summary>
-    public class RestierComplexTypeSerializer : ODataComplexTypeSerializer
+    public class RestierResourceSerializer : ODataResourceSerializer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestierComplexTypeSerializer" /> class.
+        /// Initializes a new instance of the <see cref="RestierResourceSerializer" /> class.
         /// </summary>
         /// <param name="provider">The serializer provider.</param>
-        public RestierComplexTypeSerializer(ODataSerializerProvider provider)
-            : base(provider)
+        public RestierResourceSerializer(ODataSerializerProvider provider)
+             : base(provider)
         {
         }
 
