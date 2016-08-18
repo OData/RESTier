@@ -352,8 +352,19 @@ namespace Microsoft.Restier.Core.Submit
             // Expression value = itemValue != null
             //     ? LinqParameterContainer.Parameterize(itemValue.GetType(), itemValue)
             //     : Expression.Constant(value: null);
-            var constant = Expression.Constant(itemValue, property.Type);
-            BinaryExpression equal = Expression.Equal(property, constant);
+            Expression left = property;
+            Expression right = Expression.Constant(itemValue, property.Type);
+            if (property.Type == typeof(byte[]))
+            {
+                left = Expression.Call(typeof(BitConverter), "ToString", null, new Expression[] { property });
+                right = Expression.Call(
+                    typeof(BitConverter),
+                    "ToString",
+                    null,
+                    new Expression[] { Expression.Constant(itemValue, property.Type) });
+            }
+
+            var equal = Expression.Equal(left, right);
             return where == null ? equal : Expression.AndAlso(where, equal);
         }
     }
