@@ -13,17 +13,6 @@ namespace Microsoft.Restier.Core.Model
     public class ModelContext : InvocationContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelContext" /> class.
-        /// </summary>
-        /// <param name="apiContext">
-        /// An API context.
-        /// </param>
-        public ModelContext(ApiContext apiContext)
-            : base(apiContext)
-        {
-        }
-
-        /// <summary>
         /// Gets or sets resource set and resource type map dictionary, it will be used by publisher for model build.
         /// </summary>
         public IDictionary<string, Type> ResourceSetTypeMap { get; set; }

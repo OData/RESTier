@@ -19,24 +19,24 @@ using System.Web.OData.Query;
 using System.Web.OData.Results;
 using System.Web.OData.Routing;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Batch;
-using Microsoft.Restier.Publishers.OData.Formatter;
 using Microsoft.Restier.Publishers.OData.Query;
 
 // This is a must for creating response with correct extension method
 using Net::System.Net.Http;
+using ODataPath = System.Web.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// The all-in-one controller class to handle API requests.
     /// </summary>
-    [RestierFormatting]
+    [ODataFormatting]
     [RestierExceptionFilter]
     public class RestierController : ODataController
     {
@@ -88,12 +88,13 @@ namespace Microsoft.Restier.Publishers.OData
             bool isIfNoneMatch;
 
             // TODO #365 Do not support additional path segment after function call now
-            if (lastSegment.SegmentKind == ODataSegmentKinds.UnboundFunction)
+            if (lastSegment is OperationImportSegment)
             {
-                var unboundSegment = (UnboundFunctionPathSegment)lastSegment;
+                var unboundSegment = (OperationImportSegment)lastSegment;
+                var operation = unboundSegment.OperationImports.FirstOrDefault();
                 Func<string, object> getParaValueFunc = p => unboundSegment.GetParameterValue(p);
                 result = await ExecuteOperationAsync(
-                    getParaValueFunc, unboundSegment.FunctionName, true, null, cancellationToken);
+                    getParaValueFunc, operation.Name, true, null, cancellationToken);
                 result = ApplyQueryOptions(result, path, true, out isIfNoneMatch, out etag);
             }
             else
@@ -106,14 +107,15 @@ namespace Microsoft.Restier.Publishers.OData
                             Resources.ResourceNotFound));
                 }
 
-                if (lastSegment.SegmentKind == ODataSegmentKinds.Function)
+                if (lastSegment is OperationSegment)
                 {
                     result = await ExecuteQuery(queryable, cancellationToken);
 
-                    var boundSeg = (BoundFunctionPathSegment)lastSegment;
+                    var boundSeg = (OperationSegment)lastSegment;
+                    var operation = boundSeg.Operations.FirstOrDefault();
                     Func<string, object> getParaValueFunc = p => boundSeg.GetParameterValue(p);
                     result = await ExecuteOperationAsync(
-                        getParaValueFunc, boundSeg.Function.Name, true, result, cancellationToken);
+                        getParaValueFunc, operation.Name, true, result, cancellationToken);
 
                     result = ApplyQueryOptions(result, path, true, out isIfNoneMatch, out etag);
                 }
@@ -290,11 +292,13 @@ namespace Microsoft.Restier.Publishers.OData
                 return parameters[p];
             };
 
-            if (lastSegment.SegmentKind == ODataSegmentKinds.UnboundAction)
+            var segment = lastSegment as OperationImportSegment;
+            if (segment != null)
             {
-                var unboundSegment = (UnboundActionPathSegment)lastSegment;
+                var unboundSegment = segment;
+                var operation = unboundSegment.OperationImports.FirstOrDefault();
                 result = await ExecuteOperationAsync(
-                    getParaValueFunc, unboundSegment.ActionName, false, null, cancellationToken);
+                    getParaValueFunc, operation.Name, false, null, cancellationToken);
             }
             else
             {
@@ -308,14 +312,13 @@ namespace Microsoft.Restier.Publishers.OData
                             Resources.ResourceNotFound));
                 }
 
-                if (lastSegment.SegmentKind == ODataSegmentKinds.Action)
+                if (lastSegment is OperationSegment)
                 {
+                    var operationSegment = lastSegment as OperationSegment;
+                    var operation = operationSegment.Operations.FirstOrDefault();
                     var queryResult = await ExecuteQuery(queryable, cancellationToken);
-
-                    // TODO GitHubIssue#114, need etag check here for single bound entity
-                    var boundSeg = (BoundActionPathSegment)lastSegment;
                     result = await ExecuteOperationAsync(
-                        getParaValueFunc, boundSeg.Action.Name, false, queryResult, cancellationToken);
+                        getParaValueFunc, operation.Name, false, queryResult, cancellationToken);
                 }
             }
 
@@ -490,14 +493,14 @@ namespace Microsoft.Restier.Publishers.OData
             if (typeReference.IsCollection())
             {
                 var elementType = typeReference.AsCollection().ElementType();
-                if (elementType.IsPrimitive() || elementType.IsComplex() || elementType.IsEnum())
+                if (elementType.IsPrimitive() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Api.Context));
+                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference, this.Api.Context));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Api.Context));
+                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference, this.Api.Context));
             }
 
             var entityResult = query.SingleOrDefault();
@@ -562,8 +565,9 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             HttpRequestMessageProperties properties = this.Request.ODataProperties();
+            var model = Api.GetModelAsync().Result;
             ODataQueryContext queryContext =
-                new ODataQueryContext(properties.Model, queryable.ElementType, path);
+                new ODataQueryContext(model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
 
             // Get etag for query request
@@ -652,7 +656,9 @@ namespace Microsoft.Restier.Publishers.OData
         {
             var executor = Api.Context.GetApiService<IOperationExecutor>();
             var context = new OperationContext(
-                Api.Context, getParaValueFunc, operationName, isFunction, bindingParameterValue);
+                getParaValueFunc, operationName, Api, isFunction, bindingParameterValue);
+            context.ServiceProvider = Request.GetRequestContainer();
+            context.Request = Request;
             var result = executor.ExecuteOperationAsync(Api, context, cancellationToken);
             return result;
         }

@@ -18,6 +18,13 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
+        public InvocationContext()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvocationContext" /> class.
+        /// </summary>
         /// <param name="apiContext">
         /// An API context.
         /// </param>
@@ -32,5 +39,10 @@ namespace Microsoft.Restier.Core
         /// Gets the API context.
         /// </summary>
         public ApiContext ApiContext { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IServiceProvider"/> which contains all services of this scope.
+        /// </summary>
+        public IServiceProvider ServiceProvider { get; set; }
     }
 }

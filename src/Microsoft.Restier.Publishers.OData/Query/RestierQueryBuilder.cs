@@ -6,27 +6,23 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web.OData.Routing;
-using Microsoft.OData.Core;
-using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
+using ODataPath = System.Web.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData.Query
 {
     internal class RestierQueryBuilder
     {
         private const string DefaultNameOfParameterExpression = "currentValue";
-        private const char EntityKeySeparator = ',';
-        private const char EntityKeyNameValueSeparator = '=';
 
         private readonly ApiBase api;
         private readonly ODataPath path;
-        private readonly IDictionary<string, Action<ODataPathSegment>> handlers =
-            new Dictionary<string, Action<ODataPathSegment>>();
+        private readonly IDictionary<Type, Action<ODataPathSegment>> handlers =
+            new Dictionary<Type, Action<ODataPathSegment>>();
 
         private IQueryable queryable;
-        private IEdmEntityType currentEntityType;
         private Type currentType;
 
         public RestierQueryBuilder(ApiBase api, ODataPath path)
@@ -36,18 +32,16 @@ namespace Microsoft.Restier.Publishers.OData.Query
             this.api = api;
             this.path = path;
 
-            this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
-            this.handlers[ODataSegmentKinds.Singleton] = this.HandleSingletonPathSegment;
-            this.handlers[ODataSegmentKinds.UnboundFunction] = this.EmptyHandler;
-            this.handlers[ODataSegmentKinds.Function] = this.EmptyHandler;
-            this.handlers[ODataSegmentKinds.Action] = this.EmptyHandler;
-            this.handlers[ODataSegmentKinds.UnboundAction] = this.EmptyHandler;
-            this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
-            this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
-            this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;
-            this.handlers[ODataSegmentKinds.Navigation] = this.HandleNavigationPathSegment;
-            this.handlers[ODataSegmentKinds.Property] = this.HandlePropertyAccessPathSegment;
-            this.handlers[ODataSegmentKinds.Cast] = this.HandleCastPathSegment;
+            this.handlers[typeof(EntitySetSegment)] = this.HandleEntitySetPathSegment;
+            this.handlers[typeof(SingletonSegment)] = this.HandleSingletonPathSegment;
+            this.handlers[typeof(OperationSegment)] = this.EmptyHandler;
+            this.handlers[typeof(OperationImportSegment)] = this.EmptyHandler;
+            this.handlers[typeof(CountSegment)] = this.HandleCountPathSegment;
+            this.handlers[typeof(ValueSegment)] = this.HandleValuePathSegment;
+            this.handlers[typeof(KeySegment)] = this.HandleKeyValuePathSegment;
+            this.handlers[typeof(NavigationPropertySegment)] = this.HandleNavigationPathSegment;
+            this.handlers[typeof(PropertySegment)] = this.HandlePropertyAccessPathSegment;
+            this.handlers[typeof(TypeSegment)] = this.HandleEntityTypeSegment;
 
             // Complex cast is not supported by EF, and is not supported here
             // this.handlers[ODataSegmentKinds.ComplexCast] = null;
@@ -64,7 +58,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             foreach (var segment in this.path.Segments)
             {
                 Action<ODataPathSegment> handler;
-                if (!this.handlers.TryGetValue(segment.SegmentKind, out handler))
+                if (!this.handlers.TryGetValue(segment.GetType(), out handler))
                 {
                     throw new NotImplementedException(
                         string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment));
@@ -82,13 +76,13 @@ namespace Microsoft.Restier.Publishers.OData.Query
             if (path.PathTemplate == "~/entityset/key" ||
                 path.PathTemplate == "~/entityset/key/cast")
             {
-                KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[1];
-                return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
+                var keySegment = (KeySegment)path.Segments[1];
+                return GetPathKeyValues(keySegment);
             }
             else if (path.PathTemplate == "~/entityset/cast/key")
             {
-                KeyValuePathSegment keySegment = (KeyValuePathSegment)path.Segments[2];
-                return GetPathKeyValues(keySegment, (IEdmEntityType)path.EdmType);
+                var keySegment = (KeySegment)path.Segments[2];
+                return GetPathKeyValues(keySegment);
             }
             else
             {
@@ -100,53 +94,19 @@ namespace Microsoft.Restier.Publishers.OData.Query
         }
 
         private static IReadOnlyDictionary<string, object> GetPathKeyValues(
-            KeyValuePathSegment keySegment,
-            IEdmEntityType entityType)
+            KeySegment keySegment)
         {
             var result = new Dictionary<string, object>();
-            var keys = entityType.Key();
 
             // TODO GitHubIssue#42 : Improve key parsing logic
             // this parsing implementation does not allow key values to contain commas
             // Depending on the WebAPI to make KeyValuePathSegment.Values collection public
             // (or have the parsing logic public).
-            string[] values = keySegment.Value.Split(EntityKeySeparator);
-            if (values.Length > 1)
+            var keyValuePairs = keySegment.Keys;
+
+            foreach (var keyValuePair in keyValuePairs)
             {
-                foreach (string value in values)
-                {
-                    // Split key name and key value
-                    var keyValues = value.Split(EntityKeyNameValueSeparator);
-                    if (keyValues.Length != 2)
-                    {
-                        throw new InvalidOperationException(Resources.IncorrectKeyFormat);
-                    }
-
-                    // Validate the key name
-                    if (!keys.Select(k => k.Name).Contains(keyValues[0]))
-                    {
-                        throw new InvalidOperationException(
-                            string.Format(
-                            CultureInfo.InvariantCulture,
-                            Resources.KeyNotValidForEntityType,
-                            keyValues[0],
-                            entityType.Name));
-                    }
-
-                    result.Add(keyValues[0], ODataUriUtils.ConvertFromUriLiteral(keyValues[1], ODataVersion.V4));
-                }
-            }
-            else
-            {
-                // We just have the single key value
-                // Validate it has exactly one key
-                if (keys.Count() > 1)
-                {
-                    throw new InvalidOperationException(Resources.MultiKeyValuesExpected);
-                }
-
-                var keyName = keys.First().Name;
-                result.Add(keyName, ODataUriUtils.ConvertFromUriLiteral(keySegment.Value, ODataVersion.V4));
+                result.Add(keyValuePair.Key, keyValuePair.Value);
             }
 
             return result;
@@ -177,18 +137,16 @@ namespace Microsoft.Restier.Publishers.OData.Query
         #region Handler Methods
         private void HandleEntitySetPathSegment(ODataPathSegment segment)
         {
-            var entitySetPathSegment = (EntitySetPathSegment)segment;
-            var entitySet = entitySetPathSegment.EntitySetBase;
-            this.currentEntityType = entitySet.EntityType();
+            var entitySetPathSegment = (EntitySetSegment)segment;
+            var entitySet = entitySetPathSegment.EntitySet;
             this.queryable = this.api.GetQueryableSource(entitySet.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 
         private void HandleSingletonPathSegment(ODataPathSegment segment)
         {
-            var singletonPathSegment = (SingletonPathSegment)segment;
+            var singletonPathSegment = (SingletonSegment)segment;
             var singleton = singletonPathSegment.Singleton;
-            this.currentEntityType = singleton.EntityType();
             this.queryable = this.api.GetQueryableSource(singleton.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
@@ -210,10 +168,10 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
         private void HandleKeyValuePathSegment(ODataPathSegment segment)
         {
-            var keySegment = (KeyValuePathSegment)segment;
+            var keySegment = (KeySegment)segment;
 
             var parameterExpression = Expression.Parameter(this.currentType, DefaultNameOfParameterExpression);
-            var keyValues = GetPathKeyValues(keySegment, this.currentEntityType);
+            var keyValues = GetPathKeyValues(keySegment);
 
             BinaryExpression keyFilter = null;
             foreach (KeyValuePair<string, object> keyValuePair in keyValues)
@@ -229,12 +187,10 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
         private void HandleNavigationPathSegment(ODataPathSegment segment)
         {
-            var navigationSegment = (NavigationPathSegment)segment;
+            var navigationSegment = (NavigationPropertySegment)segment;
             var entityParameterExpression = Expression.Parameter(this.currentType);
             var navigationPropertyExpression =
-                Expression.Property(entityParameterExpression, navigationSegment.NavigationPropertyName);
-
-            this.currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
+                Expression.Property(entityParameterExpression, navigationSegment.NavigationProperty.Name);
 
             // Check whether property is null or not before further selection
             var whereExpression =
@@ -267,10 +223,10 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
         private void HandlePropertyAccessPathSegment(ODataPathSegment segment)
         {
-            var propertySegment = (PropertyAccessPathSegment)segment;
+            var propertySegment = (PropertySegment)segment;
             var entityParameterExpression = Expression.Parameter(this.currentType);
             var structuralPropertyExpression =
-                Expression.Property(entityParameterExpression, propertySegment.PropertyName);
+                Expression.Property(entityParameterExpression, propertySegment.Property.Name);
 
             // Check whether property is null or not before further selection
             if (propertySegment.Property.Type.IsNullable && !propertySegment.Property.Type.IsPrimitive())
@@ -306,13 +262,21 @@ namespace Microsoft.Restier.Publishers.OData.Query
         // This only covers entity type cast
         // complex type cast uses ComplexCastPathSegment and is not supported by EF now
         // CLR type is got from model annotation, which means model must include that annotation.
-        private void HandleCastPathSegment(ODataPathSegment segment)
+        private void HandleEntityTypeSegment(ODataPathSegment segment)
         {
-            var castSegment = (CastPathSegment)segment;
-            var elementType = castSegment.CastType.GetClrType(api);
-            this.currentEntityType = castSegment.CastType;
-            this.currentType = elementType;
-            this.queryable = ExpressionHelpers.OfType(this.queryable, elementType);
+            var typeSegment = (TypeSegment)segment;
+            var edmType = typeSegment.EdmType;
+
+            if (typeSegment.EdmType.TypeKind == EdmTypeKind.Collection)
+            {
+                edmType = ((IEdmCollectionType)typeSegment.EdmType).ElementType.Definition;
+            }
+
+            if (edmType.TypeKind == EdmTypeKind.Entity)
+            {
+                this.currentType = edmType.GetClrType(api);
+                this.queryable = ExpressionHelpers.OfType(this.queryable, this.currentType);
+            }
         }
         #endregion
     }

@@ -18,7 +18,7 @@ namespace Microsoft.Restier.Core.Tests
         public void CachedConfigurationIsCachedCorrectly()
         {
             ApiBase api = new TestApiA();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiA());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var configuration = api.Context.Configuration;
@@ -32,17 +32,18 @@ namespace Microsoft.Restier.Core.Tests
         public void ConfigurationRegistersApiServicesCorrectly()
         {
             var api = new TestApiA();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiA());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             Assert.Null(api.Context.GetApiService<IServiceA>());
             Assert.Null(api.Context.GetApiService<IServiceB>());
 
             var apiB = new TestApiB();
-            container = new RestierContainerBuilder(apiB);
+            container = new RestierContainerBuilder(() => new TestApiB());
             apiB.Configuration = new ApiConfiguration(container.BuildContainer());
 
-            Assert.Same(apiB.serviceA, apiB.Context.GetApiService<IServiceA>());
+            // This is not same as during configure Api, a new APi is created which has new Service A registered.
+            Assert.NotSame(apiB.serviceA, apiB.Context.GetApiService<IServiceA>());
 
             var serviceBInstance = apiB.Context.GetApiService<ServiceB>();
             var serviceBInterface = apiB.Context.GetApiService<IServiceB>();
@@ -53,14 +54,16 @@ namespace Microsoft.Restier.Core.Tests
 
             var serviceBFirst = serviceBInterface as ServiceB;
             Assert.NotNull(serviceBFirst);
-            Assert.Same(apiB.serviceB, serviceBFirst.InnerHandler);
+
+            // This is not same as during configure Api, a new APi is created which has new Service B registered.
+            Assert.NotSame(apiB.serviceB, serviceBFirst.InnerHandler);
         }
 
         [Fact]
         public void ServiceChainTest()
         {
             var api = new TestApiC();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiC());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var handler = api.Context.GetApiService<IServiceB>();

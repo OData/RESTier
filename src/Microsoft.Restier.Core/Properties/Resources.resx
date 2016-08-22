@@ -219,4 +219,7 @@
   <data name="PreconditionCheckFailed" xml:space="preserve">
     <value>The precondition check for request {0} on resource {1} is failed.</value>
   </data>
+  <data name="ArgumentCanNotBeNull" xml:space="preserve">
+    <value>The argument with name {0} can not be null.</value>
+  </data>
 </root>

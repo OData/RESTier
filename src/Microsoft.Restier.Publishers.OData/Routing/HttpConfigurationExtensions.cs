@@ -2,18 +2,22 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData.Batch;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
-using Microsoft.OData.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Batch;
+using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace Microsoft.Restier.Publishers.OData
 {
@@ -24,6 +28,7 @@ namespace Microsoft.Restier.Publishers.OData
     public static class HttpConfigurationExtensions
     {
         private const string UseVerboseErrorsFlagKey = "Microsoft.Restier.UseVerboseErrorsFlag";
+        private const string RootContainerKey = "System.Web.OData.RootContainerMappingsKey";
 
         /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
@@ -52,36 +57,33 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 services.AddODataServices<TApi>();
             });
+
             using (var api = apiFactory())
             {
-                var model = GetModel(api);
+                Func<IContainerBuilder> func = () => new RestierContainerBuilder(apiFactory);
+                config.UseCustomContainerBuilder(func);
 
-                var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
-
+                var conventions = CreateRestierRoutingConventions(config, routeName, apiFactory);
                 if (batchHandler != null && batchHandler.ApiFactory == null)
                 {
                     batchHandler.ApiFactory = apiFactory;
+                    batchHandler.ODataRouteName = routeName;
                 }
 
-                // Customized path handler should be added in ConfigureApi as service
-                // Allow to handle URL encoded slash (%2F), and backslash(%5C) with customized handler
-                var handler = api.Context.GetApiService<IODataPathHandler>();
-                if (handler == null)
+                Action<IContainerBuilder> configureAction = builder => builder
+                .AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions)
+                .AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
+
+                var route = config.MapODataServiceRoute(routeName, routePrefix, configureAction);
+
+                // Set ApiConfiguration instance for further usage
+                if (config != null)
                 {
-                    handler = new DefaultODataPathHandler();
+                    var mapping = (ConcurrentDictionary<string, IServiceProvider>)config.Properties[RootContainerKey];
+                    IServiceProvider rootContainer;
+                    mapping.TryGetValue(routeName, out rootContainer);
+                    api.Configuration = rootContainer.GetService<ApiConfiguration>();
                 }
-
-                var route = config.MapODataServiceRoute(
-                    routeName, routePrefix, model, handler, conventions, batchHandler);
-
-                // Customized converter should be added in ConfigureApi as service
-                var converter = api.Context.GetApiService<ODataPayloadValueConverter>();
-                if (converter == null)
-                {
-                    converter = new RestierPayloadValueConverter();
-                }
-
-                model.SetPayloadValueConverter(converter);
 
                 return Task.FromResult(route);
             }
@@ -152,13 +154,13 @@ namespace Microsoft.Restier.Publishers.OData
         /// Creates the default routing conventions.
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
-        /// <param name="model">The EDM model.</param>
+        /// <param name="routeName">The name of the route.</param>
         /// <param name="apiFactory">The API factory.</param>
         /// <returns>The routing conventions created.</returns>
         private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
-            this HttpConfiguration config, IEdmModel model, Func<ApiBase> apiFactory)
+            this HttpConfiguration config, string routeName, Func<ApiBase> apiFactory)
         {
-            var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
+            var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(routeName, config);
             var index = 0;
             for (; index < conventions.Count; index++)
             {
@@ -171,26 +173,6 @@ namespace Microsoft.Restier.Publishers.OData
 
             conventions.Insert(index + 1, new RestierRoutingConvention(apiFactory));
             return conventions;
-        }
-
-        private static IEdmModel GetModel(ApiBase api)
-        {
-            // Here await is not used because if method MapRestierRoute is mapped async,
-            // Then during application starts, the http service initialization may complete first
-            // before this method call is complete.
-            // Then all request will fail, and this happen for some test cases before when get model takes long time.
-            IEdmModel model;
-            try
-            {
-                model = api.GetModelAsync().Result;
-            }
-            catch (AggregateException e)
-            {
-                // Without await, the exception is wrapped and inner exception has more meaningful message.
-                throw e.InnerException;
-            }
-
-            return model;
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
@@ -58,7 +59,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
 #else
             var resourceSetTypeMap = new Dictionary<string, Type>();
             var resourceTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
-            var dbContext = context.ApiContext.GetApiService<DbContext>();
+            var dbContext = context.ServiceProvider.GetService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
             var efEntityContainer = efModel.GetItems<EntityContainer>(DataSpace.CSpace).Single();

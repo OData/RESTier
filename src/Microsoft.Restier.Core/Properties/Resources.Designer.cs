@@ -61,6 +61,15 @@ namespace Microsoft.Restier.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The argument with name {0} can not be null..
+        /// </summary>
+        internal static string ArgumentCanNotBeNull {
+            get {
+                return ResourceManager.GetString("ArgumentCanNotBeNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Calling the methods in &apos;QueryableSource&apos; or &apos;QueryableSource&lt;T&gt;&apos; is not supported..
         /// </summary>
         internal static string CallQueryableSourceMethodNotSupported {

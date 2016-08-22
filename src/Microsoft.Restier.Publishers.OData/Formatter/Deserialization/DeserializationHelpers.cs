@@ -4,10 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net.Http;
+using System.Web.OData.Formatter;
 using System.Web.OData.Formatter.Deserialization;
-using Microsoft.OData.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter
 {
@@ -18,38 +20,22 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
     {
         internal static object ConvertValue(
             object odataValue,
+            string parameterName,
             Type expectedReturnType,
             IEdmTypeReference propertyType,
             IEdmModel model,
-            ApiContext apiContext)
+            HttpRequestMessage request,
+            IServiceProvider serviceProvider)
         {
-            ODataDeserializerContext readContext = new ODataDeserializerContext
+            var readContext = new ODataDeserializerContext
             {
-                Model = model
+                Model = model,
+                Request = request
             };
 
-            ODataDeserializerProvider deserializerProvider = apiContext.GetApiService<ODataDeserializerProvider>();
-
-            if (odataValue == null)
-            {
-                return null;
-            }
-
-            ODataNullValue nullValue = odataValue as ODataNullValue;
-            if (nullValue != null)
-            {
-                return null;
-            }
-
-            ODataComplexValue complexValue = odataValue as ODataComplexValue;
-            if (complexValue != null)
-            {
-                ODataEdmTypeDeserializer deserializer
-                    = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsComplex());
-                return deserializer.ReadInline(complexValue, propertyType, readContext);
-            }
-
-            ODataEnumValue enumValue = odataValue as ODataEnumValue;
+            // Enum logic can be removed after RestierEnumDeserializer extends ODataEnumDeserializer
+            var deserializerProvider = serviceProvider.GetService<ODataDeserializerProvider>();
+            var enumValue = odataValue as ODataEnumValue;
             if (enumValue != null)
             {
                 ODataEdmTypeDeserializer deserializer
@@ -57,17 +43,15 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
                 return deserializer.ReadInline(enumValue, propertyType, readContext);
             }
 
-            ODataCollectionValue collection = odataValue as ODataCollectionValue;
-            if (collection != null)
-            {
-                ODataEdmTypeDeserializer deserializer
-                    = deserializerProvider.GetEdmTypeDeserializer(propertyType as IEdmCollectionTypeReference);
-                var collectionResult = deserializer.ReadInline(collection, propertyType, readContext);
+            var returnValue = ODataModelBinderConverter.Convert(
+                odataValue, propertyType, expectedReturnType, parameterName, readContext, serviceProvider);
 
-                return ConvertCollectionType(collectionResult, expectedReturnType);
+            if (!propertyType.IsCollection())
+            {
+                return returnValue;
             }
 
-            return odataValue;
+            return ConvertCollectionType(returnValue, expectedReturnType);
         }
 
         internal static object ConvertCollectionType(object collectionResult, Type expectedReturnType)

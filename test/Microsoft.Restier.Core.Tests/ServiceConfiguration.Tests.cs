@@ -297,7 +297,7 @@ namespace Microsoft.Restier.Core.Tests
         public void ContributorsAreCalledCorrectly()
         {
             var api = new TestApiA();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiA());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("03210", value);
@@ -307,7 +307,7 @@ namespace Microsoft.Restier.Core.Tests
         public void NextInjectedViaProperty()
         {
             var api = new TestApiB();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiB());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
@@ -321,13 +321,13 @@ namespace Microsoft.Restier.Core.Tests
         public void ContextApiScopeWorksCorrectly()
         {
             var api = new TestApiC();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiC());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var service1 = api.Context.GetApiService<ISomeService>();
 
             var api2 = new TestApiC();
-            container = new RestierContainerBuilder(api2);
+            container = new RestierContainerBuilder(() => new TestApiC());
             api2.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var service2 = api2.Context.GetApiService<ISomeService>();
@@ -345,7 +345,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             // Outmost service does not call inner service
             var api = new TestApiD();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiD());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var value = api.Context.GetApiService<ISomeService>().Call();
@@ -362,7 +362,7 @@ namespace Microsoft.Restier.Core.Tests
         public void ServiceInjectedViaProperty()
         {
             var api = new TestApiE();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiE());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var expected = "Text42";
@@ -384,7 +384,7 @@ namespace Microsoft.Restier.Core.Tests
         public void DefaultValueInConstructorUsedIfNoService()
         {
             var api = new TestApiF();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiF());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var value = api.Context.GetApiService<ISomeService>().Call();
@@ -401,7 +401,7 @@ namespace Microsoft.Restier.Core.Tests
         public void MultiInjectionViaConstructor()
         {
             var api = new TestApiG();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiG());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var value = api.Context.GetApiService<ISomeService>().Call();
@@ -418,7 +418,7 @@ namespace Microsoft.Restier.Core.Tests
         public void ThrowOnNoServiceFound()
         {
             var api = new TestApiH();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiH());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             Assert.Throws<InvalidOperationException>(() => { api.Context.GetApiService<ISomeService>(); });
@@ -428,7 +428,7 @@ namespace Microsoft.Restier.Core.Tests
         public void NextInjectedWithInheritedField()
         {
             var api = new TestApiI();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiI());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var value = api.Context.GetApiService<ISomeService>().Call();

@@ -30,11 +30,6 @@ namespace Microsoft.Restier.Core.Submit
         }
 
         /// <summary>
-        /// Gets the model that informs this submit context.
-        /// </summary>
-        public IEdmModel Model { get; internal set; }
-
-        /// <summary>
         /// Gets or sets the change set.
         /// </summary>
         /// <remarks>

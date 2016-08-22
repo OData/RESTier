@@ -200,7 +200,8 @@ namespace Microsoft.Restier.Core
 
             try
             {
-                var buildContext = new ModelContext(context);
+                var buildContext = new ModelContext();
+                buildContext.ServiceProvider = context.ServiceProvider;
                 var model = await builder.GetModelAsync(buildContext, cancellationToken);
                 source.SetResult(model);
                 return model;
@@ -461,8 +462,6 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
 
             var submitContext = new SubmitContext(context, changeSet);
-            var model = await context.GetModelAsync(cancellationToken);
-            submitContext.Model = model;
             return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken);
         }
 

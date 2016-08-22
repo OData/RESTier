@@ -80,7 +80,7 @@ namespace Microsoft.Restier.Core
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.GetApiService<ApiBase>();
+                    target = context.ImplementInstance;
                     if (target == null ||
                         !this.targetType.IsInstanceOfType(target))
                     {

@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
             var parameterArray = method.GetParameters();
 
-            var model = await context.ApiContext.GetModelAsync(cancellationToken);
+            var model = context.ServiceProvider.GetService<IEdmModel>();
 
             // Parameters of method and model is exactly mapped or there is parsing error
             var parameters = new object[parameterArray.Length];
@@ -63,7 +64,13 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
                     // Change to right CLR class for collection/Enum/Complex/Entity
                     convertedValue = DeserializationHelpers.ConvertValue(
-                        currentParameterValue, parameter.ParameterType, parameterTypeRef, model, context.ApiContext);
+                        currentParameterValue,
+                        parameter.Name,
+                        parameter.ParameterType,
+                        parameterTypeRef,
+                        model,
+                        context.Request,
+                        context.ServiceProvider);
                 }
                 else
                 {
@@ -188,7 +195,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
         private static void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationFilter>();
+            var processor = context.ServiceProvider.GetService<IOperationFilter>();
             if (processor != null)
             {
                 processor.OnOperationExecutingAsync(context, cancellationToken);
@@ -197,7 +204,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
         private static void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationFilter>();
+            var processor = context.ServiceProvider.GetService<IOperationFilter>();
             if (processor != null)
             {
                 processor.OnOperationExecutedAsync(context, cancellationToken);

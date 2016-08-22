@@ -58,7 +58,6 @@ namespace Microsoft.Restier.Providers.EntityFramework
 
             // Add core and convention's services
             services = services.AddCoreServices(apiType)
-                .AddAttributeServices(apiType)
                 .AddConventionBasedServices(apiType);
 
             // Add EF related services

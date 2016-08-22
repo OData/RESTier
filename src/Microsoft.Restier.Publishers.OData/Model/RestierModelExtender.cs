@@ -178,7 +178,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
         private void BuildEntitySetsAndSingletons(ModelContext context, EdmModel model)
         {
-            var configuration = context.ApiContext.Configuration;
+            var configuration = context.ServiceProvider.GetService<ApiConfiguration>();
             foreach (var property in this.publicProperties)
             {
                 if (configuration.IsPropertyIgnored(property.Name))
@@ -213,29 +213,29 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 {
                     if (container.FindEntitySet(property.Name) == null)
                     {
-                        this.entitySetProperties.Add(property);
-                        var addedEntitySet = container.AddEntitySet(property.Name, entityType);
-                        this.addedNavigationSources.Add(addedEntitySet);
+                        container.AddEntitySet(property.Name, entityType);
                     }
-                    else
+
+                    // If ODataConventionModelBuilder is used to build the model, and a entity set is added,
+                    // i.e. the entity set is already in the container,
+                    // we should add it into entitySetProperties and addedNavigationSources
+                    if (!this.entitySetProperties.Contains(property))
                     {
-                        // If ODataConventionModelBuilder is used to build the model, and a entity set is added,
-                        // i.e. the entity set is already in the container,
-                        // we should add it into entitySetProperties and addedNavigationSources
-                        if (!this.entitySetProperties.Contains(property))
-                        {
-                            this.entitySetProperties.Add(property);
-                            this.addedNavigationSources.Add(container.FindEntitySet(property.Name) as EdmEntitySet);
-                        }
+                        this.entitySetProperties.Add(property);
+                        this.addedNavigationSources.Add(container.FindEntitySet(property.Name) as EdmEntitySet);
                     }
                 }
                 else
                 {
                     if (container.FindSingleton(property.Name) == null)
                     {
+                        container.AddSingleton(property.Name, entityType);
+                    }
+
+                    if (!this.singletonProperties.Contains(property))
+                    {
                         this.singletonProperties.Add(property);
-                        var addedSingleton = container.AddSingleton(property.Name, entityType);
-                        this.addedNavigationSources.Add(addedSingleton);
+                        this.addedNavigationSources.Add(container.FindSingleton(property.Name) as EdmSingleton);
                     }
                 }
             }

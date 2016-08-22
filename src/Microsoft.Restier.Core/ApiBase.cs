@@ -48,9 +48,6 @@ namespace Microsoft.Restier.Core
                     {
                         apiScope.Api = this;
                     }
-
-                    ApiConfiguratorAttributes.ApplyInitialization(
-                        this.GetType(), this, this.apiContext);
                 }
 
                 return this.apiContext;
@@ -63,9 +60,9 @@ namespace Microsoft.Restier.Core
         public bool IsDisposed { get; private set; }
 
         /// <summary>
-        /// Gets the API configuration for this API.
+        /// Gets or sets the API configuration for this API.
         /// </summary>
-        protected ApiConfiguration Configuration
+        public ApiConfiguration Configuration
         {
             get
             {
@@ -74,17 +71,18 @@ namespace Microsoft.Restier.Core
                     return this.apiConfiguration;
                 }
 
-                return this.apiConfiguration = Configurations.GetOrAdd(
-                    this.GetType(),
-                    apiType =>
-                    {
-                        IServiceCollection services = new ServiceCollection();
-                        services = this.ConfigureApi(services);
+                Configurations.TryGetValue(this.GetType(), out this.apiConfiguration);
+                return this.apiConfiguration;
+            }
 
-                        var configuration = this.CreateApiConfiguration(services);
-                        ApiConfiguratorAttributes.ApplyConfiguration(apiType, configuration);
-                        return configuration;
-                    });
+            set
+            {
+                this.apiConfiguration = value;
+                bool isSuccess = Configurations.TryAdd(GetType(), apiConfiguration);
+                if (isSuccess)
+                {
+                    UpdateApiConfiguration(this.apiConfiguration);
+                }
             }
         }
 
@@ -103,9 +101,6 @@ namespace Microsoft.Restier.Core
 
             if (this.apiContext != null)
             {
-                ApiConfiguratorAttributes.ApplyDisposal(
-                    this.GetType(), this, this.apiContext);
-
                 this.apiContext.DisposeScope();
                 this.apiContext = null;
             }
@@ -121,13 +116,12 @@ namespace Microsoft.Restier.Core
         /// </param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
         [CLSCompliant(false)]
-        protected virtual IServiceCollection ConfigureApi(IServiceCollection services)
+        public virtual IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
 
             // Add core and convention's services
             services = services.AddCoreServices(apiType)
-                .AddAttributeServices(apiType)
                 .AddConventionBasedServices(apiType);
 
             // This is used to add the publisher's services
@@ -137,18 +131,13 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Creates the API configuration for this API.
-        /// Descendants may override to use a customized DI container, or further configure the built
+        /// Allow user to update the ApiConfiguration
         /// <see cref="ApiConfiguration"/>.
         /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/> containing API service registrations.</param>
-        /// <returns>
-        /// An <see cref="ApiConfiguration"/> with which to create the API configuration for this API.
-        /// </returns>
+        /// <param name="configuration">The <see cref="ApiConfiguration"/> for the Api instance.</param>
         [CLSCompliant(false)]
-        protected virtual ApiConfiguration CreateApiConfiguration(IServiceCollection services)
+        protected virtual void UpdateApiConfiguration(ApiConfiguration configuration)
         {
-            return services.BuildApiConfiguration();
         }
 
         /// <summary>

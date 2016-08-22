@@ -32,6 +32,8 @@ namespace Microsoft.OData.Service.Sample.Northwind
         public static void RegisterNorthwind(
             HttpConfiguration config, HttpServer server)
         {
+            config.Filter().Expand().Select().OrderBy().MaxTop(null).Count();
+            config.SetUseVerboseErrors(true);
             config.MapRestierRoute<NorthwindApi>(
                 "NorthwindApi", "api/Northwind",
                 new RestierBatchHandler(server));

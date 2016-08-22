@@ -32,7 +32,6 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 Type apiType = this.GetType();
                 // Add core and convention's services
                 services = services.AddCoreServices(apiType)
-                    .AddAttributeServices(apiType)
                     .AddConventionBasedServices(apiType);
                 // Add EF related services
                 services.AddEfProviderServices<NorthwindContext>();
@@ -56,7 +55,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         public async Task TestEntityFilterReturnsTask()
         {
             TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestEntityFilterReturnsTaskApi());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             DataModificationItem<Customer> createCustomer = new DataModificationItem<Customer>(
                 "Customers",

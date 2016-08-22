@@ -105,7 +105,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         public async Task GetModelUsingDefaultModelHandler()
         {
             var api = new TestApiA();
-            var container = new RestierContainerBuilder(api);
+            var container = new RestierContainerBuilder(() => new TestApiA());
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
 
@@ -141,6 +141,10 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private static Task<IEdmModel>[] PrepareThreads(int count, Type apiType, ManualResetEventSlim wait)
         {
+            var api2 = (ApiBase)Activator.CreateInstance(apiType);
+            var container = new RestierContainerBuilder(() => (ApiBase)Activator.CreateInstance(apiType));
+            api2.Configuration = new ApiConfiguration(container.BuildContainer());
+
             var tasks = new Task<IEdmModel>[count];
             var result = Parallel.For(0, count, (inx, state) =>
             {
@@ -151,8 +155,6 @@ namespace Microsoft.Restier.Core.Tests.Model
                     wait.Wait();
 
                     var api = (ApiBase)Activator.CreateInstance(apiType);
-                    var container = new RestierContainerBuilder(api);
-                    api.Configuration = new ApiConfiguration(container.BuildContainer());
 
                     var context = api.Context;
                     try

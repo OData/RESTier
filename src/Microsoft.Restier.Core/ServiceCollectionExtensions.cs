@@ -219,26 +219,10 @@ namespace Microsoft.Restier.Core
                     .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api.Context);
             }
 
+            services.TryAddSingleton<ApiConfiguration>();
+
             return services.AddService<IQueryExecutor, DefaultQueryExecutor>()
                             .AddScoped<PropertyBag>();
-        }
-
-        /// <summary>
-        /// Add services of enabled attributes.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="apiType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddAttributeServices(this IServiceCollection services, Type apiType)
-        {
-            Ensure.NotNull(apiType, "apiType");
-
-            ApiConfiguratorAttributes.AddApiServices(apiType, services);
-            return services;
         }
 
         /// <summary>
@@ -262,38 +246,6 @@ namespace Microsoft.Restier.Core
             ConventionBasedOperationAuthorizer.ApplyTo(services, apiType);
             ConventionBasedOperationFilter.ApplyTo(services, apiType);
             return services;
-        }
-
-        /// <summary>
-        /// Build the <see cref="ApiConfiguration"/>
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>The built <see cref="ApiConfiguration"/></returns>
-        internal static ApiConfiguration BuildApiConfiguration(this IServiceCollection services)
-        {
-            return services.BuildApiConfiguration(null);
-        }
-
-        /// <summary>
-        /// Build the <see cref="ApiConfiguration"/>
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="serviceProviderFactory">
-        /// An optional factory to create an <see cref="IServiceProvider"/>.
-        /// Use this to inject your favorite DI container.
-        /// </param>
-        /// <returns>The built <see cref="ApiConfiguration"/></returns>
-        internal static ApiConfiguration BuildApiConfiguration(
-            this IServiceCollection services,
-            Func<IServiceCollection, IServiceProvider> serviceProviderFactory)
-        {
-            Ensure.NotNull(services, "services");
-
-            services.TryAddSingleton<ApiConfiguration>();
-
-            var serviceProvider = serviceProviderFactory != null ?
-                serviceProviderFactory(services) : services.BuildServiceProvider();
-            return serviceProvider.GetService<ApiConfiguration>();
         }
 
         private static IServiceCollection AddContributorNoCheck<TService>(

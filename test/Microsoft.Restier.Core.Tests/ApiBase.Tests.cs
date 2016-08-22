@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             using (var api = new TestApi())
             {
-                var container = new RestierContainerBuilder(api);
+                var container = new RestierContainerBuilder(() => new TestApi());
                 api.Configuration = new ApiConfiguration(container.BuildContainer());
 
                 var context = api.Context;
@@ -65,74 +65,6 @@ namespace Microsoft.Restier.Core.Tests
                 api.Dispose();
                 Assert.Throws<ObjectDisposedException>(() => api.Context);
             }
-        }
-
-        [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-        private class TestApiConfiguratorAttribute :
-            ApiConfiguratorAttribute
-        {
-            public TestApiConfiguratorAttribute(string value)
-            {
-                this.Value = value;
-            }
-
-            public string Value { get; private set; }
-
-            public override void UpdateApiConfiguration(
-                ApiConfiguration configuration,
-                Type type)
-            {
-                base.UpdateApiConfiguration(configuration, type);
-                Assert.Same(typeof(TestApiWithParticipants), type);
-                configuration.SetProperty(this.Value, true);
-            }
-
-            public override void UpdateApiContext(
-                ApiContext context,
-                Type type, object instance)
-            {
-                base.UpdateApiContext(context, type, instance);
-                Assert.Same(typeof(TestApiWithParticipants), type);
-                context.SetProperty(this.Value + ".Self", instance);
-                context.SetProperty(this.Value, true);
-            }
-
-            public override void Dispose(
-                ApiContext context,
-                Type type, object instance)
-            {
-                Assert.Same(typeof(TestApiWithParticipants), type);
-                context.SetProperty(this.Value, false);
-                base.Dispose(context, type, instance);
-            }
-        }
-
-        [TestApiConfigurator("Test1")]
-        [TestApiConfigurator("Test2")]
-        private class TestApiWithParticipants : ApiBase
-        {
-        }
-
-        [Fact]
-        public void TestApiAppliesApiParticipantsCorrectly()
-        {
-            ApiBase api = new TestApiWithParticipants();
-            var container = new RestierContainerBuilder(api);
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
-
-            var configuration = api.Context.Configuration;
-            Assert.True(configuration.GetProperty<bool>("Test1"));
-            Assert.True(configuration.GetProperty<bool>("Test2"));
-
-            var context = api.Context;
-            Assert.True(context.GetProperty<bool>("Test1"));
-            Assert.Same(api, context.GetProperty("Test1.Self"));
-            Assert.True(context.GetProperty<bool>("Test2"));
-            Assert.Same(api, context.GetProperty("Test2.Self"));
-
-            (api as IDisposable).Dispose();
-            Assert.False(context.GetProperty<bool>("Test2"));
-            Assert.False(context.GetProperty<bool>("Test1"));
         }
     }
 }
