@@ -63,7 +63,10 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
             // zone when converting the "graph" to a DateTimeOffset.
             if (primitiveType != null && primitiveType.IsDateTimeOffset() && graph is DateTime)
             {
-                graph = new DateTimeOffset((DateTime)graph, TimeSpan.Zero);
+                // If DateTime.Kind equals Local, offset should equal the offset of the system's local time zone
+                graph = new DateTimeOffset((DateTime)graph,
+                    ((DateTime)graph).Kind == DateTimeKind.Local ?
+                    TimeZoneInfo.Local.GetUtcOffset((DateTime)graph) : TimeSpan.Zero);
             }
 
             return base.CreateODataPrimitiveValue(graph, primitiveType, writeContext);
