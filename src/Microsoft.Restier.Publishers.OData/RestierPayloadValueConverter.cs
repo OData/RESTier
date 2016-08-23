@@ -36,8 +36,12 @@ namespace Microsoft.Restier.Publishers.OData
 
                     // System.DateTime[SqlType = DateTime or DateTime2] => Edm.DateTimeOffset
                     // If DateTime.Kind equals Local, offset should equal the offset of the system's local time zone
-                    return new DateTimeOffset(dateTimeValue, dateTimeValue.Kind == DateTimeKind.Local ?
-                        TimeZoneInfo.Local.GetUtcOffset(dateTimeValue) : TimeSpan.Zero);
+                    if (dateTimeValue.Kind == DateTimeKind.Local)
+                    {
+                        return new DateTimeOffset(dateTimeValue, TimeZoneInfo.Local.GetUtcOffset(dateTimeValue));
+                    }
+
+                    return new DateTimeOffset(dateTimeValue, TimeSpan.Zero);
                 }
 
                 // System.TimeSpan is shared by *Edm.TimeOfDay and Edm.Duration:
