@@ -41,6 +41,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         // collection of navigation property with empty collection value
         [InlineData("/People('willieashmore')/Friends", 200)]
         // collection of navigation property with null collection value
+        // TODO since webapi doesnot handle query with null, the trips here in the datasource are actually not null.
         [InlineData("/People('clydeguess')/Trips", 200)]
         // collection of navigation property's property and navigation property has null value
         // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
@@ -81,12 +82,6 @@ namespace Microsoft.OData.Service.Sample.Tests
         public void QueryPropertyWithNonExistEntity(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
-        }
-
-        [Fact]
-        public void TestAutoExpandedNavigationProperty()
-        {
-            TestGetPayloadContains("People", "\"Friends\":[");
         }
 
         [Fact]

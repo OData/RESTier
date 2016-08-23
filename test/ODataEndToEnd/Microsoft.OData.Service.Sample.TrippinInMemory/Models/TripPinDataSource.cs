@@ -592,7 +592,8 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
                     LastName = "Guess",
                     UserName = "clydeguess",
                     Gender = PersonGender.Male,
-                    HomeAddress = new Location()
+                    HomeAddress = new Location(),
+                    Trips = new List<Trip>()
                 },
                 new Person()
                 {

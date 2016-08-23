@@ -45,7 +45,6 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
 
         public Location HomeAddress { get; set; }
 
-        [AutoExpand]
         public virtual ICollection<Person> Friends { get; set; }
 
         public Person BestFriend { get; set; }
