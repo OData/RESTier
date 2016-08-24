@@ -31,6 +31,16 @@ namespace Microsoft.Restier.Providers.EntityFramework
     public class EntityFrameworkApi<T> : ApiBase where T : DbContext
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="EntityFrameworkApi{T}" /> class.
+        /// </summary>
+        /// <param name="serviceProvider">
+        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
+        /// </param>
+        public EntityFrameworkApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
+        /// <summary>
         /// Gets the underlying DbContext for this API.
         /// </summary>
         protected T DbContext

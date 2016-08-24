@@ -21,12 +21,20 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public abstract class ApiBase : IDisposable
     {
-        private static readonly ConcurrentDictionary<Type, ApiConfiguration> Configurations =
-            new ConcurrentDictionary<Type, ApiConfiguration>();
-
         private ApiConfiguration apiConfiguration;
         private ApiContext apiContext;
         private IServiceProvider serviceProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiBase" /> class.
+        /// </summary>
+        /// <param name="serviceProvider">
+        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
+        /// </param>
+        protected ApiBase(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
 
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
@@ -36,12 +44,6 @@ namespace Microsoft.Restier.Core
             get
             {
                 return serviceProvider;
-            }
-
-            set
-            {
-                // TODO use set but not in constructor as need to update lots of test cases
-                this.serviceProvider = value;
             }
         }
 
@@ -72,7 +74,7 @@ namespace Microsoft.Restier.Core
         public bool IsDisposed { get; private set; }
 
         /// <summary>
-        /// Gets or sets the API configuration for this API.
+        /// Gets the API configuration for this API.
         /// </summary>
         public ApiConfiguration Configuration
         {
@@ -84,13 +86,6 @@ namespace Microsoft.Restier.Core
                 }
 
                 return this.apiConfiguration;
-            }
-
-            set
-            {
-                // TODO keep now as lots of test cases need to update
-                this.apiConfiguration = value;
-                Configurations.TryAdd(GetType(), apiConfiguration);
             }
         }
 
@@ -136,14 +131,6 @@ namespace Microsoft.Restier.Core
             }
 
             GC.SuppressFinalize(this);
-        }
-
-        // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.
-        // If a descendant class wants to expose these 2 services in another way, it must ensure they could be
-        // resolved after CreateApiContext call.
-        internal class ApiHolder
-        {
-            public ApiBase Api { get; set; }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class StoreApi : ApiBase
     {
-        public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services = ApiBase.ConfigureApi(apiType, services);
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
@@ -45,6 +45,10 @@ namespace Microsoft.Restier.Publishers.OData.Test
             services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer());
             services.AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
             return services;
+        }
+
+        public StoreApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 

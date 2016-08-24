@@ -19,11 +19,11 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiContext" /> class.
         /// </summary>
-        /// <param name="configuration">
-        /// An API configuration.
-        /// </param>
         /// <param name="provider">
         /// The service provider.
+        /// </param>
+        /// <param name="configuration">
+        /// An API configuration.
         /// </param>
         public ApiContext(IServiceProvider provider, ApiConfiguration configuration)
         {

@@ -1,16 +1,16 @@
 public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
-	protected ApiBase ()
+	protected ApiBase (System.IServiceProvider serviceProvider)
 
-	Microsoft.Restier.Core.ApiConfiguration Configuration  { public get; public set; }
+	Microsoft.Restier.Core.ApiConfiguration Configuration  { public get; }
 	Microsoft.Restier.Core.ApiContext Context  { public get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]public get; }
+	System.IServiceProvider ServiceProvider  { public get; }
 
 	[
 	CLSCompliantAttribute(),
 	]
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (System.Type apiType, Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
-	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 	public virtual void Dispose ()
 }
 
@@ -52,41 +52,6 @@ public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiBase api, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
-}
-
-[
-ExtensionAttribute(),
-]
-public sealed class Microsoft.Restier.Core.ApiConfigurationExtensions {
-	[
-	ExtensionAttribute(),
-	]
-	public static void ClearProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static T GetApiService (Microsoft.Restier.Core.ApiConfiguration configuration)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static object GetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static T GetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static bool HasProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static void SetProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string name, object value)
 }
 
 [
@@ -235,7 +200,7 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 }
 
 public class Microsoft.Restier.Core.ApiConfiguration {
-	public ApiConfiguration (System.IServiceProvider serviceProvider)
+	public ApiConfiguration ()
 
 	[
 	CLSCompliantAttribute(),
@@ -249,7 +214,7 @@ public class Microsoft.Restier.Core.ApiConfiguration {
 }
 
 public class Microsoft.Restier.Core.ApiContext {
-	public ApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
+	public ApiContext (System.IServiceProvider provider, Microsoft.Restier.Core.ApiConfiguration configuration)
 
 	Microsoft.Restier.Core.ApiConfiguration Configuration  { [CompilerGeneratedAttribute(),]public get; }
 }
@@ -561,7 +526,7 @@ public class Microsoft.Restier.Providers.EntityFramework.ChangeSetInitializer : 
 }
 
 public class Microsoft.Restier.Providers.EntityFramework.EntityFrameworkApi`1 : Microsoft.Restier.Core.ApiBase, IDisposable {
-	public EntityFrameworkApi`1 ()
+	public EntityFrameworkApi`1 (System.IServiceProvider serviceProvider)
 
 	T DbContext  { protected get; }
 
@@ -585,11 +550,6 @@ public sealed class Microsoft.Restier.Publishers.OData.HttpConfigurationExtensio
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, params Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler batchHandler)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[System.Web.OData.Routing.ODataRoute]] MapRestierRoute (System.Web.Http.HttpConfiguration config, string routeName, string routePrefix, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory, params Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler batchHandler)
 
 	[
 	ExtensionAttribute(),
@@ -654,7 +614,7 @@ public class Microsoft.Restier.Publishers.OData.RestierPayloadValueConverter : M
 }
 
 public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
-	public RestierBatchChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests, System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
+	public RestierBatchChangeSetRequestItem (System.Collections.Generic.IEnumerable`1[[System.Net.Http.HttpRequestMessage]] requests)
 
 	[
 	AsyncStateMachineAttribute(),
@@ -663,9 +623,7 @@ public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetReque
 }
 
 public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchHandler : System.Web.OData.Batch.DefaultODataBatchHandler, IDisposable {
-	public RestierBatchHandler (System.Web.Http.HttpServer httpServer, params System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
-
-	System.Func`1[[Microsoft.Restier.Core.ApiBase]] ApiFactory  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	public RestierBatchHandler (System.Web.Http.HttpServer httpServer)
 
 	protected virtual Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem (System.Collections.Generic.IList`1[[System.Net.Http.HttpRequestMessage]] changeSetRequests)
 	[

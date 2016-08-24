@@ -17,6 +17,10 @@ namespace Microsoft.Restier.Core.Tests
                     .MakeScoped<IService>()
                     .AddService<IService, Service>();
             }
+
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         interface IService
@@ -42,10 +46,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void DefaultApiBaseCanBeCreatedAndDisposed()
         {
-            using (var api = new TestApi())
-            {
-                api.Dispose();
-            }
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.Dispose();
         }
 
         [Fact]
@@ -54,9 +58,7 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
-            // TODO, this will create a new scope and a new provider....
             var context = api.Context;
             var svc = context.GetApiService<IService>();
 

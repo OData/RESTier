@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
@@ -37,12 +38,13 @@ namespace Microsoft.Restier.Publishers.OData.Batch
         /// <summary>
         /// The callback to execute when the changeset is completed.
         /// </summary>
+        /// <param name="request">The http request message.</param>
         /// <returns>The task object that represents this callback execution.</returns>
-        public Task OnChangeSetCompleted()
+        public Task OnChangeSetCompleted(HttpRequestMessage request)
         {
             if (Interlocked.Decrement(ref this.subRequestCount) == 0)
             {
-                this.changeSetRequestItem.SubmitChangeSet(this.ChangeSet)
+                this.changeSetRequestItem.SubmitChangeSet(request, this.ChangeSet)
                     .ContinueWith(t =>
                     {
                         if (t.Exception != null)

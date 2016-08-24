@@ -110,6 +110,10 @@ namespace Microsoft.Restier.Publishers.OData.Test
         {
             get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
         }
+
+        public FallbackApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class PeopleController : ODataController

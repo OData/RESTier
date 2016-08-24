@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Xunit;
@@ -20,12 +21,10 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiA));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var configuration = api.Context.Configuration;
 
-            ApiBase anotherApi = new TestApiA();
-            anotherApi.ServiceProvider = provider;
+            ApiBase anotherApi = provider.GetService<ApiBase>();
             var cached = anotherApi.Context.Configuration;
             Assert.Same(configuration, cached);
         }
@@ -36,15 +35,13 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiA));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             Assert.Null(api.Context.GetApiService<IServiceA>());
             Assert.Null(api.Context.GetApiService<IServiceB>());
 
             container = new RestierContainerBuilder(typeof(TestApiB));
             var provider2 = container.BuildContainer();
-            var apiB = provider.GetService<ApiBase>();
-            apiB.ServiceProvider = provider2;
+            var apiB = provider2.GetService<ApiBase>();
 
             Assert.Same(TestApiB.serviceA, apiB.Context.GetApiService<IServiceA>());
 
@@ -67,7 +64,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiC));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var handler = api.Context.GetApiService<IServiceB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
@@ -75,6 +71,9 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApiA : ApiBase
         {
+            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         private class TestApiB : ApiBase
@@ -114,7 +113,17 @@ namespace Microsoft.Restier.Core.Tests
                 services.AddService<IServiceB, ServiceB>();
                 services.AddSingleton(new ServiceB());
 
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
         private class TestApiC : ApiBase
@@ -130,7 +139,17 @@ namespace Microsoft.Restier.Core.Tests
                         return q2;
                     });
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
+
                 return services;
+            }
+
+            public TestApiC(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 

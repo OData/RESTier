@@ -12,7 +12,6 @@ using System.Web.OData.Batch;
 using System.Web.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
-using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.Publishers.OData.Batch
 {
@@ -25,17 +24,10 @@ namespace Microsoft.Restier.Publishers.OData.Batch
         /// Initializes a new instance of the <see cref="RestierBatchHandler" /> class.
         /// </summary>
         /// <param name="httpServer">The HTTP server instance.</param>
-        /// <param name="apiFactory">Gets or sets the callback to create API.</param>
-        public RestierBatchHandler(HttpServer httpServer, Func<ApiBase> apiFactory = null)
+        public RestierBatchHandler(HttpServer httpServer)
             : base(httpServer)
         {
-            this.ApiFactory = apiFactory;
         }
-
-        /// <summary>
-        /// Gets or sets the callback to create API.
-        /// </summary>
-        public Func<ApiBase> ApiFactory { get; set; }
 
         /// <summary>
         /// Asynchronously parses the batch requests.
@@ -47,11 +39,6 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (this.ApiFactory == null)
-            {
-                throw new InvalidOperationException(Resources.BatchHandlerRequiresApiContextFactory);
-            }
-
             Ensure.NotNull(request, "request");
 
             IServiceProvider requestContainer = request.CreateRequestContainer(ODataRouteName);
@@ -99,7 +86,7 @@ namespace Microsoft.Restier.Publishers.OData.Batch
         protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(
             IList<HttpRequestMessage> changeSetRequests)
         {
-            return new RestierBatchChangeSetRequestItem(changeSetRequests, this.ApiFactory);
+            return new RestierBatchChangeSetRequestItem(changeSetRequests);
         }
     }
 }

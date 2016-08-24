@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Batch;
+using System.Web.OData.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 
@@ -17,19 +19,13 @@ namespace Microsoft.Restier.Publishers.OData.Batch
     /// </summary>
     public class RestierBatchChangeSetRequestItem : ChangeSetRequestItem
     {
-        private Func<ApiBase> apiFactory;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierBatchChangeSetRequestItem" /> class.
         /// </summary>
         /// <param name="requests">The request messages.</param>
-        /// <param name="apiFactory">Gets or sets the callback to create API.</param>
-        public RestierBatchChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<ApiBase> apiFactory)
+        public RestierBatchChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests)
             : base(requests)
         {
-            Ensure.NotNull(apiFactory, "apiFactory");
-
-            this.apiFactory = apiFactory;
         }
 
         /// <summary>
@@ -89,9 +85,10 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             return new ChangeSetResponseItem(responses);
         }
 
-        internal async Task SubmitChangeSet(ChangeSet changeSet)
+        internal async Task SubmitChangeSet(HttpRequestMessage request, ChangeSet changeSet)
         {
-            using (var api = this.apiFactory())
+            var requestContainer = request.GetRequestContainer();
+            using (var api = requestContainer.GetService<ApiBase>())
             {
                 SubmitResult submitResults = await api.SubmitAsync(changeSet);
             }

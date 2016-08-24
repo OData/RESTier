@@ -104,5 +104,9 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
                 return model;
             }
         }
+
+        public NorthwindApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 }

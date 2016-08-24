@@ -16,5 +16,9 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             services.AddODataServices<LibraryApi>();
             return services;
         }
+
+        public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 }

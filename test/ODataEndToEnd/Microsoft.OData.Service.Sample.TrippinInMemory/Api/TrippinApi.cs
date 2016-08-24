@@ -34,6 +34,10 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             get { return InMemoryProviderUtils.GetSessionId(); }
         }
 
+        public TrippinApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
         #region Entity Set
 
         [Resource]
@@ -337,7 +341,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
 
         #endregion
 
-        public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             Func<IServiceProvider, IDataStoreManager<string, TripPinDataSource>> defaultDataStoreManager =
                 sp => new DefaultDataStoreManager<string, TripPinDataSource>()

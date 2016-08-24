@@ -11,6 +11,9 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApi : ApiBase
         {
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         [Fact]
@@ -19,7 +22,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var context = api.Context;
             Assert.NotNull(context.Configuration);

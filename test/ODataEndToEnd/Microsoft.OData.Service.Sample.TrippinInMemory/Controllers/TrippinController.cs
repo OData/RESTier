@@ -4,8 +4,11 @@
 using System.Linq;
 using System.Web.Http;
 using System.Web.OData;
+using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Service.Sample.TrippinInMemory.Api;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory.Controllers
 {
@@ -18,7 +21,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Controllers
             {
                 if (_api == null)
                 {
-                    _api = new TrippinApi();
+                    _api = (TrippinApi)this.Request.GetRequestContainer().GetService<ApiBase>();
                 }
 
                 return _api;

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
@@ -36,7 +37,16 @@ namespace Microsoft.Restier.Core.Tests
                     })
                     .AddService<ISomeService, SomeService>();
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -52,7 +62,16 @@ namespace Microsoft.Restier.Core.Tests
                     .AddService<ISomeService, SomeService>()
                     .MakeTransient<ISomeService>();
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -62,7 +81,17 @@ namespace Microsoft.Restier.Core.Tests
             {
                 services.MakeScoped<ISomeService>()
                     .AddService<ISomeService>((sp, next) => new SomeService());
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiC(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -77,7 +106,17 @@ namespace Microsoft.Restier.Core.Tests
                 })
                     .AddService<ISomeService, SomeServiceNoChain>()
                     .MakeTransient<ISomeService>();
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiD(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -94,7 +133,16 @@ namespace Microsoft.Restier.Core.Tests
                     .AddService<ISomeService, SomeService2>()
                     .AddSingleton("Text");
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiE(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -109,7 +157,17 @@ namespace Microsoft.Restier.Core.Tests
                     .MakeTransient<ISomeService>()
                     .AddService<ISomeService, SomeService2>();
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
+
                 return services;
+            }
+
+            public TestApiF(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -130,7 +188,17 @@ namespace Microsoft.Restier.Core.Tests
                     .AddService<string>((sp, next) => { return "0"; })
                     .MakeTransient<string>();
 
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiG(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -147,7 +215,16 @@ namespace Microsoft.Restier.Core.Tests
                     .AddService<string>((sp, next) => { return "0"; })
                     .MakeTransient<string>();
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiH(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -166,7 +243,16 @@ namespace Microsoft.Restier.Core.Tests
                     })
                     .AddService<ISomeService, SomeService4>();
 
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiI(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -299,7 +385,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiA));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("03210", value);
         }
@@ -310,7 +395,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiB));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
 
@@ -325,19 +409,20 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiC));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var service1 = api.Context.GetApiService<ISomeService>();
-
-            var api2 = new TestApiC();
+            
             container = new RestierContainerBuilder(typeof(TestApiC));
-            api2.Configuration = new ApiConfiguration(container.BuildContainer());
+            provider = container.BuildContainer();
+            var api2 = provider.GetService<ApiBase>();
 
             var service2 = api2.Context.GetApiService<ISomeService>();
 
             Assert.NotEqual(service1, service2);
 
-            var api3 = new TestApiC();
+            container = new RestierContainerBuilder(typeof(TestApiC));
+            provider = container.BuildContainer();
+            var api3 = provider.GetService<ApiBase>();
             var service3 = api3.Context.GetApiService<ISomeService>();
 
             Assert.NotEqual(service3, service2);
@@ -350,7 +435,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiD));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
@@ -368,7 +452,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiE));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var expected = "Text42";
             var value = api.Context.GetApiService<ISomeService>().Call();
@@ -391,7 +474,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiF));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
@@ -409,7 +491,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiG));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
@@ -427,7 +508,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiH));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             Assert.Throws<InvalidOperationException>(() => { api.Context.GetApiService<ISomeService>(); });
         }
@@ -438,7 +518,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiI));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var value = api.Context.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);

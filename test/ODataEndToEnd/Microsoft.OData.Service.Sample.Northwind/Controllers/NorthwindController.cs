@@ -12,33 +12,22 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.OData;
+using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Service.Sample.Northwind.Models;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Controllers
 {
     public class NorthwindController : ODataController
     {
-        private NorthwindApi api;
-
-        private NorthwindApi Api
-        {
-            get
-            {
-                if (api == null)
-                {
-                    api = new NorthwindApi();
-                }
-
-                return api;
-            }
-        }
-
         private NorthwindContext DbContext
         {
             get
             {
-                return Api.Context;
+                var api =(NorthwindApi)this.Request.GetRequestContainer().GetService<ApiBase>();
+                return api.Context;
             }
         }
 
@@ -115,23 +104,6 @@ namespace Microsoft.OData.Service.Sample.Northwind.Controllers
         {
             DbContext.ResetDataSource();
             return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        /// <summary>
-        /// Disposes the API and the controller.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposing is happening.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.api != null)
-                {
-                    this.api.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

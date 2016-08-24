@@ -179,7 +179,7 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 changeSetProperty.ChangeSet.Entries.Add(postItem);
 
-                await changeSetProperty.OnChangeSetCompleted();
+                await changeSetProperty.OnChangeSetCompleted(this.Request);
             }
 
             return this.CreateCreatedODataResult(postItem.Resource);
@@ -258,7 +258,7 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 changeSetProperty.ChangeSet.Entries.Add(deleteItem);
 
-                await changeSetProperty.OnChangeSetCompleted();
+                await changeSetProperty.OnChangeSetCompleted(this.Request);
             }
 
             return this.StatusCode(HttpStatusCode.NoContent);
@@ -426,7 +426,7 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 changeSetProperty.ChangeSet.Entries.Add(updateItem);
 
-                await changeSetProperty.OnChangeSetCompleted();
+                await changeSetProperty.OnChangeSetCompleted(this.Request);
             }
 
             return this.CreateUpdatedODataResult(updateItem.Resource);

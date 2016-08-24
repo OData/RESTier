@@ -648,5 +648,9 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
                 return model;
             }
         }
+
+        public TrippinApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 }

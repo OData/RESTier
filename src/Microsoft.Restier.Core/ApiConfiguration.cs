@@ -30,28 +30,7 @@ namespace Microsoft.Restier.Core
 
         private static Action<IServiceCollection> emptyConfig = _ => { };
 
-        private IServiceProvider serviceProvider;
-
         private Task<IEdmModel> modelTask;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApiConfiguration" /> class.
-        /// </summary>
-        /// <param name="serviceProvider">
-        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
-        /// </param>
-        public ApiConfiguration(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
-        /// </summary>
-        internal IServiceProvider ServiceProvider
-        {
-            get { return serviceProvider; }
-        }
 
         internal IEdmModel Model { get; private set; }
 

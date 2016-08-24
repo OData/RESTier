@@ -33,5 +33,9 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
                 return Task.FromResult<IEdmModel>(model);
             }
         }
+
+        public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 }

@@ -30,17 +30,6 @@ namespace Microsoft.Restier.Publishers.OData
         private const string MethodNameOfDelete = "Delete";
         private const string MethodNameOfPostAction = "PostAction";
 
-        private readonly Func<ApiBase> apiFactory;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RestierRoutingConvention" /> class.
-        /// </summary>
-        /// <param name="apiFactory">The API factory method.</param>
-        public RestierRoutingConvention(Func<ApiBase> apiFactory)
-        {
-            this.apiFactory = apiFactory;
-        }
-
         /// <summary>
         /// Selects OData controller based on parsed OData URI
         /// </summary>
@@ -69,10 +58,8 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             // Create ApiBase instance
-            // TODO need to change the way to create ApiBase
             var provider = request.GetRequestContainer();
             var apiBase = provider.GetService<ApiBase>();
-            apiBase.ServiceProvider = provider;
             request.SetApiInstance(apiBase);
             return RestierControllerName;
         }

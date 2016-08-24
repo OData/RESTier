@@ -38,19 +38,15 @@ namespace Microsoft.Restier.Publishers.OData
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routePrefix">The prefix of the route.</param>
-        /// <param name="apiFactory">The callback to create API instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
         public static Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            Func<ApiBase> apiFactory,
             RestierBatchHandler batchHandler = null)
             where TApi : ApiBase
         {
-            Ensure.NotNull(apiFactory, "apiFactory");
-
             // This will be added a service to callback stored in ApiConfiguration
             // Callback is called by ApiBase.AddApiServices method to add real services.
             ApiConfiguration.AddPublisherServices(
@@ -60,55 +56,22 @@ namespace Microsoft.Restier.Publishers.OData
                 services.AddODataServices<TApi>();
             });
 
-            using (var api = apiFactory())
+            Func<IContainerBuilder> func = () => new RestierContainerBuilder(typeof(TApi));
+            config.UseCustomContainerBuilder(func);
+
+            var conventions = CreateRestierRoutingConventions(config, routeName);
+            if (batchHandler != null)
             {
-                Func<IContainerBuilder> func = () => new RestierContainerBuilder(api.GetType());
-                config.UseCustomContainerBuilder(func);
-
-                var conventions = CreateRestierRoutingConventions(config, routeName, apiFactory);
-                if (batchHandler != null && batchHandler.ApiFactory == null)
-                {
-                    batchHandler.ApiFactory = apiFactory;
-                    batchHandler.ODataRouteName = routeName;
-                }
-
-                Action<IContainerBuilder> configureAction = builder => builder
-                .AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions)
-                .AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
-
-                var route = config.MapODataServiceRoute(routeName, routePrefix, configureAction);
-
-                // Set ApiConfiguration instance for further usage
-                if (config != null)
-                {
-                    var mapping = (ConcurrentDictionary<string, IServiceProvider>)config.Properties[RootContainerKey];
-                    IServiceProvider rootContainer;
-                    mapping.TryGetValue(routeName, out rootContainer);
-                    api.Configuration = rootContainer.GetService<ApiConfiguration>();
-                }
-
-                return Task.FromResult(route);
+                batchHandler.ODataRouteName = routeName;
             }
-        }
 
-        /// <summary>
-        /// Maps the API routes to the RestierController.
-        /// </summary>
-        /// <typeparam name="TApi">The user API.</typeparam>
-        /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
-        /// <param name="routeName">The name of the route.</param>
-        /// <param name="routePrefix">The prefix of the route.</param>
-        /// <param name="batchHandler">The handler for batch requests.</param>
-        /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static Task<ODataRoute> MapRestierRoute<TApi>(
-            this HttpConfiguration config,
-            string routeName,
-            string routePrefix,
-            RestierBatchHandler batchHandler = null)
-            where TApi : ApiBase, new()
-        {
-            return MapRestierRoute<TApi>(
-                config, routeName, routePrefix, () => new TApi(), batchHandler);
+            Action<IContainerBuilder> configureAction = builder => builder
+            .AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions)
+            .AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
+
+            var route = config.MapODataServiceRoute(routeName, routePrefix, configureAction);
+
+            return Task.FromResult(route);
         }
 
         /// <summary>
@@ -157,10 +120,9 @@ namespace Microsoft.Restier.Publishers.OData
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
-        /// <param name="apiFactory">The API factory.</param>
         /// <returns>The routing conventions created.</returns>
         private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
-            this HttpConfiguration config, string routeName, Func<ApiBase> apiFactory)
+            this HttpConfiguration config, string routeName)
         {
             var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(routeName, config);
             var index = 0;
@@ -173,7 +135,7 @@ namespace Microsoft.Restier.Publishers.OData
                 }
             }
 
-            conventions.Insert(index + 1, new RestierRoutingConvention(apiFactory));
+            conventions.Insert(index + 1, new RestierRoutingConvention());
             return conventions;
         }
     }

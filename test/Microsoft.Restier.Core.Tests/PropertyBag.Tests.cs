@@ -15,7 +15,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
             var context =api.Context;
 
             Assert.False(context.HasProperty("Test"));
@@ -41,15 +40,9 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
 
             var context = api.Context;
-            var configuration = context.Configuration;
-
-            configuration.SetProperty("Test", 1);
             context.SetProperty("Test", 2);
-
-            Assert.Equal(1, configuration.GetProperty<int>("Test"));
             Assert.Equal(2, context.GetProperty<int>("Test"));
         }
 
@@ -58,22 +51,23 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
+            var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var scopedProvider  = scope.ServiceProvider;
+            var api = scopedProvider.GetService<ApiBase>();
             var context = api.Context;
-            var configuration = context.Configuration;
-
-            Assert.NotNull(configuration.GetApiService<MyPropertyBag>());
-            Assert.Equal(1, MyPropertyBag.InstanceCount);
 
             Assert.NotNull(context.GetApiService<MyPropertyBag>());
+            Assert.Equal(1, MyPropertyBag.InstanceCount);
+
+            var scopedProvider2 = provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
+            var api2 = scopedProvider2.GetService<ApiBase>();
+            var context2 = api2.Context;
+
+            Assert.NotNull(context2.GetApiService<MyPropertyBag>());
             Assert.Equal(2, MyPropertyBag.InstanceCount);
 
-            // This will dispose all the scoped and transient instances registered
-            // in the ApiContext scope.
-            api.Dispose();
+            scope.Dispose();
 
-            // The one in ApiConfiguration will NOT be disposed until the service ends.
             Assert.Equal(1, MyPropertyBag.InstanceCount);
         }
 
@@ -102,6 +96,10 @@ namespace Microsoft.Restier.Core.Tests
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 return ApiBase.ConfigureApi(apiType, services).AddScoped<MyPropertyBag>();
+            }
+
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
     }

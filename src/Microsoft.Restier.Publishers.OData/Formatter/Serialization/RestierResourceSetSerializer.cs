@@ -56,17 +56,17 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
             Type type,
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext,
-            IEdmTypeReference feedType)
+            IEdmTypeReference resourceSetType)
         {
             if (typeof(IEnumerable<DynamicTypeWrapper>).IsAssignableFrom(type))
             {
-                IEdmTypeReference elementType = feedType.AsCollection().ElementType();
+                IEdmTypeReference elementType = resourceSetType.AsCollection().ElementType();
                 if (elementType.IsEntity())
                 {
                     var entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
                     var entityType = elementType.AsEntity();
                     var writer = messageWriter.CreateODataResourceSetWriter(entitySet, entityType.EntityDefinition());
-                    WriteObjectInline(graph, feedType, writer, writeContext);
+                    WriteObjectInline(graph, resourceSetType, writer, writeContext);
                     return true;
                 }
             }

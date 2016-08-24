@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
@@ -124,17 +126,20 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             // In this case, two entity sets Employees and People have entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should NOT be added.
-            var model = await this.GetModelAsync<ApiG>();
+            var model = await GetModelAsync<ApiG>();
             Assert.Empty(model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings);
             Assert.Empty(model.EntityContainer.FindSingleton("Me").NavigationPropertyBindings);
         }
 
-        private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi, new()
+        private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi
         {
-            var api = (BaseApi)Activator.CreateInstance<T>();
             HttpConfiguration config = new HttpConfiguration();
             await config.MapRestierRoute<T>(
                     "test", "api/test",null);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
+            request.SetConfiguration(config);
+            var api = request.CreateRequestContainer("test").GetService<ApiBase>();
             return await api.Context.GetModelAsync();
         }
     }
@@ -178,10 +183,17 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             get { return base.Configuration; }
         }
+
+        public BaseApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class EmptyApi : BaseApi
     {
+        public EmptyApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class Person
@@ -197,10 +209,14 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
-        public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return BaseApi.ConfigureApi(apiType, services);
+        }
+
+        public ApiA(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 
@@ -208,6 +224,10 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
     {
         [Resource]
         public IQueryable<Person> Customers { get; set; }
+
+        public ApiB(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class Customer
@@ -227,10 +247,17 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public new IQueryable<Customer> Customers { get; set; }
         [Resource(IsSingleton = true)]
         public new Customer Me { get; set; }
+
+        public ApiC(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class ApiD : ApiC
     {
+        public ApiD(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class Order
@@ -250,6 +277,10 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return BaseApi.ConfigureApi(apiType, services);
         }
+
+        public ApiE(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class ApiF : BaseApi
@@ -261,12 +292,20 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return BaseApi.ConfigureApi(apiType, services);
         }
+
+        public ApiF(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class ApiG : ApiC
     {
         [Resource]
         public IQueryable<Person> Employees { get; set; }
+
+        public ApiG(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
     }
 
     public class ApiH : BaseApi
@@ -282,6 +321,10 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             return BaseApi.ConfigureApi(apiType, services);
+        }
+
+        public ApiH(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

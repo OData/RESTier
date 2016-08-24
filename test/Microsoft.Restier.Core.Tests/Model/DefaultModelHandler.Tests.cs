@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Xunit;
@@ -27,7 +28,18 @@ namespace Microsoft.Restier.Core.Tests.Model
                 {
                     InnerHandler = next,
                 });
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
+
                 return services;
+            }
+
+            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -37,7 +49,17 @@ namespace Microsoft.Restier.Core.Tests.Model
             {
                 var service = new TestSingleCallModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
                 return services;
+            }
+
+            public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -47,7 +69,18 @@ namespace Microsoft.Restier.Core.Tests.Model
             {
                 var service = new TestRetryModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
+
+                services.AddScoped(apiType, apiType)
+                    .AddScoped(typeof(ApiBase), apiType)
+                    .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
+
                 return services;
+            }
+
+            public TestApiC(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -107,7 +140,6 @@ namespace Microsoft.Restier.Core.Tests.Model
             var container = new RestierContainerBuilder(typeof(TestApiA));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
             var context = api.Context;
 
             var model = await context.GetModelAsync();
@@ -140,12 +172,8 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        private static Task<IEdmModel>[] PrepareThreads(int count, Type apiType, ManualResetEventSlim wait)
+        private static Task<IEdmModel>[] PrepareThreads(int count, IServiceProvider provider, ManualResetEventSlim wait)
         {
-            var api2 = (ApiBase)Activator.CreateInstance(apiType);
-            var container = new RestierContainerBuilder(apiType);
-            api2.Configuration = new ApiConfiguration(container.BuildContainer());
-
             var tasks = new Task<IEdmModel>[count];
             var result = Parallel.For(0, count, (inx, state) =>
             {
@@ -155,8 +183,9 @@ namespace Microsoft.Restier.Core.Tests.Model
                     // To make threads better aligned.
                     wait.Wait();
 
-                    var api = (ApiBase)Activator.CreateInstance(apiType);
-
+                    var scopedProvider =
+                        provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
+                    var api = scopedProvider.GetService<ApiBase>();
                     var context = api.Context;
                     try
                     {
@@ -182,7 +211,9 @@ namespace Microsoft.Restier.Core.Tests.Model
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    var tasks = PrepareThreads(50, typeof(TestApiB), wait);
+                    var container = new RestierContainerBuilder(typeof(TestApiB));
+                    var provider = container.BuildContainer();
+                    var tasks = PrepareThreads(50, provider, wait);
                     wait.Set();
 
                     var models = await Task.WhenAll(tasks);
@@ -212,7 +243,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                var tasks = PrepareThreads(6, typeof(TestApiC), wait);
+                var container = new RestierContainerBuilder(typeof(TestApiC));
+                var provider = container.BuildContainer();
+
+                var tasks = PrepareThreads(6, provider, wait);
                 wait.Set();
 
                 await Task.WhenAll(tasks).ContinueWith(t =>
@@ -221,7 +255,7 @@ namespace Microsoft.Restier.Core.Tests.Model
                     Assert.True(tasks.All(e => e.IsFaulted));
                 });
 
-                tasks = PrepareThreads(150, typeof(TestApiC), wait);
+                tasks = PrepareThreads(150, provider, wait);
 
                 var models = await Task.WhenAll(tasks);
                 Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));

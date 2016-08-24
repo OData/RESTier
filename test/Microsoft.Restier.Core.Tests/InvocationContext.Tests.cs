@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace Microsoft.Restier.Core.Tests
@@ -25,11 +26,21 @@ namespace Microsoft.Restier.Core.Tests
                 }
             }
 
-            public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                services.AddScoped(apiType, apiType)
+                .AddScoped(typeof(ApiBase), apiType)
+                .AddScoped<ApiContext>();
+
+                services.TryAddSingleton<ApiConfiguration>();
+
                 services.AddService<IServiceA>((sp, next) => ApiService);
 
                 return services;
+            }
+
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -39,7 +50,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
             var apiContext = api.Context;
             var context = new InvocationContext(apiContext);
             Assert.Same(apiContext, context.ApiContext);
@@ -51,7 +61,6 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            api.ServiceProvider = provider;
             var apiContext = api.Context;
             var context = new InvocationContext(apiContext);
             Assert.Same(TestApi.ApiService, context.GetApiService<IServiceA>());

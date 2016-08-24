@@ -38,6 +38,10 @@ namespace Microsoft.Restier.Publishers.OData.Test
                 return StoreApi.ConfigureApi(apiType, services)
                     .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
+
+            public ExcApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         private class FakeSourcer : IQueryExpressionSourcer
