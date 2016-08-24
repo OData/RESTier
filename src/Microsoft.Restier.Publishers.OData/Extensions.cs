@@ -18,7 +18,7 @@ using Microsoft.Restier.Publishers.OData.Model;
 
 namespace Microsoft.Restier.Publishers.OData
 {
-    internal static class Extensions
+    public static class Extensions
     {
         private const string PropertyNameOfConcurrencyProperties = "ConcurrencyProperties";
 
