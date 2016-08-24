@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core.Tests.Model
     {
         private class TestApiA : ApiBase
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
                 services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private class TestApiB : ApiBase
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var service = new TestSingleCallModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private class TestApiC : ApiBase
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var service = new TestRetryModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
@@ -104,9 +104,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var api = new TestApiA();
-            var container = new RestierContainerBuilder(() => new TestApiA());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApiA));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
 
             var model = await context.GetModelAsync();
@@ -142,7 +143,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         private static Task<IEdmModel>[] PrepareThreads(int count, Type apiType, ManualResetEventSlim wait)
         {
             var api2 = (ApiBase)Activator.CreateInstance(apiType);
-            var container = new RestierContainerBuilder(() => (ApiBase)Activator.CreateInstance(apiType));
+            var container = new RestierContainerBuilder(apiType);
             api2.Configuration = new ApiConfiguration(container.BuildContainer());
 
             var tasks = new Task<IEdmModel>[count];

@@ -36,9 +36,9 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class StoreApi : ApiBase
     {
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            services = base.ConfigureApi(services);
+            services = ApiBase.ConfigureApi(apiType, services);
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
             services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer());

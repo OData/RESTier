@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 #region Permanent Exclusions
+[assembly: SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Scope = "member", Target = "Microsoft.Restier.Providers.EntityFramework.EntityFrameworkApi`1.#ConfigureApi(System.Type,Microsoft.Extensions.DependencyInjection.IServiceCollection)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Scope = "member", Target = "Microsoft.Restier.Core.Query.QueryRequest.#Create`2(System.Linq.IQueryable`1<!!0>,System.Linq.Expressions.Expression`1<System.Func`2<System.Linq.IQueryable`1<!!0>,!!1>>,System.Nullable`1<System.Boolean>)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Scope = "type", Target = "Microsoft.Restier.Core.Submit.ChangeSetValidationException", Justification = "We do not intend to support serialization of this exception yet")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem.#DisposeResponses(System.Collections.Generic.IEnumerable`1<System.Net.Http.HttpResponseMessage>)")]

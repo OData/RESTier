@@ -30,6 +30,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             get { return DbContext; }
         }
 
+        [Resource(IsSingleton = true)]
         public Person Me
         {
             get
@@ -42,16 +43,19 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        [Resource]
         public IQueryable<Flight> Flights1
         {
             get { return DbContext.Flights; }
         }
 
+        [Resource]
         public IQueryable<Flight> Flights2
         {
             get { return this.GetQueryableSource<Flight>("Flights"); }
         }
 
+        [Resource]
         public IQueryable<PersonWithAge> PeopleWithAge
         {
             get
@@ -66,6 +70,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        [Resource]
         public IQueryable<PersonWithAge> PeopleWithAge1
         {
             get
@@ -80,6 +85,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        [Resource(IsSingleton = true)]
         public PersonWithAge PeopleWithAgeMe
         {
             get
@@ -561,7 +567,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             return false;
         }
 
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             // Add customized OData validation settings 
             Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = sp => new ODataValidationSettings
@@ -572,7 +578,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
             services.AddService<IModelBuilder, TrippinModelExtender>();
 
-            return base.ConfigureApi(services)
+            return EntityFrameworkApi<TrippinModel>.ConfigureApi(apiType, services)
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
                 .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()

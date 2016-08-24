@@ -22,6 +22,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         public new NorthwindContext Context { get { return DbContext; } }
 
         // Imperative views. Currently CUD operations not supported
+        [Resource]
         public IQueryable<Product> ExpensiveProducts
         {
             get
@@ -31,6 +32,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             }
         }
 
+        [Resource]
         public IQueryable<Order> CurrentOrders
         {
             get
@@ -56,9 +58,9 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             return 0.0;
         }
 
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            return base.ConfigureApi(services)
+            return EntityFrameworkApi<NorthwindContext>.ConfigureApi(apiType, services)
                 .AddService<IModelBuilder, NorthwindModelExtender>();
         }
 

@@ -16,9 +16,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void NewApiContextIsConfiguredCorrectly()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var context = api.Context;
             Assert.NotNull(context.Configuration);

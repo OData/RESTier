@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
@@ -17,15 +18,15 @@ namespace Microsoft.Restier.Core
     public class RestierContainerBuilder : IContainerBuilder
     {
         private readonly IServiceCollection services = new ServiceCollection();
-        private Func<ApiBase> apiFactory;
+        private Type apiType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
-        /// <param name="apiFactory">The Api factory to create the Api instance</param>
-        public RestierContainerBuilder(Func<ApiBase> apiFactory)
+        /// <param name="apiType">The Api Type</param>
+        public RestierContainerBuilder(Type apiType)
         {
-            this.apiFactory = apiFactory;
+            this.apiType = apiType;
         }
 
         /// <summary>
@@ -103,23 +104,28 @@ namespace Microsoft.Restier.Core
         {
             Func<IServiceProvider, IEdmModel> modelFactory = sp =>
             {
-                using (var api = apiFactory())
-                {
-                    var configuation = sp.GetService<ApiConfiguration>();
-                    if (api.Configuration == null)
-                    {
-                        api.Configuration = configuation;
-                    }
-
-                    var model = api.Context.GetModelAsync(default(CancellationToken)).Result;
-                    return model;
-                }
+                var context = sp.GetService<ApiContext>();
+                var model = context.GetModelAsync(default(CancellationToken)).Result;
+                return model;
             };
 
-            using (var api = apiFactory())
+            // Configure the API via reflection call
+            var methodDeclaredType = apiType;
+
+            MethodInfo method = null;
+            while (method == null && methodDeclaredType != null)
             {
-                api.ConfigureApi(services);
+                // In case the subclass does not override the method, call super class method
+                method = methodDeclaredType.GetMethod("ConfigureApi");
+                methodDeclaredType = methodDeclaredType.BaseType;
             }
+
+            var parameters = new object[]
+            {
+                apiType, services
+            };
+
+            method.Invoke(null, parameters);
 
             services.AddSingleton(modelFactory);
             return this;

@@ -65,7 +65,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("People", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
             Assert.Equal("Customer", model.EntityContainer.FindSingleton("Me").EntityType().Name);
         }
@@ -179,12 +178,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             get { return base.Configuration; }
         }
-
-        protected override void UpdateApiConfiguration(ApiConfiguration config)
-        {
-            config.IgnoreProperty("ApiConfiguration")
-                .IgnoreProperty("ApiContext");
-        }
     }
 
     public class EmptyApi : BaseApi
@@ -198,25 +191,22 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
 
     public class ApiA : BaseApi
     {
+        [Resource]
         public IQueryable<Person> People { get; set; }
+        [Resource(IsSingleton = true)]
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
-        protected override void UpdateApiConfiguration(ApiConfiguration config)
-        {
-            base.UpdateApiConfiguration(config);
-            config.IgnoreProperty("Invisible");
-        }
-
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return base.ConfigureApi(services);
+            return BaseApi.ConfigureApi(apiType, services);
         }
     }
 
     public class ApiB : ApiA
     {
+        [Resource]
         public IQueryable<Person> Customers { get; set; }
     }
 
@@ -233,17 +223,14 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
 
     public class ApiC : ApiB
     {
+        [Resource]
         public new IQueryable<Customer> Customers { get; set; }
+        [Resource(IsSingleton = true)]
         public new Customer Me { get; set; }
     }
 
     public class ApiD : ApiC
     {
-        protected override void UpdateApiConfiguration(ApiConfiguration config)
-        {
-            base.UpdateApiConfiguration(config);
-            config.IgnoreProperty("People");
-        }
     }
 
     public class Order
@@ -253,13 +240,15 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
 
     public class ApiE : BaseApi
     {
+        [Resource]
         public IQueryable<Person> People { get; set; }
+        [Resource]
         public IQueryable<Order> Orders { get; set; }
 
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return base.ConfigureApi(services);
+            return BaseApi.ConfigureApi(apiType, services);
         }
     }
 
@@ -267,28 +256,32 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
     {
         public IQueryable<Customer> VipCustomers { get; set; }
 
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return base.ConfigureApi(services);
+            return BaseApi.ConfigureApi(apiType, services);
         }
     }
 
     public class ApiG : ApiC
     {
+        [Resource]
         public IQueryable<Person> Employees { get; set; }
     }
 
     public class ApiH : BaseApi
     {
+        [Resource(IsSingleton = true)]
         public Person Me { get; set; }
+        [Resource]
         public IQueryable<Customer> Customers { get; set; }
+        [Resource(IsSingleton = true)]
         public Customer Me2 { get; set; }
 
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return base.ConfigureApi(services);
+            return BaseApi.ConfigureApi(apiType, services);
         }
     }
 }

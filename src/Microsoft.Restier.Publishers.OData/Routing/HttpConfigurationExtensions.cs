@@ -53,14 +53,16 @@ namespace Microsoft.Restier.Publishers.OData
 
             // This will be added a service to callback stored in ApiConfiguration
             // Callback is called by ApiBase.AddApiServices method to add real services.
-            ApiConfiguration.AddPublisherServices<TApi>(services =>
+            ApiConfiguration.AddPublisherServices(
+                typeof(TApi),
+                services =>
             {
                 services.AddODataServices<TApi>();
             });
 
             using (var api = apiFactory())
             {
-                Func<IContainerBuilder> func = () => new RestierContainerBuilder(apiFactory);
+                Func<IContainerBuilder> func = () => new RestierContainerBuilder(api.GetType());
                 config.UseCustomContainerBuilder(func);
 
                 var conventions = CreateRestierRoutingConventions(config, routeName, apiFactory);

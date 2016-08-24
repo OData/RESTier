@@ -56,19 +56,20 @@ namespace Microsoft.Restier.Core
         internal IEdmModel Model { get; private set; }
 
         /// <summary>
-        /// Adds a configuration procedure for API type <typeparamref name="TApi"/>.
+        /// Adds a configuration procedure for apiType.
         /// This is expected to be called by publisher like WebApi to add services.
         /// </summary>
-        /// <typeparam name="TApi">The API type.</typeparam>
+        /// <param name="apiType">
+        /// The Api Type.
+        /// </param>
         /// <param name="configurationCallback">
-        /// An action that will be called during the configuration of <typeparamref name="TApi"/>.
+        /// An action that will be called during the configuration of apiType.
         /// </param>
         [CLSCompliant(false)]
-        public static void AddPublisherServices<TApi>(Action<IServiceCollection> configurationCallback)
-             where TApi : ApiBase
+        public static void AddPublisherServices(Type apiType, Action<IServiceCollection> configurationCallback)
         {
             publisherServicesCallback.AddOrUpdate(
-                typeof(TApi),
+                apiType,
                 configurationCallback,
                 (type, existing) => existing + configurationCallback);
         }

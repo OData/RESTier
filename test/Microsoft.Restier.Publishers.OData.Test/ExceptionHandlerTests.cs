@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Security;
@@ -32,9 +33,9 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
         private class ExcApi : StoreApi
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                return base.ConfigureApi(services)
+                return StoreApi.ConfigureApi(apiType, services)
                     .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
         }

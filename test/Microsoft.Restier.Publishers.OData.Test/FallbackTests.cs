@@ -17,6 +17,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Publishers.OData.Model;
 using Xunit;
 
 namespace Microsoft.Restier.Publishers.OData.Test
@@ -95,15 +96,16 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class FallbackApi : ApiBase
     {
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model));
             services.AddService<IModelMapper>((sp, next) => new FallbackModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer());
-            services = base.ConfigureApi(services);
+            services = ApiBase.ConfigureApi(apiType, services);
             return services;
         }
 
+        [Resource]
         public IQueryable<Order> PreservedOrders
         {
             get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }

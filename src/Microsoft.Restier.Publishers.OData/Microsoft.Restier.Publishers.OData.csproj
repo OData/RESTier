@@ -86,8 +86,8 @@
     <Compile Include="Batch\RestierBatchChangeSetRequestItem.cs" />
     <Compile Include="Formatter\Deserialization\DeserializationHelpers.cs" />
     <Compile Include="Formatter\Serialization\RestierResourceSerializer.cs" />
-    <Compile Include="Model\ApiConfigurationExtensions.cs" />
     <Compile Include="Model\ModelMapper.cs" />
+    <Compile Include="Model\ResourceAttribute.cs" />
     <Compile Include="Model\OperationAttribute.cs" />
     <Compile Include="Model\PropertyAttributes.cs" />
     <Compile Include="Model\RestierModelBuilder.cs" />

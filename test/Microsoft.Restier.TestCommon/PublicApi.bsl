@@ -8,14 +8,10 @@ public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 	[
 	CLSCompliantAttribute(),
 	]
-	public virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (System.Type apiType, Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	protected virtual Microsoft.Restier.Core.ApiContext CreateApiContext (Microsoft.Restier.Core.ApiConfiguration configuration)
 	public virtual void Dispose ()
-	[
-	CLSCompliantAttribute(),
-	]
-	protected virtual void UpdateApiConfiguration (Microsoft.Restier.Core.ApiConfiguration configuration)
 }
 
 [
@@ -244,7 +240,7 @@ public class Microsoft.Restier.Core.ApiConfiguration {
 	[
 	CLSCompliantAttribute(),
 	]
-	public static void AddPublisherServices (System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
+	public static void AddPublisherServices (System.Type apiType, System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
 
 	[
 	CLSCompliantAttribute(),
@@ -294,7 +290,7 @@ public class Microsoft.Restier.Core.ResourceNotFoundException : System.Exception
 }
 
 public class Microsoft.Restier.Core.RestierContainerBuilder : IContainerBuilder {
-	public RestierContainerBuilder (System.Func`1[[Microsoft.Restier.Core.ApiBase]] apiFactory)
+	public RestierContainerBuilder (System.Type apiType)
 
 	public virtual Microsoft.OData.IContainerBuilder AddService (Microsoft.OData.ServiceLifetime lifetime, System.Type serviceType, System.Func`2[[System.IServiceProvider],[System.Object]] implementationFactory)
 	public virtual Microsoft.OData.IContainerBuilder AddService (Microsoft.OData.ServiceLifetime lifetime, System.Type serviceType, System.Type implementationType)
@@ -572,7 +568,7 @@ public class Microsoft.Restier.Providers.EntityFramework.EntityFrameworkApi`1 : 
 	[
 	CLSCompliantAttribute(),
 	]
-	public virtual Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (System.Type apiType, Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
 [
@@ -729,16 +725,6 @@ public class Microsoft.Restier.Publishers.OData.Formatter.RestierResourceSetSeri
 }
 
 [
-ExtensionAttribute(),
-]
-public sealed class Microsoft.Restier.Publishers.OData.Model.ApiConfigurationExtensions {
-	[
-	ExtensionAttribute(),
-	]
-	public static Microsoft.Restier.Core.ApiConfiguration IgnoreProperty (Microsoft.Restier.Core.ApiConfiguration configuration, string propertyName)
-}
-
-[
 AttributeUsageAttribute(),
 ]
 public sealed class Microsoft.Restier.Publishers.OData.Model.OperationAttribute : System.Attribute, _Attribute {
@@ -750,5 +736,14 @@ public sealed class Microsoft.Restier.Publishers.OData.Model.OperationAttribute 
 	bool IsComposable  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Name  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Namespace  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+}
+
+[
+AttributeUsageAttribute(),
+]
+public sealed class Microsoft.Restier.Publishers.OData.Model.ResourceAttribute : System.Attribute, _Attribute {
+	public ResourceAttribute ()
+
+	bool IsSingleton  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 

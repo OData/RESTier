@@ -12,9 +12,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void PropertyBagManipulatesPropertiesCorrectly()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context =api.Context;
 
             Assert.False(context.HasProperty("Test"));
@@ -37,9 +38,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void DifferentPropertyBagsDoNotConflict()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var context = api.Context;
             var configuration = context.Configuration;
@@ -54,9 +56,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void PropertyBagsAreDisposedCorrectly()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
             var configuration = context.Configuration;
 
@@ -96,9 +99,9 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApi : ApiBase
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                return base.ConfigureApi(services).AddScoped<MyPropertyBag>();
+                return ApiBase.ConfigureApi(apiType, services).AddScoped<MyPropertyBag>();
             }
         }
     }

@@ -176,27 +176,27 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private void BuildEntitySetsAndSingletons(ModelContext context, EdmModel model)
+        private void BuildEntitySetsAndSingletons(EdmModel model)
         {
-            var configuration = context.ServiceProvider.GetService<ApiConfiguration>();
             foreach (var property in this.publicProperties)
             {
-                if (configuration.IsPropertyIgnored(property.Name))
+                var resourceAttribute = property.GetCustomAttributes<ResourceAttribute>(true).FirstOrDefault();
+                if (resourceAttribute == null)
                 {
                     continue;
                 }
 
-                var isEntitySet = IsEntitySetProperty(property);
-                if (!isEntitySet)
+                bool isSingleton = resourceAttribute.IsSingleton;
+                if ((!isSingleton && !IsEntitySetProperty(property))
+                    || (isSingleton && !IsSingletonProperty(property)))
                 {
-                    if (!IsSingletonProperty(property))
-                    {
-                        continue;
-                    }
+                    // This means property type is not IQueryable<T> when indicating an entityset
+                    // or not non-generic type when indicating a singleton
+                    continue;
                 }
 
                 var propertyType = property.PropertyType;
-                if (isEntitySet)
+                if (!isSingleton)
                 {
                     propertyType = propertyType.GetGenericArguments()[0];
                 }
@@ -209,7 +209,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
 
                 var container = model.EnsureEntityContainer(this.targetType);
-                if (isEntitySet)
+                if (!isSingleton)
                 {
                     if (container.FindEntitySet(property.Name) == null)
                     {
@@ -341,7 +341,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
 
                 ModelCache.ScanForDeclaredPublicProperties();
-                ModelCache.BuildEntitySetsAndSingletons(context, edmModel);
+                ModelCache.BuildEntitySetsAndSingletons(edmModel);
                 ModelCache.AddNavigationPropertyBindings(edmModel);
                 return edmModel;
             }

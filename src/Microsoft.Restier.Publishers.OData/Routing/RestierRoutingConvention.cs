@@ -7,7 +7,9 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
+using System.Web.OData.Extensions;
 using System.Web.OData.Routing.Conventions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
@@ -67,7 +69,11 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             // Create ApiBase instance
-            request.SetApiInstance(apiFactory.Invoke());
+            // TODO need to change the way to create ApiBase
+            var provider = request.GetRequestContainer();
+            var apiBase = provider.GetService<ApiBase>();
+            apiBase.ServiceProvider = provider;
+            request.SetApiInstance(apiBase);
             return RestierControllerName;
         }
 

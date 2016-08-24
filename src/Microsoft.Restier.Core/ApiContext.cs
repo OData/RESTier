@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class ApiContext
     {
-        private readonly IServiceScope scope;
+        private IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiContext" /> class.
@@ -22,13 +22,15 @@ namespace Microsoft.Restier.Core
         /// <param name="configuration">
         /// An API configuration.
         /// </param>
-        public ApiContext(ApiConfiguration configuration)
+        /// <param name="provider">
+        /// The service provider.
+        /// </param>
+        public ApiContext(IServiceProvider provider, ApiConfiguration configuration)
         {
             Ensure.NotNull(configuration, "configuration");
 
             this.Configuration = configuration;
-            this.scope = configuration.ServiceProvider
-                .GetRequiredService<IServiceScopeFactory>().CreateScope();
+            this.serviceProvider = provider;
         }
 
         /// <summary>
@@ -41,12 +43,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         internal IServiceProvider ServiceProvider
         {
-            get { return this.scope.ServiceProvider; }
-        }
-
-        internal void DisposeScope()
-        {
-            this.scope.Dispose();
+            get { return this.serviceProvider; }
         }
     }
 }

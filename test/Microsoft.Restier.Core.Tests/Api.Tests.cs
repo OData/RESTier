@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,7 +80,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApi : ApiBase
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var modelBuilder = new TestModelBuilder();
                 var modelMapper = new TestModelMapper();
@@ -87,7 +88,7 @@ namespace Microsoft.Restier.Core.Tests
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                services.AddCoreServices(this.GetType());
+                services.AddCoreServices(apiType);
                 services.AddService<IModelBuilder>((sp, next) => modelBuilder);
                 services.AddService<IModelMapper>((sp, next) => modelMapper);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => querySourcer);
@@ -105,9 +106,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ApiSourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var arguments = new object[0];
 
@@ -131,7 +133,7 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
             var api = new TestApiEmpty();
-            var container = new RestierContainerBuilder(() => new TestApiEmpty());
+            var container = new RestierContainerBuilder(typeof(TestApiEmpty));
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
             var arguments = new object[0];
@@ -142,7 +144,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
             var arguments = new object[0];
 
@@ -165,9 +170,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ApiSourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var arguments = new object[0];
 
@@ -192,10 +198,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
-            var api = new TestApiEmpty();
-            var container = new RestierContainerBuilder(() => new TestApiEmpty());
-            var serviceProvider = container.BuildContainer();
-            api.Configuration = serviceProvider.GetService<ApiConfiguration>();
+            var container = new RestierContainerBuilder(typeof(TestApiEmpty));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
             var arguments = new object[0];
 
@@ -205,9 +211,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var context = api.Context;
             var arguments = new object[0];
@@ -233,7 +240,11 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericApiSourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource<string>("Test", arguments);
@@ -255,7 +266,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfEntityContainerElementThrowsIfWrongType()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
             var arguments = new object[0];
 
@@ -265,9 +279,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var context = api.Context;
             var arguments = new object[0];
@@ -291,7 +306,11 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericApiSourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource<DateTime>(
@@ -316,9 +335,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfComposableFunctionThrowsIfWrongType()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var context = api.Context;
             var arguments = new object[0];
@@ -329,7 +349,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
             var arguments = new object[0];
 
@@ -354,7 +377,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceQueryableCannotGenericEnumerate()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
 
             var source = context.GetQueryableSource<string>("Test");
@@ -364,7 +390,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceQueryableCannotEnumerate()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
             var context = api.Context;
 
             var source = context.GetQueryableSource<string>("Test");
@@ -385,7 +414,7 @@ namespace Microsoft.Restier.Core.Tests
         public void SourceQueryProviderCannotExecute()
         {
             var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
+            var container = new RestierContainerBuilder(typeof(TestApi));
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var context = api.Context;
 
@@ -396,9 +425,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public async Task ApiQueryAsyncWithQueryReturnsResults()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
             var result = await api.Context.QueryAsync(request);
@@ -410,9 +440,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public async Task ApiQueryAsyncCorrectlyForwardsCall()
         {
-            var api = new TestApi();
-            var container = new RestierContainerBuilder(() => new TestApi());
-            api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
             var queryRequest = new QueryRequest(
                 api.GetQueryableSource<string>("Test"));

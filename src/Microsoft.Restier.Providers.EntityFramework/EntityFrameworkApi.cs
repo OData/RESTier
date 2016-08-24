@@ -45,6 +45,9 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// Configures the API services for this API. Descendants may override this method to register
         /// <typeparamref name="T"/> as a scoped service.
         /// </summary>
+        /// <param name="apiType">
+        /// The Api type.
+        /// </param>
         /// <param name="services">
         /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
         /// </param>
@@ -52,10 +55,8 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// The <see cref="IServiceCollection"/>.
         /// </returns>
         [CLSCompliant(false)]
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            Type apiType = this.GetType();
-
             // Add core and convention's services
             services = services.AddCoreServices(apiType)
                 .AddConventionBasedServices(apiType);

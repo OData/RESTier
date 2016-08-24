@@ -11,9 +11,9 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApi : ApiBase
         {
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                return base.ConfigureApi(services)
+                return ApiBase.ConfigureApi(apiType, services)
                     .MakeScoped<IService>()
                     .AddService<IService, Service>();
             }
@@ -51,20 +51,20 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ApiAndApiContextCanBeInjectedByDI()
         {
-            using (var api = new TestApi())
-            {
-                var container = new RestierContainerBuilder(() => new TestApi());
-                api.Configuration = new ApiConfiguration(container.BuildContainer());
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            api.ServiceProvider = provider;
 
-                var context = api.Context;
-                var svc = context.GetApiService<IService>();
+            // TODO, this will create a new scope and a new provider....
+            var context = api.Context;
+            var svc = context.GetApiService<IService>();
 
-                Assert.Same(svc.Api, api);
-                Assert.Same(svc.Context, context);
+            Assert.Same(svc.Api, api);
+            Assert.Same(svc.Context, context);
 
-                api.Dispose();
-                Assert.Throws<ObjectDisposedException>(() => api.Context);
-            }
+            api.Dispose();
+            Assert.Throws<ObjectDisposedException>(() => api.Context);
         }
     }
 }

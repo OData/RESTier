@@ -27,9 +27,8 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             /// </summary>
             /// <param name="services"></param>
             /// <returns></returns>
-            public override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                Type apiType = this.GetType();
                 // Add core and convention's services
                 services = services.AddCoreServices(apiType)
                     .AddConventionBasedServices(apiType);
@@ -55,7 +54,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         public async Task TestEntityFilterReturnsTask()
         {
             TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
-            var container = new RestierContainerBuilder(() => new TestEntityFilterReturnsTaskApi());
+            var container = new RestierContainerBuilder(typeof(TestEntityFilterReturnsTaskApi));
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             DataModificationItem<Customer> createCustomer = new DataModificationItem<Customer>(
                 "Customers",

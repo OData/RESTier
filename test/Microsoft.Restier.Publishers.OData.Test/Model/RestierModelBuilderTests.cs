@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public void ComplexTypeShoudWork()
         {
             var api = new LibraryApi();
-            var container = new RestierContainerBuilder(() => new LibraryApi());
+            var container = new RestierContainerBuilder(typeof(LibraryApi));
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var model = api.Context.GetModelAsync().Result;
 
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         public void PrimitiveTypesShouldWork()
         {
             var api = new LibraryApi();
-            var container = new RestierContainerBuilder(() => new LibraryApi());
+            var container = new RestierContainerBuilder(typeof(LibraryApi));
             api.Configuration = new ApiConfiguration(container.BuildContainer());
             var model = api.Context.GetModelAsync().Result;
 

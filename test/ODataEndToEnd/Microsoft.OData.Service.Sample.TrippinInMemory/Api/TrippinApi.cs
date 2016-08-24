@@ -36,6 +36,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
 
         #region Entity Set
 
+        [Resource]
         public IQueryable<Person> People
         {
             get
@@ -50,6 +51,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             }
         }
 
+        [Resource]
         public IQueryable<Person> NewComePeople
         {
             get
@@ -64,6 +66,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             }
         }
 
+        [Resource(IsSingleton = true)]
         public Person Me
         {
             get
@@ -78,6 +81,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             }
         }
 
+        [Resource]
         public IQueryable<Airline> Airlines
         {
             get
@@ -92,6 +96,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             }
         }
 
+        [Resource]
         public IQueryable<Airport> Airports
         {
             get
@@ -332,7 +337,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
 
         #endregion
 
-        public override IServiceCollection ConfigureApi(IServiceCollection services)
+        public new static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             Func<IServiceProvider, IDataStoreManager<string, TripPinDataSource>> defaultDataStoreManager =
                 sp => new DefaultDataStoreManager<string, TripPinDataSource>()
@@ -345,7 +350,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             services.AddService<IChangeSetInitializer>((sp, next) => new ChangeSetInitializer<TripPinDataSource>());
             services.AddService<ISubmitExecutor>((sp, next) => new SubmitExecutor());
             services.AddSingleton(defaultDataStoreManager);
-            return base.ConfigureApi(services);
+            return ApiBase.ConfigureApi(apiType, services);
         }
 
         private class ModelBuilder : IModelBuilder

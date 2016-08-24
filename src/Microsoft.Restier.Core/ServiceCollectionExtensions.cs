@@ -211,13 +211,11 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
         {
-            if (!services.HasService<ApiBase>())
-            {
-                services.AddScoped<ApiBase.ApiHolder>()
-                    .AddScoped(apiType, sp => sp.GetService<ApiBase.ApiHolder>().Api)
-                    .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api)
-                    .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api.Context);
-            }
+            Ensure.NotNull(apiType, "apiType");
+
+            services.AddScoped(apiType, apiType)
+                .AddScoped(typeof(ApiBase), apiType)
+                .AddScoped<ApiContext>();
 
             services.TryAddSingleton<ApiConfiguration>();
 
