@@ -108,7 +108,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
         [Resource]
         public IQueryable<Order> PreservedOrders
         {
-            get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
+            get { return this.Context.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
         }
 
         public FallbackApi(IServiceProvider serviceProvider) : base(serviceProvider)

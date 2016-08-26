@@ -27,7 +27,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Controllers
             get
             {
                 var api =(NorthwindApi)this.Request.GetRequestContainer().GetService<ApiBase>();
-                return api.Context;
+                return api.ModelContext;
             }
         }
 

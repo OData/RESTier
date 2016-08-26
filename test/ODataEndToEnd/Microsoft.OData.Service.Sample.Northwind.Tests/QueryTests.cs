@@ -25,7 +25,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 {
                     WebApiConfig.RegisterNorthwind(config, server); var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
-                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiContext>();
                     QueryResult result = await api.QueryAsync(
                         new QueryRequest(api.GetQueryableSource<Order>("Orders").OrderBy(o => o.OrderDate).Take(10)));
 
@@ -45,7 +45,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                     WebApiConfig.RegisterNorthwind(config, server);
                     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
-                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiContext>();
                     QueryResult result = await api.QueryAsync(
                         new QueryRequest(api.GetQueryableSource<Order>("Orders").OrderBy(o => o.OrderDate).Skip(10)));
 
@@ -65,7 +65,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                     WebApiConfig.RegisterNorthwind(config, server);
                     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
-                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiContext>();
                     QueryResult result = await api.QueryAsync(
                         new QueryRequest(api.GetQueryableSource<Order>("Orders").OrderBy(o => o.OrderDate).Skip(10).Take(25)));
 
@@ -89,7 +89,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                     WebApiConfig.RegisterNorthwind(config, server);
                     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
-                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiContext>();
                     QueryResult result = await api.QueryAsync(
                         new QueryRequest(api.GetQueryableSource<Order>("Orders").Take(10).OrderBy(o => o.OrderDate)));
 

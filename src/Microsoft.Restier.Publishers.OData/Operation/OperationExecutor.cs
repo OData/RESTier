@@ -22,14 +22,14 @@ namespace Microsoft.Restier.Publishers.OData.Operation
     internal class OperationExecutor : IOperationExecutor
     {
         public async Task<IQueryable> ExecuteOperationAsync(
-            object instanceImplementMethod, OperationContext context, CancellationToken cancellationToken)
+            OperationContext context, CancellationToken cancellationToken)
         {
             // Authorization check
             await InvokeAuthorizers(context, cancellationToken);
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
-            MethodInfo method = instanceImplementMethod.GetType().GetMethod(
+            MethodInfo method = context.ImplementInstance.GetType().GetMethod(
                 context.OperationName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
             if (method == null)
@@ -86,7 +86,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             // Invoke preprocessing on the operation execution
             PerformPreEvent(context, cancellationToken);
 
-            var result = InvokeOperation(instanceImplementMethod, method, parameters, model);
+            var result = InvokeOperation(context.ImplementInstance, method, parameters, model);
 
             // Invoke preprocessing on the operation execution
             PerformPostEvent(context, cancellationToken);

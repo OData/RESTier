@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using System.Net.Http;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Batch;
 
 namespace Microsoft.Restier.Publishers.OData
@@ -16,7 +15,6 @@ namespace Microsoft.Restier.Publishers.OData
     internal static class HttpRequestMessageExtensions
     {
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";
-        private const string ApiInstanceKey = "Microsoft.Restier.Core.ApiInstance";
 
         /// <summary>
         /// Sets the <see cref="RestierChangeSetProperty"/> to the <see cref="HttpRequestMessage"/>.
@@ -45,37 +43,6 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Gets the API instance from the <see cref="HttpRequestMessage"/>.
-        /// </summary>
-        /// <param name="request">The HTTP request.</param>
-        /// <returns>The API instance.</returns>
-        internal static ApiBase GetApiInstance(this HttpRequestMessage request)
-        {
-            Ensure.NotNull(request, "request");
-
-            object value;
-            if (request.Properties.TryGetValue(ApiInstanceKey, out value))
-            {
-                return value as ApiBase;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Sets the API instance to the <see cref="HttpRequestMessage"/>.
-        /// </summary>
-        /// <param name="request">The HTTP request.</param>
-        /// <param name="apiInstance">The API instance.</param>
-        internal static void SetApiInstance(this HttpRequestMessage request, ApiBase apiInstance)
-        {
-            Ensure.NotNull(request, "request");
-            Ensure.NotNull(apiInstance, "apiInstance");
-
-            request.Properties[ApiInstanceKey] = apiInstance;
         }
     }
 }

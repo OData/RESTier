@@ -75,7 +75,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             services.AddEfProviderServices<T>();
 
             // This is used to add the publisher's services
-            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
+            GetPublisherServiceCallback(apiType)(services);
 
             return services;
         }

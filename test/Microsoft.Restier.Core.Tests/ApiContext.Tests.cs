@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = provider.GetService<ApiBase>();
 
             var context = api.Context;
-            Assert.NotNull(context.Configuration);
+            Assert.NotNull(context);
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Microsoft.Restier.Publishers.OData
         {
             // This will be added a service to callback stored in ApiConfiguration
             // Callback is called by ApiBase.AddApiServices method to add real services.
-            ApiConfiguration.AddPublisherServices(
+            ApiBase.AddPublisherServices(
                 typeof(TApi),
                 services =>
             {

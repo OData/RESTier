@@ -179,11 +179,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
 
     public class BaseApi : ApiBase
     {
-        public ApiConfiguration ApiConfiguration
-        {
-            get { return base.Configuration; }
-        }
-
         public BaseApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }

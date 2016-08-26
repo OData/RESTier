@@ -70,7 +70,6 @@
     <Compile Include="Conventions\ConventionBasedChangeSetItemFilter.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetItemValidator.cs" />
     <Compile Include="Conventions\ConventionBasedQueryExpressionProcessor.cs" />
-    <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="ApiBase.cs" />
     <Compile Include="ApiConfiguration.cs" />
     <Compile Include="ApiContext.cs" />

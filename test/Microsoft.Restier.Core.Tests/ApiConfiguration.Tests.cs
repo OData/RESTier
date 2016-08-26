@@ -16,20 +16,6 @@ namespace Microsoft.Restier.Core.Tests
     public class ApiConfigurationTests
     {
         [Fact]
-        public void CachedConfigurationIsCachedCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiA));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var configuration = api.Context.Configuration;
-
-            ApiBase anotherApi = provider.GetService<ApiBase>();
-            var cached = anotherApi.Context.Configuration;
-            Assert.Same(configuration, cached);
-        }
-
-        [Fact]
         public void ConfigurationRegistersApiServicesCorrectly()
         {
             var container = new RestierContainerBuilder(typeof(TestApiA));
@@ -108,17 +94,11 @@ namespace Microsoft.Restier.Core.Tests
 
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IServiceA>((sp, next) => serviceA);
                 services.AddService<IServiceB>((sp, next) => serviceB);
                 services.AddService<IServiceB, ServiceB>();
                 services.AddSingleton(new ServiceB());
-
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -130,6 +110,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var q1 = new ServiceB("q1Pre", "q1Post");
                 var q2 = new ServiceB("q2Pre", "q2Post");
                 services.AddService<IServiceB>((sp, next) => q1)
@@ -138,12 +119,6 @@ namespace Microsoft.Restier.Core.Tests
                         q2.InnerHandler = next;
                         return q2;
                     });
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
 
                 return services;
             }

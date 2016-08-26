@@ -16,9 +16,6 @@ namespace Microsoft.Restier.Core.Operation
         /// <summary>
         /// Asynchronously executes an operation.
         /// </summary>
-        /// <param name="instanceImplementMethod">
-        /// A class instance with have operation implemented and will be used for reflection call.
-        /// </param>
         /// <param name="context">
         /// The operation context.
         /// </param>
@@ -29,7 +26,6 @@ namespace Microsoft.Restier.Core.Operation
         /// A task that represents the asynchronous
         /// operation whose result is a operation result.
         /// </returns>
-        Task<IQueryable> ExecuteOperationAsync(
-            object instanceImplementMethod, OperationContext context, CancellationToken cancellationToken);
+        Task<IQueryable> ExecuteOperationAsync(OperationContext context, CancellationToken cancellationToken);
     }
 }

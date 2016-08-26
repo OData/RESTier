@@ -28,12 +28,7 @@ namespace Microsoft.Restier.Core.Tests
 
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                services.AddScoped(apiType, apiType)
-                .AddScoped(typeof(ApiBase), apiType)
-                .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
-
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IServiceA>((sp, next) => ApiService);
 
                 return services;

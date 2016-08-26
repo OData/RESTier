@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Publishers.OData.Batch
         internal async Task SubmitChangeSet(HttpRequestMessage request, ChangeSet changeSet)
         {
             var requestContainer = request.GetRequestContainer();
-            using (var api = requestContainer.GetService<ApiBase>())
+            using (var api = requestContainer.GetService<ApiContext>())
             {
                 SubmitResult submitResults = await api.SubmitAsync(changeSet);
             }

@@ -14,6 +14,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var i = 0;
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
@@ -36,12 +37,6 @@ namespace Microsoft.Restier.Core.Tests
                         Value = i++
                     })
                     .AddService<ISomeService, SomeService>();
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -54,6 +49,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Inner = next,
@@ -61,12 +57,6 @@ namespace Microsoft.Restier.Core.Tests
                 })
                     .AddService<ISomeService, SomeService>()
                     .MakeTransient<ISomeService>();
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -79,14 +69,9 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.MakeScoped<ISomeService>()
                     .AddService<ISomeService>((sp, next) => new SomeService());
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -99,6 +84,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Inner = next,
@@ -106,12 +92,6 @@ namespace Microsoft.Restier.Core.Tests
                 })
                     .AddService<ISomeService, SomeServiceNoChain>()
                     .MakeTransient<ISomeService>();
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -124,6 +104,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var first = new SomeService
                 {
                     Value = 42
@@ -132,12 +113,6 @@ namespace Microsoft.Restier.Core.Tests
                     .AddService<ISomeService>((sp, next) => first)
                     .AddService<ISomeService, SomeService2>()
                     .AddSingleton("Text");
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -150,18 +125,13 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Value = 2
                 })
                     .MakeTransient<ISomeService>()
                     .AddService<ISomeService, SomeService2>();
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
 
                 return services;
             }
@@ -175,6 +145,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Value = 1
@@ -187,13 +158,6 @@ namespace Microsoft.Restier.Core.Tests
                     .MakeTransient<ISomeService>()
                     .AddService<string>((sp, next) => { return "0"; })
                     .MakeTransient<string>();
-
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -206,6 +170,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<ISomeService>((sp, next) => new SomeService
                 {
                     Value = 1
@@ -214,12 +179,6 @@ namespace Microsoft.Restier.Core.Tests
                     .MakeTransient<ISomeService>()
                     .AddService<string>((sp, next) => { return "0"; })
                     .MakeTransient<string>();
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -232,6 +191,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.MakeTransient<ISomeService>()
                     .AddService<ISomeService>((sp, next) => new SomeService
                     {
@@ -243,11 +203,6 @@ namespace Microsoft.Restier.Core.Tests
                     })
                     .AddService<ISomeService, SomeService4>();
 
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 

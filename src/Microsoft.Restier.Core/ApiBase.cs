@@ -21,7 +21,11 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public abstract class ApiBase : IDisposable
     {
-        private ApiConfiguration apiConfiguration;
+        private static ConcurrentDictionary<Type, Action<IServiceCollection>> publisherServicesCallback =
+            new ConcurrentDictionary<Type, Action<IServiceCollection>>();
+
+        private static Action<IServiceCollection> emptyConfig = _ => { };
+
         private ApiContext apiContext;
         private IServiceProvider serviceProvider;
 
@@ -74,22 +78,6 @@ namespace Microsoft.Restier.Core
         public bool IsDisposed { get; private set; }
 
         /// <summary>
-        /// Gets the API configuration for this API.
-        /// </summary>
-        public ApiConfiguration Configuration
-        {
-            get
-            {
-                if (this.apiConfiguration == null)
-                {
-                    this.apiConfiguration = serviceProvider.GetService<ApiConfiguration>();
-                }
-
-                return this.apiConfiguration;
-            }
-        }
-
-        /// <summary>
         /// Configure services for this API.
         /// </summary>
         /// <param name="apiType">
@@ -107,9 +95,47 @@ namespace Microsoft.Restier.Core
                 .AddConventionBasedServices(apiType);
 
             // This is used to add the publisher's services
-            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
+            GetPublisherServiceCallback(apiType)(services);
 
             return services;
+        }
+
+        /// <summary>
+        /// Adds a configuration procedure for apiType.
+        /// This is expected to be called by publisher like WebApi to add services.
+        /// </summary>
+        /// <param name="apiType">
+        /// The Api Type.
+        /// </param>
+        /// <param name="configurationCallback">
+        /// An action that will be called during the configuration of apiType.
+        /// </param>
+        [CLSCompliant(false)]
+        public static void AddPublisherServices(Type apiType, Action<IServiceCollection> configurationCallback)
+        {
+            publisherServicesCallback.AddOrUpdate(
+                apiType,
+                configurationCallback,
+                (type, existing) => existing + configurationCallback);
+        }
+
+        /// <summary>
+        /// Get publisher registering service callback for specified Api.
+        /// </summary>
+        /// <param name="apiType">
+        /// The Api type of which to get the publisher registering service callback.
+        /// </param>
+        /// <returns>The service registering callback.</returns>
+        [CLSCompliant(false)]
+        public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
+        {
+            Action<IServiceCollection> val;
+            if (publisherServicesCallback.TryGetValue(apiType, out val))
+            {
+                return val;
+            }
+
+            return emptyConfig;
         }
 
         /// <summary>

@@ -57,10 +57,6 @@ namespace Microsoft.Restier.Publishers.OData
                 return null;
             }
 
-            // Create ApiBase instance
-            var provider = request.GetRequestContainer();
-            var apiBase = provider.GetService<ApiBase>();
-            request.SetApiInstance(apiBase);
             return RestierControllerName;
         }
 

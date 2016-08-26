@@ -19,6 +19,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
                 services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
                 {
@@ -28,12 +29,6 @@ namespace Microsoft.Restier.Core.Tests.Model
                 {
                     InnerHandler = next,
                 });
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
 
                 return services;
             }
@@ -47,14 +42,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var service = new TestSingleCallModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
                 return services;
             }
 
@@ -67,14 +57,9 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var service = new TestRetryModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
-
-                services.AddScoped(apiType, apiType)
-                    .AddScoped(typeof(ApiBase), apiType)
-                    .AddScoped<ApiContext>();
-
-                services.TryAddSingleton<ApiConfiguration>();
 
                 return services;
             }

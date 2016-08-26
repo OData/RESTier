@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
     {
         private const string DefaultNameOfParameterExpression = "currentValue";
 
-        private readonly ApiBase api;
+        private readonly ApiContext apiContext;
         private readonly ODataPath path;
         private readonly IDictionary<Type, Action<ODataPathSegment>> handlers =
             new Dictionary<Type, Action<ODataPathSegment>>();
@@ -25,11 +25,11 @@ namespace Microsoft.Restier.Publishers.OData.Query
         private IQueryable queryable;
         private Type currentType;
 
-        public RestierQueryBuilder(ApiBase api, ODataPath path)
+        public RestierQueryBuilder(ApiContext apiContext, ODataPath path)
         {
-            Ensure.NotNull(api, "api");
+            Ensure.NotNull(apiContext, "apiContext");
             Ensure.NotNull(path, "path");
-            this.api = api;
+            this.apiContext = apiContext;
             this.path = path;
 
             this.handlers[typeof(EntitySetSegment)] = this.HandleEntitySetPathSegment;
@@ -139,7 +139,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
         {
             var entitySetPathSegment = (EntitySetSegment)segment;
             var entitySet = entitySetPathSegment.EntitySet;
-            this.queryable = this.api.GetQueryableSource(entitySet.Name, (object[])null);
+            this.queryable = this.apiContext.GetQueryableSource(entitySet.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 
@@ -147,7 +147,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
         {
             var singletonPathSegment = (SingletonSegment)segment;
             var singleton = singletonPathSegment.Singleton;
-            this.queryable = this.api.GetQueryableSource(singleton.Name, (object[])null);
+            this.queryable = this.apiContext.GetQueryableSource(singleton.Name, (object[])null);
             this.currentType = this.queryable.ElementType;
         }
 
@@ -274,7 +274,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
             if (edmType.TypeKind == EdmTypeKind.Entity)
             {
-                this.currentType = edmType.GetClrType(api);
+                this.currentType = edmType.GetClrType(apiContext);
                 this.queryable = ExpressionHelpers.OfType(this.queryable, this.currentType);
             }
         }

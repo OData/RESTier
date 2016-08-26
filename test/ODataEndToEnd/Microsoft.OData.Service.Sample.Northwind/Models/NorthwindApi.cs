@@ -19,7 +19,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
 {
     public class NorthwindApi : EntityFrameworkApi<NorthwindContext>
     {
-        public new NorthwindContext Context { get { return DbContext; } }
+        public NorthwindContext ModelContext { get { return DbContext; } }
 
         // Imperative views. Currently CUD operations not supported
         [Resource]
@@ -27,7 +27,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         {
             get
             {
-                return this.GetQueryableSource<Product>("Products")
+                return this.Context.GetQueryableSource<Product>("Products")
                     .Where(c => c.UnitPrice > 50);
             }
         }
@@ -37,7 +37,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         {
             get
             {
-                return this.GetQueryableSource<Order>("Orders")
+                return this.Context.GetQueryableSource<Order>("Orders")
                     .Where(o => o.ShippedDate == null);
             }
         }

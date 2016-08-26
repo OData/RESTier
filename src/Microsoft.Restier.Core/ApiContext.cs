@@ -12,9 +12,10 @@ namespace Microsoft.Restier.Core
     /// <remarks>
     /// An API context is an instantiation of an API configuration.
     /// </remarks>
-    public class ApiContext
+    public class ApiContext : IDisposable
     {
         private IServiceProvider serviceProvider;
+        private ApiConfiguration apiConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiContext" /> class.
@@ -22,21 +23,31 @@ namespace Microsoft.Restier.Core
         /// <param name="provider">
         /// The service provider.
         /// </param>
-        /// <param name="configuration">
-        /// An API configuration.
-        /// </param>
-        public ApiContext(IServiceProvider provider, ApiConfiguration configuration)
+        public ApiContext(IServiceProvider provider)
         {
-            Ensure.NotNull(configuration, "configuration");
-
-            this.Configuration = configuration;
             this.serviceProvider = provider;
         }
 
         /// <summary>
-        /// Gets the API configuration.
+        /// Gets a value indicating whether this API context has been disposed.
         /// </summary>
-        public ApiConfiguration Configuration { get; private set; }
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Gets the API configuration for this API.
+        /// </summary>
+        internal ApiConfiguration Configuration
+        {
+            get
+            {
+                if (this.apiConfiguration == null)
+                {
+                    this.apiConfiguration = serviceProvider.GetService<ApiConfiguration>();
+                }
+
+                return this.apiConfiguration;
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiContext"/>.
@@ -44,6 +55,22 @@ namespace Microsoft.Restier.Core
         internal IServiceProvider ServiceProvider
         {
             get { return this.serviceProvider; }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with
+        /// freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
+            this.IsDisposed = true;
+
+            GC.SuppressFinalize(this);
         }
     }
 }

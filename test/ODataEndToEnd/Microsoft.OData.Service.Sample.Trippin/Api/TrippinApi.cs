@@ -52,7 +52,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Resource]
         public IQueryable<Flight> Flights2
         {
-            get { return this.GetQueryableSource<Flight>("Flights"); }
+            get { return this.Context.GetQueryableSource<Flight>("Flights"); }
         }
 
         [Resource]
@@ -75,7 +75,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         {
             get
             {
-                return this.GetQueryableSource<Person>("People").Select(p => new PersonWithAge
+                return this.Context.GetQueryableSource<Person>("People").Select(p => new PersonWithAge
                 {
                     Id = p.PersonId,
                     UserName = p.UserName,

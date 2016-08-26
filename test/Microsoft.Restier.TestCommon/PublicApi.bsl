@@ -1,7 +1,6 @@
 public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 	protected ApiBase (System.IServiceProvider serviceProvider)
 
-	Microsoft.Restier.Core.ApiConfiguration Configuration  { public get; }
 	Microsoft.Restier.Core.ApiContext Context  { public get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]public get; }
 	System.IServiceProvider ServiceProvider  { public get; }
@@ -9,49 +8,18 @@ public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 	[
 	CLSCompliantAttribute(),
 	]
+	public static void AddPublisherServices (System.Type apiType, System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
+
+	[
+	CLSCompliantAttribute(),
+	]
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection ConfigureApi (System.Type apiType, Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 
 	public virtual void Dispose ()
-}
-
-[
-ExtensionAttribute(),
-]
-public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	[
-	ExtensionAttribute(),
+	CLSCompliantAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiBase api, params System.Threading.CancellationToken cancellationToken)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiBase api, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
+	public static System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] GetPublisherServiceCallback (System.Type apiType)
 }
 
 [
@@ -199,24 +167,12 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeTransient (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
-public class Microsoft.Restier.Core.ApiConfiguration {
-	public ApiConfiguration ()
+public class Microsoft.Restier.Core.ApiContext : IDisposable {
+	public ApiContext (System.IServiceProvider provider)
 
-	[
-	CLSCompliantAttribute(),
-	]
-	public static void AddPublisherServices (System.Type apiType, System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] configurationCallback)
+	bool IsDisposed  { [CompilerGeneratedAttribute(),]public get; }
 
-	[
-	CLSCompliantAttribute(),
-	]
-	public static System.Action`1[[Microsoft.Extensions.DependencyInjection.IServiceCollection]] GetPublisherServiceCallback (System.Type apiType)
-}
-
-public class Microsoft.Restier.Core.ApiContext {
-	public ApiContext (System.IServiceProvider provider, Microsoft.Restier.Core.ApiConfiguration configuration)
-
-	Microsoft.Restier.Core.ApiConfiguration Configuration  { [CompilerGeneratedAttribute(),]public get; }
+	public virtual void Dispose ()
 }
 
 public class Microsoft.Restier.Core.InvocationContext {
@@ -283,7 +239,7 @@ public interface Microsoft.Restier.Core.Operation.IOperationAuthorizer {
 }
 
 public interface Microsoft.Restier.Core.Operation.IOperationExecutor {
-	System.Threading.Tasks.Task`1[[System.Linq.IQueryable]] ExecuteOperationAsync (object instanceImplementMethod, Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task`1[[System.Linq.IQueryable]] ExecuteOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
 }
 
 public interface Microsoft.Restier.Core.Operation.IOperationFilter {
