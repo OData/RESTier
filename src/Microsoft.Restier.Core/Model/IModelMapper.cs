@@ -15,8 +15,8 @@ namespace Microsoft.Restier.Core.Model
         /// Tries to get the relevant type of an entity
         /// set, singleton, or composable function import.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="apiBase">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -48,15 +48,15 @@ namespace Microsoft.Restier.Core.Model
         /// </para>
         /// </remarks>
         bool TryGetRelevantType(
-            ApiContext context,
+            ApiBase apiBase,
             string name,
             out Type relevantType);
 
         /// <summary>
         /// Tries to get the relevant type of a composable function.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="apiBase">
+        /// An API.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -85,7 +85,7 @@ namespace Microsoft.Restier.Core.Model
         /// </para>
         /// </remarks>
         bool TryGetRelevantType(
-            ApiContext context,
+            ApiBase apiBase,
             string namespaceName,
             string name,
             out Type relevantType);

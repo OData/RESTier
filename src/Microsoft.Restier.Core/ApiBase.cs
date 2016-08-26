@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core
 
         private static Action<IServiceCollection> emptyConfig = _ => { };
 
-        private ApiContext apiContext;
+        private ApiConfiguration apiConfiguration;
         private IServiceProvider serviceProvider;
 
         /// <summary>
@@ -52,30 +52,25 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Gets the API context for this API.
-        /// </summary>
-        public ApiContext Context
-        {
-            get
-            {
-                if (this.IsDisposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
-
-                if (this.apiContext == null)
-                {
-                    this.apiContext = serviceProvider.GetService<ApiContext>();
-                }
-
-                return this.apiContext;
-            }
-        }
-
-        /// <summary>
         /// Gets a value indicating whether this API has been disposed.
         /// </summary>
         public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Gets the API configuration for this API.
+        /// </summary>
+        internal ApiConfiguration Configuration
+        {
+            get
+            {
+                if (this.apiConfiguration == null)
+                {
+                    this.apiConfiguration = serviceProvider.GetService<ApiConfiguration>();
+                }
+
+                return this.apiConfiguration;
+            }
+        }
 
         /// <summary>
         /// Configure services for this API.
@@ -150,12 +145,6 @@ namespace Microsoft.Restier.Core
             }
 
             this.IsDisposed = true;
-
-            if (this.apiContext != null)
-            {
-                this.apiContext = null;
-            }
-
             GC.SuppressFinalize(this);
         }
     }

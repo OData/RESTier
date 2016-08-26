@@ -22,17 +22,17 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            Assert.Null(api.Context.GetApiService<IServiceA>());
-            Assert.Null(api.Context.GetApiService<IServiceB>());
+            Assert.Null(api.GetApiService<IServiceA>());
+            Assert.Null(api.GetApiService<IServiceB>());
 
             container = new RestierContainerBuilder(typeof(TestApiB));
             var provider2 = container.BuildContainer();
             var apiB = provider2.GetService<ApiBase>();
 
-            Assert.Same(TestApiB.serviceA, apiB.Context.GetApiService<IServiceA>());
+            Assert.Same(TestApiB.serviceA, apiB.GetApiService<IServiceA>());
 
-            var serviceBInstance = apiB.Context.GetApiService<ServiceB>();
-            var serviceBInterface = apiB.Context.GetApiService<IServiceB>();
+            var serviceBInstance = apiB.GetApiService<ServiceB>();
+            var serviceBInterface = apiB.GetApiService<IServiceB>();
             Assert.Equal(serviceBInstance, serviceBInterface);
 
             // AddService will call services.TryAddTransient
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var handler = api.Context.GetApiService<IServiceB>();
+            var handler = api.GetApiService<IServiceB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
         }
 

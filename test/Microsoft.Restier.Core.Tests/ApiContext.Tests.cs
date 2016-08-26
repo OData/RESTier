@@ -23,8 +23,7 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var context = api.Context;
-            Assert.NotNull(context);
+            Assert.NotNull(api);
         }
     }
 }

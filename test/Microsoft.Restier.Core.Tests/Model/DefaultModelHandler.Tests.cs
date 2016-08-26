@@ -125,9 +125,8 @@ namespace Microsoft.Restier.Core.Tests.Model
             var container = new RestierContainerBuilder(typeof(TestApiA));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
 
-            var model = await context.GetModelAsync();
+            var model = await api.GetModelAsync();
             Assert.Equal(4, model.SchemaElements.Count());
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));
@@ -171,10 +170,9 @@ namespace Microsoft.Restier.Core.Tests.Model
                     var scopedProvider =
                         provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
                     var api = scopedProvider.GetService<ApiBase>();
-                    var context = api.Context;
                     try
                     {
-                        var model = context.GetModelAsync().Result;
+                        var model = api.GetModelAsync().Result;
                         source.SetResult(model);
                     }
                     catch (Exception e)

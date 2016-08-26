@@ -108,7 +108,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
         [Resource]
         public IQueryable<Order> PreservedOrders
         {
-            get { return this.Context.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
+            get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
         }
 
         public FallbackApi(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -174,14 +174,14 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class FallbackModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiBase context, string name, out Type relevantType)
         {
             relevantType = name == "Person" ? typeof(Person) : typeof(Order);
 
             return true;
         }
 
-        public bool TryGetRelevantType(ApiContext context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiBase context, string namespaceName, string name, out Type relevantType)
         {
             return TryGetRelevantType(context, name, out relevantType);
         }

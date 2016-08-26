@@ -120,9 +120,6 @@
   <data name="ArguementsCannotbeNull" xml:space="preserve">
     <value>The argument with name {0} cannot be null.</value>
   </data>
-  <data name="BatchHandlerRequiresApiContextFactory" xml:space="preserve">
-    <value>RestierBatchHandler was called without an ApiContext Factory.</value>
-  </data>
   <data name="CannotWriteObjectType" xml:space="preserve">
     <value>{0} cannot write an object of type '{1}'.</value>
   </data>

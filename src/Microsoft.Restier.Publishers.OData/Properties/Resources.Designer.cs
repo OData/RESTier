@@ -70,15 +70,6 @@ namespace Microsoft.Restier.Publishers.OData {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RestierBatchHandler was called without an ApiContext Factory..
-        /// </summary>
-        internal static string BatchHandlerRequiresApiContextFactory {
-            get {
-                return ResourceManager.GetString("BatchHandlerRequiresApiContextFactory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0} cannot write an object of type &apos;{1}&apos;..
         /// </summary>
         internal static string CannotWriteObjectType {

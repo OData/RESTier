@@ -44,24 +44,24 @@ namespace Microsoft.Restier.Publishers.OData
         private const string IfMatchKey = "@IfMatchKey";
         private const string IfNoneMatchKey = "@IfNoneMatchKey";
 
-        private ApiContext apiContext;
+        private ApiBase api;
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
 
         /// <summary>
         /// Gets the API associated with this controller.
         /// </summary>
-        private ApiContext ApiContext
+        private ApiBase Api
         {
             get
             {
-                if (this.apiContext == null)
+                if (this.api == null)
                 {
                     var provider = Request.GetRequestContainer();
-                    this.apiContext = provider.GetService<ApiContext>();
+                    this.api = provider.GetService<ApiBase>();
                 }
 
-                return this.apiContext;
+                return this.api;
             }
         }
 
@@ -162,12 +162,12 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(ApiContext),
-                actualEntityType.GetClrType(ApiContext),
+                expectedEntityType.GetClrType(Api),
+                actualEntityType.GetClrType(Api),
                 DataModificationItemAction.Insert,
                 null,
                 null,
-                edmEntityObject.CreatePropertyDictionary(actualEntityType, apiContext, true));
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
@@ -175,7 +175,7 @@ namespace Microsoft.Restier.Publishers.OData
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(postItem);
 
-                SubmitResult result = await ApiContext.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -241,7 +241,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.GetClrType(ApiContext),
+                path.EdmType.GetClrType(Api),
                 null,
                 DataModificationItemAction.Remove,
                 RestierQueryBuilder.GetPathKeyValues(path),
@@ -254,7 +254,7 @@ namespace Microsoft.Restier.Publishers.OData
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteItem);
 
-                SubmitResult result = await ApiContext.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -391,12 +391,12 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(ApiContext),
-                actualEntityType.GetClrType(ApiContext),
+                expectedEntityType.GetClrType(Api),
+                actualEntityType.GetClrType(Api),
                 DataModificationItemAction.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
-                edmEntityObject.CreatePropertyDictionary(actualEntityType, apiContext, false));
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false));
             updateItem.IsFullReplaceUpdateRequest = isFullReplaceUpdate;
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
@@ -405,7 +405,7 @@ namespace Microsoft.Restier.Publishers.OData
                 ChangeSet changeSet = new ChangeSet();
                 changeSet.Entries.Add(updateItem);
 
-                SubmitResult result = await ApiContext.SubmitAsync(changeSet, cancellationToken);
+                SubmitResult result = await Api.SubmitAsync(changeSet, cancellationToken);
             }
             else
             {
@@ -428,13 +428,13 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.shouldReturnCount || this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.ApiContext);
+                    var rawResult = new RawResult(query, typeReference, this.Api);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var primitiveResult = new PrimitiveResult(query, typeReference, this.ApiContext);
+                    var primitiveResult = new PrimitiveResult(query, typeReference, this.Api);
                     singleResult = primitiveResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, primitiveResult);
                 }
@@ -442,7 +442,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             if (typeReference.IsComplex())
             {
-                var complexResult = new ComplexResult(query, typeReference, this.ApiContext);
+                var complexResult = new ComplexResult(query, typeReference, this.Api);
                 singleResult = complexResult;
                 response = this.Request.CreateResponse(HttpStatusCode.OK, complexResult);
             }
@@ -451,13 +451,13 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.ApiContext);
+                    var rawResult = new RawResult(query, typeReference, this.Api);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var enumResult = new EnumResult(query, typeReference, this.ApiContext);
+                    var enumResult = new EnumResult(query, typeReference, this.Api);
                     singleResult = enumResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, enumResult);
                 }
@@ -481,11 +481,11 @@ namespace Microsoft.Restier.Publishers.OData
                 if (elementType.IsPrimitive() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference, this.ApiContext));
+                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference, this.Api));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference, this.ApiContext));
+                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference, this.Api));
             }
 
             var entityResult = query.SingleOrDefault();
@@ -528,7 +528,7 @@ namespace Microsoft.Restier.Publishers.OData
 
         private IQueryable GetQuery(ODataPath path)
         {
-            RestierQueryBuilder builder = new RestierQueryBuilder(this.ApiContext, path);
+            RestierQueryBuilder builder = new RestierQueryBuilder(this.Api, path);
             IQueryable queryable = builder.BuildQuery();
             this.shouldReturnCount = builder.IsCountPathSegmentPresent;
             this.shouldWriteRawValue = builder.IsValuePathSegmentPresent;
@@ -550,7 +550,7 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             HttpRequestMessageProperties properties = this.Request.ODataProperties();
-            var model = ApiContext.GetModelAsync().Result;
+            var model = Api.GetModelAsync().Result;
             ODataQueryContext queryContext =
                 new ODataQueryContext(model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
@@ -567,7 +567,7 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
-            ODataQuerySettings settings = ApiContext.GetApiService<ODataQuerySettings>();
+            ODataQuerySettings settings = Api.GetApiService<ODataQuerySettings>();
 
             if (this.shouldReturnCount)
             {
@@ -580,13 +580,13 @@ namespace Microsoft.Restier.Publishers.OData
             if (queryOptions.Count != null && !applyCount)
             {
                 RestierQueryExecutorOptions queryExecutorOptions =
-                    ApiContext.GetApiService<RestierQueryExecutorOptions>();
+                    Api.GetApiService<RestierQueryExecutorOptions>();
                 queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
                 queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }
 
             // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
-            ODataValidationSettings validationSettings = ApiContext.GetApiService<ODataValidationSettings>();
+            ODataValidationSettings validationSettings = Api.GetApiService<ODataValidationSettings>();
             queryOptions.Validate(validationSettings);
 
             // Entity count can NOT be evaluated at this point of time because the source
@@ -610,7 +610,7 @@ namespace Microsoft.Restier.Publishers.OData
                 ShouldReturnCount = this.shouldReturnCount
             };
 
-            QueryResult queryResult = await ApiContext.QueryAsync(queryRequest, cancellationToken);
+            QueryResult queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
             var result = queryResult.Results.AsQueryable();
             return result;
         }
@@ -639,8 +639,8 @@ namespace Microsoft.Restier.Publishers.OData
             IQueryable bindingParameterValue,
             CancellationToken cancellationToken)
         {
-            var executor = ApiContext.GetApiService<IOperationExecutor>();
-            var implementInstance = ApiContext.GetApiService<ApiBase>();
+            var executor = Api.GetApiService<IOperationExecutor>();
+            var implementInstance = Api.GetApiService<ApiBase>();
 
             var context = new OperationContext(
                 getParaValueFunc,
@@ -680,7 +680,7 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             // return 428(Precondition Required) if entity requires concurrency check.
-            var model = await this.ApiContext.GetModelAsync();
+            var model = await this.Api.GetModelAsync();
             bool needEtag = model.IsConcurrencyCheckEnabled(entitySet);
             if (needEtag)
             {

@@ -30,7 +30,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             var model = await this.GetModelAsync<ApiA>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
             Assert.NotNull(model.EntityContainer.FindSingleton("Me"));
@@ -41,7 +40,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             var model = await this.GetModelAsync<ApiB>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
             Assert.NotNull(model.EntityContainer.FindEntitySet("Customers"));
@@ -53,7 +51,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             var model = await this.GetModelAsync<ApiC>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
             Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
@@ -65,7 +62,6 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         {
             var model = await this.GetModelAsync<ApiD>();
             Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("ApiContext", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
             Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
             Assert.Equal("Customer", model.EntityContainer.FindSingleton("Me").EntityType().Name);
@@ -140,7 +136,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
             request.SetConfiguration(config);
             var api = request.CreateRequestContainer("test").GetService<ApiBase>();
-            return await api.Context.GetModelAsync();
+            return await api.GetModelAsync();
         }
     }
 

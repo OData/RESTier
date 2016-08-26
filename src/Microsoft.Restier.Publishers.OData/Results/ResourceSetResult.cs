@@ -17,9 +17,9 @@ namespace Microsoft.Restier.Publishers.OData
         /// </summary>
         /// <param name="query">The query that returns a collection of resources.</param>
         /// <param name="edmType">The EDM type reference of the entities or complex.</param>
-        /// <param name="context">The context where the action is executed.</param>
-        public ResourceSetResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
-            : base(query, edmType, context)
+        /// <param name="api">The api instance where the action is executed.</param>
+        public ResourceSetResult(IQueryable query, IEdmTypeReference edmType, ApiBase api)
+            : base(query, edmType, api)
         {
         }
     }

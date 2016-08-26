@@ -145,11 +145,11 @@ namespace Microsoft.Restier.Providers.EntityFramework
             DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            var apiContext = context.ServiceProvider.GetService<ApiContext>();
-            IQueryable query = apiContext.GetQueryableSource(item.ResourceSetName);
+            var apiBase = context.ServiceProvider.GetService<ApiBase>();
+            IQueryable query = apiBase.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
-            QueryResult result = await apiContext.QueryAsync(new QueryRequest(query), cancellationToken);
+            QueryResult result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken);
 
             object resource = result.Results.SingleOrDefault();
             if (resource == null)

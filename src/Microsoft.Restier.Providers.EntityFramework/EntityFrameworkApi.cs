@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// Initializes a new instance of the <see cref="EntityFrameworkApi{T}" /> class.
         /// </summary>
         /// <param name="serviceProvider">
-        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
+        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="EntityFrameworkApi{T}"/>.
         /// </param>
         public EntityFrameworkApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         {
             get
             {
-                return (T)this.Context.GetApiService<DbContext>();
+                return (T)this.GetApiService<DbContext>();
             }
         }
 
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// The Api type.
         /// </param>
         /// <param name="services">
-        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// The <see cref="IServiceCollection"/> with which to create all DI services.
         /// </param>
         /// <returns>
         /// The <see cref="IServiceCollection"/>.

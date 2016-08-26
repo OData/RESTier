@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var model = api.Context.GetModelAsync().Result;
+            var model = api.GetModelAsync().Result;
 
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
             var container = new RestierContainerBuilder(typeof(LibraryApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var model = api.Context.GetModelAsync().Result;
+            var model = api.GetModelAsync().Result;
 
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));

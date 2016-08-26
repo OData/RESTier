@@ -214,8 +214,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(apiType, "apiType");
 
             services.AddScoped(apiType, apiType)
-                .AddScoped(typeof(ApiBase), apiType)
-                .AddScoped<ApiContext>();
+                .AddScoped(typeof(ApiBase), apiType);
 
             services.TryAddSingleton<ApiConfiguration>();
 

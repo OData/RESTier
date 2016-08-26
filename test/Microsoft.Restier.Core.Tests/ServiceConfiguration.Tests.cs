@@ -237,7 +237,7 @@ namespace Microsoft.Restier.Core.Tests
         private class SomeService2 : ISomeService
         {
             private string _value;
-            // The string value will be retrieved via api.Context.GetApiService<string>()
+            // The string value will be retrieved via api.GetApiService<string>()
             public SomeService2(string value = "4")
             {
                 _value = value;
@@ -340,7 +340,7 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiA));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("03210", value);
         }
 
@@ -350,11 +350,11 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiB));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
 
             // Test expression compilation.
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("01", value);
         }
 
@@ -365,20 +365,20 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var service1 = api.Context.GetApiService<ISomeService>();
+            var service1 = api.GetApiService<ISomeService>();
             
             container = new RestierContainerBuilder(typeof(TestApiC));
             provider = container.BuildContainer();
             var api2 = provider.GetService<ApiBase>();
 
-            var service2 = api2.Context.GetApiService<ISomeService>();
+            var service2 = api2.GetApiService<ISomeService>();
 
             Assert.NotEqual(service1, service2);
 
             container = new RestierContainerBuilder(typeof(TestApiC));
             provider = container.BuildContainer();
             var api3 = provider.GetService<ApiBase>();
-            var service3 = api3.Context.GetApiService<ISomeService>();
+            var service3 = api3.GetApiService<ISomeService>();
 
             Assert.NotEqual(service3, service2);
         }
@@ -391,13 +391,13 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
 
             // Test expression compilation.
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
         }
 
@@ -409,18 +409,18 @@ namespace Microsoft.Restier.Core.Tests
             var api = provider.GetService<ApiBase>();
 
             var expected = "Text42";
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
 
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
 
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal(expected, value);
 
             Assert.NotEqual(
-                api.Context.GetApiService<ISomeService>(),
-                api.Context.GetApiService<ISomeService>());
+                api.GetApiService<ISomeService>(),
+                api.GetApiService<ISomeService>());
         }
 
         [Fact]
@@ -430,12 +430,12 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
 
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("42", value);
         }
 
@@ -447,13 +447,13 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
 
             // Test expression compilation
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("0122", value);
         }
 
@@ -464,7 +464,7 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            Assert.Throws<InvalidOperationException>(() => { api.Context.GetApiService<ISomeService>(); });
+            Assert.Throws<InvalidOperationException>(() => { api.GetApiService<ISomeService>(); });
         }
 
         [Fact]
@@ -474,13 +474,13 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var value = api.Context.GetApiService<ISomeService>().Call();
+            var value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
 
             // Test expression compilation
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
-            value = api.Context.GetApiService<ISomeService>().Call();
+            value = api.GetApiService<ISomeService>().Call();
             Assert.Equal("4200", value);
         }
     }

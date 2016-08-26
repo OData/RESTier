@@ -18,14 +18,14 @@ namespace Microsoft.Restier.Publishers.OData
         /// Initializes a new instance of the <see cref="BaseResult" /> class.
         /// </summary>
         /// <param name="edmType">The EDM type reference of the OData result.</param>
-        /// <param name="context">The context where the action is executed.</param>
-        protected BaseResult(IEdmTypeReference edmType, ApiContext context)
+        /// <param name="api">The api instance where the action is executed.</param>
+        protected BaseResult(IEdmTypeReference edmType, ApiBase api)
         {
             Ensure.NotNull(edmType, "edmType");
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
 
             this.edmType = edmType;
-            this.Context = context;
+            this.Api = api;
         }
 
         /// <summary>
@@ -42,6 +42,6 @@ namespace Microsoft.Restier.Publishers.OData
         /// <summary>
         /// Gets the context where the action is executed.
         /// </summary>
-        public ApiContext Context { get; private set; }
+        public ApiBase Api { get; private set; }
     }
 }

@@ -69,9 +69,9 @@ namespace Microsoft.Restier.Publishers.OData
         }
 
         public static IReadOnlyDictionary<string, object> CreatePropertyDictionary(
-            this Delta entity, IEdmStructuredType edmType, ApiContext apiContext, bool isCreation)
+            this Delta entity, IEdmStructuredType edmType, ApiBase api, bool isCreation)
         {
-            var propertiesAttributes = RetrievePropertiesAttributes(edmType, apiContext);
+            var propertiesAttributes = RetrievePropertiesAttributes(edmType, api);
 
             Dictionary<string, object> propertyValues = new Dictionary<string, object>();
             foreach (string propertyName in entity.GetChangedPropertyNames())
@@ -93,7 +93,7 @@ namespace Microsoft.Restier.Publishers.OData
                     var complexObj = value as EdmComplexObject;
                     if (complexObj != null)
                     {
-                        value = CreatePropertyDictionary(complexObj, complexObj.ActualEdmType, apiContext, isCreation);
+                        value = CreatePropertyDictionary(complexObj, complexObj.ActualEdmType, api, isCreation);
                     }
 
                     propertyValues.Add(propertyName, value);
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.Publishers.OData
         }
 
         public static IDictionary<string, PropertyAttributes> RetrievePropertiesAttributes(
-            IEdmStructuredType edmType, ApiContext apiContext)
+            IEdmStructuredType edmType, ApiBase api)
         {
             IDictionary<string, PropertyAttributes> propertiesAttributes;
             if (typePropertiesAttributes.TryGetValue(edmType, out propertiesAttributes))
@@ -112,7 +112,7 @@ namespace Microsoft.Restier.Publishers.OData
                 return propertiesAttributes;
             }
 
-            var model = apiContext.GetModelAsync().Result;
+            var model = api.GetModelAsync().Result;
             foreach (var property in edmType.DeclaredProperties)
             {
                 var annotations = model.FindVocabularyAnnotations(property);
@@ -164,7 +164,7 @@ namespace Microsoft.Restier.Publishers.OData
             return propertiesAttributes;
         }
 
-        public static Type GetClrType(this IEdmType edmType, ApiContext api)
+        public static Type GetClrType(this IEdmType edmType, ApiBase api)
         {
             IEdmModel edmModel = api.GetModelAsync().Result;
 

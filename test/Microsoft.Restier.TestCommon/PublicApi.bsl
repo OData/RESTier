@@ -1,7 +1,6 @@
 public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 	protected ApiBase (System.IServiceProvider serviceProvider)
 
-	Microsoft.Restier.Core.ApiContext Context  { public get; }
 	bool IsDisposed  { [CompilerGeneratedAttribute(),]public get; }
 	System.IServiceProvider ServiceProvider  { public get; }
 
@@ -25,79 +24,79 @@ public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 [
 ExtensionAttribute(),
 ]
-public sealed class Microsoft.Restier.Core.ApiContextExtensions {
+public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static void ClearProperty (Microsoft.Restier.Core.ApiContext context, string name)
+	public static void ClearProperty (Microsoft.Restier.Core.ApiBase api, string name)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static T GetApiService (Microsoft.Restier.Core.ApiContext context)
+	public static T GetApiService (Microsoft.Restier.Core.ApiBase api)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static IEnumerable`1 GetApiServices (Microsoft.Restier.Core.ApiContext context)
-
-	[
-	AsyncStateMachineAttribute(),
-	ExtensionAttribute(),
-	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiContext context, params System.Threading.CancellationToken cancellationToken)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static object GetProperty (Microsoft.Restier.Core.ApiContext context, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static T GetProperty (Microsoft.Restier.Core.ApiContext context, string name)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, object[] arguments)
-
-	[
-	ExtensionAttribute(),
-	]
-	public static bool HasProperty (Microsoft.Restier.Core.ApiContext context, string name)
+	public static IEnumerable`1 GetApiServices (Microsoft.Restier.Core.ApiBase api)
 
 	[
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiContext context, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
+	public static System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.ApiBase api, params System.Threading.CancellationToken cancellationToken)
 
 	[
 	ExtensionAttribute(),
 	]
-	public static void SetProperty (Microsoft.Restier.Core.ApiContext context, string name, object value)
+	public static object GetProperty (Microsoft.Restier.Core.ApiBase api, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static T GetProperty (Microsoft.Restier.Core.ApiBase api, string name)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Linq.IQueryable GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static IQueryable`1 GetQueryableSource (Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, object[] arguments)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static bool HasProperty (Microsoft.Restier.Core.ApiBase api, string name)
 
 	[
 	AsyncStateMachineAttribute(),
 	ExtensionAttribute(),
 	]
-	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiContext context, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
+	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static void SetProperty (Microsoft.Restier.Core.ApiBase api, string name, object value)
+
+	[
+	AsyncStateMachineAttribute(),
+	ExtensionAttribute(),
+	]
+	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Submit.SubmitResult]] SubmitAsync (Microsoft.Restier.Core.ApiBase api, params Microsoft.Restier.Core.Submit.ChangeSet changeSet, params System.Threading.CancellationToken cancellationToken)
 }
 
 public sealed class Microsoft.Restier.Core.DataSourceStub {
@@ -167,14 +166,6 @@ public sealed class Microsoft.Restier.Core.ServiceCollectionExtensions {
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection MakeTransient (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
-public class Microsoft.Restier.Core.ApiContext : IDisposable {
-	public ApiContext (System.IServiceProvider provider)
-
-	bool IsDisposed  { [CompilerGeneratedAttribute(),]public get; }
-
-	public virtual void Dispose ()
-}
-
 public class Microsoft.Restier.Core.InvocationContext {
 	public InvocationContext (System.IServiceProvider provider)
 
@@ -221,8 +212,8 @@ public interface Microsoft.Restier.Core.Model.IModelBuilder {
 }
 
 public interface Microsoft.Restier.Core.Model.IModelMapper {
-	bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string name, out System.Type& relevantType)
-	bool TryGetRelevantType (Microsoft.Restier.Core.ApiContext context, string namespaceName, string name, out System.Type& relevantType)
+	bool TryGetRelevantType (Microsoft.Restier.Core.ApiBase apiBase, string name, out System.Type& relevantType)
+	bool TryGetRelevantType (Microsoft.Restier.Core.ApiBase apiBase, string namespaceName, string name, out System.Type& relevantType)
 }
 
 public class Microsoft.Restier.Core.Model.ModelContext : Microsoft.Restier.Core.InvocationContext {

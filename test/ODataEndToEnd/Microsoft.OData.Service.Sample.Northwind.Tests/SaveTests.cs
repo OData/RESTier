@@ -59,7 +59,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestEntityFilterReturnsTaskApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             DataModificationItem<Customer> createCustomer = new DataModificationItem<Customer>(
                 "Customers",

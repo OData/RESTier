@@ -104,8 +104,8 @@ namespace Microsoft.Restier.Core
         {
             Func<IServiceProvider, IEdmModel> modelFactory = sp =>
             {
-                var context = sp.GetService<ApiContext>();
-                var model = context.GetModelAsync(default(CancellationToken)).Result;
+                var api = sp.GetService<ApiBase>();
+                var model = api.GetModelAsync(default(CancellationToken)).Result;
                 return model;
             };
 

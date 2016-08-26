@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Core.Tests
         private class TestModelMapper : IModelMapper
         {
             public bool TryGetRelevantType(
-                ApiContext context,
+                ApiBase context,
                 string name, out Type relevantType)
             {
                 relevantType = typeof(string);
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Core.Tests
             }
 
             public bool TryGetRelevantType(
-                ApiContext context,
+                ApiBase context,
                 string namespaceName, string name,
                 out Type relevantType)
             {
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             var arguments = new object[0];
 
@@ -141,10 +141,9 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiEmpty));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => context.GetQueryableSource("Test", arguments));
+            Assert.Throws<NotSupportedException>(() => api.GetQueryableSource("Test", arguments));
         }
 
         [Fact]
@@ -153,10 +152,9 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource("Test", arguments);
+            var source = api.GetQueryableSource("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -177,7 +175,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             var arguments = new object[0];
 
@@ -205,10 +203,9 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApiEmpty));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => context.GetQueryableSource("Namespace", "Function", arguments));
+            Assert.Throws<NotSupportedException>(() => api.GetQueryableSource("Namespace", "Function", arguments));
         }
 
         [Fact]
@@ -218,10 +215,9 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource("Namespace", "Function", arguments);
+            var source = api.GetQueryableSource("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -244,7 +240,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             var arguments = new object[0];
 
@@ -270,10 +266,9 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => context.GetQueryableSource<object>("Test", arguments));
+            Assert.Throws<ArgumentException>(() => api.GetQueryableSource<object>("Test", arguments));
         }
 
         [Fact]
@@ -283,10 +278,9 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var context = api.Context;
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource<string>("Test", arguments);
+            var source = api.GetQueryableSource<string>("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -311,7 +305,7 @@ namespace Microsoft.Restier.Core.Tests
 
             var arguments = new object[0];
 
-            var source = api.Context.GetQueryableSource<DateTime>(
+            var source = api.GetQueryableSource<DateTime>(
                 "Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
@@ -337,10 +331,9 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var context = api.Context;
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => context.GetQueryableSource<object>("Namespace", "Function", arguments));
+            Assert.Throws<ArgumentException>(() => api.GetQueryableSource<object>("Namespace", "Function", arguments));
         }
 
         [Fact]
@@ -349,10 +342,10 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
+
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
+            var source = api.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -376,9 +369,8 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.GetEnumerator());
         }
 
@@ -388,9 +380,8 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => (source as IEnumerable).GetEnumerator());
         }
 
@@ -400,9 +391,8 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute<string>(null));
         }
 
@@ -412,9 +402,8 @@ namespace Microsoft.Restier.Core.Tests
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = api.Context;
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute(null));
         }
 
@@ -423,7 +412,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
             var result = await api.QueryAsync(request);
@@ -437,7 +426,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             var queryRequest = new QueryRequest(
                 api.GetQueryableSource<string>("Test"));
@@ -451,7 +440,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiContext>();
+            var api = provider.GetService<ApiBase>();
 
             var submitResult = await api.SubmitAsync();
             Assert.NotNull(submitResult.CompletedChangeSet);

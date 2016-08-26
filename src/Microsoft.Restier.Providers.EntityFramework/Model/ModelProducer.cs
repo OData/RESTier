@@ -48,7 +48,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             Ensure.NotNull(context, "context");
 
 #if EF7
-            var dbContext = context.ApiContext.GetApiService<DbContext>();
+            var dbContext = context.ServiceProvider.GetService<DbContext>();
             context.ResourceSetTypeMap = dbContext.GetType().GetProperties()
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);

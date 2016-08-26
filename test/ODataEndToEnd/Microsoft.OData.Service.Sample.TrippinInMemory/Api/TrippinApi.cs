@@ -26,7 +26,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
     {
         private IDataStoreManager<string, TripPinDataSource> DataStoreManager
         {
-            get { return base.Context.GetApiService<IDataStoreManager<string, TripPinDataSource>>(); }
+            get { return this.GetApiService<IDataStoreManager<string, TripPinDataSource>>(); }
         }
 
         private string Key

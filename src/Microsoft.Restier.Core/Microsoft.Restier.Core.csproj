@@ -76,8 +76,7 @@
     <Compile Include="Conventions\ConventionBasedQueryExpressionProcessor.cs" />
     <Compile Include="ApiBase.cs" />
     <Compile Include="ApiConfiguration.cs" />
-    <Compile Include="ApiContext.cs" />
-    <Compile Include="ApiContextExtensions.cs" />
+    <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="DataSourceStub.cs" />
     <Compile Include="Exceptions\PreconditionRequiredException.cs" />
     <Compile Include="Exceptions\PreconditionFailedException.cs" />

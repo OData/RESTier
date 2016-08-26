@@ -20,11 +20,11 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents the API engine and provides a set of static
     /// (Shared in Visual Basic) methods for interacting with objects
-    /// that implement <see cref="ApiContext"/>.
+    /// that implement <see cref="ApiBase"/>.
     /// </summary>
-    public static class ApiContextExtensions
+    public static class ApiBaseExtensions
     {
-        private static readonly MethodInfo SourceCoreMethod = typeof(ApiContextExtensions)
+        private static readonly MethodInfo SourceCoreMethod = typeof(ApiBaseExtensions)
             .GetMember("SourceCore", BindingFlags.NonPublic | BindingFlags.Static)
             .Cast<MethodInfo>().Single(m => m.IsGenericMethod);
 
@@ -41,29 +41,29 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets a service instance.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <typeparam name="T">The service type.</typeparam>
         /// <returns>The service instance.</returns>
-        public static T GetApiService<T>(this ApiContext context) where T : class
+        public static T GetApiService<T>(this ApiBase api) where T : class
         {
-            Ensure.NotNull(context, "context");
-            return context.ServiceProvider.GetService<T>();
+            Ensure.NotNull(api, "api");
+            return api.ServiceProvider.GetService<T>();
         }
 
         /// <summary>
         /// Gets all registered service instances.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <typeparam name="T">The service type.</typeparam>
         /// <returns>The ordered collection of service instances.</returns>
-        public static IEnumerable<T> GetApiServices<T>(this ApiContext context) where T : class
+        public static IEnumerable<T> GetApiServices<T>(this ApiBase api) where T : class
         {
-            Ensure.NotNull(context, "context");
-            return context.ServiceProvider.GetServices<T>();
+            Ensure.NotNull(api, "api");
+            return api.ServiceProvider.GetServices<T>();
         }
 
         #endregion
@@ -73,8 +73,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Indicates if this object has a property.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of a property.
@@ -83,9 +83,9 @@ namespace Microsoft.Restier.Core
         /// <c>true</c> if this object has the
         /// property; otherwise, <c>false</c>.
         /// </returns>
-        public static bool HasProperty(this ApiContext context, string name)
+        public static bool HasProperty(this ApiBase api, string name)
         {
-            return context.GetPropertyBag().HasProperty(name);
+            return api.GetPropertyBag().HasProperty(name);
         }
 
         /// <summary>
@@ -94,8 +94,8 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="T">
         /// The type of the property.
         /// </typeparam>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of a property.
@@ -103,16 +103,16 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// The value of the property.
         /// </returns>
-        public static T GetProperty<T>(this ApiContext context, string name)
+        public static T GetProperty<T>(this ApiBase api, string name)
         {
-            return context.GetPropertyBag().GetProperty<T>(name);
+            return api.GetPropertyBag().GetProperty<T>(name);
         }
 
         /// <summary>
         /// Gets a property.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of a property.
@@ -120,16 +120,16 @@ namespace Microsoft.Restier.Core
         /// <returns>
         /// The value of the property.
         /// </returns>
-        public static object GetProperty(this ApiContext context, string name)
+        public static object GetProperty(this ApiBase api, string name)
         {
-            return context.GetPropertyBag().GetProperty(name);
+            return api.GetPropertyBag().GetProperty(name);
         }
 
         /// <summary>
         /// Sets a property.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of a property.
@@ -137,23 +137,23 @@ namespace Microsoft.Restier.Core
         /// <param name="value">
         /// A value for the property.
         /// </param>
-        public static void SetProperty(this ApiContext context, string name, object value)
+        public static void SetProperty(this ApiBase api, string name, object value)
         {
-            context.GetPropertyBag().SetProperty(name, value);
+            api.GetPropertyBag().SetProperty(name, value);
         }
 
         /// <summary>
         /// Clears a property.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of a property.
         /// </param>
-        public static void ClearProperty(this ApiContext context, string name)
+        public static void ClearProperty(this ApiBase api, string name)
         {
-            context.GetPropertyBag().ClearProperty(name);
+            api.GetPropertyBag().ClearProperty(name);
         }
 
         #endregion
@@ -163,8 +163,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Asynchronously gets an API model using an API context.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="cancellationToken">
         /// An optional cancellation token.
@@ -174,18 +174,18 @@ namespace Microsoft.Restier.Core
         /// operation whose result is the API model.
         /// </returns>
         public static async Task<IEdmModel> GetModelAsync(
-            this ApiContext context,
+            this ApiBase api,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
 
-            var config = context.Configuration;
+            var config = api.Configuration;
             if (config.Model != null)
             {
                 return config.Model;
             }
 
-            var builder = context.GetApiService<IModelBuilder>();
+            var builder = api.GetApiService<IModelBuilder>();
             if (builder == null)
             {
                 throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
@@ -200,7 +200,7 @@ namespace Microsoft.Restier.Core
 
             try
             {
-                var buildContext = new ModelContext(context.ServiceProvider);
+                var buildContext = new ModelContext(api.ServiceProvider);
                 var model = await builder.GetModelAsync(buildContext, cancellationToken);
                 source.SetResult(model);
                 return model;
@@ -224,8 +224,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets a queryable source of data using an API context.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -249,21 +249,21 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable GetQueryableSource(
-            this ApiContext context,
+            this ApiBase api,
             string name,
             params object[] arguments)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
             Ensure.NotNull(name, "name");
 
-            return context.SourceCore(null, name, arguments);
+            return api.SourceCore(null, name, arguments);
         }
 
         /// <summary>
         /// Gets a queryable source of data using an API context.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -289,16 +289,16 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable GetQueryableSource(
-            this ApiContext context,
+            this ApiBase api,
             string namespaceName,
             string name,
             params object[] arguments)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
             Ensure.NotNull(namespaceName, "namespaceName");
             Ensure.NotNull(name, "name");
 
-            return SourceCore(context, namespaceName, name, arguments);
+            return SourceCore(api, namespaceName, name, arguments);
         }
 
         /// <summary>
@@ -307,8 +307,8 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TElement">
         /// The type of the elements in the queryable source.
         /// </typeparam>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -332,14 +332,14 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable<TElement> GetQueryableSource<TElement>(
-            this ApiContext context,
+            this ApiBase api,
             string name,
             params object[] arguments)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
             Ensure.NotNull(name, "name");
 
-            var elementType = context.EnsureElementType(null, name);
+            var elementType = api.EnsureElementType(null, name);
             if (typeof(TElement) != elementType)
             {
                 throw new ArgumentException(Resources.ElementTypeNotMatch);
@@ -354,8 +354,8 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TElement">
         /// The type of the elements in the queryable source.
         /// </typeparam>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -381,16 +381,16 @@ namespace Microsoft.Restier.Core
         /// </para>
         /// </remarks>
         public static IQueryable<TElement> GetQueryableSource<TElement>(
-            this ApiContext context,
+            this ApiBase api,
             string namespaceName,
             string name,
             params object[] arguments)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
             Ensure.NotNull(namespaceName, "namespaceName");
             Ensure.NotNull(name, "name");
 
-            var elementType = context.EnsureElementType(namespaceName, name);
+            var elementType = api.EnsureElementType(namespaceName, name);
             if (typeof(TElement) != elementType)
             {
                 throw new ArgumentException(Resources.ElementTypeNotMatch);
@@ -406,8 +406,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Asynchronously queries for data using an API context.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="request">
         /// A query request.
@@ -420,15 +420,15 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a query result.
         /// </returns>
         public static async Task<QueryResult> QueryAsync(
-            this ApiContext context,
+            this ApiBase api,
             QueryRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
             Ensure.NotNull(request, "request");
 
-            var queryContext = new QueryContext(context.ServiceProvider, request);
-            var model = await context.GetModelAsync(cancellationToken);
+            var queryContext = new QueryContext(api.ServiceProvider, request);
+            var model = await api.GetModelAsync(cancellationToken);
             queryContext.Model = model;
             return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
         }
@@ -440,8 +440,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Asynchronously submits changes made using an API context.
         /// </summary>
-        /// <param name="context">
-        /// An API context.
+        /// <param name="api">
+        /// An API.
         /// </param>
         /// <param name="changeSet">
         /// A change set, or <c>null</c> to submit existing pending changes.
@@ -454,13 +454,13 @@ namespace Microsoft.Restier.Core
         /// operation whose result is a submit result.
         /// </returns>
         public static async Task<SubmitResult> SubmitAsync(
-            this ApiContext context,
+            this ApiBase api,
             ChangeSet changeSet = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(api, "api");
 
-            var submitContext = new SubmitContext(context.ServiceProvider, changeSet);
+            var submitContext = new SubmitContext(api.ServiceProvider, changeSet);
             return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken);
         }
 
@@ -469,12 +469,12 @@ namespace Microsoft.Restier.Core
         #region GetQueryableSource Private
 
         private static IQueryable SourceCore(
-            this ApiContext context,
+            this ApiBase api,
             string namespaceName,
             string name,
             object[] arguments)
         {
-            var elementType = context.EnsureElementType(namespaceName, name);
+            var elementType = api.EnsureElementType(namespaceName, name);
             var method = SourceCoreMethod.MakeGenericMethod(elementType);
             var args = new object[] { namespaceName, name, arguments };
             return method.Invoke(null, args) as IQueryable;
@@ -515,22 +515,22 @@ namespace Microsoft.Restier.Core
         }
 
         private static Type EnsureElementType(
-            this ApiContext context,
+            this ApiBase api,
             string namespaceName,
             string name)
         {
             Type elementType = null;
 
-            var mapper = context.GetApiService<IModelMapper>();
+            var mapper = api.GetApiService<IModelMapper>();
             if (mapper != null)
             {
                 if (namespaceName == null)
                 {
-                    mapper.TryGetRelevantType(context, name, out elementType);
+                    mapper.TryGetRelevantType(api, name, out elementType);
                 }
                 else
                 {
-                    mapper.TryGetRelevantType(context, namespaceName, name, out elementType);
+                    mapper.TryGetRelevantType(api, namespaceName, name, out elementType);
                 }
             }
 
@@ -549,10 +549,10 @@ namespace Microsoft.Restier.Core
 
         #region PropertyBag Private
 
-        private static PropertyBag GetPropertyBag(this ApiContext context)
+        private static PropertyBag GetPropertyBag(this ApiBase api)
         {
-            Ensure.NotNull(context, "context");
-            return context.GetApiService<PropertyBag>();
+            Ensure.NotNull(api, "api");
+            return api.GetApiService<PropertyBag>();
         }
 
         #endregion

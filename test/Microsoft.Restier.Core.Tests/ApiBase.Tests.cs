@@ -26,20 +26,15 @@ namespace Microsoft.Restier.Core.Tests
         interface IService
         {
             ApiBase Api { get; }
-
-            ApiContext Context { get; }
         }
 
         class Service : IService
         {
             public ApiBase Api { get; set; }
 
-            public ApiContext Context { get; set; }
-
-            public Service(ApiBase api, ApiContext context)
+            public Service(ApiBase api)
             {
                 Api = api;
-                Context = context;
             }
         }
 
@@ -59,14 +54,9 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
 
-            var context = api.Context;
-            var svc = context.GetApiService<IService>();
+            var svc = api.GetApiService<IService>();
 
             Assert.Same(svc.Api, api);
-            Assert.Same(svc.Context, context);
-
-            api.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => api.Context);
         }
     }
 }

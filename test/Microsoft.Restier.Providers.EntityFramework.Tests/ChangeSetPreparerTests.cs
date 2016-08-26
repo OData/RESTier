@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
             var sc = new SubmitContext(provider, changeSet);
 
             // Act
-            var changeSetPreparer = libraryApi.Context.GetApiService<IChangeSetInitializer>();
+            var changeSetPreparer = libraryApi.GetApiService<IChangeSetInitializer>();
             await changeSetPreparer.InitializeAsync(sc, CancellationToken.None);
             var person = item.Resource as Person;
 

@@ -27,7 +27,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         {
             get
             {
-                return this.Context.GetQueryableSource<Product>("Products")
+                return this.GetQueryableSource<Product>("Products")
                     .Where(c => c.UnitPrice > 50);
             }
         }
@@ -37,7 +37,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         {
             get
             {
-                return this.Context.GetQueryableSource<Order>("Orders")
+                return this.GetQueryableSource<Order>("Orders")
                     .Where(o => o.ShippedDate == null);
             }
         }

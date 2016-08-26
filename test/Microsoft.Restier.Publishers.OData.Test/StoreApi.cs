@@ -83,7 +83,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class TestModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiBase context, string name, out Type relevantType)
         {
             if (name == "Products")
             {
@@ -105,7 +105,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             return true;
         }
 
-        public bool TryGetRelevantType(ApiContext context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ApiBase context, string namespaceName, string name, out Type relevantType)
         {
             relevantType = typeof(Product);
             return true;
