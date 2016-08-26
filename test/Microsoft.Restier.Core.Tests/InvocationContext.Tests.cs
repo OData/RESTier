@@ -46,8 +46,8 @@ namespace Microsoft.Restier.Core.Tests
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
             var apiContext = api.Context;
-            var context = new InvocationContext(apiContext);
-            Assert.Same(apiContext, context.ApiContext);
+            var context = new InvocationContext(provider);
+            Assert.Same(apiContext, context.GetApiService<ApiContext>());
         }
 
         [Fact]
@@ -55,9 +55,7 @@ namespace Microsoft.Restier.Core.Tests
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var apiContext = api.Context;
-            var context = new InvocationContext(apiContext);
+            var context = new InvocationContext(provider);
             Assert.Same(TestApi.ApiService, context.GetApiService<IServiceA>());
         }
 

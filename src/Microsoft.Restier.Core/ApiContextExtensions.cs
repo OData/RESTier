@@ -200,8 +200,7 @@ namespace Microsoft.Restier.Core
 
             try
             {
-                var buildContext = new ModelContext();
-                buildContext.ServiceProvider = context.ServiceProvider;
+                var buildContext = new ModelContext(context.ServiceProvider);
                 var model = await builder.GetModelAsync(buildContext, cancellationToken);
                 source.SetResult(model);
                 return model;
@@ -428,7 +427,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, "context");
             Ensure.NotNull(request, "request");
 
-            var queryContext = new QueryContext(context, request);
+            var queryContext = new QueryContext(context.ServiceProvider, request);
             var model = await context.GetModelAsync(cancellationToken);
             queryContext.Model = model;
             return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
@@ -461,7 +460,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(context, "context");
 
-            var submitContext = new SubmitContext(context, changeSet);
+            var submitContext = new SubmitContext(context.ServiceProvider, changeSet);
             return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken);
         }
 

@@ -31,10 +31,6 @@ namespace Microsoft.Restier.Core
             {
                 return context.ServiceProvider.GetService<T>();
             }
-            else if (context.ApiContext != null)
-            {
-                return context.ApiContext.GetApiService<T>();
-            }
 
             return null;
         }
@@ -53,10 +49,6 @@ namespace Microsoft.Restier.Core
             if (context.ServiceProvider != null)
             {
                 return context.ServiceProvider.GetServices<T>();
-            }
-            else if (context.ApiContext != null)
-            {
-                return context.ApiContext.GetApiServices<T>();
             }
 
             return null;

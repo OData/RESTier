@@ -176,11 +176,9 @@ public class Microsoft.Restier.Core.ApiContext : IDisposable {
 }
 
 public class Microsoft.Restier.Core.InvocationContext {
-	public InvocationContext ()
-	public InvocationContext (Microsoft.Restier.Core.ApiContext apiContext)
+	public InvocationContext (System.IServiceProvider provider)
 
-	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
-	System.IServiceProvider ServiceProvider  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	System.IServiceProvider ServiceProvider  { [CompilerGeneratedAttribute(),]public get; }
 }
 
 [
@@ -228,7 +226,7 @@ public interface Microsoft.Restier.Core.Model.IModelMapper {
 }
 
 public class Microsoft.Restier.Core.Model.ModelContext : Microsoft.Restier.Core.InvocationContext {
-	public ModelContext ()
+	public ModelContext (System.IServiceProvider provider)
 
 	System.Collections.Generic.IDictionary`2[[System.String],[System.Type]] ResourceSetTypeMap  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Collections.Generic.IDictionary`2[[System.Type],[System.Collections.Generic.ICollection`1[[System.Reflection.PropertyInfo]]]] ResourceTypeKeyPropertiesMap  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
@@ -248,7 +246,7 @@ public interface Microsoft.Restier.Core.Operation.IOperationFilter {
 }
 
 public class Microsoft.Restier.Core.Operation.OperationContext : Microsoft.Restier.Core.InvocationContext {
-	public OperationContext (System.Func`2[[System.String],[System.Object]] getParameterValueFunc, string operationName, object implementInstance, bool isFunction, System.Collections.IEnumerable bindingParameterValue)
+	public OperationContext (System.Func`2[[System.String],[System.Object]] getParameterValueFunc, string operationName, object implementInstance, bool isFunction, System.Collections.IEnumerable bindingParameterValue, System.IServiceProvider provider)
 
 	System.Collections.IEnumerable BindingParameterValue  { public get; }
 	System.Func`2[[System.String],[System.Object]] GetParameterValueFunc  { public get; }
@@ -297,7 +295,7 @@ public class Microsoft.Restier.Core.Query.PropertyModelReference : Microsoft.Res
 }
 
 public class Microsoft.Restier.Core.Query.QueryContext : Microsoft.Restier.Core.InvocationContext {
-	public QueryContext (Microsoft.Restier.Core.ApiContext apiContext, Microsoft.Restier.Core.Query.QueryRequest request)
+	public QueryContext (System.IServiceProvider serviceProvider, Microsoft.Restier.Core.Query.QueryRequest request)
 
 	Microsoft.OData.Edm.IEdmModel Model  { [CompilerGeneratedAttribute(),]public get; }
 	Microsoft.Restier.Core.Query.QueryRequest Request  { [CompilerGeneratedAttribute(),]public get; }
@@ -421,7 +419,7 @@ public class Microsoft.Restier.Core.Submit.DataModificationItem`1 : Microsoft.Re
 }
 
 public class Microsoft.Restier.Core.Submit.SubmitContext : Microsoft.Restier.Core.InvocationContext {
-	public SubmitContext (Microsoft.Restier.Core.ApiContext apiContext, Microsoft.Restier.Core.Submit.ChangeSet changeSet)
+	public SubmitContext (System.IServiceProvider provider, Microsoft.Restier.Core.Submit.ChangeSet changeSet)
 
 	Microsoft.Restier.Core.Submit.ChangeSet ChangeSet  { public get; public set; }
 	Microsoft.Restier.Core.Submit.SubmitResult Result  { public get; public set; }
@@ -536,7 +534,6 @@ public class Microsoft.Restier.Publishers.OData.RestierController : System.Web.O
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Delete (System.Threading.CancellationToken cancellationToken)
 
-	protected virtual void Dispose (bool disposing)
 	[
 	AsyncStateMachineAttribute(),
 	]

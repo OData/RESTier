@@ -643,8 +643,13 @@ namespace Microsoft.Restier.Publishers.OData
             var implementInstance = ApiContext.GetApiService<ApiBase>();
 
             var context = new OperationContext(
-                getParaValueFunc, operationName, implementInstance, isFunction, bindingParameterValue);
-            context.ServiceProvider = Request.GetRequestContainer();
+                getParaValueFunc,
+                operationName,
+                implementInstance,
+                isFunction,
+                bindingParameterValue,
+                Request.GetRequestContainer());
+
             context.Request = Request;
             var result = executor.ExecuteOperationAsync(context, cancellationToken);
             return result;

@@ -13,6 +13,16 @@ namespace Microsoft.Restier.Core.Model
     public class ModelContext : InvocationContext
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ModelContext" /> class.
+        /// </summary>
+        /// <param name="provider">
+        /// The service provider to get services.
+        /// </param>
+        public ModelContext(IServiceProvider provider) : base(provider)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets resource set and resource type map dictionary, it will be used by publisher for model build.
         /// </summary>
         public IDictionary<string, Type> ResourceSetTypeMap { get; set; }

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
@@ -35,7 +36,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             SubmitContext context,
             CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.ApiContext.GetApiService<DbContext>();
+            DbContext dbContext = context.ServiceProvider.GetService<DbContext>();
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
@@ -144,10 +145,11 @@ namespace Microsoft.Restier.Providers.EntityFramework
             DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.GetQueryableSource(item.ResourceSetName);
+            var apiContext = context.ServiceProvider.GetService<ApiContext>();
+            IQueryable query = apiContext.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
-            QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
+            QueryResult result = await apiContext.QueryAsync(new QueryRequest(query), cancellationToken);
 
             object resource = result.Results.SingleOrDefault();
             if (resource == null)

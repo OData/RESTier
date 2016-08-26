@@ -39,13 +39,17 @@ namespace Microsoft.Restier.Core.Operation
         /// <param name="bindingParameterValue">
         /// A queryable for binding parameter value and if it is function/action import, the value will be null.
         /// </param>
+        /// <param name="provider">
+        /// The service provider used to get service from container.
+        /// </param>
         public OperationContext(
             Func<string, object> getParameterValueFunc,
             string operationName,
             object implementInstance,
             bool isFunction,
-            IEnumerable bindingParameterValue)
-            : base()
+            IEnumerable bindingParameterValue,
+            IServiceProvider provider)
+            : base(provider)
         {
             this.getParameterValueFunc = getParameterValueFunc;
             this.operationName = operationName;

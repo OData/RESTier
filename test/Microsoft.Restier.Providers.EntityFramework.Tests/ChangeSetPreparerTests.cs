@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
                 new Dictionary<string, object>(),
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });
             var changeSet = new ChangeSet(new[] { item });
-            var sc = new SubmitContext(libraryApi.Context, changeSet);
+            var sc = new SubmitContext(provider, changeSet);
 
             // Act
             var changeSetPreparer = libraryApi.Context.GetApiService<IChangeSetInitializer>();
