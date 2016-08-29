@@ -19,9 +19,8 @@ namespace Microsoft.Restier.Publishers.OData
         /// </summary>
         /// <param name="query">The query that returns an object.</param>
         /// <param name="edmType">The EDM type reference of the object.</param>
-        /// <param name="api">The api instance where the action is executed.</param>
-        protected BaseSingleResult(IQueryable query, IEdmTypeReference edmType, ApiBase api)
-            : base(edmType, api)
+        protected BaseSingleResult(IQueryable query, IEdmTypeReference edmType)
+            : base(edmType)
         {
             Ensure.NotNull(query, "query");
 

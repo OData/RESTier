@@ -428,13 +428,13 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.shouldReturnCount || this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.Api);
+                    var rawResult = new RawResult(query, typeReference);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var primitiveResult = new PrimitiveResult(query, typeReference, this.Api);
+                    var primitiveResult = new PrimitiveResult(query, typeReference);
                     singleResult = primitiveResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, primitiveResult);
                 }
@@ -442,7 +442,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             if (typeReference.IsComplex())
             {
-                var complexResult = new ComplexResult(query, typeReference, this.Api);
+                var complexResult = new ComplexResult(query, typeReference);
                 singleResult = complexResult;
                 response = this.Request.CreateResponse(HttpStatusCode.OK, complexResult);
             }
@@ -451,13 +451,13 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.Api);
+                    var rawResult = new RawResult(query, typeReference);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var enumResult = new EnumResult(query, typeReference, this.Api);
+                    var enumResult = new EnumResult(query, typeReference);
                     singleResult = enumResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, enumResult);
                 }
@@ -481,11 +481,11 @@ namespace Microsoft.Restier.Publishers.OData
                 if (elementType.IsPrimitive() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference, this.Api));
+                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference, this.Api));
+                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference));
             }
 
             var entityResult = query.SingleOrDefault();
@@ -640,12 +640,11 @@ namespace Microsoft.Restier.Publishers.OData
             CancellationToken cancellationToken)
         {
             var executor = Api.GetApiService<IOperationExecutor>();
-            var implementInstance = Api.GetApiService<ApiBase>();
 
             var context = new OperationContext(
                 getParaValueFunc,
                 operationName,
-                implementInstance,
+                Api,
                 isFunction,
                 bindingParameterValue,
                 Request.GetRequestContainer());
