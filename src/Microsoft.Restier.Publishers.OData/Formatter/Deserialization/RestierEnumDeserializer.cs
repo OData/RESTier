@@ -12,14 +12,9 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
     /// <summary>
     /// The serializer for enum result.
     /// </summary>
-    internal class RestierEnumDeserializer : ODataEdmTypeDeserializer
+    internal class RestierEnumDeserializer : ODataEnumDeserializer
     {
         private ODataEnumDeserializer enumDeserializer = new ODataEnumDeserializer();
-
-        public RestierEnumDeserializer()
-            : base(ODataPayloadKind.Property)
-        {
-        }
 
         /// <inheritdoc />
         public override object Read(

@@ -33,16 +33,6 @@ namespace Microsoft.Restier.Publishers.OData.Formatter
                 Request = request
             };
 
-            // Enum logic can be removed after RestierEnumDeserializer extends ODataEnumDeserializer
-            var deserializerProvider = serviceProvider.GetService<ODataDeserializerProvider>();
-            var enumValue = odataValue as ODataEnumValue;
-            if (enumValue != null)
-            {
-                ODataEdmTypeDeserializer deserializer
-                    = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsEnum());
-                return deserializer.ReadInline(enumValue, propertyType, readContext);
-            }
-
             var returnValue = ODataModelBinderConverter.Convert(
                 odataValue, propertyType, expectedReturnType, parameterName, readContext, serviceProvider);
 

@@ -86,9 +86,6 @@ namespace Microsoft.Restier.Publishers.OData
             IQueryable queryable = this.GetQuery(path);
             ETag etag;
 
-            // TODO This flag can be removed when Etag isIfNoneMatch is changed to public.
-            bool isIfNoneMatch;
-
             // TODO #365 Do not support additional path segment after function call now
             if (lastSegment is OperationImportSegment)
             {
@@ -97,7 +94,7 @@ namespace Microsoft.Restier.Publishers.OData
                 Func<string, object> getParaValueFunc = p => unboundSegment.GetParameterValue(p);
                 result = await ExecuteOperationAsync(
                     getParaValueFunc, operation.Name, true, null, cancellationToken);
-                result = ApplyQueryOptions(result, path, true, out isIfNoneMatch, out etag);
+                result = ApplyQueryOptions(result, path, true, out etag);
             }
             else
             {
@@ -119,16 +116,16 @@ namespace Microsoft.Restier.Publishers.OData
                     result = await ExecuteOperationAsync(
                         getParaValueFunc, operation.Name, true, result, cancellationToken);
 
-                    result = ApplyQueryOptions(result, path, true, out isIfNoneMatch, out etag);
+                    result = ApplyQueryOptions(result, path, true, out etag);
                 }
                 else
                 {
-                    queryable = ApplyQueryOptions(queryable, path, false, out isIfNoneMatch, out etag);
+                    queryable = ApplyQueryOptions(queryable, path, false, out etag);
                     result = await ExecuteQuery(queryable, cancellationToken);
                 }
             }
 
-            return this.CreateQueryResponse(result, path.EdmType, isIfNoneMatch, etag);
+            return this.CreateQueryResponse(result, path.EdmType, etag);
         }
 
         /// <summary>
@@ -330,7 +327,7 @@ namespace Microsoft.Restier.Publishers.OData
                 return this.Request.CreateResponse(HttpStatusCode.NoContent);
             }
 
-            return this.CreateQueryResponse(result, path.EdmType, false, null);
+            return this.CreateQueryResponse(result, path.EdmType, null);
         }
 
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
@@ -418,7 +415,7 @@ namespace Microsoft.Restier.Publishers.OData
         }
 
         private HttpResponseMessage CreateQueryResponse(
-            IQueryable query, IEdmType edmType, bool isIfNoneMatch, ETag etag)
+            IQueryable query, IEdmType edmType, ETag etag)
         {
             IEdmTypeReference typeReference = GetTypeReference(edmType);
             BaseSingleResult singleResult = null;
@@ -504,7 +501,7 @@ namespace Microsoft.Restier.Publishers.OData
                 etag.EntityType = query.ElementType;
                 query = etag.ApplyTo(query);
                 entityResult = query.SingleOrDefault();
-                if (entityResult == null && !isIfNoneMatch)
+                if (entityResult == null && !etag.IsIfNoneMatch)
                 {
                     return this.Request.CreateResponse(HttpStatusCode.PreconditionFailed);
                 }
@@ -537,10 +534,8 @@ namespace Microsoft.Restier.Publishers.OData
         }
 
         private IQueryable ApplyQueryOptions(
-            IQueryable queryable, ODataPath path, bool applyCount, out bool isIfNoneMatch, out ETag etag)
+            IQueryable queryable, ODataPath path, bool applyCount, out ETag etag)
         {
-            // ETAG IsIfNoneMatch is changed to public access, this flag can be removed.
-            isIfNoneMatch = false;
             etag = null;
 
             if (this.shouldWriteRawValue)
@@ -562,7 +557,6 @@ namespace Microsoft.Restier.Publishers.OData
             }
             else if (queryOptions.IfNoneMatch != null)
             {
-                isIfNoneMatch = true;
                 etag = queryOptions.IfNoneMatch;
             }
 

@@ -175,7 +175,7 @@ using System.Diagnostics.CodeAnalysis;
 #endregion
 
 #region CA2000 Dispose objects
-[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType,System.Boolean,System.Web.OData.Formatter.ETag)")]
+[assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierController.#CreateQueryResponse(System.Linq.IQueryable,Microsoft.OData.Edm.IEdmType,System.Web.OData.Formatter.ETag)")]
 [assembly: SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Scope = "member", Target = "Microsoft.Restier.Publishers.OData.RestierExceptionFilterAttribute.#HandleCommonException(System.Web.Http.Filters.HttpActionExecutedContext,System.Boolean,System.Threading.CancellationToken)")]
 #endregion
 
