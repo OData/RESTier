@@ -63,7 +63,7 @@ $(document).ready(function(){
       <ul class="nav nav-pills nav-stacked">
         {% assign sortedCategories = site.categories | sort %}
         {% for category in sortedCategories %}
-        {% if category contains "v0.5" or category contains "v0.6" %}
+        {% if category contains "v0.5" or category contains "v0.6" or category contains "v1.0" %}
         {% else %}
         <li class="panel panel-default">
           <a class="panel-heading">
@@ -73,7 +73,7 @@ $(document).ready(function(){
             <ul class="nav nav-pills nav-stacked">
               {% for posts in category %}
               {% for post in posts reversed %}
-              {% if post.categories contains "v0.6" %}
+              {% if post.categories contains "v1.0" %}
               {% if post.title != null%}
               <li class="nav-item">
                 <a href="#{{ post.id | remove_first:'/'}}"><small>{{ post.title }}</small></a>
@@ -95,20 +95,20 @@ $(document).ready(function(){
       <div class="alert alert-success" role="alert">
         For a unified experience, please go to the <a href="https://github.com/odata/RESTier/issues" target="_blank">GitHub Issues</a> to ask question, report bugs, and ask for features.
 		<br/>
-        This document is for current release version 0.6.
+        This document is for current release version 1.0 (First GA).
 		<br/>
-		For document of version 0.5.0 or earlier, refer to <a href="http://odata.github.io/RESTier/v0.5" target="_blank">Version 0.5.0 document</a>
+		For document of version 0.6.0, refer to <a href="http://odata.github.io/RESTier/v0.6" target="_blank">Version 0.6.0 document</a>
       </div>
       
       {% assign sortedCategories = site.categories | sort %}
       {% for category in sortedCategories %}
-      {% if category contains "v0.5" or category contains "v0.6" %}
+      {% if category contains "v0.5" or category contains "v0.6" or category contains "v1.0" %}
       {% else %}
       <h1 class="post-title" id="{{ category[0] | replace:' ','-' | replace:'.','' }}">{{ category[0] | join: "/" | upcase }}</h1>
       <ul class="post-list">
         {% for posts in category %}
         {% for post in posts reversed %}
-        {% if post.categories contains "v0.6" %}
+        {% if post.categories contains "v1.0" %}
         {% if post.title != null%}
         <li>
           <h2 class="post-title" id="{{ post.id | remove_first:'/'}}">{{ post.title }}</h2>
