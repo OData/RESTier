@@ -125,6 +125,7 @@
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerDemographic.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\NorthwindApi2.cs" />
     <Compile Include="Models\NorthwindContext.cs" />
     <Compile Include="Models\NorthwindApi.cs" />
     <Compile Include="Models\Order.cs" />

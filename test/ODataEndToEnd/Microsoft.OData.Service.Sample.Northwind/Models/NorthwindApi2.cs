@@ -17,7 +17,10 @@ using Microsoft.Restier.Publishers.OData.Model;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Models
 {
-    public class NorthwindApi : EntityFrameworkApi<NorthwindContext>
+    /// <summary>
+    /// This class is only used for unqualified operation call test
+    /// </summary>
+    public class NorthwindApi2 : EntityFrameworkApi<NorthwindContext>
     {
         public NorthwindContext ModelContext { get { return DbContext; } }
 
@@ -61,7 +64,8 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             return EntityFrameworkApi<NorthwindContext>.ConfigureApi(apiType, services)
-                .AddService<IModelBuilder, NorthwindModelExtender>();
+                .AddService<IModelBuilder, NorthwindModelExtender>()
+                .AddSingleton<ODataUriResolver>(new UnqualifiedODataUriResolver());
         }
 
         // Entity set filter
@@ -105,7 +109,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             }
         }
 
-        public NorthwindApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        public NorthwindApi2(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }

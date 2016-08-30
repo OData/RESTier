@@ -4,7 +4,6 @@
 using System.Web.Http;
 using System.Web.OData.Extensions;
 using Microsoft.OData.Service.Sample.Northwind.Models;
-using Microsoft.OData.UriParser;
 using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;
 
@@ -18,8 +17,7 @@ namespace Microsoft.OData.Service.Sample.Northwind
 
             // Web API routes
             config.MapHttpAttributeRoutes();
-
-            config.SetUriResolver(new UnqualifiedODataUriResolver());
+            
             RegisterNorthwind(config, GlobalConfiguration.DefaultServer);
 
             config.Routes.MapHttpRoute(
@@ -35,6 +33,15 @@ namespace Microsoft.OData.Service.Sample.Northwind
             config.Filter().Expand().Select().OrderBy().MaxTop(null).Count();
             config.SetUseVerboseErrors(true);
             config.MapRestierRoute<NorthwindApi>(
+                "NorthwindApi", "api/Northwind",
+                new RestierBatchHandler(server));
+        }
+
+        public static void RegisterNorthwind2(
+            HttpConfiguration config, HttpServer server)
+        {
+            config.SetUseVerboseErrors(true);
+            config.MapRestierRoute<NorthwindApi2>(
                 "NorthwindApi", "api/Northwind",
                 new RestierBatchHandler(server));
         }

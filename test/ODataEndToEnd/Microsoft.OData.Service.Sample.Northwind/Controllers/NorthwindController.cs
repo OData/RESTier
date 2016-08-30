@@ -61,43 +61,6 @@ namespace Microsoft.OData.Service.Sample.Northwind.Controllers
             return Ok(price);
         }
 
-        [HttpGet]
-        [ODataRoute("Products/Microsoft.OData.Service.Sample.Northwind.Models.MostExpensive")]
-        public IHttpActionResult MostExpensive()
-        {
-            var product = DbContext.Products.Max(p => p.UnitPrice);
-            return Ok(product);
-        }
-
-        [HttpPost]
-        [ODataRoute("Products({key})/Microsoft.OData.Service.Sample.Northwind.Models.IncreasePrice")]
-        public IHttpActionResult IncreasePrice([FromODataUri] int key, ODataActionParameters parameters)
-        {
-            var entity = DbContext.Products.FirstOrDefault(e => e.ProductID == key);
-            if (entity == null)
-            {
-                return NotFound();
-            }
-            entity.UnitPrice = entity.UnitPrice + (int)parameters["diff"];
-
-            try
-            {
-                DbContext.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DbContext.Products.Any(p => p.ProductID == key))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
         [HttpPost]
         [ODataRoute("ResetDataSource")]
         public IHttpActionResult ResetDataSource()

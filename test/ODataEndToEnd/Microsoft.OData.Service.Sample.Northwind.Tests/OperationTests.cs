@@ -26,8 +26,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await FunctionCall(false, (config, server) =>
                 {
-                    config.SetUriResolver(new UnqualifiedODataUriResolver());
-                    WebApiConfig.RegisterNorthwind(config, server);
+                    WebApiConfig.RegisterNorthwind2(config, server);
                 });
         }
 
@@ -55,8 +54,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await ActionCall(true, (config, server) =>
             {
-                config.SetUriResolver(new UnqualifiedODataUriResolver());
-                WebApiConfig.RegisterNorthwind(config, server);
+                WebApiConfig.RegisterNorthwind2(config, server);
             });
         }
 
