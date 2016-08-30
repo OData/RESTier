@@ -174,14 +174,14 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class FallbackModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(ApiBase context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
         {
             relevantType = name == "Person" ? typeof(Person) : typeof(Order);
 
             return true;
         }
 
-        public bool TryGetRelevantType(ApiBase context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType)
         {
             return TryGetRelevantType(context, name, out relevantType);
         }

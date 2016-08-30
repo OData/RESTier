@@ -372,12 +372,12 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             /// <inheritdoc/>
             public bool TryGetRelevantType(
-                ApiBase api,
+                ModelContext context,
                 string name,
                 out Type relevantType)
             {
                 if (this.InnerModelMapper != null &&
-                    this.InnerModelMapper.TryGetRelevantType(api, name, out relevantType))
+                    this.InnerModelMapper.TryGetRelevantType(context, name, out relevantType))
                 {
                     return true;
                 }
@@ -403,13 +403,13 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             /// <inheritdoc/>
             public bool TryGetRelevantType(
-                ApiBase api,
+                ModelContext context,
                 string namespaceName,
                 string name,
                 out Type relevantType)
             {
                 if (this.InnerModelMapper != null &&
-                    this.InnerModelMapper.TryGetRelevantType(api, namespaceName, name, out relevantType))
+                    this.InnerModelMapper.TryGetRelevantType(context, namespaceName, name, out relevantType))
                 {
                     return true;
                 }

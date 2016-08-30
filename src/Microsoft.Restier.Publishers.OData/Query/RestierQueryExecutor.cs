@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-            var countOption = context.ServiceProvider.GetService<RestierQueryExecutorOptions>();
+            var countOption = context.GetApiService<RestierQueryExecutorOptions>();
             if (countOption.IncludeTotalCount)
             {
                 var countQuery = ExpressionHelpers.GetCountableQuery(query);

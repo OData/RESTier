@@ -35,8 +35,8 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// Tries to get the relevant type of an entity
         /// set, singleton, or composable function import.
         /// </summary>
-        /// <param name="apiBase">
-        /// An API.
+        /// <param name="context">
+        /// The context for model mapper.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -50,7 +50,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiBase apiBase,
+            ModelContext context,
             string name,
             out Type relevantType)
         {
@@ -77,8 +77,8 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// <summary>
         /// Tries to get the relevant type of a composable function.
         /// </summary>
-        /// <param name="apiBase">
-        /// An API.
+        /// <param name="context">
+        /// The context for model mapper.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiBase apiBase,
+            ModelContext context,
             string namespaceName,
             string name,
             out Type relevantType)

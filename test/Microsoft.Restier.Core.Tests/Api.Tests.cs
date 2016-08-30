@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Core.Tests
         private class TestModelMapper : IModelMapper
         {
             public bool TryGetRelevantType(
-                ApiBase context,
+                ModelContext context,
                 string name, out Type relevantType)
             {
                 relevantType = typeof(string);
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Core.Tests
             }
 
             public bool TryGetRelevantType(
-                ApiBase context,
+                ModelContext context,
                 string namespaceName, string name,
                 out Type relevantType)
             {

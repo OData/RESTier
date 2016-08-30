@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
             var parameterArray = method.GetParameters();
 
-            var model = context.ServiceProvider.GetService<IEdmModel>();
+            var model = context.GetApiService<IEdmModel>();
 
             // Parameters of method and model is exactly mapped or there is parsing error
             var parameters = new object[parameterArray.Length];
@@ -195,7 +195,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
         private static void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.ServiceProvider.GetService<IOperationFilter>();
+            var processor = context.GetApiService<IOperationFilter>();
             if (processor != null)
             {
                 processor.OnOperationExecutingAsync(context, cancellationToken);
@@ -204,7 +204,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
         private static void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.ServiceProvider.GetService<IOperationFilter>();
+            var processor = context.GetApiService<IOperationFilter>();
             if (processor != null)
             {
                 processor.OnOperationExecutedAsync(context, cancellationToken);

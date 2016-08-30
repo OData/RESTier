@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             SubmitContext context,
             CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.ServiceProvider.GetService<DbContext>();
+            DbContext dbContext = context.GetApiService<DbContext>();
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
@@ -145,7 +145,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            var apiBase = context.ServiceProvider.GetService<ApiBase>();
+            var apiBase = context.GetApiService<ApiBase>();
             IQueryable query = apiBase.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 

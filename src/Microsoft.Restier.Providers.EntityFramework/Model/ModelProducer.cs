@@ -48,7 +48,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             Ensure.NotNull(context, "context");
 
 #if EF7
-            var dbContext = context.ServiceProvider.GetService<DbContext>();
+            var dbContext = context.GetApiService<DbContext>();
             context.ResourceSetTypeMap = dbContext.GetType().GetProperties()
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
 #else
             var resourceSetTypeMap = new Dictionary<string, Type>();
             var resourceTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
-            var dbContext = context.ServiceProvider.GetService<DbContext>();
+            var dbContext = context.GetApiService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
             var efEntityContainer = efModel.GetItems<EntityContainer>(DataSpace.CSpace).Single();

@@ -524,13 +524,14 @@ namespace Microsoft.Restier.Core
             var mapper = api.GetApiService<IModelMapper>();
             if (mapper != null)
             {
+                var modelContext = new ModelContext(api.ServiceProvider);
                 if (namespaceName == null)
                 {
-                    mapper.TryGetRelevantType(api, name, out elementType);
+                    mapper.TryGetRelevantType(modelContext, name, out elementType);
                 }
                 else
                 {
-                    mapper.TryGetRelevantType(api, namespaceName, name, out elementType);
+                    mapper.TryGetRelevantType(modelContext, namespaceName, name, out elementType);
                 }
             }
 

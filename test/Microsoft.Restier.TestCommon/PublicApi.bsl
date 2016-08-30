@@ -212,8 +212,8 @@ public interface Microsoft.Restier.Core.Model.IModelBuilder {
 }
 
 public interface Microsoft.Restier.Core.Model.IModelMapper {
-	bool TryGetRelevantType (Microsoft.Restier.Core.ApiBase apiBase, string name, out System.Type& relevantType)
-	bool TryGetRelevantType (Microsoft.Restier.Core.ApiBase apiBase, string namespaceName, string name, out System.Type& relevantType)
+	bool TryGetRelevantType (Microsoft.Restier.Core.Model.ModelContext context, string name, out System.Type& relevantType)
+	bool TryGetRelevantType (Microsoft.Restier.Core.Model.ModelContext context, string namespaceName, string name, out System.Type& relevantType)
 }
 
 public class Microsoft.Restier.Core.Model.ModelContext : Microsoft.Restier.Core.InvocationContext {

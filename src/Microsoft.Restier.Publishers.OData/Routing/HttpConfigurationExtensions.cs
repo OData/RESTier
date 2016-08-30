@@ -52,9 +52,9 @@ namespace Microsoft.Restier.Publishers.OData
             ApiBase.AddPublisherServices(
                 typeof(TApi),
                 services =>
-            {
-                services.AddODataServices<TApi>();
-            });
+                {
+                    services.AddODataServices<TApi>();
+                });
 
             Func<IContainerBuilder> func = () => new RestierContainerBuilder(typeof(TApi));
             config.UseCustomContainerBuilder(func);

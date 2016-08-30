@@ -21,8 +21,8 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// Tries to get the relevant type of an entity
         /// set, singleton, or composable function import.
         /// </summary>
-        /// <param name="api">
-        /// An API.
+        /// <param name="context">
+        /// The context for model mapper.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -36,12 +36,12 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiBase api,
+            ModelContext context,
             string name,
             out Type relevantType)
         {
             // Cannot await as cannot make method async
-            var model = api.GetModelAsync().Result;
+            var model = context.GetApiService<IEdmModel>();
             var element = model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
 
             if (element != null)
@@ -73,14 +73,14 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
             }
 
-            return InnerMapper.TryGetRelevantType(api, name, out relevantType);
+            return InnerMapper.TryGetRelevantType(context, name, out relevantType);
         }
 
         /// <summary>
         /// Tries to get the relevant type of a composable function.
         /// </summary>
-        /// <param name="api">
-        /// An API.
+        /// <param name="context">
+        /// The context for model mapper.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiBase api,
+            ModelContext context,
             string namespaceName,
             string name,
             out Type relevantType)
