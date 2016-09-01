@@ -16,6 +16,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
 
         public string NormalProperty { get; set; }
 
+        public string AnotherNormalProperty { get; set; }
+
         public string ComputedProperty { get; set; }
 
         public string ImmutableProperty { get; set; }

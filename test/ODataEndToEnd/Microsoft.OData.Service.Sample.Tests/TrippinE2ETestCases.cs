@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using Microsoft.OData.Client;
 using Microsoft.OData.Core;
 using Microsoft.OData.Service.Sample.Trippin.Models;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
@@ -295,11 +297,11 @@ namespace Microsoft.OData.Service.Sample.Tests
             // Query the updated entity
             this.TestClientContext.Detach(employee);
             employee = this.TestClientContext.Orders.Where(e => e.PersonId == personId && e.OrderId == orderId).First();
-            
+
             // both computed property and immutable property should not have new value
             Assert.Equal(400, employee.Price);
             Assert.NotEqual("ShouldBeIgnored2", employee.ComputedProperty);
-            
+
             // Immutable property has value set during insert.
             Assert.NotEqual("ShouldBeIgnored2", employee.ImmutableProperty);
             Assert.Equal("ShouldNotBeIgnored", employee.ImmutableProperty);
@@ -409,9 +411,9 @@ namespace Microsoft.OData.Service.Sample.Tests
             Assert.Equal("Cooper", lastName);
 
             // Update a property
-            Dictionary<string, string> headers = new Dictionary<string, string>() 
+            Dictionary<string, string> headers = new Dictionary<string, string>()
             {
-                { "Content-Type", "application/json" } 
+                { "Content-Type", "application/json" }
             };
 
             HttpWebRequestMessage request = new HttpWebRequestMessage(
@@ -566,12 +568,12 @@ namespace Microsoft.OData.Service.Sample.Tests
             // skip
             people2 = this.TestClientContext.People.Skip((int)(personId - 1)).ToList();
             Assert.Equal(personId, people2.First().PersonId);
-            
+
             // count
             var countQuery = this.TestClientContext.People.IncludeTotalCount().Skip(1).Take(2) as DataServiceQuery<Person>;
             var response = countQuery.Execute() as QueryOperationResponse<Person>;
             Assert.Equal(response.TotalCount, 14);
-            
+
             // count with expand
             countQuery = this.TestClientContext.People.IncludeTotalCount().Expand("Friends").Skip(1).Take(2) as DataServiceQuery<Person>;
             response = countQuery.Execute() as QueryOperationResponse<Person>;
@@ -638,7 +640,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             Assert.True(flight1.All(f => f.StartsAt.Second == startDate.Second));
 
             // Following built-in functions are not supported now.
-            // fractionalseconds 
+            // fractionalseconds
             // date
             // time
             // totaloffsetminutes
@@ -1118,6 +1120,33 @@ namespace Microsoft.OData.Service.Sample.Tests
             Assert.Contains(
                 "The current user does not have permission to delete entities from the EntitySet 'Trips'.",
                 clientException.Message);
+        }
+
+        [Fact]
+        public void TestPatchSuccessfully()
+        {
+            // Get origin content.
+            var uriStringAfterServiceRoot = "Orders(PersonId=1, OrderId=1)";
+            var originContent = default(string);
+            Action<string> getContent = p => originContent = p;
+            TestGetPayload(uriStringAfterServiceRoot, getContent);
+
+            // Patch it.
+            var changedDescription = "TestDescription";
+            var changedNormalProperty = "TestNormalProperty";
+            string patchContent =
+                string.Format(
+                    "{{\n    \"Description\": \"{0}\",\n    \"NormalOrderDetail\": {{\n        \"NormalProperty\": \"{1}\"\n    }}\n}}",
+                    changedDescription,
+                    changedNormalProperty);
+            TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent);
+
+            // Test patch results.
+            dynamic content = JsonConvert.DeserializeObject(originContent);
+            content.Description = changedDescription;
+            content.NormalOrderDetail.NormalProperty = changedNormalProperty;
+            string changedContent = JsonConvert.SerializeObject(content);
+            TestGetPayloadContains(uriStringAfterServiceRoot, changedContent);
         }
     }
 }
