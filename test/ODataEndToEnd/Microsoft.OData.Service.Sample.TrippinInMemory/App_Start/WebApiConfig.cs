@@ -3,6 +3,7 @@
 
 using System.Web.Http;
 using System.Web.OData;
+using System.Web.OData.Extensions;
 using Microsoft.OData.Service.Sample.TrippinInMemory.Api;
 using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;
@@ -13,9 +14,10 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
     {
         public static void Register(HttpConfiguration config)
         {
-            RegisterTrippin(config, GlobalConfiguration.DefaultServer);
             config.SetUseVerboseErrors(true);
             config.MessageHandlers.Add(new ETagMessageHandler());
+            config.SetUrlKeyDelimiter(ODataUrlKeyDelimiter.Slash);
+            RegisterTrippin(config, GlobalConfiguration.DefaultServer);
         }
 
         public static async void RegisterTrippin(
