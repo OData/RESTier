@@ -155,6 +155,21 @@ namespace Microsoft.OData.Service.Sample.Tests
                 Assert.Equal(statusCode, response.StatusCode);
             }
         }
+
+        protected async void TestPatchStatusCodeIs(string uriStringAfterServiceRoot, string patchContent, HttpStatusCode statusCode)
+        {
+            var requestUri = string.Format("{0}/{1}", this.ServiceBaseUri, uriStringAfterServiceRoot);
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri);
+
+            request.Content = new StringContent(patchContent);
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            Assert.Equal(statusCode, response.StatusCode);
+        }
+
         #endregion
 
         protected void ResetDataSource()

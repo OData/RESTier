@@ -1,6 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Net;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
@@ -157,6 +161,47 @@ namespace Microsoft.OData.Service.Sample.Tests
         public void TestRawValuedEnumPropertyAccess()
         {
             TestGetPayloadIs("People('russellwhyte')/FavoriteFeature/$value", "Feature1");
+        }
+
+        [Fact]
+        public void TestPatchSuccessfully()
+        {
+            // Get origin content and sessionId.
+            var uriStringAfterServiceRoot = "Airports('KLAX')";
+            var originContent = default(string);
+            Action<string> getContent = p => originContent = p;
+            TestGetPayload(uriStringAfterServiceRoot, getContent);
+            var sessionId = GetSessionIdFromResponse(originContent);
+            Assert.NotNull(sessionId);
+
+            // Patch it.
+            uriStringAfterServiceRoot = string.Format(@"(S({0}))/{1}", sessionId, uriStringAfterServiceRoot);
+            var changedRegion = "TestRegion";
+            var changedAddress = "1 World Way, Los Angeles, CA, 90045";
+            string patchContent =
+                string.Format(
+                    "{{\r\n    \"Location\":{{\r\n        \"Address\":\"{0}\",\r\n        \"City\":{{\r\n            \"Region\":\"{1}\"\r\n        }}\r\n    }}\r\n}}",
+                    changedAddress,
+                    changedRegion);
+            TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent);
+
+            // Test patch results.
+            dynamic content = JsonConvert.DeserializeObject(originContent);
+            content.Location.Address = changedAddress;
+            content.Location.City.Region = changedRegion;
+            string changedContent = JsonConvert.SerializeObject(content);
+            TestGetPayloadContains(uriStringAfterServiceRoot, changedContent);
+        }
+
+        private static string GetSessionIdFromResponse(string response)
+        {
+            var match = Regex.Match(response, @"/\(S\((\w+)\)\)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+
+            return default(string);
         }
     }
 }
