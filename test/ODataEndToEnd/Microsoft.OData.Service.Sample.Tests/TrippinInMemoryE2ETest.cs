@@ -48,8 +48,8 @@ namespace Microsoft.OData.Service.Sample.Tests
         // TODO since webapi doesnot handle query with null, the trips here in the datasource are actually not null.
         [InlineData("/People('clydeguess')/Trips", 200)]
         // collection of navigation property's property and navigation property has null value
-        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
-        [InlineData("/People('willieashmore')/Friends/MiddleName", 500)]
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. (404 is returned when key-as-segment, otherwise, 500 will be returned.)
+        [InlineData("/People('willieashmore')/Friends/MiddleName", 404)]
         public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
@@ -81,8 +81,8 @@ namespace Microsoft.OData.Service.Sample.Tests
         // collection of navigation property
         [InlineData("/People('NoneExist')/Friends", 404)]
         // collection of navigation property's property
-        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
-        [InlineData("/People('NoneExist')/Friends/MiddleName", 500)]
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. (404 is returned when key-as-segment, otherwise, 500 will be returned.)
+        [InlineData("/People('NoneExist')/Friends/MiddleName", 404)]
         public void QueryPropertyWithNonExistEntity(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
