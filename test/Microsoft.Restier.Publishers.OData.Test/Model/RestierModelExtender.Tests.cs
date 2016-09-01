@@ -196,7 +196,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
     {
         [Resource]
         public IQueryable<Person> People { get; set; }
-        [Resource(IsSingleton = true)]
+        [Resource]
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
@@ -236,7 +236,7 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
     {
         [Resource]
         public new IQueryable<Customer> Customers { get; set; }
-        [Resource(IsSingleton = true)]
+        [Resource]
         public new Customer Me { get; set; }
 
         public ApiC(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -301,11 +301,11 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
 
     public class ApiH : BaseApi
     {
-        [Resource(IsSingleton = true)]
+        [Resource]
         public Person Me { get; set; }
         [Resource]
         public IQueryable<Customer> Customers { get; set; }
-        [Resource(IsSingleton = true)]
+        [Resource]
         public Customer Me2 { get; set; }
 
         public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)

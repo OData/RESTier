@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework;
 using Microsoft.Restier.Publishers.OData.Model;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Web.OData.Builder;
 using Microsoft.OData.Edm.Vocabularies;
 
@@ -25,12 +27,14 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
+        [NotMapped]
+        [IgnoreDataMember]
         public TrippinModel ModelContext
         {
             get { return DbContext; }
         }
 
-        [Resource(IsSingleton = true)]
+        [Resource]
         public Person Me
         {
             get
@@ -85,7 +89,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
-        [Resource(IsSingleton = true)]
+        [Resource]
         public PersonWithAge PeopleWithAgeMe
         {
             get

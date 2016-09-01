@@ -186,9 +186,9 @@ namespace Microsoft.Restier.Publishers.OData.Model
                     continue;
                 }
 
-                bool isSingleton = resourceAttribute.IsSingleton;
-                if ((!isSingleton && !IsEntitySetProperty(property))
-                    || (isSingleton && !IsSingletonProperty(property)))
+                bool isEntitySet = IsEntitySetProperty(property);
+                bool isSingleton = IsSingletonProperty(property);
+                if (!isSingleton && !isEntitySet)
                 {
                     // This means property type is not IQueryable<T> when indicating an entityset
                     // or not non-generic type when indicating a singleton
@@ -196,7 +196,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
 
                 var propertyType = property.PropertyType;
-                if (!isSingleton)
+                if (isEntitySet)
                 {
                     propertyType = propertyType.GetGenericArguments()[0];
                 }
@@ -209,7 +209,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
 
                 var container = model.EnsureEntityContainer(this.targetType);
-                if (!isSingleton)
+                if (isEntitySet)
                 {
                     if (container.FindEntitySet(property.Name) == null)
                     {

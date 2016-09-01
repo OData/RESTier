@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core.Tests
             Assert.Equal("Test", api.GetProperty("Test"));
             Assert.Equal("Test", api.GetProperty<string>("Test"));
 
-            api.ClearProperty("Test");
+            api.RemoveProperty("Test");
             Assert.False(api.HasProperty("Test"));
             Assert.Null(api.GetProperty("Test"));
             Assert.Null(api.GetProperty<string>("Test"));

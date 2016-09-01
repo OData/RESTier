@@ -233,7 +233,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             public string Name
             {
-                get { return this.OperationAttribute.Name ?? this.Method.Name; }
+                get { return this.Method.Name; }
             }
 
             public string Namespace

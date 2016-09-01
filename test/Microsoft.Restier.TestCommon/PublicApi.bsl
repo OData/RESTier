@@ -28,11 +28,6 @@ public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	[
 	ExtensionAttribute(),
 	]
-	public static void ClearProperty (Microsoft.Restier.Core.ApiBase api, string name)
-
-	[
-	ExtensionAttribute(),
-	]
 	public static T GetApiService (Microsoft.Restier.Core.ApiBase api)
 
 	[
@@ -86,6 +81,11 @@ public sealed class Microsoft.Restier.Core.ApiBaseExtensions {
 	ExtensionAttribute(),
 	]
 	public static System.Threading.Tasks.Task`1[[Microsoft.Restier.Core.Query.QueryResult]] QueryAsync (Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Query.QueryRequest request, params System.Threading.CancellationToken cancellationToken)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static void RemoveProperty (Microsoft.Restier.Core.ApiBase api, string name)
 
 	[
 	ExtensionAttribute(),
@@ -656,7 +656,6 @@ public sealed class Microsoft.Restier.Publishers.OData.Model.OperationAttribute 
 	bool HasSideEffects  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool IsBound  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool IsComposable  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	string Name  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Namespace  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 
@@ -665,7 +664,5 @@ AttributeUsageAttribute(),
 ]
 public sealed class Microsoft.Restier.Publishers.OData.Model.ResourceAttribute : System.Attribute, _Attribute {
 	public ResourceAttribute ()
-
-	bool IsSingleton  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 }
 

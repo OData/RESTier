@@ -87,12 +87,12 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Clears a property.
+        /// Removes a property.
         /// </summary>
         /// <param name="name">
         /// The name of a property.
         /// </param>
-        public void ClearProperty(string name)
+        public void RemoveProperty(string name)
         {
             Ensure.NotNull(name, "name");
             this.properties.Remove(name);

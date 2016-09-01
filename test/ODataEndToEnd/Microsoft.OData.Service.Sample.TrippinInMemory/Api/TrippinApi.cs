@@ -70,7 +70,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory.Api
             }
         }
 
-        [Resource(IsSingleton = true)]
+        [Resource]
         public Person Me
         {
             get

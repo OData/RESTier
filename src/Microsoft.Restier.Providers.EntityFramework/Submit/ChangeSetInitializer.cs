@@ -254,6 +254,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
                             propertyPair.Key));
                     }
 
+                    // TODO GithubIssue #508
                     value = Activator.CreateInstance(propertyInfo.PropertyType);
                     SetValues(value, propertyInfo.PropertyType, dic);
                 }

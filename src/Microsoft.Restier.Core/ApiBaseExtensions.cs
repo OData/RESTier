@@ -143,7 +143,7 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Clears a property.
+        /// Removes a property.
         /// </summary>
         /// <param name="api">
         /// An API.
@@ -151,9 +151,9 @@ namespace Microsoft.Restier.Core
         /// <param name="name">
         /// The name of a property.
         /// </param>
-        public static void ClearProperty(this ApiBase api, string name)
+        public static void RemoveProperty(this ApiBase api, string name)
         {
-            api.GetPropertyBag().ClearProperty(name);
+            api.GetPropertyBag().RemoveProperty(name);
         }
 
         #endregion
