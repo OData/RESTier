@@ -16,6 +16,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Publishers.OData.Formatter;
+using Microsoft.Restier.Publishers.OData.Model;
 
 namespace Microsoft.Restier.Publishers.OData.Operation
 {

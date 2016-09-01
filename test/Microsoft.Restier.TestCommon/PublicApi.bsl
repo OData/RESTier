@@ -627,6 +627,26 @@ public class Microsoft.Restier.Publishers.OData.Formatter.RestierResourceSetSeri
 }
 
 [
+ExtensionAttribute(),
+]
+public sealed class Microsoft.Restier.Publishers.OData.Model.EdmHelpers {
+	[
+	ExtensionAttribute(),
+	]
+	public static System.Type GetClrType (Microsoft.OData.Edm.IEdmType edmType, System.IServiceProvider serviceProvider)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.OData.Edm.EdmTypeReference GetPrimitiveTypeReference (System.Type type)
+
+	[
+	ExtensionAttribute(),
+	]
+	public static Microsoft.OData.Edm.IEdmTypeReference GetTypeReference (System.Type type, Microsoft.OData.Edm.IEdmModel model)
+}
+
+[
 AttributeUsageAttribute(),
 ]
 public sealed class Microsoft.Restier.Publishers.OData.Model.OperationAttribute : System.Attribute, _Attribute {

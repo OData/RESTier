@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Publishers.OData.Model;
 using ODataPath = System.Web.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData.Query
@@ -274,7 +275,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
             if (edmType.TypeKind == EdmTypeKind.Entity)
             {
-                this.currentType = edmType.GetClrType(api);
+                this.currentType = edmType.GetClrType(api.ServiceProvider);
                 this.queryable = ExpressionHelpers.OfType(this.queryable, this.currentType);
             }
         }

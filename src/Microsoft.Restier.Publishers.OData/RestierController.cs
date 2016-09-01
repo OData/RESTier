@@ -26,6 +26,7 @@ using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Batch;
+using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Publishers.OData.Query;
 
 // This is a must for creating response with correct extension method
@@ -159,8 +160,8 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(Api),
-                actualEntityType.GetClrType(Api),
+                expectedEntityType.GetClrType(Api.ServiceProvider),
+                actualEntityType.GetClrType(Api.ServiceProvider),
                 DataModificationItemAction.Insert,
                 null,
                 null,
@@ -238,7 +239,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.GetClrType(Api),
+                path.EdmType.GetClrType(Api.ServiceProvider),
                 null,
                 DataModificationItemAction.Remove,
                 RestierQueryBuilder.GetPathKeyValues(path),
@@ -388,8 +389,8 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(Api),
-                actualEntityType.GetClrType(Api),
+                expectedEntityType.GetClrType(Api.ServiceProvider),
+                actualEntityType.GetClrType(Api.ServiceProvider),
                 DataModificationItemAction.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,

@@ -164,22 +164,6 @@ namespace Microsoft.Restier.Publishers.OData
             return propertiesAttributes;
         }
 
-        public static Type GetClrType(this IEdmType edmType, ApiBase api)
-        {
-            IEdmModel edmModel = api.GetModelAsync().Result;
-
-            ClrTypeAnnotation annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
-            if (annotation != null)
-            {
-                return annotation.ClrType;
-            }
-
-            throw new NotSupportedException(string.Format(
-                CultureInfo.InvariantCulture,
-                Resources.ElementTypeNotFound,
-                edmType.FullTypeName()));
-        }
-
         public static IEdmTypeReference GetReturnTypeReference(this Type type, IEdmModel model)
         {
             // In case it is a nullable type, get the underlying type
@@ -196,38 +180,7 @@ namespace Microsoft.Restier.Publishers.OData
                 type = typeof(void);
             }
 
-            return GetTypeReference(type, model);
-        }
-
-        public static IEdmTypeReference GetTypeReference(this Type type, IEdmModel model)
-        {
-            Type elementType;
-            if (type.TryGetElementType(out elementType))
-            {
-                return EdmCoreModel.GetCollection(GetTypeReference(elementType, model));
-            }
-
-            var edmType = model.FindDeclaredType(type.FullName);
-
-            var enumType = edmType as IEdmEnumType;
-            if (enumType != null)
-            {
-                return new EdmEnumTypeReference(enumType, true);
-            }
-
-            var complexType = edmType as IEdmComplexType;
-            if (complexType != null)
-            {
-                return new EdmComplexTypeReference(complexType, true);
-            }
-
-            var entityType = edmType as IEdmEntityType;
-            if (entityType != null)
-            {
-                return new EdmEntityTypeReference(entityType, true);
-            }
-
-            return type.GetPrimitiveTypeReference();
+            return EdmHelpers.GetTypeReference(type, model);
         }
 
         public static bool IsSameTerm(this IEdmTerm sourceTerm, IEdmTerm targetTerm)
