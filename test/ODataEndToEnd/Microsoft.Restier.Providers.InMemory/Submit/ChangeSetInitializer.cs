@@ -202,7 +202,7 @@ namespace Microsoft.Restier.Providers.InMemory.Submit
 
                     if (dic != null)
                     {
-                        value = Activator.CreateInstance(propertyInfo.PropertyType);
+                        value = propertyInfo.GetValue(instance);
                         SetValues(value, propertyInfo.PropertyType, dic);
                     }
                     else if (propertyInfo.PropertyType.IsGenericType)

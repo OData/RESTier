@@ -1,6 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Net;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.OData.Service.Sample.Tests
@@ -44,8 +48,8 @@ namespace Microsoft.OData.Service.Sample.Tests
         // TODO since webapi doesnot handle query with null, the trips here in the datasource are actually not null.
         [InlineData("/People('clydeguess')/Trips", 200)]
         // collection of navigation property's property and navigation property has null value
-        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
-        [InlineData("/People('willieashmore')/Friends/MiddleName", 500)]
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. (404 is returned when key-as-segment, otherwise, 500 will be returned.)
+        [InlineData("/People('willieashmore')/Friends/MiddleName", 404)]
         public void QueryPropertyWithNullValueStatusCode(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
@@ -77,8 +81,8 @@ namespace Microsoft.OData.Service.Sample.Tests
         // collection of navigation property
         [InlineData("/People('NoneExist')/Friends", 404)]
         // collection of navigation property's property
-        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. 500 is returned actually.
-        [InlineData("/People('NoneExist')/Friends/MiddleName", 500)]
+        // TODO should be bad request 400 as this is not allowed, 404 is returned by WebApi Route Match method. (404 is returned when key-as-segment, otherwise, 500 will be returned.)
+        [InlineData("/People('NoneExist')/Friends/MiddleName", 404)]
         public void QueryPropertyWithNonExistEntity(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
@@ -157,6 +161,47 @@ namespace Microsoft.OData.Service.Sample.Tests
         public void TestRawValuedEnumPropertyAccess()
         {
             TestGetPayloadIs("People('russellwhyte')/FavoriteFeature/$value", "Feature1");
+        }
+
+        [Fact]
+        public void TestPatchSuccessfully()
+        {
+            // Get origin content and sessionId.
+            var uriStringAfterServiceRoot = "Airports('KLAX')";
+            var originContent = default(string);
+            Action<string> getContent = p => originContent = p;
+            TestGetPayload(uriStringAfterServiceRoot, getContent);
+            var sessionId = GetSessionIdFromResponse(originContent);
+            Assert.NotNull(sessionId);
+
+            // Patch it.
+            uriStringAfterServiceRoot = string.Format(@"(S({0}))/{1}", sessionId, uriStringAfterServiceRoot);
+            var changedRegion = "TestRegion";
+            var changedAddress = "1 World Way, Los Angeles, CA, 90045";
+            string patchContent =
+                string.Format(
+                    "{{\r\n    \"Location\":{{\r\n        \"Address\":\"{0}\",\r\n        \"City\":{{\r\n            \"Region\":\"{1}\"\r\n        }}\r\n    }}\r\n}}",
+                    changedAddress,
+                    changedRegion);
+            TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent);
+
+            // Test patch results.
+            dynamic content = JsonConvert.DeserializeObject(originContent);
+            content.Location.Address = changedAddress;
+            content.Location.City.Region = changedRegion;
+            string changedContent = JsonConvert.SerializeObject(content);
+            TestGetPayloadContains(uriStringAfterServiceRoot, changedContent);
+        }
+
+        private static string GetSessionIdFromResponse(string response)
+        {
+            var match = Regex.Match(response, @"/\(S\((\w+)\)\)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+
+            return default(string);
         }
     }
 }

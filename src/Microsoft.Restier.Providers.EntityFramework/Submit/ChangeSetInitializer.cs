@@ -220,7 +220,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
                                 propertyPair.Key));
                         }
 
-                        value = Activator.CreateInstance(type);
+                        value = propertyEntry.CurrentValue;
                         SetValues(value, type, dic);
                     }
 

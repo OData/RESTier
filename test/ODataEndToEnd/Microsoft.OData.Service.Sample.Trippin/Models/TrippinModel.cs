@@ -563,7 +563,11 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                     OrderId = 1,
                     Description = "Person 1 Order 1",
                     Price = 200,
-                    NormalOrderDetail = new OrderDetail(),
+                    NormalOrderDetail = new OrderDetail()
+                    {
+                        NormalProperty = "NormalProperty",
+                        AnotherNormalProperty = "AnotherNormalProperty"
+                    },
                     ComputedOrderDetail = new OrderDetail(),
                     ImmutableOrderDetail = new OrderDetail()
                 },
