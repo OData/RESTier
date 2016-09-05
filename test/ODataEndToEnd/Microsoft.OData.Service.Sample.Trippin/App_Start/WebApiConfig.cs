@@ -24,7 +24,7 @@ namespace Microsoft.OData.Service.Sample.Trippin
         {
             // enable query options for all properties
             config.Filter().Expand().Select().OrderBy().MaxTop(null).Count();
-
+            config.SetTimeZoneInfo(TimeZoneInfo.Utc);
             await config.MapRestierRoute<TrippinApi>(
                 "TrippinApi", "api/Trippin",
                 new RestierBatchHandler(server));

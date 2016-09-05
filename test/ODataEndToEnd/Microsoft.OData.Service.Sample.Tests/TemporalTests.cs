@@ -465,7 +465,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         public void QueryOptionsOnDateTimeOffsetProperty()
         {
             this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
-            var birthDateTime = new DateTimeOffset(2000, 1, 1, 12, 34, 56, TimeSpan.Zero);
+            var birthDateTime = new DateTimeOffset(2000, 1, 1, 15, 34, 56, TimeSpan.Zero);
 
             // Post an entity
             Person person = new Person
@@ -483,11 +483,11 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             // Filter this entity
             var persons = this.TestClientContext.People
-                .AddQueryOption("$filter", "BirthDateTime eq 2000-01-01T12:34:56Z")
+                .AddQueryOption("$filter", "BirthDateTime eq 2000-01-01T15:34:56Z")
                 .ToList();
             Assert.Equal(1, persons.Count);
             persons = this.TestClientContext.People
-                .AddQueryOption("$filter", "BirthDateTime2 eq 2000-01-01T12:34:56Z")
+                .AddQueryOption("$filter", "BirthDateTime2 eq 2000-01-01T15:34:56Z")
                 .ToList();
             Assert.Equal(1, persons.Count);
 

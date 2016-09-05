@@ -87,7 +87,7 @@
           Properties="Configuration=$(Configuration);CodeAnalysis=$(CodeAnalysis);StyleCopEnabled=$(StyleCopEnabled);VisualStudioVersion=$(VisualStudioVersion);OutputPath=$(OutputPath)Product;EnableProjectCop=false" />
   </Target>
 
-  <Target Name="RunTests">
+  <Target Name="RunTests" DependsOnTargets="Build">
     <RemoveDir Directories="$(TestResultsDirectory)" />
     <MakeDir Directories="$(TestResultsDirectory)" />
     <Message Text="{Running Test Begin}" Importance="High" />
