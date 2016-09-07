@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Microsoft.Restier</id>
-    <version>1.0.0-beta</version>
+    <version>1.0.0</version>
     <title>RESTier</title>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
@@ -13,9 +13,9 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>
-      <dependency id="Microsoft.Restier.Core" version="[1.0.0-beta]" />
-      <dependency id="Microsoft.Restier.Providers.EntityFramework" version="[1.0.0-beta]" />
-      <dependency id="Microsoft.Restier.Publishers.OData" version="[1.0.0-beta]" />
+      <dependency id="Microsoft.Restier.Core" version="[1.0.0]" />
+      <dependency id="Microsoft.Restier.Providers.EntityFramework" version="[1.0.0]" />
+      <dependency id="Microsoft.Restier.Publishers.OData" version="[1.0.0]" />
     </dependencies>
   </metadata>
 </package>
