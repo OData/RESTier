@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Restier.Publishers.OData {
+namespace Microsoft.Restier.Publishers.OData.Properties {
     using System;
     
     
@@ -174,6 +174,15 @@ namespace Microsoft.Restier.Publishers.OData {
         internal static string KeyNotValidForEntityType {
             get {
                 return ResourceManager.GetString("KeyNotValidForEntityType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model state is not valid with message {0}, please check your request..
+        /// </summary>
+        internal static string ModelStateIsNotValid {
+            get {
+                return ResourceManager.GetString("ModelStateIsNotValid", resourceCulture);
             }
         }
         

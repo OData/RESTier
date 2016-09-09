@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web.OData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Model
 {

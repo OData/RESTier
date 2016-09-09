@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -28,12 +30,15 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             this.changeSetRequestItem = changeSetRequestItem;
             this.changeSetCompletedTaskSource = new TaskCompletionSource<bool>();
             this.subRequestCount = this.changeSetRequestItem.Requests.Count();
+            this.Exceptions = new List<Exception>();
         }
 
         /// <summary>
         /// Gets or sets the changeset.
         /// </summary>
         public ChangeSet ChangeSet { get; set; }
+
+        public IList<Exception> Exceptions { get; set; }
 
         /// <summary>
         /// The callback to execute when the changeset is completed.
@@ -44,25 +49,30 @@ namespace Microsoft.Restier.Publishers.OData.Batch
         {
             if (Interlocked.Decrement(ref this.subRequestCount) == 0)
             {
-                this.changeSetRequestItem.SubmitChangeSet(request, this.ChangeSet)
-                    .ContinueWith(t =>
-                    {
-                        if (t.Exception != null)
+                if (Exceptions.Count == 0)
+                {
+                    this.changeSetRequestItem.SubmitChangeSet(request, this.ChangeSet)
+                        .ContinueWith(t =>
                         {
-                            var taskEx =
-                                (t.Exception.InnerExceptions != null
-                                    && t.Exception.InnerExceptions.Count == 1)
-                                ?
-                                t.Exception.InnerExceptions.First()
-                                :
-                                t.Exception;
-                            this.changeSetCompletedTaskSource.SetException(taskEx);
-                        }
-                        else
-                        {
-                            this.changeSetCompletedTaskSource.SetResult(true);
-                        }
-                    });
+                            if (t.Exception != null)
+                            {
+                                var taskEx =
+                                    (t.Exception.InnerExceptions != null
+                                     && t.Exception.InnerExceptions.Count == 1)
+                                        ? t.Exception.InnerExceptions.First()
+                                        : t.Exception;
+                                this.changeSetCompletedTaskSource.SetException(taskEx);
+                            }
+                            else
+                            {
+                                this.changeSetCompletedTaskSource.SetResult(true);
+                            }
+                        });
+                }
+                else
+                {
+                    this.changeSetCompletedTaskSource.SetException(Exceptions);
+                }
             }
 
             return this.changeSetCompletedTaskSource.Task;

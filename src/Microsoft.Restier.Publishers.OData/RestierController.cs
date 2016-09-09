@@ -1,10 +1,11 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 extern alias Net;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Formatter;
@@ -19,6 +21,7 @@ using System.Web.OData.Query;
 using System.Web.OData.Results;
 using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
@@ -27,6 +30,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Batch;
 using Microsoft.Restier.Publishers.OData.Model;
+using Microsoft.Restier.Publishers.OData.Properties;
 using Microsoft.Restier.Publishers.OData.Query;
 
 // This is a must for creating response with correct extension method
@@ -137,11 +141,7 @@ namespace Microsoft.Restier.Publishers.OData
         /// <returns>The task object that contains the creation result.</returns>
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
+            CheckModelState();
             ODataPath path = this.GetPath();
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
@@ -193,11 +193,6 @@ namespace Microsoft.Restier.Publishers.OData
         /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
             return await this.Update(edmEntityObject, true, cancellationToken);
         }
 
@@ -209,11 +204,6 @@ namespace Microsoft.Restier.Publishers.OData
         /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
             return await this.Update(edmEntityObject, false, cancellationToken);
         }
 
@@ -360,6 +350,7 @@ namespace Microsoft.Restier.Publishers.OData
             bool isFullReplaceUpdate,
             CancellationToken cancellationToken)
         {
+            CheckModelState();
             ODataPath path = this.GetPath();
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
@@ -699,6 +690,28 @@ namespace Microsoft.Restier.Publishers.OData
             Type genericResultType = resultType.MakeGenericType(result.GetType());
 
             return (IHttpActionResult)Activator.CreateInstance(genericResultType, result, this);
+        }
+
+        private void CheckModelState()
+        {
+            if (!this.ModelState.IsValid)
+            {
+                var errorList = (
+                    from item in this.ModelState
+                    where item.Value.Errors.Any()
+                    select
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{{ Error: {0}, Exception {1} }}",
+                            item.Value.Errors[0].ErrorMessage,
+                            item.Value.Errors[0].Exception.Message)).ToList();
+
+                throw new ODataException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.ModelStateIsNotValid,
+                        string.Join(";", errorList)));
+            }
         }
     }
 }

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,10 +47,39 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             this.SetChangeSetProperty(changeSetProperty);
 
             Dictionary<string, string> contentIdToLocationMapping = new Dictionary<string, string>();
-            List<Task<HttpResponseMessage>> responseTasks = new List<Task<HttpResponseMessage>>();
+            var responseTasks = new List<Task<Task<HttpResponseMessage>>>();
+
             foreach (HttpRequestMessage request in Requests)
             {
-                responseTasks.Add(SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping));
+                // Since exceptions may occure before the request is sent to RestierController,
+                // we must catch the exceptions here and call OnChangeSetCompleted,
+                // so as to avoid deadlock mentioned in Github Issue #82.
+                TaskCompletionSource<HttpResponseMessage> tcs = new TaskCompletionSource<HttpResponseMessage>();
+                var task =
+                    SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
+                        .ContinueWith(
+                            t =>
+                            {
+                                if (t.Exception != null)
+                                {
+                                    var taskEx = (t.Exception.InnerExceptions != null &&
+                                                  t.Exception.InnerExceptions.Count == 1)
+                                        ? t.Exception.InnerExceptions.First()
+                                        : t.Exception;
+                                    changeSetProperty.Exceptions.Add(taskEx);
+                                    changeSetProperty.OnChangeSetCompleted(request);
+                                    tcs.SetException(taskEx);
+                                }
+                                else
+                                {
+                                    tcs.SetResult(t.Result);
+                                }
+
+                                return tcs.Task;
+                            },
+                            cancellationToken);
+
+                responseTasks.Add(task);
             }
 
             // the responseTasks will be complete after:
@@ -60,9 +91,9 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             List<HttpResponseMessage> responses = new List<HttpResponseMessage>();
             try
             {
-                foreach (Task<HttpResponseMessage> responseTask in responseTasks)
+                foreach (var responseTask in responseTasks)
                 {
-                    HttpResponseMessage response = responseTask.Result;
+                    HttpResponseMessage response = responseTask.Result.Result;
                     if (response.IsSuccessStatusCode)
                     {
                         responses.Add(response);

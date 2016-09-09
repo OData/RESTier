@@ -28,10 +28,10 @@ namespace Microsoft.Restier.Publishers.OData
     internal sealed class RestierExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private static readonly List<ExceptionHandlerDelegate> Handlers = new List<ExceptionHandlerDelegate>
-            {
-                HandleChangeSetValidationException,
-                HandleCommonException
-            };
+        {
+            HandleChangeSetValidationException,
+            HandleCommonException
+        };
 
         private delegate Task<HttpResponseMessage> ExceptionHandlerDelegate(
             HttpActionExecutedContext context,
@@ -124,6 +124,16 @@ namespace Microsoft.Restier.Publishers.OData
             else if (context.Exception is NotImplementedException)
             {
                 code = HttpStatusCode.NotImplemented;
+            }
+
+            // When exception occured in a ChangeSet request,
+            // exception must be handled in OnChangeSetCompleted
+            // to avoid deadlock in Github Issue #82.
+            var changeSetProperty = context.Request.GetChangeSet();
+            if (changeSetProperty != null)
+            {
+                changeSetProperty.Exceptions.Add(exception);
+                changeSetProperty.OnChangeSetCompleted(context.Request);
             }
 
             if (code != HttpStatusCode.Unused)

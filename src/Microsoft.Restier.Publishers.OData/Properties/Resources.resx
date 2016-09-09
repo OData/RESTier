@@ -156,6 +156,9 @@
   <data name="KeyNotValidForEntityType" xml:space="preserve">
     <value>Specified key '{0}' is not a valid property of entity '{1}'.</value>
   </data>
+  <data name="ModelStateIsNotValid" xml:space="preserve">
+    <value>Model state is not valid with message {0}, please check your request.</value>
+  </data>
   <data name="MultiKeyValuesExpected" xml:space="preserve">
     <value>Only one key was specified, when multiple were expected.</value>
   </data>
