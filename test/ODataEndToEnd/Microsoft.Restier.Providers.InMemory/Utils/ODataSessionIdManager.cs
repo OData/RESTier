@@ -21,19 +21,55 @@ namespace Microsoft.Restier.Providers.InMemory.Utils
 
         public string GetSessionID(HttpContext context)
         {
-            var id = HttpContext.Current.Items["AspCookielessSession"] as string;
+            var id = context.Items["AspCookielessSession"] as string;
+            if (!string.IsNullOrEmpty(id))
+            {
+                return id;
+            }
 
             // Azure web site does not support header "AspFilterSessionId", so we cannot get context.Items["AspCookielessSession"]
             // for azure web site use, Headers["X-Original-URL"] format: /(S(xxx))/odata/path.
-            var originalUrl = HttpContext.Current.Request.Headers["X-Original-URL"];
+            var originalUrl = context.Request.Headers["X-Original-URL"];
 
             if (!string.IsNullOrEmpty(originalUrl))
             {
-                var match = Regex.Match(HttpContext.Current.Request.Headers["X-Original-URL"], @"/\(S\((\w+)\)\)");
+                var match = Regex.Match(originalUrl, @"S\((\w+)\)");
                 if (match.Success)
                 {
                     id = match.Groups[1].Value;
+                    return id;
                 }
+            }
+
+            // Starting 2016/09/18, Azure request header does not contains X-Original-URL
+            // Note session will always null, URL parsing does not work neither
+            originalUrl = context.Request.Headers["AspFilterSessionId"];
+            if (!string.IsNullOrEmpty(originalUrl))
+            {
+                var match = Regex.Match(originalUrl, @"S\((\w+)\)");
+                if (match.Success)
+                {
+                    id = match.Groups[1].Value;
+                    return id;
+                }
+            }
+
+            // Try some cookieless logic
+            originalUrl = context.Request.Params["HTTP_ASPFILTERSESSIONID"];
+            if (!string.IsNullOrEmpty(originalUrl))
+            {
+                var match = Regex.Match(originalUrl, @"S\((\w+)\)");
+                if (match.Success)
+                {
+                    id = match.Groups[1].Value;
+                    return id;
+                }
+            }
+
+            var cookie = context.Request.Cookies["ASP.NET_SessionId"];
+            if (cookie != null)
+            {
+                return cookie.Value;
             }
 
             return id;

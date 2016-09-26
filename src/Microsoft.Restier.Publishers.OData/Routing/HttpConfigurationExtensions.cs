@@ -113,7 +113,7 @@ namespace Microsoft.Restier.Publishers.OData
                         CultureInfo.InvariantCulture, Resources.ArguementsCannotbeNull, "configuration"));
             }
 
-            configuration.Properties[useVerboseErrors] = useVerboseErrors;
+            configuration.Properties[UseVerboseErrorsFlagKey] = useVerboseErrors;
         }
 
         /// <summary>
