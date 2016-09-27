@@ -74,15 +74,15 @@ namespace Microsoft.Restier.Core.Submit
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string message = null;
-                    if (dataModification.IsNewRequest)
+                    if (dataModification.DataModificationItemAction == DataModificationItemAction.Insert)
                     {
                         message = Resources.NoPermissionToInsertEntity;
                     }
-                    else if (dataModification.IsUpdateRequest)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Update)
                     {
                         message = Resources.NoPermissionToUpdateEntity;
                     }
-                    else if (dataModification.IsDeleteRequest)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Remove)
                     {
                         message = Resources.NoPermissionToDeleteEntity;
                     }
@@ -92,13 +92,6 @@ namespace Microsoft.Restier.Core.Submit
                     }
 
                     return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
-
-                case ChangeSetItemType.ActionInvocation:
-                    ActionInvocationItem actionInvocation = (ActionInvocationItem)item;
-                    return string.Format(
-                        CultureInfo.InvariantCulture,
-                        Resources.NoPermissionToInvokeAction,
-                        actionInvocation.ActionName);
 
                 default:
                     throw new InvalidOperationException(string.Format(
@@ -162,14 +155,16 @@ namespace Microsoft.Restier.Core.Submit
                 return;
             }
 
-            Collection<ChangeSetItemValidationResult> validationResults = new Collection<ChangeSetItemValidationResult>();
+            Collection<ChangeSetItemValidationResult> validationResults
+                = new Collection<ChangeSetItemValidationResult>();
 
             foreach (ChangeSetItem entry in changeSetItems.Where(i => i.HasChanged()))
             {
                 await validator.ValidateChangeSetItemAsync(context, entry, validationResults, cancellationToken);
             }
 
-            IEnumerable<ChangeSetItemValidationResult> errors = validationResults.Where(result => result.Severity == EventLevel.Error);
+            IEnumerable<ChangeSetItemValidationResult> errors
+                = validationResults.Where(result => result.Severity == EventLevel.Error);
 
             if (errors.Any())
             {
@@ -219,28 +214,6 @@ namespace Microsoft.Restier.Core.Submit
             IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
-            // Once the change is persisted, the EntityState is lost.
-            // In order to invoke the correct post-CUD event, remember which action was performed on the entity.
-            foreach (ChangeSetItem item in changeSetItems)
-            {
-                if (item.Type == ChangeSetItemType.DataModification)
-                {
-                    DataModificationItem dataModification = (DataModificationItem)item;
-                    if (dataModification.IsNewRequest)
-                    {
-                        dataModification.ChangeSetItemAction = ChangeSetItemAction.Insert;
-                    }
-                    else if (dataModification.IsUpdateRequest)
-                    {
-                        dataModification.ChangeSetItemAction = ChangeSetItemAction.Update;
-                    }
-                    else if (dataModification.IsDeleteRequest)
-                    {
-                        dataModification.ChangeSetItemAction = ChangeSetItemAction.Remove;
-                    }
-                }
-            }
-
             var executor = context.GetApiService<ISubmitExecutor>();
             if (executor == null)
             {

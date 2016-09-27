@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Publishers.OData.Routing
             });
             using (var api = apiFactory())
             {
-                var model = api.GetModelAsync().Result;
+                var model = GetModel(api);
 
                 var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
 
@@ -59,7 +59,6 @@ namespace Microsoft.Restier.Publishers.OData.Routing
                 {
                     batchHandler.ApiFactory = apiFactory;
                 }
-
 
                 // Customized path handler should be added in ConfigureApi as service
                 // Allow to handle URL encoded slash (%2F), and backslash(%5C) with customized handler
@@ -128,6 +127,26 @@ namespace Microsoft.Restier.Publishers.OData.Routing
 
             conventions.Insert(index + 1, new RestierRoutingConvention(apiFactory));
             return conventions;
+        }
+
+        private static IEdmModel GetModel(ApiBase api)
+        {
+            // Here await is not used because if method MapRestierRoute is mapped async,
+            // Then during application starts, the http service initialization may complete first
+            // before this method call is complete.
+            // Then all request will fail, and this happen for some test cases before when get model takes long time.
+            IEdmModel model;
+            try
+            {
+                model = api.GetModelAsync().Result;
+            }
+            catch (AggregateException e)
+            {
+                // Without await, the exception is wrapped and inner exception has more meaningful message.
+                throw e.InnerException;
+            }
+
+            return model;
         }
     }
 }

@@ -14,14 +14,28 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
     /// </summary>
     public class DefaultRestierSerializerProvider : DefaultODataSerializerProvider
     {
+        private static readonly DefaultRestierSerializerProvider SingletonInstanceField
+            = new DefaultRestierSerializerProvider();
+
         private RestierFeedSerializer feedSerializer;
-        private RestierEntityTypeSerializer entityTypeSerializer;
         private RestierPrimitiveSerializer primitiveSerializer;
         private RestierRawSerializer rawSerializer;
         private RestierComplexTypeSerializer complexTypeSerializer;
         private RestierCollectionSerializer collectionSerializer;
         private RestierEnumSerializer enumSerializer;
-        private static readonly DefaultRestierSerializerProvider _instance = new DefaultRestierSerializerProvider();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
+        /// </summary>
+        public DefaultRestierSerializerProvider()
+        {
+            this.feedSerializer = new RestierFeedSerializer(this);
+            this.primitiveSerializer = new RestierPrimitiveSerializer();
+            this.rawSerializer = new RestierRawSerializer();
+            this.complexTypeSerializer = new RestierComplexTypeSerializer(this);
+            this.collectionSerializer = new RestierCollectionSerializer(this);
+            this.enumSerializer = new RestierEnumSerializer();
+        }
 
         /// <summary>
         /// Gets the default instance of the <see cref="DefaultRestierSerializerProvider"/>.
@@ -30,21 +44,8 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
         {
             get
             {
-                return _instance;
+                return SingletonInstanceField;
             }
-        }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
-        /// </summary>
-        public DefaultRestierSerializerProvider()
-        {
-            this.feedSerializer = new RestierFeedSerializer(this);
-            this.entityTypeSerializer = new RestierEntityTypeSerializer(this);
-            this.primitiveSerializer = new RestierPrimitiveSerializer();
-            this.rawSerializer = new RestierRawSerializer();
-            this.complexTypeSerializer = new RestierComplexTypeSerializer(this);
-            this.collectionSerializer = new RestierCollectionSerializer(this);
-            this.enumSerializer = new RestierEnumSerializer();
         }
 
         /// <summary>
@@ -60,31 +61,27 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             HttpRequestMessage request)
         {
             ODataSerializer serializer = null;
-            if (type == typeof (EntityCollectionResult))
+            if (type == typeof(EntityCollectionResult))
             {
                 serializer = this.feedSerializer;
             }
-            else if (type == typeof (EntityResult))
-            {
-                serializer = this.entityTypeSerializer;
-            }
-            else if (type == typeof (PrimitiveResult))
+            else if (type == typeof(PrimitiveResult))
             {
                 serializer = this.primitiveSerializer;
             }
-            else if (type == typeof (RawResult))
+            else if (type == typeof(RawResult))
             {
                 serializer = this.rawSerializer;
             }
-            else if (type == typeof (ComplexResult))
+            else if (type == typeof(ComplexResult))
             {
                 serializer = this.complexTypeSerializer;
             }
-            else if (type == typeof (NonEntityCollectionResult))
+            else if (type == typeof(NonEntityCollectionResult))
             {
                 serializer = this.collectionSerializer;
             }
-            else if (type == typeof (EnumResult))
+            else if (type == typeof(EnumResult))
             {
                 serializer = this.enumSerializer;
             }
@@ -103,11 +100,6 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
         /// <returns>The serializer instance.</returns>
         public override ODataEdmTypeSerializer GetEdmTypeSerializer(IEdmTypeReference edmType)
         {
-            if (edmType.IsEntity())
-            {
-                return this.entityTypeSerializer;
-            }
-
             if (edmType.IsComplex())
             {
                 return this.complexTypeSerializer;

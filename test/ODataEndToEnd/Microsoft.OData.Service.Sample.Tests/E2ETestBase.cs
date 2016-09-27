@@ -4,6 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using Microsoft.OData.Client;
 using Xunit;
 
@@ -86,6 +89,22 @@ namespace Microsoft.OData.Service.Sample.Tests
             }
         }
 
+        protected async void TestPostPayloadContains(string uriStringAfterServiceRoot, string postContent, string expectedSubString)
+        {
+            var requestUri = string.Format("{0}/{1}", this.ServiceBaseUri, uriStringAfterServiceRoot);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+
+            request.Content = new StringContent(postContent);
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.SendAsync(request);
+            string responseString = response.Content.ReadAsStringAsync().Result;
+
+            response.EnsureSuccessStatusCode();
+            Assert.Contains(expectedSubString, responseString);
+        }
+
         protected void TestPostPayloadContains(string uriStringAfterServiceRoot, string expectedSubString)
         {
             var requestMessage = new HttpWebRequestMessage(
@@ -102,6 +121,20 @@ namespace Microsoft.OData.Service.Sample.Tests
             }
         }
 
+        protected async void TestPostStatusCodeIs(string uriStringAfterServiceRoot, string postContent, HttpStatusCode statusCode)
+        {
+            var requestUri = string.Format("{0}/{1}", this.ServiceBaseUri, uriStringAfterServiceRoot);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+
+            request.Content = new StringContent(postContent);
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            Assert.Equal(statusCode, response.StatusCode);
+        }
+
         protected void TestPostStatusCodeIs(string uriStringAfterServiceRoot, int statusCode)
         {
             var requestMessage = new HttpWebRequestMessage(
@@ -111,7 +144,16 @@ namespace Microsoft.OData.Service.Sample.Tests
                     useDefaultCredentials: true,
                     usePostTunneling: false,
                     headers: new Dictionary<string, string>() { { "Content-Length", "0" } }));
-            Assert.Equal(statusCode, requestMessage.GetResponse().StatusCode);
+            try
+            {
+                Assert.Equal(statusCode, requestMessage.GetResponse().StatusCode);
+            }
+            catch (DataServiceTransportException e)
+            {
+                // In case of 404 or 500, it will be handled here
+                var response = e.Response;
+                Assert.Equal(statusCode, response.StatusCode);
+            }
         }
         #endregion
 

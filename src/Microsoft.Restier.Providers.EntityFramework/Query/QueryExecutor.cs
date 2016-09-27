@@ -9,10 +9,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core.Query;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
+using Microsoft.Restier.Core.Query;
 
 #if EF7
 using IAsyncQueryProvider = Microsoft.EntityFrameworkCore.Query.Internal.IAsyncQueryProvider;

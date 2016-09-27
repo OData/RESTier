@@ -91,6 +91,20 @@ namespace System.Linq.Expressions
             return (IQueryable<object>)countQuery;
         }
 
+        /// <summary>
+        /// Create am empty Queryable of specified type
+        /// </summary>
+        /// <param name="elementType">The element type of IQueryable</param>
+        /// <returns>The empty IQueryable</returns>
+        public static IQueryable CreateEmptyQueryable(Type elementType)
+        {
+            var constructor = typeof(List<>).MakeGenericType(elementType).GetConstructor(Type.EmptyTypes);
+            var instance = constructor.Invoke(new object[] { });
+            var emptyQuerable = ExpressionHelperMethods.QueryableAsQueryable
+                .Invoke(null, new object[] { instance }) as IQueryable;
+            return emptyQuerable;
+        }
+
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
             Type type = enumerableType.FindGenericType(typeof(IEnumerable<>));

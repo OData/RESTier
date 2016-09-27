@@ -38,8 +38,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Query
             // EF model builder set complex type not null by default, but Web Api OData does not.
             if (context.VisitedNode.NodeType == ExpressionType.NotEqual)
             {
-
-                var binaryExp = (BinaryExpression) context.VisitedNode;
+                var binaryExp = (BinaryExpression)context.VisitedNode;
                 var left = binaryExp.Left as MemberExpression;
                 var right = binaryExp.Right as ConstantExpression;
 
@@ -56,7 +55,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Query
                 {
                     // If it is a collection, then replace coll != null with true
                     leftCheck = left.Type.IsGenericType
-                        && left.Type.GetGenericTypeDefinition() == typeof (ICollection<>);
+                        && left.Type.GetGenericTypeDefinition() == typeof(ICollection<>);
 
                     // If it is a complex, replace complex!=null with true
                     if (!leftCheck)

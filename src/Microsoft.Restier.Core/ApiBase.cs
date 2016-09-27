@@ -61,6 +61,11 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
+        /// Gets a value indicating whether this API has been disposed.
+        /// </summary>
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
         /// Gets the API configuration for this API.
         /// </summary>
         protected ApiConfiguration Configuration
@@ -85,11 +90,6 @@ namespace Microsoft.Restier.Core
                     });
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this API has been disposed.
-        /// </summary>
-        protected bool IsDisposed { get; private set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with
@@ -127,6 +127,7 @@ namespace Microsoft.Restier.Core
         protected virtual IServiceCollection ConfigureApi(IServiceCollection services)
         {
             Type apiType = this.GetType();
+
             // Add core and convention's services
             services = services.AddCoreServices(apiType)
                 .AddAttributeServices(apiType)

@@ -120,6 +120,9 @@
   <data name="DataModificationMustBeCUD" xml:space="preserve">
     <value>A DataModificationEntry must be either New, Update or Delete.</value>
   </data>
+  <data name="PreconditionCheckFailed" xml:space="preserve">
+    <value>The precondition check for request {0} on resource {1} is failed.</value>
+  </data>
   <data name="ResourceNotFound" xml:space="preserve">
     <value>Could not find the specified resource.</value>
     <comment>The target entity not found for modification</comment>

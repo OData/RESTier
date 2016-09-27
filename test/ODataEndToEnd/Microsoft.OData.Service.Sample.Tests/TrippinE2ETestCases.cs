@@ -107,7 +107,6 @@ namespace Microsoft.OData.Service.Sample.Tests
             using (var r = new StreamReader(requestMessage.GetResponse().GetStream()))
             {
                 var modelStr = r.ReadToEnd();
-                Assert.Contains("<EntityType Name=\"SpecialOrder\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Order\">", modelStr, StringComparison.Ordinal);
                 Assert.Contains("<EntityType Name=\"Manager\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
                 Assert.Contains("<EntityType Name=\"Employee\" BaseType=\"Microsoft.OData.Service.Sample.Trippin.Models.Person\">", modelStr, StringComparison.Ordinal);
             }
@@ -172,7 +171,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(employee);
             this.TestClientContext.SaveChanges();
-            long? personId = employee.PersonId;
+            long personId = employee.PersonId;
 
             // Count this entity
             var count = this.TestClientContext.People.Count();
@@ -285,7 +284,7 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             this.TestClientContext.AddToPeople(person);
             this.TestClientContext.SaveChanges();
-            long? personId = person.PersonId;
+            long personId = person.PersonId;
 
             // Query a property
             var lastName = this.TestClientContext.People

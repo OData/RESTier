@@ -196,6 +196,24 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The requested operation is not implemented in Api class..
+        /// </summary>
+        internal static string OperationNotImplemented {
+            get {
+                return ResourceManager.GetString("OperationNotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user is not authorized to execute operation {0}..
+        /// </summary>
+        internal static string OperationUnAuthorizationExecution {
+            get {
+                return ResourceManager.GetString("OperationUnAuthorizationExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path segment not supported: {0}.
         /// </summary>
         internal static string PathSegmentNotSupported {
@@ -210,6 +228,15 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         internal static string PostToUnboundActionNotSupported {
             get {
                 return ResourceManager.GetString("PostToUnboundActionNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The request need to have If-Match or If-None-Match header..
+        /// </summary>
+        internal static string PreconditionRequired {
+            get {
+                return ResourceManager.GetString("PreconditionRequired", resourceCulture);
             }
         }
         

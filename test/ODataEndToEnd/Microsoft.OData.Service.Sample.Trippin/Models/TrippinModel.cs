@@ -22,6 +22,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Airline>().HasKey(a =>a.AirlineCode);
+
             modelBuilder.Entity<Trip>().HasMany<Flight>(s => s.Flights).WithMany().Map(c =>
             {
                 c.MapLeftKey("TripId");
@@ -38,6 +40,48 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 }
             );
 
+            modelBuilder.Entity<Staff>().HasMany<Staff>(s => s.PeerStaffs).WithMany().Map(c =>
+            {
+                c.MapLeftKey("StaffId1");
+                c.MapRightKey("StaffId2");
+                c.ToTable("StaffPeers");
+            });
+
+            modelBuilder.Entity<Staff>().HasMany<Conference>(s => s.Conferences).WithMany().Map(c =>
+            {
+                c.MapLeftKey("StaffId");
+                c.MapRightKey("ConferenceId");
+                c.ToTable("StaffConferences");
+            });
+
+            modelBuilder.Entity<SeniorStaff>().HasMany<SeniorStaff>(s => s.PeerSeniorStaffs).WithMany().Map(c =>
+            {
+                c.MapLeftKey("StaffId1");
+                c.MapRightKey("StaffId2");
+                c.ToTable("SeniorStaffPeers");
+            });
+
+            modelBuilder.Entity<SeniorStaff>().HasMany<HighEndConference>(s => s.HighEndConferences).WithMany().Map(c =>
+            {
+                c.MapLeftKey("StaffId");
+                c.MapRightKey("ConferenceId");
+                c.ToTable("SeniorStaffHighEndConferences");
+            });
+
+            modelBuilder.Entity<Conference>().HasMany<Sponsor>(s => s.Sponsors).WithMany().Map(c =>
+            {
+                c.MapLeftKey("ConferenceId");
+                c.MapRightKey("SponsorId");
+                c.ToTable("ConferenceSponsors");
+            });
+
+            modelBuilder.Entity<HighEndConference>().HasMany<GlodSponsor>(s => s.GlodSponsors).WithMany().Map(c =>
+            {
+                c.MapLeftKey("ConferenceId");
+                c.MapRightKey("SponsorId");
+                c.ToTable("HighEndConferenceGlodSponsors");
+            });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -48,6 +92,9 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
+        public DbSet<Conference> Conferences { get; set; }
+        public DbSet<Sponsor> Sponsors { get; set; }
 
         private static TrippinModel instance;
         public static TrippinModel Instance
@@ -76,6 +123,15 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 instance.Entry(x).State = EntityState.Detached;
             }
 
+            instance.Database.ExecuteSqlCommand("DELETE FROM StaffPeers");
+            instance.Database.ExecuteSqlCommand("DELETE FROM SeniorStaffPeers");
+
+            foreach (var x in instance.Staffs)
+            {
+                // Discard local changes for the person..
+                instance.Entry(x).State = EntityState.Detached;
+            }
+
             instance.People.RemoveRange(instance.People);
             instance.Orders.RemoveRange(instance.Orders);
             instance.Flights.RemoveRange(instance.Flights);
@@ -83,11 +139,17 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             instance.Airports.RemoveRange(instance.Airports);
             instance.Trips.RemoveRange(instance.Trips);
             instance.Events.RemoveRange(instance.Events);
+            instance.Staffs.RemoveRange(instance.Staffs);
+            instance.Conferences.RemoveRange(instance.Conferences);
+            instance.Sponsors.RemoveRange(instance.Sponsors);
 
             // This is to set the People Id from 0
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('People', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Flights', RESEED, 0)");
             instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('TripsTable', RESEED, 0)");
+            instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Staffs', RESEED, 0)");
+            instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Conferences', RESEED, 0)");
+            instance.Database.ExecuteSqlCommand("DBCC CHECKIDENT ('Sponsors', RESEED, 0)");
 
             instance.SaveChanges();
 
@@ -635,6 +697,249 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                     }
                 },
             });
+            #endregion
+
+            #region Sponsors
+            var sponsor0 = new Sponsor
+            {
+                SponsorId = 0,
+                Name = "sponsor0"
+            };
+            var sponsor1 = new Sponsor
+            {
+                SponsorId = 1,
+                Name = "sponsor1"
+            };
+            var sponsor2 = new Sponsor
+            {
+                SponsorId = 2,
+                Name = "sponsor2"
+            };
+            var sponsor3 = new Sponsor
+            {
+                SponsorId = 3,
+                Name = "sponsor3"
+            };
+            var sponsor4 = new GlodSponsor
+            {
+                SponsorId = 4,
+                Name = "sponsor4",
+                Funding = 10
+            };
+            var sponsor5 = new GlodSponsor
+            {
+                SponsorId = 5,
+                Name = "sponsor5",
+                Funding = 100
+            };
+            var sponsor6 = new GlodSponsor
+            {
+                SponsorId = 6,
+                Name = "sponsor6",
+                Funding = 1000
+            };
+            var sponsor7 = new GlodSponsor
+            {
+                SponsorId = 7,
+                Name = "sponsor7",
+                Funding = 10000
+            };
+            instance.Sponsors.AddRange(new List<Sponsor>
+            {
+                sponsor0,
+                sponsor1,
+                sponsor2,
+                sponsor3,
+                sponsor4,
+                sponsor5,
+                sponsor6,
+                sponsor7,
+            });
+            #endregion
+
+            #region Conferences
+            var conference0 = new Conference
+            {
+                ConferenceId = 0,
+                Name = "conference0",
+                NumberOfAttendees = 1000
+            };
+            var conference1 = new Conference
+            {
+                ConferenceId = 1,
+                Name = "conference1",
+                NumberOfAttendees = 2000
+            };
+            var conference2 = new Conference
+            {
+                ConferenceId = 2,
+                Name = "conference2",
+                NumberOfAttendees = 1000
+            };
+            var conference3 = new Conference
+            {
+                ConferenceId = 3,
+                Name = "conference3",
+                NumberOfAttendees = 1000
+            };
+            var conference4 = new HighEndConference
+            {
+                ConferenceId = 4,
+                Name = "conference4",
+                NumberOfAttendees = 1000,
+                NumberofVips = 1000
+            };
+            var conference5 = new HighEndConference
+            {
+                ConferenceId = 5,
+                Name = "conference5",
+                NumberOfAttendees = 1000,
+                NumberofVips = 1000
+            };
+            var conference6 = new HighEndConference
+            {
+                ConferenceId = 6,
+                Name = "conference6",
+                NumberOfAttendees = 1000,
+                NumberofVips = 1000
+            };
+            var conference7 = new HighEndConference
+            {
+                ConferenceId = 7,
+                Name = "conference7",
+                NumberOfAttendees = 1000,
+                NumberofVips = 1000
+            };
+
+            conference0.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference1.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference2.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference3.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference4.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference5.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference6.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference7.Sponsors = new Collection<Sponsor> { sponsor0, sponsor1, sponsor2, sponsor3, sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference4.GlodSponsors = new Collection<GlodSponsor> { sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference5.GlodSponsors = new Collection<GlodSponsor> { sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference6.GlodSponsors = new Collection<GlodSponsor> { sponsor4, sponsor5, sponsor6, sponsor7 };
+            conference7.GlodSponsors = new Collection<GlodSponsor> { sponsor4, sponsor5, sponsor6, sponsor7 };
+
+            instance.Conferences.AddRange(new List<Conference>
+            {
+                conference0,
+                conference1,
+                conference2,
+                conference3,
+                conference4,
+                conference5,
+                conference6,
+                conference7,
+            });
+            #endregion
+
+            #region Staff
+
+            var staff0 = new Staff
+            {
+                StaffId = 0,
+                FirstName = "Russell",
+                UserName = "russellwhyte",
+            };
+            var staff1 = new Staff
+            {
+                StaffId = 1,
+                FirstName = "Scott",
+                UserName = "scottketchum",
+            };
+            var staff2 = new Staff
+            {
+                StaffId = 2,
+                FirstName = "Ronald",
+                UserName = "ronaldmundy",
+            };
+            var staff3 = new Staff
+            {
+                StaffId = 3,
+                FirstName = "Javier",
+                UserName = "javieralfred",
+            };
+
+            var staff4 = new Staff
+            {
+                StaffId = 4,
+                FirstName = "Willie",
+                UserName = "willieashmore",
+            };
+            var staff5 = new SeniorStaff
+            {
+                StaffId = 5,
+                FirstName = "Vincent",
+                UserName = "vincentcalabrese",
+            };
+            var staff6 = new SeniorStaff
+            {
+                StaffId = 6,
+                FirstName = "Clyde",
+                UserName = "clydeguess",
+            };
+            var staff7 = new SeniorStaff
+            {
+                StaffId = 7,
+                FirstName = "Keith",
+                UserName = "keithpinckney",
+            };
+            var staff8 = new SeniorStaff
+            {
+                StaffId = 7,
+                FirstName = "Rains",
+                UserName = "Lewis",
+            };
+            var staff9= new SeniorStaff
+            {
+                StaffId = 7,
+                FirstName = "Layla",
+                UserName = "Rains",
+            };
+
+
+            instance.Staffs.AddRange(new List<Staff>
+            {
+                staff0,
+                staff1,
+                staff2,
+                staff3,
+                staff4,
+                staff5,
+                staff6,
+                staff7,
+                staff8,
+                staff9,
+            });
+
+            staff0.PeerStaffs = new Collection<Staff> { staff1, staff2, staff3, staff4, staff5, staff6, staff7, staff8, staff9 };
+            staff1.PeerStaffs = new Collection<Staff> { staff0, staff2, staff3, staff4, staff5, staff6, staff7, staff8, staff9 };
+            staff2.PeerStaffs = new Collection<Staff> { staff0, staff1, staff3, staff4, staff5, staff6, staff7, staff8, staff9 };
+            staff3.PeerStaffs = new Collection<Staff> { staff0, staff1, staff2, staff4, staff5, staff6, staff7, staff8, staff9 };
+            staff5.PeerStaffs = new Collection<Staff> { staff0, staff1, staff2, staff3, staff4, staff6, staff7, staff8, staff9 };
+            staff6.PeerStaffs = new Collection<Staff> { staff0, staff1, staff2, staff3, staff4, staff5, staff7, staff8, staff9 };
+            staff7.PeerStaffs = new Collection<Staff> { staff0, staff1, staff2, staff3, staff4, staff5, staff6, staff8, staff9 };
+
+            staff0.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7};
+            staff1.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7 };
+            staff2.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7 };
+            staff3.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7 };
+            staff5.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7 };
+            staff6.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7 };
+            staff7.Conferences = new Collection<Conference> { conference0, conference1, conference2, conference3, conference4, conference5, conference6, conference7 };
+
+            staff5.PeerSeniorStaffs = new Collection<SeniorStaff> { staff6, staff7, staff8, staff9 };
+            staff6.PeerSeniorStaffs = new Collection<SeniorStaff> { staff5, staff7, staff8, staff9 };
+            staff7.PeerSeniorStaffs = new Collection<SeniorStaff> { staff5, staff6, staff8, staff9 };
+
+            staff5.HighEndConferences = new Collection<HighEndConference> { conference4, conference5, conference6, conference7 };
+            staff6.HighEndConferences = new Collection<HighEndConference> { conference4, conference5, conference6, conference7 };
+            staff7.HighEndConferences = new Collection<HighEndConference> { conference4, conference5, conference6, conference7 };
+
             #endregion
 
             instance.SaveChanges();

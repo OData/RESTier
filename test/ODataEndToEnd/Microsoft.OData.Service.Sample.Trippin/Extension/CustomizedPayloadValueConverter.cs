@@ -4,7 +4,7 @@
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Publishers.OData;
 
-namespace Microsoft.OData.Service.Sample.Trippin.Models
+namespace Microsoft.OData.Service.Sample.Trippin.Extension
 {
     /// <summary>
     /// The customized payload value converter for test only

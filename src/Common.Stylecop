@@ -2,7 +2,9 @@
   <GlobalSettings>
     <StringProperty Name="MergeSettingsFiles">NoMerge</StringProperty>
     <CollectionProperty Name="RecognizedWords">
+      <Value>Api</Value>
       <Value>changeset</Value>
+      <Value>clr</Value>
       <Value>composable</Value>
       <Value>Db</Value>
       <Value>deserializer</Value>
@@ -13,7 +15,9 @@
       <Value>queryable</Value>
       <Value>RESTier</Value>
       <Value>sourcer</Value>
-    </CollectionProperty>
+      <Value>metadata</Value>
+      <Value>odata</Value>
+    </CollectionProperty> 
   </GlobalSettings>
   <Parsers>
     <Parser ParserId="StyleCop.CSharp.CsParser">
@@ -75,8 +79,11 @@
       <Rules />
       <AnalyzerSettings>
         <CollectionProperty Name="Hungarian">
+          <Value>as</Value>
+          <Value>of</Value>
           <Value>is</Value>
           <Value>ef</Value>
+          <Value>to</Value>
           <Value>db</Value>
         </CollectionProperty>
       </AnalyzerSettings>

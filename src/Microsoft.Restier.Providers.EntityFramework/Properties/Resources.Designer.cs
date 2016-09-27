@@ -70,6 +70,15 @@ namespace Microsoft.Restier.Providers.EntityFramework.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The precondition check for request {0} on resource {1} is failed..
+        /// </summary>
+        internal static string PreconditionCheckFailed {
+            get {
+                return ResourceManager.GetString("PreconditionCheckFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find the specified resource..
         /// </summary>
         internal static string ResourceNotFound {

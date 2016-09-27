@@ -16,13 +16,13 @@ namespace Microsoft.Restier.Core
     public abstract class ApiConfiguratorAttribute : Attribute
     {
         /// <summary>
-        /// Add API services into the DI container.
+        /// Add Api services into the DI container.
         /// </summary>
         /// <param name="services">
-        /// The API services registration.
+        /// The Api services registration.
         /// </param>
         /// <param name="type">
-        /// The API type on which this attribute was placed.
+        /// The Api type on which this attribute was placed.
         /// </param>
         [CLSCompliant(false)]
         public virtual void AddApiServices(
@@ -32,13 +32,13 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Update an API configuration after ApiConfiguration is created.
+        /// Update an Api configuration after ApiConfiguration is created.
         /// </summary>
         /// <param name="configuration">
-        /// An API configuration.
+        /// An Api configuration.
         /// </param>
         /// <param name="type">
-        /// The API type on which this attribute was placed.
+        /// The Api type on which this attribute was placed.
         /// </param>
         public virtual void UpdateApiConfiguration(
             ApiConfiguration configuration,
@@ -47,16 +47,16 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Update an API context after ApiContext is created.
+        /// Update an Api context after ApiContext is created.
         /// </summary>
         /// <param name="context">
-        /// An API context.
+        /// An Api context.
         /// </param>
         /// <param name="type">
-        /// The API type on which this attribute was placed.
+        /// The Api type on which this attribute was placed.
         /// </param>
         /// <param name="instance">
-        /// An API instance, if applicable.
+        /// An Api instance, if applicable.
         /// </param>
         public virtual void UpdateApiContext(
             ApiContext context,
@@ -66,16 +66,16 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Disposes an API context.
+        /// Disposes an Api context.
         /// </summary>
         /// <param name="context">
-        /// An API context.
+        /// An Api context.
         /// </param>
         /// <param name="type">
-        /// The API type on which this attribute was placed.
+        /// The Api type on which this attribute was placed.
         /// </param>
         /// <param name="instance">
-        /// An API instance, if applicable.
+        /// An Api instance, if applicable.
         /// </param>
         public virtual void Dispose(
             ApiContext context,

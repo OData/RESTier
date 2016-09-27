@@ -19,8 +19,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
     internal class RestierOperationModelBuilder : IModelBuilder
     {
         private readonly Type targetType;
-        private readonly ICollection<FunctionMethodInfo> actionInfos = new List<FunctionMethodInfo>();
-        private readonly ICollection<FunctionMethodInfo> functionInfos = new List<FunctionMethodInfo>();
+        private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
 
         private RestierOperationModelBuilder(Type targetType)
         {
@@ -52,23 +51,22 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
 
             this.ScanForOperations();
-            this.BuildFunctions(model);
-            this.BuildActions(model);
-            return model;
-        }
 
-        private static bool TryGetEntityType(IEdmModel model, Type type, out IEdmEntityType entityType)
-        {
-            var edmType = model.FindDeclaredType(type.FullName);
-            entityType = edmType as IEdmEntityType;
-            return entityType != null;
+            string existingNamespace = null;
+            if (model.DeclaredNamespaces != null)
+            {
+                existingNamespace = model.DeclaredNamespaces.FirstOrDefault();
+            }
+
+            this.BuildOperations(model, existingNamespace);
+            return model;
         }
 
         private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
         {
             foreach (ParameterInfo parameter in method.GetParameters())
             {
-                var parameterTypeReference = GetTypeReference(parameter.ParameterType, model);
+                var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
                 var operationParam = new EdmOperationParameter(
                     operation,
                     parameter.Name,
@@ -78,67 +76,16 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private static bool TryGetBindingParameter(
-            MethodInfo method, IEdmModel model, out ParameterInfo bindingParameter)
-        {
-            bindingParameter = null;
-            var firstParameter = method.GetParameters().FirstOrDefault();
-            if (firstParameter == null)
-            {
-                return false;
-            }
-
-            Type parameterType;
-            if (!firstParameter.ParameterType.TryGetElementType(out parameterType))
-            {
-                parameterType = firstParameter.ParameterType;
-            }
-
-            if (!GetTypeReference(parameterType, model).IsEntity())
-            {
-                return false;
-            }
-
-            bindingParameter = firstParameter;
-            return true;
-        }
-
-        private static IEdmTypeReference GetReturnTypeReference(Type type, IEdmModel model)
-        {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>))
-            {
-                // if the action returns a Task<T>, map that to just be returning a T
-                type = type.GetGenericArguments()[0];
-            }
-            else if (type == typeof(Task))
-            {
-                // if the action returns a concrete Task, map that to being a void return type.
-                type = typeof(void);
-            }
-
-            return GetTypeReference(type, model);
-        }
-
-        private static IEdmTypeReference GetTypeReference(Type type, IEdmModel model)
-        {
-            Type elementType;
-            if (type.TryGetElementType(out elementType))
-            {
-                return EdmCoreModel.GetCollection(GetTypeReference(elementType, model));
-            }
-
-            IEdmEntityType entityType;
-            if (TryGetEntityType(model, type, out entityType))
-            {
-                return new EdmEntityTypeReference(entityType, true);
-            }
-
-            return type.GetPrimitiveTypeReference();
-        }
-
         private static EdmPathExpression BuildEntitySetPathExpression(
             IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter)
         {
+            // Bound actions or functions that return an entity or a collection of entities
+            // MAY specify a value for the EntitySetPath attribute
+            // if determination of the entity set for the return type is contingent on the binding parameter.
+            // The value for the EntitySetPath attribute consists of a series of segments
+            // joined together with forward slashes.
+            // The first segment of the entity set path MUST be the name of the binding parameter.
+            // The remaining segments of the entity set path MUST represent navigation segments or type casts.
             if (returnTypeReference != null &&
                 returnTypeReference.IsEntity() &&
                 bindingParameter != null)
@@ -171,6 +118,25 @@ namespace Microsoft.Restier.Publishers.OData.Model
             return null;
         }
 
+        private static string GetNamespaceName(OperationMethodInfo methodInfo, string modelNamespace)
+        {
+            // customized the namespace logic, customized namespace is P0
+            string namespaceName = methodInfo.OperationAttribute.Namespace;
+
+            if (namespaceName != null)
+            {
+                return namespaceName;
+            }
+
+            if (modelNamespace != null)
+            {
+                return modelNamespace;
+            }
+
+            // This returns defined class namespace
+            return methodInfo.Namespace;
+        }
+
         private void ScanForOperations()
         {
             var methods = this.targetType.GetMethods(
@@ -181,89 +147,89 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             foreach (var method in methods)
             {
-                var functionAttribute = method.GetCustomAttributes<OperationAttribute>(true).FirstOrDefault();
-                if (functionAttribute != null)
+                var operationAttribute = method.GetCustomAttributes<OperationAttribute>(true).FirstOrDefault();
+                if (operationAttribute != null)
                 {
-                    if (!functionAttribute.HasSideEffects)
+                    operationInfos.Add(new OperationMethodInfo
                     {
-                        functionInfos.Add(new FunctionMethodInfo
-                        {
-                            Method = method,
-                            OperationAttribute = functionAttribute
-                        });
+                        Method = method,
+                        OperationAttribute = operationAttribute
+                    });
+                }
+            }
+        }
+
+        private void BuildOperations(EdmModel model, string modelNamespace)
+        {
+            foreach (OperationMethodInfo operationMethodInfo in this.operationInfos)
+            {
+                // With this method, if return type is nullable type,it will get underlying type
+                var returnType = TypeHelper.GetUnderlyingTypeOrSelf(operationMethodInfo.Method.ReturnType);
+                var returnTypeReference = returnType.GetReturnTypeReference(model);
+                bool isBound = operationMethodInfo.IsBound;
+                var bindingParameter = operationMethodInfo.Method.GetParameters().FirstOrDefault();
+
+                if (bindingParameter == null && isBound)
+                {
+                    // Ignore the method which is marked as bounded but no parameters
+                    continue;
+                }
+
+                string namespaceName = GetNamespaceName(operationMethodInfo, modelNamespace);
+
+                EdmOperation operation = null;
+                EdmPathExpression path = null;
+                if (isBound)
+                {
+                    // Unbound actions or functions should not have EntitySetPath attribute
+                    path = BuildEntitySetPathExpression(returnTypeReference, bindingParameter);
+                }
+
+                if (operationMethodInfo.HasSideEffects)
+                {
+                    operation = new EdmAction(
+                        namespaceName,
+                        operationMethodInfo.Name,
+                        returnTypeReference,
+                        isBound,
+                        path);
+                }
+                else
+                {
+                    operation = new EdmFunction(
+                        namespaceName,
+                        operationMethodInfo.Name,
+                        returnTypeReference,
+                        isBound,
+                        path,
+                        operationMethodInfo.IsComposable);
+                }
+
+                BuildOperationParameters(operation, operationMethodInfo.Method, model);
+                model.AddElement(operation);
+
+                if (!isBound)
+                {
+                    // entitySetReferenceExpression refer to an entity set containing entities returned
+                    // by this function/action import.
+                    var entitySetReferenceExpression = BuildEntitySetReferenceExpression(
+                        model, operationMethodInfo.EntitySet, returnTypeReference);
+                    var entityContainer = model.EnsureEntityContainer(this.targetType);
+                    if (operationMethodInfo.HasSideEffects)
+                    {
+                        entityContainer.AddActionImport(
+                            operation.Name, (EdmAction)operation, entitySetReferenceExpression);
                     }
                     else
                     {
-                        actionInfos.Add(new FunctionMethodInfo
-                        {
-                            Method = method,
-                            OperationAttribute = functionAttribute
-                        });
+                        entityContainer.AddFunctionImport(
+                            operation.Name, (EdmFunction)operation, entitySetReferenceExpression);
                     }
                 }
             }
         }
 
-        private void BuildActions(EdmModel model)
-        {
-            foreach (FunctionMethodInfo actionInfo in this.actionInfos)
-            {
-                var returnTypeReference = GetReturnTypeReference(actionInfo.Method.ReturnType, model);
-
-                ParameterInfo bindingParameter;
-                bool isBound = TryGetBindingParameter(actionInfo.Method, model, out bindingParameter);
-
-                var action = new EdmAction(
-                    actionInfo.Namespace,
-                    actionInfo.Name,
-                    returnTypeReference,
-                    isBound,
-                    BuildEntitySetPathExpression(returnTypeReference, bindingParameter));
-                BuildOperationParameters(action, actionInfo.Method, model);
-                model.AddElement(action);
-
-                if (!isBound)
-                {
-                    var entitySetReferenceExpression = BuildEntitySetReferenceExpression(
-                        model, actionInfo.EntitySet, returnTypeReference);
-                    var entityContainer = model.EnsureEntityContainer(this.targetType);
-                    entityContainer.AddActionImport(
-                        action.Name, action, entitySetReferenceExpression);
-                }
-            }
-        }
-
-        private void BuildFunctions(EdmModel model)
-        {
-            foreach (FunctionMethodInfo functionInfo in this.functionInfos)
-            {
-                var returnTypeReference = GetReturnTypeReference(functionInfo.Method.ReturnType, model);
-
-                ParameterInfo bindingParameter;
-                bool isBound = TryGetBindingParameter(functionInfo.Method, model, out bindingParameter);
-
-                var function = new EdmFunction(
-                    functionInfo.Namespace,
-                    functionInfo.Name,
-                    returnTypeReference,
-                    isBound,
-                    BuildEntitySetPathExpression(returnTypeReference, bindingParameter),
-                    functionInfo.IsComposable);
-                BuildOperationParameters(function, functionInfo.Method, model);
-                model.AddElement(function);
-
-                if (!isBound)
-                {
-                    var entitySetReferenceExpression = BuildEntitySetReferenceExpression(
-                        model, functionInfo.EntitySet, returnTypeReference);
-                    var entityContainer = model.EnsureEntityContainer(this.targetType);
-                    entityContainer.AddFunctionImport(
-                        function.Name, function, entitySetReferenceExpression);
-                }
-            }
-        }
-
-        private class FunctionMethodInfo
+        private class OperationMethodInfo
         {
             public MethodInfo Method { get; set; }
 
@@ -287,6 +253,16 @@ namespace Microsoft.Restier.Publishers.OData.Model
             public bool IsComposable
             {
                 get { return this.OperationAttribute.IsComposable; }
+            }
+
+            public bool IsBound
+            {
+                get { return this.OperationAttribute.IsBound; }
+            }
+
+            public bool HasSideEffects
+            {
+                get { return this.OperationAttribute.HasSideEffects; }
             }
         }
     }

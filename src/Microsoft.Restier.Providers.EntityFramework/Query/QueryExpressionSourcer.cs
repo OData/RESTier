@@ -2,15 +2,16 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
-using System.Linq.Expressions;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Query;
-#if EF7
-using Microsoft.EntityFrameworkCore;
-#else
+#if !EF7
 using System.Data.Entity;
 #endif
+using System.Linq;
+using System.Linq.Expressions;
+#if EF7
+using Microsoft.EntityFrameworkCore;
+#endif
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Query
 {

@@ -1,0 +1,5 @@
+{
+  "@odata.context":"http://localhost:18384/api/Trippin/$metadata#Staffs","value":[
+    
+  ]
+}

@@ -162,11 +162,20 @@
   <data name="NotSupportedType" xml:space="preserve">
     <value>Not supported type: {0}.</value>
   </data>
+  <data name="OperationNotImplemented" xml:space="preserve">
+    <value>The requested operation is not implemented in Api class.</value>
+  </data>
+  <data name="OperationUnAuthorizationExecution" xml:space="preserve">
+    <value>The user is not authorized to execute operation {0}.</value>
+  </data>
   <data name="PathSegmentNotSupported" xml:space="preserve">
     <value>Path segment not supported: {0}</value>
   </data>
   <data name="PostToUnboundActionNotSupported" xml:space="preserve">
     <value>Post to unbound action is not supported by `RestierController`.</value>
+  </data>
+  <data name="PreconditionRequired" xml:space="preserve">
+    <value>The request need to have If-Match or If-None-Match header.</value>
   </data>
   <data name="ResourceNotFound" xml:space="preserve">
     <value>The resource you requested is not found.</value>

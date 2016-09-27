@@ -8,7 +8,6 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
 {
     public class Airline
     {
-        [Key]
         public string AirlineCode { get; set; }
 
         public string Name { get; set; }

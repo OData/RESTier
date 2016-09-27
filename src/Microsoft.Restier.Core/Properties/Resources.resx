@@ -210,4 +210,7 @@
   <data name="ModelBuilderNotRegistered" xml:space="preserve">
     <value>IEdmModel cannot be generated since API service IModelBuilder is not registered.</value>
   </data>
+  <data name="EdmTypeNotSupported" xml:space="preserve">
+    <value>{0} is not a supported EDM type.</value>
+  </data>
 </root>

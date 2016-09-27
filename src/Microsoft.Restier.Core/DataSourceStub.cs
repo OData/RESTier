@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Restier.Core.Properties;
 
@@ -64,105 +63,6 @@ namespace Microsoft.Restier.Core
         /// from a call to the composable function.
         /// </returns>
         public static IQueryable<TElement> GetQueryableSource<TElement>(
-            string namespaceName, string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
-
-        /// <summary>
-        /// Identifies an entity set or results of a call to a function import.
-        /// TODO reserve for function/action supports
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the results.
-        /// </typeparam>
-        /// <param name="name">
-        /// The name of an entity set or function import.
-        /// </param>
-        /// <param name="arguments">
-        /// If <paramref name="name"/> is a function import,
-        /// the arguments to be passed to the function import.
-        /// </param>
-        /// <returns>
-        /// A representation of the entity set or
-        /// results of a call to the function import.
-        /// </returns>
-        internal static IEnumerable<TElement> Results<TElement>(
-            string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
-
-        /// <summary>
-        /// Identifies a singleton or result of a
-        /// call to a singular function import.
-        /// TODO reserve for function/action supports
-        /// </summary>
-        /// <typeparam name="TResult">
-        /// The type of the result.
-        /// </typeparam>
-        /// <param name="name">
-        /// The name of a singleton or singular function import.
-        /// </param>
-        /// <param name="arguments">
-        /// If <paramref name="name"/> is a singular function import,
-        /// the arguments to be passed to the singular function import.
-        /// </param>
-        /// <returns>
-        /// A representation of the singleton or result
-        /// of a call to the singular function import.
-        /// </returns>
-        internal static TResult Result<TResult>(
-            string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
-
-        /// <summary>
-        /// Identifies the results of a call to a function.
-        /// TODO reserve for function/action supports
-        /// </summary>
-        /// <typeparam name="TElement">
-        /// The type of the elements in the results.
-        /// </typeparam>
-        /// <param name="namespaceName">
-        /// The name of a namespace containing the function.
-        /// </param>
-        /// <param name="name">
-        /// The name of a function.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments to be passed to the function.
-        /// </param>
-        /// <returns>
-        /// A representation of the results of a call to the function.
-        /// </returns>
-        internal static IEnumerable<TElement> Results<TElement>(
-            string namespaceName, string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
-
-        /// <summary>
-        /// Identifies the result of a call to a singular function.
-        /// TODO reserve for function/action supports
-        /// </summary>
-        /// <typeparam name="TResult">
-        /// The type of the result.
-        /// </typeparam>
-        /// <param name="namespaceName">
-        /// The name of a namespace containing the singular function.
-        /// </param>
-        /// <param name="name">
-        /// The name of a singular function.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments to be passed to the singular function.
-        /// </param>
-        /// <returns>
-        /// A representation of the result of a call to the singular function.
-        /// </returns>
-        internal static TResult Result<TResult>(
             string namespaceName, string name, params object[] arguments)
         {
             throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);

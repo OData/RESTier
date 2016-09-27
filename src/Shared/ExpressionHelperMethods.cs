@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
@@ -22,6 +23,22 @@ namespace System.Linq.Expressions
 
         private static MethodInfo countMethod =
             GenericMethodOf(_ => Queryable.LongCount(default(IQueryable<int>)));
+
+        private static MethodInfo asQueryableMethod = typeof(Queryable).GetMethod(
+                            "AsQueryable",
+                            BindingFlags.Static | BindingFlags.Public,
+                            null,
+                            new[] { typeof(IEnumerable<>) },
+                            null);
+
+        private static MethodInfo asQueryableMethodGeneric =
+            GenericMethodOf(_ => Queryable.AsQueryable<int>(default(IEnumerable<int>)));
+
+        private static MethodInfo enumerableCastMethod = typeof(Enumerable).GetMethod("Cast");
+
+        private static MethodInfo enumerableToArrayMethod = typeof(Enumerable).GetMethod("ToArray");
+
+        private static MethodInfo enumerableToListMethod = typeof(Enumerable).GetMethod("ToList");
 
         public static MethodInfo QueryableSelectGeneric
         {
@@ -46,6 +63,31 @@ namespace System.Linq.Expressions
         public static MethodInfo QueryableCountGeneric
         {
             get { return countMethod; }
+        }
+
+        public static MethodInfo QueryableAsQueryable
+        {
+            get { return asQueryableMethod; }
+        }
+
+        public static MethodInfo QueryableAsQueryableGeneric
+        {
+            get { return asQueryableMethodGeneric; }
+        }
+
+        public static MethodInfo EnumerableCastGeneric
+        {
+            get { return enumerableCastMethod; }
+        }
+
+        public static MethodInfo EnumerableToListGeneric
+        {
+            get { return enumerableToListMethod; }
+        }
+
+        public static MethodInfo EnumerableToArrayGeneric
+        {
+            get { return enumerableToArrayMethod; }
         }
 
         private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression)

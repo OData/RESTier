@@ -14,7 +14,7 @@ using Microsoft.Restier.Core.Submit;
 namespace Microsoft.Restier.Core.Conventions
 {
     /// <summary>
-    /// A convention-based change set item filter.
+    /// A convention-based change set item processor which calls logic like OnInserting and OnInserted.
     /// </summary>
     internal class ConventionBasedChangeSetItemProcessor : IChangeSetItemProcessor
     {
@@ -33,7 +33,8 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IChangeSetItemProcessor>((sp, next) => new ConventionBasedChangeSetItemProcessor(targetType));
+            services.AddService<IChangeSetItemProcessor>(
+                (sp, next) => new ConventionBasedChangeSetItemProcessor(targetType));
         }
 
         /// <inheritdoc/>
@@ -42,7 +43,7 @@ namespace Microsoft.Restier.Core.Conventions
             ChangeSetItem item,
             CancellationToken cancellationToken)
         {
-            return this.InvokeFilterMethodAsync(
+            return this.InvokeProcessorMethodAsync(
                 context, item, ConventionBasedChangeSetConstants.FilterMethodNamePreFilterSuffix);
         }
 
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Core.Conventions
             ChangeSetItem item,
             CancellationToken cancellationToken)
         {
-            return this.InvokeFilterMethodAsync(
+            return this.InvokeProcessorMethodAsync(
                 context, item, ConventionBasedChangeSetConstants.FilterMethodNamePostFilterSuffix);
         }
 
@@ -63,25 +64,20 @@ namespace Microsoft.Restier.Core.Conventions
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
-                    if (dataModification.IsNewRequest)
+                    if (dataModification.DataModificationItemAction == DataModificationItemAction.Insert)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
                     }
-                    else if (dataModification.IsUpdateRequest)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Update)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
                     }
-                    else if (dataModification.IsDeleteRequest)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Remove)
                     {
                         operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
                     }
 
                     return operationName + suffix + dataModification.EntitySetName;
-
-                case ChangeSetItemType.ActionInvocation:
-                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
-                    return ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
-                           suffix + actionItem.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(
@@ -97,10 +93,6 @@ namespace Microsoft.Restier.Core.Conventions
                     DataModificationItem dataModification = (DataModificationItem)item;
                     return new object[] { dataModification.Entity };
 
-                case ChangeSetItemType.ActionInvocation:
-                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
-                    return actionItem.GetArgumentArray();
-
                 default:
                     throw new InvalidOperationException(string.Format(
                         CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, item.Type));
@@ -113,13 +105,13 @@ namespace Microsoft.Restier.Core.Conventions
                 && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
         }
 
-        private Task InvokeFilterMethodAsync(
+        private Task InvokeProcessorMethodAsync(
             SubmitContext context,
             ChangeSetItem item,
             string methodNameSuffix)
         {
-            string methodName = ConventionBasedChangeSetItemProcessor.GetMethodName(item, methodNameSuffix);
-            object[] parameters = ConventionBasedChangeSetItemProcessor.GetParameters(item);
+            string methodName = GetMethodName(item, methodNameSuffix);
+            object[] parameters = GetParameters(item);
 
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
@@ -139,7 +131,7 @@ namespace Microsoft.Restier.Core.Conventions
                 }
 
                 ParameterInfo[] methodParameters = method.GetParameters();
-                if (ConventionBasedChangeSetItemProcessor.ParametersMatch(methodParameters, parameters))
+                if (ParametersMatch(methodParameters, parameters))
                 {
                     object result = method.Invoke(target, parameters);
                     Task resultTask = result as Task;

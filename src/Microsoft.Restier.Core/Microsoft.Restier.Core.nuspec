@@ -13,8 +13,8 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>
-      <dependency id="Microsoft.Extensions.DependencyInjection" version="[1.0.0-rc2-final]" />
-      <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[1.0.0-rc2-final]" />
+      <dependency id="Microsoft.Extensions.DependencyInjection" version="[1.0.0]" />
+      <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[1.0.0]" />
       <dependency id="Microsoft.OData.Edm" version="[6.15.0, 7.0.0)" />
     </dependencies>
   </metadata>

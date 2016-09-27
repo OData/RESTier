@@ -11,6 +11,36 @@ using Microsoft.Restier.Core.Properties;
 namespace Microsoft.Restier.Core.Submit
 {
     /// <summary>
+    /// This enum controls the actions requested for an entity.
+    /// </summary>
+    /// <remarks>
+    /// This is required because during the post-CUD events, the EntityState has been lost.
+    /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
+    /// </remarks>
+    public enum DataModificationItemAction
+    {
+        /// <summary>
+        /// Specifies an undefined action.
+        /// </summary>
+        Undefined = 0,
+
+        /// <summary>
+        /// Specifies the entity is being updated.
+        /// </summary>
+        Update,
+
+        /// <summary>
+        /// Specifies the entity is being inserted.
+        /// </summary>
+        Insert,
+
+        /// <summary>
+        /// Specifies the entity is being removed.
+        /// </summary>
+        Remove
+    }
+
+    /// <summary>
     /// Specifies the type of a change set item.
     /// </summary>
     internal enum ChangeSetItemType
@@ -18,12 +48,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Specifies a data modification item.
         /// </summary>
-        DataModification,
-
-        /// <summary>
-        /// Specifies an action invocation item.
-        /// </summary>
-        ActionInvocation
+        DataModification
     }
 
     /// <summary>
@@ -59,36 +84,6 @@ namespace Microsoft.Restier.Core.Submit
     }
 
     /// <summary>
-    /// This enum controls the actions requested for an entity.
-    /// </summary>
-    /// <remarks>
-    /// This is required because during the post-CUD events, the EntityState has been lost.
-    /// This enum allows the API to remember which pre-CUD event was raised for the Entity.
-    /// </remarks>
-    public enum ChangeSetItemAction
-    {
-        /// <summary>
-        /// Specifies an undefined action.
-        /// </summary>
-        Undefined = 0,
-
-        /// <summary>
-        /// Specifies the entity is being updated.
-        /// </summary>
-        Update,
-
-        /// <summary>
-        /// Specifies the entity is being inserted.
-        /// </summary>
-        Insert,
-
-        /// <summary>
-        /// Specifies the entity is being removed.
-        /// </summary>
-        Remove
-    }
-
-    /// <summary>
     /// Represents an item in a change set.
     /// </summary>
     public abstract class ChangeSetItem
@@ -96,7 +91,6 @@ namespace Microsoft.Restier.Core.Submit
         internal ChangeSetItem(ChangeSetItemType type)
         {
             this.Type = type;
-
             this.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.Initialized;
         }
 
@@ -128,6 +122,8 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class DataModificationItem : ChangeSetItem
     {
+        private const string IfNoneMatchKey = "@IfNoneMatchKey";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DataModificationItem" /> class.
         /// </summary>
@@ -139,6 +135,9 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         /// <param name="actualEntityType">
         /// The type of the actual entity type in question.
+        /// </param>
+        /// <param name="action">
+        /// The DataModificationItemAction for the request.
         /// </param>
         /// <param name="entityKey">
         /// The key of the entity being modified.
@@ -153,6 +152,7 @@ namespace Microsoft.Restier.Core.Submit
             string entitySetName,
             Type expectedEntityType,
             Type actualEntityType,
+            DataModificationItemAction action,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
@@ -166,7 +166,7 @@ namespace Microsoft.Restier.Core.Submit
             this.EntityKey = entityKey;
             this.OriginalValues = originalValues;
             this.LocalValues = localValues;
-            this.ChangeSetItemAction = ChangeSetItemAction.Undefined;
+            this.DataModificationItemAction = action;
         }
 
         /// <summary>
@@ -193,29 +193,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets the action to be taken.
         /// </summary>
-        public ChangeSetItemAction ChangeSetItemAction { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the modification is a new entity.
-        /// </summary>
-        public bool IsNewRequest
-        {
-            get
-            {
-                return this.OriginalValues == null && this.EntityKey == null;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the modification is updating an entity.
-        /// </summary>
-        public bool IsUpdateRequest
-        {
-            get
-            {
-                return this.OriginalValues != null && this.LocalValues != null;
-            }
-        }
+        public DataModificationItemAction DataModificationItemAction { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the entity should be fully replaced by the modification.
@@ -225,17 +203,6 @@ namespace Microsoft.Restier.Core.Submit
         /// If false, only properties identified in LocalValues will be updated on the entity.
         /// </remarks>
         public bool IsFullReplaceUpdateRequest { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the modification is deleting an entity.
-        /// </summary>
-        public bool IsDeleteRequest
-        {
-            get
-            {
-                return this.LocalValues == null;
-            }
-        }
 
         /// <summary>
         /// Gets or sets the entity object in question.
@@ -294,7 +261,7 @@ namespace Microsoft.Restier.Core.Submit
         public IQueryable ApplyTo(IQueryable query)
         {
             Ensure.NotNull(query, "query");
-            if (this.IsNewRequest)
+            if (this.DataModificationItemAction == DataModificationItemAction.Insert)
             {
                 throw new InvalidOperationException(Resources.DataModificationNotSupportCreateEntity);
             }
@@ -316,6 +283,25 @@ namespace Microsoft.Restier.Core.Submit
                 throw new InvalidOperationException(Resources.DataModificationRequiresEntityKey);
             }
 
+            LambdaExpression whereLambda = Expression.Lambda(where, param);
+            return ExpressionHelpers.Where(query, whereLambda, type);
+        }
+
+        /// <summary>
+        /// Applies the current DataModificationItem's OriginalValues to the
+        /// specified query and returns the new query.
+        /// </summary>
+        /// <param name="query">The IQueryable to apply the property values to.</param>
+        /// <returns>
+        /// The new IQueryable with the property values applied to it in a Where condition.
+        /// </returns>
+        public IQueryable ApplyEtag(IQueryable query)
+        {
+            Ensure.NotNull(query, "query");
+            Type type = query.ElementType;
+            ParameterExpression param = Expression.Parameter(type);
+            Expression where = null;
+
             if (this.OriginalValues != null)
             {
                 foreach (KeyValuePair<string, object> item in this.OriginalValues)
@@ -324,6 +310,11 @@ namespace Microsoft.Restier.Core.Submit
                     {
                         where = ApplyPredicate(param, where, item);
                     }
+                }
+
+                if (this.OriginalValues.ContainsKey(IfNoneMatchKey))
+                {
+                    where = Expression.Not(where);
                 }
             }
 
@@ -373,6 +364,9 @@ namespace Microsoft.Restier.Core.Submit
         /// <param name="actualEntityType">
         /// The type of the actual entity type in question.
         /// </param>
+        /// <param name="action">
+        /// The DataModificationItemAction for the request.
+        /// </param>
         /// <param name="entityKey">
         /// The key of the entity being modified.
         /// </param>
@@ -386,10 +380,11 @@ namespace Microsoft.Restier.Core.Submit
             string entitySetName,
             Type expectedEntityType,
             Type actualEntityType,
+            DataModificationItemAction action,
             IReadOnlyDictionary<string, object> entityKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
-            : base(entitySetName, expectedEntityType, actualEntityType, entityKey, originalValues, localValues)
+            : base(entitySetName, expectedEntityType, actualEntityType, action, entityKey, originalValues, localValues)
         {
         }
 
@@ -410,68 +405,6 @@ namespace Microsoft.Restier.Core.Submit
             set
             {
                 base.Entity = value;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents an action invocation item in a change set.
-    /// </summary>
-    public class ActionInvocationItem : ChangeSetItem
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ActionInvocationItem" /> class.
-        /// </summary>
-        /// <param name="actionName">
-        /// An action name.
-        /// </param>
-        /// <param name="arguments">
-        /// A set of arguments to pass to the action.
-        /// </param>
-        public ActionInvocationItem(
-            string actionName,
-            IDictionary<string, object> arguments)
-            : base(ChangeSetItemType.ActionInvocation)
-        {
-            Ensure.NotNull(actionName, "actionName");
-            this.ActionName = actionName;
-            this.Arguments = arguments;
-        }
-
-        /// <summary>
-        /// Gets or sets the operation (action) request.
-        /// </summary>
-        public string ActionName { get; set; }
-
-        /// <summary>
-        /// Gets the set of arguments to pass to the action.
-        /// </summary>
-        public IDictionary<string, object> Arguments { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the result of the action.
-        /// </summary>
-        /// <remarks>
-        /// Initially this will be <c>null</c>, however after the action
-        /// has been invoked it will contain the result.
-        /// </remarks>
-        public object Result { get; set; }
-
-        /// <summary>
-        /// Gets an array of the arguments to pass to the action.
-        /// </summary>
-        /// <returns>
-        /// An array of the arguments to pass to the action.
-        /// </returns>
-        internal object[] GetArgumentArray()
-        {
-            if (this.Arguments == null)
-            {
-                return new object[] { };
-            }
-            else
-            {
-                return this.Arguments.Select(a => a.Value).ToArray();
             }
         }
     }

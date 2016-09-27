@@ -24,7 +24,8 @@ namespace Microsoft.Restier.Publishers.OData.Query
             {
                 var countQuery = ExpressionHelpers.GetCountableQuery(query);
                 var expression = ExpressionHelpers.Count(countQuery.Expression, countQuery.ElementType);
-                var result = await ExecuteExpressionAsync<long>(context, countQuery.Provider, expression, cancellationToken);
+                var result
+                    = await ExecuteExpressionAsync<long>(context, countQuery.Provider, expression, cancellationToken);
                 var totalCount = result.Results.Cast<long>().Single();
 
                 countOption.SetTotalCount(totalCount);

@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core
     /// through a set of registered Api services in DI container.
     /// </para>
     /// <para>
-    /// Api services may be singletons, meaning there is at most one instance, 
+    /// Api services may be singletons, meaning there is at most one instance,
     /// or scoped, in which case there will be one instances of the services for each scope.
     /// </para>
     /// </remarks>
@@ -73,6 +73,13 @@ namespace Microsoft.Restier.Core
                 (type, existing) => existing + configurationCallback);
         }
 
+        /// <summary>
+        /// Get publisher registering service callback for specified Api.
+        /// </summary>
+        /// <param name="apiType">
+        /// The Api type of which to get the publisher registering service callback.
+        /// </param>
+        /// <returns>The service registering callback.</returns>
         [CLSCompliant(false)]
         public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
         {

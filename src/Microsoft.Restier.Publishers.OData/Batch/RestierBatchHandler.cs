@@ -99,7 +99,8 @@ namespace Microsoft.Restier.Publishers.OData.Batch
         /// </summary>
         /// <param name="changeSetRequests">The list of changeset requests.</param>
         /// <returns>The created <see cref="RestierBatchChangeSetRequestItem"/> instance.</returns>
-        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests)
+        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(
+            IList<HttpRequestMessage> changeSetRequests)
         {
             return new RestierBatchChangeSetRequestItem(changeSetRequests, this.ApiFactory);
         }

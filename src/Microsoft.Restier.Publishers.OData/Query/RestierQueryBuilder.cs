@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web.OData;
 using System.Web.OData.Routing;
 using Microsoft.OData.Core;
 using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Query
@@ -41,7 +39,10 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
             this.handlers[ODataSegmentKinds.EntitySet] = this.HandleEntitySetPathSegment;
             this.handlers[ODataSegmentKinds.Singleton] = this.HandleSingletonPathSegment;
-            this.handlers[ODataSegmentKinds.UnboundFunction] = this.HandleUnboundFunctionPathSegment;
+            this.handlers[ODataSegmentKinds.UnboundFunction] = this.EmptyHandler;
+            this.handlers[ODataSegmentKinds.Function] = this.EmptyHandler;
+            this.handlers[ODataSegmentKinds.Action] = this.EmptyHandler;
+            this.handlers[ODataSegmentKinds.UnboundAction] = this.EmptyHandler;
             this.handlers[ODataSegmentKinds.Count] = this.HandleCountPathSegment;
             this.handlers[ODataSegmentKinds.Value] = this.HandleValuePathSegment;
             this.handlers[ODataSegmentKinds.Key] = this.HandleKeyValuePathSegment;
@@ -66,7 +67,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
                 Action<ODataPathSegment> handler;
                 if (!this.handlers.TryGetValue(segment.SegmentKind, out handler))
                 {
-                    throw new NotSupportedException(
+                    throw new NotImplementedException(
                         string.Format(CultureInfo.InvariantCulture, Resources.PathSegmentNotSupported, segment));
                 }
 
@@ -193,22 +194,9 @@ namespace Microsoft.Restier.Publishers.OData.Query
             this.currentType = this.queryable.ElementType;
         }
 
-        private void HandleUnboundFunctionPathSegment(ODataPathSegment segment)
+        private void EmptyHandler(ODataPathSegment segment)
         {
-            var unboundFunctionPathSegment = (UnboundFunctionPathSegment)segment;
-            var functionImport = unboundFunctionPathSegment.Function;
-            var entityTypeRef = functionImport.Function.ReturnType.AsEntity();
-            this.currentEntityType = entityTypeRef == null ? null : entityTypeRef.EntityDefinition();
-
-            object[] queryArgs = null;
-            if (functionImport.Function.Parameters.Any())
-            {
-                queryArgs = functionImport.Function.Parameters.Select(
-                    p => unboundFunctionPathSegment.GetParameterValue(p.Name)).ToArray();
-            }
-
-            this.queryable = this.api.GetQueryableSource(functionImport.Name, queryArgs);
-            this.currentType = queryable.ElementType;
+            // Nothing will be done
         }
 
         private void HandleCountPathSegment(ODataPathSegment segment)
@@ -249,7 +237,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
 
             this.currentEntityType = navigationSegment.NavigationProperty.ToEntityType();
 
-            // Check whether property is null or not before futher selection
+            // Check whether property is null or not before further selection
             var whereExpression =
                 CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
             this.queryable = ExpressionHelpers.Where(this.queryable, whereExpression, this.currentType);
@@ -285,7 +273,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             var structuralPropertyExpression =
                 Expression.Property(entityParameterExpression, propertySegment.PropertyName);
 
-            // Check whether property is null or not before futher selection
+            // Check whether property is null or not before further selection
             if (propertySegment.Property.Type.IsNullable && !propertySegment.Property.Type.IsPrimitive())
             {
                 var whereExpression =

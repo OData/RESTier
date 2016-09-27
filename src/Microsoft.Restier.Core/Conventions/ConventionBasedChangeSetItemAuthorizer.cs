@@ -32,7 +32,8 @@ namespace Microsoft.Restier.Core.Conventions
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(targetType));
+            services.AddService<IChangeSetItemAuthorizer>(
+                (sp, next) => new ConventionBasedChangeSetItemAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Core.Conventions
             bool result = true;
 
             Type returnType = typeof(bool);
-            string methodName = ConventionBasedChangeSetItemAuthorizer.GetAuthorizeMethodName(item);
+            string methodName = GetAuthorizeMethodName(item);
             MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsFamily &&
@@ -79,25 +80,20 @@ namespace Microsoft.Restier.Core.Conventions
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
                     string operationName = null;
-                    if (dataModification.IsNewRequest)
+                    if (dataModification.DataModificationItemAction == DataModificationItemAction.Insert)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationInsert;
                     }
-                    else if (dataModification.IsUpdateRequest)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Update)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationUpdate;
                     }
-                    else if (dataModification.IsDeleteRequest)
+                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Remove)
                     {
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
                     return operationName + dataModification.EntitySetName;
-
-                case ChangeSetItemType.ActionInvocation:
-                    ActionInvocationItem actionItem = (ActionInvocationItem)item;
-                    return ConventionBasedChangeSetConstants.AuthorizeMethodActionInvocationExecute +
-                        actionItem.ActionName;
 
                 default:
                     throw new InvalidOperationException(string.Format(

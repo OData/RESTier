@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace Microsoft.Restier.Core.Model
 {
@@ -24,8 +24,16 @@ namespace Microsoft.Restier.Core.Model
         }
 
         /// <summary>
-        /// Gets Entity set and entiy type map collection, it will be used by publisher for model build.
+        /// Gets or sets Entity set and entity type map dictionary, it will be used by publisher for model build.
         /// </summary>
-        public Collection<KeyValuePair<string, Type>> EntitySetTypeMapCollection { get; set; }
+        public IDictionary<string, Type> EntitySetTypeMap { get; set; }
+
+        /// <summary>
+        /// Gets or sets entity type and its key properties map dictionary, and used by publisher for model build.
+        /// This is useful when key properties does not have key attribute
+        /// or follow Web Api OData key property naming convention.
+        /// Otherwise, this collection is not needed.
+        /// </summary>
+        public IDictionary<Type, ICollection<PropertyInfo>> EntityTypeKeyPropertiesMap { get; set; }
     }
 }

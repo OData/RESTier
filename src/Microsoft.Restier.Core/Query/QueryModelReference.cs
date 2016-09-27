@@ -12,7 +12,6 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class QueryModelReference
     {
-
         private readonly IEdmEntitySet edmEntitySet;
 
         private readonly IEdmType edmType;
@@ -88,7 +87,7 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="name">
         /// The name of a function.
         /// </param>
-        public DataSourceStubModelReference(
+        internal DataSourceStubModelReference(
             QueryContext context,
             string namespaceName,
             string name)
@@ -177,11 +176,46 @@ namespace Microsoft.Restier.Core.Query
     }
 
     /// <summary>
+    /// Represents a reference to parameter data in terms of a model.
+    /// It does not have special logic
+    /// </summary>
+    public class ParameterModelReference : QueryModelReference
+    {
+        internal ParameterModelReference(IEdmEntitySet entitySet, IEdmType type)
+            : base(entitySet, type)
+        {
+        }
+    }
+
+    /// <summary>
     /// Represents a reference to property data in terms of a model.
     /// </summary>
     public class PropertyModelReference : QueryModelReference
     {
         private readonly string propertyName;
+        private IEdmProperty property;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyModelReference" /> class.
+        /// </summary>
+        /// <param name="propertyName">
+        /// The name of a property.
+        /// </param>
+        /// <param name="property">
+        /// EDM property instance
+        /// </param>
+        /// <param name="source">
+        /// A source query model reference.
+        /// </param>
+        internal PropertyModelReference(string propertyName, IEdmProperty property, QueryModelReference source)
+        {
+            Ensure.NotNull(propertyName, "propertyName");
+            this.propertyName = propertyName;
+
+            Ensure.NotNull(property, "property");
+            this.property = property;
+            this.Source = source;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyModelReference" /> class.
@@ -213,7 +247,12 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                return this.Source.EntitySet;
+                if (this.Source != null)
+                {
+                    return this.Source.EntitySet;
+                }
+
+                return null;
             }
         }
 
@@ -240,10 +279,19 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                var structuredType = this.Source.Type as IEdmStructuredType;
-                if (structuredType != null)
+                if (property != null)
                 {
-                    return structuredType.FindProperty(this.propertyName);
+                    return property;
+                }
+
+                if (Source != null)
+                {
+                    var structuredType = Source.Type as IEdmStructuredType;
+                    if (structuredType != null)
+                    {
+                        property = structuredType.FindProperty(this.propertyName);
+                        return property;
+                    }
                 }
 
                 return null;

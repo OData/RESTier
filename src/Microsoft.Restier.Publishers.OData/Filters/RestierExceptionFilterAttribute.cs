@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+extern alias Net;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,8 +15,10 @@ using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
 using Microsoft.OData.Core;
+using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Query;
+using Net::System.Net.Http.Formatting;
 
 namespace Microsoft.Restier.Publishers.OData.Filters
 {
@@ -29,7 +32,10 @@ namespace Microsoft.Restier.Publishers.OData.Filters
             {
                 Handler400,
                 Handler403,
-                Handler404
+                Handler404,
+                Handler412,
+                Handler428,
+                Handler501
             };
 
         private delegate Task<HttpResponseMessage> ExceptionHandlerDelegate(
@@ -100,15 +106,58 @@ namespace Microsoft.Restier.Publishers.OData.Filters
             HttpActionExecutedContext context,
             CancellationToken cancellationToken)
         {
-            var notSupportedException = context.Exception as NotSupportedException;
-            if (notSupportedException != null)
+            var notFoundException = context.Exception as ResourceNotFoundException;
+            if (notFoundException != null)
             {
-                if (notSupportedException.TargetSite.DeclaringType == typeof(RestierQueryBuilder))
-                {
-                    throw new HttpResponseException(context.Request.CreateErrorResponse(
-                        HttpStatusCode.NotFound,
-                        notSupportedException.Message));
-                }
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.NotFound, context.Exception));
+            }
+
+            return Task.FromResult<HttpResponseMessage>(null);
+        }
+
+        private static Task<HttpResponseMessage> Handler412(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            if (context.Exception is PreconditionFailedException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, context.Exception));
+            }
+
+            return Task.FromResult<HttpResponseMessage>(null);
+        }
+
+        private static Task<HttpResponseMessage> Handler428(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            if (context.Exception is PreconditionRequiredException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse((HttpStatusCode)428, context.Exception));
+            }
+
+            return Task.FromResult<HttpResponseMessage>(null);
+        }
+
+        private static Task<HttpResponseMessage> Handler501(
+            HttpActionExecutedContext context,
+            CancellationToken cancellationToken)
+        {
+            if (context.Exception is NotImplementedException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.NotImplemented, context.Exception));
+            }
+
+            // For async call, the exception is wrapped.
+            if (context.Exception is AggregateException
+                && context.Exception.InnerException is NotImplementedException)
+            {
+                return Task.FromResult(
+                    context.Request.CreateErrorResponse(HttpStatusCode.NotImplemented, context.Exception));
             }
 
             return Task.FromResult<HttpResponseMessage>(null);

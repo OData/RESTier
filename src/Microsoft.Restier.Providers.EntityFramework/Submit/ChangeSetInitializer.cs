@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework.Properties;
@@ -51,7 +52,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
                 object entity;
 
-                if (entry.IsNewRequest)
+                if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
                 {
                     entity = set.Create();
 
@@ -59,12 +60,12 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
 
                     set.Add(entity);
                 }
-                else if (entry.IsDeleteRequest)
+                else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
                 {
                     entity = await FindEntity(context, entry, cancellationToken);
                     set.Remove(entity);
                 }
-                else if (entry.IsUpdateRequest)
+                else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
                 {
                     entity = await FindEntity(context, entry, cancellationToken);
 
@@ -93,24 +94,27 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             object entity = result.Results.SingleOrDefault();
             if (entity == null)
             {
-                // TODO GitHubIssue#38 : Handle the case when entity is resolved
-                // there are 2 cases where the entity is not found:
-                // 1) it doesn't exist
-                // 2) concurrency checks have failed
-                // we should account for both - I can see 3 options:
-                // a. always return "PreConditionFailed" result
-                //  - this is the canonical behavior of WebAPI OData, see the following post:
-                //    "Getting started with ASP.NET Web API 2.2 for OData v4.0" on http://blogs.msdn.com/b/webdev/.
-                //  - this makes sense because if someone deleted the record, then you still have a concurrency error
-                // b. possibly doing a 2nd query with just the keys to see if the record still exists
-                // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values,
-                //    letting the save fail if there are concurrency errors
-
-                ////throw new EntityNotFoundException
-                throw new InvalidOperationException(Resources.ResourceNotFound);
+                throw new ResourceNotFoundException(Resources.ResourceNotFound);
             }
 
-            return entity;
+            // This means no If-Match or If-None-Match header
+            if (item.OriginalValues == null || item.OriginalValues.Count == 0)
+            {
+                return entity;
+            }
+
+            var etagEntity = item.ApplyEtag(result.Results.AsQueryable()).SingleOrDefault();
+            if (etagEntity == null)
+            {
+                // If ETAG does not match, should return 412 Precondition Failed
+                var message = string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.PreconditionCheckFailed,
+                    new object[] { item.DataModificationItemAction, entity });
+                throw new PreconditionFailedException(message);
+            }
+
+            return etagEntity;
         }
 
         private static void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)

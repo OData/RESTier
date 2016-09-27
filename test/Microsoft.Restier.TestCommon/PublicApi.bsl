@@ -3,7 +3,7 @@ public abstract class Microsoft.Restier.Core.ApiBase : IDisposable {
 
 	Microsoft.Restier.Core.ApiConfiguration Configuration  { protected get; }
 	Microsoft.Restier.Core.ApiContext Context  { public get; }
-	bool IsDisposed  { [CompilerGeneratedAttribute(),]protected get; }
+	bool IsDisposed  { [CompilerGeneratedAttribute(),]public get; }
 
 	[
 	CLSCompliantAttribute(),
@@ -287,6 +287,33 @@ public class Microsoft.Restier.Core.InvocationContext {
 	Microsoft.Restier.Core.ApiContext ApiContext  { [CompilerGeneratedAttribute(),]public get; }
 }
 
+[
+SerializableAttribute(),
+]
+public class Microsoft.Restier.Core.Exceptions.PreconditionFailedException : System.Exception, _Exception, ISerializable {
+	public PreconditionFailedException ()
+	public PreconditionFailedException (string message)
+	public PreconditionFailedException (string message, System.Exception innerException)
+}
+
+[
+SerializableAttribute(),
+]
+public class Microsoft.Restier.Core.Exceptions.PreconditionRequiredException : System.Exception, _Exception, ISerializable {
+	public PreconditionRequiredException ()
+	public PreconditionRequiredException (string message)
+	public PreconditionRequiredException (string message, System.Exception innerException)
+}
+
+[
+SerializableAttribute(),
+]
+public class Microsoft.Restier.Core.Exceptions.ResourceNotFoundException : System.Exception, _Exception, ISerializable {
+	public ResourceNotFoundException ()
+	public ResourceNotFoundException (string message)
+	public ResourceNotFoundException (string message, System.Exception innerException)
+}
+
 public interface Microsoft.Restier.Core.Model.IModelBuilder {
 	System.Threading.Tasks.Task`1[[Microsoft.OData.Edm.IEdmModel]] GetModelAsync (Microsoft.Restier.Core.Model.ModelContext context, System.Threading.CancellationToken cancellationToken)
 }
@@ -299,7 +326,31 @@ public interface Microsoft.Restier.Core.Model.IModelMapper {
 public class Microsoft.Restier.Core.Model.ModelContext : Microsoft.Restier.Core.InvocationContext {
 	public ModelContext (Microsoft.Restier.Core.ApiContext apiContext)
 
-	System.Collections.ObjectModel.Collection`1[[System.Collections.Generic.KeyValuePair`2[[System.String],[System.Type]]]] EntitySetTypeMapCollection  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	System.Collections.Generic.IDictionary`2[[System.String],[System.Type]] EntitySetTypeMap  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	System.Collections.Generic.IDictionary`2[[System.Type],[System.Collections.Generic.ICollection`1[[System.Reflection.PropertyInfo]]]] EntityTypeKeyPropertiesMap  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+}
+
+public interface Microsoft.Restier.Core.Operation.IOperationAuthorizer {
+	System.Threading.Tasks.Task`1[[System.Boolean]] AuthorizeAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+}
+
+public interface Microsoft.Restier.Core.Operation.IOperationExecutor {
+	System.Threading.Tasks.Task`1[[System.Linq.IQueryable]] ExecuteOperationAsync (object instanceImplementMethod, Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+}
+
+public interface Microsoft.Restier.Core.Operation.IOperationProcessor {
+	System.Threading.Tasks.Task OnExecutedOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+	System.Threading.Tasks.Task OnExecutingOperationAsync (Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+}
+
+public class Microsoft.Restier.Core.Operation.OperationContext : Microsoft.Restier.Core.InvocationContext {
+	public OperationContext (Microsoft.Restier.Core.ApiContext apiContext, System.Func`2[[System.String],[System.Object]] getParameterValueFunc, string operationName, bool isFunction, System.Linq.IQueryable bindingParameterValue)
+
+	System.Linq.IQueryable BindingParameterValue  { public get; }
+	System.Func`2[[System.String],[System.Object]] GetParameterValueFunc  { public get; }
+	bool IsFunction  { public get; }
+	string OperationName  { public get; }
+	System.Collections.Generic.ICollection`1[[System.Object]] ParametersValue  { public get; public set; }
 }
 
 public interface Microsoft.Restier.Core.Query.IQueryExecutor {
@@ -324,11 +375,12 @@ public interface Microsoft.Restier.Core.Query.IQueryExpressionSourcer {
 }
 
 public class Microsoft.Restier.Core.Query.DataSourceStubModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
-	public DataSourceStubModelReference (Microsoft.Restier.Core.Query.QueryContext context, string namespaceName, string name)
-
 	Microsoft.OData.Edm.IEdmElement Element  { public get; }
 	Microsoft.OData.Edm.IEdmEntitySet EntitySet  { public virtual get; }
 	Microsoft.OData.Edm.IEdmType Type  { public virtual get; }
+}
+
+public class Microsoft.Restier.Core.Query.ParameterModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
 }
 
 public class Microsoft.Restier.Core.Query.PropertyModelReference : Microsoft.Restier.Core.Query.QueryModelReference {
@@ -380,7 +432,7 @@ public class Microsoft.Restier.Core.Query.QueryResult {
 	Microsoft.OData.Edm.IEdmEntitySet ResultsSource  { public get; public set; }
 }
 
-public enum Microsoft.Restier.Core.Submit.ChangeSetItemAction : int {
+public enum Microsoft.Restier.Core.Submit.DataModificationItemAction : int {
 	Insert = 2
 	Remove = 3
 	Undefined = 0
@@ -412,14 +464,6 @@ public abstract class Microsoft.Restier.Core.Submit.ChangeSetItem {
 	public bool HasChanged ()
 }
 
-public class Microsoft.Restier.Core.Submit.ActionInvocationItem : Microsoft.Restier.Core.Submit.ChangeSetItem {
-	public ActionInvocationItem (string actionName, System.Collections.Generic.IDictionary`2[[System.String],[System.Object]] arguments)
-
-	string ActionName  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	System.Collections.Generic.IDictionary`2[[System.String],[System.Object]] Arguments  { [CompilerGeneratedAttribute(),]public get; }
-	object Result  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-}
-
 public class Microsoft.Restier.Core.Submit.ChangeSet {
 	public ChangeSet ()
 	public ChangeSet (System.Collections.Generic.IEnumerable`1[[Microsoft.Restier.Core.Submit.ChangeSetItem]] entries)
@@ -447,27 +491,25 @@ public class Microsoft.Restier.Core.Submit.ChangeSetValidationException : System
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem : Microsoft.Restier.Core.Submit.ChangeSetItem {
-	public DataModificationItem (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
+	public DataModificationItem (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
 
 	System.Type ActualEntityType  { [CompilerGeneratedAttribute(),]public get; }
-	Microsoft.Restier.Core.Submit.ChangeSetItemAction ChangeSetItemAction  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	Microsoft.Restier.Core.Submit.DataModificationItemAction DataModificationItemAction  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	object Entity  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] EntityKey  { [CompilerGeneratedAttribute(),]public get; }
 	string EntitySetName  { [CompilerGeneratedAttribute(),]public get; }
 	System.Type ExpectedEntityType  { [CompilerGeneratedAttribute(),]public get; }
-	bool IsDeleteRequest  { public get; }
 	bool IsFullReplaceUpdateRequest  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
-	bool IsNewRequest  { public get; }
-	bool IsUpdateRequest  { public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] LocalValues  { [CompilerGeneratedAttribute(),]public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] OriginalValues  { [CompilerGeneratedAttribute(),]public get; }
 	System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] ServerValues  { [CompilerGeneratedAttribute(),]public get; }
 
+	public System.Linq.IQueryable ApplyEtag (System.Linq.IQueryable query)
 	public System.Linq.IQueryable ApplyTo (System.Linq.IQueryable query)
 }
 
 public class Microsoft.Restier.Core.Submit.DataModificationItem`1 : Microsoft.Restier.Core.Submit.DataModificationItem {
-	public DataModificationItem`1 (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
+	public DataModificationItem`1 (string entitySetName, System.Type expectedEntityType, System.Type actualEntityType, Microsoft.Restier.Core.Submit.DataModificationItemAction action, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] entityKey, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] originalValues, System.Collections.Generic.IReadOnlyDictionary`2[[System.String],[System.Object]] localValues)
 
 	T Entity  { public get; public set; }
 }
@@ -521,17 +563,11 @@ public sealed class Microsoft.Restier.Publishers.OData.ServiceCollectionExtensio
 	public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddODataServices (Microsoft.Extensions.DependencyInjection.IServiceCollection services)
 }
 
-public class Microsoft.Restier.Publishers.OData.RestierPayloadValueConverter : Microsoft.OData.Core.ODataPayloadValueConverter {
-	public RestierPayloadValueConverter ()
-
-	public virtual object ConvertToPayloadValue (object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
-}
-
 [
 RestierExceptionFilterAttribute(),
 RestierFormattingAttribute(),
 ]
-public sealed class Microsoft.Restier.Publishers.OData.RestierController : System.Web.OData.ODataController, IDisposable, IHttpController {
+public class Microsoft.Restier.Publishers.OData.RestierController : System.Web.OData.ODataController, IDisposable, IHttpController {
 	public RestierController ()
 
 	[
@@ -539,6 +575,7 @@ public sealed class Microsoft.Restier.Publishers.OData.RestierController : Syste
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Delete (System.Threading.CancellationToken cancellationToken)
 
+	protected virtual void Dispose (bool disposing)
 	[
 	AsyncStateMachineAttribute(),
 	]
@@ -557,12 +594,18 @@ public sealed class Microsoft.Restier.Publishers.OData.RestierController : Syste
 	[
 	AsyncStateMachineAttribute(),
 	]
-	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] PostAction (System.Threading.CancellationToken cancellationToken)
+	public System.Threading.Tasks.Task`1[[System.Net.Http.HttpResponseMessage]] PostAction (System.Web.OData.ODataActionParameters parameters, System.Threading.CancellationToken cancellationToken)
 
 	[
 	AsyncStateMachineAttribute(),
 	]
 	public System.Threading.Tasks.Task`1[[System.Web.Http.IHttpActionResult]] Put (System.Web.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+}
+
+public class Microsoft.Restier.Publishers.OData.RestierPayloadValueConverter : Microsoft.OData.Core.ODataPayloadValueConverter {
+	public RestierPayloadValueConverter ()
+
+	public virtual object ConvertToPayloadValue (object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
 }
 
 public class Microsoft.Restier.Publishers.OData.Batch.RestierBatchChangeSetRequestItem : System.Web.OData.Batch.ChangeSetRequestItem, IDisposable {
@@ -604,6 +647,7 @@ public sealed class Microsoft.Restier.Publishers.OData.Model.OperationAttribute 
 
 	string EntitySet  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool HasSideEffects  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
+	bool IsBound  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	bool IsComposable  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Name  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
 	string Namespace  { [CompilerGeneratedAttribute(),]public get; [CompilerGeneratedAttribute(),]public set; }
@@ -647,13 +691,6 @@ public class Microsoft.Restier.Publishers.OData.Formatter.Serialization.RestierC
 public class Microsoft.Restier.Publishers.OData.Formatter.Serialization.RestierComplexTypeSerializer : System.Web.OData.Formatter.Serialization.ODataComplexTypeSerializer {
 	public RestierComplexTypeSerializer (System.Web.OData.Formatter.Serialization.ODataSerializerProvider provider)
 
-	public virtual void WriteObject (object graph, System.Type type, Microsoft.OData.Core.ODataMessageWriter messageWriter, System.Web.OData.Formatter.Serialization.ODataSerializerContext writeContext)
-}
-
-public class Microsoft.Restier.Publishers.OData.Formatter.Serialization.RestierEntityTypeSerializer : System.Web.OData.Formatter.Serialization.ODataEntityTypeSerializer {
-	public RestierEntityTypeSerializer (System.Web.OData.Formatter.Serialization.ODataSerializerProvider provider)
-
-	public virtual string CreateETag (System.Web.OData.EntityInstanceContext entityInstanceContext)
 	public virtual void WriteObject (object graph, System.Type type, Microsoft.OData.Core.ODataMessageWriter messageWriter, System.Web.OData.Formatter.Serialization.ODataSerializerContext writeContext)
 }
 
