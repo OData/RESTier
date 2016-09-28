@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Restier.Publishers.OData.Query
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-            var countOption = context.ApiContext.GetApiService<RestierQueryExecutorOptions>();
+            var countOption = context.GetApiService<RestierQueryExecutorOptions>();
             if (countOption.IncludeTotalCount)
             {
                 var countQuery = ExpressionHelpers.GetCountableQuery(query);

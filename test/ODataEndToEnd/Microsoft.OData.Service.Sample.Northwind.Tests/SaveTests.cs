@@ -27,12 +27,10 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             /// </summary>
             /// <param name="services"></param>
             /// <returns></returns>
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                Type apiType = this.GetType();
                 // Add core and convention's services
                 services = services.AddCoreServices(apiType)
-                    .AddAttributeServices(apiType)
                     .AddConventionBasedServices(apiType);
                 // Add EF related services
                 services.AddEfProviderServices<NorthwindContext>();
@@ -47,6 +45,10 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 await Task.Delay(10);
                 customer.CompanyName += "OnInserting";
             }
+
+            public TestEntityFilterReturnsTaskApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         /// <summary>
@@ -55,7 +57,10 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         [Fact]
         public async Task TestEntityFilterReturnsTask()
         {
-            TestEntityFilterReturnsTaskApi api = new TestEntityFilterReturnsTaskApi();
+            var container = new RestierContainerBuilder(typeof(TestEntityFilterReturnsTaskApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             DataModificationItem<Customer> createCustomer = new DataModificationItem<Customer>(
                 "Customers",
                 typeof(Customer),

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Restier.Core.Properties {
+namespace Microsoft.Restier.Core {
     using System;
     
     
@@ -57,6 +57,15 @@ namespace Microsoft.Restier.Core.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The argument with name {0} can not be null..
+        /// </summary>
+        internal static string ArgumentCanNotBeNull {
+            get {
+                return ResourceManager.GetString("ArgumentCanNotBeNull", resourceCulture);
             }
         }
         
@@ -115,20 +124,20 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;DataModificationItem.ApplyTo cannot be called on an IsNew item..
+        ///   Looks up a localized string similar to &quot;DataModificationItem.ApplyTo cannot be called on an new resource..
         /// </summary>
-        internal static string DataModificationNotSupportCreateEntity {
+        internal static string DataModificationNotSupportCreateResource {
             get {
-                return ResourceManager.GetString("DataModificationNotSupportCreateEntity", resourceCulture);
+                return ResourceManager.GetString("DataModificationNotSupportCreateResource", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey..
+        ///   Looks up a localized string similar to There should have been at least one predicate applied to the query from the resource key.  Ensure there is at least one resource key..
         /// </summary>
-        internal static string DataModificationRequiresEntityKey {
+        internal static string DataModificationRequiresResourceKey {
             get {
-                return ResourceManager.GetString("DataModificationRequiresEntityKey", resourceCulture);
+                return ResourceManager.GetString("DataModificationRequiresResourceKey", resourceCulture);
             }
         }
         
@@ -277,6 +286,15 @@ namespace Microsoft.Restier.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The precondition check for request {0} on resource {1} is failed..
+        /// </summary>
+        internal static string PreconditionCheckFailed {
+            get {
+                return ResourceManager.GetString("PreconditionCheckFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processor cannot change the expression type..
         /// </summary>
         internal static string ProcessorCannotChangeExpressionType {
@@ -309,6 +327,15 @@ namespace Microsoft.Restier.Core.Properties {
         internal static string QuerySourcerMissing {
             get {
                 return ResourceManager.GetString("QuerySourcerMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The request resource is not found..
+        /// </summary>
+        internal static string ResourceNotFound {
+            get {
+                return ResourceManager.GetString("ResourceNotFound", resourceCulture);
             }
         }
         

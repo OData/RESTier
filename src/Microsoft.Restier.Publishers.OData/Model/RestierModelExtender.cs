@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -177,23 +176,23 @@ namespace Microsoft.Restier.Publishers.OData.Model
             }
         }
 
-        private void BuildEntitySetsAndSingletons(InvocationContext context, EdmModel model)
+        private void BuildEntitySetsAndSingletons(EdmModel model)
         {
-            var configuration = context.ApiContext.Configuration;
             foreach (var property in this.publicProperties)
             {
-                if (configuration.IsPropertyIgnored(property.Name))
+                var resourceAttribute = property.GetCustomAttributes<ResourceAttribute>(true).FirstOrDefault();
+                if (resourceAttribute == null)
                 {
                     continue;
                 }
 
-                var isEntitySet = IsEntitySetProperty(property);
-                if (!isEntitySet)
+                bool isEntitySet = IsEntitySetProperty(property);
+                bool isSingleton = IsSingletonProperty(property);
+                if (!isSingleton && !isEntitySet)
                 {
-                    if (!IsSingletonProperty(property))
-                    {
-                        continue;
-                    }
+                    // This means property type is not IQueryable<T> when indicating an entityset
+                    // or not non-generic type when indicating a singleton
+                    continue;
                 }
 
                 var propertyType = property.PropertyType;
@@ -214,18 +213,29 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 {
                     if (container.FindEntitySet(property.Name) == null)
                     {
+                        container.AddEntitySet(property.Name, entityType);
+                    }
+
+                    // If ODataConventionModelBuilder is used to build the model, and a entity set is added,
+                    // i.e. the entity set is already in the container,
+                    // we should add it into entitySetProperties and addedNavigationSources
+                    if (!this.entitySetProperties.Contains(property))
+                    {
                         this.entitySetProperties.Add(property);
-                        var addedEntitySet = container.AddEntitySet(property.Name, entityType);
-                        this.addedNavigationSources.Add(addedEntitySet);
+                        this.addedNavigationSources.Add(container.FindEntitySet(property.Name) as EdmEntitySet);
                     }
                 }
                 else
                 {
                     if (container.FindSingleton(property.Name) == null)
                     {
+                        container.AddSingleton(property.Name, entityType);
+                    }
+
+                    if (!this.singletonProperties.Contains(property))
+                    {
                         this.singletonProperties.Add(property);
-                        var addedSingleton = container.AddSingleton(property.Name, entityType);
-                        this.addedNavigationSources.Add(addedSingleton);
+                        this.addedNavigationSources.Add(container.FindSingleton(property.Name) as EdmSingleton);
                     }
                 }
             }
@@ -331,7 +341,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
                 }
 
                 ModelCache.ScanForDeclaredPublicProperties();
-                ModelCache.BuildEntitySetsAndSingletons(context, edmModel);
+                ModelCache.BuildEntitySetsAndSingletons(edmModel);
                 ModelCache.AddNavigationPropertyBindings(edmModel);
                 return edmModel;
             }
@@ -362,7 +372,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             /// <inheritdoc/>
             public bool TryGetRelevantType(
-                ApiContext context,
+                ModelContext context,
                 string name,
                 out Type relevantType)
             {
@@ -393,7 +403,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
 
             /// <inheritdoc/>
             public bool TryGetRelevantType(
-                ApiContext context,
+                ModelContext context,
                 string namespaceName,
                 string name,
                 out Type relevantType)

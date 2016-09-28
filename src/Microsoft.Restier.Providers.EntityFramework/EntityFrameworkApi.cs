@@ -31,13 +31,23 @@ namespace Microsoft.Restier.Providers.EntityFramework
     public class EntityFrameworkApi<T> : ApiBase where T : DbContext
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="EntityFrameworkApi{T}" /> class.
+        /// </summary>
+        /// <param name="serviceProvider">
+        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="EntityFrameworkApi{T}"/>.
+        /// </param>
+        public EntityFrameworkApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
+        /// <summary>
         /// Gets the underlying DbContext for this API.
         /// </summary>
         protected T DbContext
         {
             get
             {
-                return (T)this.Context.GetApiService<DbContext>();
+                return (T)this.GetApiService<DbContext>();
             }
         }
 
@@ -45,27 +55,27 @@ namespace Microsoft.Restier.Providers.EntityFramework
         /// Configures the API services for this API. Descendants may override this method to register
         /// <typeparamref name="T"/> as a scoped service.
         /// </summary>
+        /// <param name="apiType">
+        /// The Api type.
+        /// </param>
         /// <param name="services">
-        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
+        /// The <see cref="IServiceCollection"/> with which to create all DI services.
         /// </param>
         /// <returns>
         /// The <see cref="IServiceCollection"/>.
         /// </returns>
         [CLSCompliant(false)]
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            Type apiType = this.GetType();
-
             // Add core and convention's services
             services = services.AddCoreServices(apiType)
-                .AddAttributeServices(apiType)
                 .AddConventionBasedServices(apiType);
 
             // Add EF related services
             services.AddEfProviderServices<T>();
 
             // This is used to add the publisher's services
-            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
+            GetPublisherServiceCallback(apiType)(services);
 
             return services;
         }

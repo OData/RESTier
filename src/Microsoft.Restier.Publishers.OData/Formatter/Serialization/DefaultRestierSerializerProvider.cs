@@ -3,67 +3,53 @@
 
 using System;
 using System.Net.Http;
+using System.Web.OData;
 using System.Web.OData.Formatter.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Publishers.OData.Results;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The default serializer provider.
     /// </summary>
     public class DefaultRestierSerializerProvider : DefaultODataSerializerProvider
     {
-        private static readonly DefaultRestierSerializerProvider SingletonInstanceField
-            = new DefaultRestierSerializerProvider();
-
-        private RestierFeedSerializer feedSerializer;
+        private RestierResourceSetSerializer resourceSetSerializer;
         private RestierPrimitiveSerializer primitiveSerializer;
         private RestierRawSerializer rawSerializer;
-        private RestierComplexTypeSerializer complexTypeSerializer;
+        private RestierResourceSerializer resourceSerializer;
         private RestierCollectionSerializer collectionSerializer;
         private RestierEnumSerializer enumSerializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
         /// </summary>
-        public DefaultRestierSerializerProvider()
+        /// <param name="rootContainer">The container to get the service</param>
+        public DefaultRestierSerializerProvider(IServiceProvider rootContainer) : base(rootContainer)
         {
-            this.feedSerializer = new RestierFeedSerializer(this);
+            this.resourceSetSerializer = new RestierResourceSetSerializer(this);
             this.primitiveSerializer = new RestierPrimitiveSerializer();
             this.rawSerializer = new RestierRawSerializer();
-            this.complexTypeSerializer = new RestierComplexTypeSerializer(this);
+            this.resourceSerializer = new RestierResourceSerializer(this);
             this.collectionSerializer = new RestierCollectionSerializer(this);
-            this.enumSerializer = new RestierEnumSerializer();
-        }
-
-        /// <summary>
-        /// Gets the default instance of the <see cref="DefaultRestierSerializerProvider"/>.
-        /// </summary>
-        internal static DefaultRestierSerializerProvider SingletonInstance
-        {
-            get
-            {
-                return SingletonInstanceField;
-            }
+            this.enumSerializer = new RestierEnumSerializer(this);
         }
 
         /// <summary>
         /// Gets the serializer for the given result type.
         /// </summary>
-        /// <param name="model">The EDM model.</param>
         /// <param name="type">The type of result to serialize.</param>
         /// <param name="request">The HTTP request.</param>
         /// <returns>The serializer instance.</returns>
         public override ODataSerializer GetODataPayloadSerializer(
-            IEdmModel model,
             Type type,
             HttpRequestMessage request)
         {
             ODataSerializer serializer = null;
-            if (type == typeof(EntityCollectionResult))
+            if (type == typeof(ResourceSetResult))
             {
-                serializer = this.feedSerializer;
+                serializer = this.resourceSetSerializer;
             }
             else if (type == typeof(PrimitiveResult))
             {
@@ -75,9 +61,9 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             }
             else if (type == typeof(ComplexResult))
             {
-                serializer = this.complexTypeSerializer;
+                serializer = this.resourceSerializer;
             }
-            else if (type == typeof(NonEntityCollectionResult))
+            else if (type == typeof(NonResourceCollectionResult))
             {
                 serializer = this.collectionSerializer;
             }
@@ -87,7 +73,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             }
             else
             {
-                serializer = base.GetODataPayloadSerializer(model, type, request);
+                serializer = base.GetODataPayloadSerializer(type, request);
             }
 
             return serializer;
@@ -102,7 +88,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
         {
             if (edmType.IsComplex())
             {
-                return this.complexTypeSerializer;
+                return this.resourceSerializer;
             }
 
             if (edmType.IsPrimitive())
@@ -117,9 +103,14 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
 
             if (edmType.IsCollection())
             {
-                if (edmType.AsCollection().ElementType().IsEntity())
+                var collectionType = edmType.AsCollection();
+                if (collectionType.Definition.IsDeltaFeed())
                 {
-                    return this.feedSerializer;
+                    return base.GetEdmTypeSerializer(edmType);
+                }
+                else if (collectionType.ElementType().IsEntity() || collectionType.ElementType().IsComplex())
+                {
+                    return this.resourceSetSerializer;
                 }
 
                 return this.collectionSerializer;

@@ -6,24 +6,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Spatial;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.OData.Edm.Library;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Providers.EntityFramework.Properties;
+using Microsoft.Spatial;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Submit
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
     /// </summary>
-    internal class ChangeSetInitializer : IChangeSetInitializer
+    public class ChangeSetInitializer : IChangeSetInitializer
     {
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -35,64 +36,123 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             SubmitContext context,
             CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.ApiContext.GetApiService<DbContext>();
+            DbContext dbContext = context.GetApiService<DbContext>();
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
-                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.EntitySetName).GetValue(dbContext);
-                Type entityType = strongTypedDbSet.GetType().GetGenericArguments()[0];
+                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
+                Type resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
-                // This means request entity is sub type of entity type
-                if (entry.ActualEntityType != null && entityType != entry.ActualEntityType)
+                // This means request resource is sub type of resource type
+                if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
                 {
-                    entityType = entry.ActualEntityType;
+                    // Set type to derived type
+                    resourceType = entry.ActualResourceType;
                 }
 
-                DbSet set = dbContext.Set(entityType);
+                DbSet set = dbContext.Set(resourceType);
 
-                object entity;
+                object resource;
 
                 if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
                 {
-                    entity = set.Create();
-
-                    SetValues(entity, entityType, entry.LocalValues);
-
-                    set.Add(entity);
+                    resource = set.Create();
+                    SetValues(resource, resourceType, entry.LocalValues);
+                    set.Add(resource);
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
                 {
-                    entity = await FindEntity(context, entry, cancellationToken);
-                    set.Remove(entity);
+                    resource = await FindResource(context, entry, cancellationToken);
+                    set.Remove(resource);
                 }
                 else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
                 {
-                    entity = await FindEntity(context, entry, cancellationToken);
+                    resource = await FindResource(context, entry, cancellationToken);
 
-                    DbEntityEntry dbEntry = dbContext.Entry(entity);
-                    SetValues(dbEntry, entry, entityType);
+                    DbEntityEntry dbEntry = dbContext.Entry(resource);
+                    SetValues(dbEntry, entry, resourceType);
                 }
                 else
                 {
                     throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                 }
 
-                entry.Entity = entity;
+                entry.Resource = resource;
             }
         }
 
-        private static async Task<object> FindEntity(
+        /// <summary>
+        /// Convert a Edm type value to Resource Framework supported value type
+        /// </summary>
+        /// <param name="type">The type of the property defined in CLR class</param>
+        /// <param name="value">The value from OData deserializer and in type of Edm</param>
+        /// <returns>The converted value object</returns>
+        public virtual object ConvertToEfValue(Type type, object value)
+        {
+            // string[EdmType = Enum] => System.Enum
+            if (TypeHelper.IsEnum(type))
+            {
+                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
+            }
+
+            // Edm.Date => System.DateTime[SqlType = Date]
+            if (value is Date)
+            {
+                var dateValue = (Date)value;
+                return (DateTime)dateValue;
+            }
+
+            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
+            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
+            {
+                var dateTimeOffsetValue = (DateTimeOffset)value;
+                return dateTimeOffsetValue.DateTime;
+            }
+
+            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
+            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
+            {
+                var timeOfDayValue = (TimeOfDay)value;
+                return (TimeSpan)timeOfDayValue;
+            }
+
+            // In case key is long type, when put an resource, key value will be from key parsing which is type of int
+            if (value is int && type == typeof(long))
+            {
+                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
+            }
+
+            if (type == typeof(DbGeography))
+            {
+                var point = value as GeographyPoint;
+                if (point != null)
+                {
+                    return point.ToDbGeography();
+                }
+
+                var s = value as GeographyLineString;
+                if (s != null)
+                {
+                    return s.ToDbGeography();
+                }
+            }
+
+            return value;
+        }
+
+        private static async Task<object> FindResource(
             SubmitContext context,
             DataModificationItem item,
             CancellationToken cancellationToken)
         {
-            IQueryable query = context.ApiContext.GetQueryableSource(item.EntitySetName);
+            var apiBase = context.GetApiService<ApiBase>();
+            IQueryable query = apiBase.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
-            QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
+            QueryResult result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken);
 
-            object entity = result.Results.SingleOrDefault();
-            if (entity == null)
+            object resource = result.Results.SingleOrDefault();
+            if (resource == null)
             {
                 throw new ResourceNotFoundException(Resources.ResourceNotFound);
             }
@@ -100,24 +160,14 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             // This means no If-Match or If-None-Match header
             if (item.OriginalValues == null || item.OriginalValues.Count == 0)
             {
-                return entity;
+                return resource;
             }
 
-            var etagEntity = item.ApplyEtag(result.Results.AsQueryable()).SingleOrDefault();
-            if (etagEntity == null)
-            {
-                // If ETAG does not match, should return 412 Precondition Failed
-                var message = string.Format(
-                    CultureInfo.InvariantCulture,
-                    Resources.PreconditionCheckFailed,
-                    new object[] { item.DataModificationItemAction, entity });
-                throw new PreconditionFailedException(message);
-            }
-
-            return etagEntity;
+            resource = item.ValidateEtag(result.Results.AsQueryable());
+            return resource;
         }
 
-        private static void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type entityType)
+        private void SetValues(DbEntityEntry dbEntry, DataModificationItem item, Type resourceType)
         {
             if (item.IsFullReplaceUpdateRequest)
             {
@@ -127,10 +177,10 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                 //  - Copy over the key values and set any updated values from the client on the new instance.
                 //  - Then apply all the properties of the new instance to the instance to be updated.
                 //    This will set any unspecified properties to their default value.
-                object newInstance = Activator.CreateInstance(entityType);
+                object newInstance = Activator.CreateInstance(resourceType);
 
-                SetValues(newInstance, entityType, item.EntityKey);
-                SetValues(newInstance, entityType, item.LocalValues);
+                SetValues(newInstance, resourceType, item.ResourceKey);
+                SetValues(newInstance, resourceType, item.LocalValues);
 
                 dbEntry.CurrentValues.SetValues(newInstance);
             }
@@ -170,7 +220,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                                 propertyPair.Key));
                         }
 
-                        value = Activator.CreateInstance(type);
+                        value = propertyEntry.CurrentValue;
                         SetValues(value, type, dic);
                     }
 
@@ -179,7 +229,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
             }
         }
 
-        private static void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
+        private void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
@@ -204,50 +254,13 @@ namespace Microsoft.Restier.Providers.EntityFramework.Submit
                             propertyPair.Key));
                     }
 
+                    // TODO GithubIssue #508
                     value = Activator.CreateInstance(propertyInfo.PropertyType);
                     SetValues(value, propertyInfo.PropertyType, dic);
                 }
 
                 propertyInfo.SetValue(instance, value);
             }
-        }
-
-        private static object ConvertToEfValue(Type type, object value)
-        {
-            // string[EdmType = Enum] => System.Enum
-            if (TypeHelper.IsEnum(type))
-            {
-                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
-            }
-
-            // Edm.Date => System.DateTime[SqlType = Date]
-            if (value is Date)
-            {
-                var dateValue = (Date)value;
-                return (DateTime)dateValue;
-            }
-
-            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
-            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
-            {
-                var dateTimeOffsetValue = (DateTimeOffset)value;
-                return dateTimeOffsetValue.DateTime;
-            }
-
-            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
-            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
-            {
-                var timeOfDayValue = (TimeOfDay)value;
-                return (TimeSpan)timeOfDayValue;
-            }
-
-            // In case key is long type, when put an entity, key value will be from key parsing which is type of int
-            if (value is int && type == typeof(long))
-            {
-                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
-            }
-
-            return value;
         }
     }
 }

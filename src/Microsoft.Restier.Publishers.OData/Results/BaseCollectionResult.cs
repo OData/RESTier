@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publishers.OData.Results
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Represents a collection of objects being returned from an action.
@@ -18,9 +18,8 @@ namespace Microsoft.Restier.Publishers.OData.Results
         /// </summary>
         /// <param name="query">The query that returns a collection of objects.</param>
         /// <param name="edmType">The EDM type reference of the objects.</param>
-        /// <param name="context">The context where the action is executed.</param>
-        protected BaseCollectionResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
-            : base(edmType, context)
+        protected BaseCollectionResult(IQueryable query, IEdmTypeReference edmType)
+            : base(edmType)
         {
             Ensure.NotNull(query, "query");
 

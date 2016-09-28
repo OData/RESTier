@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -26,7 +27,12 @@ namespace Microsoft.Restier.Core
         public static T GetApiService<T>(this InvocationContext context) where T : class
         {
             Ensure.NotNull(context, "context");
-            return context.ApiContext.GetApiService<T>();
+            if (context.ServiceProvider != null)
+            {
+                return context.ServiceProvider.GetService<T>();
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -40,7 +46,12 @@ namespace Microsoft.Restier.Core
         public static IEnumerable<T> GetApiServices<T>(this InvocationContext context) where T : class
         {
             Ensure.NotNull(context, "context");
-            return context.ApiContext.GetApiServices<T>();
+            if (context.ServiceProvider != null)
+            {
+                return context.ServiceProvider.GetServices<T>();
+            }
+
+            return null;
         }
 
         #endregion

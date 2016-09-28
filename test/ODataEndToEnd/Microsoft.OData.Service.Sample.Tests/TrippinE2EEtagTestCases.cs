@@ -72,7 +72,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "flightId", flightId } }).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(412, statusCode);
@@ -101,7 +101,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -125,7 +125,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -171,7 +171,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             Assert.Equal(412, statusCode);
@@ -197,7 +197,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "flightId", flightId } }).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(404, statusCode);
@@ -255,7 +255,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() {{"flightId", flightId}}).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
             Assert.Equal(304, statusCode);
@@ -285,7 +285,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -313,7 +313,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             this.TestClientContext.Detach(flight);
@@ -346,7 +346,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             Assert.Equal(200, statusCode);
             Assert.NotEqual(oldEtag, etag);
 
-            // Delete the Entity with If-None-Match matches, should return 412            
+            // Delete the Entity with If-None-Match matches, should return 412
             // If this is not removed, client will auto add If-Match header
             descriptor = this.TestClientContext.GetEntityDescriptor(flight);
             descriptor.ETag = null;
@@ -361,7 +361,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             {
                 this.TestClientContext.SaveChanges();
             }
-            catch (DataServiceRequestException e)
+            catch (DataServiceRequestException)
             {
             }
             Assert.Equal(412, statusCode);
@@ -381,15 +381,88 @@ namespace Microsoft.OData.Service.Sample.Tests
             this.TestClientContext.SaveChanges();
             Assert.Equal(204, statusCode);
 
-            // Query the flight again and entiy does not exist.
+            // Query the flight again and entity does not exist.
             this.TestClientContext.SendingRequest2 -= sendRequestEvent;
             try
             {
                 flight = this.TestClientContext.Flights.ByKey(new Dictionary<string, object>() { { "flightId", flightId } }).GetValue();
             }
-            catch (DataServiceQueryException e)
+            catch (DataServiceQueryException)
             {
             }
+            Assert.Equal(404, statusCode);
+        }
+
+        [Fact]
+        public void ByteArrayIfMatchTest()
+        {
+            this.TestClientContext.MergeOption = MergeOption.OverwriteChanges;
+            var airline = new Airline()
+            {
+                AirlineCode = "TT",
+                Name = "Test Airlines"
+            };
+
+            this.TestClientContext.AddToAirlines(airline);
+            this.TestClientContext.SaveChanges();
+
+            string etag = null;
+            int statusCode = -1;
+            EventHandler<ReceivingResponseEventArgs> statusCodeHandler = (sender, eventArgs) =>
+            {
+                etag = eventArgs.ResponseMessage.GetHeader("ETag");
+                statusCode = eventArgs.ResponseMessage.StatusCode;
+            };
+
+            this.TestClientContext.ReceivingResponse += statusCodeHandler;
+
+            // Retrieve the matched etag
+            airline =
+                this.TestClientContext.Airlines.ByKey(new Dictionary<string, object>()
+                {
+                    {"AirlineCode", airline.AirlineCode}
+                }).GetValue();
+            var matchEtag = etag;
+
+            // Retrieve a none match etag
+            var anotherAirline =
+                this.TestClientContext.Airlines.ByKey(new Dictionary<string, object>() {{"AirlineCode", "AA"}})
+                    .GetValue();
+            var nonMatchEtag = etag;
+
+            // Delete the Entity with If-Match does not match, should return 412
+            EventHandler<SendingRequest2EventArgs> sendRequestEvent = (sender, eventArgs) =>
+            {
+                eventArgs.RequestMessage.SetHeader("If-Match", nonMatchEtag);
+            };
+
+            this.TestClientContext.SendingRequest2 += sendRequestEvent;
+            this.TestClientContext.DeleteObject(airline);
+            Assert.Throws<DataServiceRequestException>(() => this.TestClientContext.SaveChanges());
+            Assert.Equal(412, statusCode);
+
+            // Delete the Entity with If-Match matches, should return 204
+            this.TestClientContext.SendingRequest2 -= sendRequestEvent;
+            sendRequestEvent = (sender, eventArgs) =>
+            {
+                eventArgs.RequestMessage.SetHeader("If-Match", matchEtag);
+            };
+
+            this.TestClientContext.SendingRequest2 += sendRequestEvent;
+            this.TestClientContext.DeleteObject(airline);
+            this.TestClientContext.SaveChanges();
+            Assert.Equal(204, statusCode);
+
+            // Query the flight again and entity does not exist.
+            this.TestClientContext.SendingRequest2 -= sendRequestEvent;
+            Assert.Throws<DataServiceQueryException>(() =>
+                airline =
+                    this.TestClientContext.Airlines.ByKey(new Dictionary<string, object>()
+                    {
+                        {"AirlineCode", airline.AirlineCode}
+                    }).GetValue()
+                );
+
             Assert.Equal(404, statusCode);
         }
     }

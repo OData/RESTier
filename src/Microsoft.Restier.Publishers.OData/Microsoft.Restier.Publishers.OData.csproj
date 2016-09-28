@@ -12,7 +12,6 @@
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.1.0.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
       <Private>True</Private>
@@ -21,20 +20,12 @@
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.OData.Core, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Core.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Core.dll</HintPath>
+    <Reference Include="Microsoft.OData.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.OData.Core.7.0.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.OData.Edm, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Edm.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Edm.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Spatial, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Spatial.6.15.0\lib\portable-net45+win+wpa81\Microsoft.Spatial.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.OData.Edm, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.OData.Edm.7.0.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Edm.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -49,8 +40,8 @@
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.OData, Version=5.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.AspNet.OData.5.9.0\lib\net45\System.Web.OData.dll</HintPath>
+    <Reference Include="System.Web.OData, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.OData.6.0.0-beta2\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -85,11 +76,11 @@
     <Compile Include="Batch\RestierChangeSetProperty.cs" />
     <Compile Include="Batch\RestierBatchChangeSetRequestItem.cs" />
     <Compile Include="Formatter\Deserialization\DeserializationHelpers.cs" />
-    <Compile Include="Formatter\Deserialization\RestierDeserializerProviderProxy.cs" />
-    <Compile Include="Formatter\Serialization\RestierSerializerProviderProxy.cs" />
-    <Compile Include="Model\ApiConfigurationExtensions.cs" />
+    <Compile Include="Formatter\Serialization\RestierResourceSerializer.cs" />
     <Compile Include="Model\ModelMapper.cs" />
+    <Compile Include="Model\ResourceAttribute.cs" />
     <Compile Include="Model\OperationAttribute.cs" />
+    <Compile Include="Model\PropertyAttributes.cs" />
     <Compile Include="Model\RestierModelBuilder.cs" />
     <Compile Include="Model\RestierModelExtender.cs" />
     <Compile Include="Model\RestierOperationModelBuilder.cs" />
@@ -98,17 +89,17 @@
     <Compile Include="Formatter\Serialization\DefaultRestierSerializerProvider.cs" />
     <Compile Include="Formatter\Serialization\RestierCollectionSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierEnumSerializer.cs" />
-    <Compile Include="Formatter\Serialization\RestierComplexTypeSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierRawSerializer.cs" />
     <Compile Include="Formatter\Serialization\RestierPrimitiveSerializer.cs" />
-    <Compile Include="Formatter\Serialization\RestierFeedSerializer.cs" />
+    <Compile Include="Formatter\Serialization\RestierResourceSetSerializer.cs" />
     <Compile Include="Operation\OperationExecutor.cs" />
+    <Compile Include="Results\NonResourceCollectionResult.cs" />
+    <Compile Include="Results\ResourceSetResult.cs" />
     <Compile Include="Routing\HttpConfigurationExtensions.cs" />
     <Compile Include="HttpRequestMessageExtensions.cs" />
     <Compile Include="Query\RestierQueryExecutor.cs" />
     <Compile Include="Query\RestierQueryBuilder.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Formatter\RestierFormattingAttribute.cs" />
     <Compile Include="Filters\RestierExceptionFilterAttribute.cs" />
     <Compile Include="RestierPayloadValueConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,8 +111,6 @@
     <Compile Include="RestierController.cs" />
     <Compile Include="Results\BaseCollectionResult.cs" />
     <Compile Include="Results\EnumResult.cs" />
-    <Compile Include="Results\NonEntityCollectionResult.cs" />
-    <Compile Include="Results\EntityCollectionResult.cs" />
     <Compile Include="Results\ComplexResult.cs" />
     <Compile Include="Results\RawResult.cs" />
     <Compile Include="Results\PrimitiveResult.cs" />
@@ -129,7 +118,7 @@
     <Compile Include="Results\BaseResult.cs" />
     <Compile Include="Routing\RestierRoutingConvention.cs" />
     <Compile Include="Filters\ValidationResultDto.cs" />
-    <Compile Include="..\Shared\SharedResources\SharedResources.WebApi.Designer.cs">
+    <Compile Include="..\Shared\SharedResources\SharedResources.OData.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SharedResources.resx</DependentUpon>

@@ -135,11 +135,11 @@
   <data name="DataModificationMustBeCUD" xml:space="preserve">
     <value>A DataModification must be either: IsNew, IsUpdate, or IsDelete.</value>
   </data>
-  <data name="DataModificationNotSupportCreateEntity" xml:space="preserve">
-    <value>"DataModificationItem.ApplyTo cannot be called on an IsNew item.</value>
+  <data name="DataModificationNotSupportCreateResource" xml:space="preserve">
+    <value>"DataModificationItem.ApplyTo cannot be called on an new resource.</value>
   </data>
-  <data name="DataModificationRequiresEntityKey" xml:space="preserve">
-    <value>There should have been at least one predicate applied to the query from the EntityKey.  Ensure there is at least one EntityKey.</value>
+  <data name="DataModificationRequiresResourceKey" xml:space="preserve">
+    <value>There should have been at least one predicate applied to the query from the resource key.  Ensure there is at least one resource key.</value>
   </data>
   <data name="DoNotCallDataSourceStubMethodDirectly" xml:space="preserve">
     <value>Do not call the methods in 'DataSourceStub' directly.</value>
@@ -212,5 +212,14 @@
   </data>
   <data name="EdmTypeNotSupported" xml:space="preserve">
     <value>{0} is not a supported EDM type.</value>
+  </data>
+  <data name="ResourceNotFound" xml:space="preserve">
+    <value>The request resource is not found.</value>
+  </data>
+  <data name="PreconditionCheckFailed" xml:space="preserve">
+    <value>The precondition check for request {0} on resource {1} is failed.</value>
+  </data>
+  <data name="ArgumentCanNotBeNull" xml:space="preserve">
+    <value>The argument with name {0} can not be null.</value>
   </data>
 </root>

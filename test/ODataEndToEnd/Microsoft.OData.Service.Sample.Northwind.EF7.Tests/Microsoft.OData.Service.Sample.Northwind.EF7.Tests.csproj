@@ -133,8 +133,8 @@
       <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.OData, Version=5.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.5.9.0\lib\net45\System.Web.OData.dll</HintPath>
+    <Reference Include="System.Web.OData, Version=5.9.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.OData.5.9.1\lib\net45\System.Web.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -202,10 +202,6 @@
     <ProjectReference Include="..\Microsoft.OData.Service.Sample.Northwind.EF7\Microsoft.OData.Service.Sample.Northwind.EF7.csproj">
       <Project>{af007cef-19b7-426d-ae97-e7d99ecacbb9}</Project>
       <Name>Microsoft.OData.Service.Sample.Northwind.EF7</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Microsoft.Restier.Security\Microsoft.Restier.Security.csproj">
-      <Project>{b15a5064-f0d2-480c-a51e-3430a8360827}</Project>
-      <Name>Microsoft.Restier.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
       <Project>{f1beab8d-82d4-4bbb-a5c6-ba0e6872e508}</Project>

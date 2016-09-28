@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BatchHandlerRequiresApiContextFactory" xml:space="preserve">
-    <value>RestierBatchHandler was called without an ApiContext Factory.</value>
+  <data name="ArguementsCannotbeNull" xml:space="preserve">
+    <value>The argument with name {0} cannot be null.</value>
   </data>
   <data name="CannotWriteObjectType" xml:space="preserve">
     <value>{0} cannot write an object of type '{1}'.</value>
@@ -155,6 +155,9 @@
   </data>
   <data name="KeyNotValidForEntityType" xml:space="preserve">
     <value>Specified key '{0}' is not a valid property of entity '{1}'.</value>
+  </data>
+  <data name="ModelStateIsNotValid" xml:space="preserve">
+    <value>Model state is not valid with message {0}, please check your request.</value>
   </data>
   <data name="MultiKeyValuesExpected" xml:space="preserve">
     <value>Only one key was specified, when multiple were expected.</value>

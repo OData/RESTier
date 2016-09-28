@@ -13,11 +13,11 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Publishers.OData.Routing;
+using Microsoft.Restier.Publishers.OData.Model;
 using Xunit;
 
 namespace Microsoft.Restier.Publishers.OData.Test
@@ -96,18 +96,23 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class FallbackApi : ApiBase
     {
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model));
             services.AddService<IModelMapper>((sp, next) => new FallbackModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer());
-            services = base.ConfigureApi(services);
+            services = ApiBase.ConfigureApi(apiType, services);
             return services;
         }
 
+        [Resource]
         public IQueryable<Order> PreservedOrders
         {
             get { return this.GetQueryableSource<Order>("Orders").Where(o => o.Id > 123); }
+        }
+
+        public FallbackApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 
@@ -169,14 +174,14 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class FallbackModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
         {
             relevantType = name == "Person" ? typeof(Person) : typeof(Order);
 
             return true;
         }
 
-        public bool TryGetRelevantType(ApiContext context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType)
         {
             return TryGetRelevantType(context, name, out relevantType);
         }

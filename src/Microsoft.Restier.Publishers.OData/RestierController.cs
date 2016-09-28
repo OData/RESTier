@@ -1,10 +1,11 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 extern alias Net;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,35 +13,36 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Formatter;
 using System.Web.OData.Query;
 using System.Web.OData.Results;
 using System.Web.OData.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Batch;
-using Microsoft.Restier.Publishers.OData.Filters;
-using Microsoft.Restier.Publishers.OData.Formatter;
+using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
 using Microsoft.Restier.Publishers.OData.Query;
-using Microsoft.Restier.Publishers.OData.Results;
 
 // This is a must for creating response with correct extension method
 using Net::System.Net.Http;
+using ODataPath = System.Web.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// The all-in-one controller class to handle API requests.
     /// </summary>
-    [RestierFormatting]
+    [ODataFormatting]
     [RestierExceptionFilter]
     public class RestierController : ODataController
     {
@@ -60,7 +62,8 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.api == null)
                 {
-                    this.api = this.Request.GetApiInstance();
+                    var provider = Request.GetRequestContainer();
+                    this.api = provider.GetService<ApiBase>();
                 }
 
                 return this.api;
@@ -88,17 +91,15 @@ namespace Microsoft.Restier.Publishers.OData
             IQueryable queryable = this.GetQuery(path);
             ETag etag;
 
-            // TODO This flag can be removed when Etag isIfNoneMatch is changed to public.
-            bool isIfNoneMatch;
-
             // TODO #365 Do not support additional path segment after function call now
-            if (lastSegment.SegmentKind == ODataSegmentKinds.UnboundFunction)
+            if (lastSegment is OperationImportSegment)
             {
-                var unboundSegment = (UnboundFunctionPathSegment)lastSegment;
+                var unboundSegment = (OperationImportSegment)lastSegment;
+                var operation = unboundSegment.OperationImports.FirstOrDefault();
                 Func<string, object> getParaValueFunc = p => unboundSegment.GetParameterValue(p);
                 result = await ExecuteOperationAsync(
-                    getParaValueFunc, unboundSegment.FunctionName, true, null, cancellationToken);
-                result = ApplyQueryOptions(result, path, true, out isIfNoneMatch, out etag);
+                    getParaValueFunc, operation.Name, true, null, cancellationToken);
+                result = ApplyQueryOptions(result, path, true, out etag);
             }
             else
             {
@@ -110,25 +111,26 @@ namespace Microsoft.Restier.Publishers.OData
                             Resources.ResourceNotFound));
                 }
 
-                if (lastSegment.SegmentKind == ODataSegmentKinds.Function)
+                if (lastSegment is OperationSegment)
                 {
                     result = await ExecuteQuery(queryable, cancellationToken);
 
-                    var boundSeg = (BoundFunctionPathSegment)lastSegment;
+                    var boundSeg = (OperationSegment)lastSegment;
+                    var operation = boundSeg.Operations.FirstOrDefault();
                     Func<string, object> getParaValueFunc = p => boundSeg.GetParameterValue(p);
                     result = await ExecuteOperationAsync(
-                        getParaValueFunc, boundSeg.Function.Name, true, result, cancellationToken);
+                        getParaValueFunc, operation.Name, true, result, cancellationToken);
 
-                    result = ApplyQueryOptions(result, path, true, out isIfNoneMatch, out etag);
+                    result = ApplyQueryOptions(result, path, true, out etag);
                 }
                 else
                 {
-                    queryable = ApplyQueryOptions(queryable, path, false, out isIfNoneMatch, out etag);
+                    queryable = ApplyQueryOptions(queryable, path, false, out etag);
                     result = await ExecuteQuery(queryable, cancellationToken);
                 }
             }
 
-            return this.CreateQueryResponse(result, path.EdmType, isIfNoneMatch, etag);
+            return this.CreateQueryResponse(result, path.EdmType, etag);
         }
 
         /// <summary>
@@ -139,11 +141,7 @@ namespace Microsoft.Restier.Publishers.OData
         /// <returns>The task object that contains the creation result.</returns>
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
+            CheckModelState();
             ODataPath path = this.GetPath();
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
@@ -153,7 +151,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             // In case of type inheritance, the actual type will be different from entity type
             var expectedEntityType = path.EdmType;
-            var actualEntityType = path.EdmType;
+            var actualEntityType = path.EdmType as IEdmStructuredType;
             if (edmEntityObject.ActualEdmType != null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
@@ -162,12 +160,12 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem postItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(Api),
-                actualEntityType.GetClrType(Api),
+                expectedEntityType.GetClrType(Api.ServiceProvider),
+                actualEntityType.GetClrType(Api.ServiceProvider),
                 DataModificationItemAction.Insert,
                 null,
                 null,
-                edmEntityObject.CreatePropertyDictionary());
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
             if (changeSetProperty == null)
@@ -181,10 +179,10 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 changeSetProperty.ChangeSet.Entries.Add(postItem);
 
-                await changeSetProperty.OnChangeSetCompleted();
+                await changeSetProperty.OnChangeSetCompleted(this.Request);
             }
 
-            return this.CreateCreatedODataResult(postItem.Entity);
+            return this.CreateCreatedODataResult(postItem.Resource);
         }
 
         /// <summary>
@@ -195,11 +193,6 @@ namespace Microsoft.Restier.Publishers.OData
         /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
             return await this.Update(edmEntityObject, true, cancellationToken);
         }
 
@@ -211,11 +204,6 @@ namespace Microsoft.Restier.Publishers.OData
         /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
-
             return await this.Update(edmEntityObject, false, cancellationToken);
         }
 
@@ -241,7 +229,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem deleteItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.GetClrType(Api),
+                path.EdmType.GetClrType(Api.ServiceProvider),
                 null,
                 DataModificationItemAction.Remove,
                 RestierQueryBuilder.GetPathKeyValues(path),
@@ -260,7 +248,7 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 changeSetProperty.ChangeSet.Entries.Add(deleteItem);
 
-                await changeSetProperty.OnChangeSetCompleted();
+                await changeSetProperty.OnChangeSetCompleted(this.Request);
             }
 
             return this.StatusCode(HttpStatusCode.NoContent);
@@ -294,11 +282,13 @@ namespace Microsoft.Restier.Publishers.OData
                 return parameters[p];
             };
 
-            if (lastSegment.SegmentKind == ODataSegmentKinds.UnboundAction)
+            var segment = lastSegment as OperationImportSegment;
+            if (segment != null)
             {
-                var unboundSegment = (UnboundActionPathSegment)lastSegment;
+                var unboundSegment = segment;
+                var operation = unboundSegment.OperationImports.FirstOrDefault();
                 result = await ExecuteOperationAsync(
-                    getParaValueFunc, unboundSegment.ActionName, false, null, cancellationToken);
+                    getParaValueFunc, operation.Name, false, null, cancellationToken);
             }
             else
             {
@@ -312,14 +302,13 @@ namespace Microsoft.Restier.Publishers.OData
                             Resources.ResourceNotFound));
                 }
 
-                if (lastSegment.SegmentKind == ODataSegmentKinds.Action)
+                if (lastSegment is OperationSegment)
                 {
+                    var operationSegment = lastSegment as OperationSegment;
+                    var operation = operationSegment.Operations.FirstOrDefault();
                     var queryResult = await ExecuteQuery(queryable, cancellationToken);
-
-                    // TODO GitHubIssue#114, need etag check here for single bound entity
-                    var boundSeg = (BoundActionPathSegment)lastSegment;
                     result = await ExecuteOperationAsync(
-                        getParaValueFunc, boundSeg.Action.Name, false, queryResult, cancellationToken);
+                        getParaValueFunc, operation.Name, false, queryResult, cancellationToken);
                 }
             }
 
@@ -329,24 +318,7 @@ namespace Microsoft.Restier.Publishers.OData
                 return this.Request.CreateResponse(HttpStatusCode.NoContent);
             }
 
-            return this.CreateQueryResponse(result, path.EdmType, false, null);
-        }
-
-        /// <summary>
-        /// Disposes the API and the controller.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposing is happening.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.api != null)
-                {
-                    this.api.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
+            return this.CreateQueryResponse(result, path.EdmType, null);
         }
 
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
@@ -378,6 +350,7 @@ namespace Microsoft.Restier.Publishers.OData
             bool isFullReplaceUpdate,
             CancellationToken cancellationToken)
         {
+            CheckModelState();
             ODataPath path = this.GetPath();
             IEdmEntitySet entitySet = path.NavigationSource as IEdmEntitySet;
             if (entitySet == null)
@@ -388,13 +361,17 @@ namespace Microsoft.Restier.Publishers.OData
             var propertiesInEtag = await this.GetOriginalValues(entitySet);
             if (propertiesInEtag == null)
             {
-               throw new PreconditionRequiredException(Resources.PreconditionRequired);
+                throw new PreconditionRequiredException(Resources.PreconditionRequired);
             }
 
             // In case of type inheritance, the actual type will be different from entity type
-            // This is only needed for put case, and does not for patch case
+            // This is only needed for put case, and does not need for patch case
+            // For put request, it will create a new, blank instance of the entity.
+            // copy over the key values and set any updated values from the client on the new instance.
+            // Then apply all the properties of the new instance to the instance to be updated.
+            // This will set any unspecified properties to their default value.
             var expectedEntityType = path.EdmType;
-            var actualEntityType = path.EdmType;
+            var actualEntityType = path.EdmType as IEdmStructuredType;
             if (edmEntityObject.ActualEdmType != null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
@@ -403,12 +380,12 @@ namespace Microsoft.Restier.Publishers.OData
 
             DataModificationItem updateItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(Api),
-                actualEntityType.GetClrType(Api),
+                expectedEntityType.GetClrType(Api.ServiceProvider),
+                actualEntityType.GetClrType(Api.ServiceProvider),
                 DataModificationItemAction.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
-                edmEntityObject.CreatePropertyDictionary());
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false));
             updateItem.IsFullReplaceUpdateRequest = isFullReplaceUpdate;
 
             RestierChangeSetProperty changeSetProperty = this.Request.GetChangeSet();
@@ -423,18 +400,16 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 changeSetProperty.ChangeSet.Entries.Add(updateItem);
 
-                await changeSetProperty.OnChangeSetCompleted();
+                await changeSetProperty.OnChangeSetCompleted(this.Request);
             }
 
-            return this.CreateUpdatedODataResult(updateItem.Entity);
+            return this.CreateUpdatedODataResult(updateItem.Resource);
         }
 
         private HttpResponseMessage CreateQueryResponse(
-            IQueryable query, IEdmType edmType, bool isIfNoneMatch, ETag etag)
+            IQueryable query, IEdmType edmType, ETag etag)
         {
             IEdmTypeReference typeReference = GetTypeReference(edmType);
-
-            // TODO, GitHubIssue#328 : 404 should be returned when requesting property of non-exist entity
             BaseSingleResult singleResult = null;
             HttpResponseMessage response = null;
 
@@ -442,13 +417,13 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.shouldReturnCount || this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.Api.Context);
+                    var rawResult = new RawResult(query, typeReference);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var primitiveResult = new PrimitiveResult(query, typeReference, this.Api.Context);
+                    var primitiveResult = new PrimitiveResult(query, typeReference);
                     singleResult = primitiveResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, primitiveResult);
                 }
@@ -456,7 +431,7 @@ namespace Microsoft.Restier.Publishers.OData
 
             if (typeReference.IsComplex())
             {
-                var complexResult = new ComplexResult(query, typeReference, this.Api.Context);
+                var complexResult = new ComplexResult(query, typeReference);
                 singleResult = complexResult;
                 response = this.Request.CreateResponse(HttpStatusCode.OK, complexResult);
             }
@@ -465,13 +440,13 @@ namespace Microsoft.Restier.Publishers.OData
             {
                 if (this.shouldWriteRawValue)
                 {
-                    var rawResult = new RawResult(query, typeReference, this.Api.Context);
+                    var rawResult = new RawResult(query, typeReference);
                     singleResult = rawResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, rawResult);
                 }
                 else
                 {
-                    var enumResult = new EnumResult(query, typeReference, this.Api.Context);
+                    var enumResult = new EnumResult(query, typeReference);
                     singleResult = enumResult;
                     response = this.Request.CreateResponse(HttpStatusCode.OK, enumResult);
                 }
@@ -492,26 +467,20 @@ namespace Microsoft.Restier.Publishers.OData
             if (typeReference.IsCollection())
             {
                 var elementType = typeReference.AsCollection().ElementType();
-                if (elementType.IsPrimitive() || elementType.IsComplex() || elementType.IsEnum())
+                if (elementType.IsPrimitive() || elementType.IsEnum())
                 {
                     return this.Request.CreateResponse(
-                        HttpStatusCode.OK, new NonEntityCollectionResult(query, typeReference, this.Api.Context));
+                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference));
                 }
 
                 return this.Request.CreateResponse(
-                    HttpStatusCode.OK, new EntityCollectionResult(query, typeReference, this.Api.Context));
+                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference));
             }
 
             var entityResult = query.SingleOrDefault();
             if (entityResult == null)
             {
-                // TODO GitHubIssue#288: 204 expected when requesting single nav property which has null value
-                // ~/People(nonexistkey) and ~/People(nonexistkey)/BestFriend, expected 404
-                // ~/People(key)/BestFriend, and BestFriend is null, expected 204
-                throw new HttpResponseException(
-                    this.Request.CreateErrorResponse(
-                        HttpStatusCode.NotFound,
-                        Resources.ResourceNotFound));
+                return this.Request.CreateResponse(HttpStatusCode.NoContent);
             }
 
             // Check the ETag here
@@ -524,7 +493,7 @@ namespace Microsoft.Restier.Publishers.OData
                 etag.EntityType = query.ElementType;
                 query = etag.ApplyTo(query);
                 entityResult = query.SingleOrDefault();
-                if (entityResult == null && !isIfNoneMatch)
+                if (entityResult == null && !etag.IsIfNoneMatch)
                 {
                     return this.Request.CreateResponse(HttpStatusCode.PreconditionFailed);
                 }
@@ -557,10 +526,8 @@ namespace Microsoft.Restier.Publishers.OData
         }
 
         private IQueryable ApplyQueryOptions(
-            IQueryable queryable, ODataPath path, bool applyCount, out bool isIfNoneMatch, out ETag etag)
+            IQueryable queryable, ODataPath path, bool applyCount, out ETag etag)
         {
-            // ETAG IsIfNoneMatch is changed to public access, this flag can be removed.
-            isIfNoneMatch = false;
             etag = null;
 
             if (this.shouldWriteRawValue)
@@ -570,8 +537,9 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             HttpRequestMessageProperties properties = this.Request.ODataProperties();
+            var model = Api.GetModelAsync().Result;
             ODataQueryContext queryContext =
-                new ODataQueryContext(properties.Model, queryable.ElementType, path);
+                new ODataQueryContext(model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
 
             // Get etag for query request
@@ -581,12 +549,11 @@ namespace Microsoft.Restier.Publishers.OData
             }
             else if (queryOptions.IfNoneMatch != null)
             {
-                isIfNoneMatch = true;
                 etag = queryOptions.IfNoneMatch;
             }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
-            ODataQuerySettings settings = Api.Context.GetApiService<ODataQuerySettings>();
+            ODataQuerySettings settings = Api.GetApiService<ODataQuerySettings>();
 
             if (this.shouldReturnCount)
             {
@@ -599,13 +566,13 @@ namespace Microsoft.Restier.Publishers.OData
             if (queryOptions.Count != null && !applyCount)
             {
                 RestierQueryExecutorOptions queryExecutorOptions =
-                    Api.Context.GetApiService<RestierQueryExecutorOptions>();
+                    Api.GetApiService<RestierQueryExecutorOptions>();
                 queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
                 queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }
 
             // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
-            ODataValidationSettings validationSettings = Api.Context.GetApiService<ODataValidationSettings>();
+            ODataValidationSettings validationSettings = Api.GetApiService<ODataValidationSettings>();
             queryOptions.Validate(validationSettings);
 
             // Entity count can NOT be evaluated at this point of time because the source
@@ -658,10 +625,18 @@ namespace Microsoft.Restier.Publishers.OData
             IQueryable bindingParameterValue,
             CancellationToken cancellationToken)
         {
-            var executor = Api.Context.GetApiService<IOperationExecutor>();
+            var executor = Api.GetApiService<IOperationExecutor>();
+
             var context = new OperationContext(
-                Api.Context, getParaValueFunc, operationName, isFunction, bindingParameterValue);
-            var result = executor.ExecuteOperationAsync(Api, context, cancellationToken);
+                getParaValueFunc,
+                operationName,
+                Api,
+                isFunction,
+                bindingParameterValue,
+                Request.GetRequestContainer());
+
+            context.Request = Request;
+            var result = executor.ExecuteOperationAsync(context, cancellationToken);
             return result;
         }
 
@@ -690,7 +665,7 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             // return 428(Precondition Required) if entity requires concurrency check.
-            var model = await this.Api.Context.GetModelAsync();
+            var model = await this.Api.GetModelAsync();
             bool needEtag = model.IsConcurrencyCheckEnabled(entitySet);
             if (needEtag)
             {
@@ -715,6 +690,28 @@ namespace Microsoft.Restier.Publishers.OData
             Type genericResultType = resultType.MakeGenericType(result.GetType());
 
             return (IHttpActionResult)Activator.CreateInstance(genericResultType, result, this);
+        }
+
+        private void CheckModelState()
+        {
+            if (!this.ModelState.IsValid)
+            {
+                var errorList = (
+                    from item in this.ModelState
+                    where item.Value.Errors.Any()
+                    select
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{{ Error: {0}, Exception {1} }}",
+                            item.Value.Errors[0].ErrorMessage,
+                            item.Value.Errors[0].Exception.Message)).ToList();
+
+                throw new ODataException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.ModelStateIsNotValid,
+                        string.Join(";", errorList)));
+            }
         }
     }
 }

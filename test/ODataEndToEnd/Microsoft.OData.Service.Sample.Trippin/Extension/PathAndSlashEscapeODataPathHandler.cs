@@ -21,11 +21,12 @@ namespace Microsoft.OData.Service.Sample.Trippin.Extension
 
         private const string EscapedQuote = "'";
 
-        public override ODataPath Parse(IEdmModel model, string serviceRoot, string odataPath)
+        public override ODataPath Parse(string serviceRoot, string odataPath,
+            IServiceProvider requestContainer)
         {
             if (!odataPath.Contains(EscapedQuote))
             {
-                return base.Parse(model, serviceRoot, odataPath);
+                return base.Parse(serviceRoot, odataPath, requestContainer);
             }
 
             var pathBuilder = new StringBuilder();
@@ -44,7 +45,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Extension
                 EscapeSlashBackslash(path, pathBuilder);
                 pathBuilder.Append(odataPath.Substring(queryStringIndex));
             }
-            return base.Parse(model, serviceRoot, pathBuilder.ToString());
+            return base.Parse(serviceRoot, pathBuilder.ToString(), requestContainer);
         }
 
         private void EscapeSlashBackslash(string uri, StringBuilder pathBuilder)

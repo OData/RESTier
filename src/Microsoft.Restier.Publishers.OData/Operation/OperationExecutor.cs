@@ -11,12 +11,12 @@ using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Exceptions;
 using Microsoft.Restier.Core.Operation;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Publishers.OData.Formatter.Deserialization;
+using Microsoft.Restier.Publishers.OData.Formatter;
+using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData.Operation
@@ -24,14 +24,14 @@ namespace Microsoft.Restier.Publishers.OData.Operation
     internal class OperationExecutor : IOperationExecutor
     {
         public async Task<IQueryable> ExecuteOperationAsync(
-            object instanceImplementMethod, OperationContext context, CancellationToken cancellationToken)
+            OperationContext context, CancellationToken cancellationToken)
         {
             // Authorization check
             await InvokeAuthorizers(context, cancellationToken);
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
-            MethodInfo method = instanceImplementMethod.GetType().GetMethod(
+            MethodInfo method = context.ImplementInstance.GetType().GetMethod(
                 context.OperationName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
             if (method == null)
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
             var parameterArray = method.GetParameters();
 
-            var model = await context.ApiContext.GetModelAsync(cancellationToken);
+            var model = context.GetApiService<IEdmModel>();
 
             // Parameters of method and model is exactly mapped or there is parsing error
             var parameters = new object[parameterArray.Length];
@@ -66,7 +66,13 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
                     // Change to right CLR class for collection/Enum/Complex/Entity
                     convertedValue = DeserializationHelpers.ConvertValue(
-                        currentParameterValue, parameter.ParameterType, parameterTypeRef, model, context.ApiContext);
+                        currentParameterValue,
+                        parameter.Name,
+                        parameter.ParameterType,
+                        parameterTypeRef,
+                        model,
+                        context.Request,
+                        context.ServiceProvider);
                 }
                 else
                 {
@@ -77,19 +83,19 @@ namespace Microsoft.Restier.Publishers.OData.Operation
                 parameters[paraIndex] = convertedValue;
             }
 
-            context.ParametersValue = parameters;
+            context.ParameterValues = parameters;
 
             // Invoke preprocessing on the operation execution
             PerformPreEvent(context, cancellationToken);
 
-            var result = InvokeOperation(instanceImplementMethod, method, parameters, model);
+            var result = InvokeOperation(context.ImplementInstance, method, parameters, model);
 
             // Invoke preprocessing on the operation execution
             PerformPostEvent(context, cancellationToken);
             return result;
         }
 
-        private static object PrepareBindingParameter(Type bindingType, IQueryable bindingParameterValue)
+        private static object PrepareBindingParameter(Type bindingType, IEnumerable bindingParameterValue)
         {
             var enumerableType = bindingType.FindGenericType(typeof(IEnumerable<>));
 
@@ -191,19 +197,19 @@ namespace Microsoft.Restier.Publishers.OData.Operation
 
         private static void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationProcessor>();
+            var processor = context.GetApiService<IOperationFilter>();
             if (processor != null)
             {
-                processor.OnExecutingOperationAsync(context, cancellationToken);
+                processor.OnOperationExecutingAsync(context, cancellationToken);
             }
         }
 
         private static void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationProcessor>();
+            var processor = context.GetApiService<IOperationFilter>();
             if (processor != null)
             {
-                processor.OnExecutedOperationAsync(context, cancellationToken);
+                processor.OnOperationExecutedAsync(context, cancellationToken);
             }
         }
     }

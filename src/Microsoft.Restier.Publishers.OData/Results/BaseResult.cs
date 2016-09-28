@@ -5,7 +5,7 @@ using System;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publishers.OData.Results
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Represents the result of an OData query.
@@ -18,14 +18,11 @@ namespace Microsoft.Restier.Publishers.OData.Results
         /// Initializes a new instance of the <see cref="BaseResult" /> class.
         /// </summary>
         /// <param name="edmType">The EDM type reference of the OData result.</param>
-        /// <param name="context">The context where the action is executed.</param>
-        protected BaseResult(IEdmTypeReference edmType, ApiContext context)
+        protected BaseResult(IEdmTypeReference edmType)
         {
             Ensure.NotNull(edmType, "edmType");
-            Ensure.NotNull(context, "context");
 
             this.edmType = edmType;
-            this.Context = context;
         }
 
         /// <summary>
@@ -38,10 +35,5 @@ namespace Microsoft.Restier.Publishers.OData.Results
                 return this.edmType;
             }
         }
-
-        /// <summary>
-        /// Gets the context where the action is executed.
-        /// </summary>
-        public ApiContext Context { get; private set; }
     }
 }

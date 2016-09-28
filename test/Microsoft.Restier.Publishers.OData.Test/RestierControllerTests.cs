@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.Publishers.OData.Test
@@ -78,7 +77,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             var result = await response.Content.ReadAsStringAsync();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(expected, result);
+            Assert.Equal(expected.Replace(" ","").Replace("\r\n", ""), result.Replace(" ", ""));
         }
 
         [Fact]

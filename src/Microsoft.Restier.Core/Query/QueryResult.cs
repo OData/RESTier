@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Query
 {

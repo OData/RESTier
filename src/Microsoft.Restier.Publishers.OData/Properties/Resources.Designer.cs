@@ -61,11 +61,11 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RestierBatchHandler was called without an ApiContext Factory..
+        ///   Looks up a localized string similar to The argument with name {0} cannot be null..
         /// </summary>
-        internal static string BatchHandlerRequiresApiContextFactory {
+        internal static string ArguementsCannotbeNull {
             get {
-                return ResourceManager.GetString("BatchHandlerRequiresApiContextFactory", resourceCulture);
+                return ResourceManager.GetString("ArguementsCannotbeNull", resourceCulture);
             }
         }
         
@@ -174,6 +174,15 @@ namespace Microsoft.Restier.Publishers.OData.Properties {
         internal static string KeyNotValidForEntityType {
             get {
                 return ResourceManager.GetString("KeyNotValidForEntityType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Model state is not valid with message {0}, please check your request..
+        /// </summary>
+        internal static string ModelStateIsNotValid {
+            get {
+                return ResourceManager.GetString("ModelStateIsNotValid", resourceCulture);
             }
         }
         

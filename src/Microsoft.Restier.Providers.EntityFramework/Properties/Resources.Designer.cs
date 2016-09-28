@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Restier.Providers.EntityFramework.Properties {
+namespace Microsoft.Restier.Providers.EntityFramework {
     using System;
     
     
@@ -66,6 +66,24 @@ namespace Microsoft.Restier.Providers.EntityFramework.Properties {
         internal static string DataModificationMustBeCUD {
             get {
                 return ResourceManager.GetString("DataModificationMustBeCUD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Need &apos;LineString type&apos;, while input is {0}..
+        /// </summary>
+        internal static string InvalidLineStringGeographyType {
+            get {
+                return ResourceManager.GetString("InvalidLineStringGeographyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Need &apos;Point type&apos;, while input is {0}..
+        /// </summary>
+        internal static string InvalidPointGeographyType {
+            get {
+                return ResourceManager.GetString("InvalidPointGeographyType", resourceCulture);
             }
         }
         

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -37,15 +36,19 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     internal class StoreApi : ApiBase
     {
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            services = base.ConfigureApi(services);
+            services = ApiBase.ConfigureApi(apiType, services);
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
             services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer());
             services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer());
             services.AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
             return services;
+        }
+
+        public StoreApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 
@@ -80,7 +83,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
     class TestModelMapper : IModelMapper
     {
-        public bool TryGetRelevantType(ApiContext context, string name, out Type relevantType)
+        public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
         {
             if (name == "Products")
             {
@@ -102,7 +105,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             return true;
         }
 
-        public bool TryGetRelevantType(ApiContext context, string namespaceName, string name, out Type relevantType)
+        public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType)
         {
             relevantType = typeof(Product);
             return true;
@@ -176,7 +179,7 @@ namespace Microsoft.Restier.Publishers.OData.Test
             var dataModificationEntry = changeSetEntry as DataModificationItem;
             if (dataModificationEntry != null)
             {
-                dataModificationEntry.Entity = new Product()
+                dataModificationEntry.Resource = new Product()
                 {
                     Name = "var1",
                     Addr = new Address()

@@ -2,19 +2,25 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData.Batch;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
 using System.Web.OData.Routing.Conventions;
-using Microsoft.OData.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Batch;
+using Microsoft.Restier.Publishers.OData.Properties;
+using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
-namespace Microsoft.Restier.Publishers.OData.Routing
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpConfiguration"/>.
@@ -22,6 +28,9 @@ namespace Microsoft.Restier.Publishers.OData.Routing
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions
     {
+        private const string UseVerboseErrorsFlagKey = "Microsoft.Restier.UseVerboseErrorsFlag";
+        private const string RootContainerKey = "System.Web.OData.RootContainerMappingsKey";
+
         /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
         /// Maps the API routes to the RestierController.
@@ -30,91 +39,93 @@ namespace Microsoft.Restier.Publishers.OData.Routing
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routePrefix">The prefix of the route.</param>
-        /// <param name="apiFactory">The callback to create API instances.</param>
         /// <param name="batchHandler">The handler for batch requests.</param>
         /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
         public static Task<ODataRoute> MapRestierRoute<TApi>(
             this HttpConfiguration config,
             string routeName,
             string routePrefix,
-            Func<ApiBase> apiFactory,
             RestierBatchHandler batchHandler = null)
             where TApi : ApiBase
         {
-            Ensure.NotNull(apiFactory, "apiFactory");
-
             // This will be added a service to callback stored in ApiConfiguration
             // Callback is called by ApiBase.AddApiServices method to add real services.
-            ApiConfiguration.AddPublisherServices<TApi>(services =>
+            ApiBase.AddPublisherServices(
+                typeof(TApi),
+                services =>
+                {
+                    services.AddODataServices<TApi>();
+                });
+
+            Func<IContainerBuilder> func = () => new RestierContainerBuilder(typeof(TApi));
+            config.UseCustomContainerBuilder(func);
+
+            var conventions = CreateRestierRoutingConventions(config, routeName);
+            if (batchHandler != null)
             {
-                services.AddODataServices<TApi>();
-            });
-            using (var api = apiFactory())
-            {
-                var model = GetModel(api);
-
-                var conventions = CreateRestierRoutingConventions(config, model, apiFactory);
-
-                if (batchHandler != null && batchHandler.ApiFactory == null)
-                {
-                    batchHandler.ApiFactory = apiFactory;
-                }
-
-                // Customized path handler should be added in ConfigureApi as service
-                // Allow to handle URL encoded slash (%2F), and backslash(%5C) with customized handler
-                var handler = api.Context.GetApiService<IODataPathHandler>();
-                if (handler == null)
-                {
-                    handler = new DefaultODataPathHandler();
-                }
-
-                var route = config.MapODataServiceRoute(
-                    routeName, routePrefix, model, handler, conventions, batchHandler);
-
-                // Customized converter should be added in ConfigureApi as service
-                var converter = api.Context.GetApiService<ODataPayloadValueConverter>();
-                if (converter == null)
-                {
-                    converter = new RestierPayloadValueConverter();
-                }
-
-                model.SetPayloadValueConverter(converter);
-
-                return Task.FromResult(route);
+                batchHandler.ODataRouteName = routeName;
             }
+
+            Action<IContainerBuilder> configureAction = builder => builder
+            .AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions)
+            .AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
+
+            var route = config.MapODataServiceRoute(routeName, routePrefix, configureAction);
+
+            return Task.FromResult(route);
         }
 
         /// <summary>
-        /// Maps the API routes to the RestierController.
+        /// Gets the UseVerboseErrors flag from the configuration.
         /// </summary>
-        /// <typeparam name="TApi">The user API.</typeparam>
-        /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
-        /// <param name="routeName">The name of the route.</param>
-        /// <param name="routePrefix">The prefix of the route.</param>
-        /// <param name="batchHandler">The handler for batch requests.</param>
-        /// <returns>The task object containing the resulted <see cref="ODataRoute"/> instance.</returns>
-        public static Task<ODataRoute> MapRestierRoute<TApi>(
-            this HttpConfiguration config,
-            string routeName,
-            string routePrefix,
-            RestierBatchHandler batchHandler = null)
-            where TApi : ApiBase, new()
+        /// <param name="configuration">The server configuration.</param>
+        /// <returns>The flag of UseVerboseErrors for the configuration.</returns>
+        public static bool GetUseVerboseErrors(this HttpConfiguration configuration)
         {
-            return MapRestierRoute<TApi>(
-                config, routeName, routePrefix, () => new TApi(), batchHandler);
+            if (configuration == null)
+            {
+                throw new ArgumentException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.ArguementsCannotbeNull, "configuration"));
+            }
+
+            object value;
+            bool useVerboseErrorsFlag = false;
+            if (configuration.Properties.TryGetValue(UseVerboseErrorsFlagKey, out value))
+            {
+                useVerboseErrorsFlag = value is bool ? (bool)value : false;
+            }
+
+            return useVerboseErrorsFlag;
+        }
+
+        /// <summary>
+        /// Sets the UseVerboseErrors flag on the configuration.
+        /// If this is set to true (suggest for debug model only),
+        /// then the whole exception stack will be returned in case there is some error.
+        /// </summary>
+        /// <param name="configuration">The server configuration.</param>
+        /// <param name="useVerboseErrors">The UseVerboseErrors flag for the configuration.</param>
+        public static void SetUseVerboseErrors(this HttpConfiguration configuration, bool useVerboseErrors)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentException(string.Format(
+                        CultureInfo.InvariantCulture, Resources.ArguementsCannotbeNull, "configuration"));
+            }
+
+            configuration.Properties[useVerboseErrors] = useVerboseErrors;
         }
 
         /// <summary>
         /// Creates the default routing conventions.
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance.</param>
-        /// <param name="model">The EDM model.</param>
-        /// <param name="apiFactory">The API factory.</param>
+        /// <param name="routeName">The name of the route.</param>
         /// <returns>The routing conventions created.</returns>
         private static IList<IODataRoutingConvention> CreateRestierRoutingConventions(
-            this HttpConfiguration config, IEdmModel model, Func<ApiBase> apiFactory)
+            this HttpConfiguration config, string routeName)
         {
-            var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(config, model);
+            var conventions = ODataRoutingConventions.CreateDefaultWithAttributeRouting(routeName, config);
             var index = 0;
             for (; index < conventions.Count; index++)
             {
@@ -125,28 +136,8 @@ namespace Microsoft.Restier.Publishers.OData.Routing
                 }
             }
 
-            conventions.Insert(index + 1, new RestierRoutingConvention(apiFactory));
+            conventions.Insert(index + 1, new RestierRoutingConvention());
             return conventions;
-        }
-
-        private static IEdmModel GetModel(ApiBase api)
-        {
-            // Here await is not used because if method MapRestierRoute is mapped async,
-            // Then during application starts, the http service initialization may complete first
-            // before this method call is complete.
-            // Then all request will fail, and this happen for some test cases before when get model takes long time.
-            IEdmModel model;
-            try
-            {
-                model = api.GetModelAsync().Result;
-            }
-            catch (AggregateException e)
-            {
-                // Without await, the exception is wrapped and inner exception has more meaningful message.
-                throw e.InnerException;
-            }
-
-            return model;
         }
     }
 }

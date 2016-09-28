@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publishers.OData.Results
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// Represents a raw value being returned from an action.
@@ -17,9 +17,8 @@ namespace Microsoft.Restier.Publishers.OData.Results
         /// </summary>
         /// <param name="query">The query that returns a primitive value.</param>
         /// <param name="edmType">The EDM type reference of the primitive value.</param>
-        /// <param name="context">The context where the action is executed.</param>
-        public RawResult(IQueryable query, IEdmTypeReference edmType, ApiContext context)
-            : base(query, edmType, context)
+        public RawResult(IQueryable query, IEdmTypeReference edmType)
+            : base(query, edmType)
         {
         }
     }

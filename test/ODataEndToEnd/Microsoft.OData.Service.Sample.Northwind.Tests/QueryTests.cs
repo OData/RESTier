@@ -2,8 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.OData.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Service.Sample.Northwind.Models;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
@@ -13,13 +16,6 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
 {
     public class QueryTests : TestBase
     {
-        private NorthwindApi api = new NorthwindApi();
-
-        private IQueryable<Order> OrdersQuery
-        {
-            get { return this.api.GetQueryableSource<Order>("Orders"); }
-        }
-
         [Fact]
         public async Task TestTakeIncludeTotalCount()
         {
@@ -27,9 +23,11 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             {
                 using (HttpServer server = new HttpServer(config))
                 {
-                    WebApiConfig.RegisterNorthwind(config, server);
-                    QueryResult result = await this.api.QueryAsync(
-                        new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Take(10)));
+                    WebApiConfig.RegisterNorthwind(config, server); var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
+                    request.SetConfiguration(config);
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    QueryResult result = await api.QueryAsync(
+                        new QueryRequest(api.GetQueryableSource<Order>("Orders").OrderBy(o => o.OrderDate).Take(10)));
 
                     var orderResults = result.Results.OfType<Order>();
                     Assert.Equal(10, orderResults.Count());
@@ -45,8 +43,11 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 using (HttpServer server = new HttpServer(config))
                 {
                     WebApiConfig.RegisterNorthwind(config, server);
-                    QueryResult result = await this.api.QueryAsync(
-                        new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10)));
+                    var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
+                    request.SetConfiguration(config);
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    QueryResult result = await api.QueryAsync(
+                        new QueryRequest(api.GetQueryableSource<Order>("Orders").OrderBy(o => o.OrderDate).Skip(10)));
 
                     var orderResults = result.Results.OfType<Order>();
                     Assert.Equal(820, orderResults.Count());
@@ -62,8 +63,11 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 using (HttpServer server = new HttpServer(config))
                 {
                     WebApiConfig.RegisterNorthwind(config, server);
-                    QueryResult result = await this.api.QueryAsync(
-                        new QueryRequest(this.OrdersQuery.OrderBy(o => o.OrderDate).Skip(10).Take(25)));
+                    var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
+                    request.SetConfiguration(config);
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    QueryResult result = await api.QueryAsync(
+                        new QueryRequest(api.GetQueryableSource<Order>("Orders").OrderBy(o => o.OrderDate).Skip(10).Take(25)));
 
                     var orderResults = result.Results.OfType<Order>();
                     Assert.Equal(25, orderResults.Count());
@@ -83,8 +87,11 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 using (HttpServer server = new HttpServer(config))
                 {
                     WebApiConfig.RegisterNorthwind(config, server);
-                    QueryResult result = await this.api.QueryAsync(
-                        new QueryRequest(this.OrdersQuery.Take(10).OrderBy(o => o.OrderDate)));
+                    var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
+                    request.SetConfiguration(config);
+                    var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
+                    QueryResult result = await api.QueryAsync(
+                        new QueryRequest(api.GetQueryableSource<Order>("Orders").Take(10).OrderBy(o => o.OrderDate)));
 
                     var orderResults = result.Results.OfType<Order>();
                     Assert.Equal(10, orderResults.Count());

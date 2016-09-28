@@ -4,9 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core.Conventions;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -24,39 +21,33 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public abstract class ApiBase : IDisposable
     {
-        private static readonly ConcurrentDictionary<Type, ApiConfiguration> Configurations =
-            new ConcurrentDictionary<Type, ApiConfiguration>();
+        private static ConcurrentDictionary<Type, Action<IServiceCollection>> publisherServicesCallback =
+            new ConcurrentDictionary<Type, Action<IServiceCollection>>();
+
+        private static Action<IServiceCollection> emptyConfig = _ => { };
 
         private ApiConfiguration apiConfiguration;
-        private ApiContext apiContext;
+        private IServiceProvider serviceProvider;
 
         /// <summary>
-        /// Gets the API context for this API.
+        /// Initializes a new instance of the <see cref="ApiBase" /> class.
         /// </summary>
-        public ApiContext Context
+        /// <param name="serviceProvider">
+        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
+        /// </param>
+        protected ApiBase(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
+        /// </summary>
+        public IServiceProvider ServiceProvider
         {
             get
             {
-                if (this.IsDisposed)
-                {
-                    throw new ObjectDisposedException(this.GetType().FullName);
-                }
-
-                if (this.apiContext == null)
-                {
-                    this.apiContext = this.CreateApiContext(
-                        this.Configuration);
-                    var apiScope = this.apiContext.GetApiService<ApiHolder>();
-                    if (apiScope != null)
-                    {
-                        apiScope.Api = this;
-                    }
-
-                    ApiConfiguratorAttributes.ApplyInitialization(
-                        this.GetType(), this, this.apiContext);
-                }
-
-                return this.apiContext;
+                return serviceProvider;
             }
         }
 
@@ -68,27 +59,78 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets the API configuration for this API.
         /// </summary>
-        protected ApiConfiguration Configuration
+        internal ApiConfiguration Configuration
         {
             get
             {
-                if (this.apiConfiguration != null)
+                if (this.apiConfiguration == null)
                 {
-                    return this.apiConfiguration;
+                    this.apiConfiguration = serviceProvider.GetService<ApiConfiguration>();
                 }
 
-                return this.apiConfiguration = Configurations.GetOrAdd(
-                    this.GetType(),
-                    apiType =>
-                    {
-                        IServiceCollection services = new ServiceCollection();
-                        services = this.ConfigureApi(services);
-
-                        var configuration = this.CreateApiConfiguration(services);
-                        ApiConfiguratorAttributes.ApplyConfiguration(apiType, configuration);
-                        return configuration;
-                    });
+                return this.apiConfiguration;
             }
+        }
+
+        /// <summary>
+        /// Configure services for this API.
+        /// </summary>
+        /// <param name="apiType">
+        /// The Api type.
+        /// </param>
+        /// <param name="services">
+        /// The <see cref="IServiceCollection"/> with which is used to store all services.
+        /// </param>
+        /// <returns>The <see cref="IServiceCollection"/>.</returns>
+        [CLSCompliant(false)]
+        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        {
+            // Add core and convention's services
+            services = services.AddCoreServices(apiType)
+                .AddConventionBasedServices(apiType);
+
+            // This is used to add the publisher's services
+            GetPublisherServiceCallback(apiType)(services);
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds a configuration procedure for apiType.
+        /// This is expected to be called by publisher like WebApi to add services.
+        /// </summary>
+        /// <param name="apiType">
+        /// The Api Type.
+        /// </param>
+        /// <param name="configurationCallback">
+        /// An action that will be called during the configuration of apiType.
+        /// </param>
+        [CLSCompliant(false)]
+        public static void AddPublisherServices(Type apiType, Action<IServiceCollection> configurationCallback)
+        {
+            publisherServicesCallback.AddOrUpdate(
+                apiType,
+                configurationCallback,
+                (type, existing) => existing + configurationCallback);
+        }
+
+        /// <summary>
+        /// Get publisher registering service callback for specified Api.
+        /// </summary>
+        /// <param name="apiType">
+        /// The Api type of which to get the publisher registering service callback.
+        /// </param>
+        /// <returns>The service registering callback.</returns>
+        [CLSCompliant(false)]
+        public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
+        {
+            Action<IServiceCollection> val;
+            if (publisherServicesCallback.TryGetValue(apiType, out val))
+            {
+                return val;
+            }
+
+            return emptyConfig;
         }
 
         /// <summary>
@@ -103,79 +145,7 @@ namespace Microsoft.Restier.Core
             }
 
             this.IsDisposed = true;
-
-            if (this.apiContext != null)
-            {
-                ApiConfiguratorAttributes.ApplyDisposal(
-                    this.GetType(), this, this.apiContext);
-
-                this.apiContext.DisposeScope();
-                this.apiContext = null;
-            }
-
             GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Configure services for this API.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> with which to create an <see cref="ApiConfiguration"/>.
-        /// </param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        [CLSCompliant(false)]
-        protected virtual IServiceCollection ConfigureApi(IServiceCollection services)
-        {
-            Type apiType = this.GetType();
-
-            // Add core and convention's services
-            services = services.AddCoreServices(apiType)
-                .AddAttributeServices(apiType)
-                .AddConventionBasedServices(apiType);
-
-            // This is used to add the publisher's services
-            ApiConfiguration.GetPublisherServiceCallback(apiType)(services);
-
-            return services;
-        }
-
-        /// <summary>
-        /// Creates the API configuration for this API.
-        /// Descendants may override to use a customized DI container, or further configure the built
-        /// <see cref="ApiConfiguration"/>.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/> containing API service registrations.</param>
-        /// <returns>
-        /// An <see cref="ApiConfiguration"/> with which to create the API configuration for this API.
-        /// </returns>
-        [CLSCompliant(false)]
-        protected virtual ApiConfiguration CreateApiConfiguration(IServiceCollection services)
-        {
-            return services.BuildApiConfiguration();
-        }
-
-        /// <summary>
-        /// Creates the API context for this API.
-        /// Descendants may further configure the built <see cref="ApiContext"/>.
-        /// </summary>
-        /// <param name="configuration">
-        /// The API configuration to use.
-        /// </param>
-        /// <returns>
-        /// The API context for this API.
-        /// </returns>
-        protected virtual ApiContext CreateApiContext(
-            ApiConfiguration configuration)
-        {
-            return new ApiContext(configuration);
-        }
-
-        // Registered as a scoped service so that IApi and ApiContext could be exposed as scoped service.
-        // If a descendant class wants to expose these 2 services in another way, it must ensure they could be
-        // resolved after CreateApiContext call.
-        internal class ApiHolder
-        {
-            public ApiBase Api { get; set; }
         }
     }
 }

@@ -11,14 +11,19 @@ namespace Microsoft.Restier.Core.Tests
     {
         private class TestApi : ApiBase
         {
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         [Fact]
         public void NewApiContextIsConfiguredCorrectly()
         {
-            var api = new TestApi();
-            var context = api.Context;
-            Assert.NotNull(context.Configuration);
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
+            Assert.NotNull(api);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Xunit;
@@ -15,29 +16,23 @@ namespace Microsoft.Restier.Core.Tests
     public class ApiConfigurationTests
     {
         [Fact]
-        public void CachedConfigurationIsCachedCorrectly()
-        {
-            ApiBase api = new TestApiA();
-            var configuration = api.Context.Configuration;
-
-            ApiBase anotherApi = new TestApiA();
-            var cached = anotherApi.Context.Configuration;
-            Assert.Same(configuration, cached);
-        }
-
-        [Fact]
         public void ConfigurationRegistersApiServicesCorrectly()
         {
-            var api = new TestApiA();
-            Assert.Null(api.Context.GetApiService<IServiceA>());
-            Assert.Null(api.Context.GetApiService<IServiceB>());
+            var container = new RestierContainerBuilder(typeof(TestApiA));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var apiB = new TestApiB();
-            
-            Assert.Same(apiB.serviceA, apiB.Context.GetApiService<IServiceA>());
+            Assert.Null(api.GetApiService<IServiceA>());
+            Assert.Null(api.GetApiService<IServiceB>());
 
-            var serviceBInstance = apiB.Context.GetApiService<ServiceB>();
-            var serviceBInterface = apiB.Context.GetApiService<IServiceB>();
+            container = new RestierContainerBuilder(typeof(TestApiB));
+            var provider2 = container.BuildContainer();
+            var apiB = provider2.GetService<ApiBase>();
+
+            Assert.Same(TestApiB.serviceA, apiB.GetApiService<IServiceA>());
+
+            var serviceBInstance = apiB.GetApiService<ServiceB>();
+            var serviceBInterface = apiB.GetApiService<IServiceB>();
             Assert.Equal(serviceBInstance, serviceBInterface);
 
             // AddService will call services.TryAddTransient
@@ -45,29 +40,35 @@ namespace Microsoft.Restier.Core.Tests
 
             var serviceBFirst = serviceBInterface as ServiceB;
             Assert.NotNull(serviceBFirst);
-            Assert.Same(apiB.serviceB, serviceBFirst.InnerHandler);
+
+            Assert.Same(TestApiB.serviceB, serviceBFirst.InnerHandler);
         }
 
         [Fact]
         public void ServiceChainTest()
         {
-            var api = new TestApiC();
+            var container = new RestierContainerBuilder(typeof(TestApiC));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var handler = api.Context.GetApiService<IServiceB>();
+            var handler = api.GetApiService<IServiceB>();
             Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
         }
 
         private class TestApiA : ApiBase
         {
+            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         private class TestApiB : ApiBase
         {
-            private ServiceA _serviceA;
+            private static ServiceA _serviceA;
 
-            private ServiceB _serviceB;
+            private static ServiceB _serviceB;
 
-            public ServiceA serviceA
+            public static ServiceA serviceA
             {
                 get
                 {
@@ -79,7 +80,7 @@ namespace Microsoft.Restier.Core.Tests
                 }
             }
 
-            public ServiceB serviceB
+            public static ServiceB serviceB
             {
                 get
                 {
@@ -91,20 +92,25 @@ namespace Microsoft.Restier.Core.Tests
                 }
             }
 
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IServiceA>((sp, next) => serviceA);
                 services.AddService<IServiceB>((sp, next) => serviceB);
                 services.AddService<IServiceB, ServiceB>();
                 services.AddSingleton(new ServiceB());
-
                 return services;
+            }
+
+            public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
         private class TestApiC : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var q1 = new ServiceB("q1Pre", "q1Post");
                 var q2 = new ServiceB("q2Pre", "q2Post");
                 services.AddService<IServiceB>((sp, next) => q1)
@@ -115,6 +121,10 @@ namespace Microsoft.Restier.Core.Tests
                     });
 
                 return services;
+            }
+
+            public TestApiC(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 

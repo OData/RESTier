@@ -7,10 +7,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A convention-based change set item authorizer.
@@ -93,7 +92,7 @@ namespace Microsoft.Restier.Core.Conventions
                         operationName = ConventionBasedChangeSetConstants.AuthorizeMethodDataModificationDelete;
                     }
 
-                    return operationName + dataModification.EntitySetName;
+                    return operationName + dataModification.ResourceSetName;
 
                 default:
                     throw new InvalidOperationException(string.Format(

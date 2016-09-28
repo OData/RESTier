@@ -13,7 +13,6 @@
     <!-- TODO: compile as a portable assembly -->
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.1.0.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
       <Private>True</Private>
@@ -22,13 +21,18 @@
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.OData.Edm, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Edm.6.15.0\lib\portable-net45+win+wpa81\Microsoft.OData.Edm.dll</HintPath>
+    <Reference Include="Microsoft.OData.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.OData.Core.7.0.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.OData.Edm.7.0.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Edm.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
@@ -41,6 +45,9 @@
     <Compile Include="..\Shared\Ensure.cs">
       <Link>Shared\Ensure.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\EnumerableExtensions.cs">
+      <Link>Shared\EnumerableExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\ExpressionHelperMethods.cs">
       <Link>Shared\ExpressionHelperMethods.cs</Link>
     </Compile>
@@ -50,22 +57,22 @@
     <Compile Include="..\Shared\TypeExtensions.cs">
       <Link>Shared\TypeExtensions.cs</Link>
     </Compile>
-    <Compile Include="ApiConfiguratorAttributes.cs" />
-    <Compile Include="Conventions\ConventionBasedOperationProcessor.cs" />
+    <Compile Include="..\Shared\SharedResources\SharedResources.Core.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SharedResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Conventions\ConventionBasedOperationFilter.cs" />
     <Compile Include="Conventions\ConventionBasedOperationAuthorizer.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetItemAuthorizer.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetConstants.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetItemProcessor.cs" />
+    <Compile Include="Conventions\ConventionBasedChangeSetItemFilter.cs" />
     <Compile Include="Conventions\ConventionBasedChangeSetItemValidator.cs" />
     <Compile Include="Conventions\ConventionBasedQueryExpressionProcessor.cs" />
-    <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="ApiBase.cs" />
     <Compile Include="ApiConfiguration.cs" />
-    <Compile Include="ApiConfigurationExtensions.cs" />
-    <Compile Include="ApiContext.cs" />
-    <Compile Include="ApiContextExtensions.cs" />
+    <Compile Include="ApiBaseExtensions.cs" />
     <Compile Include="DataSourceStub.cs" />
-    <Compile Include="ApiConfiguratorAttribute.cs" />
     <Compile Include="Exceptions\PreconditionRequiredException.cs" />
     <Compile Include="Exceptions\PreconditionFailedException.cs" />
     <Compile Include="Exceptions\ResourceNotFoundException.cs" />
@@ -73,10 +80,11 @@
     <Compile Include="InvocationContextExtensions.cs" />
     <Compile Include="Model\EdmHelpers.cs" />
     <Compile Include="Model\ModelContext.cs" />
-    <Compile Include="Operation\IOperationProcessor.cs" />
+    <Compile Include="Operation\IOperationFilter.cs" />
     <Compile Include="Operation\IOperationAuthorizer.cs" />
     <Compile Include="Operation\IOperationExecutor.cs" />
     <Compile Include="Operation\OperationContext.cs" />
+    <Compile Include="RestierContainerBuilder.cs" />
     <Compile Include="ServiceCollectionExtensions.cs" />
     <Compile Include="Model\IModelBuilder.cs" />
     <Compile Include="Model\IModelMapper.cs" />
@@ -104,7 +112,7 @@
     <Compile Include="Submit\ChangeSetItem.cs" />
     <Compile Include="Submit\DefaultSubmitHandler.cs" />
     <Compile Include="Submit\IChangeSetItemAuthorizer.cs" />
-    <Compile Include="Submit\IChangeSetItemProcessor.cs" />
+    <Compile Include="Submit\IChangeSetItemFilter.cs" />
     <Compile Include="Submit\IChangeSetItemValidator.cs" />
     <Compile Include="Submit\IChangeSetInitializer.cs" />
     <Compile Include="Submit\ISubmitExecutor.cs" />

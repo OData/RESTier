@@ -14,13 +14,12 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
-using Microsoft.OData.Core;
-using Microsoft.Restier.Core.Exceptions;
+using Microsoft.OData;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Publishers.OData.Query;
 using Net::System.Net.Http.Formatting;
 
-namespace Microsoft.Restier.Publishers.OData.Filters
+namespace Microsoft.Restier.Publishers.OData
 {
     /// <summary>
     /// An ExceptionFilter that is capable of serializing well-known exceptions to the client.
@@ -29,17 +28,14 @@ namespace Microsoft.Restier.Publishers.OData.Filters
     internal sealed class RestierExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private static readonly List<ExceptionHandlerDelegate> Handlers = new List<ExceptionHandlerDelegate>
-            {
-                Handler400,
-                Handler403,
-                Handler404,
-                Handler412,
-                Handler428,
-                Handler501
-            };
+        {
+            HandleChangeSetValidationException,
+            HandleCommonException
+        };
 
         private delegate Task<HttpResponseMessage> ExceptionHandlerDelegate(
             HttpActionExecutedContext context,
+            bool useVerboseErros,
             CancellationToken cancellationToken);
 
         /// <summary>
@@ -52,9 +48,12 @@ namespace Microsoft.Restier.Publishers.OData.Filters
             HttpActionExecutedContext actionExecutedContext,
             CancellationToken cancellationToken)
         {
+            var config = actionExecutedContext.Request.GetConfiguration();
+            var useVerboseErros = config.GetUseVerboseErrors();
+
             foreach (var handler in Handlers)
             {
-                var result = await handler.Invoke(actionExecutedContext, cancellationToken);
+                var result = await handler.Invoke(actionExecutedContext, useVerboseErros, cancellationToken);
 
                 if (result != null)
                 {
@@ -64,8 +63,9 @@ namespace Microsoft.Restier.Publishers.OData.Filters
             }
         }
 
-        private static async Task<HttpResponseMessage> Handler400(
+        private static async Task<HttpResponseMessage> HandleChangeSetValidationException(
            HttpActionExecutedContext context,
+           bool useVerboseErros,
            CancellationToken cancellationToken)
         {
             ChangeSetValidationException validationException = context.Exception as ChangeSetValidationException;
@@ -80,84 +80,70 @@ namespace Microsoft.Restier.Publishers.OData.Filters
                 return await exceptionResult.ExecuteAsync(cancellationToken);
             }
 
-            var odataException = context.Exception as ODataException;
-            if (odataException != null)
-            {
-                return context.Request.CreateErrorResponse(HttpStatusCode.BadRequest, context.Exception);
-            }
-
             return null;
         }
 
-        private static Task<HttpResponseMessage> Handler403(
+        private static Task<HttpResponseMessage> HandleCommonException(
             HttpActionExecutedContext context,
+            bool useVerboseErros,
             CancellationToken cancellationToken)
         {
-            if (context.Exception is SecurityException)
+            var exception = context.Exception;
+            if (exception is AggregateException)
             {
-                return Task.FromResult(
-                    context.Request.CreateErrorResponse(HttpStatusCode.Forbidden, context.Exception));
+                // In async call, the exception will be wrapped as AggregateException
+                exception = exception.InnerException;
             }
 
-            return Task.FromResult<HttpResponseMessage>(null);
-        }
-
-        private static Task<HttpResponseMessage> Handler404(
-            HttpActionExecutedContext context,
-            CancellationToken cancellationToken)
-        {
-            var notFoundException = context.Exception as ResourceNotFoundException;
-            if (notFoundException != null)
+            if (exception == null)
             {
-                return Task.FromResult(
-                    context.Request.CreateErrorResponse(HttpStatusCode.NotFound, context.Exception));
+                return Task.FromResult<HttpResponseMessage>(null);
             }
 
-            return Task.FromResult<HttpResponseMessage>(null);
-        }
-
-        private static Task<HttpResponseMessage> Handler412(
-            HttpActionExecutedContext context,
-            CancellationToken cancellationToken)
-        {
-            if (context.Exception is PreconditionFailedException)
+            HttpStatusCode code = HttpStatusCode.Unused;
+            if (exception is ODataException)
             {
-                return Task.FromResult(
-                    context.Request.CreateErrorResponse(HttpStatusCode.PreconditionFailed, context.Exception));
+                code = HttpStatusCode.BadRequest;
+            }
+            else if (exception is SecurityException)
+            {
+                code = HttpStatusCode.Forbidden;
+            }
+            else if (exception is ResourceNotFoundException)
+            {
+                code = HttpStatusCode.NotFound;
+            }
+            else if (exception is PreconditionFailedException)
+            {
+                code = HttpStatusCode.PreconditionFailed;
+            }
+            else if (exception is PreconditionRequiredException)
+            {
+                code = (HttpStatusCode)428;
+            }
+            else if (context.Exception is NotImplementedException)
+            {
+                code = HttpStatusCode.NotImplemented;
             }
 
-            return Task.FromResult<HttpResponseMessage>(null);
-        }
-
-        private static Task<HttpResponseMessage> Handler428(
-            HttpActionExecutedContext context,
-            CancellationToken cancellationToken)
-        {
-            if (context.Exception is PreconditionRequiredException)
+            // When exception occured in a ChangeSet request,
+            // exception must be handled in OnChangeSetCompleted
+            // to avoid deadlock in Github Issue #82.
+            var changeSetProperty = context.Request.GetChangeSet();
+            if (changeSetProperty != null)
             {
-                return Task.FromResult(
-                    context.Request.CreateErrorResponse((HttpStatusCode)428, context.Exception));
+                changeSetProperty.Exceptions.Add(exception);
+                changeSetProperty.OnChangeSetCompleted(context.Request);
             }
 
-            return Task.FromResult<HttpResponseMessage>(null);
-        }
-
-        private static Task<HttpResponseMessage> Handler501(
-            HttpActionExecutedContext context,
-            CancellationToken cancellationToken)
-        {
-            if (context.Exception is NotImplementedException)
+            if (code != HttpStatusCode.Unused)
             {
-                return Task.FromResult(
-                    context.Request.CreateErrorResponse(HttpStatusCode.NotImplemented, context.Exception));
-            }
+                if (useVerboseErros)
+                {
+                    return Task.FromResult(context.Request.CreateErrorResponse(code, exception));
+                }
 
-            // For async call, the exception is wrapped.
-            if (context.Exception is AggregateException
-                && context.Exception.InnerException is NotImplementedException)
-            {
-                return Task.FromResult(
-                    context.Request.CreateErrorResponse(HttpStatusCode.NotImplemented, context.Exception));
+                return Task.FromResult(context.Request.CreateErrorResponse(code, exception.Message));
             }
 
             return Task.FromResult<HttpResponseMessage>(null);

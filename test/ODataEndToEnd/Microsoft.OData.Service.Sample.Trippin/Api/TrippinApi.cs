@@ -3,17 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Query;
 using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Core;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.OData.Edm.Library.Annotations;
-using Microsoft.OData.Edm.Library.Values;
 using Microsoft.OData.Service.Sample.Trippin.Extension;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 using Microsoft.Restier.Core;
@@ -22,17 +19,22 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework;
 using Microsoft.Restier.Publishers.OData.Model;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Web.OData.Builder;
+using Microsoft.OData.Edm.Vocabularies;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
-        public new TrippinModel Context
+        [NotMapped]
+        [IgnoreDataMember]
+        public TrippinModel ModelContext
         {
             get { return DbContext; }
         }
 
+        [Resource]
         public Person Me
         {
             get
@@ -45,16 +47,19 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        [Resource]
         public IQueryable<Flight> Flights1
         {
             get { return DbContext.Flights; }
         }
 
+        [Resource]
         public IQueryable<Flight> Flights2
         {
             get { return this.GetQueryableSource<Flight>("Flights"); }
         }
 
+        [Resource]
         public IQueryable<PersonWithAge> PeopleWithAge
         {
             get
@@ -69,6 +74,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        [Resource]
         public IQueryable<PersonWithAge> PeopleWithAge1
         {
             get
@@ -83,11 +89,12 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
+        [Resource]
         public PersonWithAge PeopleWithAgeMe
         {
             get
             {
-                return Context.People.Select(p => new PersonWithAge
+                return ModelContext.People.Select(p => new PersonWithAge
                 {
                     Id = p.PersonId,
                     UserName = p.UserName,
@@ -114,7 +121,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
         private IQueryable<Person> PeopleWithFriends
         {
-            get { return Context.People.Include("Friends"); }
+            get { return ModelContext.People.Include("Friends"); }
         }
 
         /// <summary>
@@ -292,7 +299,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetIEnumerable(IEnumerable<Person> people, int n)
         {
-            return n*10;
+            return n * 10;
         }
 
         /// <summary>
@@ -305,7 +312,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", IsBound = true)]
         public int GetBoundEntitySetICollection(ICollection<Person> people, int n, int m)
         {
-            return n*m;
+            return n * m;
         }
 
         /// <summary>
@@ -545,7 +552,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
         [Operation(IsBound = true)]
         public int GetBoundPrimitive(int i)
         {
-            return i*100;
+            return i * 100;
         }
 
         /// <summary>
@@ -564,7 +571,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             return false;
         }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             // Add customized OData validation settings 
             Func<IServiceProvider, ODataValidationSettings> validationSettingFactory = sp => new ODataValidationSettings
@@ -575,22 +582,22 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
             services.AddService<IModelBuilder, TrippinModelExtender>();
 
-            return base.ConfigureApi(services)
+            return EntityFrameworkApi<TrippinModel>.ConfigureApi(apiType, services)
                 .AddSingleton<ODataPayloadValueConverter, CustomizedPayloadValueConverter>()
                 .AddSingleton<ODataValidationSettings>(validationSettingFactory)
                 .AddSingleton<IODataPathHandler, PathAndSlashEscapeODataPathHandler>()
-                .AddService<IChangeSetItemProcessor, CustomizedSubmitProcessor>()
+                .AddService<IChangeSetItemFilter, CustomizedSubmitFilter>()
                 .AddService<IModelBuilder, TrippinModelCustomizer>();
         }
 
 
         private class TrippinModelExtender : IModelBuilder
         {
-            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var builder = new ODataConventionModelBuilder();
                 builder.EntityType<PersonWithAge>();
-                return builder.GetEdmModel();
+                return Task.FromResult(builder.GetEdmModel());
             }
         }
 
@@ -602,20 +609,41 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             {
                 var model = await InnerHandler.GetModelAsync(context, cancellationToken);
 
+                var trueConstant = new EdmBooleanConstant(true);
+
                 // Set computed annotation
                 var tripType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Trip");
                 var trackGuidProperty = tripType.DeclaredProperties.Single(prop => prop.Name == "TrackGuid");
-                var timeStampValueProp= model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
-                var term = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
-                var anno1 = new EdmAnnotation(trackGuidProperty, term, new EdmBooleanConstant(true));
-                var anno2 = new EdmAnnotation(timeStampValueProp, term, new EdmBooleanConstant(true));
+                var timeStampValueProp = model.EntityContainer.FindEntitySet("Airlines").EntityType().FindProperty("TimeStampValue");
+                var computedTerm = new EdmTerm("Org.OData.Core.V1", "Computed", EdmPrimitiveTypeKind.Boolean);
+                var anno1 = new EdmVocabularyAnnotation(trackGuidProperty, computedTerm, trueConstant);
+                var anno2 = new EdmVocabularyAnnotation(timeStampValueProp, computedTerm, trueConstant);
                 ((EdmModel)model).SetVocabularyAnnotation(anno1);
                 ((EdmModel)model).SetVocabularyAnnotation(anno2);
+
+                var immutableTerm = new EdmTerm("Org.OData.Core.V1", "Immutable", EdmPrimitiveTypeKind.Boolean);
+
+                var orderType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Order");
+                var orderProp1 = orderType.DeclaredProperties.Single(prop => prop.Name == "ComputedProperty");
+                var orderProp2 = orderType.DeclaredProperties.Single(prop => prop.Name == "ImmutableProperty");
+                var orderProp3 = orderType.DeclaredProperties.Single(prop => prop.Name == "ComputedOrderDetail");
+                var orderProp4 = orderType.DeclaredProperties.Single(prop => prop.Name == "ImmutableOrderDetail");
+
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp1, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp2, immutableTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp3, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(orderProp4, immutableTerm, trueConstant));
+
+                var orderDetailType = (EdmComplexType)model.SchemaElements.Single(e => e.Name == "OrderDetail");
+                var detailProp1 = orderDetailType.DeclaredProperties.Single(prop => prop.Name == "ComputedProperty");
+                var detailProp2 = orderDetailType.DeclaredProperties.Single(prop => prop.Name == "ImmutableProperty");
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(detailProp1, computedTerm, trueConstant));
+                ((EdmModel)model).SetVocabularyAnnotation(new EdmVocabularyAnnotation(detailProp2, immutableTerm, trueConstant));
 
                 var personType = (EdmEntityType)model.SchemaElements.Single(e => e.Name == "Person");
                 var type = personType.FindProperty("PersonId").Type;
 
-                var isNullableField = typeof(EdmTypeReference).GetField("isNullable",BindingFlags.Instance | BindingFlags.NonPublic);
+                var isNullableField = typeof(EdmTypeReference).GetField("isNullable", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (isNullableField != null)
                 {
                     isNullableField.SetValue(type, false);
@@ -623,6 +651,10 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
                 return model;
             }
+        }
+
+        public TrippinApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Web.OData;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
@@ -23,7 +22,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// set, singleton, or composable function import.
         /// </summary>
         /// <param name="context">
-        /// An API context.
+        /// The context for model mapper.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -37,12 +36,12 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiContext context,
+            ModelContext context,
             string name,
             out Type relevantType)
         {
             // Cannot await as cannot make method async
-            var model = context.GetModelAsync().Result;
+            var model = context.GetApiService<IEdmModel>();
             var element = model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
 
             if (element != null)
@@ -81,7 +80,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// Tries to get the relevant type of a composable function.
         /// </summary>
         /// <param name="context">
-        /// An API context.
+        /// The context for model mapper.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -98,7 +97,7 @@ namespace Microsoft.Restier.Publishers.OData.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiContext context,
+            ModelContext context,
             string namespaceName,
             string name,
             out Type relevantType)

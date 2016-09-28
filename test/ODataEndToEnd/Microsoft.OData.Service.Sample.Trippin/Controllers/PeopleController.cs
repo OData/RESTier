@@ -9,34 +9,22 @@ using System.Web.Http;
 using System.Web.OData;
 using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
-using Microsoft.OData.Edm.Library;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using Microsoft.OData.Service.Sample.Trippin.Api;
 using Microsoft.OData.Service.Sample.Trippin.Models;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Controllers
 {
     public class PeopleController : ODataController
     {
-        private TrippinApi api;
-
-        private TrippinApi Api
-        {
-            get
-            {
-                if (api == null)
-                {
-                    api = new TrippinApi();
-                }
-
-                return api;
-            }
-        }
-
         private TrippinModel DbContext
         {
             get
             {
-                return Api.Context;
+                var api = (TrippinApi)this.Request.GetRequestContainer().GetService<ApiBase>();
+                return api.ModelContext;
             }
         }
 

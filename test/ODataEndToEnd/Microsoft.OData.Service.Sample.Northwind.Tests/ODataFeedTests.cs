@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.OData.Extensions;
-using Microsoft.OData.Core.UriParser;
 using Microsoft.OData.Service.Sample.Northwind.Models;
 using Microsoft.Restier.Tests;
 using Newtonsoft.Json;
@@ -64,7 +63,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
 
             //Enable Key as Segment
             HttpConfiguration httpConfig = new HttpConfiguration();
-            httpConfig.SetUrlConventions(ODataUrlConventions.ODataSimplified);
+            httpConfig.SetUrlKeyDelimiter(ODataUrlKeyDelimiter.Slash);
 
             Action<HttpConfiguration, HttpServer> registerOData = (config, server) => WebApiConfig.RegisterNorthwind(config, server);
             string baselineFileName = "TestCustomerKeyAsSegment";
@@ -77,6 +76,14 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         public async Task TestBatch()
         {
             int id = ODataFeedTests.InsertTestProduct();
+
+            NorthwindContext ctx2 = GetDbContext();
+            Product[] insertedProducts2 = ctx2.Products
+                .Where(b => b.ProductName == "Horizon" || b.ProductName == "Commons")
+                .OrderBy(b => b.ProductName)
+                .ToArray();
+            ctx2.Products.RemoveRange(insertedProducts2);
+            ctx2.SaveChanges();
 
             string batchContentString =
 @"--batch_35114042-958d-48fd-8189-bd93264b31de
@@ -95,7 +102,7 @@ Accept: application/json;odata.metadata=minimal
 Accept-Charset: UTF-8
 User-Agent: Microsoft ADO.NET Data Services
 
-{""@odata.type"":""#Microsoft.OData.Service.Sample.Northwind.Models.Product"",""CategoryID"":null,""Discontinued"":false,""ProductID"":0,""ProductName"":""Horizon"",""QuantityPerUnit"":""4"",""ReorderLevel"":10,""SupplierID"":null,""UnitPrice"":2.5,""UnitsInStock"":100,""UnitsOnOrder"":0}
+{'@odata.type':'#Microsoft.OData.Service.Sample.Northwind.Models.Product','CategoryID':null,'Discontinued':false,'ProductID':0,'ProductName':'Horizon','QuantityPerUnit':'4','ReorderLevel':10,'SupplierID':null,'UnitPrice':2.5,'UnitsInStock':100,'UnitsOnOrder':0}
 --changeset_3ffaecfa-069f-4ad7-bb41-bcc2481ea0dd
 Content-Type: application/http
 Content-Transfer-Encoding: binary
@@ -109,7 +116,7 @@ Accept: application/json;odata.metadata=minimal
 Accept-Charset: UTF-8
 User-Agent: Microsoft ADO.NET Data Services
 
-{""@odata.type"":""#Microsoft.OData.Service.Sample.Northwind.Models.Product"",""CategoryID"":null,""Discontinued"":true,""ProductID"":0,""ProductName"":""Commons"",""QuantityPerUnit"":""5"",""ReorderLevel"":11,""SupplierID"":null,""UnitPrice"":15.99,""UnitsInStock"":200,""UnitsOnOrder"":10}
+{'@odata.type':'#Microsoft.OData.Service.Sample.Northwind.Models.Product','CategoryID':null,'Discontinued':true,'ProductID':0,'ProductName':'Commons','QuantityPerUnit':'5','ReorderLevel':11,'SupplierID':null,'UnitPrice':15.99,'UnitsInStock':200,'UnitsOnOrder':10}
 --changeset_3ffaecfa-069f-4ad7-bb41-bcc2481ea0dd
 Content-Type: application/http
 Content-Transfer-Encoding: binary

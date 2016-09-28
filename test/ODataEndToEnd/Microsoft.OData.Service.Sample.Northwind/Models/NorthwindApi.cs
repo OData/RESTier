@@ -4,39 +4,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData;
-using System.Web.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Providers.EntityFramework;
-using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Model;
-using Microsoft.Restier.Security;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Models
 {
-    [EnableRoleBasedSecurity]
-    [Grant(ApiPermissionType.All, On = "Customers")]
-    [Grant(ApiPermissionType.All, On = "Products")]
-    [Grant(ApiPermissionType.All, On = "CurrentOrders")]
-    [Grant(ApiPermissionType.All, On = "ExpensiveProducts")]
-    [Grant(ApiPermissionType.All, On = "Orders")]
-    [Grant(ApiPermissionType.All, On = "Employees")]
-    [Grant(ApiPermissionType.All, On = "Regions")]
-    [Grant(ApiPermissionType.Inspect, On = "Suppliers")]
-    [Grant(ApiPermissionType.Read, On = "Suppliers")]
-    [Grant(ApiPermissionType.All, On = "ResetDataSource")]
     public class NorthwindApi : EntityFrameworkApi<NorthwindContext>
     {
-        public new NorthwindContext Context { get { return DbContext; } }
+        public NorthwindContext ModelContext { get { return DbContext; } }
 
         // Imperative views. Currently CUD operations not supported
+        [Resource]
         public IQueryable<Product> ExpensiveProducts
         {
             get
@@ -46,6 +32,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             }
         }
 
+        [Resource]
         public IQueryable<Order> CurrentOrders
         {
             get
@@ -71,9 +58,9 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
             return 0.0;
         }
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            return base.ConfigureApi(services)
+            return EntityFrameworkApi<NorthwindContext>.ConfigureApi(apiType, services)
                 .AddService<IModelBuilder, NorthwindModelExtender>();
         }
 
@@ -116,6 +103,10 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
 
                 return model;
             }
+        }
+
+        public NorthwindApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

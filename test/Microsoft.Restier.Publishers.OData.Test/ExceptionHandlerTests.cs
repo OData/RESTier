@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Security;
@@ -7,7 +8,6 @@ using System.Web.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Publishers.OData.Routing;
 using Xunit;
 
 namespace Microsoft.Restier.Publishers.OData.Test
@@ -33,10 +33,14 @@ namespace Microsoft.Restier.Publishers.OData.Test
 
         private class ExcApi : StoreApi
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                return base.ConfigureApi(services)
+                return StoreApi.ConfigureApi(apiType, services)
                     .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
+            }
+
+            public ExcApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 

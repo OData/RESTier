@@ -12,33 +12,22 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.OData;
+using System.Web.OData.Extensions;
 using System.Web.OData.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Service.Sample.Northwind.Models;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Controllers
 {
     public class NorthwindController : ODataController
     {
-        private NorthwindApi api;
-
-        private NorthwindApi Api
-        {
-            get
-            {
-                if (api == null)
-                {
-                    api = new NorthwindApi();
-                }
-
-                return api;
-            }
-        }
-
         private NorthwindContext DbContext
         {
             get
             {
-                return Api.Context;
+                var api =(NorthwindApi)this.Request.GetRequestContainer().GetService<ApiBase>();
+                return api.ModelContext;
             }
         }
 
@@ -72,66 +61,12 @@ namespace Microsoft.OData.Service.Sample.Northwind.Controllers
             return Ok(price);
         }
 
-        [HttpGet]
-        [ODataRoute("Products/Microsoft.OData.Service.Sample.Northwind.Models.MostExpensive")]
-        public IHttpActionResult MostExpensive()
-        {
-            var product = DbContext.Products.Max(p => p.UnitPrice);
-            return Ok(product);
-        }
-
-        [HttpPost]
-        [ODataRoute("Products({key})/Microsoft.OData.Service.Sample.Northwind.Models.IncreasePrice")]
-        public IHttpActionResult IncreasePrice([FromODataUri] int key, ODataActionParameters parameters)
-        {
-            var entity = DbContext.Products.FirstOrDefault(e => e.ProductID == key);
-            if (entity == null)
-            {
-                return NotFound();
-            }
-            entity.UnitPrice = entity.UnitPrice + (int)parameters["diff"];
-
-            try
-            {
-                DbContext.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DbContext.Products.Any(p => p.ProductID == key))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
         [HttpPost]
         [ODataRoute("ResetDataSource")]
         public IHttpActionResult ResetDataSource()
         {
             DbContext.ResetDataSource();
             return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        /// <summary>
-        /// Disposes the API and the controller.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposing is happening.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.api != null)
-                {
-                    this.api.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

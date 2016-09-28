@@ -7,8 +7,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core.Conventions;
-using Microsoft.Restier.Core.Properties;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
@@ -213,34 +211,15 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
         {
-            if (!services.HasService<ApiBase>())
-            {
-                services.AddScoped<ApiBase.ApiHolder>()
-                    .AddScoped(apiType, sp => sp.GetService<ApiBase.ApiHolder>().Api)
-                    .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api)
-                    .AddScoped(sp => sp.GetService<ApiBase.ApiHolder>().Api.Context);
-            }
+            Ensure.NotNull(apiType, "apiType");
+
+            services.AddScoped(apiType, apiType)
+                .AddScoped(typeof(ApiBase), apiType);
+
+            services.TryAddSingleton<ApiConfiguration>();
 
             return services.AddService<IQueryExecutor, DefaultQueryExecutor>()
                             .AddScoped<PropertyBag>();
-        }
-
-        /// <summary>
-        /// Add services of enabled attributes.
-        /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="apiType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddAttributeServices(this IServiceCollection services, Type apiType)
-        {
-            Ensure.NotNull(apiType, "apiType");
-
-            ApiConfiguratorAttributes.AddApiServices(apiType, services);
-            return services;
         }
 
         /// <summary>
@@ -258,44 +237,12 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(apiType, "apiType");
 
             ConventionBasedChangeSetItemAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedChangeSetItemProcessor.ApplyTo(services, apiType);
+            ConventionBasedChangeSetItemFilter.ApplyTo(services, apiType);
             services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
             ConventionBasedQueryExpressionProcessor.ApplyTo(services, apiType);
             ConventionBasedOperationAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedOperationProcessor.ApplyTo(services, apiType);
+            ConventionBasedOperationFilter.ApplyTo(services, apiType);
             return services;
-        }
-
-        /// <summary>
-        /// Build the <see cref="ApiConfiguration"/>
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>The built <see cref="ApiConfiguration"/></returns>
-        internal static ApiConfiguration BuildApiConfiguration(this IServiceCollection services)
-        {
-            return services.BuildApiConfiguration(null);
-        }
-
-        /// <summary>
-        /// Build the <see cref="ApiConfiguration"/>
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="serviceProviderFactory">
-        /// An optional factory to create an <see cref="IServiceProvider"/>.
-        /// Use this to inject your favorite DI container.
-        /// </param>
-        /// <returns>The built <see cref="ApiConfiguration"/></returns>
-        internal static ApiConfiguration BuildApiConfiguration(
-            this IServiceCollection services,
-            Func<IServiceCollection, IServiceProvider> serviceProviderFactory)
-        {
-            Ensure.NotNull(services, "services");
-
-            services.TryAddSingleton<ApiConfiguration>();
-
-            var serviceProvider = serviceProviderFactory != null ?
-                serviceProviderFactory(services) : services.BuildServiceProvider();
-            return serviceProvider.GetService<ApiConfiguration>();
         }
 
         private static IServiceCollection AddContributorNoCheck<TService>(

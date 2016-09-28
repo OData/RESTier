@@ -3,10 +3,9 @@
 
 using System;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
-using Microsoft.Restier.Publishers.OData.Results;
+using Microsoft.OData;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The serializer for collection result.
@@ -35,7 +34,7 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            NonEntityCollectionResult collectionResult = graph as NonEntityCollectionResult;
+            NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
             if (collectionResult != null)
             {
                 graph = collectionResult.Query;

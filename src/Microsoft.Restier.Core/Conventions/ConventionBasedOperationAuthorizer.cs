@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Operation;
 
-namespace Microsoft.Restier.Core.Conventions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A convention-based operation authorizer.
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Core.Conventions
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.GetApiService<ApiBase>();
+                    target = context.ImplementInstance;
                     if (target == null ||
                         !this.targetType.IsInstanceOfType(target))
                     {

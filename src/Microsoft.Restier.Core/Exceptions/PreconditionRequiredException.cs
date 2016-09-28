@@ -3,13 +3,13 @@
 
 using System;
 
-namespace Microsoft.Restier.Core.Exceptions
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// This exception is used for 428 Precondition required response.
     /// </summary>
     [Serializable]
-    public class PreconditionRequiredException : System.Exception
+    public class PreconditionRequiredException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the PreconditionRequiredException class.

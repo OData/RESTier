@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library;
@@ -18,7 +19,10 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
         public async Task ComplexTypeUpdate()
         {
             // Arrange
-            var libraryApi = new LibraryApi();
+            var container = new RestierContainerBuilder(typeof(LibraryApi));
+            var provider = container.BuildContainer();
+            var libraryApi = provider.GetService<ApiBase>();
+
             var item = new DataModificationItem(
                 "Readers",
                 typeof(Person),
@@ -28,12 +32,12 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests
                 new Dictionary<string, object>(),
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });
             var changeSet = new ChangeSet(new[] { item });
-            var sc = new SubmitContext(libraryApi.Context, changeSet);
+            var sc = new SubmitContext(provider, changeSet);
 
             // Act
-            var changeSetPreparer = libraryApi.Context.Configuration.GetApiService<IChangeSetInitializer>();
+            var changeSetPreparer = libraryApi.GetApiService<IChangeSetInitializer>();
             await changeSetPreparer.InitializeAsync(sc, CancellationToken.None);
-            var person = item.Entity as Person;
+            var person = item.Resource as Person;
 
             // Assert
             Assert.NotNull(person);

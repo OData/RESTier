@@ -12,64 +12,65 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void PropertyBagManipulatesPropertiesCorrectly()
         {
-            var context = new TestApi().Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            Assert.False(context.HasProperty("Test"));
-            Assert.Null(context.GetProperty("Test"));
-            Assert.Null(context.GetProperty<string>("Test"));
-            Assert.Equal(default(int), context.GetProperty<int>("Test"));
+            Assert.False(api.HasProperty("Test"));
+            Assert.Null(api.GetProperty("Test"));
+            Assert.Null(api.GetProperty<string>("Test"));
+            Assert.Equal(default(int), api.GetProperty<int>("Test"));
 
-            context.SetProperty("Test", "Test");
-            Assert.True(context.HasProperty("Test"));
-            Assert.Equal("Test", context.GetProperty("Test"));
-            Assert.Equal("Test", context.GetProperty<string>("Test"));
+            api.SetProperty("Test", "Test");
+            Assert.True(api.HasProperty("Test"));
+            Assert.Equal("Test", api.GetProperty("Test"));
+            Assert.Equal("Test", api.GetProperty<string>("Test"));
 
-            context.ClearProperty("Test");
-            Assert.False(context.HasProperty("Test"));
-            Assert.Null(context.GetProperty("Test"));
-            Assert.Null(context.GetProperty<string>("Test"));
-            Assert.Equal(default(int), context.GetProperty<int>("Test"));
+            api.RemoveProperty("Test");
+            Assert.False(api.HasProperty("Test"));
+            Assert.Null(api.GetProperty("Test"));
+            Assert.Null(api.GetProperty<string>("Test"));
+            Assert.Equal(default(int), api.GetProperty<int>("Test"));
         }
 
         [Fact]
         public void DifferentPropertyBagsDoNotConflict()
         {
-            var api = new TestApi();
-            var context = api.Context;
-            var configuration = context.Configuration;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            configuration.SetProperty("Test", 1);
-            context.SetProperty("Test", 2);
-
-            Assert.Equal(1, configuration.GetProperty<int>("Test"));
-            Assert.Equal(2, context.GetProperty<int>("Test"));
+            api.SetProperty("Test", 2);
+            Assert.Equal(2, api.GetProperty<int>("Test"));
         }
 
         [Fact]
         public void PropertyBagsAreDisposedCorrectly()
         {
-            var api = new TestApi();
-            var context = api.Context;
-            var configuration = context.Configuration;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var scopedProvider  = scope.ServiceProvider;
+            var api = scopedProvider.GetService<ApiBase>();
 
-            Assert.NotNull(configuration.GetApiService<MyPropertyBag>());
+            Assert.NotNull(api.GetApiService<MyPropertyBag>());
             Assert.Equal(1, MyPropertyBag.InstanceCount);
 
-            Assert.NotNull(context.GetApiService<MyPropertyBag>());
+            var scopedProvider2 = provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
+            var api2 = scopedProvider2.GetService<ApiBase>();
+
+            Assert.NotNull(api2.GetApiService<MyPropertyBag>());
             Assert.Equal(2, MyPropertyBag.InstanceCount);
 
-            // This will dispose all the scoped and transient instances registered
-            // in the ApiContext scope.
-            api.Dispose();
+            scope.Dispose();
 
-            // The one in ApiConfiguration will NOT be disposed until the service ends.
             Assert.Equal(1, MyPropertyBag.InstanceCount);
         }
 
         /// <summary>
         /// <see cref="MyPropertyBag"/> has the same lifetime as PropertyBag thus
         /// use this class to test the lifetime of PropertyBag in ApiConfiguration
-        /// and ApiContext.
+        /// and ApiBase.
         /// </summary>
         private class MyPropertyBag : IDisposable
         {
@@ -88,9 +89,13 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApi : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                return base.ConfigureApi(services).AddScoped<MyPropertyBag>();
+                return ApiBase.ConfigureApi(apiType, services).AddScoped<MyPropertyBag>();
+            }
+
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
     }

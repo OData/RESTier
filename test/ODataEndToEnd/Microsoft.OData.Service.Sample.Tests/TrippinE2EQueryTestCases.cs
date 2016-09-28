@@ -23,7 +23,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         }
 
         [Theory]
-        [InlineData("People(1)/Microsoft.OData.Service.Sample.Trippin.Models.Employee", 404)]
+        [InlineData("People(1)/Microsoft.OData.Service.Sample.Trippin.Models.Employee", 204)]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Employee/UserName", 500)]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Employee/Cost", 500)]
         public void DerivedTypeQuery(string url, int expectedCode)

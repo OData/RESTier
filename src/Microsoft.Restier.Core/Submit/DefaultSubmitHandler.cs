@@ -10,7 +10,6 @@ using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -91,7 +90,7 @@ namespace Microsoft.Restier.Core.Submit
                         throw new NotSupportedException(Resources.DataModificationMustBeCUD);
                     }
 
-                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.EntitySetName);
+                    return string.Format(CultureInfo.InvariantCulture, message, dataModification.ResourceSetName);
 
                 default:
                     throw new InvalidOperationException(string.Format(
@@ -187,10 +186,10 @@ namespace Microsoft.Restier.Core.Submit
                 {
                     item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
 
-                    var processor = context.GetApiService<IChangeSetItemProcessor>();
+                    var processor = context.GetApiService<IChangeSetItemFilter>();
                     if (processor != null)
                     {
-                        await processor.OnProcessingChangeSetItemAsync(context, item, cancellationToken);
+                        await processor.OnChangeSetItemProcessingAsync(context, item, cancellationToken);
                     }
 
                     if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
@@ -230,10 +229,10 @@ namespace Microsoft.Restier.Core.Submit
         {
             foreach (ChangeSetItem item in changeSetItems)
             {
-                var processor = context.GetApiService<IChangeSetItemProcessor>();
+                var processor = context.GetApiService<IChangeSetItemFilter>();
                 if (processor != null)
                 {
-                    await processor.OnProcessedChangeSetItemAsync(context, item, cancellationToken);
+                    await processor.OnChangeSetItemProcessedAsync(context, item, cancellationToken);
                 }
             }
         }

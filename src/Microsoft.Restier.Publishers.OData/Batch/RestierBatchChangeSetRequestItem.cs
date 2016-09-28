@@ -3,10 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Batch;
+using System.Web.OData.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 
@@ -17,19 +21,13 @@ namespace Microsoft.Restier.Publishers.OData.Batch
     /// </summary>
     public class RestierBatchChangeSetRequestItem : ChangeSetRequestItem
     {
-        private Func<ApiBase> apiFactory;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierBatchChangeSetRequestItem" /> class.
         /// </summary>
         /// <param name="requests">The request messages.</param>
-        /// <param name="apiFactory">Gets or sets the callback to create API.</param>
-        public RestierBatchChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests, Func<ApiBase> apiFactory)
+        public RestierBatchChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests)
             : base(requests)
         {
-            Ensure.NotNull(apiFactory, "apiFactory");
-
-            this.apiFactory = apiFactory;
         }
 
         /// <summary>
@@ -49,10 +47,39 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             this.SetChangeSetProperty(changeSetProperty);
 
             Dictionary<string, string> contentIdToLocationMapping = new Dictionary<string, string>();
-            List<Task<HttpResponseMessage>> responseTasks = new List<Task<HttpResponseMessage>>();
+            var responseTasks = new List<Task<Task<HttpResponseMessage>>>();
+
             foreach (HttpRequestMessage request in Requests)
             {
-                responseTasks.Add(SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping));
+                // Since exceptions may occure before the request is sent to RestierController,
+                // we must catch the exceptions here and call OnChangeSetCompleted,
+                // so as to avoid deadlock mentioned in Github Issue #82.
+                TaskCompletionSource<HttpResponseMessage> tcs = new TaskCompletionSource<HttpResponseMessage>();
+                var task =
+                    SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
+                        .ContinueWith(
+                            t =>
+                            {
+                                if (t.Exception != null)
+                                {
+                                    var taskEx = (t.Exception.InnerExceptions != null &&
+                                                  t.Exception.InnerExceptions.Count == 1)
+                                        ? t.Exception.InnerExceptions.First()
+                                        : t.Exception;
+                                    changeSetProperty.Exceptions.Add(taskEx);
+                                    changeSetProperty.OnChangeSetCompleted(request);
+                                    tcs.SetException(taskEx);
+                                }
+                                else
+                                {
+                                    tcs.SetResult(t.Result);
+                                }
+
+                                return tcs.Task;
+                            },
+                            cancellationToken);
+
+                responseTasks.Add(task);
             }
 
             // the responseTasks will be complete after:
@@ -64,9 +91,9 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             List<HttpResponseMessage> responses = new List<HttpResponseMessage>();
             try
             {
-                foreach (Task<HttpResponseMessage> responseTask in responseTasks)
+                foreach (var responseTask in responseTasks)
                 {
-                    HttpResponseMessage response = responseTask.Result;
+                    HttpResponseMessage response = responseTask.Result.Result;
                     if (response.IsSuccessStatusCode)
                     {
                         responses.Add(response);
@@ -89,9 +116,10 @@ namespace Microsoft.Restier.Publishers.OData.Batch
             return new ChangeSetResponseItem(responses);
         }
 
-        internal async Task SubmitChangeSet(ChangeSet changeSet)
+        internal async Task SubmitChangeSet(HttpRequestMessage request, ChangeSet changeSet)
         {
-            using (var api = this.apiFactory())
+            var requestContainer = request.GetRequestContainer();
+            using (var api = requestContainer.GetService<ApiBase>())
             {
                 SubmitResult submitResults = await api.SubmitAsync(changeSet);
             }

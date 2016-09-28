@@ -2,8 +2,9 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 
 namespace Microsoft.Restier.Core.Operation
 {
@@ -14,22 +15,23 @@ namespace Microsoft.Restier.Core.Operation
     public class OperationContext : InvocationContext
     {
         private readonly string operationName;
+        private readonly object implementInstance;
         private readonly Func<string, object> getParameterValueFunc;
         private readonly bool isFunction;
-        private readonly IQueryable bindingParameterValue;
-        private ICollection<object> parametersValue;
+        private readonly IEnumerable bindingParameterValue;
+        private ICollection<object> parameterValues;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationContext" /> class.
         /// </summary>
-        /// <param name="apiContext">
-        /// An API context.
-        /// </param>
         /// <param name="getParameterValueFunc">
         /// The function that used to retrieve the parameter value name.
         /// </param>
         /// <param name="operationName">
         /// The operation name.
+        /// </param>
+        /// <param name="implementInstance">
+        /// The instance which has the implementation of the operation and used for reflection call
         /// </param>
         /// <param name="isFunction">
         /// A flag indicates this is a function call or action call.
@@ -37,16 +39,21 @@ namespace Microsoft.Restier.Core.Operation
         /// <param name="bindingParameterValue">
         /// A queryable for binding parameter value and if it is function/action import, the value will be null.
         /// </param>
+        /// <param name="provider">
+        /// The service provider used to get service from container.
+        /// </param>
         public OperationContext(
-            ApiContext apiContext,
             Func<string, object> getParameterValueFunc,
             string operationName,
+            object implementInstance,
             bool isFunction,
-            IQueryable bindingParameterValue)
-            : base(apiContext)
+            IEnumerable bindingParameterValue,
+            IServiceProvider provider)
+            : base(provider)
         {
             this.getParameterValueFunc = getParameterValueFunc;
             this.operationName = operationName;
+            this.implementInstance = implementInstance;
             this.isFunction = isFunction;
             this.bindingParameterValue = bindingParameterValue;
         }
@@ -59,6 +66,17 @@ namespace Microsoft.Restier.Core.Operation
             get
             {
                 return this.operationName;
+            }
+        }
+
+        /// <summary>
+        /// Gets the instance have implemented the operation and used for reflection call.
+        /// </summary>
+        public object ImplementInstance
+        {
+            get
+            {
+                return this.implementInstance;
             }
         }
 
@@ -88,7 +106,7 @@ namespace Microsoft.Restier.Core.Operation
         /// Gets the queryable for binding parameter value,
         /// and if it is function/action import, the value will be null.
         /// </summary>
-        public IQueryable BindingParameterValue
+        public IEnumerable BindingParameterValue
         {
             get
             {
@@ -100,17 +118,23 @@ namespace Microsoft.Restier.Core.Operation
         /// Gets or sets the parameters value array used by method,
         /// It is only set after parameters are prepared.
         /// </summary>
-        public ICollection<object> ParametersValue
+        public ICollection<object> ParameterValues
         {
             get
             {
-                return this.parametersValue;
+                return this.parameterValues;
             }
 
             set
             {
-                this.parametersValue = value;
+                this.parameterValues = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the http request for this operation call
+        /// TODO consider moving to base class after more investigation
+        /// </summary>
+        public HttpRequestMessage Request { get; set; }
     }
 }

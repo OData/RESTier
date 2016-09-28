@@ -4,12 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net.Http;
+using System.Web.OData.Formatter;
 using System.Web.OData.Formatter.Deserialization;
-using Microsoft.OData.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// Get clr type from payload.
@@ -18,56 +20,28 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
     {
         internal static object ConvertValue(
             object odataValue,
+            string parameterName,
             Type expectedReturnType,
             IEdmTypeReference propertyType,
             IEdmModel model,
-            ApiContext apiContext)
+            HttpRequestMessage request,
+            IServiceProvider serviceProvider)
         {
-            ODataDeserializerContext readContext = new ODataDeserializerContext
+            var readContext = new ODataDeserializerContext
             {
-                Model = model
+                Model = model,
+                Request = request
             };
 
-            ODataDeserializerProvider deserializerProvider = apiContext.GetApiService<ODataDeserializerProvider>();
+            var returnValue = ODataModelBinderConverter.Convert(
+                odataValue, propertyType, expectedReturnType, parameterName, readContext, serviceProvider);
 
-            if (odataValue == null)
+            if (!propertyType.IsCollection())
             {
-                return null;
+                return returnValue;
             }
 
-            ODataNullValue nullValue = odataValue as ODataNullValue;
-            if (nullValue != null)
-            {
-                return null;
-            }
-
-            ODataComplexValue complexValue = odataValue as ODataComplexValue;
-            if (complexValue != null)
-            {
-                ODataEdmTypeDeserializer deserializer
-                    = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsComplex());
-                return deserializer.ReadInline(complexValue, propertyType, readContext);
-            }
-
-            ODataEnumValue enumValue = odataValue as ODataEnumValue;
-            if (enumValue != null)
-            {
-                ODataEdmTypeDeserializer deserializer
-                    = deserializerProvider.GetEdmTypeDeserializer(propertyType.AsEnum());
-                return deserializer.ReadInline(enumValue, propertyType, readContext);
-            }
-
-            ODataCollectionValue collection = odataValue as ODataCollectionValue;
-            if (collection != null)
-            {
-                ODataEdmTypeDeserializer deserializer
-                    = deserializerProvider.GetEdmTypeDeserializer(propertyType as IEdmCollectionTypeReference);
-                var collectionResult = deserializer.ReadInline(collection, propertyType, readContext);
-
-                return ConvertCollectionType(collectionResult, expectedReturnType);
-            }
-
-            return odataValue;
+            return ConvertCollectionType(returnValue, expectedReturnType);
         }
 
         internal static object ConvertCollectionType(object collectionResult, Type expectedReturnType)

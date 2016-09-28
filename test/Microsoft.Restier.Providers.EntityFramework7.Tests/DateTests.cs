@@ -12,7 +12,6 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives;
 using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;
-using Microsoft.Restier.Publishers.OData.Routing;
 using Microsoft.Restier.Tests;
 using Newtonsoft.Json;
 using Xunit;

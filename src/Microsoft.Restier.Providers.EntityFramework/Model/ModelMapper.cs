@@ -10,7 +10,7 @@ using System.Data.Entity;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-namespace Microsoft.Restier.Providers.EntityFramework.Model
+namespace Microsoft.Restier.Providers.EntityFramework
 {
     /// <summary>
     /// Represents a model mapper based on a DbContext.
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         /// set, singleton, or composable function import.
         /// </summary>
         /// <param name="context">
-        /// An API context.
+        /// The context for model mapper.
         /// </param>
         /// <param name="name">
         /// The name of an entity set, singleton or composable function import.
@@ -50,7 +50,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiContext context,
+            ModelContext context,
             string name,
             out Type relevantType)
         {
@@ -78,7 +78,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         /// Tries to get the relevant type of a composable function.
         /// </summary>
         /// <param name="context">
-        /// An API context.
+        /// The context for model mapper.
         /// </param>
         /// <param name="namespaceName">
         /// The name of a namespace containing a composable function.
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Providers.EntityFramework.Model
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ApiContext context,
+            ModelContext context,
             string namespaceName,
             string name,
             out Type relevantType)

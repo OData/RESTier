@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
 {

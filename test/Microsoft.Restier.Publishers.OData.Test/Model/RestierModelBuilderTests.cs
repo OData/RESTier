@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Validation;
 using Microsoft.Restier.Core;
@@ -15,7 +16,12 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         [Fact]
         public void ComplexTypeShoudWork()
         {
-            var model = new LibraryApi().Context.GetModelAsync().Result;
+            var container = new RestierContainerBuilder(typeof(LibraryApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
+            var model = api.GetModelAsync().Result;
+
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);
@@ -29,7 +35,11 @@ namespace Microsoft.Restier.Publishers.OData.Test.Model
         [Fact]
         public void PrimitiveTypesShouldWork()
         {
-            var model = new LibraryApi().Context.GetModelAsync().Result;
+            var container = new RestierContainerBuilder(typeof(LibraryApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            var model = api.GetModelAsync().Result;
+
             IEnumerable<EdmError> errors;
             Assert.True(model.Validate(out errors));
             Assert.Empty(errors);

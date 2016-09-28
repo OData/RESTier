@@ -62,11 +62,14 @@ The release of the component binaries is carried out regularly through [Nuget](h
 ## 4. Documentation
 Please visit the [RESTier pages](http://odata.github.io/RESTier). It has detailed descriptions on each feature provided by RESTier.
 
-## 5. Community
-### 5.1 Contribution
+## 5. Sample services
+Refer to [sample service github](https://github.com/OData/ODataSamples/tree/master/RESTier) for end to end sample service. The source code also contains end to end service for end to end test purpose. All the sample service can be run with visual studio 2015.
+
+## 6. Community
+### 6.1 Contribution
 There are many ways for you to contribute to RESTier. The easiest way is to participate in discussion of features and issues. You can also contribute by sending pull requests of features or bug fixes to us. Contribution to the documentations is also highly welcomed. Please refer to the [CONTRIBUTING.md](https://github.com/OData/RESTier/blob/master/.github/CONTRIBUTING.md) for more details.
 
-### 5.2 Support
+### 6.2 Support
 - Issues<br />Report issues on [Github issues](https://github.com/OData/RESTier/issues).
 - Questions<br />Ask questions on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=odata).
 - Feedback<br />Please send mails to [odatafeedback@microsoft.com](mailto:odatafeedback@microsoft.com).

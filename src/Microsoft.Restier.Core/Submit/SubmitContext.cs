@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -18,22 +17,17 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Initializes a new instance of the <see cref="SubmitContext" /> class.
         /// </summary>
-        /// <param name="apiContext">
-        /// An API context.
+        /// <param name="provider">
+        /// The service provider used to get service from container
         /// </param>
         /// <param name="changeSet">
         /// A change set.
         /// </param>
-        public SubmitContext(ApiContext apiContext, ChangeSet changeSet)
-            : base(apiContext)
+        public SubmitContext(IServiceProvider provider, ChangeSet changeSet)
+            : base(provider)
         {
             this.changeSet = changeSet;
         }
-
-        /// <summary>
-        /// Gets the model that informs this submit context.
-        /// </summary>
-        public IEdmModel Model { get; internal set; }
 
         /// <summary>
         /// Gets or sets the change set.

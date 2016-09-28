@@ -2,9 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 
 namespace Microsoft.Restier.Publishers.OData
 {
@@ -35,6 +34,12 @@ namespace Microsoft.Restier.Publishers.OData
                     }
 
                     // System.DateTime[SqlType = DateTime or DateTime2] => Edm.DateTimeOffset
+                    // If DateTime.Kind equals Local, offset should equal the offset of the system's local time zone
+                    if (dateTimeValue.Kind == DateTimeKind.Local)
+                    {
+                        return new DateTimeOffset(dateTimeValue, TimeZoneInfo.Local.GetUtcOffset(dateTimeValue));
+                    }
+
                     return new DateTimeOffset(dateTimeValue, TimeSpan.Zero);
                 }
 

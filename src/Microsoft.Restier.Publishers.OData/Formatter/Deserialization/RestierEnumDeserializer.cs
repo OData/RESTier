@@ -4,22 +4,17 @@
 using System;
 using System.Web.OData;
 using System.Web.OData.Formatter.Deserialization;
-using Microsoft.OData.Core;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Deserialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The serializer for enum result.
     /// </summary>
-    internal class RestierEnumDeserializer : ODataEdmTypeDeserializer
+    internal class RestierEnumDeserializer : ODataEnumDeserializer
     {
         private ODataEnumDeserializer enumDeserializer = new ODataEnumDeserializer();
-
-        public RestierEnumDeserializer()
-            : base(ODataPayloadKind.Property)
-        {
-        }
 
         /// <inheritdoc />
         public override object Read(

@@ -3,10 +3,9 @@
 
 using System;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
-using Microsoft.Restier.Publishers.OData.Results;
+using Microsoft.OData;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The serializer for raw result.

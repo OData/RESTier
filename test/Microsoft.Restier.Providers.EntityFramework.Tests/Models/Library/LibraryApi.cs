@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.OData.Builder;
@@ -14,9 +15,9 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
     class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            base.ConfigureApi(services);
+            EntityFrameworkApi<LibraryContext>.ConfigureApi(apiType, services);
             services.AddService<IModelBuilder, ModelBuilder>();
 
             return services;
@@ -31,6 +32,10 @@ namespace Microsoft.Restier.Providers.EntityFramework.Tests.Models.Library
                 var model = builder.GetEdmModel();
                 return Task.FromResult<IEdmModel>(model);
             }
+        }
+
+        public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

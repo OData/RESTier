@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Tests
             string expectedContentPath = GetExpectedContentPath(baselinePath);
             string expectedContent = File.ReadAllText(expectedContentPath);
 
-            if (!string.Equals(expectedContent, actualContent))
+            if (!string.Equals(expectedContent.Replace("\r\n","").Replace(" ", ""), actualContent.Replace("\r\n", "").Replace(" ", "")))
             {
                 string actualContentRootFolder = Path.GetFullPath("ActualBaselines");
                 string actualContentPath = Path.Combine(actualContentRootFolder, baselinePath + ".txt");

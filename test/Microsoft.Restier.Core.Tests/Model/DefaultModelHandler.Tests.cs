@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 using Xunit;
 
@@ -17,8 +17,9 @@ namespace Microsoft.Restier.Core.Tests.Model
     {
         private class TestApiA : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
                 services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
                 {
@@ -28,27 +29,43 @@ namespace Microsoft.Restier.Core.Tests.Model
                 {
                     InnerHandler = next,
                 });
+
                 return services;
+            }
+
+            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
         private class TestApiB : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var service = new TestSingleCallModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
                 return services;
+            }
+
+            public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
         private class TestApiC : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                ApiBase.ConfigureApi(apiType, services);
                 var service = new TestRetryModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
+
                 return services;
+            }
+
+            public TestApiC(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
             }
         }
 
@@ -105,10 +122,11 @@ namespace Microsoft.Restier.Core.Tests.Model
         [Fact]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var api = new TestApiA();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApiA));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var model = await context.GetModelAsync();
+            var model = await api.GetModelAsync();
             Assert.Equal(4, model.SchemaElements.Count());
             Assert.NotNull(model.SchemaElements
                 .SingleOrDefault(e => e.Name == "TestName"));
@@ -138,7 +156,7 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        private static Task<IEdmModel>[] PrepareThreads(int count, Type apiType, ManualResetEventSlim wait)
+        private static Task<IEdmModel>[] PrepareThreads(int count, IServiceProvider provider, ManualResetEventSlim wait)
         {
             var tasks = new Task<IEdmModel>[count];
             var result = Parallel.For(0, count, (inx, state) =>
@@ -149,11 +167,12 @@ namespace Microsoft.Restier.Core.Tests.Model
                     // To make threads better aligned.
                     wait.Wait();
 
-                    var api = (ApiBase)Activator.CreateInstance(apiType);
-                    var context = api.Context;
+                    var scopedProvider =
+                        provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
+                    var api = scopedProvider.GetService<ApiBase>();
                     try
                     {
-                        var model = context.GetModelAsync().Result;
+                        var model = api.GetModelAsync().Result;
                         source.SetResult(model);
                     }
                     catch (Exception e)
@@ -175,7 +194,9 @@ namespace Microsoft.Restier.Core.Tests.Model
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    var tasks = PrepareThreads(50, typeof(TestApiB), wait);
+                    var container = new RestierContainerBuilder(typeof(TestApiB));
+                    var provider = container.BuildContainer();
+                    var tasks = PrepareThreads(50, provider, wait);
                     wait.Set();
 
                     var models = await Task.WhenAll(tasks);
@@ -205,7 +226,10 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                var tasks = PrepareThreads(6, typeof(TestApiC), wait);
+                var container = new RestierContainerBuilder(typeof(TestApiC));
+                var provider = container.BuildContainer();
+
+                var tasks = PrepareThreads(6, provider, wait);
                 wait.Set();
 
                 await Task.WhenAll(tasks).ContinueWith(t =>
@@ -214,7 +238,7 @@ namespace Microsoft.Restier.Core.Tests.Model
                     Assert.True(tasks.All(e => e.IsFaulted));
                 });
 
-                tasks = PrepareThreads(150, typeof(TestApiC), wait);
+                tasks = PrepareThreads(150, provider, wait);
 
                 var models = await Task.WhenAll(tasks);
                 Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));

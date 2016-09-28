@@ -11,12 +11,10 @@ using System.Threading.Tasks;
 using System.Web.OData;
 using System.Web.OData.Formatter;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Annotations;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Model;
-using Microsoft.Restier.Publishers.OData.Properties;
 
 namespace Microsoft.Restier.Publishers.OData
 {
@@ -27,8 +25,14 @@ namespace Microsoft.Restier.Publishers.OData
         private static PropertyInfo etagConcurrencyPropertiesProperty = typeof(ETag).GetProperty(
             PropertyNameOfConcurrencyProperties, BindingFlags.NonPublic | BindingFlags.Instance);
 
+        // TODO GithubIssue#485 considering move to API class DI instance
         private static ConcurrentDictionary<IEdmEntitySet, bool> concurrencyCheckFlags
             = new ConcurrentDictionary<IEdmEntitySet, bool>();
+
+        // TODO GithubIssue#485 considering move to API class DI instance
+        private static ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>
+            typePropertiesAttributes
+            = new ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>();
 
         public static void ApplyTo(this ETag etag, IDictionary<string, object> propertyValues)
         {
@@ -52,9 +56,9 @@ namespace Microsoft.Restier.Publishers.OData
             }
 
             needCurrencyCheck = false;
-            var annotations = model.FindVocabularyAnnotations<IEdmValueAnnotation>(
+            var annotations = model.FindVocabularyAnnotations<IEdmVocabularyAnnotation>(
                 entitySet, CoreVocabularyModel.ConcurrencyTerm);
-            IEdmValueAnnotation annotation = annotations.FirstOrDefault();
+            var annotation = annotations.FirstOrDefault();
             if (annotation != null)
             {
                 needCurrencyCheck = true;
@@ -64,18 +68,32 @@ namespace Microsoft.Restier.Publishers.OData
             return needCurrencyCheck;
         }
 
-        public static IReadOnlyDictionary<string, object> CreatePropertyDictionary(this Delta entity)
+        public static IReadOnlyDictionary<string, object> CreatePropertyDictionary(
+            this Delta entity, IEdmStructuredType edmType, ApiBase api, bool isCreation)
         {
+            var propertiesAttributes = RetrievePropertiesAttributes(edmType, api);
+
             Dictionary<string, object> propertyValues = new Dictionary<string, object>();
             foreach (string propertyName in entity.GetChangedPropertyNames())
             {
+                PropertyAttributes attributes;
+                if (propertiesAttributes != null && propertiesAttributes.TryGetValue(propertyName, out attributes))
+                {
+                    if ((isCreation && (attributes & PropertyAttributes.IgnoreForCreation) != PropertyAttributes.None)
+                      || (!isCreation && (attributes & PropertyAttributes.IgnoreForUpdate) != PropertyAttributes.None))
+                    {
+                        // Will not get the properties for update or creation
+                        continue;
+                    }
+                }
+
                 object value;
                 if (entity.TryGetPropertyValue(propertyName, out value))
                 {
                     var complexObj = value as EdmComplexObject;
                     if (complexObj != null)
                     {
-                        value = CreatePropertyDictionary(complexObj);
+                        value = CreatePropertyDictionary(complexObj, complexObj.ActualEdmType, api, isCreation);
                     }
 
                     propertyValues.Add(propertyName, value);
@@ -85,20 +103,65 @@ namespace Microsoft.Restier.Publishers.OData
             return propertyValues;
         }
 
-        public static Type GetClrType(this IEdmType edmType, ApiBase api)
+        public static IDictionary<string, PropertyAttributes> RetrievePropertiesAttributes(
+            IEdmStructuredType edmType, ApiBase api)
         {
-            IEdmModel edmModel = api.GetModelAsync().Result;
-
-            ClrTypeAnnotation annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
-            if (annotation != null)
+            IDictionary<string, PropertyAttributes> propertiesAttributes;
+            if (typePropertiesAttributes.TryGetValue(edmType, out propertiesAttributes))
             {
-                return annotation.ClrType;
+                return propertiesAttributes;
             }
 
-            throw new NotSupportedException(string.Format(
-                CultureInfo.InvariantCulture,
-                Resources.ElementTypeNotFound,
-                edmType.FullTypeName()));
+            var model = api.GetModelAsync().Result;
+            foreach (var property in edmType.DeclaredProperties)
+            {
+                var annotations = model.FindVocabularyAnnotations(property);
+                var attributes = PropertyAttributes.None;
+                foreach (var annotation in annotations)
+                {
+                    var valueAnnotation = annotation as EdmVocabularyAnnotation;
+                    if (valueAnnotation == null)
+                    {
+                        continue;
+                    }
+
+                    if (valueAnnotation.Term.IsSameTerm(CoreVocabularyModel.ImmutableTerm))
+                    {
+                        var value = valueAnnotation.Value as EdmBooleanConstant;
+                        if (value != null && value.Value)
+                        {
+                            attributes |= PropertyAttributes.IgnoreForUpdate;
+                        }
+                    }
+
+                    if (valueAnnotation.Term.IsSameTerm(CoreVocabularyModel.ComputedTerm))
+                    {
+                        var value = valueAnnotation.Value as EdmBooleanConstant;
+                        if (value != null && value.Value)
+                        {
+                            attributes |= PropertyAttributes.IgnoreForUpdate;
+                            attributes |= PropertyAttributes.IgnoreForCreation;
+                        }
+                    }
+
+                    // TODO add permission annotation check
+                    // CoreVocabularyModel has no permission yet, will add with #480
+                }
+
+                // Add property attributes to the dictionary
+                if (attributes != PropertyAttributes.None)
+                {
+                    if (propertiesAttributes == null)
+                    {
+                        propertiesAttributes = new Dictionary<string, PropertyAttributes>();
+                        typePropertiesAttributes[edmType] = propertiesAttributes;
+                    }
+
+                    propertiesAttributes.Add(property.Name, attributes);
+                }
+            }
+
+            return propertiesAttributes;
         }
 
         public static IEdmTypeReference GetReturnTypeReference(this Type type, IEdmModel model)
@@ -117,38 +180,17 @@ namespace Microsoft.Restier.Publishers.OData
                 type = typeof(void);
             }
 
-            return GetTypeReference(type, model);
+            return EdmHelpers.GetTypeReference(type, model);
         }
 
-        public static IEdmTypeReference GetTypeReference(this Type type, IEdmModel model)
+        public static bool IsSameTerm(this IEdmTerm sourceTerm, IEdmTerm targetTerm)
         {
-            Type elementType;
-            if (type.TryGetElementType(out elementType))
+            if (sourceTerm.Namespace == targetTerm.Namespace && sourceTerm.Name == targetTerm.Name)
             {
-                return EdmCoreModel.GetCollection(GetTypeReference(elementType, model));
+                return true;
             }
 
-            var edmType = model.FindDeclaredType(type.FullName);
-
-            var enumType = edmType as IEdmEnumType;
-            if (enumType != null)
-            {
-                return new EdmEnumTypeReference(enumType, true);
-            }
-
-            var complexType = edmType as IEdmComplexType;
-            if (complexType != null)
-            {
-                return new EdmComplexTypeReference(complexType, true);
-            }
-
-            var entityType = edmType as IEdmEntityType;
-            if (entityType != null)
-            {
-                return new EdmEntityTypeReference(entityType, true);
-            }
-
-            return type.GetPrimitiveTypeReference();
+            return false;
         }
     }
 }

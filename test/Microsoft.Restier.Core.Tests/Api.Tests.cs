@@ -5,11 +5,11 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Core.Tests
         private class TestModelMapper : IModelMapper
         {
             public bool TryGetRelevantType(
-                ApiContext context,
+                ModelContext context,
                 string name, out Type relevantType)
             {
                 relevantType = typeof(string);
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Core.Tests
             }
 
             public bool TryGetRelevantType(
-                ApiContext context,
+                ModelContext context,
                 string namespaceName, string name,
                 out Type relevantType)
             {
@@ -80,7 +80,7 @@ namespace Microsoft.Restier.Core.Tests
 
         private class TestApi : ApiBase
         {
-            protected override IServiceCollection ConfigureApi(IServiceCollection services)
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var modelBuilder = new TestModelBuilder();
                 var modelMapper = new TestModelMapper();
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Core.Tests
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                services.AddCoreServices(this.GetType());
+                services.AddCoreServices(apiType);
                 services.AddService<IModelBuilder>((sp, next) => modelBuilder);
                 services.AddService<IModelMapper>((sp, next) => modelMapper);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => querySourcer);
@@ -97,16 +97,26 @@ namespace Microsoft.Restier.Core.Tests
 
                 return services;
             }
+
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         private class TestApiEmpty : ApiBase
         {
+            public TestApiEmpty(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
         }
 
         [Fact]
         public void ApiSourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource("Test", arguments);
@@ -128,21 +138,23 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfEntityContainerElementThrowsIfNotMapped()
         {
-            var api = new TestApiEmpty();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApiEmpty));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => context.GetQueryableSource("Test", arguments));
+            Assert.Throws<NotSupportedException>(() => api.GetQueryableSource("Test", arguments));
         }
 
         [Fact]
         public void SourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource("Test", arguments);
+            var source = api.GetQueryableSource("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -161,7 +173,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void ApiSourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource("Namespace", "Function", arguments);
@@ -185,21 +200,24 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceOfComposableFunctionThrowsIfNotMapped()
         {
-            var api = new TestApiEmpty();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApiEmpty));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
             var arguments = new object[0];
 
-            Assert.Throws<NotSupportedException>(() => context.GetQueryableSource("Namespace", "Function", arguments));
+            Assert.Throws<NotSupportedException>(() => api.GetQueryableSource("Namespace", "Function", arguments));
         }
 
         [Fact]
         public void SourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource("Namespace", "Function", arguments);
+            var source = api.GetQueryableSource("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -220,7 +238,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericApiSourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource<string>("Test", arguments);
@@ -242,21 +263,24 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfEntityContainerElementThrowsIfWrongType()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => context.GetQueryableSource<object>("Test", arguments));
+            Assert.Throws<ArgumentException>(() => api.GetQueryableSource<object>("Test", arguments));
         }
 
         [Fact]
         public void GenericSourceOfEntityContainerElementIsCorrect()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource<string>("Test", arguments);
+            var source = api.GetQueryableSource<string>("Test", arguments);
             Assert.Equal(typeof(string), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -275,7 +299,10 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericApiSourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
             var source = api.GetQueryableSource<DateTime>(
@@ -300,21 +327,25 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void GenericSourceOfComposableFunctionThrowsIfWrongType()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
-            Assert.Throws<ArgumentException>(() => context.GetQueryableSource<object>("Namespace", "Function", arguments));
+            Assert.Throws<ArgumentException>(() => api.GetQueryableSource<object>("Namespace", "Function", arguments));
         }
 
         [Fact]
         public void GenericSourceOfComposableFunctionIsCorrect()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
             var arguments = new object[0];
 
-            var source = context.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
+            var source = api.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
             Assert.Equal(typeof(DateTime), source.ElementType);
             Assert.True(source.Expression is MethodCallExpression);
             var methodCall = source.Expression as MethodCallExpression;
@@ -335,50 +366,56 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public void SourceQueryableCannotGenericEnumerate()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.GetEnumerator());
         }
 
         [Fact]
         public void SourceQueryableCannotEnumerate()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => (source as IEnumerable).GetEnumerator());
         }
 
         [Fact]
         public void SourceQueryProviderCannotGenericExecute()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute<string>(null));
         }
 
         [Fact]
         public void SourceQueryProviderCannotExecute()
         {
-            var api = new TestApi();
-            var context = api.Context;
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
-            var source = context.GetQueryableSource<string>("Test");
+            var source = api.GetQueryableSource<string>("Test");
             Assert.Throws<NotSupportedException>(() => source.Provider.Execute(null));
         }
 
         [Fact]
         public async Task ApiQueryAsyncWithQueryReturnsResults()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
             var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
-            var result = await api.Context.QueryAsync(request);
+            var result = await api.QueryAsync(request);
             var results = result.Results.Cast<string>();
 
             Assert.True(results.SequenceEqual(new[] {"Test"}));
@@ -387,7 +424,9 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public async Task ApiQueryAsyncCorrectlyForwardsCall()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
             var queryRequest = new QueryRequest(
                 api.GetQueryableSource<string>("Test"));
@@ -399,7 +438,9 @@ namespace Microsoft.Restier.Core.Tests
         [Fact]
         public async Task ApiSubmitAsyncCorrectlyForwardsCall()
         {
-            var api = new TestApi();
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
 
             var submitResult = await api.SubmitAsync();
             Assert.NotNull(submitResult.CompletedChangeSet);

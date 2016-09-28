@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using Microsoft.Restier.Core.Properties;
 
 namespace Microsoft.Restier.Core
 {

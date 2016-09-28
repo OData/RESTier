@@ -2,13 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Web.OData.Extensions;
 using System.Web.OData.Formatter.Serialization;
-using Microsoft.OData.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
-using Microsoft.Restier.Publishers.OData.Results;
 
-namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
+namespace Microsoft.Restier.Publishers.OData.Formatter
 {
     /// <summary>
     /// The serializer for primitive result.
@@ -64,7 +64,15 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
             // zone when converting the "graph" to a DateTimeOffset.
             if (primitiveType != null && primitiveType.IsDateTimeOffset() && graph is DateTime)
             {
-                graph = new DateTimeOffset((DateTime)graph, TimeSpan.Zero);
+                // If DateTime.Kind equals Local, offset should equal the offset of the system's local time zone
+                if (((DateTime)graph).Kind == DateTimeKind.Local)
+                {
+                    graph = new DateTimeOffset((DateTime)graph, TimeZoneInfo.Local.GetUtcOffset((DateTime)graph));
+                }
+                else
+                {
+                    graph = new DateTimeOffset((DateTime)graph, TimeSpan.Zero);
+                }
             }
 
             return base.CreateODataPrimitiveValue(graph, primitiveType, writeContext);
@@ -86,7 +94,8 @@ namespace Microsoft.Restier.Publishers.OData.Formatter.Serialization
                 }
             }
 
-            var payloadValueConverter = writeContext.Model.GetPayloadValueConverter();
+            var payloadValueConverter
+                = writeContext.Request.GetRequestContainer().GetService<ODataPayloadValueConverter>();
             return payloadValueConverter.ConvertToPayloadValue(value, edmTypeReference);
         }
     }
