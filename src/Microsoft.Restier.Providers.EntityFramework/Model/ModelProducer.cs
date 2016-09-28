@@ -69,7 +69,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
                 if (efEntityContainers.Count > 1)
                 {
                     var containerNames = efEntityContainers.Aggregate("", (current, next) => next.Name + ", ");
-                    throw new Exception("This project has multiple EntityFrameworkApis using different DbContexts, and the correct contect could not be loaded. \r\n" +
+                    throw new Exception("This project has multiple EntityFrameworkApis using different DbContexts, and the correct context could not be loaded. \r\n" +
                         $"The contexts available are '{containerNames.Substring(0, containerNames.Length - 2)}' but the Container expects '{efEntityContainer.Name}'.");
                 }
                 throw new Exception("Could not find the correct DbContext instance for this EntityFrameworkApi. \r\n" + 
