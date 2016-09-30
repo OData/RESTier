@@ -62,16 +62,26 @@ namespace Microsoft.Restier.Providers.EntityFramework
             var dbContext = context.GetApiService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
+            // @robertmclaws: The query below actually returns all registered Containers across all registered DbContexts.
+            //                 It is likely a bug in some other part of OData. But we can roll with it.
             var efEntityContainers = efModel.GetItems<EntityContainer>(DataSpace.CSpace);
+            // @robertmclaws: Because of the bug above, we should not make any assumptions about what is returned, and get 
+            //                the specific container we want to use. Even if the bug gets fixed, the next line should still 
+            //                continue to work.
             var efEntityContainer = efEntityContainers.FirstOrDefault(c => c.Name == dbContext.GetType().Name);
+            // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(), we wont' crash if more
+            //                that one is returned, and we can check for null and inform the user specifically what happened.
             if (efEntityContainer == null)
             {
                 if (efEntityContainers.Count > 1)
                 {
+                    // @robertmclaws: In this case, we have multiple DbContexts available, but none of them match up.
+                    //                Tell the user what we have, and what we were expecting, so they can fix it.
                     var containerNames = efEntityContainers.Aggregate("", (current, next) => next.Name + ", ");
                     throw new Exception("This project has multiple EntityFrameworkApis using different DbContexts, and the correct context could not be loaded. \r\n" +
                         $"The contexts available are '{containerNames.Substring(0, containerNames.Length - 2)}' but the Container expects '{efEntityContainer.Name}'.");
                 }
+                // @robertmclaws: In this case, we only had one DbContext available, and if wasn't thw right one.
                 throw new Exception("Could not find the correct DbContext instance for this EntityFrameworkApi. \r\n" + 
                     $"The Context name was '{dbContext.GetType().Name}' but the Container expects '{efEntityContainer.Name}'.");
             }
