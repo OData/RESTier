@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             //                continue to work.
             var efEntityContainer = efEntityContainers.FirstOrDefault(c => c.Name == dbContext.GetType().Name);
             // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(), we wont' crash if more
-            //                that one is returned, and we can check for null and inform the user specifically what happened.
+            //                than one is returned, and we can check for null and inform the user specifically what happened.
             if (efEntityContainer == null)
             {
                 if (efEntityContainers.Count > 1)
