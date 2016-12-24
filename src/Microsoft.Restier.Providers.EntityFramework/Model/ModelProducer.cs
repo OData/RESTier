@@ -78,12 +78,10 @@ namespace Microsoft.Restier.Providers.EntityFramework
                     // @robertmclaws: In this case, we have multiple DbContexts available, but none of them match up.
                     //                Tell the user what we have, and what we were expecting, so they can fix it.
                     var containerNames = efEntityContainers.Aggregate("", (current, next) => next.Name + ", ");
-                    throw new Exception("This project has multiple EntityFrameworkApis using different DbContexts, and the correct context could not be loaded. \r\n" +
-                        $"The contexts available are '{containerNames.Substring(0, containerNames.Length - 2)}' but the Container expects '{efEntityContainer.Name}'.");
+                    throw new Exception(string.Format(Resources.MultipleDbContextsExpectedException, containerNames.Substring(0, containerNames.Length - 2), efEntityContainer.Name));
                 }
                 // @robertmclaws: In this case, we only had one DbContext available, and if wasn't thw right one.
-                throw new Exception("Could not find the correct DbContext instance for this EntityFrameworkApi. \r\n" + 
-                    $"The Context name was '{dbContext.GetType().Name}' but the Container expects '{efEntityContainer.Name}'.");
+                throw new Exception(string.Format(Resources.DbContextCouldNotBeFoundException, dbContext.GetType().Name, efEntityContainer.Name));
             }
             var itemCollection = (ObjectItemCollection)efModel.GetItemCollection(DataSpace.OSpace);
 
