@@ -130,7 +130,7 @@
     <value>Need 'Point type', while input is {0}.</value>
   </data>
   <data name="MultipleDbContextsExpectedException" xml:space="preserve">
-    <value>This project has multiple EntityFrameworkApis using different DbContexts, and the correct context could not be loaded. \r\n The contexts available are '{0}' but the Container expects '{1}'.</value>
+    <value>This project has multiple EntityFrameworkApi using different DbContexts, and the correct context could not be loaded. \r\n The contexts available are '{0}' but the Container expects '{1}'.</value>
   </data>
   <data name="PreconditionCheckFailed" xml:space="preserve">
     <value>The precondition check for request {0} on resource {1} is failed.</value>

@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 #endif
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -62,27 +63,43 @@ namespace Microsoft.Restier.Providers.EntityFramework
             var dbContext = context.GetApiService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
-            // @robertmclaws: The query below actually returns all registered Containers across all registered DbContexts.
-            //                 It is likely a bug in some other part of OData. But we can roll with it.
+
+            // @robertmclaws: The query below actually returns all registered Containers
+            // across all registered DbContexts.
+            // It is likely a bug in some other part of OData. But we can roll with it.
             var efEntityContainers = efModel.GetItems<EntityContainer>(DataSpace.CSpace);
-            // @robertmclaws: Because of the bug above, we should not make any assumptions about what is returned, and get 
-            //                the specific container we want to use. Even if the bug gets fixed, the next line should still 
-            //                continue to work.
+
+            // @robertmclaws: Because of the bug above, we should not make any assumptions about what is returned,
+            // and get the specific container we want to use. Even if the bug gets fixed, the next line should still
+            // continue to work.
             var efEntityContainer = efEntityContainers.FirstOrDefault(c => c.Name == dbContext.GetType().Name);
-            // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(), we wont' crash if more
-            //                than one is returned, and we can check for null and inform the user specifically what happened.
+
+            // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(),
+            // we wont' crash if more than one is returned, and we can check for null
+            // and inform the user specifically what happened.
             if (efEntityContainer == null)
             {
                 if (efEntityContainers.Count > 1)
                 {
                     // @robertmclaws: In this case, we have multiple DbContexts available, but none of them match up.
                     //                Tell the user what we have, and what we were expecting, so they can fix it.
-                    var containerNames = efEntityContainers.Aggregate("", (current, next) => next.Name + ", ");
-                    throw new Exception(string.Format(Resources.MultipleDbContextsExpectedException, containerNames.Substring(0, containerNames.Length - 2), efEntityContainer.Name));
+                    var containerNames = efEntityContainers.Aggregate(
+                        string.Empty, (current, next) => next.Name + ", ");
+                    throw new Exception(string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.MultipleDbContextsExpectedException,
+                        containerNames.Substring(0, containerNames.Length - 2),
+                        efEntityContainer.Name));
                 }
+
                 // @robertmclaws: In this case, we only had one DbContext available, and if wasn't thw right one.
-                throw new Exception(string.Format(Resources.DbContextCouldNotBeFoundException, dbContext.GetType().Name, efEntityContainer.Name));
+                throw new Exception(string.Format(
+                    CultureInfo.InvariantCulture,
+                    Resources.DbContextCouldNotBeFoundException,
+                    dbContext.GetType().Name,
+                    efEntityContainer.Name));
             }
+
             var itemCollection = (ObjectItemCollection)efModel.GetItemCollection(DataSpace.OSpace);
 
             foreach (var efEntitySet in efEntityContainer.EntitySets)
