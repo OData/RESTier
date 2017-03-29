@@ -77,16 +77,15 @@ namespace System.Linq.Expressions
                 // If Type is Type<GenericType> to then GenericType will be returned.
                 // e.g. if type is SelectAllAndExpand<Namespace.Product>, then Namespace.Product will be returned.
                 Type elementType = GetSelectExpandElementType(typeof(TElement));
+				
+				// Get the CreateQuery method information who accepts generic type
+				// To avoid bug from Github Issues #541,#542 use methodInfo from IQueryProvider
+				// Bug was caused by explicit implementation of CreateQuery method in System.Linq.EnumerableQuery
+				// This solution allows us also to cache methodInfo in ExpressionHelperMethods
+				MethodInfo method = ExpressionHelperMethods.IQueryProviderCreateQueryGeneric;
 
-                // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
-                Type thisType = query.Provider.GetType();
-
-                // Get the CreateQuery method information who accepts generic type
-                MethodInfo method = thisType.GetMethods()
-                    .Single(m => m.Name == MethodNameOfCreateQuery && m.IsGenericMethodDefinition);
-
-                // Replace method generic type with specified type.
-                MethodInfo generic = method.MakeGenericMethod(elementType);
+				// Replace method generic type with specified type.
+				MethodInfo generic = method.MakeGenericMethod(elementType);
                 countQuery = generic.Invoke(query.Provider, new object[] { expression });
             }
 

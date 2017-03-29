@@ -40,7 +40,12 @@ namespace System.Linq.Expressions
 
         private static MethodInfo enumerableToListMethod = typeof(Enumerable).GetMethod("ToList");
 
-        public static MethodInfo QueryableSelectGeneric
+		private static MethodInfo createQueryMethod = typeof(IQueryProvider).GetMethods()
+			.Single(_ =>
+			   _.Name == "CreateQuery"
+		    && _.IsGenericMethodDefinition);
+
+		public static MethodInfo QueryableSelectGeneric
         {
             get { return selectMethod; }
         }
@@ -90,7 +95,12 @@ namespace System.Linq.Expressions
             get { return enumerableToArrayMethod; }
         }
 
-        private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression)
+		public static MethodInfo IQueryProviderCreateQueryGeneric
+		{
+			get { return createQueryMethod; }
+		}
+
+		private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression)
         {
             return GenericMethodOf(expression as Expression);
         }
