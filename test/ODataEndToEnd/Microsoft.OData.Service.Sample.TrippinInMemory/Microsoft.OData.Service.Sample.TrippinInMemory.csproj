@@ -123,6 +123,7 @@
     <Compile Include="Api\TrippinApi.cs" />
     <Compile Include="Models\TripPinDataSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrippinBatchHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
