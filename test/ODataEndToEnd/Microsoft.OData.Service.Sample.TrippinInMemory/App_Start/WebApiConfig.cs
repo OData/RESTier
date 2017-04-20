@@ -29,7 +29,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
             config.SetTimeZoneInfo(TimeZoneInfo.Utc);
             await config.MapRestierRoute<TrippinApi>(
                 "TrippinApi",
-                "",
+                "api/Trippin",
                 new TrippinBatchHandler(server));
         }
     }
