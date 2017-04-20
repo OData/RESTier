@@ -149,7 +149,42 @@ namespace Microsoft.Restier.Core
                 var collectionType = context.VisitedNode.Type.FindGenericType(typeof(ICollection<>));
                 if (collectionType == null)
                 {
-                    return null;
+                    var nullableType = context.VisitedNode.Type;
+
+                    var tmpCollection = ExpressionHelpers.CreateEmptyQueryable(nullableType);
+
+                    var methodResult = method.Invoke(apiBase, new object[] { tmpCollection }) as IQueryable;
+
+                    MethodCallExpression methodCallExpression = methodResult.Expression as MethodCallExpression;
+                    if (methodCallExpression == null)
+                    {
+                        return null;
+                    }
+
+                    UnaryExpression unaryExpression = methodCallExpression.Arguments.Count > 1
+                        ? methodCallExpression.Arguments[1] as UnaryExpression
+                        : null;
+                    if (unaryExpression == null)
+                    {
+                        return null;
+                    }
+
+                    LambdaExpression lambdaExpression = unaryExpression.Operand as LambdaExpression;
+                    if (lambdaExpression == null)
+                    {
+                        return null;
+                    }
+
+                    var invoke = Expression.Invoke(lambdaExpression, context.VisitedNode);
+                    var expanded = LinqKit.Extensions.Expand(invoke);
+
+                    var condition = Expression.Condition(
+                        test: expanded,
+                        ifTrue: context.VisitedNode,
+                        ifFalse: Expression.Constant(value: null, type: nullableType),
+                        type: nullableType);
+
+                    return condition;
                 }
 
                 elementType = collectionType.GetGenericArguments()[0];
