@@ -30,7 +30,7 @@ namespace Microsoft.OData.Service.Sample.TrippinInMemory
             await config.MapRestierRoute<TrippinApi>(
                 "TrippinApi",
                 "api/Trippin",
-                new RestierBatchHandler(server));
+                new TrippinBatchHandler(server));
         }
     }
 }

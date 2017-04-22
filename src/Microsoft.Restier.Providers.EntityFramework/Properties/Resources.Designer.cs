@@ -70,6 +70,15 @@ namespace Microsoft.Restier.Providers.EntityFramework {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find the correct DbContext instance for this EntityFrameworkApi. \r\n The Context name was &apos;{0}&apos; but the Container expects &apos;{1}&apos;..
+        /// </summary>
+        internal static string DbContextCouldNotBeFoundException {
+            get {
+                return ResourceManager.GetString("DbContextCouldNotBeFoundException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Need &apos;LineString type&apos;, while input is {0}..
         /// </summary>
         internal static string InvalidLineStringGeographyType {
@@ -84,6 +93,15 @@ namespace Microsoft.Restier.Providers.EntityFramework {
         internal static string InvalidPointGeographyType {
             get {
                 return ResourceManager.GetString("InvalidPointGeographyType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This project has multiple EntityFrameworkApi using different DbContexts, and the correct context could not be loaded. \r\n The contexts available are &apos;{0}&apos; but the Container expects &apos;{1}&apos;..
+        /// </summary>
+        internal static string MultipleDbContextsExpectedException {
+            get {
+                return ResourceManager.GetString("MultipleDbContextsExpectedException", resourceCulture);
             }
         }
         
