@@ -971,7 +971,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
                 global::System.Xml.XmlReader reader = CreateXmlReader(Edmx);
                 try
                 {
-                    return global::Microsoft.OData.Edm.Csdl.EdmxReader.Parse(reader);
+                    return global::Microsoft.OData.Edm.Csdl.CsdlReader.Parse(reader);
                 }
                 finally
                 {
@@ -2751,8 +2751,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         public static Person CreatePerson(long personId, 
                     string firstName, 
                     long concurrency, 
-                    global::Microsoft.OData.Edm.Library.Date birthDate, 
-                    global::Microsoft.OData.Edm.Library.TimeOfDay birthTime, 
+                    global::Microsoft.OData.Edm.Date birthDate, 
+                    global::Microsoft.OData.Edm.TimeOfDay birthTime, 
                     global::System.DateTimeOffset birthDateTime, 
                     global::Microsoft.OData.Service.Sample.Trippin.Models.Feature favoriteFeature)
         {
@@ -2909,7 +2909,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BirthDate")]
-        public global::Microsoft.OData.Edm.Library.Date BirthDate
+        public global::Microsoft.OData.Edm.Date BirthDate
         {
             get
             {
@@ -2924,15 +2924,15 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Edm.Library.Date _BirthDate;
-        partial void OnBirthDateChanging(global::Microsoft.OData.Edm.Library.Date value);
+        private global::Microsoft.OData.Edm.Date _BirthDate;
+        partial void OnBirthDateChanging(global::Microsoft.OData.Edm.Date value);
         partial void OnBirthDateChanged();
         /// <summary>
         /// There are no comments for Property BirthDate2 in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BirthDate2")]
-        public global::System.Nullable<global::Microsoft.OData.Edm.Library.Date> BirthDate2
+        public global::System.Nullable<global::Microsoft.OData.Edm.Date> BirthDate2
         {
             get
             {
@@ -2947,15 +2947,15 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::System.Nullable<global::Microsoft.OData.Edm.Library.Date> _BirthDate2;
-        partial void OnBirthDate2Changing(global::System.Nullable<global::Microsoft.OData.Edm.Library.Date> value);
+        private global::System.Nullable<global::Microsoft.OData.Edm.Date> _BirthDate2;
+        partial void OnBirthDate2Changing(global::System.Nullable<global::Microsoft.OData.Edm.Date> value);
         partial void OnBirthDate2Changed();
         /// <summary>
         /// There are no comments for Property BirthTime in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BirthTime")]
-        public global::Microsoft.OData.Edm.Library.TimeOfDay BirthTime
+        public global::Microsoft.OData.Edm.TimeOfDay BirthTime
         {
             get
             {
@@ -2970,15 +2970,15 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::Microsoft.OData.Edm.Library.TimeOfDay _BirthTime;
-        partial void OnBirthTimeChanging(global::Microsoft.OData.Edm.Library.TimeOfDay value);
+        private global::Microsoft.OData.Edm.TimeOfDay _BirthTime;
+        partial void OnBirthTimeChanging(global::Microsoft.OData.Edm.TimeOfDay value);
         partial void OnBirthTimeChanged();
         /// <summary>
         /// There are no comments for Property BirthTime2 in the schema.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
         [global::Microsoft.OData.Client.OriginalNameAttribute("BirthTime2")]
-        public global::System.Nullable<global::Microsoft.OData.Edm.Library.TimeOfDay> BirthTime2
+        public global::System.Nullable<global::Microsoft.OData.Edm.TimeOfDay> BirthTime2
         {
             get
             {
@@ -2993,8 +2993,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
             }
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.OData.Client.Design.T4", "2.4.0")]
-        private global::System.Nullable<global::Microsoft.OData.Edm.Library.TimeOfDay> _BirthTime2;
-        partial void OnBirthTime2Changing(global::System.Nullable<global::Microsoft.OData.Edm.Library.TimeOfDay> value);
+        private global::System.Nullable<global::Microsoft.OData.Edm.TimeOfDay> _BirthTime2;
+        partial void OnBirthTime2Changing(global::System.Nullable<global::Microsoft.OData.Edm.TimeOfDay> value);
         partial void OnBirthTime2Changed();
         /// <summary>
         /// There are no comments for Property BirthDateTime in the schema.
@@ -4368,8 +4368,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         public static Employee CreateEmployee(long personId, 
                     string firstName, 
                     long concurrency, 
-                    global::Microsoft.OData.Edm.Library.Date birthDate, 
-                    global::Microsoft.OData.Edm.Library.TimeOfDay birthTime, 
+                    global::Microsoft.OData.Edm.Date birthDate, 
+                    global::Microsoft.OData.Edm.TimeOfDay birthTime, 
                     global::System.DateTimeOffset birthDateTime, 
                     global::Microsoft.OData.Service.Sample.Trippin.Models.Feature favoriteFeature, 
                     long cost)
@@ -4570,8 +4570,8 @@ namespace Microsoft.OData.Service.Sample.Trippin.Models
         public static Manager CreateManager(long personId, 
                     string firstName, 
                     long concurrency, 
-                    global::Microsoft.OData.Edm.Library.Date birthDate, 
-                    global::Microsoft.OData.Edm.Library.TimeOfDay birthTime, 
+                    global::Microsoft.OData.Edm.Date birthDate, 
+                    global::Microsoft.OData.Edm.TimeOfDay birthTime, 
                     global::System.DateTimeOffset birthDateTime, 
                     global::Microsoft.OData.Service.Sample.Trippin.Models.Feature favoriteFeature, 
                     long budget)
