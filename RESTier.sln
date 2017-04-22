@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Publishers", "Publishers", "{432208D4-54DF-453E-96AE-CB7721461030}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{552DD8A7-2F3A-4D0F-B623-B7D832C6C62B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Core.Tests", "test\Microsoft.Restier.Core.Tests\Microsoft.Restier.Core.Tests.csproj", "{D1F0FA28-73A1-4202-807B-DCAF5FFEDC2F}"
 EndProject
@@ -108,7 +108,6 @@ Global
 		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|x64.ActiveCfg = Release|Any CPU
 		{B379640E-9064-438D-8DA5-6F7B394C2C46}.Release|x86.ActiveCfg = Release|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{C5FDAD47-4449-42FC-904F-C7FEBD0F4DB7}.Release|Any CPU.ActiveCfg = Release|Any CPU

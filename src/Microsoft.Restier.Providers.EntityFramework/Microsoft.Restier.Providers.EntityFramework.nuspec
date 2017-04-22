@@ -13,6 +13,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>
+      <dependency id="EntityFramework" version="[6.1.3]" />
       <dependency id="Microsoft.Restier.Core" version="[1.0.0]" />
     </dependencies>
   </metadata>
