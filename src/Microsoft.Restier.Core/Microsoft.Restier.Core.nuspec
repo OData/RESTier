@@ -13,8 +13,8 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <copyright></copyright>
     <dependencies>
-      <dependency id="Microsoft.Extensions.DependencyInjection" version="[1.0.0]" />
-      <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[1.0.0]" />
+      <dependency id="Microsoft.Extensions.DependencyInjection" version="[1.1.0]" />
+      <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[1.1.0]" />
       <dependency id="Microsoft.OData.Edm" version="[7.0.0, 8.0.0)" />
       <dependency id="Microsoft.OData.Core" version="[7.0.0, 8.0.0)" />
       <dependency id="Microsoft.Spatial" version="[7.0.0, 8.0.0)" />

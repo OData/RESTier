@@ -9,6 +9,7 @@ using System.Net;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 using Newtonsoft.Json;
 using Xunit;
+using Microsoft.OData.Client;
 
 namespace Microsoft.OData.Service.Sample.Tests
 {
@@ -957,8 +958,8 @@ namespace Microsoft.OData.Service.Sample.Tests
 
             ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings()
             {
-                BaseUri = ServiceBaseUri,
-                UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.IgnoreUndeclaredValueProperty
+                BaseUri = ServiceBaseUri, 
+                //UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.IgnoreUndeclaredValueProperty
             };
 
             foreach (var testCase in testCases)

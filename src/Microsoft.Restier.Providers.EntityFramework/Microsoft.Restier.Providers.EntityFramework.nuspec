@@ -14,7 +14,7 @@
     <copyright></copyright>
     <dependencies>
       <dependency id="EntityFramework" version="[6.1.3]" />
-      <dependency id="Microsoft.Restier.Core" version="[1.0.0]" />
+      <dependency id="Microsoft.Restier.Core" version="[$version$]" />
     </dependencies>
   </metadata>
 </package>
