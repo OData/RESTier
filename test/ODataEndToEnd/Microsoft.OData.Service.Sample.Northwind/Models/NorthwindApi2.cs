@@ -50,6 +50,12 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         {
         }
 
+        [Operation(IsBound = true, HasSideEffects = true)]
+        public Task IncreasePriceAsync(Product bindingParameter, int diff)
+        {
+            return Task.FromResult(0);
+        }
+
         [Operation(HasSideEffects = true)]
         public void ResetDataSource()
         {
@@ -59,6 +65,12 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         public double MostExpensive(IEnumerable<Product> bindingParameter)
         {
             return 0.0;
+        }
+
+        [Operation(IsBound = true)]
+        public Task<double> MostExpensiveAsync(IEnumerable<Product> bindingParameter)
+        {
+            return Task.FromResult(0.0);
         }
 
         public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)

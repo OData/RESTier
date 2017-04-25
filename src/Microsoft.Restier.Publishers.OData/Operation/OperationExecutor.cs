@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             // Invoke preprocessing on the operation execution
             PerformPreEvent(context, cancellationToken);
 
-            var result = InvokeOperation(context.ImplementInstance, method, parameters, model);
+            var result = await InvokeOperation(context.ImplementInstance, method, parameters, model);
 
             // Invoke preprocessing on the operation execution
             PerformPostEvent(context, cancellationToken);
@@ -135,19 +135,33 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             return bindingParameterValue;
         }
 
-        private static IQueryable InvokeOperation(
+        private static async Task<IQueryable> InvokeOperation(
             object instanceImplementMethod, MethodInfo method, object[] parameters, IEdmModel model)
         {
             object result = method.Invoke(instanceImplementMethod, parameters);
             var returnType = method.ReturnType;
-
             if (returnType == typeof(void))
             {
                 return null;
             }
 
-            IEdmTypeReference edmReturnType = method.ReturnType.GetReturnTypeReference(model);
+            var task = result as Task;
+            if (task != null)
+            {
+                await task;
+                if (returnType.GenericTypeArguments.Any())
+                {
+                    returnType = returnType.GenericTypeArguments.First();
+                    var resultProperty = typeof(Task<>).MakeGenericType(returnType).GetProperty("Result");
+                    result = resultProperty.GetValue(task);
+                }
+                else
+                {
+                    return null;
+                }
+            }
 
+            IEdmTypeReference edmReturnType = returnType.GetReturnTypeReference(model);
             if (edmReturnType.IsCollection())
             {
                 var elementClrType = returnType.GetElementType() ??
@@ -170,7 +184,7 @@ namespace Microsoft.Restier.Publishers.OData.Operation
             // This means this is single result
             // cannot return new[] { result }.AsQueryable(); as need to return in its own type but not object type
             var objectQueryable = new[] { result }.AsQueryable();
-            var castMethodInfo = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(method.ReturnType);
+            var castMethodInfo = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(returnType);
             var castedResult = castMethodInfo.Invoke(null, new object[] { objectQueryable });
             var typedQueryable = ExpressionHelperMethods.QueryableAsQueryable
                 .Invoke(null, new object[] { castedResult }) as IQueryable;
