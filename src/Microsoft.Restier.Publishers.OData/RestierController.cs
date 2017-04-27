@@ -99,7 +99,8 @@ namespace Microsoft.Restier.Publishers.OData
                 Func<string, object> getParaValueFunc = p => unboundSegment.GetParameterValue(p);
                 result = await ExecuteOperationAsync(
                     getParaValueFunc, operation.Name, true, null, cancellationToken);
-                result = ApplyQueryOptions(result, path, true, out etag);
+                result = applied.Queryable;
+                etag = applied.Etag;
             }
             else
             {
@@ -121,12 +122,13 @@ namespace Microsoft.Restier.Publishers.OData
                     result = await ExecuteOperationAsync(
                         getParaValueFunc, operation.Name, true, result, cancellationToken);
 
-                    result = ApplyQueryOptions(result, path, true, out etag);
+                    result = applied.Queryable;
+                    etag = applied.Etag;
                 }
                 else
                 {
-                    queryable = ApplyQueryOptions(queryable, path, false, out etag);
-                    result = await ExecuteQuery(queryable, cancellationToken);
+                    etag = applied.Etag;
+                    result = await ExecuteQuery(applied.Queryable, cancellationToken);
                 }
             }
 
@@ -525,19 +527,25 @@ namespace Microsoft.Restier.Publishers.OData
             return queryable;
         }
 
-        private IQueryable ApplyQueryOptions(
-            IQueryable queryable, ODataPath path, bool applyCount, out ETag etag)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="queryable"></param>
+        /// <param name="path"></param>
+        /// <param name="applyCount"></param>
+        /// <returns></returns>
+            IQueryable queryable, ODataPath path, bool applyCount)
         {
-            etag = null;
+            ETag etag = null;
 
             if (this.shouldWriteRawValue)
             {
                 // Query options don't apply to $value.
-                return queryable;
+                return (queryable, null);
             }
 
             HttpRequestMessageProperties properties = this.Request.ODataProperties();
-            var model = Api.GetModelAsync().Result;
+            var model = await Api.GetModelAsync();
             ODataQueryContext queryContext =
                 new ODataQueryContext(model, queryable.ElementType, path);
             ODataQueryOptions queryOptions = new ODataQueryOptions(queryContext, this.Request);
@@ -560,7 +568,7 @@ namespace Microsoft.Restier.Publishers.OData
                 // Query options other than $filter and $search don't apply to $count.
                 queryable = queryOptions.ApplyTo(
                     queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
-                return queryable;
+                return (queryable, etag);
             }
 
             if (queryOptions.Count != null && !applyCount)
@@ -586,7 +594,7 @@ namespace Microsoft.Restier.Publishers.OData
                 queryable = queryOptions.ApplyTo(queryable, settings);
             }
 
-            return queryable;
+            return (queryable, etag);
         }
 
         private async Task<IQueryable> ExecuteQuery(IQueryable queryable, CancellationToken cancellationToken)
