@@ -26,10 +26,10 @@ md bin\nuget\%config%
 :Build
 set params=-Prop Configuration=%config% -OutputDirectory bin\nuget\%config%
 
-.nuget\NuGet pack src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj %params% -version %version%
-.nuget\NuGet pack src\Microsoft.Restier.Providers.EntityFramework\Microsoft.Restier.Providers.EntityFramework.csproj %params% -version %version%
-.nuget\NuGet pack src\Microsoft.Restier.Publishers.OData\Microsoft.Restier.Publishers.OData.csproj %params% -version %version%
-.nuget\NuGet pack src\Microsoft.Restier\Microsoft.Restier.nuspec %params% -version %version%
+.nuget\NuGet pack src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj %params% -version %version% -symbols
+.nuget\NuGet pack src\Microsoft.Restier.Providers.EntityFramework\Microsoft.Restier.Providers.EntityFramework.csproj %params% -version %version% -symbols
+.nuget\NuGet pack src\Microsoft.Restier.Publishers.OData\Microsoft.Restier.Publishers.OData.csproj %params% -version %version% -symbols
+.nuget\NuGet pack src\Microsoft.Restier\Microsoft.Restier.nuspec %params% -version %version% -symbols
 
 popd
 endlocal
