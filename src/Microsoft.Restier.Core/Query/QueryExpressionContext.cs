@@ -345,6 +345,11 @@ namespace Microsoft.Restier.Core.Query
         {
             QueryModelReference modelReference = null;
             var memberExp = member.Expression;
+            if (memberExp == null)
+            {
+                throw new Exception(string.Format(Resources.QueryMemberNotAccessible, member.ToString()));
+            }
+
             if (memberExp.NodeType == ExpressionType.Parameter)
             {
                 modelReference = this.GetModelReferenceForNode(memberExp);

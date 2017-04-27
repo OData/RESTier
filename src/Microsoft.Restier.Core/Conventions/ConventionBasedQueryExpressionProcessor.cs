@@ -112,7 +112,7 @@ namespace Microsoft.Restier.Core
         {
             var methodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
             var method = this.targetType.GetQualifiedMethod(methodName);
-            if (method == null || !method.IsFamily)
+            if (method == null || (!method.IsFamily && !method.IsFamilyOrAssembly))
             {
                 return null;
             }
