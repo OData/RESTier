@@ -99,6 +99,7 @@ namespace Microsoft.Restier.Publishers.OData
                 Func<string, object> getParaValueFunc = p => unboundSegment.GetParameterValue(p);
                 result = await ExecuteOperationAsync(
                     getParaValueFunc, operation.Name, true, null, cancellationToken);
+                var applied = await ApplyQueryOptionsAsync(result, path, true);
                 result = applied.Queryable;
                 etag = applied.Etag;
             }
@@ -122,11 +123,13 @@ namespace Microsoft.Restier.Publishers.OData
                     result = await ExecuteOperationAsync(
                         getParaValueFunc, operation.Name, true, result, cancellationToken);
 
+                    var applied = await ApplyQueryOptionsAsync(result, path, true);
                     result = applied.Queryable;
                     etag = applied.Etag;
                 }
                 else
                 {
+                    var applied = await ApplyQueryOptionsAsync(queryable, path, true);
                     etag = applied.Etag;
                     result = await ExecuteQuery(applied.Queryable, cancellationToken);
                 }
@@ -534,6 +537,7 @@ namespace Microsoft.Restier.Publishers.OData
         /// <param name="path"></param>
         /// <param name="applyCount"></param>
         /// <returns></returns>
+        private async Task<(IQueryable Queryable, ETag Etag)> ApplyQueryOptionsAsync(
             IQueryable queryable, ODataPath path, bool applyCount)
         {
             ETag etag = null;
