@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Microsoft.OData.Client;
 using Xunit;
 
@@ -156,7 +157,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             }
         }
 
-        protected async void TestPatchStatusCodeIs(string uriStringAfterServiceRoot, string patchContent, HttpStatusCode statusCode)
+        protected async Task TestPatchStatusCodeIs(string uriStringAfterServiceRoot, string patchContent, HttpStatusCode statusCode)
         {
             var requestUri = string.Format("{0}/{1}", this.ServiceBaseUri, uriStringAfterServiceRoot);
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri);
