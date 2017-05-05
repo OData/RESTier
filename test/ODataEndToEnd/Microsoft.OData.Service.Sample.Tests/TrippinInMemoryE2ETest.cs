@@ -183,7 +183,8 @@ namespace Microsoft.OData.Service.Sample.Tests
                     "{{\r\n    \"Location\":{{\r\n        \"Address\":\"{0}\",\r\n        \"City\":{{\r\n            \"Region\":\"{1}\"\r\n        }}\r\n    }}\r\n}}",
                     changedAddress,
                     changedRegion);
-            TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent);
+            bool result = TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent).Wait(1000);
+            Assert.Equal(true, result);
 
             // Test patch results.
             dynamic content = JsonConvert.DeserializeObject(originContent);

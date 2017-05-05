@@ -1139,7 +1139,8 @@ namespace Microsoft.OData.Service.Sample.Tests
                     "{{\n    \"Description\": \"{0}\",\n    \"NormalOrderDetail\": {{\n        \"NormalProperty\": \"{1}\"\n    }}\n}}",
                     changedDescription,
                     changedNormalProperty);
-            TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent);
+            bool result = TestPatchStatusCodeIs(uriStringAfterServiceRoot, patchContent, HttpStatusCode.NoContent).Wait(1000);
+            Assert.Equal(true, result);
 
             // Test patch results.
             dynamic content = JsonConvert.DeserializeObject(originContent);

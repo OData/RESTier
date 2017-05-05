@@ -17,7 +17,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("People(1)/Friends/Microsoft.OData.Service.Sample.Trippin.Models.Employee", "$metadata#People/Microsoft.OData.Service.Sample.Trippin.Models.Employee\",\"value\":[")]
         [InlineData("People(12)/Microsoft.OData.Service.Sample.Trippin.Models.Employee/UserName", "salliesampson")]
         [InlineData("People(12)/Microsoft.OData.Service.Sample.Trippin.Models.Employee/Cost", "1000000")]
-        public void DerivedTypeQuery(string uriStringAfterServiceRoot, string expectedSubString)
+        public void DerivedTypeQueryResponse(string uriStringAfterServiceRoot, string expectedSubString)
         {
             this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
@@ -26,7 +26,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("People(1)/Microsoft.OData.Service.Sample.Trippin.Models.Employee", 204)]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Employee/UserName", 500)]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Employee/Cost", 500)]
-        public void DerivedTypeQuery(string url, int expectedCode)
+        public void DerivedTypeQueryStatus(string url, int expectedCode)
         {
             TestGetStatusCodeIs(url, expectedCode);
         }
@@ -36,7 +36,7 @@ namespace Microsoft.OData.Service.Sample.Tests
         [InlineData("People?$filter=Microsoft.OData.Service.Sample.Trippin.Models.Manager/BossOffice/Address eq 'ROOM 1001'", "\"UserName\":\"jonirosales\"")]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Manager?$filter=Budget gt 1000", "\"UserName\":\"jonirosales\"")]
         [InlineData("People/Microsoft.OData.Service.Sample.Trippin.Models.Manager?$filter=BossOffice/Address eq 'ROOM 1001'", "\"UserName\":\"jonirosales\"")]
-        public void DerivedTypeQueryOprions(string uriStringAfterServiceRoot, string expectedSubString)
+        public void DerivedTypeQueryOptions(string uriStringAfterServiceRoot, string expectedSubString)
         {
             this.TestGetPayloadContains(uriStringAfterServiceRoot, expectedSubString);
         }
