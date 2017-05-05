@@ -6,7 +6,7 @@ using System;
 namespace Microsoft.Restier.Publishers.OData
 {
     [Flags]
-    internal enum PropertyAttributes
+    public enum PropertyAttributes
     {
         /// <summary>
         /// No flag is set for the property
