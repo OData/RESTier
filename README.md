@@ -17,7 +17,7 @@ For more information about OData, please refer to the following resources:
 Please be noted that currently RESTier is still a preview version.
 
 ## 2. Project structure
-The project currently has two branches: [master](https://github.com/OData/RESTier/tree/master), [gh-pages](https://github.com/OData/RESTier/tree/gh-pages).
+The project currently has the following branches: [master](https://github.com/OData/RESTier/tree/master), [release](https://github.com/OData/RESTier/tree/release), [gh-pages](https://github.com/OData/RESTier/tree/gh-pages).
 
 **master branch**
 
@@ -29,6 +29,9 @@ The master branch has the following libraries:
 
 For these libraries, we accept bug reports, feature requirements and pull requests. 
 
+**release branch**
+
+This is the branch for the latest stable release of RESTier libraries.
 
 **gh-pages branch**
 
