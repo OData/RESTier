@@ -65,7 +65,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             HttpConfiguration httpConfig = new HttpConfiguration();
             httpConfig.SetUrlKeyDelimiter(ODataUrlKeyDelimiter.Slash);
 
-            Action<HttpConfiguration, HttpServer> registerOData = (config, server) => WebApiConfig.RegisterNorthwind(config, server);
+            Action<HttpConfiguration, HttpServer> registerOData = (config, server) => WebApiConfig.RegisterRestierNorthwind(config, server);
             string baselineFileName = "TestCustomerKeyAsSegment";
             using (HttpResponseMessage response = await ODataTestHelpers.GetResponseWithConfig(requestUri, HttpMethod.Get, null, httpConfig, registerOData, HttpStatusCode.OK, baselineFileName,null))
             {
@@ -360,7 +360,7 @@ User-Agent: Microsoft ADO.NET Data Services
                 httpMethod,
                 requestContent,
                 expectedStatusCode,
-                (config, server) => WebApiConfig.RegisterNorthwind(config, server),
+                (config, server) => WebApiConfig.RegisterRestierNorthwind(config, server),
                 headers,
                 postProcessContentHandler,
                 baselineFileName);

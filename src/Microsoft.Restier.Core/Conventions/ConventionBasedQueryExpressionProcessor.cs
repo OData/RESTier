@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
+using System.Diagnostics;
 
 namespace Microsoft.Restier.Core
 {
@@ -54,8 +55,7 @@ namespace Microsoft.Restier.Core
                 }
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
-            if (dataSourceStubReference != null)
+            if (context.ModelReference is DataSourceStubModelReference dataSourceStubReference)
             {
                 var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
                 if (entitySet == null)
@@ -75,16 +75,14 @@ namespace Microsoft.Restier.Core
                     return null;
                 }
 
-                return AppendOnFilterExpression(context, entityType.Name);
+                return AppendOnFilterExpression(context, entitySet.Name, entityType.Name);
             }
 
-            var propertyModelReference = context.ModelReference as PropertyModelReference;
-            if (propertyModelReference != null && propertyModelReference.Property != null)
+            if (context.ModelReference is PropertyModelReference propertyModelReference && propertyModelReference.Property != null)
             {
                 // Could be a single navigation property or a collection navigation property
                 var propType = propertyModelReference.Property.Type;
-                var collectionTypeReference = propType as IEdmCollectionTypeReference;
-                if (collectionTypeReference != null)
+                if (propType is IEdmCollectionTypeReference collectionTypeReference)
                 {
                     var collectionType = collectionTypeReference.Definition as IEdmCollectionType;
                     propType = collectionType.ElementType;
@@ -102,30 +100,50 @@ namespace Microsoft.Restier.Core
                     entityType = (IEdmEntityType)entityType.BaseType;
                 }
 
-                return AppendOnFilterExpression(context, entityType.Name);
+                //Get the model, query it for the entity set of a given type.
+                var entitySet = context.QueryContext.Model.EntityContainer.EntitySets().FirstOrDefault(c => c.EntityType() == entityType);
+                if (entitySet == null)
+                {
+                    return null;
+                }
+
+                return AppendOnFilterExpression(context, entitySet.Name, entityType.Name);
             }
 
             return null;
         }
 
-        private Expression AppendOnFilterExpression(QueryExpressionContext context, string entityTypeName)
+        private Expression AppendOnFilterExpression(QueryExpressionContext context, string entitySetName, string entityTypeName)
         {
-            var methodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
-            var method = this.targetType.GetQualifiedMethod(methodName);
-            if (method == null || !method.IsFamily)
+            var expectedMethodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entitySetName;
+            var expectedMethod = this.targetType.GetQualifiedMethod(expectedMethodName);
+            if (expectedMethod == null || !expectedMethod.IsFamily)
             {
+                if (expectedMethod != null)
+                {
+                    Debug.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Change it to be 'protected internal'.");
+                }
+                else
+                {
+                    var actualMethodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
+                    var actualMethod = this.targetType.GetQualifiedMethod(actualMethodName);
+                    if (actualMethod != null)
+                    {
+                        Debug.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Please correct the method name.");
+                    }
+                }
                 return null;
             }
 
-            var parameter = method.GetParameters().SingleOrDefault();
+            var parameter = expectedMethod.GetParameters().SingleOrDefault();
             if (parameter == null ||
-                parameter.ParameterType != method.ReturnType)
+                parameter.ParameterType != expectedMethod.ReturnType)
             {
                 return null;
             }
 
             object apiBase = null;
-            if (!method.IsStatic)
+            if (!expectedMethod.IsStatic)
             {
                 apiBase = context.QueryContext.GetApiService<ApiBase>();
                 if (apiBase == null ||
@@ -166,13 +184,13 @@ namespace Microsoft.Restier.Core
 
             var queryType = typeof(EnumerableQuery<>).MakeGenericType(elementType);
             var query = Activator.CreateInstance(queryType, enumerableQueryParameter);
-            var result = method.Invoke(apiBase, new object[] { query }) as IQueryable;
+            var result = expectedMethod.Invoke(apiBase, new object[] { query }) as IQueryable;
             if (result == null)
             {
                 return null;
             }
 
-            if (method.ReturnType == returnType)
+            if (expectedMethod.ReturnType == returnType)
             {
                 if (result != query)
                 {

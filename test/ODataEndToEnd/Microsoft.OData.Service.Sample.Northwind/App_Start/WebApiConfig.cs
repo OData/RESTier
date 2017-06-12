@@ -18,7 +18,7 @@ namespace Microsoft.OData.Service.Sample.Northwind
             // Web API routes
             config.MapHttpAttributeRoutes();
             
-            RegisterNorthwind(config, GlobalConfiguration.DefaultServer);
+            RegisterRestierNorthwind(config, GlobalConfiguration.DefaultServer);
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
@@ -27,7 +27,7 @@ namespace Microsoft.OData.Service.Sample.Northwind
             );
         }
 
-        public static void RegisterNorthwind(
+        public static void RegisterRestierNorthwind(
             HttpConfiguration config, HttpServer server)
         {
             config.Filter().Expand().Select().OrderBy().MaxTop(null).Count();
@@ -37,7 +37,7 @@ namespace Microsoft.OData.Service.Sample.Northwind
                 new RestierBatchHandler(server));
         }
 
-        public static void RegisterNorthwind2(
+        public static void RegisterRestierNorthwind2(
             HttpConfiguration config, HttpServer server)
         {
             config.SetUseVerboseErrors(true);

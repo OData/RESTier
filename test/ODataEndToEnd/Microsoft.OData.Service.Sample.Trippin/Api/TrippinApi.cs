@@ -104,17 +104,17 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
             }
         }
 
-        protected IQueryable<Staff> OnFilterStaff(IQueryable<Staff> entitySet)
+        protected IQueryable<Staff> OnFilterStaffs(IQueryable<Staff> entitySet)
         {
             return entitySet.Where(s => s.StaffId % 2 == 0).AsQueryable();
         }
 
-        protected IQueryable<Conference> OnFilterConference(IQueryable<Conference> entitySet)
+        protected IQueryable<Conference> OnFilterConferences(IQueryable<Conference> entitySet)
         {
             return entitySet.Where(c => c.ConferenceId % 2 == 0).AsQueryable();
         }
 
-        protected IQueryable<Sponsor> OnFilterSponsor(IQueryable<Sponsor> entitySet)
+        protected IQueryable<Sponsor> OnFilterSponsors(IQueryable<Sponsor> entitySet)
         {
             return entitySet.Where(s => s.SponsorId % 2 == 0).AsQueryable();
         }
