@@ -13,7 +13,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
