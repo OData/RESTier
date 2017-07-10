@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             {
                 var dbContext = Activator.CreateInstance<TDbContext>();
 #if EF7
-    // TODO GitHubIssue#58: Figure out the equivalent measurement to suppress proxy generation in EF7.
+                dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 #else
                 dbContext.Configuration.ProxyCreationEnabled = false;
 #endif

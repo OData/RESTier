@@ -6,8 +6,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.OData.Edm.Library;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives;
 using Microsoft.Restier.Publishers.OData;
@@ -23,11 +23,13 @@ namespace Microsoft.Restier.Providers.EntityFramework7.Tests
         [Fact]
         public async Task VerifyMetadataPropertyType()
         {
-            ApiConfiguration.AddPublisherServices<PrimitivesApi>(services =>
+            ApiBase.AddPublisherServices(typeof(PrimitivesApi), services =>
             {
                 services.AddODataServices<PrimitivesApi>();
             });
-            var api = new PrimitivesApi();
+            var container = new RestierContainerBuilder(typeof(PrimitivesApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
             var edmModel = await api.GetModelAsync();
 
             var entityType = (IEdmEntityType)

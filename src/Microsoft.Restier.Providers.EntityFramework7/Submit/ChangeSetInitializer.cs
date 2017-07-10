@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
     public class ChangeSetInitializer : IChangeSetInitializer
     {
         private static MethodInfo prepareEntryGeneric = typeof(ChangeSetInitializer)
-            .GetMethod("PrepareEntry", BindingFlags.Static | BindingFlags.NonPublic);
+            .GetMethod("PrepareEntry", BindingFlags.Instance | BindingFlags.NonPublic);
 
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -55,13 +55,84 @@ namespace Microsoft.Restier.Providers.EntityFramework
                 MethodInfo prepareEntryMethod = prepareEntryGeneric.MakeGenericMethod(entityType);
 
                 var task = (Task)prepareEntryMethod.Invoke(
-                    obj: null,
+                    obj: this,
                     parameters: new[] { context, dbContext, entry, strongTypedDbSet, cancellationToken });
                 await task;
             }
         }
 
-        private static async Task PrepareEntry<TEntity>(
+        /// <summary>
+        /// Convert a Edm type value to Resource Framework supported value type
+        /// </summary>
+        /// <param name="type">The type of the property defined in CLR class</param>
+        /// <param name="value">The value from OData deserializer and in type of Edm</param>
+        /// <returns>The converted value object</returns>
+        public virtual object ConvertToEfValue(Type type, object value)
+        {
+            // string[EdmType = Enum] => System.Enum
+            if (TypeHelper.IsEnum(type))
+            {
+                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
+            }
+
+            // Edm.Date => System.DateTime[SqlType = Date]
+            if (value is Date)
+            {
+                var dateValue = (Date)value;
+                return (DateTime)dateValue;
+            }
+
+            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
+            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
+            {
+                var dateTimeOffsetValue = (DateTimeOffset)value;
+                return dateTimeOffsetValue.DateTime;
+            }
+
+            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
+            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
+            {
+                var timeOfDayValue = (TimeOfDay)value;
+                return (TimeSpan)timeOfDayValue;
+            }
+
+            // In case key is long type, when put an resource, key value will be from key parsing which is type of int
+            if (value is int && type == typeof(long))
+            {
+                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
+            }
+
+            return value;
+        }
+
+        private static async Task<object> FindResource(
+            SubmitContext context,
+            DataModificationItem item,
+            CancellationToken cancellationToken)
+        {
+            var apiBase = context.GetApiService<ApiBase>();
+            IQueryable query = apiBase.GetQueryableSource(item.ResourceSetName);
+            query = item.ApplyTo(query);
+
+            QueryResult result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken);
+
+            object resource = result.Results.SingleOrDefault();
+            if (resource == null)
+            {
+                throw new ResourceNotFoundException(Resources.ResourceNotFound);
+            }
+
+            // This means no If-Match or If-None-Match header
+            if (item.OriginalValues == null || item.OriginalValues.Count == 0)
+            {
+                return resource;
+            }
+
+            resource = item.ValidateEtag(result.Results.AsQueryable());
+            return resource;
+        }
+
+        private async Task PrepareEntry<TEntity>(
             SubmitContext context,
             DbContext dbContext,
             DataModificationItem entry,
@@ -76,27 +147,27 @@ namespace Microsoft.Restier.Providers.EntityFramework
                 // TODO: See if Create method is in DbSet<> in future EF7 releases, as the one EF6 has.
                 entity = (TEntity)Activator.CreateInstance(typeof(TEntity));
 
-                ChangeSetInitializer.SetValues(entity, entityType, entry.LocalValues);
+                SetValues(entity, entityType, entry.LocalValues);
                 set.Add(entity);
             }
             else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
             {
-                entity = (TEntity)await ChangeSetInitializer.FindEntity(context, entry, cancellationToken);
+                entity = (TEntity)await ChangeSetInitializer.FindResource(context, entry, cancellationToken);
                 set.Remove(entity);
             }
             else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
             {
                 if (entry.IsFullReplaceUpdateRequest)
                 {
-                    entity = (TEntity)ChangeSetInitializer.CreateFullUpdateInstance(entry, entityType);
+                    entity = (TEntity)CreateFullUpdateInstance(entry, entityType);
                     dbContext.Update(entity);
                 }
                 else
                 {
-                    entity = (TEntity)await ChangeSetInitializer.FindEntity(context, entry, cancellationToken);
+                    entity = (TEntity)await ChangeSetInitializer.FindResource(context, entry, cancellationToken);
 
                     var dbEntry = dbContext.Attach(entity);
-                    ChangeSetInitializer.SetValues(dbEntry, entry);
+                    SetValues(dbEntry, entry);
                 }
             }
             else
@@ -107,40 +178,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             entry.Resource = entity;
         }
 
-        private static async Task<object> FindEntity(
-            SubmitContext context,
-            DataModificationItem entry,
-            CancellationToken cancellationToken)
-        {
-            IQueryable query = context.ApiContext.GetQueryableSource(entry.ResourceSetName);
-            query = entry.ApplyTo(query);
-
-            QueryResult result = await context.ApiContext.QueryAsync(new QueryRequest(query), cancellationToken);
-
-            object entity = result.Results.SingleOrDefault();
-            if (entity == null)
-            {
-                // TODO GitHubIssue#38 : Handle the case when entity is resolved
-                // there are 2 cases where the entity is not found:
-                // 1) it doesn't exist
-                // 2) concurrency checks have failed
-                // we should account for both - I can see 3 options:
-                // a. always return "PreConditionFailed" result
-                //  - this is the canonical behavior of WebAPI OData, see the following post:
-                //    "Getting started with ASP.NET Web API 2.2 for OData v4.0" on http://blogs.msdn.com/b/webdev/.
-                //  - this makes sense because if someone deleted the record, then you still have a concurrency error
-                // b. possibly doing a 2nd query with just the keys to see if the record still exists
-                // c. only query with the keys, and then set the DbEntityEntry's OriginalValues to the ETag values,
-                //    letting the save fail if there are concurrency errors
-
-                ////throw new EntityNotFoundException
-                throw new InvalidOperationException(Resources.ResourceNotFound);
-            }
-
-            return entity;
-        }
-
-        private static object CreateFullUpdateInstance(DataModificationItem entry, Type entityType)
+        private object CreateFullUpdateInstance(DataModificationItem entry, Type entityType)
         {
             // The algorithm for a "FullReplaceUpdate" is taken from ObjectContextServiceProvider.ResetResource
             // in WCF DS, and works as follows:
@@ -150,13 +188,13 @@ namespace Microsoft.Restier.Providers.EntityFramework
             //    This will set any unspecified properties to their default value.
             object newInstance = Activator.CreateInstance(entityType);
 
-            ChangeSetInitializer.SetValues(newInstance, entityType, entry.ResourceKey);
-            ChangeSetInitializer.SetValues(newInstance, entityType, entry.LocalValues);
+            SetValues(newInstance, entityType, entry.ResourceKey);
+            SetValues(newInstance, entityType, entry.LocalValues);
 
             return newInstance;
         }
 
-        private static void SetValues(EntityEntry dbEntry, DataModificationItem entry)
+        private void SetValues(EntityEntry dbEntry, DataModificationItem entry)
         {
             foreach (KeyValuePair<string, object> propertyPair in entry.LocalValues)
             {
@@ -190,7 +228,7 @@ namespace Microsoft.Restier.Providers.EntityFramework
             }
         }
 
-        private static void SetValues(object instance, Type instanceType, IReadOnlyDictionary<string, object> values)
+        private void SetValues(object instance, Type instanceType, IReadOnlyDictionary<string, object> values)
         {
             foreach (KeyValuePair<string, object> propertyPair in values)
             {
@@ -222,44 +260,6 @@ namespace Microsoft.Restier.Providers.EntityFramework
 
                 propertyInfo.SetValue(instance, value);
             }
-        }
-
-        private static object ConvertToEfValue(Type type, object value)
-        {
-            // string[EdmType = Enum] => System.Enum
-            if (TypeHelper.IsEnum(type))
-            {
-                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
-            }
-
-            // Edm.Date => System.DateTime[SqlType = Date]
-            if (value is Date)
-            {
-                var dateValue = (Date)value;
-                return (DateTime)dateValue;
-            }
-
-            // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
-            if (value is DateTimeOffset && TypeHelper.IsDateTime(type))
-            {
-                var dateTimeOffsetValue = (DateTimeOffset)value;
-                return dateTimeOffsetValue.DateTime;
-            }
-
-            // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
-            if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
-            {
-                var timeOfDayValue = (TimeOfDay)value;
-                return (TimeSpan)timeOfDayValue;
-            }
-
-            // In case key is long type, when put an entity, key value will be from key parsing which is type of int
-            if (value is int && type == typeof(long))
-            {
-                return Convert.ToInt64(value, CultureInfo.InvariantCulture);
-            }
-
-            return value;
         }
     }
 }

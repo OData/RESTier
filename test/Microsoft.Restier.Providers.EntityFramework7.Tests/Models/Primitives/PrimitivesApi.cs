@@ -8,6 +8,10 @@ namespace Microsoft.Restier.Providers.EntityFramework7.Tests.Models.Primitives
 {
     class PrimitivesApi : EntityFrameworkApi<PrimitivesContext>
     {
+        public PrimitivesApi(IServiceProvider sp) : base(sp)
+        {
+        }
+
         internal PrimitivesContext DataContext
         {
             get { return (PrimitivesContext)this.DbContext; }
