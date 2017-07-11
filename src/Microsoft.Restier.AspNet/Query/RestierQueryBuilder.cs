@@ -118,7 +118,7 @@ namespace Microsoft.Restier.AspNet.Query
         {
             var property = Expression.Property(parameterExpression, propertyName);
             var constant = Expression.Constant(
-                Convert.ChangeType(propertyValue, property.Type, CultureInfo.InvariantCulture));
+                TypeConverter.ChangeType(propertyValue, property.Type, CultureInfo.InvariantCulture));
             return Expression.Equal(property, constant);
         }
 
