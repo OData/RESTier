@@ -129,4 +129,16 @@ namespace System
             return underlyingTypeOrSelf == typeof(DateTimeOffset);
         }
     }
+
+    internal static class TypeConverter
+    {
+        public static object ChangeType(object value, Type conversionType, IFormatProvider provider)
+        {
+            if (conversionType == typeof(DateTime) && value is DateTimeOffset)
+            {
+                return ((DateTimeOffset)value).DateTime;
+            }
+            return Convert.ChangeType(value, conversionType, provider);
+        }
+    }
 }

@@ -305,7 +305,7 @@ namespace Microsoft.Restier.Core.Submit
 
             if (itemValue.GetType() != property.Type)
             {
-                itemValue = Convert.ChangeType(itemValue, property.Type, CultureInfo.InvariantCulture);
+                itemValue = TypeConverter.ChangeType(itemValue, property.Type, CultureInfo.InvariantCulture);
             }
 
             // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary
