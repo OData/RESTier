@@ -8,7 +8,7 @@
     <RootNamespace>Microsoft.Restier.Core</RootNamespace>
     <AssemblyName>Microsoft.Restier.Core</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-    <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
     <!-- TODO: compile as a portable assembly -->
   </PropertyGroup>

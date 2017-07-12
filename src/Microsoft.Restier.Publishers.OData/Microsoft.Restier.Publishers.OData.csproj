@@ -8,7 +8,7 @@
     <RootNamespace>Microsoft.Restier.Publishers.OData</RootNamespace>
     <AssemblyName>Microsoft.Restier.Publishers.OData</AssemblyName>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-    <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>

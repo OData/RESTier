@@ -57,7 +57,7 @@ namespace Microsoft.Restier.Core.Submit
 
             await PerformPreEvent(context, currentChangeSetItems, cancellationToken);
 
-            await PerformPersist(context, currentChangeSetItems, cancellationToken);
+            await PerformPersist(context, cancellationToken);
 
             context.ChangeSet.Entries.Clear();
 
@@ -210,7 +210,6 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task PerformPersist(
             SubmitContext context,
-            IEnumerable<ChangeSetItem> changeSetItems,
             CancellationToken cancellationToken)
         {
             var executor = context.GetApiService<ISubmitExecutor>();
