@@ -1,4 +1,6 @@
 # RESTier
+<img src="https://identitydivision.visualstudio.com/_apis/public/build/definitions/2cfe7ec3-b94f-4ab9-85ab-2ebff928f3fd/100/badge"/>
+
 ## 1. Introduction
 [OData](http://www.odata.org/ "OData") stands for the Open Data Protocol. It was initiated by Microsoft and is now an ISO and OASIS standard. OData enables the creation and consumption of RESTful APIs, which allow resources, defined in a data model and identified by using URLs, to be published and edited by Web clients using simple HTTP requests.
 
