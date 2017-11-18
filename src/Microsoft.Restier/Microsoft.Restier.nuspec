@@ -11,7 +11,7 @@
     <projectUrl>http://odata.github.io/</projectUrl>
     <releaseNotes>http://odata.github.io/RESTier/</releaseNotes>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <copyright></copyright>
+    <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <dependency id="Microsoft.Restier.Core" version="[1.0.0-beta]" />
       <dependency id="Microsoft.Restier.Providers.EntityFramework" version="[1.0.0-beta]" />
