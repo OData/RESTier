@@ -3,9 +3,8 @@
 
 using System;
 using System.Net.Http;
-using System.Web.OData;
-using System.Web.OData.Formatter.Serialization;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Publishers.OData.Formatter

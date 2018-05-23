@@ -3,11 +3,10 @@
 
 using System;
 using System.Web.Http;
-using System.Web.OData;
-using System.Web.OData.Extensions;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.OData.Service.Sample.TrippinInMemory.Api;
 using Microsoft.Restier.Publishers.OData;
-using Microsoft.Restier.Publishers.OData.Batch;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory
 {

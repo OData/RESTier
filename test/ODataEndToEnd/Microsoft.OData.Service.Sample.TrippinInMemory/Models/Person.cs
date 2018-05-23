@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web.OData.Builder;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory.Models
 {

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Web.Http;
-using System.Web.OData.Extensions;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.OData.Service.Sample.Northwind.Models;
 using Microsoft.Restier.Publishers.OData;
 using Microsoft.Restier.Publishers.OData.Batch;

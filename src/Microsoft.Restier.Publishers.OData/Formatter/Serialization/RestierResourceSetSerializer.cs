@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web.OData.Formatter.Serialization;
-using System.Web.OData.Query.Expressions;
+using Microsoft.AspNet.OData.Formatter.Serialization;
+using Microsoft.AspNet.OData.Query.Expressions;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 

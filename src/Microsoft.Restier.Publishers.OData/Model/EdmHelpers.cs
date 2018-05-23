@@ -4,7 +4,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Web.OData;
+using Microsoft.AspNet.OData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Publishers.OData.Properties;

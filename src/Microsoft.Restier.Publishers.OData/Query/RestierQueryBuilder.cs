@@ -11,7 +11,7 @@ using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Model;
 using Microsoft.Restier.Publishers.OData.Properties;
-using ODataPath = System.Web.OData.Routing.ODataPath;
+using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData.Query
 {

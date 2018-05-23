@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.OData.Batch;
+using Microsoft.AspNet.OData.Batch;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory
 {

@@ -7,8 +7,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData.Query;
-using System.Web.OData.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Service.Sample.Trippin.Extension;
@@ -20,8 +18,10 @@ using Microsoft.Restier.Providers.EntityFramework;
 using Microsoft.Restier.Publishers.OData.Model;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Web.OData.Builder;
 using Microsoft.OData.Edm.Vocabularies;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Routing;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {

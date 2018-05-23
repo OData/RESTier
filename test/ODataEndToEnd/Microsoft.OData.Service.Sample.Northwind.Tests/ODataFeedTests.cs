@@ -13,11 +13,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.OData.Extensions;
 using Microsoft.OData.Service.Sample.Northwind.Models;
 using Microsoft.Restier.Tests;
 using Newtonsoft.Json;
 using Xunit;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Tests
 {

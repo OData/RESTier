@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using System.Web.OData;
+using Microsoft.AspNet.OData;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;

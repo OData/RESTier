@@ -3,7 +3,7 @@
 
 using System.Linq;
 using System.Web.Http;
-using System.Web.OData;
+using Microsoft.AspNet.OData;
 using Microsoft.OData.Service.Sample.Northwind.Models;
 
 namespace Microsoft.OData.Service.Sample.Northwind.Controllers

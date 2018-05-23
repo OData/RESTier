@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Web.Http.Routing;
-using System.Web.OData.Extensions;
-using System.Web.OData.Routing;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Routing;
 using Microsoft.OData.UriParser;
 
 namespace Microsoft.OData.Service.Sample.Trippin
