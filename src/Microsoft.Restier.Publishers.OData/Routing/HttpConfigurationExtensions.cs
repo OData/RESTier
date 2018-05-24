@@ -27,7 +27,6 @@ namespace Microsoft.Restier.Publishers.OData
     public static class HttpConfigurationExtensions
     {
         private const string UseVerboseErrorsFlagKey = "Microsoft.Restier.UseVerboseErrorsFlag";
-        private const string RootContainerKey = "System.Web.OData.RootContainerMappingsKey";
 
         /// TODO GitHubIssue#51 : Support model lazy loading
         /// <summary>
