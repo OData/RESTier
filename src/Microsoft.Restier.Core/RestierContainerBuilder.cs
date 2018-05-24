@@ -97,7 +97,14 @@ namespace Microsoft.Restier.Core
         public virtual IServiceProvider BuildContainer()
         {
             AddRestierService();
-            return services.BuildServiceProvider();
+
+            Assembly microsoftExtensionsDependencyInjectionAssembly = services.GetType().GetTypeInfo().Assembly;
+            TypeInfo serviceCollectionContainerBuilderExtensionsType = microsoftExtensionsDependencyInjectionAssembly.GetType(typeof(ServiceCollectionContainerBuilderExtensions).GetTypeInfo().FullName).GetTypeInfo();
+            MethodInfo buildServiceProviderMethod = serviceCollectionContainerBuilderExtensionsType.GetMethod("BuildServiceProvider", new[] { typeof(IServiceCollection) });
+
+            return (IServiceProvider)buildServiceProviderMethod.Invoke(null, new object[] { services });
+
+            // return services.BuildServiceProvider();
         }
 
         internal IContainerBuilder AddRestierService()
