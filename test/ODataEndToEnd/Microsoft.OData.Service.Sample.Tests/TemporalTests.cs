@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.OData.Client;
-using Microsoft.OData.Edm.Library;
+using Microsoft.OData.Edm;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 using Xunit;
 

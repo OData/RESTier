@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
-extern alias Net;
 
 using System;
 using System.Collections;
@@ -13,7 +12,6 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
@@ -30,11 +28,9 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Publishers.OData.Batch;
 using Microsoft.Restier.Publishers.OData.Model;
-using Microsoft.Restier.Publishers.OData.Properties;
 using Microsoft.Restier.Publishers.OData.Query;
 
 // This is a must for creating response with correct extension method
-using Net::System.Net.Http;
 using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.Publishers.OData
@@ -507,7 +503,9 @@ namespace Microsoft.Restier.Publishers.OData
             // but will be type of real entity type, then EtagMessageHandler can be used to set ETAG header
             // when response is single entity.
             // There are three HttpRequestMessageExtensions class defined in different assembles
-            var genericMethod = typeof(System.Net.Http.HttpRequestMessageExtensions).GetMethods()
+            var assembly = typeof(System.Web.Http.Filters.ActionFilterAttribute).Assembly;
+            var genericMethod = assembly.GetType("System.Net.Http.HttpRequestMessageExtensions").GetMethods()
+            //var genericMethod = typeof(System.Net.Http.HttpRequestMessageExtensions).GetMethods()
                 .Where(m => m.Name == "CreateResponse" && m.GetParameters().Length == 3);
             var method = genericMethod.FirstOrDefault().MakeGenericMethod(query.ElementType);
             response = method.Invoke(null, new object[] { this.Request, HttpStatusCode.OK, entityResult })
