@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.OData;
+using Microsoft.AspNet.OData;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Providers.InMemory.DataStoreManager;

@@ -982,18 +982,18 @@ namespace Microsoft.OData.Service.Sample.Tests
                         readerSettings,
                         this.TestClientContext.Format.LoadServiceModel()))
                     {
-                        var reader = messageReader.CreateODataFeedReader();
+                        var reader = messageReader.CreateODataResourceSetReader();
 
                         while (reader.Read())
                         {
-                            if (reader.State == ODataReaderState.EntryEnd)
+                            if (reader.State == ODataReaderState.ResourceEnd)
                             {
-                                ODataEntry entry = reader.Item as ODataEntry;
-                                Assert.NotNull(entry.Properties.Single(p => p.Name == "PersonId").Value);
+                                ODataResource resource = reader.Item as ODataResource;
+                                Assert.NotNull(resource.Properties.Single(p => p.Name == "PersonId").Value);
                             }
-                            else if (reader.State == ODataReaderState.FeedEnd)
+                            else if (reader.State == ODataReaderState.ResourceSetEnd)
                             {
-                                Assert.NotNull(reader.Item as ODataFeed);
+                                Assert.NotNull(reader.Item as ODataResourceSet);
                             }
                         }
 

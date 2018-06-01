@@ -103,9 +103,7 @@ namespace Microsoft.Restier.Core
             MethodInfo buildServiceProviderMethod = serviceCollectionContainerBuilderExtensionsType.GetMethod("BuildServiceProvider", new[] { typeof(IServiceCollection) });
 
             return (IServiceProvider)buildServiceProviderMethod.Invoke(null, new object[] { services });
-
-            // return services.BuildServiceProvider();
-        }
+         }
 
         internal IContainerBuilder AddRestierService()
         {
