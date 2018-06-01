@@ -718,7 +718,7 @@ namespace Microsoft.OData.Service.Sample.Tests
             Action test = () => TestGetPayloadContains(
                 "People?$expand=Friends($levels=4)", "The request includes a $expand path which is too deep. The maximum depth allowed is 2. To increase the limit, set the 'MaxExpansionDepth' property on EnableQueryAttribute or ODataValidationSettings.");
             // OData .NET client has wrapped the expcetion with new message.
-            test.ShouldThrow<DataServiceTransportException>();
+            test.Should().Throw<DataServiceTransportException>();
         }
 
         [Fact]

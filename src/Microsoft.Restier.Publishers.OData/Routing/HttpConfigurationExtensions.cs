@@ -15,7 +15,6 @@ using Microsoft.AspNet.OData.Routing.Conventions;
 using Microsoft.OData;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Publishers.OData.Batch;
-using Microsoft.Restier.Publishers.OData.Properties;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace Microsoft.Restier.Publishers.OData
