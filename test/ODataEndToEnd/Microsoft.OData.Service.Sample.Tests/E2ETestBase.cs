@@ -85,8 +85,8 @@ namespace Microsoft.OData.Service.Sample.Tests
             catch (DataServiceTransportException e)
             {
                 // In case of 404 or 500, it will be handled here
-                var response = e.Response;
-                Assert.Equal(statusCode, response.StatusCode);
+                var stream = new StreamReader(e.Response.GetStream()).ReadToEnd();
+                Assert.Equal(statusCode, e.Response.StatusCode);
             }
         }
 

@@ -4,7 +4,7 @@
     <DFRootPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</DFRootPath>
     <DFToolsPath>$(MSBuildThisFileDirectory)</DFToolsPath>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <StyleCopTargets>$(DFRootPath)packages\StyleCop.MSBuild.4.7.50.0\build\StyleCop.MSBuild.Targets</StyleCopTargets>
+    <!--<StyleCopTargets>$(DFRootPath)packages\StyleCop.MSBuild.4.7.50.0\build\StyleCop.MSBuild.Targets</StyleCopTargets>-->
   </PropertyGroup>
   
   <PropertyGroup>

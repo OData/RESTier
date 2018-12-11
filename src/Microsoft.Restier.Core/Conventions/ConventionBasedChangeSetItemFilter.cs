@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Submit;
+using System.Diagnostics;
 
 namespace Microsoft.Restier.Core
 {
@@ -19,16 +20,14 @@ namespace Microsoft.Restier.Core
     {
         private Type targetType;
 
-        private ConventionBasedChangeSetItemFilter(Type targetType)
+        internal ConventionBasedChangeSetItemFilter(Type targetType)
         {
             Ensure.NotNull(targetType, "targetType");
             this.targetType = targetType;
         }
 
         /// <inheritdoc/>
-        public static void ApplyTo(
-            IServiceCollection services,
-            Type targetType)
+        public static void ApplyTo(IServiceCollection services, Type targetType)
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
@@ -56,32 +55,42 @@ namespace Microsoft.Restier.Core
                 context, item, ConventionBasedChangeSetConstants.FilterMethodNamePostFilterSuffix);
         }
 
-        private static string GetMethodName(ChangeSetItem item, string suffix)
+        internal static string GetMethodName(ChangeSetItem item, string suffix, bool useOldMethod = false)
         {
             switch (item.Type)
             {
                 case ChangeSetItemType.DataModification:
                     DataModificationItem dataModification = (DataModificationItem)item;
-                    string operationName = null;
-                    if (dataModification.DataModificationItemAction == DataModificationItemAction.Insert)
-                    {
-                        operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
-                    }
-                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Update)
-                    {
-                        operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
-                    }
-                    else if (dataModification.DataModificationItemAction == DataModificationItemAction.Remove)
-                    {
-                        operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
-                    }
-
-                    return operationName + suffix + dataModification.ResourceSetName;
-
+                    var operationName = GetOperationName(dataModification);
+                    var entityName = useOldMethod ? dataModification.ResourceSetName : dataModification.ExpectedResourceType.Name;
+                    return operationName + suffix + entityName;
                 default:
                     throw new InvalidOperationException(string.Format(
                         CultureInfo.InvariantCulture, Resources.InvalidChangeSetEntryType, item.Type));
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        internal static string GetOperationName(DataModificationItem item)
+        {
+            string operationName = string.Empty;
+            switch (item.DataModificationItemAction)
+            {
+                case DataModificationItemAction.Insert:
+                    operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationInsert;
+                    break;
+                case DataModificationItemAction.Update:
+                    operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationUpdate;
+                    break;
+                case DataModificationItemAction.Remove:
+                    operationName = ConventionBasedChangeSetConstants.FilterMethodDataModificationDelete;
+                    break;
+            }
+            return operationName;
         }
 
         private static object[] GetParameters(ChangeSetItem item)
@@ -104,22 +113,30 @@ namespace Microsoft.Restier.Core
                 && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
         }
 
-        private Task InvokeProcessorMethodAsync(
-            SubmitContext context,
-            ChangeSetItem item,
-            string methodNameSuffix)
+        private Task InvokeProcessorMethodAsync(SubmitContext context, ChangeSetItem item, string methodNameSuffix)
         {
-            string methodName = GetMethodName(item, methodNameSuffix);
-            object[] parameters = GetParameters(item);
-
-            MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
-
-            if (method != null &&
-                (method.ReturnType == typeof(void) ||
-                typeof(Task).IsAssignableFrom(method.ReturnType)))
+            string expectedMethodName = GetMethodName(item, methodNameSuffix);
+            MethodInfo expectedMethod = this.targetType.GetQualifiedMethod(expectedMethodName);
+            if (!IsUsable(expectedMethod))
+            { 
+                if (expectedMethod != null)
+                {
+                    Debug.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Change it to be 'protected internal'.");
+                }
+                else
+                {
+                    var actualMethodName = GetMethodName(item, methodNameSuffix, true);
+                    var actualMethod = this.targetType.GetQualifiedMethod(actualMethodName);
+                    if (actualMethod != null)
+                    {
+                        Debug.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Please correct the method name.");
+                    }
+                }
+            }
+            else
             {
                 object target = null;
-                if (!method.IsStatic)
+                if (!expectedMethod.IsStatic)
                 {
                     target = context.GetApiService<ApiBase>();
                     if (target == null ||
@@ -129,12 +146,12 @@ namespace Microsoft.Restier.Core
                     }
                 }
 
-                ParameterInfo[] methodParameters = method.GetParameters();
+                object[] parameters = GetParameters(item);
+                ParameterInfo[] methodParameters = expectedMethod.GetParameters();
                 if (ParametersMatch(methodParameters, parameters))
                 {
-                    object result = method.Invoke(target, parameters);
-                    Task resultTask = result as Task;
-                    if (resultTask != null)
+                    object result = expectedMethod.Invoke(target, parameters);
+                    if (result is Task resultTask)
                     {
                         return resultTask;
                     }
@@ -143,5 +160,12 @@ namespace Microsoft.Restier.Core
 
             return Task.WhenAll();
         }
+
+        private static bool IsUsable(MethodInfo info)
+        {
+            return (info != null && (info.ReturnType == typeof(void) || typeof(Task).IsAssignableFrom(info.ReturnType)));
+        }
+
+
     }
 }

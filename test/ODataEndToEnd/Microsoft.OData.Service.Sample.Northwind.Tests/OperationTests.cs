@@ -16,7 +16,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         [Fact]
         public async Task AsyncFunctionCallWithFullName()
         {
-            await AsyncFunctionCall(true, (config, server) => WebApiConfig.RegisterNorthwind(config, server));
+            await AsyncFunctionCall(true, (config, server) => WebApiConfig.RegisterRestierNorthwind(config, server));
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await AsyncFunctionCall(false, (config, server) =>
             {
-                WebApiConfig.RegisterNorthwind2(config, server);
+                WebApiConfig.RegisterRestierNorthwind2(config, server);
             });
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         [Fact]
         public async Task FunctionCallWithFullName()
         {
-            await FunctionCall(true, (config, server) => WebApiConfig.RegisterNorthwind(config, server));
+            await FunctionCall(true, (config, server) => WebApiConfig.RegisterRestierNorthwind(config, server));
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await FunctionCall(false, (config, server) =>
                 {
-                    WebApiConfig.RegisterNorthwind2(config, server);
+                    WebApiConfig.RegisterRestierNorthwind2(config, server);
                 });
         }
 
@@ -72,7 +72,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         [Fact]
         public async Task AsyncActionCallWithFullName()
         {
-            await AsyncActionCall(false, (config, server) => { WebApiConfig.RegisterNorthwind(config, server); });
+            await AsyncActionCall(false, (config, server) => { WebApiConfig.RegisterRestierNorthwind(config, server); });
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await AsyncActionCall(true, (config, server) =>
             {
-                WebApiConfig.RegisterNorthwind2(config, server);
+                WebApiConfig.RegisterRestierNorthwind2(config, server);
             });
         }
 
@@ -106,7 +106,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 string.Format("http://localhost/api/Northwind/Products({0})", productID),
                 HttpMethod.Get,
                 null,
-                (config, server) => { WebApiConfig.RegisterNorthwind(config, server); },
+                (config, server) => { WebApiConfig.RegisterRestierNorthwind(config, server); },
                 HttpStatusCode.OK,
                 null);
         }
@@ -114,7 +114,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         [Fact]
         public async Task ActionCallWithFullName()
         {
-            await ActionCall(false, (config, server) => { WebApiConfig.RegisterNorthwind(config, server); });
+            await ActionCall(false, (config, server) => { WebApiConfig.RegisterRestierNorthwind(config, server); });
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
         {
             await ActionCall(true, (config, server) =>
             {
-                WebApiConfig.RegisterNorthwind2(config, server);
+                WebApiConfig.RegisterRestierNorthwind2(config, server);
             });
         }
 
@@ -148,7 +148,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 string.Format("http://localhost/api/Northwind/Products({0})", productID),
                 HttpMethod.Get,
                 null,
-                (config, server) => { WebApiConfig.RegisterNorthwind(config, server); },
+                (config, server) => { WebApiConfig.RegisterRestierNorthwind(config, server); },
                 HttpStatusCode.OK,
                 null);
         }
