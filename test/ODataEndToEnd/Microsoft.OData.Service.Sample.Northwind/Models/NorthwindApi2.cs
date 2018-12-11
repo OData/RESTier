@@ -81,18 +81,18 @@ namespace Microsoft.OData.Service.Sample.Northwind.Models
         }
 
         // Entity set filter
-        protected IQueryable<Customer> OnFilterCustomer(IQueryable<Customer> customers)
+        protected IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> customers)
         {
             return customers.Where(c => c.CountryRegion == "France");
         }
 
         // Submit logic
-        protected void OnUpdatingProducts(Product product)
+        protected void OnUpdatingProduct(Product product)
         {
             WriteLog(DateTime.Now.ToString() + product.ProductID + " is being updated");
         }
 
-        protected void OnInsertedProducts(Product product)
+        protected void OnInsertedProduct(Product product)
         {
             WriteLog(DateTime.Now.ToString() + product.ProductID + " has been inserted");
         }

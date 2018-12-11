@@ -72,6 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Naming.Tests.cs" />
     <Compile Include="ServiceConfiguration.Tests.cs" />
     <Compile Include="Model\DefaultModelHandler.Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

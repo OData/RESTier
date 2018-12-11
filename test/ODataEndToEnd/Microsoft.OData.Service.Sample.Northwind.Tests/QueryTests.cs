@@ -23,7 +23,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             {
                 using (HttpServer server = new HttpServer(config))
                 {
-                    WebApiConfig.RegisterNorthwind(config, server); var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
+                    WebApiConfig.RegisterRestierNorthwind(config, server); var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
                     var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
                     QueryResult result = await api.QueryAsync(
@@ -42,7 +42,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             {
                 using (HttpServer server = new HttpServer(config))
                 {
-                    WebApiConfig.RegisterNorthwind(config, server);
+                    WebApiConfig.RegisterRestierNorthwind(config, server);
                     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
                     var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
@@ -62,7 +62,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             {
                 using (HttpServer server = new HttpServer(config))
                 {
-                    WebApiConfig.RegisterNorthwind(config, server);
+                    WebApiConfig.RegisterRestierNorthwind(config, server);
                     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
                     var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();
@@ -86,7 +86,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
             {
                 using (HttpServer server = new HttpServer(config))
                 {
-                    WebApiConfig.RegisterNorthwind(config, server);
+                    WebApiConfig.RegisterRestierNorthwind(config, server);
                     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
                     request.SetConfiguration(config);
                     var api = request.CreateRequestContainer("NorthwindApi").GetService<ApiBase>();

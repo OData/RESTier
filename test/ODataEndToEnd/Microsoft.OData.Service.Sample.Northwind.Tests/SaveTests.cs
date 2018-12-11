@@ -40,7 +40,7 @@ namespace Microsoft.OData.Service.Sample.Northwind.Tests
                 return services;
             }
 
-            protected async Task OnInsertingCustomers(Customer customer)
+            protected async Task OnInsertingCustomer(Customer customer)
             {
                 await Task.Delay(10);
                 customer.CompanyName += "OnInserting";
