@@ -340,6 +340,15 @@ namespace Microsoft.Restier.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The LINQ expression for part {0} was not accessible. This may indicate your query has static member components, possibly from an extension method. This is not currently supported./r/nPlease check the EntitySet filter, and see https://github.com/OData/RESTier/issues/564 for more information..
+        /// </summary>
+        internal static string QueryMemberNotAccessible {
+            get {
+                return ResourceManager.GetString("QueryMemberNotAccessible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A query for a single entity resulted in more than one record..
         /// </summary>
         internal static string QueryShouldGetSingleRecord {

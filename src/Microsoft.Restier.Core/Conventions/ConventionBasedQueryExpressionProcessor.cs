@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
-using System.Diagnostics;
 
 namespace Microsoft.Restier.Core
 {
@@ -19,23 +19,17 @@ namespace Microsoft.Restier.Core
     {
         private Type targetType;
 
-        private ConventionBasedQueryExpressionProcessor(Type targetType)
-        {
-            this.targetType = targetType;
-        }
+        private ConventionBasedQueryExpressionProcessor(Type targetType) => this.targetType = targetType;
 
         // Inner should be null unless user add one as inner most
         public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>
-        public static void ApplyTo(
-            IServiceCollection services,
-            Type targetType)
+        public static void ApplyTo(IServiceCollection services, Type targetType)
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IQueryExpressionProcessor>(
-                (sp, next) => new ConventionBasedQueryExpressionProcessor(targetType)
+            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(targetType)
             {
                 Inner = next,
             });
@@ -57,8 +51,7 @@ namespace Microsoft.Restier.Core
 
             if (context.ModelReference is DataSourceStubModelReference dataSourceStubReference)
             {
-                var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
-                if (entitySet == null)
+                if (!(dataSourceStubReference.Element is IEdmEntitySet entitySet))
                 {
                     return null;
                 }
@@ -116,8 +109,8 @@ namespace Microsoft.Restier.Core
         private Expression AppendOnFilterExpression(QueryExpressionContext context, string entitySetName, string entityTypeName)
         {
             var expectedMethodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entitySetName;
-            var expectedMethod = this.targetType.GetQualifiedMethod(expectedMethodName);
-            if (expectedMethod == null || !expectedMethod.IsFamily)
+            var expectedMethod = targetType.GetQualifiedMethod(expectedMethodName);
+            if (expectedMethod == null || (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly))
             {
                 if (expectedMethod != null)
                 {
@@ -126,7 +119,7 @@ namespace Microsoft.Restier.Core
                 else
                 {
                     var actualMethodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
-                    var actualMethod = this.targetType.GetQualifiedMethod(actualMethodName);
+                    var actualMethod = targetType.GetQualifiedMethod(actualMethodName);
                     if (actualMethod != null)
                     {
                         Debug.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Please correct the method name.");
@@ -147,7 +140,7 @@ namespace Microsoft.Restier.Core
             {
                 apiBase = context.QueryContext.GetApiService<ApiBase>();
                 if (apiBase == null ||
-                    !this.targetType.IsInstanceOfType(apiBase))
+                    !targetType.IsInstanceOfType(apiBase))
                 {
                     return null;
                 }
