@@ -1,20 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Formatter;
-using Microsoft.AspNet.OData.Query;
-using Microsoft.AspNet.OData.Results;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData;
-using Microsoft.OData.Edm;
-using Microsoft.OData.UriParser;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Operation;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.AspNet.Model;
-using Microsoft.Restier.AspNet.Query;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,9 +10,23 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Formatter;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNet.OData.Results;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
+using Microsoft.Restier.AspNet.Model;
+using Microsoft.Restier.AspNet.Query;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Operation;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 // This is a must for creating response with correct extension method
 using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
-using Resources = Microsoft.Restier.AspNet.Resources;
 
 
 namespace Microsoft.Restier.AspNet
@@ -68,8 +67,7 @@ namespace Microsoft.Restier.AspNet
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the response message.</returns>
-        public async Task<HttpResponseMessage> Get(
-            CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> Get(CancellationToken cancellationToken)
         {
             var path = GetPath();
             var lastSegment = path.Segments.LastOrDefault();
@@ -89,18 +87,17 @@ namespace Microsoft.Restier.AspNet
             {
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
                 Func<string, object> getParaValueFunc = p => unboundSegment.Parameters.FirstOrDefault(c => c.Name == p).Value;
-                result = await ExecuteOperationAsync(
-                    getParaValueFunc, operation.Name, true, null, cancellationToken);
-                result = ApplyQueryOptions(result, path, true, out etag);
+                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken);
+
+                var applied = await ApplyQueryOptionsAsync(result, path, true);
+                result = applied.Queryable;
+                etag = applied.Etag;
             }
             else
             {
                 if (queryable == null)
                 {
-                    throw new HttpResponseException(
-                        Request.CreateErrorResponse(
-                            HttpStatusCode.NotFound,
-                            Resources.ResourceNotFound));
+                    throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound, Resources.ResourceNotFound));
                 }
 
                 if (lastSegment is OperationSegment)
@@ -112,12 +109,16 @@ namespace Microsoft.Restier.AspNet
                     Func<string, object> getParaValueFunc = p => boundSeg.Parameters.FirstOrDefault(c => c.Name == p).Value;
                     result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken);
 
-                    result = ApplyQueryOptions(result, path, true, out etag);
+                    var applied = await ApplyQueryOptionsAsync(result, path, true);
+                    result = applied.Queryable;
+                    etag = applied.Etag;
+
                 }
                 else
                 {
-                    queryable = ApplyQueryOptions(queryable, path, false, out etag);
-                    result = await ExecuteQuery(queryable, cancellationToken);
+                    var applied = await ApplyQueryOptionsAsync(queryable, path, false);
+                    result = await ExecuteQuery(applied.Queryable, cancellationToken);
+                    etag = applied.Etag;
                 }
             }
 
@@ -515,21 +516,26 @@ namespace Microsoft.Restier.AspNet
             return queryable;
         }
 
-        private IQueryable ApplyQueryOptions(
-            IQueryable queryable, ODataPath path, bool applyCount, out ETag etag)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="queryable"></param>
+        /// <param name="path"></param>
+        /// <param name="applyCount"></param>
+        /// <returns></returns>
+        private async Task<(IQueryable Queryable, ETag Etag)> ApplyQueryOptionsAsync(IQueryable queryable, ODataPath path, bool applyCount)
         {
-            etag = null;
+            ETag etag = null;
 
             if (shouldWriteRawValue)
             {
                 // Query options don't apply to $value.
-                return queryable;
+                return (queryable, null);
             }
 
             var properties = Request.ODataProperties();
-            var model = Api.GetModelAsync().Result;
-            var queryContext =
-                new ODataQueryContext(model, queryable.ElementType, path);
+            var model = await Api.GetModelAsync();
+            var queryContext = new ODataQueryContext(model, queryable.ElementType, path);
             var queryOptions = new ODataQueryOptions(queryContext, Request);
 
             // Get etag for query request
@@ -548,15 +554,13 @@ namespace Microsoft.Restier.AspNet
             if (shouldReturnCount)
             {
                 // Query options other than $filter and $search don't apply to $count.
-                queryable = queryOptions.ApplyTo(
-                    queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
-                return queryable;
+                queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
+                return (queryable, etag);
             }
 
             if (queryOptions.Count != null && !applyCount)
             {
-                var queryExecutorOptions =
-                    Api.GetApiService<RestierQueryExecutorOptions>();
+                var queryExecutorOptions = Api.GetApiService<RestierQueryExecutorOptions>();
                 queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
                 queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }
@@ -576,7 +580,7 @@ namespace Microsoft.Restier.AspNet
                 queryable = queryOptions.ApplyTo(queryable, settings);
             }
 
-            return queryable;
+            return (queryable, etag);
         }
 
         private async Task<IQueryable> ExecuteQuery(IQueryable queryable, CancellationToken cancellationToken)
