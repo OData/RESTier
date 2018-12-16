@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
-using DataAnnotations = System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Restier.Core
 {
@@ -35,23 +35,23 @@ namespace Microsoft.Restier.Core
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 PropertyDescriptorCollection properties =
-                    new DataAnnotations.AssociatedMetadataTypeTypeDescriptionProvider(resource.GetType())
+                    new AssociatedMetadataTypeTypeDescriptionProvider(resource.GetType())
                     .GetTypeDescriptor(resource).GetProperties();
 
-                DataAnnotations.ValidationContext validationContext = new DataAnnotations.ValidationContext(resource);
+                ValidationContext validationContext = new ValidationContext(resource);
 
                 foreach (PropertyDescriptor property in properties)
                 {
                     validationContext.MemberName = property.Name;
 
-                    IEnumerable<DataAnnotations.ValidationAttribute> validationAttributes =
-                        property.Attributes.OfType<DataAnnotations.ValidationAttribute>();
-                    foreach (DataAnnotations.ValidationAttribute validationAttribute in validationAttributes)
+                    IEnumerable<ValidationAttribute> validationAttributes =
+                        property.Attributes.OfType<ValidationAttribute>();
+                    foreach (ValidationAttribute validationAttribute in validationAttributes)
                     {
                         object value = property.GetValue(resource);
-                        DataAnnotations.ValidationResult validationResult =
+                        ValidationResult validationResult =
                             validationAttribute.GetValidationResult(value, validationContext);
-                        if (validationResult != DataAnnotations.ValidationResult.Success)
+                        if (validationResult != ValidationResult.Success)
                         {
                             validationResults.Add(new ChangeSetItemValidationResult()
                             {

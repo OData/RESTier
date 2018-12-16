@@ -11,15 +11,12 @@ namespace Microsoft.Restier.Core
     /// </summary>
     internal class PropertyBag
     {
-        private readonly IDictionary<string, object> properties =
-            new Dictionary<string, object>();
+        private readonly IDictionary<string, object> properties = new Dictionary<string, object>();
 
         /// <summary>
         /// Indicates if this object has a property.
         /// </summary>
-        /// <param name="name">
-        /// The name of a property.
-        /// </param>
+        /// <param name="name">The name of a property.</param>
         /// <returns>
         /// <c>true</c> if this object has the
         /// property; otherwise, <c>false</c>.
@@ -27,7 +24,7 @@ namespace Microsoft.Restier.Core
         public bool HasProperty(string name)
         {
             Ensure.NotNull(name, "name");
-            return this.properties.ContainsKey(name);
+            return properties.ContainsKey(name);
         }
 
         /// <summary>
@@ -45,7 +42,7 @@ namespace Microsoft.Restier.Core
         public T GetProperty<T>(string name)
         {
             Ensure.NotNull(name, "name");
-            var value = this.GetProperty(name);
+            var value = GetProperty(name);
             if (!(value is T))
             {
                 value = default(T);
@@ -57,17 +54,12 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Gets a property.
         /// </summary>
-        /// <param name="name">
-        /// The name of a property.
-        /// </param>
-        /// <returns>
-        /// The value of the property.
-        /// </returns>
+        /// <param name="name">The name of a property.</param>
+        /// <returns>The value of the property.</returns>
         public object GetProperty(string name)
         {
             Ensure.NotNull(name, "name");
-            object value = null;
-            this.properties.TryGetValue(name, out value);
+            properties.TryGetValue(name, out var value);
             return value;
         }
 
@@ -83,7 +75,7 @@ namespace Microsoft.Restier.Core
         public void SetProperty(string name, object value)
         {
             Ensure.NotNull(name, "name");
-            this.properties[name] = value;
+            properties[name] = value;
         }
 
         /// <summary>
@@ -95,7 +87,7 @@ namespace Microsoft.Restier.Core
         public void RemoveProperty(string name)
         {
             Ensure.NotNull(name, "name");
-            this.properties.Remove(name);
+            properties.Remove(name);
         }
     }
 }

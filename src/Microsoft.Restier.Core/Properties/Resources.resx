@@ -166,7 +166,7 @@
     <value>Invalid ChangeSetItem Type: {0}.</value>
   </data>
   <data name="NoPermissionToDeleteEntity" xml:space="preserve">
-    <value>The current user does not have permission to delete entities from the EntitySet '{0}'.</value>
+    <value>InvalidChangeSetEntryType</value>
   </data>
   <data name="NoPermissionToInsertEntity" xml:space="preserve">
     <value>The current user does not have permission to insert entities into the EntitySet '{0}'.</value>
@@ -221,5 +221,14 @@
   </data>
   <data name="ArgumentCanNotBeNull" xml:space="preserve">
     <value>The argument with name {0} can not be null.</value>
+  </data>
+  <data name="QueryShouldGetSingleRecord" xml:space="preserve">
+    <value>A query for a single entity resulted in more than one record.</value>
+  </data>
+  <data name="MetadataTypeAttribute_TypeCannotBeNull" xml:space="preserve">
+    <value>MetadataClassType cannot be null.</value>
+  </data>
+  <data name="AssociatedMetadataTypeTypeDescriptor_MetadataTypeContainsUnknownProperties" xml:space="preserve">
+    <value>The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type.</value>
   </data>
 </root>

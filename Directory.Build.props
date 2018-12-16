@@ -1,0 +1,69 @@
+<Project>
+  <!--<Import Project="version.props" />-->
+
+  <PropertyGroup>
+    <Product>Microsoft Restier</Product>
+
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft Corporation.</Company>
+    <RpmPackageVendor>.NET Foundation</RpmPackageVendor>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/OData/RESTier/master/License.txt</PackageLicenseUrl>
+    <!-- The SPDX name for the source license. See https://spdx.org/licenses/. -->
+    <PackageLicenseType>MIT</PackageLicenseType>
+    <!--
+      Suppress a warning about upcoming deprecation of PackageLicenseUrl. When embedding licenses are supported,
+      replace PackageLicenseUrl with PackageLicenseExpression.
+    -->
+    <NoWarn>$(NoWarn);NU5125</NoWarn>
+    <!-- Suppress warnings about using SemVer 2.0. -->
+    <NoWarn>$(NoWarn);NU5105</NoWarn>
+
+    <!-- Contact email address for NuGet packages and Linux installers. -->
+    <MaintainerEmail>odata@nimbleapps.cloud</MaintainerEmail>
+
+    <PackageIconUrl>https://go.microsoft.com/fwlink/?LinkID=288859</PackageIconUrl>
+    <PackageProjectUrl>https://restier.readthedocs.io/en/latest/</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>odata;wcf data services;</PackageTags>
+    <Serviceable>true</Serviceable>
+
+    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+    <RepositoryUrl>https://github.com/OData/RESTier</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <!-- Compilation options -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Instructs the compiler to use SHA256 instead of SHA1 when adding file hashes to PDBs. -->
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+
+    <!-- Fixes a common error in targets implementing a NoBuild mode. -->
+    <BuildProjectReferences Condition=" '$(NoBuild)' == 'true' ">false</BuildProjectReferences>
+  </PropertyGroup>
+
+  <!-- Folder layout -->
+  <PropertyGroup>
+    <IsBenchmarkProject Condition="$(MSBuildProjectName.EndsWith('.Performance'))">true</IsBenchmarkProject>
+    <IsTestProject Condition="$(MSBuildProjectName.Contains('.Tests.'))">true</IsTestProject>
+    <IsTestAssetProject Condition="$(RepoRelativeProjectDir.Contains('testassets'))">true</IsTestAssetProject>
+    <IsSampleProject Condition="$(MSBuildProjectName.Contains('.Samples.'))">true</IsSampleProject>
+
+    <IncludeSource>false</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>
+    
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '!$(IsSampleProject)' != 'true' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StandardTestTfms>netcoreapp2.2;net461</StandardTestTfms>
+  </PropertyGroup>
+
+</Project>

@@ -1,143 +1,45 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory),RESTier.sln))\tools\RESTier.settings.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <ProjectGuid>{F1BEAB8D-82D4-4BBB-A5C6-BA0E6872E508}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Restier.Core</RootNamespace>
-    <AssemblyName>Microsoft.Restier.Core</AssemblyName>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
-    <RunCodeAnalysis>$(CodeAnalysis)</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\Strict.ruleset</CodeAnalysisRuleSet>
-    <!-- TODO: compile as a portable assembly -->
+    <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for implementing Restier convention semantics and query interception.</Summary>
+    <Description>
+      $(Summary)
+
+      Commonly used types:
+      Microsoft.Restier.Core.RestierController
+    </Description>
+    <PackageTags>$(PackageTags)</PackageTags>
+
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.1.0.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.OData.Core, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Core.7.0.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.OData.Edm, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.OData.Edm.7.0.0\lib\portable-net45+win8+wpa81\Microsoft.OData.Edm.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
+    <Compile Remove="DataAnnotations\AssociatedMetadataTypeTypeDescriptionProvider.cs" />
+    <Compile Remove="DataAnnotations\AssociatedMetadataTypeTypeDescriptor.cs" />
+    <Compile Remove="DataAnnotations\MetadataPropertyDescriptorWrapper.cs" />
+    <Compile Remove="DataAnnotations\MetadataTypeAttribute.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\GlobalSuppressions.cs">
-      <Link>GlobalSuppressions.cs</Link>
-      <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
-    </Compile>
-    <Compile Include="..\Shared\Ensure.cs">
-      <Link>Shared\Ensure.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\EnumerableExtensions.cs">
-      <Link>Shared\EnumerableExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ExpressionHelperMethods.cs">
-      <Link>Shared\ExpressionHelperMethods.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ExpressionHelpers.cs">
-      <Link>Shared\ExpressionHelpers.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\TypeExtensions.cs">
-      <Link>Shared\TypeExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\SharedResources\SharedResources.Core.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.OData.Core" Version="7.5.2" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
-      <DependentUpon>SharedResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Conventions\ConventionBasedOperationFilter.cs" />
-    <Compile Include="Conventions\ConventionBasedOperationAuthorizer.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetItemAuthorizer.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetConstants.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetItemFilter.cs" />
-    <Compile Include="Conventions\ConventionBasedChangeSetItemValidator.cs" />
-    <Compile Include="Conventions\ConventionBasedQueryExpressionProcessor.cs" />
-    <Compile Include="ApiBase.cs" />
-    <Compile Include="ApiConfiguration.cs" />
-    <Compile Include="ApiBaseExtensions.cs" />
-    <Compile Include="DataSourceStub.cs" />
-    <Compile Include="Exceptions\PreconditionRequiredException.cs" />
-    <Compile Include="Exceptions\PreconditionFailedException.cs" />
-    <Compile Include="Exceptions\ResourceNotFoundException.cs" />
-    <Compile Include="InvocationContext.cs" />
-    <Compile Include="InvocationContextExtensions.cs" />
-    <Compile Include="Model\EdmHelpers.cs" />
-    <Compile Include="Model\ModelContext.cs" />
-    <Compile Include="Operation\IOperationFilter.cs" />
-    <Compile Include="Operation\IOperationAuthorizer.cs" />
-    <Compile Include="Operation\IOperationExecutor.cs" />
-    <Compile Include="Operation\OperationContext.cs" />
-    <Compile Include="RestierContainerBuilder.cs" />
-    <Compile Include="ServiceCollectionExtensions.cs" />
-    <Compile Include="Model\IModelBuilder.cs" />
-    <Compile Include="Model\IModelMapper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="PropertyBag.cs" />
-    <Compile Include="QueryableSource.cs" />
-    <Compile Include="Query\DefaultQueryExecutor.cs" />
-    <Compile Include="Query\DefaultQueryHandler.cs" />
-    <Compile Include="Query\IQueryExecutor.cs" />
-    <Compile Include="Query\IQueryExpressionExpander.cs" />
-    <Compile Include="Query\IQueryExpressionProcessor.cs" />
-    <Compile Include="Query\IQueryExpressionAuthorizer.cs" />
-    <Compile Include="Query\IQueryExpressionSourcer.cs" />
-    <Compile Include="Query\QueryContext.cs" />
-    <Compile Include="Query\QueryExpressionContext.cs" />
-    <Compile Include="Query\QueryModelReference.cs" />
-    <Compile Include="Query\QueryRequest.cs" />
-    <Compile Include="Query\QueryResult.cs" />
-    <Compile Include="Submit\ChangeSet.cs" />
-    <Compile Include="Submit\ChangeSetItem.cs" />
-    <Compile Include="Submit\DefaultSubmitHandler.cs" />
-    <Compile Include="Submit\IChangeSetItemAuthorizer.cs" />
-    <Compile Include="Submit\IChangeSetItemFilter.cs" />
-    <Compile Include="Submit\IChangeSetItemValidator.cs" />
-    <Compile Include="Submit\IChangeSetInitializer.cs" />
-    <Compile Include="Submit\ISubmitExecutor.cs" />
-    <Compile Include="Submit\SubmitContext.cs" />
-    <Compile Include="Submit\SubmitResult.cs" />
-    <Compile Include="Submit\ChangeSetValidationException.cs" />
-    <Compile Include="Submit\ChangeSetItemValidationResult.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="Microsoft.Restier.Core.nuspec" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Restier.Core</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="..\CodeAnalysisDictionary.xml">
-      <Link>CodeAnalysisDictionary.xml</Link>
-    </CodeAnalysisDictionary>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(StyleCopTargets)" Condition="Exists('$(StyleCopTargets)')" />
+
 </Project>

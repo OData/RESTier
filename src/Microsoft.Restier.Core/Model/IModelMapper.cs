@@ -47,10 +47,7 @@ namespace Microsoft.Restier.Core.Model
         /// specifically opting to not support the specified queryable source.
         /// </para>
         /// </remarks>
-        bool TryGetRelevantType(
-            ModelContext context,
-            string name,
-            out Type relevantType);
+        bool TryGetRelevantType(ModelContext context, string name, out Type relevantType);
 
         /// <summary>
         /// Tries to get the relevant type of a composable function.
@@ -84,10 +81,6 @@ namespace Microsoft.Restier.Core.Model
         /// specifically opting to not support the specified composable function.
         /// </para>
         /// </remarks>
-        bool TryGetRelevantType(
-            ModelContext context,
-            string namespaceName,
-            string name,
-            out Type relevantType);
+        bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType);
     }
 }

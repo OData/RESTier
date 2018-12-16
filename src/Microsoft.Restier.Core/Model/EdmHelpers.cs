@@ -37,10 +37,7 @@ namespace Microsoft.Restier.Core.Model
                 case EdmTypeKind.Primitive:
                     return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
                 default:
-                    string message = string.Format(
-                        CultureInfo.CurrentCulture,
-                        Resources.EdmTypeNotSupported,
-                        edmType.ToTraceString());
+                    string message = string.Format(CultureInfo.CurrentCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString());
                     throw new NotSupportedException(message);
             }
         }

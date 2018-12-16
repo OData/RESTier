@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core
         private static ConcurrentDictionary<Type, Action<IServiceCollection>> publisherServicesCallback =
             new ConcurrentDictionary<Type, Action<IServiceCollection>>();
 
-        private static Action<IServiceCollection> emptyConfig = _ => { };
+        private static readonly Action<IServiceCollection> emptyConfig = _ => { };
 
         private ApiConfiguration apiConfiguration;
         private IServiceProvider serviceProvider;
@@ -82,7 +82,7 @@ namespace Microsoft.Restier.Core
         /// The <see cref="IServiceCollection"/> with which is used to store all services.
         /// </param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             // Add core and convention's services
@@ -105,7 +105,7 @@ namespace Microsoft.Restier.Core
         /// <param name="configurationCallback">
         /// An action that will be called during the configuration of apiType.
         /// </param>
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static void AddPublisherServices(Type apiType, Action<IServiceCollection> configurationCallback)
         {
             publisherServicesCallback.AddOrUpdate(
@@ -121,11 +121,10 @@ namespace Microsoft.Restier.Core
         /// The Api type of which to get the publisher registering service callback.
         /// </param>
         /// <returns>The service registering callback.</returns>
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
         {
-            Action<IServiceCollection> val;
-            if (publisherServicesCallback.TryGetValue(apiType, out val))
+            if (publisherServicesCallback.TryGetValue(apiType, out Action<IServiceCollection> val))
             {
                 return val;
             }
