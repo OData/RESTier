@@ -1,0 +1,702 @@
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Formatter;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNet.OData.Results;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Operation;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.AspNet.Model;
+using Microsoft.Restier.AspNet.Query;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http;
+// This is a must for creating response with correct extension method
+using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
+using Resources = Microsoft.Restier.AspNet.Resources;
+
+
+namespace Microsoft.Restier.AspNet
+{
+    /// <summary>
+    /// The all-in-one controller class to handle API requests.
+    /// </summary>
+    [ODataFormatting]
+    [RestierExceptionFilter]
+    public class RestierController : ODataController
+    {
+        private const string IfMatchKey = "@IfMatchKey";
+        private const string IfNoneMatchKey = "@IfNoneMatchKey";
+
+        private ApiBase api;
+        private bool shouldReturnCount;
+        private bool shouldWriteRawValue;
+
+        /// <summary>
+        /// Gets the API associated with this controller.
+        /// </summary>
+        private ApiBase Api
+        {
+            get
+            {
+                if (api == null)
+                {
+                    var provider = Request.GetRequestContainer();
+                    api = provider.GetService<ApiBase>();
+                }
+
+                return api;
+            }
+        }
+
+        /// <summary>
+        /// Handles a GET request to query entities.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the response message.</returns>
+        public async Task<HttpResponseMessage> Get(
+            CancellationToken cancellationToken)
+        {
+            var path = GetPath();
+            var lastSegment = path.Segments.LastOrDefault();
+            if (lastSegment == null)
+            {
+                throw new InvalidOperationException(Resources.ControllerRequiresPath);
+            }
+
+            IQueryable result = null;
+
+            // Get queryable path builder to builder
+            var queryable = GetQuery(path);
+            ETag etag;
+
+            // TODO #365 Do not support additional path segment after function call now
+            if (lastSegment is OperationImportSegment unboundSegment)
+            {
+                var operation = unboundSegment.OperationImports.FirstOrDefault();
+                Func<string, object> getParaValueFunc = p => unboundSegment.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                result = await ExecuteOperationAsync(
+                    getParaValueFunc, operation.Name, true, null, cancellationToken);
+                result = ApplyQueryOptions(result, path, true, out etag);
+            }
+            else
+            {
+                if (queryable == null)
+                {
+                    throw new HttpResponseException(
+                        Request.CreateErrorResponse(
+                            HttpStatusCode.NotFound,
+                            Resources.ResourceNotFound));
+                }
+
+                if (lastSegment is OperationSegment)
+                {
+                    result = await ExecuteQuery(queryable, cancellationToken);
+
+                    var boundSeg = (OperationSegment)lastSegment;
+                    var operation = boundSeg.Operations.FirstOrDefault();
+                    Func<string, object> getParaValueFunc = p => boundSeg.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken);
+
+                    result = ApplyQueryOptions(result, path, true, out etag);
+                }
+                else
+                {
+                    queryable = ApplyQueryOptions(queryable, path, false, out etag);
+                    result = await ExecuteQuery(queryable, cancellationToken);
+                }
+            }
+
+            return CreateQueryResponse(result, path.EdmType, etag);
+        }
+
+        /// <summary>
+        /// Handles a POST request to create an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to create.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the creation result.</returns>
+        public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
+        {
+            CheckModelState();
+            var path = GetPath();
+            var entitySet = path.NavigationSource as IEdmEntitySet;
+            if (entitySet == null)
+            {
+                throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
+            }
+
+            // In case of type inheritance, the actual type will be different from entity type
+            var expectedEntityType = path.EdmType;
+            var actualEntityType = path.EdmType as IEdmStructuredType;
+            if (edmEntityObject.ActualEdmType != null)
+            {
+                expectedEntityType = edmEntityObject.ExpectedEdmType;
+                actualEntityType = edmEntityObject.ActualEdmType;
+            }
+
+            var postItem = new DataModificationItem(
+                entitySet.Name,
+                expectedEntityType.GetClrType(Api.ServiceProvider),
+                actualEntityType.GetClrType(Api.ServiceProvider),
+                DataModificationItemAction.Insert,
+                null,
+                null,
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
+
+            var changeSetProperty = Request.GetChangeSet();
+            if (changeSetProperty == null)
+            {
+                var changeSet = new ChangeSet();
+                changeSet.Entries.Add(postItem);
+
+                var result = await Api.SubmitAsync(changeSet, cancellationToken);
+            }
+            else
+            {
+                changeSetProperty.ChangeSet.Entries.Add(postItem);
+
+                await changeSetProperty.OnChangeSetCompleted(Request);
+            }
+
+            return CreateCreatedODataResult(postItem.Resource);
+        }
+
+        /// <summary>
+        /// Handles a PUT request to fully update an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to update.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the updated result.</returns>
+        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, true, cancellationToken);
+
+        /// <summary>
+        /// Handles a PATCH request to partially update an entity.
+        /// </summary>
+        /// <param name="edmEntityObject">The entity object to update.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the updated result.</returns>
+        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, false, cancellationToken);
+
+        /// <summary>
+        /// Handles a DELETE request to delete an entity.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the deletion result.</returns>
+        public async Task<IHttpActionResult> Delete(CancellationToken cancellationToken)
+        {
+            var path = GetPath();
+            var entitySet = path.NavigationSource as IEdmEntitySet;
+            if (entitySet == null)
+            {
+                throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
+            }
+
+            var propertiesInEtag = await GetOriginalValues(entitySet);
+            if (propertiesInEtag == null)
+            {
+                throw new PreconditionRequiredException(Resources.PreconditionRequired);
+            }
+
+            var deleteItem = new DataModificationItem(
+                entitySet.Name,
+                path.EdmType.GetClrType(Api.ServiceProvider),
+                null,
+                DataModificationItemAction.Remove,
+                RestierQueryBuilder.GetPathKeyValues(path),
+                propertiesInEtag,
+                null);
+
+            var changeSetProperty = Request.GetChangeSet();
+            if (changeSetProperty == null)
+            {
+                var changeSet = new ChangeSet();
+                changeSet.Entries.Add(deleteItem);
+
+                var result = await Api.SubmitAsync(changeSet, cancellationToken);
+            }
+            else
+            {
+                changeSetProperty.ChangeSet.Entries.Add(deleteItem);
+
+                await changeSetProperty.OnChangeSetCompleted(Request);
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        /// <summary>
+        /// Handles a POST request to an action.
+        /// </summary>
+        /// <param name="parameters">Parameters from action request content.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The task object that contains the action result.</returns>
+        public async Task<HttpResponseMessage> PostAction(
+            ODataActionParameters parameters, CancellationToken cancellationToken)
+        {
+            var path = GetPath();
+
+            var lastSegment = path.Segments.LastOrDefault();
+            if (lastSegment == null)
+            {
+                throw new InvalidOperationException(Resources.ControllerRequiresPath);
+            }
+
+            IQueryable result = null;
+            Func<string, object> getParaValueFunc = p =>
+            {
+                if (parameters == null)
+                {
+                    return null;
+                }
+
+                return parameters[p];
+            };
+
+            var segment = lastSegment as OperationImportSegment;
+            if (segment != null)
+            {
+                var unboundSegment = segment;
+                var operation = unboundSegment.OperationImports.FirstOrDefault();
+                result = await ExecuteOperationAsync(
+                    getParaValueFunc, operation.Name, false, null, cancellationToken);
+            }
+            else
+            {
+                // Get queryable path builder to builder
+                var queryable = GetQuery(path);
+                if (queryable == null)
+                {
+                    throw new HttpResponseException(
+                        Request.CreateErrorResponse(
+                            HttpStatusCode.NotFound,
+                            Resources.ResourceNotFound));
+                }
+
+                if (lastSegment is OperationSegment)
+                {
+                    var operationSegment = lastSegment as OperationSegment;
+                    var operation = operationSegment.Operations.FirstOrDefault();
+                    var queryResult = await ExecuteQuery(queryable, cancellationToken);
+                    result = await ExecuteOperationAsync(
+                        getParaValueFunc, operation.Name, false, queryResult, cancellationToken);
+                }
+            }
+
+            if (path.EdmType == null)
+            {
+                // This is a void action, return 204 directly
+                return Request.CreateResponse(HttpStatusCode.NoContent);
+            }
+
+            return CreateQueryResponse(result, path.EdmType, null);
+        }
+
+        private static IEdmTypeReference GetTypeReference(IEdmType edmType)
+        {
+            Ensure.NotNull(edmType, "edmType");
+
+            var isNullable = false;
+            switch (edmType.TypeKind)
+            {
+                case EdmTypeKind.Collection:
+                    return new EdmCollectionTypeReference(edmType as IEdmCollectionType);
+                case EdmTypeKind.Complex:
+                    return new EdmComplexTypeReference(edmType as IEdmComplexType, isNullable);
+                case EdmTypeKind.Entity:
+                    return new EdmEntityTypeReference(edmType as IEdmEntityType, isNullable);
+                case EdmTypeKind.EntityReference:
+                    return new EdmEntityReferenceTypeReference(edmType as IEdmEntityReferenceType, isNullable);
+                case EdmTypeKind.Enum:
+                    return new EdmEnumTypeReference(edmType as IEdmEnumType, isNullable);
+                case EdmTypeKind.Primitive:
+                    return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
+                default:
+                    throw Error.NotSupported(Resources.EdmTypeNotSupported, edmType.ToTraceString());
+            }
+        }
+
+        private async Task<IHttpActionResult> Update(
+            EdmEntityObject edmEntityObject,
+            bool isFullReplaceUpdate,
+            CancellationToken cancellationToken)
+        {
+            CheckModelState();
+            var path = GetPath();
+            var entitySet = path.NavigationSource as IEdmEntitySet;
+            if (entitySet == null)
+            {
+                throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
+            }
+
+            var propertiesInEtag = await GetOriginalValues(entitySet);
+            if (propertiesInEtag == null)
+            {
+                throw new PreconditionRequiredException(Resources.PreconditionRequired);
+            }
+
+            // In case of type inheritance, the actual type will be different from entity type
+            // This is only needed for put case, and does not need for patch case
+            // For put request, it will create a new, blank instance of the entity.
+            // copy over the key values and set any updated values from the client on the new instance.
+            // Then apply all the properties of the new instance to the instance to be updated.
+            // This will set any unspecified properties to their default value.
+            var expectedEntityType = path.EdmType;
+            var actualEntityType = path.EdmType as IEdmStructuredType;
+            if (edmEntityObject.ActualEdmType != null)
+            {
+                expectedEntityType = edmEntityObject.ExpectedEdmType;
+                actualEntityType = edmEntityObject.ActualEdmType;
+            }
+
+            var updateItem = new DataModificationItem(
+                entitySet.Name,
+                expectedEntityType.GetClrType(Api.ServiceProvider),
+                actualEntityType.GetClrType(Api.ServiceProvider),
+                DataModificationItemAction.Update,
+                RestierQueryBuilder.GetPathKeyValues(path),
+                propertiesInEtag,
+                edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false))
+            {
+                IsFullReplaceUpdateRequest = isFullReplaceUpdate
+            };
+
+            var changeSetProperty = Request.GetChangeSet();
+            if (changeSetProperty == null)
+            {
+                var changeSet = new ChangeSet();
+                changeSet.Entries.Add(updateItem);
+
+                var result = await Api.SubmitAsync(changeSet, cancellationToken);
+            }
+            else
+            {
+                changeSetProperty.ChangeSet.Entries.Add(updateItem);
+
+                await changeSetProperty.OnChangeSetCompleted(Request);
+            }
+
+            return CreateUpdatedODataResult(updateItem.Resource);
+        }
+
+        private HttpResponseMessage CreateQueryResponse(
+            IQueryable query, IEdmType edmType, ETag etag)
+        {
+            var typeReference = GetTypeReference(edmType);
+            BaseSingleResult singleResult = null;
+            HttpResponseMessage response = null;
+
+            if (typeReference.IsPrimitive())
+            {
+                if (shouldReturnCount || shouldWriteRawValue)
+                {
+                    var rawResult = new RawResult(query, typeReference);
+                    singleResult = rawResult;
+                    response = Request.CreateResponse(HttpStatusCode.OK, rawResult);
+                }
+                else
+                {
+                    var primitiveResult = new PrimitiveResult(query, typeReference);
+                    singleResult = primitiveResult;
+                    response = Request.CreateResponse(HttpStatusCode.OK, primitiveResult);
+                }
+            }
+
+            if (typeReference.IsComplex())
+            {
+                var complexResult = new ComplexResult(query, typeReference);
+                singleResult = complexResult;
+                response = Request.CreateResponse(HttpStatusCode.OK, complexResult);
+            }
+
+            if (typeReference.IsEnum())
+            {
+                if (shouldWriteRawValue)
+                {
+                    var rawResult = new RawResult(query, typeReference);
+                    singleResult = rawResult;
+                    response = Request.CreateResponse(HttpStatusCode.OK, rawResult);
+                }
+                else
+                {
+                    var enumResult = new EnumResult(query, typeReference);
+                    singleResult = enumResult;
+                    response = Request.CreateResponse(HttpStatusCode.OK, enumResult);
+                }
+            }
+
+            if (singleResult != null)
+            {
+                if (singleResult.Result == null)
+                {
+                    // Per specification, If the property is single-valued and has the null value,
+                    // the service responds with 204 No Content.
+                    return Request.CreateResponse(HttpStatusCode.NoContent);
+                }
+
+                return response;
+            }
+
+            if (typeReference.IsCollection())
+            {
+                var elementType = typeReference.AsCollection().ElementType();
+                if (elementType.IsPrimitive() || elementType.IsEnum())
+                {
+                    return Request.CreateResponse(
+                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference));
+                }
+
+                return Request.CreateResponse(
+                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference));
+            }
+
+            var entityResult = query.SingleOrDefault();
+            if (entityResult == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NoContent);
+            }
+
+            // Check the ETag here
+            if (etag != null)
+            {
+                // request with If-Match header, if match, then should return whole content
+                // request with If-Match header, if not match, then should return 412
+                // request with If-None-Match header, if match, then should return 304
+                // request with If-None-Match header, if not match, then should return whole content
+                etag.EntityType = query.ElementType;
+                query = etag.ApplyTo(query);
+                entityResult = query.SingleOrDefault();
+                if (entityResult == null && !etag.IsIfNoneMatch)
+                {
+                    return Request.CreateResponse(HttpStatusCode.PreconditionFailed);
+                }
+                else if (entityResult == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotModified);
+                }
+            }
+
+            // Using reflection to create response for single entity so passed in parameter is not object type,
+            // but will be type of real entity type, then EtagMessageHandler can be used to set ETAG header
+            // when response is single entity.
+            // There are three HttpRequestMessageExtensions class defined in different assembles
+            var assembly = System.Reflection.Assembly.GetAssembly(typeof(System.Web.Http.AcceptVerbsAttribute));
+            //RWM: GOOD LORD THIS SUCKS.
+            var type = assembly.GetType("System.Net.Http.HttpRequestMessageExtensions");
+            var genericMethod = type.GetMethods()
+                .Where(m => m.Name == "CreateResponse" && m.GetParameters().Length == 3);
+            var method = genericMethod.FirstOrDefault().MakeGenericMethod(query.ElementType);
+            response = method.Invoke(null, new object[] { Request, HttpStatusCode.OK, entityResult })
+                as HttpResponseMessage;
+            return response;
+        }
+
+        private IQueryable GetQuery(ODataPath path)
+        {
+            var builder = new RestierQueryBuilder(Api, path);
+            var queryable = builder.BuildQuery();
+            shouldReturnCount = builder.IsCountPathSegmentPresent;
+            shouldWriteRawValue = builder.IsValuePathSegmentPresent;
+
+            return queryable;
+        }
+
+        private IQueryable ApplyQueryOptions(
+            IQueryable queryable, ODataPath path, bool applyCount, out ETag etag)
+        {
+            etag = null;
+
+            if (shouldWriteRawValue)
+            {
+                // Query options don't apply to $value.
+                return queryable;
+            }
+
+            var properties = Request.ODataProperties();
+            var model = Api.GetModelAsync().Result;
+            var queryContext =
+                new ODataQueryContext(model, queryable.ElementType, path);
+            var queryOptions = new ODataQueryOptions(queryContext, Request);
+
+            // Get etag for query request
+            if (queryOptions.IfMatch != null)
+            {
+                etag = queryOptions.IfMatch;
+            }
+            else if (queryOptions.IfNoneMatch != null)
+            {
+                etag = queryOptions.IfNoneMatch;
+            }
+
+            // TODO GitHubIssue#41 : Ensure stable ordering for query
+            var settings = Api.GetApiService<ODataQuerySettings>();
+
+            if (shouldReturnCount)
+            {
+                // Query options other than $filter and $search don't apply to $count.
+                queryable = queryOptions.ApplyTo(
+                    queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
+                return queryable;
+            }
+
+            if (queryOptions.Count != null && !applyCount)
+            {
+                var queryExecutorOptions =
+                    Api.GetApiService<RestierQueryExecutorOptions>();
+                queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
+                queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
+            }
+
+            // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
+            var validationSettings = Api.GetApiService<ODataValidationSettings>();
+            queryOptions.Validate(validationSettings);
+
+            // Entity count can NOT be evaluated at this point of time because the source
+            // expression is just a placeholder to be replaced by the expression sourcer.
+            if (!applyCount)
+            {
+                queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.Count);
+            }
+            else
+            {
+                queryable = queryOptions.ApplyTo(queryable, settings);
+            }
+
+            return queryable;
+        }
+
+        private async Task<IQueryable> ExecuteQuery(IQueryable queryable, CancellationToken cancellationToken)
+        {
+            var queryRequest = new QueryRequest(queryable)
+            {
+                ShouldReturnCount = shouldReturnCount
+            };
+
+            var queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
+            var result = queryResult.Results.AsQueryable();
+            return result;
+        }
+
+        private ODataPath GetPath()
+        {
+            var properties = Request.ODataProperties();
+            if (properties == null)
+            {
+                throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
+            }
+
+            var path = properties.Path;
+            if (path == null)
+            {
+                throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
+            }
+
+            return path;
+        }
+
+        private Task<IQueryable> ExecuteOperationAsync(
+            Func<string, object> getParaValueFunc,
+            string operationName,
+            bool isFunction,
+            IQueryable bindingParameterValue,
+            CancellationToken cancellationToken)
+        {
+            var executor = Api.GetApiService<IOperationExecutor>();
+
+            var context = new OperationContext(
+                getParaValueFunc,
+                operationName,
+                Api,
+                isFunction,
+                bindingParameterValue,
+                Request.GetRequestContainer())
+            {
+                Request = Request
+            };
+            var result = executor.ExecuteOperationAsync(context, cancellationToken);
+            return result;
+        }
+
+        private async Task<IReadOnlyDictionary<string, object>> GetOriginalValues(IEdmEntitySet entitySet)
+        {
+            var originalValues = new Dictionary<string, object>();
+
+            var etagHeaderValue = Request.Headers.IfMatch.SingleOrDefault();
+            if (etagHeaderValue != null)
+            {
+                var etag = Request.GetETag(etagHeaderValue);
+                etag.ApplyTo(originalValues);
+
+                originalValues.Add(IfMatchKey, etagHeaderValue.Tag);
+                return originalValues;
+            }
+
+            etagHeaderValue = Request.Headers.IfNoneMatch.SingleOrDefault();
+            if (etagHeaderValue != null)
+            {
+                var etag = Request.GetETag(etagHeaderValue);
+                etag.ApplyTo(originalValues);
+
+                originalValues.Add(IfNoneMatchKey, etagHeaderValue.Tag);
+                return originalValues;
+            }
+
+            // return 428(Precondition Required) if entity requires concurrency check.
+            var model = await Api.GetModelAsync();
+            var needEtag = model.IsConcurrencyCheckEnabled(entitySet);
+            if (needEtag)
+            {
+                return null;
+            }
+
+            return originalValues;
+        }
+
+        private IHttpActionResult CreateCreatedODataResult(object entity) => CreateResult(typeof(CreatedODataResult<>), entity);
+
+        private IHttpActionResult CreateUpdatedODataResult(object entity) => CreateResult(typeof(UpdatedODataResult<>), entity);
+
+        private IHttpActionResult CreateResult(Type resultType, object result)
+        {
+            var genericResultType = resultType.MakeGenericType(result.GetType());
+
+            return (IHttpActionResult)Activator.CreateInstance(genericResultType, result, this);
+        }
+
+        private void CheckModelState()
+        {
+            if (!ModelState.IsValid)
+            {
+                var errorList = (
+                    from item in ModelState
+                    where item.Value.Errors.Any()
+                    select
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{{ Error: {0}, Exception {1} }}",
+                            item.Value.Errors[0].ErrorMessage,
+                            item.Value.Errors[0].Exception.Message)).ToList();
+
+                throw new ODataException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Resources.ModelStateIsNotValid,
+                        string.Join(";", errorList)));
+            }
+        }
+    }
+}

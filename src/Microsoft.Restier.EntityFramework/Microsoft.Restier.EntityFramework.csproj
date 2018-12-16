@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for interacting with DbContexts from Entity Framework 6.1.3 and later.</Summary>
+    <Description>
+      $(Summary)
+
+      Commonly used types:
+      Microsoft.Restier.EntityFramework.EntityFrameworkApi
+    </Description>
+    <PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
+
+    <TargetFrameworks>net462;net472</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.1.3" />
+    <PackageReference Include="Microsoft.OData.Core" Version="7.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+  </ItemGroup>
+
+</Project>

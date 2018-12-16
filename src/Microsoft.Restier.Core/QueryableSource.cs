@@ -21,18 +21,9 @@ namespace Microsoft.Restier.Core
 
         public Expression Expression { get; private set; }
 
-        IQueryProvider IQueryable.Provider
-        {
-            get
-            {
-                return this;
-            }
-        }
+        IQueryProvider IQueryable.Provider => this;
 
-        public override string ToString()
-        {
-            return this.Expression.ToString();
-        }
+        public override string ToString() => this.Expression.ToString();
 
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(
             Expression expression)
@@ -88,17 +79,8 @@ namespace Microsoft.Restier.Core
         {
         }
 
-        public override Type ElementType
-        {
-            get
-            {
-                return typeof(T);
-            }
-        }
+        public override Type ElementType => typeof(T);
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            throw new NotSupportedException(Resources.CallQueryableSourceMethodNotSupported);
-        }
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => throw new NotSupportedException(Resources.CallQueryableSourceMethodNotSupported);
     }
 }

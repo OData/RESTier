@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for integrating with ASP.NET Web API 2.2 to automatically handle incoming requests.</Summary>
+    <Description>
+      $(Summary)
+
+      Commonly used types:
+      Microsoft.Restier.AspNet.RestierBatchHandler
+    </Description>
+    <PackageTags>$(PackageTags);webapi;batch</PackageTags>
+
+    <TargetFrameworks>net462;net472</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Restier.AspNet</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
