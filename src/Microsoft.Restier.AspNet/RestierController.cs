@@ -495,14 +495,14 @@ namespace Microsoft.Restier.AspNet
             // but will be type of real entity type, then EtagMessageHandler can be used to set ETAG header
             // when response is single entity.
             // There are three HttpRequestMessageExtensions class defined in different assembles
-            var assembly = System.Reflection.Assembly.GetAssembly(typeof(System.Web.Http.AcceptVerbsAttribute));
-            //RWM: GOOD LORD THIS SUCKS.
+
+            // Fix by @xuzhg in PR #609.
+            var assembly = System.Reflection.Assembly.GetAssembly(typeof(AcceptVerbsAttribute));
             var type = assembly.GetType("System.Net.Http.HttpRequestMessageExtensions");
             var genericMethod = type.GetMethods()
                 .Where(m => m.Name == "CreateResponse" && m.GetParameters().Length == 3);
             var method = genericMethod.FirstOrDefault().MakeGenericMethod(query.ElementType);
-            response = method.Invoke(null, new object[] { Request, HttpStatusCode.OK, entityResult })
-                as HttpResponseMessage;
+            response = method.Invoke(null, new object[] { Request, HttpStatusCode.OK, entityResult }) as HttpResponseMessage;
             return response;
         }
 
