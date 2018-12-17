@@ -154,7 +154,7 @@ namespace Microsoft.Restier.AspNet
                 entitySet.Name,
                 expectedEntityType.GetClrType(Api.ServiceProvider),
                 actualEntityType.GetClrType(Api.ServiceProvider),
-                DataModificationItemAction.Insert,
+                RestierEntitySetOperations.Insert,
                 null,
                 null,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
@@ -217,7 +217,7 @@ namespace Microsoft.Restier.AspNet
                 entitySet.Name,
                 path.EdmType.GetClrType(Api.ServiceProvider),
                 null,
-                DataModificationItemAction.Remove,
+                RestierEntitySetOperations.Delete,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
                 null);
@@ -368,7 +368,7 @@ namespace Microsoft.Restier.AspNet
                 entitySet.Name,
                 expectedEntityType.GetClrType(Api.ServiceProvider),
                 actualEntityType.GetClrType(Api.ServiceProvider),
-                DataModificationItemAction.Update,
+                RestierEntitySetOperations.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false))

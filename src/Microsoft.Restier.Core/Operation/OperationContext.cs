@@ -45,11 +45,11 @@ namespace Microsoft.Restier.Core.Operation
             IServiceProvider provider)
             : base(provider)
         {
-            this.GetParameterValueFunc = getParameterValueFunc;
-            this.OperationName = operationName;
-            this.ImplementInstance = implementInstance;
-            this.IsFunction = isFunction;
-            this.BindingParameterValue = bindingParameterValue;
+            GetParameterValueFunc = getParameterValueFunc;
+            OperationName = operationName;
+            ImplementInstance = implementInstance;
+            IsFunction = isFunction;
+            BindingParameterValue = bindingParameterValue;
         }
 
         /// <summary>

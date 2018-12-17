@@ -56,19 +56,17 @@ namespace Microsoft.Restier.Core
                     return null;
                 }
 
-                var collectionType = entitySet.Type as IEdmCollectionType;
-                if (collectionType == null)
+                if (!(entitySet.Type is IEdmCollectionType collectionType))
                 {
                     return null;
                 }
 
-                var entityType = collectionType.ElementType.Definition as IEdmEntityType;
-                if (entityType == null)
+                if (!(collectionType.ElementType.Definition is IEdmEntityType entityType))
                 {
                     return null;
                 }
 
-                return AppendOnFilterExpression(context, entitySet.Name, entityType.Name);
+                return AppendOnFilterExpression(context, entitySet, entityType);
             }
 
             if (context.ModelReference is PropertyModelReference propertyModelReference && propertyModelReference.Property != null)
@@ -81,8 +79,7 @@ namespace Microsoft.Restier.Core
                     propType = collectionType.ElementType;
                 }
 
-                var entityType = propType.Definition as IEdmEntityType;
-                if (entityType == null)
+                if (!(propType.Definition is IEdmEntityType entityType))
                 {
                     return null;
                 }
@@ -100,15 +97,15 @@ namespace Microsoft.Restier.Core
                     return null;
                 }
 
-                return AppendOnFilterExpression(context, entitySet.Name, entityType.Name);
+                return AppendOnFilterExpression(context, entitySet, entityType);
             }
 
             return null;
         }
 
-        private Expression AppendOnFilterExpression(QueryExpressionContext context, string entitySetName, string entityTypeName)
+        private Expression AppendOnFilterExpression(QueryExpressionContext context, IEdmEntitySet entitySet, IEdmEntityType entityType)
         {
-            var expectedMethodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entitySetName;
+            var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, RestierPipelineStates.Submit, RestierEntitySetOperations.Filter);
             var expectedMethod = targetType.GetQualifiedMethod(expectedMethodName);
             if (expectedMethod == null || (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly))
             {
@@ -118,7 +115,7 @@ namespace Microsoft.Restier.Core
                 }
                 else
                 {
-                    var actualMethodName = ConventionBasedChangeSetConstants.FilterMethodEntitySetFilter + entityTypeName;
+                    var actualMethodName = expectedMethodName.Replace(entitySet.Name, entityType.Name);
                     var actualMethod = targetType.GetQualifiedMethod(actualMethodName);
                     if (actualMethod != null)
                     {
@@ -129,8 +126,7 @@ namespace Microsoft.Restier.Core
             }
 
             var parameter = expectedMethod.GetParameters().SingleOrDefault();
-            if (parameter == null ||
-                parameter.ParameterType != expectedMethod.ReturnType)
+            if (parameter == null || parameter.ParameterType != expectedMethod.ReturnType)
             {
                 return null;
             }
@@ -139,8 +135,7 @@ namespace Microsoft.Restier.Core
             if (!expectedMethod.IsStatic)
             {
                 apiBase = context.QueryContext.GetApiService<ApiBase>();
-                if (apiBase == null ||
-                    !targetType.IsInstanceOfType(apiBase))
+                if (apiBase == null || !targetType.IsInstanceOfType(apiBase))
                 {
                     return null;
                 }
@@ -166,9 +161,7 @@ namespace Microsoft.Restier.Core
                 elementType = collectionType.GetGenericArguments()[0];
                 returnType = typeof(IQueryable<>).MakeGenericType(elementType);
 
-                enumerableQueryParameter = Expression.Call(
-                    ExpressionHelperMethods.QueryableAsQueryableGeneric.MakeGenericMethod(elementType),
-                    context.VisitedNode);
+                enumerableQueryParameter = Expression.Call(ExpressionHelperMethods.QueryableAsQueryableGeneric.MakeGenericMethod(elementType), context.VisitedNode);
             }
             else
             {
@@ -177,8 +170,7 @@ namespace Microsoft.Restier.Core
 
             var queryType = typeof(EnumerableQuery<>).MakeGenericType(elementType);
             var query = Activator.CreateInstance(queryType, enumerableQueryParameter);
-            var result = expectedMethod.Invoke(apiBase, new object[] { query }) as IQueryable;
-            if (result == null)
+            if (!(expectedMethod.Invoke(apiBase, new object[] { query }) is IQueryable result))
             {
                 return null;
             }

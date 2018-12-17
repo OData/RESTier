@@ -244,8 +244,7 @@ namespace Microsoft.Restier.Core.Query
             if (methodCall != null)
             {
                 var method = methodCall.Method;
-                if (method.DeclaringType == typeof(DataSourceStub) &&
-                    method.Name != MethodNameOfDataSourceStubValue)
+                if (method.DeclaringType == typeof(DataSourceStub) && method.Name != MethodNameOfDataSourceStubValue)
                 {
                     modelReference = ComputeDataSourceStubReference(methodCall);
                 }
@@ -262,14 +261,12 @@ namespace Microsoft.Restier.Core.Query
                 return modelReference;
             }
 
-            var parameter = VisitedNode as ParameterExpression;
-            if (parameter != null)
+            if (VisitedNode is ParameterExpression parameter)
             {
                 return ComputeParameterModelReference(parameter);
             }
 
-            var member = VisitedNode as MemberExpression;
-            if (member != null)
+            if (VisitedNode is MemberExpression member)
             {
                 return ComputeMemberModelReference(member);
             }
@@ -377,8 +374,7 @@ namespace Microsoft.Restier.Core.Query
             return modelReference;
         }
 
-        private DataSourceStubModelReference ComputeDataSourceStubReference(
-            MethodCallExpression methodCall)
+        private DataSourceStubModelReference ComputeDataSourceStubReference(MethodCallExpression methodCall)
         {
             DataSourceStubModelReference modelReference = null;
             ConstantExpression namespaceName = null;

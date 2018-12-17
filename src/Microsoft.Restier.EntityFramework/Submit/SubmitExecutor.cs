@@ -25,13 +25,10 @@ namespace Microsoft.Restier.EntityFramework
         /// <param name="context">The submit context class used for preparation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public async Task<SubmitResult> ExecuteSubmitAsync(
-            SubmitContext context, CancellationToken cancellationToken)
+        public async Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.GetApiService<DbContext>();
-
+            var dbContext = context.GetApiService<DbContext>();
             await dbContext.SaveChangesAsync(cancellationToken);
-
             return new SubmitResult(context.ChangeSet);
         }
     }

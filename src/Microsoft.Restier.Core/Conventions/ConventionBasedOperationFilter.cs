@@ -25,75 +25,58 @@ namespace Microsoft.Restier.Core
         }
 
         /// <inheritdoc/>
-        public static void ApplyTo(
-            IServiceCollection services,
-            Type targetType)
+        public static void ApplyTo(IServiceCollection services, Type targetType)
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
-            services.AddService<IOperationFilter>(
-                (sp, next) => new ConventionBasedOperationFilter(targetType));
+            services.AddService<IOperationFilter>((sp, next) => new ConventionBasedOperationFilter(targetType));
         }
 
         /// <inheritdoc/>
-        public Task OnOperationExecutingAsync(
-            OperationContext context,
-            CancellationToken cancellationToken)
+        public Task OnOperationExecutingAsync(OperationContext context, CancellationToken cancellationToken)
         {
-            return this.InvokeProcessorMethodAsync(
-                context, ConventionBasedChangeSetConstants.FilterMethodNamePreFilterSuffix);
+            return InvokeProcessorMethodAsync(context, RestierPipelineStates.PreSubmit);
         }
 
         /// <inheritdoc/>
-        public Task OnOperationExecutedAsync(
-            OperationContext context,
-            CancellationToken cancellationToken)
+        public Task OnOperationExecutedAsync(OperationContext context, CancellationToken cancellationToken)
         {
-            return this.InvokeProcessorMethodAsync(
-                context, ConventionBasedChangeSetConstants.FilterMethodNamePostFilterSuffix);
+            return InvokeProcessorMethodAsync(context, RestierPipelineStates.PostSubmit);
         }
 
         private static bool ParametersMatch(ParameterInfo[] methodParameters, object[] parameters)
         {
-            return methodParameters.Length == parameters.Length
-                && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
+            return methodParameters.Length == parameters.Length && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
         }
 
-        private Task InvokeProcessorMethodAsync(
-            OperationContext context,
-            string methodNameSuffix)
+        private Task InvokeProcessorMethodAsync(OperationContext context, RestierPipelineStates pipelineState)
         {
-            string methodName = ConventionBasedChangeSetConstants.FilterMethodActionInvocationExecute +
-                    methodNameSuffix + context.OperationName;
+            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethods.Execute);
             object[] parameters = null;
             if (context.ParameterValues != null)
             {
                 context.ParameterValues.ToArray();
             }
 
-            MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
+            var method = targetType.GetQualifiedMethod(methodName);
 
-            if (method != null &&
-                (method.ReturnType == typeof(void) ||
-                typeof(Task).IsAssignableFrom(method.ReturnType)))
+            if (method != null && (method.ReturnType == typeof(void) || typeof(Task).IsAssignableFrom(method.ReturnType)))
             {
                 object target = null;
                 if (!method.IsStatic)
                 {
                     target = context.ImplementInstance;
-                    if (target == null ||
-                        !this.targetType.IsInstanceOfType(target))
+                    if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.WhenAll();
                     }
                 }
 
-                ParameterInfo[] methodParameters = method.GetParameters();
+                var methodParameters = method.GetParameters();
                 if (ParametersMatch(methodParameters, parameters))
                 {
-                    object result = method.Invoke(target, parameters);
-                    Task resultTask = result as Task;
-                    if (resultTask != null)
+                    var result = method.Invoke(target, parameters);
+                    if (result is Task resultTask)
                     {
                         return resultTask;
                     }

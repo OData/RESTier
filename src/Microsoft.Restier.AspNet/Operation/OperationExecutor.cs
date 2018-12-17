@@ -143,8 +143,7 @@ namespace Microsoft.Restier.AspNet.Operation
                 return null;
             }
 
-            var task = result as Task;
-            if (task != null)
+            if (result is Task task)
             {
                 await task;
                 if (returnType.GenericTypeArguments.Any())
@@ -162,8 +161,7 @@ namespace Microsoft.Restier.AspNet.Operation
             var edmReturnType = returnType.GetReturnTypeReference(model);
             if (edmReturnType.IsCollection())
             {
-                var elementClrType = returnType.GetElementType() ??
-                                     returnType.GenericTypeArguments[0];
+                var elementClrType = returnType.GetElementType() ?? returnType.GenericTypeArguments[0];
                 if (result == null)
                 {
                     return ExpressionHelpers.CreateEmptyQueryable(elementClrType);
@@ -184,15 +182,12 @@ namespace Microsoft.Restier.AspNet.Operation
             var objectQueryable = new[] { result }.AsQueryable();
             var castMethodInfo = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(returnType);
             var castedResult = castMethodInfo.Invoke(null, new object[] { objectQueryable });
-            var typedQueryable = ExpressionHelperMethods.QueryableAsQueryable
-                .Invoke(null, new object[] { castedResult }) as IQueryable;
+            var typedQueryable = ExpressionHelperMethods.QueryableAsQueryable.Invoke(null, new object[] { castedResult }) as IQueryable;
 
             return typedQueryable;
         }
 
-        private static async Task InvokeAuthorizers(
-            OperationContext context,
-            CancellationToken cancellationToken)
+        private static async Task InvokeAuthorizers(OperationContext context, CancellationToken cancellationToken)
         {
             var authorizor = context.GetApiService<IOperationAuthorizer>();
             if (authorizor == null)
@@ -202,8 +197,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
             if (!await authorizor.AuthorizeAsync(context, cancellationToken))
             {
-                throw new SecurityException(string.Format(
-                    CultureInfo.InvariantCulture, Resources.OperationUnAuthorizationExecution, context.OperationName));
+                throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.OperationUnAuthorizationExecution, context.OperationName));
             }
         }
 
