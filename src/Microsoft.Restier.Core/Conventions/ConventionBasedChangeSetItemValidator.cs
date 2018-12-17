@@ -2,15 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
-using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Restier.Core
 {
@@ -21,36 +20,29 @@ namespace Microsoft.Restier.Core
         IChangeSetItemValidator
     {
         /// <inheritdoc/>
-        public Task ValidateChangeSetItemAsync(
-            SubmitContext context,
-            ChangeSetItem item,
-            Collection<ChangeSetItemValidationResult> validationResults,
+        public Task ValidateChangeSetItemAsync( SubmitContext context, ChangeSetItem item, Collection<ChangeSetItemValidationResult> validationResults, 
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(validationResults, "validationResults");
-            DataModificationItem dataModificationItem = item as DataModificationItem;
-            if (dataModificationItem != null)
+            if (item is DataModificationItem dataModificationItem)
             {
-                object resource = dataModificationItem.Resource;
+                var resource = dataModificationItem.Resource;
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
-                PropertyDescriptorCollection properties =
-                    new AssociatedMetadataTypeTypeDescriptionProvider(resource.GetType())
+                var properties = new AssociatedMetadataTypeTypeDescriptionProvider(resource.GetType())
                     .GetTypeDescriptor(resource).GetProperties();
 
-                ValidationContext validationContext = new ValidationContext(resource);
+                var validationContext = new ValidationContext(resource);
 
                 foreach (PropertyDescriptor property in properties)
                 {
                     validationContext.MemberName = property.Name;
 
-                    IEnumerable<ValidationAttribute> validationAttributes =
-                        property.Attributes.OfType<ValidationAttribute>();
-                    foreach (ValidationAttribute validationAttribute in validationAttributes)
+                    var validationAttributes = property.Attributes.OfType<ValidationAttribute>();
+                    foreach (var validationAttribute in validationAttributes)
                     {
-                        object value = property.GetValue(resource);
-                        ValidationResult validationResult =
-                            validationAttribute.GetValidationResult(value, validationContext);
+                        var value = property.GetValue(resource);
+                        var validationResult = validationAttribute.GetValidationResult(value, validationContext);
                         if (validationResult != ValidationResult.Success)
                         {
                             validationResults.Add(new ChangeSetItemValidationResult()

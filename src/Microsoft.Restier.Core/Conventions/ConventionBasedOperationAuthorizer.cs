@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +22,7 @@ namespace Microsoft.Restier.Core
             this.targetType = targetType;
         }
 
-        public static void ApplyTo(
-            IServiceCollection services,
-            Type targetType)
+        public static void ApplyTo(IServiceCollection services, Type targetType)
         {
             Ensure.NotNull(services, "services");
             Ensure.NotNull(targetType, "targetType");
@@ -33,27 +30,22 @@ namespace Microsoft.Restier.Core
         }
 
         /// <inheritdoc/>
-        public Task<bool> AuthorizeAsync(
-            OperationContext context,
-            CancellationToken cancellationToken)
+        public Task<bool> AuthorizeAsync(OperationContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, "context");
-            bool result = true;
+            var result = true;
 
-            Type returnType = typeof(bool);
-            var methodName = ConventionBasedChangeSetConstants.AuthorizeMethodActionInvocationExecute +
-                        context.OperationName;
-            MethodInfo method = this.targetType.GetQualifiedMethod(methodName);
+            var returnType = typeof(bool);
+            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineStates.Authorization, RestierOperationMethods.Execute);
+            var method = targetType.GetQualifiedMethod(methodName);
 
-            if (method != null && method.IsFamily &&
-                method.ReturnType == returnType)
+            if (method != null && method.IsFamily && method.ReturnType == returnType)
             {
                 object target = null;
                 if (!method.IsStatic)
                 {
                     target = context.ImplementInstance;
-                    if (target == null ||
-                        !this.targetType.IsInstanceOfType(target))
+                    if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.FromResult(result);
                     }

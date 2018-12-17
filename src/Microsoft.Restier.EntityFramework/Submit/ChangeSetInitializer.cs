@@ -9,10 +9,8 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Spatial;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
@@ -32,16 +30,14 @@ namespace Microsoft.Restier.EntityFramework
         /// <param name="context">The submit context class used for preparation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public async Task InitializeAsync(
-            SubmitContext context,
-            CancellationToken cancellationToken)
+        public async Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            DbContext dbContext = context.GetApiService<DbContext>();
+            var dbContext = context.GetApiService<DbContext>();
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
-                object strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
-                Type resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
+                var strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
+                var resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
                 // This means request resource is sub type of resource type
                 if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
@@ -50,26 +46,26 @@ namespace Microsoft.Restier.EntityFramework
                     resourceType = entry.ActualResourceType;
                 }
 
-                DbSet set = dbContext.Set(resourceType);
+                var set = dbContext.Set(resourceType);
 
                 object resource;
 
-                if (entry.DataModificationItemAction == DataModificationItemAction.Insert)
+                if (entry.EntitySetOperation == RestierEntitySetOperations.Insert)
                 {
                     resource = set.Create();
                     SetValues(resource, resourceType, entry.LocalValues);
                     set.Add(resource);
                 }
-                else if (entry.DataModificationItemAction == DataModificationItemAction.Remove)
+                else if (entry.EntitySetOperation == RestierEntitySetOperations.Delete)
                 {
                     resource = await FindResource(context, entry, cancellationToken);
                     set.Remove(resource);
                 }
-                else if (entry.DataModificationItemAction == DataModificationItemAction.Update)
+                else if (entry.EntitySetOperation == RestierEntitySetOperations.Update)
                 {
                     resource = await FindResource(context, entry, cancellationToken);
 
-                    DbEntityEntry dbEntry = dbContext.Entry(resource);
+                    var dbEntry = dbContext.Entry(resource);
                     SetValues(dbEntry, entry, resourceType);
                 }
                 else
@@ -96,9 +92,8 @@ namespace Microsoft.Restier.EntityFramework
             }
 
             // Edm.Date => System.DateTime[SqlType = Date]
-            if (value is Date)
+            if (value is Date dateValue)
             {
-                var dateValue = (Date)value;
                 return (DateTime)dateValue;
             }
 
@@ -124,14 +119,12 @@ namespace Microsoft.Restier.EntityFramework
 
             if (type == typeof(DbGeography))
             {
-                var point = value as GeographyPoint;
-                if (point != null)
+                if (value is GeographyPoint point)
                 {
                     return point.ToDbGeography();
                 }
 
-                var s = value as GeographyLineString;
-                if (s != null)
+                if (value is GeographyLineString s)
                 {
                     return s.ToDbGeography();
                 }
@@ -140,18 +133,15 @@ namespace Microsoft.Restier.EntityFramework
             return value;
         }
 
-        private static async Task<object> FindResource(
-            SubmitContext context,
-            DataModificationItem item,
-            CancellationToken cancellationToken)
+        private static async Task<object> FindResource(SubmitContext context, DataModificationItem item, CancellationToken cancellationToken)
         {
             var apiBase = context.GetApiService<ApiBase>();
-            IQueryable query = apiBase.GetQueryableSource(item.ResourceSetName);
+            var query = apiBase.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
-            QueryResult result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken);
+            var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken);
 
-            object resource = result.Results.SingleOrDefault();
+            var resource = result.Results.SingleOrDefault();
             if (resource == null)
             {
                 throw new ResourceNotFoundException(Resources.ResourceNotFound);
@@ -177,7 +167,7 @@ namespace Microsoft.Restier.EntityFramework
                 //  - Copy over the key values and set any updated values from the client on the new instance.
                 //  - Then apply all the properties of the new instance to the instance to be updated.
                 //    This will set any unspecified properties to their default value.
-                object newInstance = Activator.CreateInstance(resourceType);
+                var newInstance = Activator.CreateInstance(resourceType);
 
                 SetValues(newInstance, resourceType, item.ResourceKey);
                 SetValues(newInstance, resourceType, item.LocalValues);
@@ -186,10 +176,10 @@ namespace Microsoft.Restier.EntityFramework
             }
             else
             {
-                foreach (KeyValuePair<string, object> propertyPair in item.LocalValues)
+                foreach (var propertyPair in item.LocalValues)
                 {
-                    DbPropertyEntry propertyEntry = dbEntry.Property(propertyPair.Key);
-                    object value = propertyPair.Value;
+                    var propertyEntry = dbEntry.Property(propertyPair.Key);
+                    var value = propertyPair.Value;
                     if (value == null)
                     {
                         // If the property value is null, we set null in the item too.
@@ -211,13 +201,9 @@ namespace Microsoft.Restier.EntityFramework
 
                     if (propertyEntry is DbComplexPropertyEntry)
                     {
-                        var dic = value as IReadOnlyDictionary<string, object>;
-                        if (dic == null)
+                        if (!(value is IReadOnlyDictionary<string, object> dic))
                         {
-                            throw new NotSupportedException(string.Format(
-                                CultureInfo.InvariantCulture,
-                                Resources.UnsupportedPropertyType,
-                                propertyPair.Key));
+                            throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.UnsupportedPropertyType, propertyPair.Key));
                         }
 
                         value = propertyEntry.CurrentValue;
@@ -231,10 +217,10 @@ namespace Microsoft.Restier.EntityFramework
 
         private void SetValues(object instance, Type type, IReadOnlyDictionary<string, object> values)
         {
-            foreach (KeyValuePair<string, object> propertyPair in values)
+            foreach (var propertyPair in values)
             {
-                object value = propertyPair.Value;
-                PropertyInfo propertyInfo = type.GetProperty(propertyPair.Key);
+                var value = propertyPair.Value;
+                var propertyInfo = type.GetProperty(propertyPair.Key);
                 if (value == null)
                 {
                     // If the property value is null, we set null in the object too.
@@ -245,13 +231,9 @@ namespace Microsoft.Restier.EntityFramework
                 value = ConvertToEfValue(propertyInfo.PropertyType, value);
                 if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
-                    var dic = value as IReadOnlyDictionary<string, object>;
-                    if (dic == null)
+                    if (!(value is IReadOnlyDictionary<string, object> dic))
                     {
-                        throw new NotSupportedException(string.Format(
-                            CultureInfo.InvariantCulture,
-                            Resources.UnsupportedPropertyType,
-                            propertyPair.Key));
+                        throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.UnsupportedPropertyType, propertyPair.Key));
                     }
 
                     // TODO GithubIssue #508
