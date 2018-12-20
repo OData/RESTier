@@ -1,15 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData;
-using Microsoft.OData.Edm;
 using System;
 using System.Globalization;
 using System.Reflection;
-using System.Threading;
-using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
+using Microsoft.OData.Edm;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
+using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace Microsoft.Restier.Core
 {
@@ -90,13 +89,13 @@ namespace Microsoft.Restier.Core
         {
             IEdmModel modelFactory(IServiceProvider sp)
             {
-                ApiBase api = sp.GetService<ApiBase>();
-                IEdmModel model = api.GetModelAsync(default(CancellationToken)).Result;
+                var api = sp.GetService<ApiBase>();
+                var model = api.GetModelAsync(default).Result;
                 return model;
             }
 
             // Configure the API via reflection call
-            Type methodDeclaredType = apiType;
+            var methodDeclaredType = apiType;
 
             MethodInfo method = null;
             while (method == null && methodDeclaredType != null)
