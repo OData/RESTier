@@ -34,10 +34,7 @@ namespace Microsoft.Restier.AspNet.Model
         private readonly IDictionary<IEdmEntityType, IEdmSingleton[]> singletonCache =
             new Dictionary<IEdmEntityType, IEdmSingleton[]>();
 
-        private RestierModelExtender(Type targetType)
-        {
-            this.targetType = targetType;
-        }
+        private RestierModelExtender(Type targetType) => this.targetType = targetType;
 
         public static void ApplyTo(
             IServiceCollection services,
@@ -63,10 +60,7 @@ namespace Microsoft.Restier.AspNet.Model
                    property.PropertyType.GetGenericArguments()[0].IsClass;
         }
 
-        private static bool IsSingletonProperty(PropertyInfo property)
-        {
-            return !property.PropertyType.IsGenericType && property.PropertyType.IsClass;
-        }
+        private static bool IsSingletonProperty(PropertyInfo property) => !property.PropertyType.IsGenericType && property.PropertyType.IsClass;
 
         private IQueryable GetEntitySetQuery(QueryExpressionContext context)
         {
@@ -88,7 +82,7 @@ namespace Microsoft.Restier.AspNet.Model
                 return null;
             }
 
-            var entitySetProperty = this.entitySetProperties
+            var entitySetProperty = entitySetProperties
                 .SingleOrDefault(p => p.Name == entitySet.Name);
             if (entitySetProperty != null)
             {
@@ -97,7 +91,7 @@ namespace Microsoft.Restier.AspNet.Model
                 {
                     target = context.QueryContext.GetApiService<ApiBase>();
                     if (target == null ||
-                        !this.targetType.IsInstanceOfType(target))
+                        !targetType.IsInstanceOfType(target))
                     {
                         return null;
                     }
@@ -129,7 +123,7 @@ namespace Microsoft.Restier.AspNet.Model
                 return null;
             }
 
-            var singletonProperty = this.singletonProperties
+            var singletonProperty = singletonProperties
                 .SingleOrDefault(p => p.Name == singleton.Name);
             if (singletonProperty != null)
             {
@@ -138,7 +132,7 @@ namespace Microsoft.Restier.AspNet.Model
                 {
                     target = context.QueryContext.GetApiService<ApiBase>();
                     if (target == null ||
-                        !this.targetType.IsInstanceOfType(target))
+                        !targetType.IsInstanceOfType(target))
                     {
                         return null;
                     }
@@ -154,7 +148,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void ScanForDeclaredPublicProperties()
         {
-            var currentType = this.targetType;
+            var currentType = targetType;
             while (currentType != null && currentType != typeof(ApiBase))
             {
                 var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
@@ -178,7 +172,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void BuildEntitySetsAndSingletons(EdmModel model)
         {
-            foreach (var property in this.publicProperties)
+            foreach (var property in publicProperties)
             {
                 var resourceAttribute = property.GetCustomAttributes<ResourceAttribute>(true).FirstOrDefault();
                 if (resourceAttribute == null)
@@ -186,8 +180,8 @@ namespace Microsoft.Restier.AspNet.Model
                     continue;
                 }
 
-                bool isEntitySet = IsEntitySetProperty(property);
-                bool isSingleton = IsSingletonProperty(property);
+                var isEntitySet = IsEntitySetProperty(property);
+                var isSingleton = IsSingletonProperty(property);
                 if (!isSingleton && !isEntitySet)
                 {
                     // This means property type is not IQueryable<T> when indicating an entityset
@@ -208,7 +202,7 @@ namespace Microsoft.Restier.AspNet.Model
                     continue;
                 }
 
-                var container = model.EnsureEntityContainer(this.targetType);
+                var container = model.EnsureEntityContainer(targetType);
                 if (isEntitySet)
                 {
                     if (container.FindEntitySet(property.Name) == null)
@@ -219,10 +213,10 @@ namespace Microsoft.Restier.AspNet.Model
                     // If ODataConventionModelBuilder is used to build the model, and a entity set is added,
                     // i.e. the entity set is already in the container,
                     // we should add it into entitySetProperties and addedNavigationSources
-                    if (!this.entitySetProperties.Contains(property))
+                    if (!entitySetProperties.Contains(property))
                     {
-                        this.entitySetProperties.Add(property);
-                        this.addedNavigationSources.Add(container.FindEntitySet(property.Name) as EdmEntitySet);
+                        entitySetProperties.Add(property);
+                        addedNavigationSources.Add(container.FindEntitySet(property.Name) as EdmEntitySet);
                     }
                 }
                 else
@@ -232,10 +226,10 @@ namespace Microsoft.Restier.AspNet.Model
                         container.AddSingleton(property.Name, entityType);
                     }
 
-                    if (!this.singletonProperties.Contains(property))
+                    if (!singletonProperties.Contains(property))
                     {
-                        this.singletonProperties.Add(property);
-                        this.addedNavigationSources.Add(container.FindSingleton(property.Name) as EdmSingleton);
+                        singletonProperties.Add(property);
+                        addedNavigationSources.Add(container.FindSingleton(property.Name) as EdmSingleton);
                     }
                 }
             }
@@ -243,8 +237,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private IEdmEntitySet[] GetMatchingEntitySets(IEdmEntityType entityType, IEdmModel model)
         {
-            IEdmEntitySet[] matchingEntitySets;
-            if (!entitySetCache.TryGetValue(entityType, out matchingEntitySets))
+            if (!entitySetCache.TryGetValue(entityType, out var matchingEntitySets))
             {
                 matchingEntitySets =
                     model.EntityContainer.EntitySets().Where(s => s.EntityType() == entityType).ToArray();
@@ -256,8 +249,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private IEdmSingleton[] GetMatchingSingletons(IEdmEntityType entityType, IEdmModel model)
         {
-            IEdmSingleton[] matchingSingletons;
-            if (!singletonCache.TryGetValue(entityType, out matchingSingletons))
+            if (!singletonCache.TryGetValue(entityType, out var matchingSingletons))
             {
                 matchingSingletons =
                     model.EntityContainer.Singletons().Where(s => s.EntityType() == entityType).ToArray();
@@ -270,13 +262,13 @@ namespace Microsoft.Restier.AspNet.Model
         private void AddNavigationPropertyBindings(IEdmModel model)
         {
             // Only add navigation property bindings for the navigation sources added by this builder.
-            foreach (var navigationSource in this.addedNavigationSources)
+            foreach (var navigationSource in addedNavigationSources)
             {
                 var sourceEntityType = navigationSource.EntityType();
                 foreach (var navigationProperty in sourceEntityType.NavigationProperties())
                 {
                     var targetEntityType = navigationProperty.ToEntityType();
-                    var matchingEntitySets = this.GetMatchingEntitySets(targetEntityType, model);
+                    var matchingEntitySets = GetMatchingEntitySets(targetEntityType, model);
                     IEdmNavigationSource targetNavigationSource = null;
                     if (navigationProperty.Type.IsCollection())
                     {
@@ -289,7 +281,7 @@ namespace Microsoft.Restier.AspNet.Model
                     else
                     {
                         // Singleton navigation property can bind to either entity set or singleton.
-                        var matchingSingletons = this.GetMatchingSingletons(targetEntityType, model);
+                        var matchingSingletons = GetMatchingSingletons(targetEntityType, model);
                         if (matchingEntitySets.Length == 1 && matchingSingletons.Length == 0)
                         {
                             targetNavigationSource = matchingEntitySets[0];
@@ -310,10 +302,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class ModelBuilder : IModelBuilder
         {
-            public ModelBuilder(RestierModelExtender modelCache)
-            {
-                ModelCache = modelCache;
-            }
+            public ModelBuilder(RestierModelExtender modelCache) => ModelCache = modelCache;
 
             public IModelBuilder InnerModelBuilder { get; private set; }
 
@@ -324,7 +313,7 @@ namespace Microsoft.Restier.AspNet.Model
             {
                 Ensure.NotNull(context, "context");
 
-                IEdmModel modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
+                var modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
                 if (modelReturned == null)
                 {
                     // There is no model returned so return an empty model.
@@ -333,7 +322,7 @@ namespace Microsoft.Restier.AspNet.Model
                     return emptyModel;
                 }
 
-                EdmModel edmModel = modelReturned as EdmModel;
+                var edmModel = modelReturned as EdmModel;
                 if (edmModel == null)
                 {
                     // The model returned is not an EDM model.
@@ -361,10 +350,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class ModelMapper : IModelMapper
         {
-            public ModelMapper(RestierModelExtender modelCache)
-            {
-                ModelCache = modelCache;
-            }
+            public ModelMapper(RestierModelExtender modelCache) => ModelCache = modelCache;
 
             public RestierModelExtender ModelCache { get; set; }
 
@@ -376,14 +362,14 @@ namespace Microsoft.Restier.AspNet.Model
                 string name,
                 out Type relevantType)
             {
-                if (this.InnerModelMapper != null &&
-                    this.InnerModelMapper.TryGetRelevantType(context, name, out relevantType))
+                if (InnerModelMapper != null &&
+                    InnerModelMapper.TryGetRelevantType(context, name, out relevantType))
                 {
                     return true;
                 }
 
                 relevantType = null;
-                var entitySetProperty = this.ModelCache.entitySetProperties.SingleOrDefault(p => p.Name == name);
+                var entitySetProperty = ModelCache.entitySetProperties.SingleOrDefault(p => p.Name == name);
                 if (entitySetProperty != null)
                 {
                     relevantType = entitySetProperty.PropertyType.GetGenericArguments()[0];
@@ -391,7 +377,7 @@ namespace Microsoft.Restier.AspNet.Model
 
                 if (relevantType == null)
                 {
-                    var singletonProperty = this.ModelCache.singletonProperties.SingleOrDefault(p => p.Name == name);
+                    var singletonProperty = ModelCache.singletonProperties.SingleOrDefault(p => p.Name == name);
                     if (singletonProperty != null)
                     {
                         relevantType = singletonProperty.PropertyType;
@@ -408,8 +394,8 @@ namespace Microsoft.Restier.AspNet.Model
                 string name,
                 out Type relevantType)
             {
-                if (this.InnerModelMapper != null &&
-                    this.InnerModelMapper.TryGetRelevantType(context, namespaceName, name, out relevantType))
+                if (InnerModelMapper != null &&
+                    InnerModelMapper.TryGetRelevantType(context, namespaceName, name, out relevantType))
                 {
                     return true;
                 }
@@ -421,10 +407,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class QueryExpressionExpander : IQueryExpressionExpander
         {
-            public QueryExpressionExpander(RestierModelExtender modelCache)
-            {
-                ModelCache = modelCache;
-            }
+            public QueryExpressionExpander(RestierModelExtender modelCache) => ModelCache = modelCache;
 
             /// <inheritdoc/>
             public IQueryExpressionExpander InnerHandler { get; set; }
@@ -459,9 +442,9 @@ namespace Microsoft.Restier.AspNet.Model
 
             private Expression CallInner(QueryExpressionContext context)
             {
-                if (this.InnerHandler != null)
+                if (InnerHandler != null)
                 {
-                    return this.InnerHandler.Expand(context);
+                    return InnerHandler.Expand(context);
                 }
 
                 return null;
@@ -470,10 +453,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class QueryExpressionSourcer : IQueryExpressionSourcer
         {
-            public QueryExpressionSourcer(RestierModelExtender modelCache)
-            {
-                ModelCache = modelCache;
-            }
+            public QueryExpressionSourcer(RestierModelExtender modelCache) => ModelCache = modelCache;
 
             public IQueryExpressionSourcer InnerHandler { get; set; }
 
@@ -502,9 +482,9 @@ namespace Microsoft.Restier.AspNet.Model
 
             private Expression CallInner(QueryExpressionContext context, bool embedded)
             {
-                if (this.InnerHandler != null)
+                if (InnerHandler != null)
                 {
-                    return this.InnerHandler.ReplaceQueryableSource(context, embedded);
+                    return InnerHandler.ReplaceQueryableSource(context, embedded);
                 }
 
                 return null;

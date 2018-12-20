@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Core.Query
         public QueryResult(Exception exception)
         {
             Ensure.NotNull(exception, "exception");
-            this.Exception = exception;
+            Exception = exception;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Query
         public QueryResult(IEnumerable results)
         {
             Ensure.NotNull(results, "results");
-            this.Results = results;
+            Results = results;
         }
 
         /// <summary>
@@ -48,17 +48,14 @@ namespace Microsoft.Restier.Core.Query
         /// </remarks>
         public Exception Exception
         {
-            get
-            {
-                return this.exception;
-            }
+            get => exception;
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this.exception = value;
-                this.resultsSource = null;
-                this.results = null;
+                exception = value;
+                resultsSource = null;
+                results = null;
             }
         }
 
@@ -71,20 +68,16 @@ namespace Microsoft.Restier.Core.Query
         /// </remarks>
         public IEdmEntitySet ResultsSource
         {
-            get
-            {
-                return this.resultsSource;
-            }
+            get => resultsSource;
 
             set
             {
-                if (this.exception != null)
+                if (exception != null)
                 {
-                    throw new InvalidOperationException(
-                        Resources.CannotSetResultsSourceIfThereIsAnyError);
+                    throw new InvalidOperationException(Resources.CannotSetResultsSourceIfThereIsAnyError);
                 }
 
-                this.resultsSource = value;
+                resultsSource = value;
             }
         }
 
@@ -96,17 +89,14 @@ namespace Microsoft.Restier.Core.Query
         /// </remarks>
         public IEnumerable Results
         {
-            get
-            {
-                return this.results;
-            }
+            get => results;
 
             set
             {
                 Ensure.NotNull(value, "value");
-                this.exception = null;
-                this.resultsSource = null;
-                this.results = value;
+                exception = null;
+                resultsSource = null;
+                results = value;
             }
         }
     }
