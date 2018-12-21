@@ -57,7 +57,7 @@
     
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '!$(IsSampleProject)' != 'true' ">
+  <PropertyGroup Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '!$(IsSampleProject)' != 'true' and $(Configuration) != 'Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

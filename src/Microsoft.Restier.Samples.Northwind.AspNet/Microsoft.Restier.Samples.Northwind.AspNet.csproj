@@ -28,6 +28,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
