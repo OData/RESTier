@@ -23,6 +23,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
@@ -150,7 +151,6 @@
     <Content Include="Data\Northwind.edmx.diagram">
       <DependentUpon>Northwind.edmx</DependentUpon>
     </Content>
-    <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
