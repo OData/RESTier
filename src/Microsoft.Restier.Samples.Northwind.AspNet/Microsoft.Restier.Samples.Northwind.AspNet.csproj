@@ -23,7 +23,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
