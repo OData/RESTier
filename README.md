@@ -1,6 +1,5 @@
-# Microsoft Restier - OData Made Simple
-
 <div align="center">
+<h1>Microsoft Restier - OData Made Simple</h1>
 
 [Releases](https://github.com/OData/RESTier/releases)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Documentation&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[OData v4.01 Documentation](https://www.odata.org/documentation/)
 
@@ -103,4 +102,4 @@ Link References
 [gitter-img]:https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=for-the-badge
 [code-climate-img]:https://img.shields.io/codeclimate/issues/github/ryanoasis/nerd-fonts.svg?style=for-the-badge
 [code-of-conduct-img]: https://img.shields.io/badge/code%20of-conduct-00a1f1.svg?style=for-the-badge&logo=windows
-[twitter-img]:https://img.shields.io/twitter/url/http/shields.io.svg?style=for-the-badge&logo=twitter
+[twitter-img]:https://img.shields.io/badge/share-on%20twitter-55acee.svg?style=for-the-badge&logo=twitter
