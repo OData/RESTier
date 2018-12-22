@@ -1,88 +1,106 @@
-# RESTier
-<img src="https://identitydivision.visualstudio.com/_apis/public/build/definitions/2cfe7ec3-b94f-4ab9-85ab-2ebff928f3fd/100/badge"/>
+# Microsoft Restier - OData Made Simple
 
-## 1. Introduction
-[OData](http://www.odata.org/ "OData") stands for the Open Data Protocol. It was initiated by Microsoft and is now an ISO and OASIS standard. OData enables the creation and consumption of RESTful APIs, which allow resources, defined in a data model and identified by using URLs, to be published and edited by Web clients using simple HTTP requests.
+<div align="center">
 
-RESTier is a RESTful API development framework for building standardized, OData V4 based RESTful services on .NET platform. It can be seen as a middle-ware on top of Web API OData. RESTier provides facilities to bootstrap an OData service like what WCF Data Services (which is sunset) does, beside this, it supports to add business logic in several simple steps, has flexibility and easy customization like what Web API OData do. It also supports to add additional publishers to support other protocols and additional providers to support other data sources.
+[Releases](https://github.com/OData/RESTier/releases)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Documentation&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[OData v4.01 Documentation](https://www.odata.org/documentation/)
 
-For more information about OData, please refer to the following resources:
-- [OData.org](http://www.odata.org/)
-- [OASIS Open Data Protocol (OData) Technical Committee](https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=odata)
+[![Build Status][devops-build-img]][devops-build] [![Release Status][devops-release-img]][devops-release] [![Code of Conduct][code-of-conduct-img]][code-of-conduct] [![Twitter][twitter-img]][twitter-intent]
 
-**For how to adopt this library to build OData service, please refer to the following resources:**
-- [Build an OData v4 Service with RESTier Library](http://odata.github.io/RESTier/#01-01-Introduction)
+</div>
 
-**For how to adopt .NET OData Client to consume OData service, please refer to the following resources:**
-- [OData .Net Client](http://odata.github.io/odata.net/#04-01-basic-crud-operations)
+## What is Restier?
 
-Please be noted that currently RESTier is still a preview version.
+Restier is an API development framework for building standardized, OData V4 based RESTful services on .NET. 
 
-## 2. Project structure
-The project currently has two branches: [master](https://github.com/OData/RESTier/tree/master), [gh-pages](https://github.com/OData/RESTier/tree/gh-pages).
+Restier is the spiritual successor to [WCF Data Services](https://en.wikipedia.org/wiki/WCF_Data_Services). Instead of 
+generating endless boilerplate code with the current Web API + OData toolchain, RESTier helps you boostrap a standardized, 
+queryable HTTP-based REST interface in literally minutes. And that's just the beginning.
 
-**master branch**
+Like WCF Data Services before it, Restier provides simple and straightforward ways to shape queries and intercept submissions
+_before_ and _after_ they hit the database. And like Web API + OData, you still have the flexibility to add your own
+custom queries and actions with techniques you're already familiar with.
 
-The master branch has the following libraries:
-- [RESTier Core](https://www.nuget.org/packages/Microsoft.Restier.Core/) (namespace `Microsoft.Restier.Core`):<br />The RESTier Core contains framework classes like API-related logic, query inspector/filter/expander/sourcer/executor, convention-based logic like model builder.
-- [RESTier OData Publisher](https://www.nuget.org/packages/Microsoft.Restier.Publishers.Odata/) (namespace `Microsoft.Restier.Publishers.Odata`):<br />The RESTier OData Publisher contains classes to publish the data source as an OData service based on Web API OData.
-- [RESTier EntityFramework Provider](https://www.nuget.org/packages/Microsoft.Restier.Providers.EntityFramework/) (namespace `Microsoft.Restier.Providers.EntityFramework`):<br />The RESTier EntityFramework Provider contains classes to access data sources exposed with Entity Framework library.
-- [RESTier Security](https://www.nuget.org/packages/Microsoft.Restier.Security/) (namespace `Microsoft.Restier.Security`):<br />The RESTier Security contains classes and methods for security control, it is not in active development state and will not be part of first GA release.
+## What is OData?
 
-For these libraries, we accept bug reports, feature requirements and pull requests. 
+OData stands for the Open Data Protocol. OData enables the creation and consumption of RESTful APIs, which allow 
+resources, defined in a data model and identified by using URLs, to be published and edited by Web clients using 
+simple HTTP requests.
 
+OData was originally designed by Microsoft to be a framework for exposing Entity Framework objects over REST services.
+The first concepts shipped as "Project Astoria" in 2007. By 2009, the concept had evolved enough for Microsoft to
+announce OData, along with a [larger effort](https://blogs.msdn.microsoft.com/odatateam/2009/11/17/breaking-down-data-silos-the-open-data-protocol-odata/)
+to push the format as an insustry standard.
 
-**gh-pages branch**
+Work on the current version of the protocol (V4) began in April 2012, and was ratified by OASIS as an industry standard in Feb 2014.
 
-The gh-pages branch contains documentation source for RESTier - tutorials, guides, etc.  The documentation source is in Markdown format. It is hosted at [RESTier Pages](http://odata.github.io/RESTier "RESTier Pages").
+## Use Cases
+Coming Soon!
 
-## 3. Building, Testing, Debugging and Release
-LocalDB v12.0 or above will be used which is part of VS2015 and no additional installation is needed. The Database will be automatically initialized by the test code if it doesn't exist.
+## Supported Platforms
+Restier 1.0 currently ships with support for Classic ASP.NET 5.2.3 and later. Support for ASP.NET Core 2.2 is coming in the first half of 2019. (More specifics will be provided in a few weeks.)
 
-### 3.1 Building and Testing in Visual Studio
-Simply open the solution files in root folder and build them in Visual Studio 2015.
+## Restier Components
+The Classic ASP.NET flavor of Restier is made up of the following components:
+- **Microsoft.Restier.AspNet:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
+- **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
+- **Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
 
-Here is the usage of each solution file:
-- RESTier.sln - Product source and all tests. It uses EntityFramework 6.x and built with .Net Framework version 4.5.1.
-- RESTier.EF7.sln - Product source and all tests. It uses EntityFramework 7.x and built with .Net Framework version 4.5.1.
+While the ASP.NET Core flavor of Restier (when is ships) will consist of the following:
+- **Microsoft.Restier.AspNetCore:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
+- **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
+- **Microsoft.Restier.EntityFrameworkCore:** Translates intercepted queries down to the database level to be executed.
 
-### 3.2 One-click build in command line
-Open Command Line Window, cd to the root folder and run following command:
+## Ecosystem
+Restier is used in solutions from:
+- [BurnRate.io](https://burnrate.io)
+- [CloudNimble, Inc.](https://nimbleapps.cloud)
+- [Florida Agency for Health Care Administration](https://ahca.myflorida.com)
 
-```
-build.cmd
-```
+There is also a growing set of tools to support Restier-based development
+- [Breakdance.Restier](https://github.com/cloudnimble/breakdance): Convention-based name troubleshooting and integration test support.
+## Community
+After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws and Chris Woodruff.
 
-The build will take about 4 minutes. Tests are recommended to run with Visual Studio.
+### Weekly Standups
+The core development team meets once a week on Google Hangouts to discuss pressing items and work through the issues list. A history of
+those meetings can be found in the Wiki.
 
-### 3.3 Debug
-Please refer to the [How to debug](http://odata.github.io/WebApi/10-01-debug-webapi-source).
+### Contributing
+If you'd like to help out with the project, our Contributor's Handbook is also located in the Wiki.
 
-### 3.4 Official Release
-The release of the component binaries is carried out regularly through [Nuget](http://www.nuget.org/).
+## Contributors
 
-## 4. Documentation
-Please visit the [RESTier pages](http://odata.github.io/RESTier). It has detailed descriptions on each feature provided by RESTier.
+Special thanks to everyone involved in making RESTier the best API development platform for .NET. The following people
+have made various contributions to the codebase:
 
-## 5. Sample services
-Refer to [sample service github](https://github.com/OData/ODataSamples/tree/master/RESTier) for end to end sample service. The source code also contains end to end service for end to end test purpose. All the sample service can be run with visual studio 2015.
+| Microsoft     | External       |
+|---------------|----------------|
+| Lewis Cheng   | Cengiz Ilerler |
+| Challenh      | Kemal M        |
+| Eric Erhardt  | Robert McLaws  |
+| Vincent He    |                |
+| Dong Liu      |                |
+| Layla Liu     |                |
+| Fan Ouyang    |                |
+| Congyong S    |                |
+| Mark Stafford |                |
+| Ray Yao       |                |
 
-## 6. Community
-### 6.1 Contribution
-There are many ways for you to contribute to RESTier. The easiest way is to participate in discussion of features and issues. You can also contribute by sending pull requests of features or bug fixes to us. Contribution to the documentations is also highly welcomed. Please refer to the [CONTRIBUTING.md](https://github.com/OData/RESTier/blob/master/.github/CONTRIBUTING.md) for more details.
+## 
 
-### 6.2 Support
-- Issues<br />Report issues on [Github issues](https://github.com/OData/RESTier/issues).
-- Questions<br />Ask questions on [Stack Overflow](http://stackoverflow.com/questions/ask?tags=odata).
-- Feedback<br />Please send mails to [odatafeedback@microsoft.com](mailto:odatafeedback@microsoft.com).
-- Team blog<br />Please visit [http://blogs.msdn.com/b/odatateam/](http://blogs.msdn.com/b/odatateam/) and [http://www.odata.org/blog/](http://www.odata.org/blog/).
+<!--
+Link References
+-->
 
-## Thank You!
+[devops-build]:https://dev.azure.com/cloudnimble/Restier/_build?definitionId=8
+[devops-release]:https://dev.azure.com/cloudnimble/Restier/_release?view=all&definitionId=1
+[twitter-intent]:https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2FOData%2FRESTier&via=robertmclaws&text=Check%20out%20Restier%21%20It%27s%20the%20simple%2C%20queryable%20framework%20for%20building%20data-driven%20APIs%20in%20.NET%21&hashtags=odata
+[code-of-conduct]:https://opensource.microsoft.com/codeofconduct/
 
-We’re using NDepend to analyze and increase code quality.
-
-[![NDepend](images/ndependlogo.png)](http://www.ndepend.com)
-
-## Code of Conduct
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+[devops-build-img]:https://img.shields.io/azure-devops/build/cloudnimble/restier/8.svg?style=for-the-badge&logo=azuredevops
+[devops-release-img]:https://img.shields.io/azure-devops/release/cloudnimble/d3aaa016-9aea-4903-b6a6-abda1d4c84f0/1/1.svg?style=for-the-badge&logo=azuredevops
+[github-version-img]:https://img.shields.io/github/release/ryanoasis/nerd-fonts.svg?style=for-the-badge
+[gitter-img]:https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=for-the-badge
+[code-climate-img]:https://img.shields.io/codeclimate/issues/github/ryanoasis/nerd-fonts.svg?style=for-the-badge
+[code-of-conduct-img]: https://img.shields.io/badge/code%20of-conduct-00a1f1.svg?style=for-the-badge&logo=windows
+[twitter-img]:https://img.shields.io/twitter/url/http/shields.io.svg?style=for-the-badge&logo=twitter
