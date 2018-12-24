@@ -188,7 +188,7 @@ namespace Microsoft.Restier.Core
 
             var restierOperationName = GetRestierOperationNameInternal(restierOperation, restierPipelineState);
             var suffix = GetPipelineSuffixInternal(restierPipelineState);
-            return $"{prefix}{operationName}{suffix}{operationName}";
+            return $"{prefix}{restierOperationName}{suffix}{operationName}";
         }
 
         /// <summary>
