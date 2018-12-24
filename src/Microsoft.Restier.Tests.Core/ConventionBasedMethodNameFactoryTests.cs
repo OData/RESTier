@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Submit;
 using Xunit;
 
@@ -80,6 +83,60 @@ namespace Microsoft.Restier.Core.Tests
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineStates.PostSubmit);
             Assert.Equal("", name);
         }
+
+        [Fact]
+        public void ConventionBasedMethodNameFactory_ExecuteMethod_Authorize()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+
+            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineStates.Authorization, RestierOperationMethods.Execute);
+            Assert.Equal("CanExecuteTestMethod", name);
+        }
+
+
+        [Fact]
+        public void ConventionBasedMethodNameFactory_ExecuteMethod_PreSubmit()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+
+            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineStates.PreSubmit, RestierOperationMethods.Execute);
+            Assert.Equal("OnExecutingTestMethod", name);
+        }
+
+        [Fact]
+        public void ConventionBasedMethodNameFactory_ExecuteMethod_Submit()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+
+            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineStates.Submit, RestierOperationMethods.Execute);
+            Assert.Equal("", name);
+        }
+
+        [Fact]
+        public void ConventionBasedMethodNameFactory_ExecuteMethod_PostSubmit()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+
+            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineStates.PostSubmit, RestierOperationMethods.Execute);
+            Assert.Equal("OnExecutedTestMethod", name);
+        }
+
+
+        private class TestApi : ApiBase
+        {
+            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            {
+            }
+        }
+
 
     }
 
