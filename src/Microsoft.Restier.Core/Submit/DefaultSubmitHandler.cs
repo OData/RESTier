@@ -127,8 +127,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 if (!await authorizer.AuthorizeAsync(context, item, cancellationToken).ConfigureAwait(false))
                 {
-                    var message = GetAuthorizeFailedMessage(item);
-                    throw new SecurityException(message);
+                    throw new SecurityException(GetAuthorizeFailedMessage(item));
                 }
             }
         }
@@ -162,13 +161,17 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task PerformPreEvent(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
+
+            var processor = context.GetApiService<IChangeSetItemFilter>();
+            //TODO: Should we error out if there is no ChangeSetFilter? No consistent pattern to follow.
+
             foreach (var item in changeSetItems)
             {
                 if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.Validated)
                 {
                     item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
 
-                    var processor = context.GetApiService<IChangeSetItemFilter>();
+
                     if (processor != null)
                     {
                         await processor.OnChangeSetItemProcessingAsync(context, item, cancellationToken).ConfigureAwait(false);
@@ -203,14 +206,16 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task PerformPostEvent(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
-            //TODO: Check this for unnecessary allocations.
+            var processor = context.GetApiService<IChangeSetItemFilter>();
+            if (processor == null)
+            {
+                //TODO: It feels like we should be following the same pattern as teh method above.
+                return;
+            }
+
             foreach (var item in changeSetItems)
             {
-                var processor = context.GetApiService<IChangeSetItemFilter>();
-                if (processor != null)
-                {
-                    await processor.OnChangeSetItemProcessedAsync(context, item, cancellationToken).ConfigureAwait(false);
-                }
+                await processor.OnChangeSetItemProcessedAsync(context, item, cancellationToken).ConfigureAwait(false);
             }
         }
     }
