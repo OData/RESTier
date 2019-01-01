@@ -14,6 +14,10 @@ namespace Microsoft.Restier.Core.Submit
     {
         private IEnumerable<ChangeSetItemValidationResult> errorValidationResults;
 
+        public ChangeSetValidationException()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeSetValidationException"/> class.
         /// </summary>
@@ -52,5 +56,7 @@ namespace Microsoft.Restier.Core.Submit
 
             set => errorValidationResults = value;
         }
+
     }
+
 }

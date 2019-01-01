@@ -34,7 +34,7 @@ namespace Microsoft.Restier.EntityFramework
         /// </returns>
         public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
 
             if (context.ModelReference.EntitySet == null)
             {

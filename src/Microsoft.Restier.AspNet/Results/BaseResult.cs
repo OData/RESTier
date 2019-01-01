@@ -19,7 +19,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="edmType">The EDM type reference of the OData result.</param>
         protected BaseResult(IEdmTypeReference edmType)
         {
-            Ensure.NotNull(edmType, "edmType");
+            Ensure.NotNull(edmType, nameof(edmType));
 
             this.edmType = edmType;
         }

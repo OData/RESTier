@@ -21,7 +21,7 @@ namespace Microsoft.Restier.AspNet
         protected BaseCollectionResult(IQueryable query, IEdmTypeReference edmType)
             : base(edmType)
         {
-            Ensure.NotNull(query, "query");
+            Ensure.NotNull(query, nameof(query));
 
             Query = query;
             Type = query.GetType();

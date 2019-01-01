@@ -45,7 +45,7 @@ namespace Microsoft.Restier.EntityFramework
         /// </returns>
         public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
 
 #if EF7
             var dbContext = context.GetApiService<DbContext>();

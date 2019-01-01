@@ -51,6 +51,7 @@ namespace Microsoft.Restier.EntityFramework
             }
         }
 
+
         /// <summary>
         /// Configures the API services for this API. Descendants may override this method to register
         /// <typeparamref name="T"/> as a scoped service.
@@ -65,7 +66,9 @@ namespace Microsoft.Restier.EntityFramework
         /// The <see cref="IServiceCollection"/>.
         /// </returns>
         //[CLSCompliant(false)]
+#pragma warning disable CA1000 // Do not declare static members on generic types
         public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+#pragma warning restore CA1000 // Do not declare static members on generic types
         {
             // Add core and convention's services
             services = services.AddCoreServices(apiType)

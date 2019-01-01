@@ -23,9 +23,9 @@ namespace Microsoft.Restier.Core
         /// </param>
         public InvocationContext(IServiceProvider provider)
         {
-            Ensure.NotNull(provider, "provider");
+            Ensure.NotNull(provider, nameof(provider));
 
-            this.ServiceProvider = provider;
+            ServiceProvider = provider;
         }
 
         /// <summary>

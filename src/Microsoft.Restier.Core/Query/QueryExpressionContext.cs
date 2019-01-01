@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         public QueryExpressionContext(QueryContext queryContext)
         {
-            Ensure.NotNull(queryContext, "queryContext");
+            Ensure.NotNull(queryContext, nameof(queryContext));
             QueryContext = queryContext;
         }
 

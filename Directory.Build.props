@@ -1,6 +1,18 @@
 <Project>
   <!--<Import Project="version.props" />-->
 
+  <!-- Folder layout -->
+  <PropertyGroup>
+    <IsBenchmarkProject Condition="$(MSBuildProjectName.EndsWith('.Performance'))">true</IsBenchmarkProject>
+    <IsTestProject Condition="$(MSBuildProjectName.ToLower().Contains('.tests.'))">true</IsTestProject>
+    <IsTestAssetProject Condition="$(RepoRelativeProjectDir.Contains('testassets'))">true</IsTestAssetProject>
+    <IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
+
+    <IncludeSource>false</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>
+
+  </PropertyGroup>
+
   <PropertyGroup>
     <Product>Microsoft Restier</Product>
 
@@ -43,21 +55,20 @@
 
     <!-- Fixes a common error in targets implementing a NoBuild mode. -->
     <BuildProjectReferences Condition=" '$(NoBuild)' == 'true' ">false</BuildProjectReferences>
+
+    <!-- Suppress warnings about uninstantiated classes. -->
+    <NoWarn>$(NoWarn);CA1812</NoWarn>
   </PropertyGroup>
 
-  <!-- Folder layout -->
-  <PropertyGroup>
-    <IsBenchmarkProject Condition="$(MSBuildProjectName.EndsWith('.Performance'))">true</IsBenchmarkProject>
-    <IsTestProject Condition="$(MSBuildProjectName.Contains('.Tests.'))">true</IsTestProject>
-    <IsTestAssetProject Condition="$(RepoRelativeProjectDir.Contains('testassets'))">true</IsTestAssetProject>
-    <IsSampleProject Condition="$(MSBuildProjectName.Contains('.Samples.'))">true</IsSampleProject>
-
-    <IncludeSource>false</IncludeSource>
-    <IncludeSymbols>true</IncludeSymbols>
-    
+  <PropertyGroup Condition=" $(IsTestProject) == 'true' ">
+    <NoWarn>$(NoWarn);CA1001;CA1707;CA2007;CA1801</NoWarn>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '!$(IsSampleProject)' != 'true' and $(Configuration) != 'Release' ">
+  
+    <PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
+    <NoWarn>$(NoWarn);CA1001;CA1707;CA1716;CA1801;CA1822</NoWarn>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '!$(IsSampleProject)' != 'true' and $(Configuration) == 'Debug' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
@@ -65,5 +76,16 @@
   <PropertyGroup>
     <StandardTestTfms>netcoreapp2.2;net461</StandardTestTfms>
   </PropertyGroup>
+
+  <ItemGroup Condition=" $(IsTestProject) != 'true' and  $(IsSampleProject) != 'true'">
+    <!-- RWM: The code quality on the unit tests right now is not awesome, so let's skip checking it for now. -->
+    <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="2.6.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(IsTestProject) == 'true' ">
+    <PackageReference Include="FluentAssertions" Version="5.5.3" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.11.4" />
+  </ItemGroup>
+  
 
 </Project>

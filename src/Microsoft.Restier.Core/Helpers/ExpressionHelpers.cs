@@ -19,7 +19,7 @@ namespace System.Linq.Expressions
 
         public static IQueryable Select(IQueryable query, LambdaExpression select)
         {
-            MethodInfo selectMethod =
+            var selectMethod =
                 ExpressionHelperMethods.QueryableSelectGeneric.MakeGenericMethod(
                     query.ElementType,
                     select.Body.Type);
@@ -28,7 +28,7 @@ namespace System.Linq.Expressions
 
         public static IQueryable SelectMany(IQueryable query, LambdaExpression selectMany, Type selectedElementType)
         {
-            MethodInfo selectManyMethod =
+            var selectManyMethod =
                 ExpressionHelperMethods.QueryableSelectManyGeneric.MakeGenericMethod(
                     query.ElementType,
                     selectedElementType);
@@ -37,20 +37,19 @@ namespace System.Linq.Expressions
 
         public static IQueryable Where(IQueryable query, LambdaExpression where, Type type)
         {
-            MethodInfo whereMethod = ExpressionHelperMethods.QueryableWhereGeneric.MakeGenericMethod(type);
+            var whereMethod = ExpressionHelperMethods.QueryableWhereGeneric.MakeGenericMethod(type);
             return whereMethod.Invoke(null, new object[] { query, where }) as IQueryable;
         }
 
         public static IQueryable OfType(IQueryable query, Type type)
         {
-            MethodInfo ofTypeMethod = ExpressionHelperMethods.QueryableOfTypeGeneric.MakeGenericMethod(type);
+            var ofTypeMethod = ExpressionHelperMethods.QueryableOfTypeGeneric.MakeGenericMethod(type);
             return ofTypeMethod.Invoke(null, new object[] { query }) as IQueryable;
         }
 
         public static Expression Count(Expression queryExpression, Type elementType)
         {
-            MethodInfo countMethod =
-                ExpressionHelperMethods.QueryableCountGeneric.MakeGenericMethod(elementType);
+            var countMethod = ExpressionHelperMethods.QueryableCountGeneric.MakeGenericMethod(elementType);
             return Expression.Call(countMethod, queryExpression);
         }
 
@@ -60,10 +59,9 @@ namespace System.Linq.Expressions
         /// <typeparam name="TElement">The type parameter for IQueryable</typeparam>
         /// <param name="query">The input query.</param>
         /// <returns>The count IQueryable</returns>
-        public static IQueryable<object> GetCountableQuery<TElement>(
-           IQueryable<TElement> query)
+        public static IQueryable<object> GetCountableQuery<TElement>(IQueryable<TElement> query)
         {
-            Ensure.NotNull(query, "query");
+            Ensure.NotNull(query, nameof(query));
             object countQuery = query;
             var expression = query.Expression;
 
@@ -76,17 +74,17 @@ namespace System.Linq.Expressions
             {
                 // If Type is Type<GenericType> to then GenericType will be returned.
                 // e.g. if type is SelectAllAndExpand<Namespace.Product>, then Namespace.Product will be returned.
-                Type elementType = GetSelectExpandElementType(typeof(TElement));
+                var elementType = GetSelectExpandElementType(typeof(TElement));
 
                 // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
-                Type thisType = query.Provider.GetType();
+                var thisType = query.Provider.GetType();
 
                 // Get the CreateQuery method information who accepts generic type
-                MethodInfo method = thisType.GetMethods()
+                var method = thisType.GetMethods()
                     .Single(m => m.Name == MethodNameOfCreateQuery && m.IsGenericMethodDefinition);
 
                 // Replace method generic type with specified type.
-                MethodInfo generic = method.MakeGenericMethod(elementType);
+                var generic = method.MakeGenericMethod(elementType);
                 countQuery = generic.Invoke(query.Provider, new object[] { expression });
             }
 
@@ -110,7 +108,7 @@ namespace System.Linq.Expressions
 
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
-            Type type = enumerableType.FindGenericType(typeof(IEnumerable<>));
+            var type = enumerableType.FindGenericType(typeof(IEnumerable<>));
             if (type != null)
             {
                 return type.GetGenericArguments()[0];
@@ -185,7 +183,7 @@ namespace System.Linq.Expressions
                 return methodCallExpression;
             }
 
-            Type returnType = lambdaExpression.ReturnType;
+            var returnType = lambdaExpression.ReturnType;
             var wrapperInterface = returnType.GetInterface(InterfaceNameISelectExpandWrapper);
             if (wrapperInterface != null)
             {

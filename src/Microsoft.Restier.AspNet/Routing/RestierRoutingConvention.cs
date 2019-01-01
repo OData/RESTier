@@ -35,8 +35,8 @@ namespace Microsoft.Restier.AspNet
         /// <returns>Prefix for controller name</returns>
         public string SelectController(ODataPath odataPath, HttpRequestMessage request)
         {
-            Ensure.NotNull(odataPath, "odataPath");
-            Ensure.NotNull(request, "request");
+            Ensure.NotNull(odataPath, nameof(odataPath));
+            Ensure.NotNull(request, nameof(request));
 
             if (IsMetadataPath(odataPath))
             {
@@ -67,9 +67,9 @@ namespace Microsoft.Restier.AspNet
         public string SelectAction(ODataPath odataPath, HttpControllerContext controllerContext, ILookup<string, HttpActionDescriptor> actionMap)
         {
             // TODO GitHubIssue#44 : implement action selection for $ref, navigation scenarios, etc.
-            Ensure.NotNull(odataPath, "odataPath");
-            Ensure.NotNull(controllerContext, "controllerContext");
-            Ensure.NotNull(actionMap, "actionMap");
+            Ensure.NotNull(odataPath, nameof(odataPath));
+            Ensure.NotNull(controllerContext, nameof(controllerContext));
+            Ensure.NotNull(actionMap, nameof(actionMap));
 
             if (!(controllerContext.Controller is RestierController))
             {
@@ -116,8 +116,7 @@ namespace Microsoft.Restier.AspNet
 
         private static bool IsMetadataPath(ODataPath odataPath)
         {
-            return odataPath.PathTemplate == "~" ||
-                odataPath.PathTemplate == "~/$metadata";
+            return odataPath.PathTemplate == "~" ||  odataPath.PathTemplate == "~/$metadata";
         }
 
         private static bool HasControllerForEntitySetOrSingleton(ODataPath odataPath, HttpRequestMessage request)
@@ -190,11 +189,9 @@ namespace Microsoft.Restier.AspNet
 
         private static bool IsAction(ODataPathSegment lastSegment)
         {
-            var operationSeg = lastSegment as OperationSegment;
-            if (operationSeg != null)
+            if (lastSegment is OperationSegment operationSeg)
             {
-                var action = operationSeg.Operations.FirstOrDefault() as IEdmAction;
-                if (action != null)
+                if (operationSeg.Operations.FirstOrDefault() is IEdmAction action)
                 {
                     return true;
                 }

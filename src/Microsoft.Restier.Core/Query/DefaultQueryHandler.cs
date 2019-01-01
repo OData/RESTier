@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Core.Query
             QueryContext context,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
 
             // process query expression
             var expression = context.Request.Expression;
@@ -79,10 +79,10 @@ namespace Microsoft.Restier.Core.Query
                     context, query, cancellationToken
                 };
                 var task = method.Invoke(executor, parameters) as Task<QueryResult>;
-                result = await task;
+                result = await task.ConfigureAwait(false);
 
                 await CheckSubExpressionResult(
-                    context, cancellationToken, result.Results, visitor, executor, expression);
+                    context, result.Results, visitor, executor, expression, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -94,7 +94,7 @@ namespace Microsoft.Restier.Core.Query
                     context, visitor.BaseQuery.Provider, expression, cancellationToken
                 };
                 var task = method.Invoke(executor, parameters) as Task<QueryResult>;
-                result = await task;
+                result = await task.ConfigureAwait(false);
             }
 
             if (result != null)
@@ -107,11 +107,11 @@ namespace Microsoft.Restier.Core.Query
 
         private static async Task CheckSubExpressionResult(
             QueryContext context,
-            CancellationToken cancellationToken,
             IEnumerable enumerableResult,
             QueryExpressionVisitor visitor,
             IQueryExecutor executor,
-            Expression expression)
+            Expression expression,
+            CancellationToken cancellationToken)
         {
             if (enumerableResult.GetEnumerator().MoveNext())
             {
@@ -141,7 +141,7 @@ namespace Microsoft.Restier.Core.Query
                 if (methodCallExpression.Method.Name == ExpressionMethodNameOfWhere)
                 {
                     // The last where from $filter is removed and run with key where statement
-                    await ExecuteSubExpression(context, cancellationToken, visitor, executor, methodCallExpression);
+                    await ExecuteSubExpression(context, visitor, executor, methodCallExpression, cancellationToken).ConfigureAwait(false);
                     return;
                 }
             }
@@ -158,15 +158,15 @@ namespace Microsoft.Restier.Core.Query
             // Remove appended statement like Where(Param_0 => (Param_0.Prop != null)) if there is one
             subExpression = subExpression.RemoveAppendWhereStatement();
 
-            await ExecuteSubExpression(context, cancellationToken, visitor, executor, subExpression);
+            await ExecuteSubExpression(context, visitor, executor, subExpression, cancellationToken).ConfigureAwait(false);
         }
 
         private static async Task ExecuteSubExpression(
             QueryContext context,
-            CancellationToken cancellationToken,
             QueryExpressionVisitor visitor,
             IQueryExecutor executor,
-            Expression expression)
+            Expression expression,
+            CancellationToken cancellationToken)
         {
             // get element type
             Type elementType = null;
@@ -185,7 +185,7 @@ namespace Microsoft.Restier.Core.Query
                 context, query, cancellationToken
             };
             var task = method.Invoke(executor, parameters) as Task<QueryResult>;
-            var result = await task;
+            var result = await task.ConfigureAwait(false);
 
             var any = result.Results.Cast<object>().Any();
             if (!any)
@@ -234,7 +234,7 @@ namespace Microsoft.Restier.Core.Query
             public QueryExpressionVisitor(QueryContext context)
             {
                 this.context = new QueryExpressionContext(context);
-                this.processedExpressions = new Dictionary<Expression, Expression>();
+                processedExpressions = new Dictionary<Expression, Expression>();
             }
 
             public IQueryable BaseQuery { get; private set; }
@@ -250,50 +250,50 @@ namespace Microsoft.Restier.Core.Query
 
                 // Initialize and push the visited node
                 var visited = node;
-                this.context.PushVisitedNode(visited);
+                context.PushVisitedNode(visited);
 
                 // If visited node has already been processed,
                 // skip normalization, inspection and filtering
                 // and simply replace with the processed node
-                if (this.processedExpressions.ContainsKey(visited))
+                if (processedExpressions.ContainsKey(visited))
                 {
-                    node = this.processedExpressions[visited];
+                    node = processedExpressions[visited];
                 }
                 else
                 {
                     // Only visit the visited node's children if
                     // the visited node represents API data
-                    if (!(this.context.ModelReference is DataSourceStubModelReference))
+                    if (!(context.ModelReference is DataSourceStubModelReference))
                     {
                         // Visit visited node's children
                         node = base.Visit(visited);
                     }
 
                     // Inspect the visited node
-                    this.Inspect();
+                    Inspect();
 
                     // Try to expand the visited node
                     // if it represents API data
-                    if (this.context.ModelReference is DataSourceStubModelReference)
+                    if (context.ModelReference is DataSourceStubModelReference)
                     {
-                        node = this.Expand(visited);
+                        node = Expand(visited);
                     }
 
                     // Process the visited node
-                    node = this.Process(visited, node);
+                    node = Process(visited, node);
                 }
 
                 if (visited == node)
                 {
-                    if (this.context.ModelReference is DataSourceStubModelReference)
+                    if (context.ModelReference is DataSourceStubModelReference)
                     {
                         // If no processing occurred on the visited node
                         // and it represents API data, then it must be
                         // in its most primitive form, so source the node
-                        node = this.Source(node);
+                        node = Source(node);
                     }
 
-                    if (this.BaseQuery == null)
+                    if (BaseQuery == null)
                     {
                         // The very first time control reaches here, the
                         // visited node represents the original starting
@@ -305,23 +305,23 @@ namespace Microsoft.Restier.Core.Query
                             throw new NotSupportedException(Resources.OriginalExpressionShouldBeConstant);
                         }
 
-                        this.BaseQuery = constant.Value as IQueryable;
-                        if (this.BaseQuery == null)
+                        BaseQuery = constant.Value as IQueryable;
+                        if (BaseQuery == null)
                         {
                             throw new NotSupportedException(Resources.OriginalExpressionShouldBeQueryable);
                         }
 
-                        node = this.BaseQuery.Expression;
+                        node = BaseQuery.Expression;
                     }
                 }
 
                 // TODO GitHubIssue#28 : Support transformation between API types and data source proxy types
-                this.context.PopVisitedNode();
+                context.PopVisitedNode();
 
-                if (this.context.VisitedNode != null)
+                if (context.VisitedNode != null)
                 {
-                    this.EntitySet = this.context.ModelReference != null ?
-                        this.context.ModelReference.EntitySet : null;
+                    EntitySet = context.ModelReference != null ?
+                        context.ModelReference.EntitySet : null;
                 }
 
                 return node;
@@ -329,12 +329,12 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                if (this.authorizer == null)
+                if (authorizer == null)
                 {
-                    this.authorizer = this.context.QueryContext.GetApiService<IQueryExpressionAuthorizer>();
+                    authorizer = context.QueryContext.GetApiService<IQueryExpressionAuthorizer>();
                 }
 
-                if (this.authorizer != null && !this.authorizer.Authorize(this.context))
+                if (authorizer != null && !authorizer.Authorize(context))
                 {
                     throw new InvalidOperationException(Resources.InspectionFailed);
                 }
@@ -342,9 +342,9 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Expand(Expression visited)
             {
-                if (this.expander == null)
+                if (expander == null)
                 {
-                    this.expander = this.context.QueryContext
+                    expander = context.QueryContext
                         .GetApiService<IQueryExpressionExpander>();
                 }
 
@@ -353,9 +353,9 @@ namespace Microsoft.Restier.Core.Query
                     return visited;
                 }
 
-                var expanded = expander.Expand(this.context);
-                var callback = this.context.AfterNestedVisitCallback;
-                this.context.AfterNestedVisitCallback = null;
+                var expanded = expander.Expand(context);
+                var callback = context.AfterNestedVisitCallback;
+                context.AfterNestedVisitCallback = null;
                 if (expanded != null && expanded != visited)
                 {
                     if (!visited.Type.IsAssignableFrom(expanded.Type))
@@ -364,9 +364,9 @@ namespace Microsoft.Restier.Core.Query
                             Resources.ExpanderCannotChangeExpressionType);
                     }
 
-                    this.context.PushVisitedNode(null);
-                    expanded = this.Visit(expanded);
-                    this.context.PopVisitedNode();
+                    context.PushVisitedNode(null);
+                    expanded = Visit(expanded);
+                    context.PopVisitedNode();
                     if (callback != null)
                     {
                         callback();
@@ -380,16 +380,16 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Process(Expression visited, Expression processed)
             {
-                if (this.processor == null)
+                if (processor == null)
                 {
-                    this.processor = this.context.QueryContext.GetApiService<IQueryExpressionProcessor>();
+                    processor = context.QueryContext.GetApiService<IQueryExpressionProcessor>();
                 }
 
-                if (this.processor != null)
+                if (processor != null)
                 {
-                    var filtered = processor.Process(this.context);
-                    var callback = this.context.AfterNestedVisitCallback;
-                    this.context.AfterNestedVisitCallback = null;
+                    var filtered = processor.Process(context);
+                    var callback = context.AfterNestedVisitCallback;
+                    context.AfterNestedVisitCallback = null;
                     if (filtered != null && filtered != visited)
                     {
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
@@ -414,16 +414,16 @@ namespace Microsoft.Restier.Core.Query
                             }
                         }
 
-                        this.processedExpressions.Add(visited, processed);
-                        this.context.PushVisitedNode(null);
+                        processedExpressions.Add(visited, processed);
+                        context.PushVisitedNode(null);
                         try
                         {
-                            processed = this.Visit(filtered);
+                            processed = Visit(filtered);
                         }
                         finally
                         {
-                            this.context.PopVisitedNode();
-                            this.processedExpressions.Remove(visited);
+                            context.PopVisitedNode();
+                            processedExpressions.Remove(visited);
                         }
 
                         if (callback != null)
@@ -438,19 +438,19 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Source(Expression node)
             {
-                if (this.sourcer == null)
+                if (sourcer == null)
                 {
-                    this.sourcer = this.context.QueryContext
+                    sourcer = context.QueryContext
                         .GetApiService<IQueryExpressionSourcer>();
                 }
 
-                if (this.sourcer == null)
+                if (sourcer == null)
                 {
                     // Missing sourcer
                     throw new NotSupportedException(Resources.QuerySourcerMissing);
                 }
 
-                node = this.sourcer.ReplaceQueryableSource(this.context, this.BaseQuery != null);
+                node = sourcer.ReplaceQueryableSource(context, BaseQuery != null);
                 if (node == null)
                 {
                     // Missing source expression

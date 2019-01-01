@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,6 +9,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The service instance.</returns>
         public static T GetApiService<T>(this ApiBase api) where T : class
         {
-            Ensure.NotNull(api, "api");
+            Ensure.NotNull(api, nameof(api));
             return api.ServiceProvider.GetService<T>();
         }
 
@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The ordered collection of service instances.</returns>
         public static IEnumerable<T> GetApiServices<T>(this ApiBase api) where T : class
         {
-            Ensure.NotNull(api, "api");
+            Ensure.NotNull(api, nameof(api));
             return api.ServiceProvider.GetServices<T>();
         }
 
@@ -163,7 +163,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public static async Task<IEdmModel> GetModelAsync(this ApiBase api, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Ensure.NotNull(api, "api");
+            Ensure.NotNull(api, nameof(api));
 
             var config = api.Configuration;
             if (config.Model != null)
@@ -180,13 +180,13 @@ namespace Microsoft.Restier.Core
             var source = config.CompeteModelGeneration(out var running);
             if (source == null)
             {
-                return await running;
+                return await running.ConfigureAwait(false);
             }
 
             try
             {
                 var buildContext = new ModelContext(api.ServiceProvider);
-                var model = await builder.GetModelAsync(buildContext, cancellationToken);
+                var model = await builder.GetModelAsync(buildContext, cancellationToken).ConfigureAwait(false);
                 source.SetResult(model);
                 return model;
             }
@@ -235,8 +235,8 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable GetQueryableSource(this ApiBase api, string name, params object[] arguments)
         {
-            Ensure.NotNull(api, "api");
-            Ensure.NotNull(name, "name");
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(name, nameof(name));
 
             return api.SourceCore(null, name, arguments);
         }
@@ -272,9 +272,9 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable GetQueryableSource(this ApiBase api, string namespaceName, string name, params object[] arguments)
         {
-            Ensure.NotNull(api, "api");
-            Ensure.NotNull(namespaceName, "namespaceName");
-            Ensure.NotNull(name, "name");
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(namespaceName, nameof(namespaceName));
+            Ensure.NotNull(name, nameof(name));
 
             return SourceCore(api, namespaceName, name, arguments);
         }
@@ -311,8 +311,8 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable<TElement> GetQueryableSource<TElement>(this ApiBase api, string name, params object[] arguments)
         {
-            Ensure.NotNull(api, "api");
-            Ensure.NotNull(name, "name");
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(name, nameof(name));
 
             var elementType = api.EnsureElementType(null, name);
             if (typeof(TElement) != elementType)
@@ -357,9 +357,9 @@ namespace Microsoft.Restier.Core
         /// </remarks>
         public static IQueryable<TElement> GetQueryableSource<TElement>(this ApiBase api, string namespaceName, string name, params object[] arguments)
         {
-            Ensure.NotNull(api, "api");
-            Ensure.NotNull(namespaceName, "namespaceName");
-            Ensure.NotNull(name, "name");
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(namespaceName, nameof(namespaceName));
+            Ensure.NotNull(name, nameof(name));
 
             var elementType = api.EnsureElementType(namespaceName, name);
             if (typeof(TElement) != elementType)
@@ -392,13 +392,13 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public static async Task<QueryResult> QueryAsync(this ApiBase api, QueryRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Ensure.NotNull(api, "api");
-            Ensure.NotNull(request, "request");
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(request, nameof(request));
 
             var queryContext = new QueryContext(api.ServiceProvider, request);
-            var model = await api.GetModelAsync(cancellationToken);
+            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
             queryContext.Model = model;
-            return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken);
+            return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -423,10 +423,10 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public static async Task<SubmitResult> SubmitAsync(this ApiBase api, ChangeSet changeSet = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Ensure.NotNull(api, "api");
+            Ensure.NotNull(api, nameof(api));
 
             var submitContext = new SubmitContext(api.ServiceProvider, changeSet);
-            return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken);
+            return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -528,7 +528,7 @@ namespace Microsoft.Restier.Core
         /// <returns></returns>
         private static PropertyBag GetPropertyBag(this ApiBase api)
         {
-            Ensure.NotNull(api, "api");
+            Ensure.NotNull(api, nameof(api));
             return api.GetApiService<PropertyBag>();
         }
 

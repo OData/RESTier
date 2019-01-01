@@ -23,8 +23,8 @@ namespace Microsoft.Restier.Core.Query
         public QueryContext(IServiceProvider serviceProvider, QueryRequest request)
             : base(serviceProvider)
         {
-            Ensure.NotNull(request, "request");
-            this.Request = request;
+            Ensure.NotNull(request, nameof(request));
+            Request = request;
         }
 
         /// <summary>

@@ -123,14 +123,14 @@ namespace Microsoft.Restier.Core.Submit
             string resourceSetName,
             Type expectedResourceType,
             Type actualResourceType,
-            RestierEntitySetOperations action,
+            RestierEntitySetOperation action,
             IReadOnlyDictionary<string, object> resourceKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)
             : base(ChangeSetItemType.DataModification)
         {
-            Ensure.NotNull(resourceSetName, "resourceSetName");
-            Ensure.NotNull(expectedResourceType, "expectedResourceType");
+            Ensure.NotNull(resourceSetName, nameof(resourceSetName));
+            Ensure.NotNull(expectedResourceType, nameof(expectedResourceType));
             ResourceSetName = resourceSetName;
             ExpectedResourceType = expectedResourceType;
             ActualResourceType = actualResourceType;
@@ -164,7 +164,7 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Gets or sets the action to be taken.
         /// </summary>
-        public RestierEntitySetOperations EntitySetOperation { get; set; }
+        public RestierEntitySetOperation EntitySetOperation { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the resource should be fully replaced by the modification.
@@ -219,8 +219,8 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public IQueryable ApplyTo(IQueryable query)
         {
-            Ensure.NotNull(query, "query");
-            if (EntitySetOperation == RestierEntitySetOperations.Insert)
+            Ensure.NotNull(query, nameof(query));
+            if (EntitySetOperation == RestierEntitySetOperation.Insert)
             {
                 throw new InvalidOperationException(Resources.DataModificationNotSupportCreateResource);
             }
@@ -256,7 +256,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public object ValidateEtag(IQueryable query)
         {
-            Ensure.NotNull(query, "query");
+            Ensure.NotNull(query, nameof(query));
             var type = query.ElementType;
             var param = Expression.Parameter(type);
             Expression where = null;
@@ -360,7 +360,7 @@ namespace Microsoft.Restier.Core.Submit
             string resourceSetName,
             Type expectedResourceType,
             Type actualResourceType,
-            RestierEntitySetOperations action,
+            RestierEntitySetOperation action,
             IReadOnlyDictionary<string, object> resourceKey,
             IReadOnlyDictionary<string, object> originalValues,
             IReadOnlyDictionary<string, object> localValues)

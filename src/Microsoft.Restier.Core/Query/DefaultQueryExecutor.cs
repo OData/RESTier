@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Core.Query
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
             var result = new QueryResult(query.ToList());
             return Task.FromResult(result);
         }
@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Core.Query
             Expression expression,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(queryProvider, "queryProvider");
+            Ensure.NotNull(queryProvider, nameof(queryProvider));
             return Task.FromResult(new QueryResult(new[] { queryProvider.Execute(expression) }));
         }
     }

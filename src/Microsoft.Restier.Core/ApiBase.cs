@@ -27,7 +27,6 @@ namespace Microsoft.Restier.Core
         private static readonly Action<IServiceCollection> emptyConfig = _ => { };
 
         private ApiConfiguration apiConfiguration;
-        private IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiBase" /> class.
@@ -35,26 +34,12 @@ namespace Microsoft.Restier.Core
         /// <param name="serviceProvider">
         /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
         /// </param>
-        protected ApiBase(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
+        protected ApiBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
         /// </summary>
-        public IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return serviceProvider;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this API has been disposed.
-        /// </summary>
-        public bool IsDisposed { get; private set; }
+        public IServiceProvider ServiceProvider { get; private set; }
 
         /// <summary>
         /// Gets the API configuration for this API.
@@ -63,12 +48,12 @@ namespace Microsoft.Restier.Core
         {
             get
             {
-                if (this.apiConfiguration == null)
+                if (apiConfiguration == null)
                 {
-                    this.apiConfiguration = serviceProvider.GetService<ApiConfiguration>();
+                    apiConfiguration = ServiceProvider.GetService<ApiConfiguration>();
                 }
 
-                return this.apiConfiguration;
+                return apiConfiguration;
             }
         }
 
@@ -108,10 +93,7 @@ namespace Microsoft.Restier.Core
         //[CLSCompliant(false)]
         public static void AddPublisherServices(Type apiType, Action<IServiceCollection> configurationCallback)
         {
-            publisherServicesCallback.AddOrUpdate(
-                apiType,
-                configurationCallback,
-                (type, existing) => existing + configurationCallback);
+            publisherServicesCallback.AddOrUpdate(apiType, configurationCallback, (type, existing) => existing + configurationCallback);
         }
 
         /// <summary>
@@ -124,7 +106,7 @@ namespace Microsoft.Restier.Core
         //[CLSCompliant(false)]
         public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
         {
-            if (publisherServicesCallback.TryGetValue(apiType, out Action<IServiceCollection> val))
+            if (publisherServicesCallback.TryGetValue(apiType, out var val))
             {
                 return val;
             }
@@ -133,18 +115,31 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with
-        /// freeing, releasing, or resetting unmanaged resources.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            if (this.IsDisposed)
-            {
-                return;
-            }
-
-            this.IsDisposed = true;
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
+        /// <remarks>RWM: See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1063-implement-idisposable-correctly?view=vs-2017 for more information.</remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            // RWM: This Dispose method isn't implemented properly, and may actually be doing more harm than good.
+            //      I'm leaving it for now so we can open an issue and ask the question if this class needs to do more on Dispose,
+            //      But I have a feeling we need to kill this with fire.   
+            if (disposing)
+            {
+                // free managed resources
+            }
+        }
+
     }
+
 }

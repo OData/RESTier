@@ -36,13 +36,13 @@ namespace Microsoft.Restier.AspNet.Query
             {
                 var countQuery = ExpressionHelpers.GetCountableQuery(query);
                 var expression = ExpressionHelpers.Count(countQuery.Expression, countQuery.ElementType);
-                var result = await ExecuteExpressionAsync<long>(context, countQuery.Provider, expression, cancellationToken);
+                var result = await ExecuteExpressionAsync<long>(context, countQuery.Provider, expression, cancellationToken).ConfigureAwait(false);
                 var totalCount = result.Results.Cast<long>().Single();
 
                 countOption.SetTotalCount(totalCount);
             }
 
-            return await Inner.ExecuteQueryAsync<TElement>(context, query, cancellationToken);
+            return await Inner.ExecuteQueryAsync(context, query, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

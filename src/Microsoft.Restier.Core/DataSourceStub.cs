@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 
+#pragma warning disable CA1801 // Unused method parameters
 namespace Microsoft.Restier.Core
 {
     /// <summary>
@@ -35,11 +36,7 @@ namespace Microsoft.Restier.Core
         /// A representation of the entity set, singleton or queryable
         /// data resulting from a call to the composable function import.
         /// </returns>
-        public static IQueryable<TElement> GetQueryableSource<TElement>(
-            string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
+        public static IQueryable<TElement> GetQueryableSource<TElement>(string name, params object[] arguments) => throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
 
         /// <summary>
         /// Identifies queryable data resulting
@@ -61,11 +58,7 @@ namespace Microsoft.Restier.Core
         /// A representation of the queryable data resulting
         /// from a call to the composable function.
         /// </returns>
-        public static IQueryable<TElement> GetQueryableSource<TElement>(
-            string namespaceName, string name, params object[] arguments)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
+        public static IQueryable<TElement> GetQueryableSource<TElement>(string namespaceName, string name, params object[] arguments) => throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
 
         /// <summary>
         /// Identifies the value of an extended property of an object.
@@ -83,10 +76,7 @@ namespace Microsoft.Restier.Core
         /// A representation of the value of the
         /// extended property of the object.
         /// </returns>
-        public static TResult GetPropertyValue<TResult>(
-            object source, string propertyName)
-        {
-            throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
-        }
+        public static TResult GetPropertyValue<TResult>(object source, string propertyName) => throw new InvalidOperationException(Resources.DoNotCallDataSourceStubMethodDirectly);
     }
 }
+#pragma warning restore CS1633 // Unrecognized #pragma directive

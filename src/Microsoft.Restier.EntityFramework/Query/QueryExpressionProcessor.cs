@@ -20,7 +20,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <inheritdoc/>
         public Expression Process(QueryExpressionContext context)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
 
             if (Inner != null)
             {

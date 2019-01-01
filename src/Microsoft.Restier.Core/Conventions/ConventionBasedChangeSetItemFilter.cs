@@ -22,28 +22,28 @@ namespace Microsoft.Restier.Core
 
         internal ConventionBasedChangeSetItemFilter(Type targetType)
         {
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
         }
 
         /// <inheritdoc/>
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
             services.AddService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(targetType));
         }
 
         /// <inheritdoc/>
         public Task OnChangeSetItemProcessingAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
-            return InvokeProcessorMethodAsync(context, item, RestierPipelineStates.PreSubmit);
+            return InvokeProcessorMethodAsync(context, item, RestierPipelineState.PreSubmit);
         }
 
         /// <inheritdoc/>
         public Task OnChangeSetItemProcessedAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
-            return InvokeProcessorMethodAsync(context, item, RestierPipelineStates.PostSubmit);
+            return InvokeProcessorMethodAsync(context, item, RestierPipelineState.PostSubmit);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Microsoft.Restier.Core
         /// <param name="item"></param>
         /// <param name="pipelineState"></param>
         /// <returns></returns>
-        private Task InvokeProcessorMethodAsync(SubmitContext context, ChangeSetItem item, RestierPipelineStates pipelineState)
+        private Task InvokeProcessorMethodAsync(SubmitContext context, ChangeSetItem item, RestierPipelineState pipelineState)
         {
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);

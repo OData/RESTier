@@ -6,7 +6,7 @@ using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNet
 {
-    public class WebApiConfig
+    public static class WebApiConfig
     {
 
         public static async void Register(HttpConfiguration config)
@@ -23,7 +23,9 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
             config.MapHttpAttributeRoutes();
 
             var batchHandler = new RestierBatchHandler(GlobalConfiguration.DefaultServer);
+#pragma warning disable CA2007 // Do not directly await a Task
             await config.MapRestierRoute<NorthwindApi>("ApiV1", "", batchHandler);
+#pragma warning restore CA2007 // Do not directly await a Task
 
         }
     }

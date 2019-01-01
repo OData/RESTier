@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The API service instance.</returns>
         public static T GetApiService<T>(this InvocationContext context) where T : class
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
             if (context.ServiceProvider != null)
             {
                 return context.ServiceProvider.GetService<T>();
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The ordered collection of service instances.</returns>
         public static IEnumerable<T> GetApiServices<T>(this InvocationContext context) where T : class
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
             if (context.ServiceProvider != null)
             {
                 return context.ServiceProvider.GetServices<T>();

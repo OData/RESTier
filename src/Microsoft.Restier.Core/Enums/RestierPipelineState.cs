@@ -4,7 +4,7 @@
     /// <summary>
     /// Represents the different parts of the Restier request execution pipeline.
     /// </summary>
-    public enum RestierPipelineStates
+    public enum RestierPipelineState
     {
 
         /// <summary>
