@@ -29,7 +29,7 @@ simple HTTP requests.
 OData was originally designed by Microsoft to be a framework for exposing Entity Framework objects over REST services.
 The first concepts shipped as "Project Astoria" in 2007. By 2009, the concept had evolved enough for Microsoft to
 announce OData, along with a [larger effort](https://blogs.msdn.microsoft.com/odatateam/2009/11/17/breaking-down-data-silos-the-open-data-protocol-odata/)
-to push the format as an insustry standard.
+to push the format as an industry standard.
 
 Work on the current version of the protocol (V4) began in April 2012, and was ratified by OASIS as an industry standard in Feb 2014.
 
