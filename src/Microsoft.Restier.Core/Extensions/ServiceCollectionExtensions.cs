@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public static bool HasService<TService>(this IServiceCollection services) where TService : class
         {
-            Ensure.NotNull(services, "services");
+            Ensure.NotNull(services, nameof(services));
 
             return services.Any(sd => sd.ServiceType == typeof(TService));
         }
@@ -64,8 +64,8 @@ namespace Microsoft.Restier.Core
             Func<IServiceProvider, TService, TService> factory)
             where TService : class
         {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(factory, "factory");
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(factory, nameof(factory));
             return services.AddContributorNoCheck<TService>((sp, next) => factory(sp, next()));
         }
 
@@ -92,7 +92,7 @@ namespace Microsoft.Restier.Core
             where TService : class
             where TImplement : class, TService
         {
-            Ensure.NotNull(services, "services");
+            Ensure.NotNull(services, nameof(services));
 
             Func<IServiceProvider, Func<TService>, TService> factory = null;
 
@@ -167,7 +167,7 @@ namespace Microsoft.Restier.Core
         public static IServiceCollection MakeSingleton<TService>(this IServiceCollection services)
             where TService : class
         {
-            Ensure.NotNull(services, "services");
+            Ensure.NotNull(services, nameof(services));
             services.AddSingleton<TService>(ChainedService<TService>.DefaultFactory);
             return services;
         }
@@ -180,7 +180,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection MakeScoped<TService>(this IServiceCollection services) where TService : class
         {
-            Ensure.NotNull(services, "services");
+            Ensure.NotNull(services, nameof(services));
             services.AddScoped<TService>(ChainedService<TService>.DefaultFactory);
             return services;
         }
@@ -194,7 +194,7 @@ namespace Microsoft.Restier.Core
         public static IServiceCollection MakeTransient<TService>(this IServiceCollection services)
             where TService : class
         {
-            Ensure.NotNull(services, "services");
+            Ensure.NotNull(services, nameof(services));
             services.AddTransient<TService>(ChainedService<TService>.DefaultFactory);
             return services;
         }
@@ -211,7 +211,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
         {
-            Ensure.NotNull(apiType, "apiType");
+            Ensure.NotNull(apiType, nameof(apiType));
 
             services.AddScoped(apiType, apiType)
                 .AddScoped(typeof(ApiBase), apiType);
@@ -234,7 +234,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddConventionBasedServices(this IServiceCollection services, Type apiType)
         {
-            Ensure.NotNull(apiType, "apiType");
+            Ensure.NotNull(apiType, nameof(apiType));
 
             ConventionBasedChangeSetItemAuthorizer.ApplyTo(services, apiType);
             ConventionBasedChangeSetItemFilter.ApplyTo(services, apiType);
@@ -282,29 +282,5 @@ namespace Microsoft.Restier.Core
 
             return null;
         }
-    }
-
-    internal static class ChainedService<TService> where TService : class
-    {
-        public static readonly Func<IServiceProvider, TService> DefaultFactory = sp =>
-        {
-            var instances = sp.GetServices<ApiServiceContributor<TService>>().Reverse();
-
-            using (var e = instances.GetEnumerator())
-            {
-                Func<TService> next = null;
-                next = () =>
-                {
-                    if (e.MoveNext())
-                    {
-                        return e.Current(sp, next);
-                    }
-
-                    return null;
-                };
-
-                return next();
-            }
-        };
     }
 }

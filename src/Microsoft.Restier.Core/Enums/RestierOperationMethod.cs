@@ -6,7 +6,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Represents the Restier operations available to an <see cref="IEdmOperationImport"/>.
     /// </summary>
-    public enum RestierOperationMethods
+    public enum RestierOperationMethod
     {
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core
         public Task ValidateChangeSetItemAsync( SubmitContext context, ChangeSetItem item, Collection<ChangeSetItemValidationResult> validationResults, 
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(validationResults, "validationResults");
+            Ensure.NotNull(validationResults, nameof(validationResults));
             if (item is DataModificationItem dataModificationItem)
             {
                 var resource = dataModificationItem.Resource;

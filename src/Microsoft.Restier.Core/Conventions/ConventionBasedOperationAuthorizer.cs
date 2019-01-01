@@ -18,25 +18,25 @@ namespace Microsoft.Restier.Core
 
         private ConventionBasedOperationAuthorizer(Type targetType)
         {
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
         }
 
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
             services.AddService<IOperationAuthorizer>((sp, next) => new ConventionBasedOperationAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
         public Task<bool> AuthorizeAsync(OperationContext context, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
             var result = true;
 
             var returnType = typeof(bool);
-            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineStates.Authorization, RestierOperationMethods.Execute);
+            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Authorization, RestierOperationMethod.Execute);
             var method = targetType.GetQualifiedMethod(methodName);
 
             if (method != null && method.IsFamily && method.ReturnType == returnType)

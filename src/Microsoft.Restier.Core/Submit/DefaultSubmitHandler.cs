@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public static async Task<SubmitResult> SubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
 
             var preparer = context.GetApiService<IChangeSetInitializer>();
             if (preparer == null)
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Core.Submit
                 throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
             }
 
-            await preparer.InitializeAsync(context, cancellationToken);
+            await preparer.InitializeAsync(context, cancellationToken).ConfigureAwait(false);
 
             if (context.Result != null)
             {
@@ -52,15 +52,15 @@ namespace Microsoft.Restier.Core.Submit
 
             IEnumerable<ChangeSetItem> currentChangeSetItems = eventsChangeSet.Entries.ToArray();
 
-            await PerformValidate(context, currentChangeSetItems, cancellationToken);
+            await PerformValidate(context, currentChangeSetItems, cancellationToken).ConfigureAwait(false);
 
-            await PerformPreEvent(context, currentChangeSetItems, cancellationToken);
+            await PerformPreEvent(context, currentChangeSetItems, cancellationToken).ConfigureAwait(false);
 
-            await PerformPersist(context, currentChangeSetItems, cancellationToken);
+            await PerformPersist(context, cancellationToken).ConfigureAwait(false);
 
             context.ChangeSet.Entries.Clear();
 
-            await PerformPostEvent(context, currentChangeSetItems, cancellationToken);
+            await PerformPostEvent(context, currentChangeSetItems, cancellationToken).ConfigureAwait(false);
 
             return context.Result;
         }
@@ -72,15 +72,15 @@ namespace Microsoft.Restier.Core.Submit
                 case ChangeSetItemType.DataModification:
                     var dataModification = (DataModificationItem)item;
                     string message = null;
-                    if (dataModification.EntitySetOperation == RestierEntitySetOperations.Insert)
+                    if (dataModification.EntitySetOperation == RestierEntitySetOperation.Insert)
                     {
                         message = Resources.NoPermissionToInsertEntity;
                     }
-                    else if (dataModification.EntitySetOperation == RestierEntitySetOperations.Update)
+                    else if (dataModification.EntitySetOperation == RestierEntitySetOperation.Update)
                     {
                         message = Resources.NoPermissionToUpdateEntity;
                     }
-                    else if (dataModification.EntitySetOperation == RestierEntitySetOperations.Delete)
+                    else if (dataModification.EntitySetOperation == RestierEntitySetOperation.Delete)
                     {
                         message = Resources.NoPermissionToDeleteEntity;
                     }
@@ -98,9 +98,9 @@ namespace Microsoft.Restier.Core.Submit
 
         private static async Task PerformValidate(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
-            await InvokeAuthorizers(context, changeSetItems, cancellationToken);
+            await InvokeAuthorizers(context, changeSetItems, cancellationToken).ConfigureAwait(false);
 
-            await InvokeValidators(context, changeSetItems, cancellationToken);
+            await InvokeValidators(context, changeSetItems, cancellationToken).ConfigureAwait(false);
 
             foreach (var item in changeSetItems.Where(i => i.HasChanged()))
             {
@@ -125,7 +125,7 @@ namespace Microsoft.Restier.Core.Submit
 
             foreach (var item in changeSetItems.Where(i => i.HasChanged()))
             {
-                if (!await authorizer.AuthorizeAsync(context, item, cancellationToken))
+                if (!await authorizer.AuthorizeAsync(context, item, cancellationToken).ConfigureAwait(false))
                 {
                     var message = GetAuthorizeFailedMessage(item);
                     throw new SecurityException(message);
@@ -145,7 +145,7 @@ namespace Microsoft.Restier.Core.Submit
 
             foreach (var entry in changeSetItems.Where(i => i.HasChanged()))
             {
-                await validator.ValidateChangeSetItemAsync(context, entry, validationResults, cancellationToken);
+                await validator.ValidateChangeSetItemAsync(context, entry, validationResults, cancellationToken).ConfigureAwait(false);
             }
 
             var errors = validationResults.Where(result => result.Severity == EventLevel.Error);
@@ -171,7 +171,7 @@ namespace Microsoft.Restier.Core.Submit
                     var processor = context.GetApiService<IChangeSetItemFilter>();
                     if (processor != null)
                     {
-                        await processor.OnChangeSetItemProcessingAsync(context, item, cancellationToken);
+                        await processor.OnChangeSetItemProcessingAsync(context, item, cancellationToken).ConfigureAwait(false);
                     }
 
                     if (item.ChangeSetItemProcessingStage == ChangeSetItemProcessingStage.PreEventing)
@@ -190,7 +190,7 @@ namespace Microsoft.Restier.Core.Submit
             }
         }
 
-        private static async Task PerformPersist(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
+        private static async Task PerformPersist(SubmitContext context, CancellationToken cancellationToken)
         {
             var executor = context.GetApiService<ISubmitExecutor>();
             if (executor == null)
@@ -198,17 +198,18 @@ namespace Microsoft.Restier.Core.Submit
                 throw new NotSupportedException(Resources.SubmitExecutorMissing);
             }
 
-            context.Result = await executor.ExecuteSubmitAsync(context, cancellationToken);
+            context.Result = await executor.ExecuteSubmitAsync(context, cancellationToken).ConfigureAwait(false);
         }
 
         private static async Task PerformPostEvent(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
+            //TODO: Check this for unnecessary allocations.
             foreach (var item in changeSetItems)
             {
                 var processor = context.GetApiService<IChangeSetItemFilter>();
                 if (processor != null)
                 {
-                    await processor.OnChangeSetItemProcessedAsync(context, item, cancellationToken);
+                    await processor.OnChangeSetItemProcessedAsync(context, item, cancellationToken).ConfigureAwait(false);
                 }
             }
         }

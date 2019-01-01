@@ -51,7 +51,7 @@ namespace Microsoft.Restier.AspNet
 
             foreach (var handler in Handlers)
             {
-                var result = await handler.Invoke(actionExecutedContext, useVerboseErros, cancellationToken);
+                var result = await handler.Invoke(actionExecutedContext, useVerboseErros, cancellationToken).ConfigureAwait(false);
 
                 if (result != null)
                 {
@@ -66,7 +66,7 @@ namespace Microsoft.Restier.AspNet
            bool useVerboseErros,
            CancellationToken cancellationToken)
         {
-            ChangeSetValidationException validationException = context.Exception as ChangeSetValidationException;
+            var validationException = context.Exception as ChangeSetValidationException;
             if (validationException != null)
             {
                 var exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(
@@ -75,7 +75,7 @@ namespace Microsoft.Restier.AspNet
                     context.ActionContext.RequestContext.Configuration.Services.GetContentNegotiator(),
                     context.Request,
                     new MediaTypeFormatterCollection());
-                return await exceptionResult.ExecuteAsync(cancellationToken);
+                return await exceptionResult.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return null;
@@ -98,7 +98,7 @@ namespace Microsoft.Restier.AspNet
                 return Task.FromResult<HttpResponseMessage>(null);
             }
 
-            HttpStatusCode code = HttpStatusCode.Unused;
+            var code = HttpStatusCode.Unused;
             if (exception is ODataException)
             {
                 code = HttpStatusCode.BadRequest;

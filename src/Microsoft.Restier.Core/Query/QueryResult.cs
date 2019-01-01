@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         public QueryResult(Exception exception)
         {
-            Ensure.NotNull(exception, "exception");
+            Ensure.NotNull(exception, nameof(exception));
             Exception = exception;
         }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         public QueryResult(IEnumerable results)
         {
-            Ensure.NotNull(results, "results");
+            Ensure.NotNull(results, nameof(results));
             Results = results;
         }
 
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core.Query
 
             set
             {
-                Ensure.NotNull(value, "value");
+                Ensure.NotNull(value, nameof(value));
                 exception = value;
                 resultsSource = null;
                 results = null;
@@ -93,7 +93,7 @@ namespace Microsoft.Restier.Core.Query
 
             set
             {
-                Ensure.NotNull(value, "value");
+                Ensure.NotNull(value, nameof(value));
                 exception = null;
                 resultsSource = null;
                 results = value;

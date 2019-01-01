@@ -28,7 +28,7 @@ namespace Microsoft.Restier.EntityFramework
         public async Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
             var dbContext = context.GetApiService<DbContext>();
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return new SubmitResult(context.ChangeSet);
         }
     }

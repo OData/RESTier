@@ -21,7 +21,7 @@ namespace Microsoft.Restier.AspNet
         protected BaseSingleResult(IQueryable query, IEdmTypeReference edmType)
             : base(edmType)
         {
-            Ensure.NotNull(query, "query");
+            Ensure.NotNull(query, nameof(query));
 
             Result = query.SingleOrDefault();
             Type = query.ElementType;

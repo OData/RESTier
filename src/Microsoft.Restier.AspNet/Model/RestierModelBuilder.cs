@@ -27,7 +27,7 @@ namespace Microsoft.Restier.AspNet.Model
             IEdmModel innerModel = null;
             if (InnerModelBuilder != null)
             {
-                innerModel = await InnerModelBuilder.GetModelAsync(context, cancellationToken);
+                innerModel = await InnerModelBuilder.GetModelAsync(context, cancellationToken).ConfigureAwait(false);
             }
 
             var entitySetTypeMap = context.ResourceSetTypeMap;
@@ -47,8 +47,7 @@ namespace Microsoft.Restier.AspNet.Model
                 Namespace = entitySetTypeMap.First().Value.Namespace
             };
 
-            var method = typeof(ODataConventionModelBuilder)
-                .GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            var method = typeof(ODataConventionModelBuilder).GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
             foreach (var pair in entitySetTypeMap)
             {

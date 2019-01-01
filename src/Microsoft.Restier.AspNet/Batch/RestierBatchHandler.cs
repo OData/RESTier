@@ -35,29 +35,25 @@ namespace Microsoft.Restier.AspNet.Batch
         /// <param name="request">The HTTP request that contains the batch requests.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public override async Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        public override async Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            Ensure.NotNull(request, "request");
+            Ensure.NotNull(request, nameof(request));
 
-            IServiceProvider requestContainer = request.CreateRequestContainer(ODataRouteName);
+            var requestContainer = request.CreateRequestContainer(ODataRouteName);
             requestContainer.GetRequiredService<ODataMessageReaderSettings>().BaseUri = GetBaseUri(request);
 
-            ODataMessageReader reader
-                = await request.Content.GetODataMessageReaderAsync(requestContainer, cancellationToken);
+            var reader = await request.Content.GetODataMessageReaderAsync(requestContainer, cancellationToken).ConfigureAwait(false);
             request.RegisterForDispose(reader);
 
-            List<ODataBatchRequestItem> requests = new List<ODataBatchRequestItem>();
-            ODataBatchReader batchReader = reader.CreateODataBatchReader();
-            Guid batchId = Guid.NewGuid();
+            var requests = new List<ODataBatchRequestItem>();
+            var batchReader = reader.CreateODataBatchReader();
+            var batchId = Guid.NewGuid();
             while (batchReader.Read())
             {
                 if (batchReader.State == ODataBatchReaderState.ChangesetStart)
                 {
-                    IList<HttpRequestMessage> changeSetRequests =
-                        await batchReader.ReadChangeSetRequestAsync(batchId, cancellationToken);
-                    foreach (HttpRequestMessage changeSetRequest in changeSetRequests)
+                    var changeSetRequests = await batchReader.ReadChangeSetRequestAsync(batchId, cancellationToken).ConfigureAwait(false);
+                    foreach (var changeSetRequest in changeSetRequests)
                     {
                         changeSetRequest.CopyBatchRequestProperties(request);
                         changeSetRequest.DeleteRequestContainer(false);
@@ -67,8 +63,7 @@ namespace Microsoft.Restier.AspNet.Batch
                 }
                 else if (batchReader.State == ODataBatchReaderState.Operation)
                 {
-                    HttpRequestMessage operationRequest = await batchReader.ReadOperationRequestAsync(
-                        batchId, true, cancellationToken);
+                    var operationRequest = await batchReader.ReadOperationRequestAsync(batchId, true, cancellationToken).ConfigureAwait(false);
                     operationRequest.CopyBatchRequestProperties(request);
                     operationRequest.DeleteRequestContainer(false);
                     requests.Add(new OperationRequestItem(operationRequest));
@@ -83,10 +78,7 @@ namespace Microsoft.Restier.AspNet.Batch
         /// </summary>
         /// <param name="changeSetRequests">The list of changeset requests.</param>
         /// <returns>The created <see cref="RestierBatchChangeSetRequestItem"/> instance.</returns>
-        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(
-            IList<HttpRequestMessage> changeSetRequests)
-        {
-            return new RestierBatchChangeSetRequestItem(changeSetRequests);
-        }
+        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests) => 
+            new RestierBatchChangeSetRequestItem(changeSetRequests);
     }
 }

@@ -40,8 +40,8 @@ namespace Microsoft.Restier.AspNet.Model
             IServiceCollection services,
             Type targetType)
         {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
 
             // The model builder must maintain a singleton life time, for holding states and being injected into
             // some other services.
@@ -64,7 +64,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private IQueryable GetEntitySetQuery(QueryExpressionContext context)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
             if (context.ModelReference == null)
             {
                 return null;
@@ -76,8 +76,7 @@ namespace Microsoft.Restier.AspNet.Model
                 return null;
             }
 
-            var entitySet = dataSourceStubReference.Element as IEdmEntitySet;
-            if (entitySet == null)
+            if (!(dataSourceStubReference.Element is IEdmEntitySet entitySet))
             {
                 return null;
             }
@@ -105,20 +104,18 @@ namespace Microsoft.Restier.AspNet.Model
 
         private IQueryable GetSingletonQuery(QueryExpressionContext context)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
             if (context.ModelReference == null)
             {
                 return null;
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
-            if (dataSourceStubReference == null)
+            if (!(context.ModelReference is DataSourceStubModelReference dataSourceStubReference))
             {
                 return null;
             }
 
-            var singleton = dataSourceStubReference.Element as IEdmSingleton;
-            if (singleton == null)
+            if (!(dataSourceStubReference.Element is IEdmSingleton singleton))
             {
                 return null;
             }
@@ -239,8 +236,7 @@ namespace Microsoft.Restier.AspNet.Model
         {
             if (!entitySetCache.TryGetValue(entityType, out var matchingEntitySets))
             {
-                matchingEntitySets =
-                    model.EntityContainer.EntitySets().Where(s => s.EntityType() == entityType).ToArray();
+                matchingEntitySets = model.EntityContainer.EntitySets().Where(s => s.EntityType() == entityType).ToArray();
                 entitySetCache.Add(entityType, matchingEntitySets);
             }
 
@@ -251,8 +247,7 @@ namespace Microsoft.Restier.AspNet.Model
         {
             if (!singletonCache.TryGetValue(entityType, out var matchingSingletons))
             {
-                matchingSingletons =
-                    model.EntityContainer.Singletons().Where(s => s.EntityType() == entityType).ToArray();
+                matchingSingletons =  model.EntityContainer.Singletons().Where(s => s.EntityType() == entityType).ToArray();
                 singletonCache.Add(entityType, matchingSingletons);
             }
 
@@ -311,9 +306,9 @@ namespace Microsoft.Restier.AspNet.Model
             /// <inheritdoc/>
             public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
-                Ensure.NotNull(context, "context");
+                Ensure.NotNull(context, nameof(context));
 
-                var modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken);
+                var modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken).ConfigureAwait(false);
                 if (modelReturned == null)
                 {
                     // There is no model returned so return an empty model.
@@ -341,7 +336,7 @@ namespace Microsoft.Restier.AspNet.Model
                 var innerHandler = InnerModelBuilder;
                 if (innerHandler != null)
                 {
-                    return await innerHandler.GetModelAsync(context, cancellationToken);
+                    return await innerHandler.GetModelAsync(context, cancellationToken).ConfigureAwait(false);
                 }
 
                 return null;
@@ -417,7 +412,7 @@ namespace Microsoft.Restier.AspNet.Model
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
             {
-                Ensure.NotNull(context, "context");
+                Ensure.NotNull(context, nameof(context));
 
                 var result = CallInner(context);
                 if (result != null)

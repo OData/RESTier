@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Core
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(
             Expression expression)
         {
-            Ensure.NotNull(expression, "expression");
+            Ensure.NotNull(expression, nameof(expression));
             if (!typeof(IQueryable<TElement>).IsAssignableFrom(expression.Type))
             {
                 throw new ArgumentException(Resources.ExpressionMustBeQueryable);
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Core
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
-            Ensure.NotNull(expression, "expression");
+            Ensure.NotNull(expression, nameof(expression));
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
             if (type == null)
             {

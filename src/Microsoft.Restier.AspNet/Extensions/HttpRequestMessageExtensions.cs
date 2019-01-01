@@ -23,7 +23,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="changeSetProperty">The change set to be set.</param>
         public static void SetChangeSet(this HttpRequestMessage request, RestierChangeSetProperty changeSetProperty)
         {
-            Ensure.NotNull(request, "request");
+            Ensure.NotNull(request, nameof(request));
             request.Properties.Add(ChangeSetKey, changeSetProperty);
         }
 
@@ -34,10 +34,9 @@ namespace Microsoft.Restier.AspNet
         /// <returns>The <see cref="RestierChangeSetProperty"/>.</returns>
         public static RestierChangeSetProperty GetChangeSet(this HttpRequestMessage request)
         {
-            Ensure.NotNull(request, "request");
+            Ensure.NotNull(request, nameof(request));
 
-            object value;
-            if (request.Properties.TryGetValue(ChangeSetKey, out value))
+            if (request.Properties.TryGetValue(ChangeSetKey, out var value))
             {
                 return value as RestierChangeSetProperty;
             }

@@ -20,10 +20,7 @@ namespace Microsoft.Restier.AspNet.Model
         private readonly Type targetType;
         private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
 
-        private RestierOperationModelBuilder(Type targetType)
-        {
-            this.targetType = targetType;
-        }
+        private RestierOperationModelBuilder(Type targetType) => this.targetType = targetType;
 
         private IModelBuilder InnerHandler { get; set; }
 
@@ -38,9 +35,9 @@ namespace Microsoft.Restier.AspNet.Model
         public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             EdmModel model = null;
-            if (this.InnerHandler != null)
+            if (InnerHandler != null)
             {
-                model = await this.InnerHandler.GetModelAsync(context, cancellationToken) as EdmModel;
+                model = await InnerHandler.GetModelAsync(context, cancellationToken).ConfigureAwait(false) as EdmModel;
             }
 
             if (model == null)
@@ -49,7 +46,7 @@ namespace Microsoft.Restier.AspNet.Model
                 return null;
             }
 
-            this.ScanForOperations();
+            ScanForOperations();
 
             string existingNamespace = null;
             if (model.DeclaredNamespaces != null)
@@ -57,13 +54,13 @@ namespace Microsoft.Restier.AspNet.Model
                 existingNamespace = model.DeclaredNamespaces.FirstOrDefault();
             }
 
-            this.BuildOperations(model, existingNamespace);
+            BuildOperations(model, existingNamespace);
             return model;
         }
 
         private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
         {
-            foreach (ParameterInfo parameter in method.GetParameters())
+            foreach (var parameter in method.GetParameters())
             {
                 var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
                 var operationParam = new EdmOperationParameter(
@@ -118,7 +115,7 @@ namespace Microsoft.Restier.AspNet.Model
         private static string GetNamespaceName(OperationMethodInfo methodInfo, string modelNamespace)
         {
             // customized the namespace logic, customized namespace is P0
-            string namespaceName = methodInfo.OperationAttribute.Namespace;
+            var namespaceName = methodInfo.OperationAttribute.Namespace;
 
             if (namespaceName != null)
             {
@@ -136,7 +133,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void ScanForOperations()
         {
-            var methods = this.targetType.GetMethods(
+            var methods = targetType.GetMethods(
                 BindingFlags.NonPublic |
                 BindingFlags.Public |
                 BindingFlags.Static |
@@ -158,12 +155,12 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void BuildOperations(EdmModel model, string modelNamespace)
         {
-            foreach (OperationMethodInfo operationMethodInfo in this.operationInfos)
+            foreach (var operationMethodInfo in operationInfos)
             {
                 // With this method, if return type is nullable type,it will get underlying type
                 var returnType = TypeHelper.GetUnderlyingTypeOrSelf(operationMethodInfo.Method.ReturnType);
                 var returnTypeReference = returnType.GetReturnTypeReference(model);
-                bool isBound = operationMethodInfo.IsBound;
+                var isBound = operationMethodInfo.IsBound;
                 var bindingParameter = operationMethodInfo.Method.GetParameters().FirstOrDefault();
 
                 if (bindingParameter == null && isBound)
@@ -172,7 +169,7 @@ namespace Microsoft.Restier.AspNet.Model
                     continue;
                 }
 
-                string namespaceName = GetNamespaceName(operationMethodInfo, modelNamespace);
+                var namespaceName = GetNamespaceName(operationMethodInfo, modelNamespace);
 
                 EdmOperation operation = null;
                 EdmPathExpression path = null;
@@ -211,7 +208,7 @@ namespace Microsoft.Restier.AspNet.Model
                     // by this function/action import.
                     var entitySetExpression = BuildEntitySetExpression(
                         model, operationMethodInfo.EntitySet, returnTypeReference);
-                    var entityContainer = model.EnsureEntityContainer(this.targetType);
+                    var entityContainer = model.EnsureEntityContainer(targetType);
                     if (operationMethodInfo.HasSideEffects)
                     {
                         entityContainer.AddActionImport(operation.Name, (EdmAction)operation, entitySetExpression);
@@ -231,35 +228,17 @@ namespace Microsoft.Restier.AspNet.Model
 
             public OperationAttribute OperationAttribute { get; set; }
 
-            public string Name
-            {
-                get { return this.Method.Name; }
-            }
+            public string Name => Method.Name;
 
-            public string Namespace
-            {
-                get { return this.OperationAttribute.Namespace ?? this.Method.DeclaringType.Namespace; }
-            }
+            public string Namespace => OperationAttribute.Namespace ?? Method.DeclaringType.Namespace;
 
-            public string EntitySet
-            {
-                get { return this.OperationAttribute.EntitySet; }
-            }
+            public string EntitySet => OperationAttribute.EntitySet;
 
-            public bool IsComposable
-            {
-                get { return this.OperationAttribute.IsComposable; }
-            }
+            public bool IsComposable => OperationAttribute.IsComposable;
 
-            public bool IsBound
-            {
-                get { return this.OperationAttribute.IsBound; }
-            }
+            public bool IsBound => OperationAttribute.IsBound;
 
-            public bool HasSideEffects
-            {
-                get { return this.OperationAttribute.HasSideEffects; }
-            }
+            public bool HasSideEffects => OperationAttribute.HasSideEffects;
         }
     }
 }

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -24,10 +23,7 @@ namespace Microsoft.Restier.Core.Submit
         /// A change set.
         /// </param>
         public SubmitContext(IServiceProvider provider, ChangeSet changeSet)
-            : base(provider)
-        {
-            this.changeSet = changeSet;
-        }
+            : base(provider) => this.changeSet = changeSet;
 
         /// <summary>
         /// Gets or sets the change set.
@@ -37,20 +33,17 @@ namespace Microsoft.Restier.Core.Submit
         /// </remarks>
         public ChangeSet ChangeSet
         {
-            get
-            {
-                return this.changeSet;
-            }
+            get => changeSet;
 
             set
             {
-                if (this.Result != null)
+                if (Result != null)
                 {
                     throw new InvalidOperationException(
                         Resources.CannotSetChangeSetIfThereIsResult);
                 }
 
-                this.changeSet = value;
+                changeSet = value;
             }
         }
 
@@ -59,15 +52,12 @@ namespace Microsoft.Restier.Core.Submit
         /// </summary>
         public SubmitResult Result
         {
-            get
-            {
-                return this.result;
-            }
+            get => result;
 
             set
             {
-                Ensure.NotNull(value, "value");
-                this.result = value;
+                Ensure.NotNull(value, nameof(value));
+                result = value;
             }
         }
     }

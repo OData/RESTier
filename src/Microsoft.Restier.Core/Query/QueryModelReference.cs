@@ -22,31 +22,19 @@ namespace Microsoft.Restier.Core.Query
 
         internal QueryModelReference(IEdmEntitySet entitySet, IEdmType type)
         {
-            this.edmEntitySet = entitySet;
-            this.edmType = type;
+            edmEntitySet = entitySet;
+            edmType = type;
         }
 
         /// <summary>
         /// Gets the entity set that ultimately contains the data.
         /// </summary>
-        public virtual IEdmEntitySet EntitySet
-        {
-            get
-            {
-                return this.edmEntitySet;
-            }
-        }
+        public virtual IEdmEntitySet EntitySet => edmEntitySet;
 
         /// <summary>
         /// Gets the type of the data, if any.
         /// </summary>
-        public virtual IEdmType Type
-        {
-            get
-            {
-                return this.edmType;
-            }
-        }
+        public virtual IEdmType Type => edmType;
     }
 
     /// <summary>
@@ -69,8 +57,8 @@ namespace Microsoft.Restier.Core.Query
         /// </param>
         internal DataSourceStubModelReference(QueryContext context, string name)
         {
-            Ensure.NotNull(context, "context");
-            Ensure.NotNull(name, "name");
+            Ensure.NotNull(context, nameof(context));
+            Ensure.NotNull(name, nameof(name));
             this.context = context;
             this.name = name;
         }
@@ -92,9 +80,9 @@ namespace Microsoft.Restier.Core.Query
             string namespaceName,
             string name)
         {
-            Ensure.NotNull(context, "context");
-            Ensure.NotNull(namespaceName, "namespaceName");
-            Ensure.NotNull(name, "name");
+            Ensure.NotNull(context, nameof(context));
+            Ensure.NotNull(namespaceName, nameof(namespaceName));
+            Ensure.NotNull(name, nameof(name));
             this.context = context;
             this.namespaceName = namespaceName;
             this.name = name;
@@ -107,7 +95,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                var entitySet = this.Element as IEdmEntitySet;
+                var entitySet = Element as IEdmEntitySet;
                 if (entitySet != null)
                 {
                     return entitySet;
@@ -125,15 +113,15 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (this.namespaceName == null)
+                if (namespaceName == null)
                 {
-                    var source = this.Element as IEdmNavigationSource;
+                    var source = Element as IEdmNavigationSource;
                     if (source != null)
                     {
                         return source.Type;
                     }
 
-                    var function = this.Element as IEdmFunctionImport;
+                    var function = Element as IEdmFunctionImport;
                     if (function != null)
                     {
                         return function.Function.ReturnType.Definition;
@@ -141,7 +129,7 @@ namespace Microsoft.Restier.Core.Query
                 }
                 else
                 {
-                    var function = this.Element as IEdmFunction;
+                    var function = Element as IEdmFunction;
                     if (function != null)
                     {
                         return function.ReturnType.Definition;
@@ -159,142 +147,18 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (this.namespaceName == null)
+                if (namespaceName == null)
                 {
-                    return this.context.Model.EntityContainer.Elements
-                        .SingleOrDefault(e => e.Name == this.name);
+                    return context.Model.EntityContainer.Elements
+                        .SingleOrDefault(e => e.Name == name);
                 }
                 else
                 {
-                    return this.context.Model.SchemaElements
+                    return context.Model.SchemaElements
                         .SingleOrDefault(e =>
-                            e.Namespace == this.namespaceName &&
-                            e.Name == this.name);
+                            e.Namespace == namespaceName &&
+                            e.Name == name);
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a reference to parameter data in terms of a model.
-    /// It does not have special logic
-    /// </summary>
-    public class ParameterModelReference : QueryModelReference
-    {
-        internal ParameterModelReference(IEdmEntitySet entitySet, IEdmType type)
-            : base(entitySet, type)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Represents a reference to property data in terms of a model.
-    /// </summary>
-    public class PropertyModelReference : QueryModelReference
-    {
-        private readonly string propertyName;
-        private IEdmProperty property;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyModelReference" /> class.
-        /// </summary>
-        /// <param name="propertyName">
-        /// The name of a property.
-        /// </param>
-        /// <param name="property">
-        /// EDM property instance
-        /// </param>
-        /// <param name="source">
-        /// A source query model reference.
-        /// </param>
-        internal PropertyModelReference(string propertyName, IEdmProperty property, QueryModelReference source)
-        {
-            Ensure.NotNull(propertyName, "propertyName");
-            this.propertyName = propertyName;
-
-            Ensure.NotNull(property, "property");
-            this.property = property;
-            this.Source = source;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyModelReference" /> class.
-        /// </summary>
-        /// <param name="source">
-        /// A source query model reference.
-        /// </param>
-        /// <param name="propertyName">
-        /// The name of a property.
-        /// </param>
-        internal PropertyModelReference(QueryModelReference source, string propertyName)
-        {
-            Ensure.NotNull(propertyName, "propertyName");
-            this.propertyName = propertyName;
-
-            Ensure.NotNull(source, "source");
-            this.Source = source;
-        }
-
-        /// <summary>
-        /// Gets the source of the derived data.
-        /// </summary>
-        public QueryModelReference Source { get; private set; }
-
-        /// <summary>
-        /// Gets the entity set that contains the data.
-        /// </summary>
-        public override IEdmEntitySet EntitySet
-        {
-            get
-            {
-                if (this.Source != null)
-                {
-                    return this.Source.EntitySet;
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the type of the queryable data.
-        /// </summary>
-        public override IEdmType Type
-        {
-            get
-            {
-                if (this.Property != null)
-                {
-                    return this.Property.Type.Definition;
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the property representing the property data.
-        /// </summary>
-        public IEdmProperty Property
-        {
-            get
-            {
-                if (property != null)
-                {
-                    return property;
-                }
-
-                if (Source != null)
-                {
-                    var structuredType = Source.Type as IEdmStructuredType;
-                    if (structuredType != null)
-                    {
-                        property = structuredType.FindProperty(this.propertyName);
-                        return property;
-                    }
-                }
-
-                return null;
             }
         }
     }

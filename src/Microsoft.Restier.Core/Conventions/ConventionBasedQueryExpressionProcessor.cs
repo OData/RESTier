@@ -27,8 +27,8 @@ namespace Microsoft.Restier.Core
         /// <inheritdoc/>
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
             services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(targetType)
             {
                 Inner = next,
@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Core
         /// <inheritdoc/>
         public Expression Process(QueryExpressionContext context)
         {
-            Ensure.NotNull(context, "context");
+            Ensure.NotNull(context, nameof(context));
 
             if (Inner != null)
             {
@@ -105,7 +105,7 @@ namespace Microsoft.Restier.Core
 
         private Expression AppendOnFilterExpression(QueryExpressionContext context, IEdmEntitySet entitySet, IEdmEntityType entityType)
         {
-            var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, RestierPipelineStates.Submit, RestierEntitySetOperations.Filter);
+            var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, RestierPipelineState.Submit, RestierEntitySetOperation.Filter);
             var expectedMethod = targetType.GetQualifiedMethod(expectedMethodName);
             if (expectedMethod == null || (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly))
             {

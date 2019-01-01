@@ -87,9 +87,9 @@ namespace Microsoft.Restier.AspNet
             {
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
                 Func<string, object> getParaValueFunc = p => unboundSegment.Parameters.FirstOrDefault(c => c.Name == p).Value;
-                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken);
+                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
 
-                var applied = await ApplyQueryOptionsAsync(result, path, true);
+                var applied = await ApplyQueryOptionsAsync(result, path, true).ConfigureAwait(false);
                 result = applied.Queryable;
                 etag = applied.Etag;
             }
@@ -102,22 +102,22 @@ namespace Microsoft.Restier.AspNet
 
                 if (lastSegment is OperationSegment)
                 {
-                    result = await ExecuteQuery(queryable, cancellationToken);
+                    result = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
 
                     var boundSeg = (OperationSegment)lastSegment;
                     var operation = boundSeg.Operations.FirstOrDefault();
                     Func<string, object> getParaValueFunc = p => boundSeg.Parameters.FirstOrDefault(c => c.Name == p).Value;
-                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken);
+                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken).ConfigureAwait(false);
 
-                    var applied = await ApplyQueryOptionsAsync(result, path, true);
+                    var applied = await ApplyQueryOptionsAsync(result, path, true).ConfigureAwait(false);
                     result = applied.Queryable;
                     etag = applied.Etag;
 
                 }
                 else
                 {
-                    var applied = await ApplyQueryOptionsAsync(queryable, path, false);
-                    result = await ExecuteQuery(applied.Queryable, cancellationToken);
+                    var applied = await ApplyQueryOptionsAsync(queryable, path, false).ConfigureAwait(false);
+                    result = await ExecuteQuery(applied.Queryable, cancellationToken).ConfigureAwait(false);
                     etag = applied.Etag;
                 }
             }
@@ -135,8 +135,7 @@ namespace Microsoft.Restier.AspNet
         {
             CheckModelState();
             var path = GetPath();
-            var entitySet = path.NavigationSource as IEdmEntitySet;
-            if (entitySet == null)
+            if (!(path.NavigationSource is IEdmEntitySet entitySet))
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
@@ -154,7 +153,7 @@ namespace Microsoft.Restier.AspNet
                 entitySet.Name,
                 expectedEntityType.GetClrType(Api.ServiceProvider),
                 actualEntityType.GetClrType(Api.ServiceProvider),
-                RestierEntitySetOperations.Insert,
+                RestierEntitySetOperation.Insert,
                 null,
                 null,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
@@ -165,13 +164,13 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(postItem);
 
-                var result = await Api.SubmitAsync(changeSet, cancellationToken);
+                var result = await Api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 changeSetProperty.ChangeSet.Entries.Add(postItem);
 
-                await changeSetProperty.OnChangeSetCompleted(Request);
+                await changeSetProperty.OnChangeSetCompleted(Request).ConfigureAwait(false);
             }
 
             return CreateCreatedODataResult(postItem.Resource);
@@ -183,7 +182,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="edmEntityObject">The entity object to update.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
-        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, true, cancellationToken);
+        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, true, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// Handles a PATCH request to partially update an entity.
@@ -191,7 +190,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="edmEntityObject">The entity object to update.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
-        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, false, cancellationToken);
+        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, false, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// Handles a DELETE request to delete an entity.
@@ -207,7 +206,7 @@ namespace Microsoft.Restier.AspNet
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = await GetOriginalValues(entitySet);
+            var propertiesInEtag = await GetOriginalValues(entitySet).ConfigureAwait(false);
             if (propertiesInEtag == null)
             {
                 throw new PreconditionRequiredException(Resources.PreconditionRequired);
@@ -217,7 +216,7 @@ namespace Microsoft.Restier.AspNet
                 entitySet.Name,
                 path.EdmType.GetClrType(Api.ServiceProvider),
                 null,
-                RestierEntitySetOperations.Delete,
+                RestierEntitySetOperation.Delete,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
                 null);
@@ -228,13 +227,13 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteItem);
 
-                var result = await Api.SubmitAsync(changeSet, cancellationToken);
+                var result = await Api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 changeSetProperty.ChangeSet.Entries.Add(deleteItem);
 
-                await changeSetProperty.OnChangeSetCompleted(Request);
+                await changeSetProperty.OnChangeSetCompleted(Request).ConfigureAwait(false);
             }
 
             return StatusCode(HttpStatusCode.NoContent);
@@ -273,8 +272,7 @@ namespace Microsoft.Restier.AspNet
             {
                 var unboundSegment = segment;
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
-                result = await ExecuteOperationAsync(
-                    getParaValueFunc, operation.Name, false, null, cancellationToken);
+                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, false, null, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -292,9 +290,8 @@ namespace Microsoft.Restier.AspNet
                 {
                     var operationSegment = lastSegment as OperationSegment;
                     var operation = operationSegment.Operations.FirstOrDefault();
-                    var queryResult = await ExecuteQuery(queryable, cancellationToken);
-                    result = await ExecuteOperationAsync(
-                        getParaValueFunc, operation.Name, false, queryResult, cancellationToken);
+                    var queryResult = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
+                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, false, queryResult, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -309,7 +306,7 @@ namespace Microsoft.Restier.AspNet
 
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
         {
-            Ensure.NotNull(edmType, "edmType");
+            Ensure.NotNull(edmType, nameof(edmType));
 
             var isNullable = false;
             switch (edmType.TypeKind)
@@ -344,7 +341,7 @@ namespace Microsoft.Restier.AspNet
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = await GetOriginalValues(entitySet);
+            var propertiesInEtag = await GetOriginalValues(entitySet).ConfigureAwait(false);
             if (propertiesInEtag == null)
             {
                 throw new PreconditionRequiredException(Resources.PreconditionRequired);
@@ -368,7 +365,7 @@ namespace Microsoft.Restier.AspNet
                 entitySet.Name,
                 expectedEntityType.GetClrType(Api.ServiceProvider),
                 actualEntityType.GetClrType(Api.ServiceProvider),
-                RestierEntitySetOperations.Update,
+                RestierEntitySetOperation.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false))
@@ -382,20 +379,19 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(updateItem);
 
-                var result = await Api.SubmitAsync(changeSet, cancellationToken);
+                var result = await Api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 changeSetProperty.ChangeSet.Entries.Add(updateItem);
 
-                await changeSetProperty.OnChangeSetCompleted(Request);
+                await changeSetProperty.OnChangeSetCompleted(Request).ConfigureAwait(false);
             }
 
             return CreateUpdatedODataResult(updateItem.Resource);
         }
 
-        private HttpResponseMessage CreateQueryResponse(
-            IQueryable query, IEdmType edmType, ETag etag)
+        private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType, ETag etag)
         {
             var typeReference = GetTypeReference(edmType);
             BaseSingleResult singleResult = null;
@@ -457,12 +453,10 @@ namespace Microsoft.Restier.AspNet
                 var elementType = typeReference.AsCollection().ElementType();
                 if (elementType.IsPrimitive() || elementType.IsEnum())
                 {
-                    return Request.CreateResponse(
-                        HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference));
+                    return Request.CreateResponse(HttpStatusCode.OK, new NonResourceCollectionResult(query, typeReference));
                 }
 
-                return Request.CreateResponse(
-                    HttpStatusCode.OK, new ResourceSetResult(query, typeReference));
+                return Request.CreateResponse(HttpStatusCode.OK, new ResourceSetResult(query, typeReference));
             }
 
             var entityResult = query.SingleOrDefault();
@@ -534,7 +528,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             var properties = Request.ODataProperties();
-            var model = await Api.GetModelAsync();
+            var model = await Api.GetModelAsync().ConfigureAwait(false);
             var queryContext = new ODataQueryContext(model, queryable.ElementType, path);
             var queryOptions = new ODataQueryOptions(queryContext, Request);
 
@@ -590,7 +584,7 @@ namespace Microsoft.Restier.AspNet
                 ShouldReturnCount = shouldReturnCount
             };
 
-            var queryResult = await Api.QueryAsync(queryRequest, cancellationToken);
+            var queryResult = await Api.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
             var result = queryResult.Results.AsQueryable();
             return result;
         }
@@ -660,7 +654,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             // return 428(Precondition Required) if entity requires concurrency check.
-            var model = await Api.GetModelAsync();
+            var model = await Api.GetModelAsync().ConfigureAwait(false);
             var needEtag = model.IsConcurrencyCheckEnabled(entitySet);
             if (needEtag)
             {

@@ -4,7 +4,7 @@
     /// <summary>
     /// Represents the Restier operations available to an EntitySet.
     /// </summary>
-    public enum RestierEntitySetOperations
+    public enum RestierEntitySetOperation
     {
 
         /// <summary>

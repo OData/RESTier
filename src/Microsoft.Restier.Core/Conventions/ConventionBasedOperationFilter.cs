@@ -20,28 +20,28 @@ namespace Microsoft.Restier.Core
 
         private ConventionBasedOperationFilter(Type targetType)
         {
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
         }
 
         /// <inheritdoc/>
         public static void ApplyTo(IServiceCollection services, Type targetType)
         {
-            Ensure.NotNull(services, "services");
-            Ensure.NotNull(targetType, "targetType");
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
             services.AddService<IOperationFilter>((sp, next) => new ConventionBasedOperationFilter(targetType));
         }
 
         /// <inheritdoc/>
         public Task OnOperationExecutingAsync(OperationContext context, CancellationToken cancellationToken)
         {
-            return InvokeProcessorMethodAsync(context, RestierPipelineStates.PreSubmit);
+            return InvokeProcessorMethodAsync(context, RestierPipelineState.PreSubmit);
         }
 
         /// <inheritdoc/>
         public Task OnOperationExecutedAsync(OperationContext context, CancellationToken cancellationToken)
         {
-            return InvokeProcessorMethodAsync(context, RestierPipelineStates.PostSubmit);
+            return InvokeProcessorMethodAsync(context, RestierPipelineState.PostSubmit);
         }
 
         private static bool ParametersMatch(ParameterInfo[] methodParameters, object[] parameters)
@@ -49,9 +49,9 @@ namespace Microsoft.Restier.Core
             return methodParameters.Length == parameters.Length && !methodParameters.Where((mp, i) => !mp.ParameterType.IsInstanceOfType(parameters[i])).Any();
         }
 
-        private Task InvokeProcessorMethodAsync(OperationContext context, RestierPipelineStates pipelineState)
+        private Task InvokeProcessorMethodAsync(OperationContext context, RestierPipelineState pipelineState)
         {
-            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethods.Execute);
+            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethod.Execute);
             object[] parameters = null;
             if (context.ParameterValues != null)
             {

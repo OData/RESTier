@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core.Model
         /// <returns>The edm type reference</returns>
         public static IEdmTypeReference GetTypeReference(this IEdmType edmType)
         {
-            Ensure.NotNull(edmType, "edmType");
+            Ensure.NotNull(edmType, nameof(edmType));
 
             var isNullable = false;
             switch (edmType.TypeKind)
@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Model
                 case EdmTypeKind.Primitive:
                     return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
                 default:
-                    string message = string.Format(CultureInfo.CurrentCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString());
+                    var message = string.Format(CultureInfo.CurrentCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString());
                     throw new NotSupportedException(message);
             }
         }

@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,21 +39,23 @@ namespace Microsoft.Restier.AspNet.Batch
             HttpMessageInvoker invoker,
             CancellationToken cancellationToken)
         {
-            Ensure.NotNull(invoker, "invoker");
+            Ensure.NotNull(invoker, nameof(invoker));
 
-            RestierChangeSetProperty changeSetProperty = new RestierChangeSetProperty(this);
-            changeSetProperty.ChangeSet = new ChangeSet();
-            this.SetChangeSetProperty(changeSetProperty);
+            var changeSetProperty = new RestierChangeSetProperty(this)
+            {
+                ChangeSet = new ChangeSet()
+            };
+            SetChangeSetProperty(changeSetProperty);
 
-            Dictionary<string, string> contentIdToLocationMapping = new Dictionary<string, string>();
+            var contentIdToLocationMapping = new Dictionary<string, string>();
             var responseTasks = new List<Task<Task<HttpResponseMessage>>>();
 
-            foreach (HttpRequestMessage request in Requests)
+            foreach (var request in Requests)
             {
                 // Since exceptions may occure before the request is sent to RestierController,
                 // we must catch the exceptions here and call OnChangeSetCompleted,
                 // so as to avoid deadlock mentioned in Github Issue #82.
-                TaskCompletionSource<HttpResponseMessage> tcs = new TaskCompletionSource<HttpResponseMessage>();
+                var tcs = new TaskCompletionSource<HttpResponseMessage>();
                 var task =
                     SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
                         .ContinueWith(
@@ -86,14 +87,14 @@ namespace Microsoft.Restier.AspNet.Batch
             // - the ChangeSet is submitted
             // - the responses are created and
             // - the controller actions have returned
-            await Task.WhenAll(responseTasks);
+            await Task.WhenAll(responseTasks).ConfigureAwait(false);
 
-            List<HttpResponseMessage> responses = new List<HttpResponseMessage>();
+            var responses = new List<HttpResponseMessage>();
             try
             {
                 foreach (var responseTask in responseTasks)
                 {
-                    HttpResponseMessage response = responseTask.Result.Result;
+                    var response = responseTask.Result.Result;
                     if (response.IsSuccessStatusCode)
                     {
                         responses.Add(response);
@@ -116,18 +117,21 @@ namespace Microsoft.Restier.AspNet.Batch
             return new ChangeSetResponseItem(responses);
         }
 
+#pragma warning disable CA1822 // Do not declare static members on generic types
         internal async Task SubmitChangeSet(HttpRequestMessage request, ChangeSet changeSet)
+#pragma warning restore CA1822 // Do not declare static members on generic types
+
         {
             var requestContainer = request.GetRequestContainer();
             using (var api = requestContainer.GetService<ApiBase>())
             {
-                SubmitResult submitResults = await api.SubmitAsync(changeSet);
+                var submitResults = await api.SubmitAsync(changeSet).ConfigureAwait(false);
             }
         }
 
         private static void DisposeResponses(IEnumerable<HttpResponseMessage> responses)
         {
-            foreach (HttpResponseMessage response in responses)
+            foreach (var response in responses)
             {
                 if (response != null)
                 {
@@ -138,7 +142,7 @@ namespace Microsoft.Restier.AspNet.Batch
 
         private void SetChangeSetProperty(RestierChangeSetProperty changeSetProperty)
         {
-            foreach (HttpRequestMessage request in this.Requests)
+            foreach (var request in Requests)
             {
                 request.SetChangeSet(changeSetProperty);
             }

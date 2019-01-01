@@ -59,11 +59,10 @@ namespace Microsoft.Restier.EntityFramework
             if (query.Provider is IDbAsyncQueryProvider)
 #endif
             {
-                return new QueryResult(
-                    await query.ToArrayAsync(cancellationToken));
+                return new QueryResult(await query.ToArrayAsync(cancellationToken).ConfigureAwait(false));
             }
 
-            return await Inner.ExecuteQueryAsync(context, query, cancellationToken);
+            return await Inner.ExecuteQueryAsync(context, query, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -102,12 +101,11 @@ namespace Microsoft.Restier.EntityFramework
 #endif
             if (provider != null)
             {
-                var result = await provider.ExecuteAsync<TResult>(
-                    expression, cancellationToken);
+                var result = await provider.ExecuteAsync<TResult>(expression, cancellationToken).ConfigureAwait(false);
                 return new QueryResult(new TResult[] { result });
             }
 
-            return await Inner.ExecuteExpressionAsync<TResult>(context, queryProvider, expression, cancellationToken);
+            return await Inner.ExecuteExpressionAsync<TResult>(context, queryProvider, expression, cancellationToken).ConfigureAwait(false);
         }
     }
 }

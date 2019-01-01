@@ -28,8 +28,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            PrimitiveResult primitiveResult = graph as PrimitiveResult;
-            if (primitiveResult != null)
+            if (graph is PrimitiveResult primitiveResult)
             {
                 graph = primitiveResult.Result;
                 type = primitiveResult.Type;
@@ -80,7 +79,7 @@ namespace Microsoft.Restier.AspNet.Formatter
 
         internal static object ConvertToPayloadValue(object value, ODataSerializerContext writeContext)
         {
-            Ensure.NotNull(writeContext, "writeContext");
+            Ensure.NotNull(writeContext, nameof(writeContext));
 
             IEdmTypeReference edmTypeReference = null;
             if (writeContext.Path != null)

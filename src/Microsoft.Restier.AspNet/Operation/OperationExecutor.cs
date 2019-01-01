@@ -25,7 +25,7 @@ namespace Microsoft.Restier.AspNet.Operation
         public async Task<IQueryable> ExecuteOperationAsync(OperationContext context, CancellationToken cancellationToken)
         {
             // Authorization check
-            await InvokeAuthorizers(context, cancellationToken);
+            await InvokeAuthorizers(context, cancellationToken).ConfigureAwait(false);
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
@@ -86,7 +86,7 @@ namespace Microsoft.Restier.AspNet.Operation
             // Invoke preprocessing on the operation execution
             PerformPreEvent(context, cancellationToken);
 
-            var result = await InvokeOperation(context.ImplementInstance, method, parameters, model);
+            var result = await InvokeOperation(context.ImplementInstance, method, parameters, model).ConfigureAwait(false);
 
             // Invoke preprocessing on the operation execution
             PerformPostEvent(context, cancellationToken);
@@ -145,7 +145,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
             if (result is Task task)
             {
-                await task;
+                await task.ConfigureAwait(false);
                 if (returnType.GenericTypeArguments.Any())
                 {
                     returnType = returnType.GenericTypeArguments.First();
@@ -195,7 +195,7 @@ namespace Microsoft.Restier.AspNet.Operation
                 return;
             }
 
-            if (!await authorizor.AuthorizeAsync(context, cancellationToken))
+            if (!await authorizor.AuthorizeAsync(context, cancellationToken).ConfigureAwait(false))
             {
                 throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.OperationUnAuthorizationExecution, context.OperationName));
             }

@@ -3,8 +3,19 @@
 
 namespace System
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     internal static partial class Ensure
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="paramName"></param>
         public static void NotNull<T>([ValidatedNotNull]T? value, string paramName)
             where T : struct
         {
@@ -14,6 +25,12 @@ namespace System
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="paramName"></param>
         public static void NotNull<T>([ValidatedNotNull]T value, string paramName)
             where T : class
         {
@@ -23,6 +40,7 @@ namespace System
             }
         }
 
+        [AttributeUsage(AttributeTargets.Parameter)]
         private sealed class ValidatedNotNullAttribute : Attribute
         {
         }

@@ -27,7 +27,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
                 "Readers",
                 typeof(Person),
                 null,
-                RestierEntitySetOperations.Update, 
+                RestierEntitySetOperation.Update, 
                 new Dictionary<string, object> { { "Id", new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461") } },
                 new Dictionary<string, object>(),
                 new Dictionary<string, object> { { "Addr", new Dictionary<string, object> { { "Zip", "332" } } } });
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
 
             // Act
             var changeSetPreparer = libraryApi.GetApiService<IChangeSetInitializer>();
-            await changeSetPreparer.InitializeAsync(sc, CancellationToken.None);
+            await changeSetPreparer.InitializeAsync(sc, CancellationToken.None).ConfigureAwait(false);
             var person = item.Resource as Person;
 
             // Assert

@@ -50,20 +50,20 @@ namespace Microsoft.Restier.EntityFramework
 
                 object resource;
 
-                if (entry.EntitySetOperation == RestierEntitySetOperations.Insert)
+                if (entry.EntitySetOperation == RestierEntitySetOperation.Insert)
                 {
                     resource = set.Create();
                     SetValues(resource, resourceType, entry.LocalValues);
                     set.Add(resource);
                 }
-                else if (entry.EntitySetOperation == RestierEntitySetOperations.Delete)
+                else if (entry.EntitySetOperation == RestierEntitySetOperation.Delete)
                 {
-                    resource = await FindResource(context, entry, cancellationToken);
+                    resource = await FindResource(context, entry, cancellationToken).ConfigureAwait(false);
                     set.Remove(resource);
                 }
-                else if (entry.EntitySetOperation == RestierEntitySetOperations.Update)
+                else if (entry.EntitySetOperation == RestierEntitySetOperation.Update)
                 {
-                    resource = await FindResource(context, entry, cancellationToken);
+                    resource = await FindResource(context, entry, cancellationToken).ConfigureAwait(false);
 
                     var dbEntry = dbContext.Entry(resource);
                     SetValues(dbEntry, entry, resourceType);
@@ -139,7 +139,7 @@ namespace Microsoft.Restier.EntityFramework
             var query = apiBase.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
-            var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken);
+            var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken).ConfigureAwait(false);
 
             var resource = result.Results.SingleOrDefault();
             if (resource == null)

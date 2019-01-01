@@ -27,8 +27,8 @@ namespace Microsoft.Restier.AspNet.Query
 
         public RestierQueryBuilder(ApiBase api, ODataPath path)
         {
-            Ensure.NotNull(api, "api");
-            Ensure.NotNull(path, "path");
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(path, nameof(path));
             this.api = api;
             this.path = path;
 

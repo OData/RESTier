@@ -30,31 +30,31 @@ namespace Microsoft.Restier.Core
         #region Private Members
 
         /// <summary>
-        /// The <see cref="RestierPipelineStates"/> to exclude from Filter name processing.
+        /// The <see cref="RestierPipelineState"/> to exclude from Filter name processing.
         /// </summary>
-        private static List<RestierPipelineStates> ExcludedFilterStates = new List<RestierPipelineStates>
+        private static List<RestierPipelineState> ExcludedFilterStates = new List<RestierPipelineState>
         {
-            RestierPipelineStates.Authorization,
-            RestierPipelineStates.PreSubmit,
-            RestierPipelineStates.PostSubmit
+            RestierPipelineState.Authorization,
+            RestierPipelineState.PreSubmit,
+            RestierPipelineState.PostSubmit
         };
 
         /// <summary>
-        /// The <see cref="RestierEntitySetOperations"/> to exclude from EntitySet Submit name processing.
+        /// The <see cref="RestierEntitySetOperation"/> to exclude from EntitySet Submit name processing.
         /// </summary>
-        private static List<RestierEntitySetOperations> ExcludedEntitySetSubmitOperations = new List<RestierEntitySetOperations>
+        private static List<RestierEntitySetOperation> ExcludedEntitySetSubmitOperations = new List<RestierEntitySetOperation>
         {
-            RestierEntitySetOperations.Insert,
-            RestierEntitySetOperations.Update,
-            RestierEntitySetOperations.Delete
+            RestierEntitySetOperation.Insert,
+            RestierEntitySetOperation.Update,
+            RestierEntitySetOperation.Delete
         };
 
         /// <summary>
-        /// The <see cref="RestierOperationMethods"/> to exclude from Method Submit name processing.
+        /// The <see cref="RestierOperationMethod"/> to exclude from Method Submit name processing.
         /// </summary>
-        private static List<RestierOperationMethods> ExcludedMethodSubmitOperations = new List<RestierOperationMethods>
+        private static List<RestierOperationMethod> ExcludedMethodSubmitOperations = new List<RestierOperationMethod>
         {
-            RestierOperationMethods.Execute
+            RestierOperationMethod.Execute
         };
 
         #endregion
@@ -62,17 +62,17 @@ namespace Microsoft.Restier.Core
         #region Public Methods
 
         /// <summary>
-        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineStates"/>, and <see cref="RestierEntitySetOperations"/>.
+        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineState"/>, and <see cref="RestierEntitySetOperation"/>.
         /// </summary>
         /// <param name="entitySet">The <see cref="IEdmEntitySet"/> that contains the details for the EntitySet and the Entities it holds.</param>
         /// <param name="restierPipelineState">The part of the Restier pipeline currently executing.</param>
-        /// <param name="operation">The <see cref="RestierEntitySetOperations"/> currently being executed.</param>
+        /// <param name="operation">The <see cref="RestierEntitySetOperation"/> currently being executed.</param>
         /// <returns>A string representing the fully-realized MethodName.</returns>
         /// <returns></returns>
-        public static string GetEntitySetMethodName(IEdmEntitySet entitySet, RestierPipelineStates restierPipelineState, RestierEntitySetOperations operation)
+        public static string GetEntitySetMethodName(IEdmEntitySet entitySet, RestierPipelineState restierPipelineState, RestierEntitySetOperation operation)
         {
-            if ((operation == RestierEntitySetOperations.Filter && ExcludedFilterStates.Contains(restierPipelineState))
-                || restierPipelineState == RestierPipelineStates.Submit && ExcludedEntitySetSubmitOperations.Contains(operation))
+            if ((operation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
+                || restierPipelineState == RestierPipelineState.Submit && ExcludedEntitySetSubmitOperations.Contains(operation))
             {
                 return string.Empty;
             }
@@ -83,22 +83,22 @@ namespace Microsoft.Restier.Core
             if (string.IsNullOrWhiteSpace(prefix)) return string.Empty;
 
             var operationName = GetRestierOperationNameInternal(operation, restierPipelineState);
-            var suffix = operation != RestierEntitySetOperations.Filter ? GetPipelineSuffixInternal(restierPipelineState) : string.Empty;
+            var suffix = operation != RestierEntitySetOperation.Filter ? GetPipelineSuffixInternal(restierPipelineState) : string.Empty;
             var entityReferenceName = GetEntityReferenceNameInternal(operation, entitySet);
             return $"{prefix}{operationName}{suffix}{entityReferenceName}";
         }
 
         /// <summary>
-        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineStates"/>, and <see cref="RestierEntitySetOperations"/>.
+        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineState"/>, and <see cref="RestierEntitySetOperation"/>.
         /// </summary>
         /// <param name="item">The <see cref="DataModificationItem"/> that contains the details for the EntitySet and the Entities it holds.</param>
         /// <param name="restierPipelineState">The part of the Restier pipeline currently executing.</param>
         /// <returns>A string representing the fully-realized MethodName.</returns>
         /// <returns></returns>
-        public static string GetEntitySetMethodName(DataModificationItem item, RestierPipelineStates restierPipelineState)
+        public static string GetEntitySetMethodName(DataModificationItem item, RestierPipelineState restierPipelineState)
         {
-            if ((item.EntitySetOperation == RestierEntitySetOperations.Filter && ExcludedFilterStates.Contains(restierPipelineState))
-                || restierPipelineState == RestierPipelineStates.Submit && ExcludedEntitySetSubmitOperations.Contains(item.EntitySetOperation))
+            if ((item.EntitySetOperation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
+                || restierPipelineState == RestierPipelineState.Submit && ExcludedEntitySetSubmitOperations.Contains(item.EntitySetOperation))
             {
                 return string.Empty;
             }
@@ -109,31 +109,31 @@ namespace Microsoft.Restier.Core
             if (string.IsNullOrWhiteSpace(prefix)) return string.Empty;
 
             var operationName = GetRestierOperationNameInternal(item.EntitySetOperation, restierPipelineState);
-            var suffix = item.EntitySetOperation != RestierEntitySetOperations.Filter ? GetPipelineSuffixInternal(restierPipelineState) : string.Empty;
+            var suffix = item.EntitySetOperation != RestierEntitySetOperation.Filter ? GetPipelineSuffixInternal(restierPipelineState) : string.Empty;
             var entityReferenceName = GetEntityReferenceNameInternal(item.EntitySetOperation, item.ResourceSetName, item.ExpectedResourceType.Name);
             return $"{prefix}{operationName}{suffix}{entityReferenceName}";
         }
 
         /// <summary>
-        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineStates"/>, and <see cref="RestierEntitySetOperations"/>.
+        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineState"/>, and <see cref="RestierEntitySetOperation"/>.
         /// </summary>
         /// <param name="operationImport">The <see cref="IEdmOperationImport"/> to generate a name for.</param>
         /// <param name="restierPipelineState">The part of the Restier pipeline currently executing.</param>
-        /// <param name="restierOperation">The <see cref="RestierOperationMethods"/> currently being executed.</param>
+        /// <param name="restierOperation">The <see cref="RestierOperationMethod"/> currently being executed.</param>
         /// <returns>A string representing the fully-realized MethodName.</returns>
-        public static string GetFunctionMethodName(IEdmOperationImport operationImport, RestierPipelineStates restierPipelineState, RestierOperationMethods restierOperation)
+        public static string GetFunctionMethodName(IEdmOperationImport operationImport, RestierPipelineState restierPipelineState, RestierOperationMethod restierOperation)
         {
             return GetFunctionMethodNameInternal(operationImport.Operation.Name, restierPipelineState, restierOperation);
         }
 
         /// <summary>
-        /// Generates the complete MethodName for a given <see cref="OperationContext"/>, <see cref="RestierPipelineStates"/>, and <see cref="RestierEntitySetOperations"/>.
+        /// Generates the complete MethodName for a given <see cref="OperationContext"/>, <see cref="RestierPipelineState"/>, and <see cref="RestierEntitySetOperation"/>.
         /// </summary>
         /// <param name="operationImport">The <see cref="OperationContext"/> to generate a name for.</param>
         /// <param name="restierPipelineState">The part of the Restier pipeline currently executing.</param>
-        /// <param name="restierOperation">The <see cref="RestierOperationMethods"/> currently being executed.</param>
+        /// <param name="restierOperation">The <see cref="RestierOperationMethod"/> currently being executed.</param>
         /// <returns>A string representing the fully-realized MethodName.</returns>
-        public static string GetFunctionMethodName(OperationContext operationImport, RestierPipelineStates restierPipelineState, RestierOperationMethods restierOperation)
+        public static string GetFunctionMethodName(OperationContext operationImport, RestierPipelineState restierPipelineState, RestierOperationMethod restierOperation)
         {
             return GetFunctionMethodNameInternal(operationImport.OperationName, restierPipelineState, restierOperation);
         }
@@ -145,10 +145,10 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Generates the right EntityName reference for a given Operation.
         /// </summary>
-        /// <param name="operation">The <see cref="RestierEntitySetOperations"/> to determine the Entity name for.</param>
+        /// <param name="operation">The <see cref="RestierEntitySetOperation"/> to determine the Entity name for.</param>
         /// <param name="entitySet">The <see cref="IEdmEntitySet"/> that contains the details for the EntitySet and the Entities it holds.</param>
         /// <returns>A string representing the right EntityName reference for a given Operation.</returns>
-        internal static string GetEntityReferenceNameInternal(RestierEntitySetOperations operation, IEdmEntitySet entitySet)
+        internal static string GetEntityReferenceNameInternal(RestierEntitySetOperation operation, IEdmEntitySet entitySet)
         {
             //RWM: You filter a set, but you Insert/Update/Delete individual items.
             return GetEntityReferenceNameInternal(operation, entitySet.Name, entitySet.EntityType().Name);
@@ -157,26 +157,26 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Generates the right EntityName reference for a given Operation.
         /// </summary>
-        /// <param name="operation">The <see cref="RestierEntitySetOperations"/> to determine the Entity name for.</param>
+        /// <param name="operation">The <see cref="RestierEntitySetOperation"/> to determine the Entity name for.</param>
         /// <param name="entitySetName">The <see cref="string"/> that contains the name of the EntitySet.</param>
         /// <param name="entityTypeName">The <see cref="string"/> that contains the name of the Entity type.</param>
         /// <returns>A string representing the right EntityName reference for a given Operation.</returns>
-        internal static string GetEntityReferenceNameInternal(RestierEntitySetOperations operation, string entitySetName, string entityTypeName)
+        internal static string GetEntityReferenceNameInternal(RestierEntitySetOperation operation, string entitySetName, string entityTypeName)
         {
             //RWM: You filter a set, but you Insert/Update/Delete individual items.
-            return operation == RestierEntitySetOperations.Filter ? entitySetName : entityTypeName;
+            return operation == RestierEntitySetOperation.Filter ? entitySetName : entityTypeName;
         }
 
         /// <summary>
-        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineStates"/>, and <see cref="RestierEntitySetOperations"/>.
+        /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineState"/>, and <see cref="RestierEntitySetOperation"/>.
         /// </summary>
         /// <param name="operationName">The <see cref="string"/> containing the name of the operation.</param>
         /// <param name="restierPipelineState">The part of the Restier pipeline currently executing.</param>
-        /// <param name="restierOperation">The <see cref="RestierOperationMethods"/> currently being executed.</param>
+        /// <param name="restierOperation">The <see cref="RestierOperationMethod"/> currently being executed.</param>
         /// <returns>A string representing the fully-realized MethodName.</returns>
-        private static string GetFunctionMethodNameInternal(string operationName, RestierPipelineStates restierPipelineState, RestierOperationMethods restierOperation)
+        private static string GetFunctionMethodNameInternal(string operationName, RestierPipelineState restierPipelineState, RestierOperationMethod restierOperation)
         {
-            if (restierPipelineState == RestierPipelineStates.Submit && ExcludedMethodSubmitOperations.Contains(restierOperation))
+            if (restierPipelineState == RestierPipelineState.Submit && ExcludedMethodSubmitOperations.Contains(restierOperation))
             {
                 return string.Empty;
             }
@@ -192,40 +192,40 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Generates the right OperationName string for a given <see cref="RestierEntitySetOperations"/> and <see cref="RestierPipelineStates"/>.
+        /// Generates the right OperationName string for a given <see cref="RestierEntitySetOperation"/> and <see cref="RestierPipelineState"/>.
         /// </summary>
-        /// <param name="operation">The <see cref="RestierEntitySetOperations"/> to determine the method name for.</param>
-        /// <param name="restierPipelineState">The <see cref="RestierPipelineStates"/> to determine the method name for.</param>
+        /// <param name="operation">The <see cref="RestierEntitySetOperation"/> to determine the method name for.</param>
+        /// <param name="restierPipelineState">The <see cref="RestierPipelineState"/> to determine the method name for.</param>
         /// <returns>A string containing the corrected OperationName, accounting for what the suffix will end up being.</returns>
-        internal static string GetRestierOperationNameInternal(RestierEntitySetOperations operation, RestierPipelineStates restierPipelineState)
+        internal static string GetRestierOperationNameInternal(RestierEntitySetOperation operation, RestierPipelineState restierPipelineState)
         {
             return GetRestierOperationNameInternal(operation.ToString(), restierPipelineState);
         }
 
         /// <summary>
-        /// Generates the right OperationName string for a given <see cref="RestierOperationMethods"/> and <see cref="RestierPipelineStates"/>.
+        /// Generates the right OperationName string for a given <see cref="RestierOperationMethod"/> and <see cref="RestierPipelineState"/>.
         /// </summary>
-        /// <param name="operation">The <see cref="RestierOperationMethods"/> to determine the method name for.</param>
-        /// <param name="restierPipelineState">The <see cref="RestierPipelineStates"/> to determine the method name for.</param>
+        /// <param name="operation">The <see cref="RestierOperationMethod"/> to determine the method name for.</param>
+        /// <param name="restierPipelineState">The <see cref="RestierPipelineState"/> to determine the method name for.</param>
         /// <returns>A string containing the corrected OperationName, accounting for what the suffix will end up being.</returns>
-        internal static string GetRestierOperationNameInternal(RestierOperationMethods operation, RestierPipelineStates restierPipelineState)
+        internal static string GetRestierOperationNameInternal(RestierOperationMethod operation, RestierPipelineState restierPipelineState)
         {
             return GetRestierOperationNameInternal(operation.ToString(), restierPipelineState);
         }
 
         /// <summary>
-        /// Generates the right OperationName string for a given <see cref="RestierOperationMethods"/> and <see cref="RestierPipelineStates"/>.
+        /// Generates the right OperationName string for a given <see cref="RestierOperationMethod"/> and <see cref="RestierPipelineState"/>.
         /// </summary>
         /// <param name="operation">The string representing the Operation to determine the method name for.</param>
-        /// <param name="restierPipelineState">The <see cref="RestierPipelineStates"/> to determine the method name for.</param>
+        /// <param name="restierPipelineState">The <see cref="RestierPipelineState"/> to determine the method name for.</param>
         /// <returns>A string containing the corrected OperationName, accounting for what the suffix will end up being.</returns>
         /// <remarks>This method is for base processing. The other overloads should be used to ensure the right name gets generated.</remarks>
-        private static string GetRestierOperationNameInternal(string operation, RestierPipelineStates restierPipelineState)
+        private static string GetRestierOperationNameInternal(string operation, RestierPipelineState restierPipelineState)
         {
             switch (restierPipelineState)
             {
-                case RestierPipelineStates.PreSubmit:
-                case RestierPipelineStates.PostSubmit:
+                case RestierPipelineState.PreSubmit:
+                case RestierPipelineState.PostSubmit:
                     //RWM: If the last letter of the string is an e, cut off it's head.
                     return operation.LastIndexOf("e") == operation.Length - 1 ? operation.Substring(0, operation.Length - 1) : operation;
                 default:
@@ -234,19 +234,19 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Returns a method prefix string for a given <see cref="RestierPipelineStates"/>.
+        /// Returns a method prefix string for a given <see cref="RestierPipelineState"/>.
         /// </summary>
-        /// <param name="restierPipelineState">The <see cref="RestierPipelineStates"/> to determine the prefix for.</param>
+        /// <param name="restierPipelineState">The <see cref="RestierPipelineState"/> to determine the prefix for.</param>
         /// <returns></returns>
-        internal static string GetPipelinePrefixInternal(RestierPipelineStates restierPipelineState)
+        internal static string GetPipelinePrefixInternal(RestierPipelineState restierPipelineState)
         {
             switch (restierPipelineState)
             {
-                case RestierPipelineStates.Authorization:
+                case RestierPipelineState.Authorization:
                     return Can;
-                case RestierPipelineStates.PreSubmit:
-                case RestierPipelineStates.Submit:
-                case RestierPipelineStates.PostSubmit:
+                case RestierPipelineState.PreSubmit:
+                case RestierPipelineState.Submit:
+                case RestierPipelineState.PostSubmit:
                     return On;
                 default:
                     return string.Empty;
@@ -254,17 +254,17 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Returns a method suffix string for a given <see cref="RestierPipelineStates"/>.
+        /// Returns a method suffix string for a given <see cref="RestierPipelineState"/>.
         /// </summary>
-        /// <param name="restierPipelineState">The <see cref="RestierPipelineStates"/> to determine the suffix for.</param>
+        /// <param name="restierPipelineState">The <see cref="RestierPipelineState"/> to determine the suffix for.</param>
         /// <returns></returns>
-        internal static string GetPipelineSuffixInternal(RestierPipelineStates restierPipelineState)
+        internal static string GetPipelineSuffixInternal(RestierPipelineState restierPipelineState)
         {
             switch (restierPipelineState)
             {
-                case RestierPipelineStates.PreSubmit:
+                case RestierPipelineState.PreSubmit:
                     return Ing;
-                case RestierPipelineStates.PostSubmit:
+                case RestierPipelineState.PostSubmit:
                     return Ed;
                 default:
                     return string.Empty;

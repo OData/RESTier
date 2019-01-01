@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.EntityFramework
@@ -27,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework
         /// </param>
         public ModelMapper(Type dbContextType)
         {
-            Ensure.NotNull(dbContextType, "dbContextType");
+            Ensure.NotNull(dbContextType, nameof(dbContextType));
             this.dbContextType = dbContextType;
         }
 
@@ -56,7 +55,7 @@ namespace Microsoft.Restier.EntityFramework
         {
             // TODO GitHubIssue#39 : support something beyond entity sets
             relevantType = null;
-            var property = this.dbContextType.GetProperty(name);
+            var property = dbContextType.GetProperty(name);
             if (property != null)
             {
                 var type = property.PropertyType;
