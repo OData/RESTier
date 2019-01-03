@@ -14,6 +14,9 @@ namespace Microsoft.Restier.Core.Submit
     {
         private IEnumerable<ChangeSetItemValidationResult> errorValidationResults;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ChangeSetValidationException()
         {
         }
