@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Core
 
         internal IEdmModel Model { get; private set; }
 
-        internal TaskCompletionSource<IEdmModel> CompeteModelGeneration(out Task<IEdmModel> running)
+        internal TaskCompletionSource<IEdmModel> CompleteModelGeneration(out Task<IEdmModel> running)
         {
             var source = new TaskCompletionSource<IEdmModel>(TaskCreationOptions.AttachedToParent);
             var runningTask = Interlocked.CompareExchange(ref modelTask, source.Task, null);

@@ -177,7 +177,7 @@ namespace Microsoft.Restier.Core
                 throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
             }
 
-            var source = config.CompeteModelGeneration(out var running);
+            var source = config.CompleteModelGeneration(out var running);
             if (source == null)
             {
                 return await running.ConfigureAwait(false);
@@ -399,34 +399,6 @@ namespace Microsoft.Restier.Core
             var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
             queryContext.Model = model;
             return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
-        }
-
-        #endregion
-
-        #region Submit
-
-        /// <summary>
-        /// Asynchronously submits changes made using an API context.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="changeSet">
-        /// A change set, or <c>null</c> to submit existing pending changes.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is a submit result.
-        /// </returns>
-        public static async Task<SubmitResult> SubmitAsync(this ApiBase api, ChangeSet changeSet = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            Ensure.NotNull(api, nameof(api));
-
-            var submitContext = new SubmitContext(api.ServiceProvider, changeSet);
-            return await DefaultSubmitHandler.SubmitAsync(submitContext, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
