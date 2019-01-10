@@ -8,7 +8,7 @@ namespace System.Linq.Expressions
 {
     internal static class ExpressionHelpers
     {
-        private const string MethodNameOfCreateQuery = "CreateQuery";
+        //private const string MethodNameOfCreateQuery = "CreateQuery";
         private const string MethodNameOfQueryTake = "Take";
         private const string MethodNameOfQuerySelect = "Select";
         private const string MethodNameOfQuerySkip = "Skip";
@@ -77,14 +77,15 @@ namespace System.Linq.Expressions
                 var elementType = GetSelectExpandElementType(typeof(TElement));
 
                 // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
-                var thisType = query.Provider.GetType();
-
                 // Get the CreateQuery method information who accepts generic type
-                var method = thisType.GetMethods()
-                    .Single(m => m.Name == MethodNameOfCreateQuery && m.IsGenericMethodDefinition);
+                // To avoid bug from Github Issues #541,#542 use methodInfo from IQueryProvider
+                // Bug was caused by explicit implementation of CreateQuery method in System.Linq.EnumerableQuery
+                // This solution allows us also to cache methodInfo in ExpressionHelperMethods
+                var method = ExpressionHelperMethods.IQueryProviderCreateQueryGeneric;
 
                 // Replace method generic type with specified type.
                 var generic = method.MakeGenericMethod(elementType);
+
                 countQuery = generic.Invoke(query.Provider, new object[] { expression });
             }
 

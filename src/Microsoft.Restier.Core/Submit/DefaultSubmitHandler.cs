@@ -40,11 +40,15 @@ namespace Microsoft.Restier.Core.Submit
         {
             //RWM: This stuff SHOULD be getting passed into a constructor. But the DI implementation is less than awesome.
             //     So we'll work around it for now and still save some allocations.
-            initializer = serviceProvider.GetService<IChangeSetInitializer>();
-            executor = serviceProvider.GetService<ISubmitExecutor>();
-            authorizer = serviceProvider.GetService<IChangeSetItemAuthorizer>();
-            validator = serviceProvider.GetService<IChangeSetItemValidator>();
-            filter = serviceProvider.GetService<IChangeSetItemFilter>();
+            //     There are certain unit te
+            if (serviceProvider != null)
+            {
+                initializer = serviceProvider.GetService<IChangeSetInitializer>();
+                executor = serviceProvider.GetService<ISubmitExecutor>();
+                authorizer = serviceProvider.GetService<IChangeSetItemAuthorizer>();
+                validator = serviceProvider.GetService<IChangeSetItemValidator>();
+                filter = serviceProvider.GetService<IChangeSetItemFilter>();
+            }
         }
 
         #endregion
@@ -54,15 +58,10 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Asynchronously executes the submit flow.
         /// </summary>
-        /// <param name="context">
-        /// The submit context.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// A cancellation token.
-        /// </param>
+        /// <param name="context">The submit context.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is a submit result.
+        /// A task that represents the asynchronous operation whose result is a submit result.
         /// </returns>
         public async Task<SubmitResult> SubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
