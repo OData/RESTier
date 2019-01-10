@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Xunit;
@@ -88,21 +87,18 @@ namespace Microsoft.Restier.Core.Tests.Model
 
         private class TestModelExtender : IModelBuilder
         {
-            private int _index;
+            private readonly int _index;
 
-            public TestModelExtender(int index)
-            {
-                _index = index;
-            }
+            public TestModelExtender(int index) => _index = index;
 
             public IModelBuilder InnerHandler { get; set; }
 
             public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 IEdmModel innerModel = null;
-                if (this.InnerHandler != null)
+                if (InnerHandler != null)
                 {
-                    innerModel = await this.InnerHandler.GetModelAsync(context, cancellationToken);
+                    innerModel = await InnerHandler.GetModelAsync(context, cancellationToken);
                 }
 
                 var entityType = new EdmEntityType(
@@ -192,7 +188,7 @@ namespace Microsoft.Restier.Core.Tests.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                for (int i = 0; i < 2; i++)
+                for (var i = 0; i < 2; i++)
                 {
                     var container = new RestierContainerBuilder(typeof(TestApiB));
                     var provider = container.BuildContainer();
