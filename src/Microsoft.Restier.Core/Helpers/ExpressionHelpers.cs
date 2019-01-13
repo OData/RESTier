@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Restier.Core;
 
 namespace System.Linq.Expressions
 {
@@ -76,17 +77,46 @@ namespace System.Linq.Expressions
                 // e.g. if type is SelectAllAndExpand<Namespace.Product>, then Namespace.Product will be returned.
                 var elementType = GetSelectExpandElementType(typeof(TElement));
 
-                // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
-                // Get the CreateQuery method information who accepts generic type
-                // To avoid bug from Github Issues #541,#542 use methodInfo from IQueryProvider
-                // Bug was caused by explicit implementation of CreateQuery method in System.Linq.EnumerableQuery
-                // This solution allows us also to cache methodInfo in ExpressionHelperMethods
-                var method = ExpressionHelperMethods.IQueryProviderCreateQueryGeneric;
 
-                // Replace method generic type with specified type.
-                var generic = method.MakeGenericMethod(elementType);
+                if (FeatureFlags.UseNewCountMethod)
+                {
 
-                countQuery = generic.Invoke(query.Provider, new object[] { expression });
+                    // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
+                    // Get the CreateQuery method information who accepts generic type
+                    // To avoid bug from Github Issues #541,#542 use methodInfo from IQueryProvider
+                    // Bug was caused by explicit implementation of CreateQuery method in System.Linq.EnumerableQuery
+                    // This solution allows us also to cache methodInfo in ExpressionHelperMethods
+                    var method = ExpressionHelperMethods.IQueryProviderCreateQueryGeneric;
+
+                    // Replace method generic type with specified type.
+                    var generic = method.MakeGenericMethod(elementType);
+
+                    try
+                    {
+                        countQuery = generic.Invoke(query.Provider, new object[] { expression });
+                    }
+                    catch (TargetInvocationException invocationEx)
+                    {
+                        if (invocationEx.InnerException.Message.Contains("SelectExpandBinder"))
+                        {
+                            throw new NotImplementedException("The '$count' parameter is not currently supported on queries that contain projections (typically with the $select or $expand options).");
+                        }
+                    }
+                }
+                else
+                {
+                    // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
+                    var thisType = query.Provider.GetType();
+
+                    // Get the CreateQuery method information who accepts generic type
+                    var method = thisType.GetMethods()
+                        .Single(m => m.Name == "CreateQuery" && m.IsGenericMethodDefinition);
+
+                    // Replace method generic type with specified type.
+                    var generic = method.MakeGenericMethod(elementType);
+                    countQuery = generic.Invoke(query.Provider, new object[] { expression });
+                }
+
             }
 
             // This means there is no $expand/$skip/$top, return count directly
@@ -172,14 +202,12 @@ namespace System.Linq.Expressions
         {
             // This means a select for expand is appended, will remove it for resource existing check
             var expandSelect = methodCallExpression.Arguments[1] as UnaryExpression;
-            var lambdaExpression = expandSelect.Operand as LambdaExpression;
-            if (lambdaExpression == null)
+            if (!(expandSelect.Operand is LambdaExpression lambdaExpression))
             {
                 return methodCallExpression;
             }
 
-            var memberInitExpression = lambdaExpression.Body as MemberInitExpression;
-            if (memberInitExpression == null)
+            if (!(lambdaExpression.Body is MemberInitExpression memberInitExpression))
             {
                 return methodCallExpression;
             }
@@ -196,25 +224,21 @@ namespace System.Linq.Expressions
 
         internal static Expression RemoveAppendWhereStatement(this Expression expression)
         {
-            var methodCallExpression = expression as MethodCallExpression;
-            if (methodCallExpression == null || methodCallExpression.Method.Name != MethodNameOfQueryWhere)
+            if (!(expression is MethodCallExpression methodCallExpression) || methodCallExpression.Method.Name != MethodNameOfQueryWhere)
             {
                 return expression;
             }
 
             // This means there may be an appended statement Where(Param_0 => (Param_0.Prop != null))
             var appendedWhere = methodCallExpression.Arguments[1] as UnaryExpression;
-            var lambdaExpression = appendedWhere.Operand as LambdaExpression;
-            if (lambdaExpression == null)
+            if (!(appendedWhere.Operand is LambdaExpression lambdaExpression))
             {
                 return expression;
             }
 
-            var binaryExpression = lambdaExpression.Body as BinaryExpression;
-            if (binaryExpression != null && binaryExpression.NodeType == ExpressionType.NotEqual)
+            if (lambdaExpression.Body is BinaryExpression binaryExpression && binaryExpression.NodeType == ExpressionType.NotEqual)
             {
-                var rightExpression = binaryExpression.Right as ConstantExpression;
-                if (rightExpression != null && rightExpression.Value == null)
+                if (binaryExpression.Right is ConstantExpression rightExpression && rightExpression.Value == null)
                 {
                     // remove statement like Where(Param_0 => (Param_0.Prop != null))
                     expression = methodCallExpression.Arguments[0];
@@ -226,8 +250,7 @@ namespace System.Linq.Expressions
 
         private static Expression StripQueryMethod(Expression expression, string methodName)
         {
-            var methodCall = expression as MethodCallExpression;
-            if (methodCall != null &&
+            if (expression is MethodCallExpression methodCall &&
                 methodCall.Method.DeclaringType == typeof(Queryable) &&
                 methodCall.Method.Name.Equals(methodName, StringComparison.Ordinal))
             {

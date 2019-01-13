@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.AspNet</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.EntityFramework</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.Core</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
+    <ProjectReference Include="..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+    <ProjectReference Include="..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+  </ItemGroup>
+
+</Project>

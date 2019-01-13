@@ -5,10 +5,10 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.OData.Edm;
 
-namespace Microsoft.Restier.Tests.AspNet.Model
+namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
     [ComplexType]
-    class Universe
+    public class Universe
     {
         public byte[] BinaryProperty { get; set; }
 

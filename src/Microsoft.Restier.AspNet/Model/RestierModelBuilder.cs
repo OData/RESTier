@@ -63,13 +63,11 @@ namespace Microsoft.Restier.AspNet.Model
 
             entitySetTypeMap.Clear();
 
-            var entityTypeKeyPropertiesMap = context.ResourceTypeKeyPropertiesMap;
-            if (entityTypeKeyPropertiesMap != null)
+            if (context.ResourceTypeKeyPropertiesMap != null)
             {
-                foreach (var pair in entityTypeKeyPropertiesMap)
+                foreach (var pair in context.ResourceTypeKeyPropertiesMap)
                 {
-                    var edmTypeConfiguration = builder.GetTypeConfigurationOrNull(pair.Key) as EntityTypeConfiguration;
-                    if (edmTypeConfiguration == null)
+                    if (!(builder.GetTypeConfigurationOrNull(pair.Key) is EntityTypeConfiguration edmTypeConfiguration))
                     {
                         continue;
                     }
@@ -80,7 +78,7 @@ namespace Microsoft.Restier.AspNet.Model
                     }
                 }
 
-                entityTypeKeyPropertiesMap.Clear();
+                context.ResourceTypeKeyPropertiesMap.Clear();
             }
 
             var model = (EdmModel)builder.GetEdmModel();
