@@ -14,7 +14,6 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
 
 #if !PROD
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
-            config.SetUseVerboseErrors(true);
 #endif
 
             config.Filter().Expand().Select().OrderBy().MaxTop(100).Count();
