@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Restier.Core
+﻿namespace Microsoft.Restier.Core
 {
 
     /// <summary>
     /// 
     /// </summary>
-    public static class FeatureFlags
+    internal static class FeatureFlags
     {
 
         /// <summary>
         /// 
         /// </summary>
-        public static bool UseNewCountMethod => false;
+        internal static bool UseNewCountMethod => false;
 
     }
 }

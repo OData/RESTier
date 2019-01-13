@@ -12,7 +12,7 @@
 
     <TargetFrameworks>net462;net472</TargetFrameworks>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <TargetFrameworks>net462;net472</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

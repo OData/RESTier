@@ -13,6 +13,18 @@
     <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.AspNet</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.EntityFramework</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.Core</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  
   <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
     <Compile Remove="DataAnnotations\AssociatedMetadataTypeTypeDescriptionProvider.cs" />
     <Compile Remove="DataAnnotations\AssociatedMetadataTypeTypeDescriptor.cs" />
