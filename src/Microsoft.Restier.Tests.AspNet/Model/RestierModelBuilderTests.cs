@@ -3,10 +3,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Validation;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNet.Model
@@ -14,42 +17,34 @@ namespace Microsoft.Restier.Tests.AspNet.Model
     public class RestierModelBuilderTests
     {
         [Fact]
-        public void ComplexTypeShoudWork()
+        public async Task ComplexTypeShoudWork()
         {
-            var container = new RestierContainerBuilder(typeof(LibraryApi));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>();
+            var model = await api.GetModelAsync();
 
-            var model = api.GetModelAsync().Result;
-
-            IEnumerable<EdmError> errors;
-            Assert.True(model.Validate(out errors));
+            Assert.True(model.Validate(out var errors));
             Assert.Empty(errors);
 
-            var address = model.FindDeclaredType("Microsoft.Restier.Tests.AspNet.Model.Address")
-             as IEdmComplexType;
+            var address = model.FindDeclaredType("Microsoft.Restier.Tests.Shared.Scenarios.Library.Address") as IEdmComplexType;
             Assert.NotNull(address);
             Assert.Equal(2, address.Properties().Count());
         }
 
         [Fact]
-        public void PrimitiveTypesShouldWork()
+        public async Task PrimitiveTypesShouldWork()
         {
-            var container = new RestierContainerBuilder(typeof(LibraryApi));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var model = api.GetModelAsync().Result;
+            var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>();
+            var model = await api.GetModelAsync();
 
-            IEnumerable<EdmError> errors;
-            Assert.True(model.Validate(out errors));
+            Assert.True(model.Validate(out var errors));
             Assert.Empty(errors);
 
-            var universe = model.FindDeclaredType("Microsoft.Restier.Tests.AspNet.Model.Universe")
+            var universe = model.FindDeclaredType("Microsoft.Restier.Tests.Shared.Scenarios.Library.Universe")
              as IEdmComplexType;
             Assert.NotNull(universe);
 
             var propertyArray = universe.Properties().ToArray();
-            int i = 0;
+            var i = 0;
             Assert.True(propertyArray[i++].Type.AsPrimitive().IsBinary());
             Assert.True(propertyArray[i++].Type.AsPrimitive().IsBoolean());
             Assert.True(propertyArray[i++].Type.AsPrimitive().IsByte());

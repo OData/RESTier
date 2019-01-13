@@ -13,7 +13,6 @@ using Microsoft.OData;
 using Microsoft.Restier.AspNet;
 using Microsoft.Restier.AspNet.Batch;
 using Microsoft.Restier.Core;
-using RAResources = Microsoft.Restier.AspNet.Resources;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 
@@ -25,7 +24,6 @@ namespace System.Web.Http
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class HttpConfigurationExtensions
     {
-        private const string UseVerboseErrorsFlagKey = "Microsoft.Restier.UseVerboseErrorsFlag";
 #pragma warning disable CA1823 // Do not declare static members on generic types
         private const string RootContainerKey = "Microsoft.AspNet.OData.RootContainerMappingsKey";
 #pragma warning restore CA1823 // Do not declare static members on generic types
@@ -70,44 +68,6 @@ namespace System.Web.Http
             var route = config.MapODataServiceRoute(routeName, routePrefix, configureAction);
 
             return Task.FromResult(route);
-        }
-
-        /// <summary>
-        /// Gets the UseVerboseErrors flag from the configuration.
-        /// </summary>
-        /// <param name="configuration">The server configuration.</param>
-        /// <returns>The flag of UseVerboseErrors for the configuration.</returns>
-        public static bool GetUseVerboseErrors(this HttpConfiguration configuration)
-        {
-            if (configuration == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, RAResources.ArgumentCannotBeNull, "configuration"));
-            }
-
-            var useVerboseErrorsFlag = false;
-            if (configuration.Properties.TryGetValue(UseVerboseErrorsFlagKey, out var value))
-            {
-                useVerboseErrorsFlag = value is bool ? (bool)value : false;
-            }
-
-            return useVerboseErrorsFlag;
-        }
-
-        /// <summary>
-        /// Sets the UseVerboseErrors flag on the configuration.
-        /// If this is set to true (suggest for debug model only),
-        /// then the whole exception stack will be returned in case there is some error.
-        /// </summary>
-        /// <param name="configuration">The server configuration.</param>
-        /// <param name="useVerboseErrors">The UseVerboseErrors flag for the configuration.</param>
-        public static void SetUseVerboseErrors(this HttpConfiguration configuration, bool useVerboseErrors)
-        {
-            if (configuration == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, RAResources.ArgumentCannotBeNull, "configuration"));
-            }
-
-            configuration.Properties[UseVerboseErrorsFlagKey] = useVerboseErrors;
         }
 
         /// <summary>

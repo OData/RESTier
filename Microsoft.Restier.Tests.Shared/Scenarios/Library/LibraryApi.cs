@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.AspNet;
 using Microsoft.Restier.EntityFramework;
 
-namespace Microsoft.Restier.Tests.AspNet.Model
+namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
     class LibraryApi : EntityFrameworkApi<LibraryContext>
     {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -47,7 +48,8 @@ namespace Microsoft.Restier.AspNet
             CancellationToken cancellationToken)
         {
             var config = actionExecutedContext.Request.GetConfiguration();
-            var useVerboseErros = config.GetUseVerboseErrors();
+            var useVerboseErros = config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.Always ||
+                (actionExecutedContext.Request.RequestUri.Host.ToLower().Contains("localhost") && config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.LocalOnly);
 
             foreach (var handler in Handlers)
             {
@@ -66,8 +68,7 @@ namespace Microsoft.Restier.AspNet
            bool useVerboseErros,
            CancellationToken cancellationToken)
         {
-            var validationException = context.Exception as ChangeSetValidationException;
-            if (validationException != null)
+            if (context.Exception is ChangeSetValidationException validationException)
             {
                 var exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(
                     HttpStatusCode.BadRequest,
@@ -86,11 +87,11 @@ namespace Microsoft.Restier.AspNet
             bool useVerboseErros,
             CancellationToken cancellationToken)
         {
-            var exception = context.Exception;
+            var exception = context.Exception.Demystify();
             if (exception is AggregateException)
             {
                 // In async call, the exception will be wrapped as AggregateException
-                exception = exception.InnerException;
+                exception = exception.InnerException.Demystify();
             }
 
             if (exception == null)
@@ -98,7 +99,7 @@ namespace Microsoft.Restier.AspNet
                 return Task.FromResult<HttpResponseMessage>(null);
             }
 
-            var code = HttpStatusCode.Unused;
+            var code = HttpStatusCode.InternalServerError;
             if (exception is ODataException)
             {
                 code = HttpStatusCode.BadRequest;

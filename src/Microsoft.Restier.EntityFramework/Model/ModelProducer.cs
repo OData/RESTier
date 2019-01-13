@@ -49,16 +49,14 @@ namespace Microsoft.Restier.EntityFramework
 
 #if EF7
             var dbContext = context.GetApiService<DbContext>();
-            context.ResourceSetTypeMap = dbContext.GetType().GetProperties()
+            context.ResourceSetTypeMap.AddRange(dbContext.GetType().GetProperties()
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
-                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);
-            context.ResourceTypeKeyPropertiesMap = dbContext.Model.GetEntityTypes().ToDictionary(
+                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
+            context.ResourceTypeKeyPropertiesMap.AddRange(dbContext.Model.GetEntityTypes().ToDictionary(
                 e => e.ClrType,
                 e => ((ICollection<PropertyInfo>)
-                    e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
+                    e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
 #else
-            var resourceSetTypeMap = new Dictionary<string, Type>();
-            var resourceTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();
             var dbContext = context.GetApiService<DbContext>();
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
@@ -91,7 +89,7 @@ namespace Microsoft.Restier.EntityFramework
                         efEntityContainer.Name));
                 }
 
-                // @robertmclaws: In this case, we only had one DbContext available, and if wasn't thw right one.
+                // @robertmclaws: In this case, we only had one DbContext available, and if wasn't the right one.
                 throw new Exception(string.Format(
                     CultureInfo.InvariantCulture,
                     Resources.DbContextCouldNotBeFoundException,
@@ -105,10 +103,10 @@ namespace Microsoft.Restier.EntityFramework
             {
                 var efEntityType = efEntitySet.ElementType;
                 var objectSpaceType = efModel.GetObjectSpaceType(efEntityType);
-                Type clrType = itemCollection.GetClrType(objectSpaceType);
+                var clrType = itemCollection.GetClrType(objectSpaceType);
 
                 // As entity set name and type map
-                resourceSetTypeMap.Add(efEntitySet.Name, clrType);
+                context.ResourceSetTypeMap.Add(efEntitySet.Name, clrType);
 
                 ICollection<PropertyInfo> keyProperties = new List<PropertyInfo>();
                 foreach (var property in efEntityType.KeyProperties)
@@ -116,11 +114,8 @@ namespace Microsoft.Restier.EntityFramework
                     keyProperties.Add(clrType.GetProperty(property.Name));
                 }
 
-                resourceTypeKeyPropertiesMap.Add(clrType, keyProperties);
+                context.ResourceTypeKeyPropertiesMap.Add(clrType, keyProperties);
             }
-
-            context.ResourceSetTypeMap = resourceSetTypeMap;
-            context.ResourceTypeKeyPropertiesMap = resourceTypeKeyPropertiesMap;
 #endif
             if (InnerModelBuilder != null)
             {

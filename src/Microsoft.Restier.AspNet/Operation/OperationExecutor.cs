@@ -20,8 +20,19 @@ using Microsoft.Restier.Core.Operation;
 
 namespace Microsoft.Restier.AspNet.Operation
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     internal class OperationExecutor : IOperationExecutor
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IQueryable> ExecuteOperationAsync(OperationContext context, CancellationToken cancellationToken)
         {
             // Authorization check
@@ -29,8 +40,8 @@ namespace Microsoft.Restier.AspNet.Operation
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
-            var method = context.ImplementInstance.GetType().GetMethod(
-                context.OperationName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            var method = context.ImplementInstance.GetType().GetMethod(context.OperationName, 
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
             if (method == null)
             {

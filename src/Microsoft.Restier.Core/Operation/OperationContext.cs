@@ -78,16 +78,18 @@ namespace Microsoft.Restier.Core.Operation
         /// </summary>
         public IEnumerable BindingParameterValue { get; }
 
+
         /// <summary>
         /// Gets or sets the parameters value array used by method,
         /// It is only set after parameters are prepared.
         /// </summary>
+#pragma warning disable CA2227 // Collection properties should be read only
         public ICollection<object> ParameterValues { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the http request for this operation call
-        /// TODO consider moving to base class after more investigation
         /// </summary>
-        public HttpRequestMessage Request { get; set; }
+        public HttpRequestMessage Request { get; set; } // TODO: RWM: Move to ApiBase.
     }
 }

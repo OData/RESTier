@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DB42
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.AspNet", "src\Microsoft.Restier.Samples.Northwind.AspNet\Microsoft.Restier.Samples.Northwind.AspNet.csproj", "{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.Shared", "Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj", "{B75D79EE-D5C0-4E1B-82CB-9505880A2730}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B75D79EE-D5C0-4E1B-82CB-9505880A2730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75D79EE-D5C0-4E1B-82CB-9505880A2730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B75D79EE-D5C0-4E1B-82CB-9505880A2730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B75D79EE-D5C0-4E1B-82CB-9505880A2730}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{FD305A0A-5680-4C38-9917-84233F35DE3F} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 		{39D4AC9D-091B-437E-A616-3E9D77804BDB} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 		{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2} = {DB42E0B8-C0C7-4DE4-9437-2B2A229B5F8F}
+		{B75D79EE-D5C0-4E1B-82CB-9505880A2730} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}
