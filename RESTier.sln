@@ -38,7 +38,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DB42
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.AspNet", "src\Microsoft.Restier.Samples.Northwind.AspNet\Microsoft.Restier.Samples.Northwind.AspNet.csproj", "{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.Shared", "Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj", "{B75D79EE-D5C0-4E1B-82CB-9505880A2730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Shared", "src\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj", "{B75D79EE-D5C0-4E1B-82CB-9505880A2730}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Product", "Product", "{76B4E51F-233E-4DD3-AABF-A6F47788040D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D8A3183C-1E9C-4D6C-AC72-4EF938EC9895} = {76B4E51F-233E-4DD3-AABF-A6F47788040D}
+		{37B52FD3-E72B-406F-8C5A-F146256D7743} = {76B4E51F-233E-4DD3-AABF-A6F47788040D}
+		{9D3D8728-C31B-4D5E-B471-79A9DBBA0E58} = {76B4E51F-233E-4DD3-AABF-A6F47788040D}
 		{300B769A-3513-49D0-A035-7DB965C8D2A4} = {D8A3183C-1E9C-4D6C-AC72-4EF938EC9895}
 		{97E94F97-E73B-4074-8587-AE1B91B4D61E} = {9D3D8728-C31B-4D5E-B471-79A9DBBA0E58}
 		{8ECF4E97-1816-44AD-AD63-6ACF287ED520} = {9D3D8728-C31B-4D5E-B471-79A9DBBA0E58}

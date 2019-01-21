@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -161,7 +160,7 @@ namespace Microsoft.Restier.Core
         /// A task that represents the asynchronous
         /// operation whose result is the API model.
         /// </returns>
-        public static async Task<IEdmModel> GetModelAsync(this ApiBase api, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<IEdmModel> GetModelAsync(this ApiBase api, CancellationToken cancellationToken = default)
         {
             Ensure.NotNull(api, nameof(api));
 

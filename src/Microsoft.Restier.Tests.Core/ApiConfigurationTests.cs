@@ -5,46 +5,44 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Core.Tests
+namespace Microsoft.Restier.Tests.Core
 {
-    public class ApiConfigurationTests
+
+    [TestClass]
+    public class ApiConfigurationTests : RestierTestBase
     {
-        [Fact]
-        public void ConfigurationRegistersApiServicesCorrectly()
+        [TestMethod]
+        public async Task ConfigurationRegistersApiServicesCorrectly()
         {
-            var container = new RestierContainerBuilder(typeof(TestApiA));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
+            var apiA = await RestierTestHelpers.GetTestableApiInstance<TestApiA>();
 
-            Assert.Null(api.GetApiService<IServiceA>());
-            Assert.Null(api.GetApiService<IServiceB>());
+            apiA.GetApiService<IServiceA>().Should().BeNull();
+            apiA.GetApiService<IServiceB>().Should().BeNull();
 
-            container = new RestierContainerBuilder(typeof(TestApiB));
-            var provider2 = container.BuildContainer();
-            var apiB = provider2.GetService<ApiBase>();
+            var apiB = await RestierTestHelpers.GetTestableApiInstance<TestApiB>();
 
-            Assert.Same(TestApiB.serviceA, apiB.GetApiService<IServiceA>());
+            apiB.GetApiService<IServiceA>().Should().BeSameAs(TestApiB.serviceA);
 
             var serviceBInstance = apiB.GetApiService<ServiceB>();
             var serviceBInterface = apiB.GetApiService<IServiceB>();
-            Assert.Equal(serviceBInstance, serviceBInterface);
-
-            // AddService will call services.TryAddTransient
-            Assert.Same(serviceBInstance, serviceBInterface);
+            serviceBInterface.Should().BeSameAs(serviceBInstance);
 
             var serviceBFirst = serviceBInterface as ServiceB;
-            Assert.NotNull(serviceBFirst);
+            serviceBFirst.Should().NotBeNull();
 
-            Assert.Same(TestApiB.serviceB, serviceBFirst.InnerHandler);
+            serviceBFirst.InnerHandler.Should().BeSameAs(TestApiB.serviceB);
         }
 
-        [Fact]
+        [TestMethod]
         public void ServiceChainTest()
         {
             var container = new RestierContainerBuilder(typeof(TestApiC));
@@ -52,7 +50,7 @@ namespace Microsoft.Restier.Core.Tests
             var api = provider.GetService<ApiBase>();
 
             var handler = api.GetApiService<IServiceB>();
-            Assert.Equal("q2Pre_q1Pre_q1Post_q2Post_", handler.GetStr());
+            handler.GetStr().Should().Be("q2Pre_q1Pre_q1Post_q2Post_");
         }
 
         private class TestApiA : ApiBase

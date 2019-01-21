@@ -1,0 +1,66 @@
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="Microsoft.Restier.Tests.Shared.Scenarios.Library" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Book">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Title" Type="Edm.String" />
+        <NavigationProperty Name="Publisher" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher" />
+      </EntityType>
+      <EntityType Name="Publisher">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.String" Nullable="false" />
+        <Property Name="Addr" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Address" />
+        <NavigationProperty Name="Books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+      </EntityType>
+      <EntityType Name="Employee">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="FullName" Type="Edm.String" />
+        <Property Name="Addr" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Address" />
+        <Property Name="Universe" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Universe" />
+      </EntityType>
+      <ComplexType Name="Address">
+        <Property Name="Street" Type="Edm.String" />
+        <Property Name="Zip" Type="Edm.String" />
+      </ComplexType>
+      <ComplexType Name="Universe">
+        <Property Name="BinaryProperty" Type="Edm.Binary" />
+        <Property Name="BooleanProperty" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="ByteProperty" Type="Edm.Byte" Nullable="false" />
+        <Property Name="DateProperty" Type="Edm.Date" Nullable="false" />
+        <Property Name="DateTimeOffsetProperty" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="DecimalProperty" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="DoubleProperty" Type="Edm.Double" Nullable="false" />
+        <Property Name="DurationProperty" Type="Edm.Duration" Nullable="false" />
+        <Property Name="GuidProperty" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Int16Property" Type="Edm.Int16" Nullable="false" />
+        <Property Name="Int32Property" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Int64Property" Type="Edm.Int64" Nullable="false" />
+        <Property Name="SingleProperty" Type="Edm.Single" Nullable="false" />
+        <Property Name="StringProperty" Type="Edm.String" />
+        <Property Name="TimeOfDayProperty" Type="Edm.TimeOfDay" Nullable="false" />
+      </ComplexType>
+      <Function Name="PublishBook">
+        <Parameter Name="IsActive" Type="Edm.Boolean" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Function>
+      <EntityContainer Name="Container">
+        <EntitySet Name="Books" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
+          <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
+        </EntitySet>
+        <EntitySet Name="Publishers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher">
+          <NavigationPropertyBinding Path="Books" Target="Books" />
+        </EntitySet>
+        <EntitySet Name="Readers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Employee" />
+        <FunctionImport Name="PublishBook" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBook" EntitySet="Books" />
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

@@ -3,167 +3,109 @@
 
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Xunit;
+using CloudNimble.Breakdance.Restier;
+using CloudNimble.Breakdance.WebApi;
+using FluentAssertions;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNet
 {
-    public class RestierControllerTests
+
+    [TestClass]
+    public class RestierControllerTests : RestierTestBase
     {
-        private HttpClient client;
 
-        public RestierControllerTests()
-        {
-            var configuration = new HttpConfiguration();
-            configuration.MapRestierRoute<StoreApi>("store", "store").Wait();
-            client = new HttpClient(new HttpServer(configuration));
-        }
-
-        [Fact]
-        public async Task MetadataTest()
-        {
-            const string expected = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<edmx:Edmx Version=""4.0"" xmlns:edmx=""http://docs.oasis-open.org/odata/ns/edmx"">
-  <edmx:DataServices>
-    <Schema Namespace=""Microsoft.Restier.Tests.AspNet"" xmlns=""http://docs.oasis-open.org/odata/ns/edm"">
-      <EntityType Name=""Product"">
-        <Key>
-          <PropertyRef Name=""Id"" />
-        </Key>
-        <Property Name=""Id"" Type=""Edm.Int32"" Nullable=""false"" />
-        <Property Name=""Name"" Type=""Edm.String"" />
-        <Property Name=""Addr"" Type=""Microsoft.Restier.Tests.AspNet.Address"" Nullable=""false"" />
-        <Property Name=""Addr2"" Type=""Microsoft.Restier.Tests.AspNet.Address"" />
-        <Property Name=""Addr3"" Type=""Microsoft.Restier.Tests.AspNet.Address"" />
-      </EntityType>
-      <EntityType Name=""Customer"">
-        <Key>
-          <PropertyRef Name=""Id"" />
-        </Key>
-        <Property Name=""Id"" Type=""Edm.Int16"" Nullable=""false"" />
-      </EntityType>
-      <EntityType Name=""Store"">
-        <Key>
-          <PropertyRef Name=""Id"" />
-        </Key>
-        <Property Name=""Id"" Type=""Edm.Int64"" Nullable=""false"" />
-      </EntityType>
-      <ComplexType Name=""Address"">
-        <Property Name=""Zip"" Type=""Edm.Int32"" Nullable=""false"" />
-      </ComplexType>
-      <Function Name=""GetBestProduct"">
-        <ReturnType Type=""Microsoft.Restier.Tests.AspNet.Product"" />
-      </Function>
-      <Action Name=""RemoveWorstProduct"">
-        <ReturnType Type=""Microsoft.Restier.Tests.AspNet.Product"" />
-      </Action>
-      <EntityContainer Name=""Container"">
-        <EntitySet Name=""Products"" EntityType=""Microsoft.Restier.Tests.AspNet.Product"" />
-        <EntitySet Name=""Customers"" EntityType=""Microsoft.Restier.Tests.AspNet.Customer"" />
-        <EntitySet Name=""Stores"" EntityType=""Microsoft.Restier.Tests.AspNet.Store"" />
-        <FunctionImport Name=""GetBestProduct"" Function=""Microsoft.Restier.Tests.AspNet.GetBestProduct"" EntitySet=""Products"" IncludeInServiceDocument=""true"" />
-        <ActionImport Name=""RemoveWorstProduct"" Action=""Microsoft.Restier.Tests.AspNet.RemoveWorstProduct"" EntitySet=""Products"" />
-      </EntityContainer>
-    </Schema>
-  </edmx:DataServices>
-</edmx:Edmx>";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/$metadata");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml"));
-            var response = await client.SendAsync(request);
-            var result = await response.Content.ReadAsStringAsync();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(expected.Replace(" ", "").Replace("\r\n", ""), result.Replace(" ", ""));
-        }
-
-        [Fact]
+        [TestMethod]
         public async Task GetTest()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/Products(1)");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products(1)");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.IsSuccessStatusCode.Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GetNonExistingEntityTest()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/Products(-1)");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products(-1)");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task PostTest()
         {
-            const string payload = "{'Name': 'var1', 'Addr':{'Zip':330}}";
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/Products")
+            var payload = new
             {
-                Content = new StringContent(payload, Encoding.UTF8, "application/json")
+                Name = "var1",
+                Addr = new Address { Zip = 330 }
             };
 
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/Products", payload: payload, acceptHeader: WebApiConstants.DefaultAcceptHeader);
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task FunctionImportNotInModelShouldReturnNotFound()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/GetBestProduct2");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct2");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task FunctionImportNotInControllerShouldReturnNotImplemented()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/GetBestProduct");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotImplemented, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ActionImportNotInModelShouldReturnNotFound()
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/RemoveWorstProduct2");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct2");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ActionImportNotInControllerShouldReturnNotImplemented()
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/RemoveWorstProduct");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            var response = await client.SendAsync(request);
-            // TODO standalone testing shows 501, but here is 500, will figure out detail reason
-            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/RemoveWorstProduct");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GetActionImportShouldReturnNotFound()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/store/RemoveWorstProduct");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task PostFunctionImportShouldReturnNotFound()
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://host/store/GetBestProduct");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/GetBestProduct");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
+
     }
+
 }

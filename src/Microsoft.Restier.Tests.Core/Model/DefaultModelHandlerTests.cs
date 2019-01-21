@@ -5,15 +5,80 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Core.Tests.Model
+namespace Microsoft.Restier.Tests.Core.Model
 {
-    public class DefaultModelHandlerTests
+
+    [TestClass]
+    public class DefaultModelHandlerTests : RestierTestBase
     {
+
+        [TestMethod]
+        public async Task GetModelUsingDefaultModelHandler()
+        {
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestApiA>();
+            model.SchemaElements.Should().HaveCount(4);
+            model.SchemaElements.SingleOrDefault(e => e.Name == "TestName").Should().NotBeNull();
+            model.SchemaElements.SingleOrDefault(e => e.Name == "TestName2").Should().NotBeNull();
+            model.SchemaElements.SingleOrDefault(e => e.Name == "TestName3").Should().NotBeNull();
+            model.EntityContainer.Should().NotBeNull();
+            model.EntityContainer.Elements.SingleOrDefault(e => e.Name == "TestEntitySet").Should().NotBeNull();
+            model.EntityContainer.Elements.SingleOrDefault(e => e.Name == "TestEntitySet2").Should().NotBeNull();
+            model.EntityContainer.Elements.SingleOrDefault(e => e.Name == "TestEntitySet3").Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public async Task ModelBuilderShouldBeCalledOnlyOnceIfSucceeded()
+        {
+            using (var wait = new ManualResetEventSlim(false))
+            {
+                for (var i = 0; i < 2; i++)
+                {
+                    var container = new RestierContainerBuilder(typeof(TestApiB));
+                    var provider = container.BuildContainer();
+                    var tasks = PrepareThreads(50, provider, wait);
+                    wait.Set();
+
+                    var models = await Task.WhenAll(tasks);
+                    models.All(e => object.ReferenceEquals(e, models[42])).Should().BeTrue();
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task GetModelAsyncRetriableAfterFailure()
+        {
+            using (var wait = new ManualResetEventSlim(false))
+            {
+                var container = new RestierContainerBuilder(typeof(TestApiC));
+                var provider = container.BuildContainer();
+
+                var tasks = PrepareThreads(6, provider, wait);
+                wait.Set();
+
+                await Task.WhenAll(tasks).ContinueWith(t =>
+                {
+                    t.IsFaulted.Should().BeTrue();
+                    tasks.All(e => e.IsFaulted).Should().BeTrue() ;
+                });
+
+                tasks = PrepareThreads(150, provider, wait);
+
+                var models = await Task.WhenAll(tasks);
+                models.All(e => ReferenceEquals(e, models[42])).Should().BeTrue();
+            }
+        }
+
+        #region Test Resources
+
         private class TestApiA : ApiBase
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
@@ -101,42 +166,16 @@ namespace Microsoft.Restier.Core.Tests.Model
                     innerModel = await InnerHandler.GetModelAsync(context, cancellationToken);
                 }
 
-                var entityType = new EdmEntityType(
-                     "TestNamespace", "TestName" + _index);
+                var entityType = new EdmEntityType("TestNamespace", "TestName" + _index);
 
                 var model = innerModel as EdmModel;
-                Assert.NotNull(model);
+                model.Should().NotBeNull();
 
                 model.AddElement(entityType);
-                (model.EntityContainer as EdmEntityContainer)
-                    .AddEntitySet("TestEntitySet" + _index, entityType);
+                (model.EntityContainer as EdmEntityContainer).AddEntitySet("TestEntitySet" + _index, entityType);
 
                 return model;
             }
-        }
-
-        [Fact]
-        public async Task GetModelUsingDefaultModelHandler()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiA));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var model = await api.GetModelAsync();
-            Assert.Equal(4, model.SchemaElements.Count());
-            Assert.NotNull(model.SchemaElements
-                .SingleOrDefault(e => e.Name == "TestName"));
-            Assert.NotNull(model.SchemaElements
-                .SingleOrDefault(e => e.Name == "TestName2"));
-            Assert.NotNull(model.SchemaElements
-                .SingleOrDefault(e => e.Name == "TestName3"));
-            Assert.NotNull(model.EntityContainer);
-            Assert.NotNull(model.EntityContainer.Elements
-                .SingleOrDefault(e => e.Name == "TestEntitySet"));
-            Assert.NotNull(model.EntityContainer.Elements
-                .SingleOrDefault(e => e.Name == "TestEntitySet2"));
-            Assert.NotNull(model.EntityContainer.Elements
-                .SingleOrDefault(e => e.Name == "TestEntitySet3"));
         }
 
         private class TestSingleCallModelBuilder : IModelBuilder
@@ -163,8 +202,7 @@ namespace Microsoft.Restier.Core.Tests.Model
                     // To make threads better aligned.
                     wait.Wait();
 
-                    var scopedProvider =
-                        provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
+                    var scopedProvider = provider.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider;
                     var api = scopedProvider.GetService<ApiBase>();
                     try
                     {
@@ -179,26 +217,8 @@ namespace Microsoft.Restier.Core.Tests.Model
                 tasks[inx] = source.Task;
             });
 
-            Assert.True(result.IsCompleted);
+            result.IsCompleted.Should().BeTrue();
             return tasks;
-        }
-
-        [Fact]
-        public async Task ModelBuilderShouldBeCalledOnlyOnceIfSucceeded()
-        {
-            using (var wait = new ManualResetEventSlim(false))
-            {
-                for (var i = 0; i < 2; i++)
-                {
-                    var container = new RestierContainerBuilder(typeof(TestApiB));
-                    var provider = container.BuildContainer();
-                    var tasks = PrepareThreads(50, provider, wait);
-                    wait.Set();
-
-                    var models = await Task.WhenAll(tasks);
-                    Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));
-                }
-            }
         }
 
         private class TestRetryModelBuilder : IModelBuilder
@@ -217,28 +237,9 @@ namespace Microsoft.Restier.Core.Tests.Model
             }
         }
 
-        [Fact]
-        public async Task GetModelAsyncRetriableAfterFailure()
-        {
-            using (var wait = new ManualResetEventSlim(false))
-            {
-                var container = new RestierContainerBuilder(typeof(TestApiC));
-                var provider = container.BuildContainer();
+        #endregion
 
-                var tasks = PrepareThreads(6, provider, wait);
-                wait.Set();
 
-                await Task.WhenAll(tasks).ContinueWith(t =>
-                {
-                    Assert.True(t.IsFaulted);
-                    Assert.True(tasks.All(e => e.IsFaulted));
-                });
 
-                tasks = PrepareThreads(150, provider, wait);
-
-                var models = await Task.WhenAll(tasks);
-                Assert.True(models.All(e => object.ReferenceEquals(e, models[42])));
-            }
-        }
     }
 }

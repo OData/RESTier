@@ -2,14 +2,157 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Xunit;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Core.Tests
+namespace Microsoft.Restier.Tests.Core
 {
-    public class ServiceConfigurationTests
+
+    [TestClass]
+    public class ServiceConfigurationTests : RestierTestBase
     {
+
+        [TestMethod]
+        public async Task ContributorsAreCalledCorrectly()
+        {
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiA>();
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("03210");
+        }
+
+        [TestMethod]
+        public async Task NextInjectedViaProperty()
+        {
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiB>();
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("01");
+        }
+
+        [TestMethod]
+        public async Task ContextApiScopeWorksCorrectly()
+        {
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiC>();
+            var service1 = api.GetApiService<ISomeService>();
+
+            var api2 = await RestierTestHelpers.GetTestableApiInstance<TestApiC>();
+            var service2 = api2.GetApiService<ISomeService>();
+
+            service1.Should().NotBe(service2);
+
+            var api3 = await RestierTestHelpers.GetTestableApiInstance<TestApiC>();
+            var service3 = api3.GetApiService<ISomeService>();
+
+            service3.Should().NotBe(service2);
+        }
+
+        //RWM: I don't think this actually tests anything of value.
+        [TestMethod]
+        public async Task NothingInjectedStillWorks()
+        {
+            // Outmost service does not call inner service
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiD>();
+
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("42");
+
+            // Test expression compilation. (RWM: I don't think this works the way they thought it did.)
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("42");
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("42");
+        }
+
+        [TestMethod]
+        public void ServiceInjectedViaProperty()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApiE));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
+            var expected = "Text42";
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be(expected);
+
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be(expected);
+
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be(expected);
+
+            api.GetApiService<ISomeService>().Should().NotBe(api.GetApiService<ISomeService>());
+        }
+
+        [TestMethod]
+        public void DefaultValueInConstructorUsedIfNoService()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApiF));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("42");
+
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("42");
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("42");
+        }
+
+
+        [TestMethod]
+        public void MultiInjectionViaConstructor()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApiG));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("0122");
+
+            // Test expression compilation
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("0122");
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("0122");
+        }
+
+        [TestMethod]
+        public void NextInjectedWithInheritedField()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApiI));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+
+            var value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("4200");
+
+            // Test expression compilation
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("4200");
+            value = api.GetApiService<ISomeService>().Call();
+            value.Should().Be("4200");
+        }
+
+        #region Exceptions
+
+        [TestMethod]
+        public async Task ThrowOnNoServiceFound()
+        {
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiH>();
+
+            Action exceptionTest = () => { api.GetApiService<ISomeService>(); };
+            exceptionTest.Should().Throw<InvalidOperationException>();
+        }
+
+        #endregion
+
+        #region Test Resources
+
         private class TestApiA : ApiBase
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
@@ -334,154 +477,9 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [Fact]
-        public void ContributorsAreCalledCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiA));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("03210", value);
-        }
-
-        [Fact]
-        public void NextInjectedViaProperty()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiB));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("01", value);
-
-            // Test expression compilation.
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("01", value);
-        }
-
-        [Fact]
-        public void ContextApiScopeWorksCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiC));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var service1 = api.GetApiService<ISomeService>();
-            
-            container = new RestierContainerBuilder(typeof(TestApiC));
-            provider = container.BuildContainer();
-            var api2 = provider.GetService<ApiBase>();
-
-            var service2 = api2.GetApiService<ISomeService>();
-
-            Assert.NotEqual(service1, service2);
-
-            container = new RestierContainerBuilder(typeof(TestApiC));
-            provider = container.BuildContainer();
-            var api3 = provider.GetService<ApiBase>();
-            var service3 = api3.GetApiService<ISomeService>();
-
-            Assert.NotEqual(service3, service2);
-        }
-
-        [Fact]
-        public void NothingInjectedStillWorks()
-        {
-            // Outmost service does not call inner service
-            var container = new RestierContainerBuilder(typeof(TestApiD));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-
-            // Test expression compilation.
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-        }
-
-        [Fact]
-        public void ServiceInjectedViaProperty()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiE));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var expected = "Text42";
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal(expected, value);
-
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal(expected, value);
-
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal(expected, value);
-
-            Assert.NotEqual(
-                api.GetApiService<ISomeService>(),
-                api.GetApiService<ISomeService>());
-        }
-
-        [Fact]
-        public void DefaultValueInConstructorUsedIfNoService()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiF));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("42", value);
-        }
+        #endregion
 
 
-        [Fact]
-        public void MultiInjectionViaConstructor()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiG));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("0122", value);
-
-            // Test expression compilation
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("0122", value);
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("0122", value);
-        }
-
-        [Fact]
-        public void ThrowOnNoServiceFound()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiH));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            Assert.Throws<InvalidOperationException>(() => { api.GetApiService<ISomeService>(); });
-        }
-
-        [Fact]
-        public void NextInjectedWithInheritedField()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApiI));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-
-            var value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("4200", value);
-
-            // Test expression compilation
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("4200", value);
-            value = api.GetApiService<ISomeService>().Call();
-            Assert.Equal("4200", value);
-        }
     }
+
 }

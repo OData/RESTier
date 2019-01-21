@@ -299,8 +299,7 @@ namespace Microsoft.Restier.Core.Query
                         // visited node represents the original starting
                         // point for the entire composed query, and thus
                         // it should produce a non-embedded expression.
-                        var constant = node as ConstantExpression;
-                        if (constant == null)
+                        if (!(node is ConstantExpression constant))
                         {
                             throw new NotSupportedException(Resources.OriginalExpressionShouldBeConstant);
                         }

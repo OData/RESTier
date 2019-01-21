@@ -1,154 +1,149 @@
-﻿using Microsoft.AspNet.OData.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNet.Model
 {
-    public class RestierModelExtenderTests
+
+    [TestClass]
+    public class RestierModelExtenderTests : RestierTestBase
     {
-        [Fact]
+
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceEmptyModelForEmptyApi()
         {
-            var model = await GetModelAsync<EmptyApi>();
-            Assert.Single(model.SchemaElements);
-            Assert.Empty(model.EntityContainer.Elements);
+            var model = await RestierTestHelpers.GetTestableModelAsync<EmptyApi>();
+            model.SchemaElements.Should().HaveCount(1);
+            model.EntityContainer.Elements.Should().BeEmpty();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForBasicScenario()
         {
-            var model = await GetModelAsync<ApiA>();
-            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
-            Assert.NotNull(model.EntityContainer.FindSingleton("Me"));
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiA>();
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
+            model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
+            model.EntityContainer.FindSingleton("Me").Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForDerivedApi()
         {
-            var model = await GetModelAsync<ApiB>();
-            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
-            Assert.NotNull(model.EntityContainer.FindEntitySet("Customers"));
-            Assert.NotNull(model.EntityContainer.FindSingleton("Me"));
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiB>();
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
+            model.EntityContainer.FindEntitySet("Customers").Should().NotBeNull();
+            model.EntityContainer.FindSingleton("Me").Should().NotBeNull();
+            model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForOverridingProperty()
         {
-            var model = await GetModelAsync<ApiC>();
-            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.NotNull(model.EntityContainer.FindEntitySet("People"));
-            Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
-            Assert.Equal("Customer", model.EntityContainer.FindSingleton("Me").EntityType().Name);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC>();
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
+            model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
+            model.EntityContainer.FindEntitySet("Customers").EntityType().Name.Should().Be("Customer");
+            model.EntityContainer.FindSingleton("Me").EntityType().Name.Should().Be("Customer");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForIgnoringInheritedProperty()
         {
-            var model = await GetModelAsync<ApiD>();
-            Assert.DoesNotContain("ApiConfiguration", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.DoesNotContain("Invisible", model.EntityContainer.Elements.Select(e => e.Name));
-            Assert.Equal("Customer", model.EntityContainer.FindEntitySet("Customers").EntityType().Name);
-            Assert.Equal("Customer", model.EntityContainer.FindSingleton("Me").EntityType().Name);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiD>();
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
+            model.EntityContainer.FindEntitySet("Customers").EntityType().Name.Should().Be("Customer");
+            model.EntityContainer.FindSingleton("Me").EntityType().Name.Should().Be("Customer");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldSkipEntitySetWithUndeclaredType()
         {
-            var model = await GetModelAsync<ApiE>();
-            Assert.Equal("Person", model.EntityContainer.FindEntitySet("People").EntityType().Name);
-            Assert.DoesNotContain("Orders", model.EntityContainer.Elements.Select(e => e.Name));
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiE>();
+            model.EntityContainer.FindEntitySet("People").EntityType().Name.Should().Be("Person");
+            model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Orders");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldSkipExistingEntitySet()
         {
-            var model = await GetModelAsync<ApiF>();
-            Assert.Equal("VipCustomer", model.EntityContainer.FindEntitySet("VipCustomers").EntityType().Name);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiF>();
+            model.EntityContainer.FindEntitySet("VipCustomers").EntityType().Name.Should().Be("VipCustomer");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldCorrectlyAddBindingsForCollectionNavigationProperty()
         {
             // In this case, only one entity set People has entity type Person.
             // Bindings for collection navigation property Customer.Friends should be added.
             // Bindings for singleton navigation property Customer.BestFriend should be added.
-            var model = await GetModelAsync<ApiC>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC>();
 
             var customersBindings = model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.ToArray();
 
             var friendsBinding = customersBindings.FirstOrDefault(c => c.NavigationProperty.Name == "Friends");
-            Assert.NotNull(friendsBinding);
-            Assert.Equal("People", friendsBinding.Target.Name);
+            friendsBinding.Should().NotBeNull();
+            friendsBinding.Target.Name.Should().Be("People");
 
             var bestFriendBinding = customersBindings.FirstOrDefault(c => c.NavigationProperty.Name == "BestFriend");
-            Assert.NotNull(bestFriendBinding);
-            Assert.Equal("People", bestFriendBinding.Target.Name);
+            bestFriendBinding.Should().NotBeNull();
+            bestFriendBinding.Target.Name.Should().Be("People");
 
             var meBindings = model.EntityContainer.FindSingleton("Me").NavigationPropertyBindings.ToArray();
 
             var friendsBinding2 = meBindings.FirstOrDefault(c => c.NavigationProperty.Name == "Friends");
-            Assert.NotNull(friendsBinding2);
-            Assert.Equal("People", friendsBinding2.Target.Name);
+            friendsBinding2.Should().NotBeNull();
+            friendsBinding2.Target.Name.Should().Be("People");
 
             var bestFriendBinding2 = meBindings.FirstOrDefault(c => c.NavigationProperty.Name == "BestFriend");
-            Assert.NotNull(bestFriendBinding2);
-            Assert.Equal("People", bestFriendBinding2.Target.Name);
+            bestFriendBinding2.Should().NotBeNull();
+            bestFriendBinding2.Target.Name.Should().Be("People");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldCorrectlyAddBindingsForSingletonNavigationProperty()
         {
             // In this case, only one singleton Me has entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should be added.
-            var model = await GetModelAsync<ApiH>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiH>();
             var binding = model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.Single();
-            Assert.Equal("BestFriend", binding.NavigationProperty.Name);
-            Assert.Equal("Me", binding.Target.Name);
+            binding.NavigationProperty.Name.Should().Be("BestFriend");
+            binding.Target.Name.Should().Be("Me");
             binding = model.EntityContainer.FindSingleton("Me2").NavigationPropertyBindings.Single();
-            Assert.Equal("BestFriend", binding.NavigationProperty.Name);
-            Assert.Equal("Me", binding.Target.Name);
+            binding.NavigationProperty.Name.Should().Be("BestFriend");
+            binding.Target.Name.Should().Be("Me");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ApiModelBuilder_ShouldNotAddAmbiguousNavigationPropertyBindings()
         {
             // In this case, two entity sets Employees and People have entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should NOT be added.
-            var model = await GetModelAsync<ApiG>();
-            Assert.Empty(model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings);
-            Assert.Empty(model.EntityContainer.FindSingleton("Me").NavigationPropertyBindings);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiG>();
+            model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.Should().BeEmpty();
+            model.EntityContainer.FindSingleton("Me").NavigationPropertyBindings.Should().BeEmpty();
         }
 
-        private async Task<IEdmModel> GetModelAsync<T>() where T : BaseApi
-        {
-            var config = new HttpConfiguration();
-            await config.MapRestierRoute<T>(
-                    "test", "api/test", null);
-
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/test");
-            request.SetConfiguration(config);
-            var api = request.CreateRequestContainer("test").GetService<ApiBase>();
-            return await api.GetModelAsync();
-        }
     }
+
+    #region Test Resources
 
     public class TestModelBuilder : IModelBuilder
     {
@@ -328,4 +323,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         {
         }
     }
+
+    #endregion
+
 }

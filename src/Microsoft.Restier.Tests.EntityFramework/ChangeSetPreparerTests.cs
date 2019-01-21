@@ -5,27 +5,31 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework.Tests.Models.Library;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.EntityFramework.Tests
 {
-    public class ChangeSetPreparerTests
+
+    [TestClass]
+    public class ChangeSetPreparerTests : RestierTestBase
     {
-        [Fact]
+
+        [TestMethod]
         public async Task ComplexTypeUpdate()
         {
             // Arrange
-            var container = new RestierContainerBuilder(typeof(LibraryApi));
-            var provider = container.BuildContainer();
-            var libraryApi = provider.GetService<ApiBase>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>();
+            var api = provider.GetTestableApiInstance<LibraryApi>();
 
             var item = new DataModificationItem(
                 "Readers",
-                typeof(Person),
+                typeof(Employee),
                 null,
                 RestierEntitySetOperation.Update, 
                 new Dictionary<string, object> { { "Id", new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461") } },
@@ -35,13 +39,13 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var sc = new SubmitContext(provider, changeSet);
 
             // Act
-            var changeSetPreparer = libraryApi.GetApiService<IChangeSetInitializer>();
+            var changeSetPreparer = api.GetApiService<IChangeSetInitializer>();
             await changeSetPreparer.InitializeAsync(sc, CancellationToken.None).ConfigureAwait(false);
-            var person = item.Resource as Person;
+            var person = item.Resource as Employee;
 
             // Assert
-            Assert.NotNull(person);
-            Assert.Equal("332", person.Addr.Zip);
+            person.Should().NotBeNull();
+            person.Addr.Zip.Should().Be("332");
         }
     }
 }
