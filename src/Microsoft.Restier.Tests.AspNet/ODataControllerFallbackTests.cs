@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,69 +18,61 @@ using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNet
 {
-    public class FallbackTests
+
+    [TestClass]
+    public class ODataControllerFallbackTests : RestierTestBase
     {
-        private HttpClient client;
 
-        public FallbackTests()
-        {
-            var configuration = new HttpConfiguration();
-            configuration.MapRestierRoute<FallbackApi>("fallback", "fallback").Wait();
-            client = new HttpClient(new HttpServer(configuration));
-        }
-
-        [Fact]
-        public async Task FallbackEntitySetTest()
+        [TestMethod]
+        public async Task FallbackApi_EntitySet_ShouldFallBack()
         {
             // Should fallback to PeopleController.
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/People");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(999, ((Person[])((ObjectContent)response.Content).Value).Single().Id);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People");
+            TestContext.WriteLine(await response.Content.ReadAsStringAsync());
+            response.IsSuccessStatusCode.Should().BeTrue();
+            ((Person[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(999);
         }
 
-        [Fact]
-        public async Task FallbackNavigationPropertyTest()
+        [TestMethod]
+        public async Task FallbackApi_NavigationProperty_ShouldFallBack()
         {
             // Should fallback to PeopleController.
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/People(1)/Orders");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(123, ((Order[])((ObjectContent)response.Content).Value).Single().Id);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People(1)/Orders");
+            TestContext.WriteLine(await response.Content.ReadAsStringAsync());
+            response.IsSuccessStatusCode.Should().BeTrue();
+            ((Order[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(123);
         }
 
-        [Fact]
-        public async Task NonFallbackTest()
+        [TestMethod]
+        public async Task FallbackApi_EntitySet_ShouldNotFallBack()
         {
             // Should be routed to RestierController.
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/Orders");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var payload = await ((ObjectContent)response.Content).ReadAsStringAsync();
-            Assert.Contains("\"Id\":234", payload);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/Orders");
+            TestContext.WriteLine(await response.Content.ReadAsStringAsync());
+            response.IsSuccessStatusCode.Should().BeTrue();
+            (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");
         }
 
-        [Fact]
-        public async Task FallbackConventionBasedProviderTest()
+        [TestMethod]
+        public async Task FallbackApi_Resource_ShouldNotFallBack()
         {
             // Should be routed to RestierController.
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/fallback/PreservedOrders");
-            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json;odata.metadata=full"));
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var payload = await ((ObjectContent)response.Content).ReadAsStringAsync();
-            Assert.Contains("\"Id\":234", payload);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/PreservedOrders");
+            TestContext.WriteLine(await response.Content.ReadAsStringAsync());
+            response.IsSuccessStatusCode.Should().BeTrue();
+            (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");
         }
+
     }
 
-    public static class FallbackModel
+    #region Test Resources
+
+    internal static class FallbackModel
     {
         public static EdmModel Model { get; private set; }
 
@@ -113,6 +105,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public FallbackApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     public class PeopleController : ODataController
@@ -138,19 +131,19 @@ namespace Microsoft.Restier.Tests.AspNet
         }
     }
 
-    class Person
+    internal class Person
     {
         public int Id { get; set; }
 
         public IEnumerable<Order> Orders { get; set; }
     }
 
-    class Order
+    internal class Order
     {
         public int Id { get; set; }
     }
 
-    class FallbackQueryExpressionSourcer : IQueryExpressionSourcer
+    internal class FallbackQueryExpressionSourcer : IQueryExpressionSourcer
     {
         public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
         {
@@ -171,7 +164,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
     }
 
-    class FallbackModelMapper : IModelMapper
+    internal class FallbackModelMapper : IModelMapper
     {
         public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
         {
@@ -182,4 +175,8 @@ namespace Microsoft.Restier.Tests.AspNet
 
         public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType) => TryGetRelevantType(context, name, out relevantType);
     }
+
+    #endregion
+
+
 }

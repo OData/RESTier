@@ -2,53 +2,61 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Xunit;
+using FluentAssertions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Core.Tests
+namespace Microsoft.Restier.Tests.Core
 {
-    public class DataSourceStubsTests
+
+    [TestClass]
+    public class DataSourceStubsTests : RestierTestBase
     {
-        [Fact]
+        [TestMethod]
         public void SourceOfEntityContainerElementIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSource<object>("EntitySet"));
+            Action invalidOperation = () => { DataSourceStub.GetQueryableSource<object>("EntitySet"); };
+            invalidOperation.Should().Throw<InvalidOperationException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void SourceOfComposableFunctionIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetQueryableSource<object>("Namespace", "Function"));
+            Action invalidOperation = () => { DataSourceStub.GetQueryableSource<object>("Namespace", "Function"); };
+            invalidOperation.Should().Throw<InvalidOperationException>();
         }
 
         // TODO enable these when function/action is supported.
-        //[Fact]
+        //[TestMethod]
         //public void ResultsOfEntityContainerElementIsNotCallable()
         //{
         //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Results<object>("EntitySet"));
         //}
 
-        //[Fact]
+        //[TestMethod]
         //public void ResultOfEntityContainerElementIsNotCallable()
         //{
         //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Result<object>("Singleton"));
         //}
 
-        //[Fact]
+        //[TestMethod]
         //public void ResultsOfComposableFunctionIsNotCallable()
         //{
         //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Results<object>("Namespace", "Function"));
         //}
 
-        //[Fact]
+        //[TestMethod]
         //public void ResultOfComposableFunctionIsNotCallable()
         //{
         //    Assert.Throws<InvalidOperationException>(() => DataSourceStub.Result<object>("Namespace", "Function"));
         //}
 
-        [Fact]
+        [TestMethod]
         public void ValueIsNotCallable()
         {
-            Assert.Throws<InvalidOperationException>(() => DataSourceStub.GetPropertyValue<object>(new object(), "Property"));
+            Action invalidOperation = () => { DataSourceStub.GetPropertyValue<object>(new object(), "Property"); };
+            invalidOperation.Should().Throw<InvalidOperationException>();
         }
     }
 }

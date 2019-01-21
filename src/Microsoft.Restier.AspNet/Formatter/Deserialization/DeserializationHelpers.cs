@@ -31,8 +31,7 @@ namespace Microsoft.Restier.AspNet.Formatter
                 Request = request
             };
 
-            var returnValue = ODataModelBinderConverter.Convert(
-                odataValue, propertyType, expectedReturnType, parameterName, readContext, serviceProvider);
+            var returnValue = ODataModelBinderConverter.Convert(odataValue, propertyType, expectedReturnType, parameterName, readContext, serviceProvider);
 
             if (!propertyType.IsCollection())
             {

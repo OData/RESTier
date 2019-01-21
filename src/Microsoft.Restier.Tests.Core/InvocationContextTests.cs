@@ -2,14 +2,40 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Xunit;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Core.Tests
+namespace Microsoft.Restier.Tests.Core
 {
-    public class InvocationContextTests
+
+    [TestClass]
+    public class InvocationContextTests : RestierTestBase
     {
+
+        [TestMethod]
+        public void InvocationContext_IsConfiguredCorrectly()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var api = provider.GetService<ApiBase>();
+            var context = new InvocationContext(provider);
+            context.GetApiService<ApiBase>().Should().BeSameAs(api);
+        }
+
+        [TestMethod]
+        public void InvocationContext_GetsApiServicesCorrectly()
+        {
+            var container = new RestierContainerBuilder(typeof(TestApi));
+            var provider = container.BuildContainer();
+            var context = new InvocationContext(provider);
+            context.GetApiService<IServiceA>().Should().BeSameAs(TestApi.ApiService);
+        }
+
+        #region Test Resources
+
         private class TestApi : ApiBase
         {
             private static ApiServiceA _service;
@@ -39,25 +65,6 @@ namespace Microsoft.Restier.Core.Tests
             }
         }
 
-        [Fact]
-        public void NewInvocationContextIsConfiguredCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApi));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var context = new InvocationContext(provider);
-            Assert.Same(api, context.GetApiService<ApiBase>());
-        }
-
-        [Fact]
-        public void InvocationContextGetsApiServicesCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApi));
-            var provider = container.BuildContainer();
-            var context = new InvocationContext(provider);
-            Assert.Same(TestApi.ApiService, context.GetApiService<IServiceA>());
-        }
-
         private interface IServiceA
         {
         }
@@ -65,5 +72,8 @@ namespace Microsoft.Restier.Core.Tests
         private class ApiServiceA : IServiceA
         {
         }
+
+        #endregion
+
     }
 }

@@ -2,89 +2,93 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using FluentAssertions;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Submit;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Core.Tests
+namespace Microsoft.Restier.Tests.Core
 {
-    public class ConventionBasedMethodNameFactoryTests
+
+    [TestClass]
+    public class ConventionBasedMethodNameFactoryTests : RestierTestBase
     {
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Insert_PreSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Insert, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PreSubmit);
-            Assert.Equal("OnInsertingString", name);
+            name.Should().Be("OnInsertingString");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Insert_PostSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Insert, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PostSubmit);
-            Assert.Equal("OnInsertedString", name);
+            name.Should().Be("OnInsertedString");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Update_PreSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Update, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PreSubmit);
-            Assert.Equal("OnUpdatingString", name);
+            name.Should().Be("OnUpdatingString");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Update_PostSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Update, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PostSubmit);
-            Assert.Equal("OnUpdatedString", name);
+            name.Should().Be("OnUpdatedString");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Delete_PreSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Delete, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PreSubmit);
-            Assert.Equal("OnDeletingString", name);
+            name.Should().Be("OnDeletingString");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Delete_PostSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Delete, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PostSubmit);
-            Assert.Equal("OnDeletedString", name);
+            name.Should().Be("OnDeletedString");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Filter_PreSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Filter, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PreSubmit);
-            Assert.Equal("", name);
+            name.Should().Be("");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Filter_Submit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Filter, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.Submit);
-            Assert.Equal("OnFilterTestItems", name);
+            name.Should().Be("OnFilterTestItems");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_Filter_PostSubmit()
         {
             var item = new DataModificationItem("TestItems", typeof(string), typeof(string), RestierEntitySetOperation.Filter, null, null, null);
             var name = ConventionBasedMethodNameFactory.GetEntitySetMethodName(item, RestierPipelineState.PostSubmit);
-            Assert.Equal("", name);
+            name.Should().Be("");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_ExecuteMethod_Authorize()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
@@ -92,11 +96,11 @@ namespace Microsoft.Restier.Core.Tests
 
             var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Authorization, RestierOperationMethod.Execute);
-            Assert.Equal("CanExecuteTestMethod", name);
+            name.Should().Be("CanExecuteTestMethod");
         }
 
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_ExecuteMethod_PreSubmit()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
@@ -104,10 +108,10 @@ namespace Microsoft.Restier.Core.Tests
 
             var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.PreSubmit, RestierOperationMethod.Execute);
-            Assert.Equal("OnExecutingTestMethod", name);
+            name.Should().Be("OnExecutingTestMethod");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_ExecuteMethod_Submit()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
@@ -115,10 +119,10 @@ namespace Microsoft.Restier.Core.Tests
 
             var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Submit, RestierOperationMethod.Execute);
-            Assert.Equal("", name);
+            name.Should().Be("");
         }
 
-        [Fact]
+        [TestMethod]
         public void ConventionBasedMethodNameFactory_ExecuteMethod_PostSubmit()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
@@ -126,7 +130,7 @@ namespace Microsoft.Restier.Core.Tests
 
             var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.PostSubmit, RestierOperationMethod.Execute);
-            Assert.Equal("OnExecutedTestMethod", name);
+            name.Should().Be("OnExecutedTestMethod");
         }
 
 

@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20190120-053305" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
-    <ProjectReference Include="..\src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
-    <ProjectReference Include="..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,37 @@
+------------------------------------------------------------
+Function Name                                      |  Found?
+------------------------------------------------------------
+CanInsertBook                                      |   False
+CanUpdateBook                                      |   False
+CanDeleteBook                                      |   False
+OnInsertingBook                                    |   False
+OnUpdatingBook                                     |   False
+OnDeletingBook                                     |   False
+OnFilterBooks                                      |   False
+OnInsertedBook                                     |   False
+OnUpdatedBook                                      |   False
+OnDeletedBook                                      |   False
+CanInsertPublisher                                 |   False
+CanUpdatePublisher                                 |   False
+CanDeletePublisher                                 |   False
+OnInsertingPublisher                               |   False
+OnUpdatingPublisher                                |   False
+OnDeletingPublisher                                |   False
+OnFilterPublishers                                 |   False
+OnInsertedPublisher                                |   False
+OnUpdatedPublisher                                 |   False
+OnDeletedPublisher                                 |   False
+CanInsertEmployee                                  |   False
+CanUpdateEmployee                                  |   False
+CanDeleteEmployee                                  |   False
+OnInsertingEmployee                                |   False
+OnUpdatingEmployee                                 |   False
+OnDeletingEmployee                                 |   False
+OnFilterReaders                                    |   False
+OnInsertedEmployee                                 |   False
+OnUpdatedEmployee                                  |   False
+OnDeletedEmployee                                  |   False
+CanExecutePublishBook                              |   False
+OnExecutingPublishBook                             |   False
+OnExecutedPublishBook                              |   False
+------------------------------------------------------------

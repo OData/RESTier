@@ -9,21 +9,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 {
 
-    /// <summary>
-    /// 
-    /// </summary>
     [TestClass]
-    public class ExpandTests : RestierTestBase
+    public class FunctionTests : RestierTestBase
     {
 
+        [Ignore]
         [TestMethod]
-        public async Task CountPlusExpandShouldntThrowExceptions()
+        public async Task FunctionParameters_BooleanParameter ()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers?$expand=Books");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBook(IsActive=true)");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
-            content.Should().Contain("A Clockwork Orange");
+            content.Should().Contain("in the Hat");
         }
 
     }

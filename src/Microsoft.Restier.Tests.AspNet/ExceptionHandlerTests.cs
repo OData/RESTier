@@ -4,34 +4,32 @@ using System.Net;
 using System.Net.Http;
 using System.Security;
 using System.Threading.Tasks;
-using System.Web.Http;
+using CloudNimble.Breakdance.Restier;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
-using Xunit;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNet
 {
-    public class ExceptionHandlerTests
+
+    [TestClass]
+    public class ExceptionHandlerTests : RestierTestBase
     {
-        private HttpClient client;
 
-        public ExceptionHandlerTests()
-        {
-            var configuration = new HttpConfiguration();
-            configuration.MapRestierRoute<ExcApi>("Exc", "Exc").Wait();
-            client = new HttpClient(new HttpServer(configuration));
-        }
-
-        [Fact]
+        [TestMethod]
         public async Task ShouldReturn403HandlerThrowsSecurityException()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://host/Exc/Products");
-            var response = await client.SendAsync(request);
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            var response = await RestierTestHelpers.ExecuteTestRequest<SecurityExceptionApi>(HttpMethod.Get, resource: "/Products");
+            response.IsSuccessStatusCode.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        private class ExcApi : StoreApi
+        #region Test Resources
+
+        private class SecurityExceptionApi : StoreApi
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
@@ -39,7 +37,7 @@ namespace Microsoft.Restier.Tests.AspNet
                     .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
 
-            public ExcApi(IServiceProvider serviceProvider) : base(serviceProvider)
+            public SecurityExceptionApi(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }
         }
@@ -51,5 +49,8 @@ namespace Microsoft.Restier.Tests.AspNet
                 throw new SecurityException();
             }
         }
+
+        #endregion
+
     }
 }
