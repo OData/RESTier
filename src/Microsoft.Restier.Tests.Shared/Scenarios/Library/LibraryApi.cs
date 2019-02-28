@@ -34,5 +34,27 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
+        [Operation(HasSideEffects = false)]
+        public Book PublishBooks(int Count)
+        {
+            Console.WriteLine($"Count = {Count}");
+            return new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "The Cat in the Hat Comes Back"
+            };
+        }
+
+        [Operation(HasSideEffects = false)]
+        public Book SubmitTransaction(Guid Id)
+        {
+            Console.WriteLine($"Id = {Id}");
+            return new Book
+            {
+                Id = Id,
+                Title = "Atlas Shrugged"
+            };
+        }
+
     }
 }

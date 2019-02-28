@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
@@ -13,7 +14,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     public class FunctionTests : RestierTestBase
     {
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public async Task FunctionParameters_BooleanParameter ()
         {
@@ -22,6 +23,30 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
             content.Should().Contain("in the Hat");
+        }
+
+        //[Ignore]
+        [TestMethod]
+        public async Task FunctionParameters_IntParameter()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBooks(Count=5)");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Comes Back");
+        }
+
+        //[Ignore]
+        [TestMethod]
+        public async Task FunctionParameters_GuidParameter()
+        {
+            var testGuid = Guid.NewGuid();
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/SubmitTransaction(Id={testGuid})");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain(testGuid.ToString());
+            content.Should().Contain("Shrugged");
         }
 
     }
