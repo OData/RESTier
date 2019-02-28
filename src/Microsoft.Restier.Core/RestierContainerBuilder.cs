@@ -90,7 +90,7 @@ namespace Microsoft.Restier.Core
             IEdmModel modelFactory(IServiceProvider sp)
             {
                 var api = sp.GetService<ApiBase>();
-                var model = api.GetModelAsync(default).Result;
+                var model = api.GetModelAsync(default).GetAwaiter().GetResult();
                 return model;
             }
 
