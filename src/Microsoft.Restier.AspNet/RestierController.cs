@@ -248,6 +248,7 @@ namespace Microsoft.Restier.AspNet
         public async Task<HttpResponseMessage> PostAction(
             ODataActionParameters parameters, CancellationToken cancellationToken)
         {
+            CheckModelState();
             var path = GetPath();
 
             var lastSegment = path.Segments.LastOrDefault();

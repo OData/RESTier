@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20190120-053305" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.0" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.1-Nightly201903011400" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Microsoft.OData.Core" Version="7.5.3" />

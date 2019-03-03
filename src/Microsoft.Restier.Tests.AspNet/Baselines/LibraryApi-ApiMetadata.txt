@@ -51,6 +51,18 @@
         <Parameter Name="IsActive" Type="Edm.Boolean" Nullable="false" />
         <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
       </Function>
+      <Function Name="PublishBooks">
+        <Parameter Name="Count" Type="Edm.Int32" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Function>
+      <Function Name="SubmitTransaction">
+        <Parameter Name="Id" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Function>
+      <Action Name="CheckoutBook">
+        <Parameter Name="book" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Action>
       <EntityContainer Name="Container">
         <EntitySet Name="Books" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
           <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
@@ -60,6 +72,9 @@
         </EntitySet>
         <EntitySet Name="Readers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Employee" />
         <FunctionImport Name="PublishBook" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBook" EntitySet="Books" />
+        <FunctionImport Name="PublishBooks" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBooks" EntitySet="Books" />
+        <FunctionImport Name="SubmitTransaction" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.SubmitTransaction" EntitySet="Books" />
+        <ActionImport Name="CheckoutBook" Action="Microsoft.Restier.Tests.Shared.Scenarios.Library.CheckoutBook" EntitySet="Books" />
       </EntityContainer>
     </Schema>
   </edmx:DataServices>
