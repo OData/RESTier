@@ -34,4 +34,13 @@ OnDeletedEmployee                                  |   False
 CanExecutePublishBook                              |   False
 OnExecutingPublishBook                             |   False
 OnExecutedPublishBook                              |   False
+CanExecutePublishBooks                             |   False
+OnExecutingPublishBooks                            |   False
+OnExecutedPublishBooks                             |   False
+CanExecuteSubmitTransaction                        |   False
+OnExecutingSubmitTransaction                       |   False
+OnExecutedSubmitTransaction                        |   False
+CanExecuteCheckoutBook                             |   False
+OnExecutingCheckoutBook                            |   False
+OnExecutedCheckoutBook                             |   False
 ------------------------------------------------------------
