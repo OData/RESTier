@@ -1,4 +1,6 @@
-namespace ChinookRESTierAPI.Models
+using Microsoft.Restier.Samples.Chinook.Api.Models;
+
+namespace Microsoft.Restier.Samples.Chinook.Api.Models
 {
     using System.Data.Entity;
 

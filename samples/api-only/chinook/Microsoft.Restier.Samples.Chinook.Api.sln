@@ -1,11 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.438
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinookRESTierAPI", "ChinookRESTierAPI\ChinookRESTierAPI.csproj", "{A0920D03-AB1D-4F56-ABF7-2C694E100F09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Chinook.Api", "Microsoft.Restier.Samples.Chinook.Api\Microsoft.Restier.Samples.Chinook.Api.csproj", "{A0920D03-AB1D-4F56-ABF7-2C694E100F09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinookRESTierAPI.Tests", "ChinookRESTierAPI.Tests\ChinookRESTierAPI.Tests.csproj", "{41BAC0CC-C2B0-47B8-91C6-8E0E9FCBCF44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Chinook.Tests.Api", "Microsoft.Restier.Samples.Chinook.Tests.Api\Microsoft.Restier.Samples.Chinook.Tests.Api.csproj", "{41BAC0CC-C2B0-47B8-91C6-8E0E9FCBCF44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,11 +18,5 @@ Global
 		{41BAC0CC-C2B0-47B8-91C6-8E0E9FCBCF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41BAC0CC-C2B0-47B8-91C6-8E0E9FCBCF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41BAC0CC-C2B0-47B8-91C6-8E0E9FCBCF44}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {57EFA61A-86B6-417D-9F4F-38F9D802D930}
 	EndGlobalSection
 EndGlobal

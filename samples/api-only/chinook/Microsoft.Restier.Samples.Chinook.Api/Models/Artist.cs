@@ -1,29 +1,24 @@
-namespace ChinookRESTierAPI.Models
+namespace Microsoft.Restier.Samples.Chinook.Api.Models
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [Table("Album")]
-    public sealed class Album
+    [Table("Artist")]
+    public sealed class Artist
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Album()
+        public Artist()
         {
-            Tracks = new HashSet<Track>();
+            Albums = new HashSet<Album>();
         }
-
-        public int AlbumId { get; set; }
-
-        [Required]
-        [StringLength(160)]
-        public string Title { get; set; }
 
         public int ArtistId { get; set; }
 
-        public Artist Artist { get; set; }
+        [StringLength(120)]
+        public string Name { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public ICollection<Track> Tracks { get; set; }
+        public ICollection<Album> Albums { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ChinookRESTierAPI.Tests
+namespace Microsoft.Restier.Samples.Chinook.Tests.Api
 {
     [TestClass]
     public class UnitTest1

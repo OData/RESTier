@@ -1,19 +1,19 @@
-namespace ChinookRESTierAPI.Models
+namespace Microsoft.Restier.Samples.Chinook.Api.Models
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [Table("Genre")]
-    public sealed class Genre
+    [Table("Playlist")]
+    public sealed class Playlist
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Genre()
+        public Playlist()
         {
             Tracks = new HashSet<Track>();
         }
 
-        public int GenreId { get; set; }
+        public int PlaylistId { get; set; }
 
         [StringLength(120)]
         public string Name { get; set; }
