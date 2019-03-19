@@ -1,30 +1,38 @@
-namespace ChinookRESTierAPI.Models
+namespace Microsoft.Restier.Samples.Chinook.Api.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [Table("Customer")]
-    public sealed class Customer
+    [Table("Employee")]
+    public sealed class Employee
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Customer()
+        public Employee()
         {
-            Invoices = new HashSet<Invoice>();
+            Customers = new HashSet<Customer>();
+            Employee1 = new HashSet<Employee>();
         }
 
-        public int CustomerId { get; set; }
-
-        [Required]
-        [StringLength(40)]
-        public string FirstName { get; set; }
+        public int EmployeeId { get; set; }
 
         [Required]
         [StringLength(20)]
         public string LastName { get; set; }
 
-        [StringLength(80)]
-        public string Company { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string FirstName { get; set; }
+
+        [StringLength(30)]
+        public string Title { get; set; }
+
+        public int? ReportsTo { get; set; }
+
+        public DateTime? BirthDate { get; set; }
+
+        public DateTime? HireDate { get; set; }
 
         [StringLength(70)]
         public string Address { get; set; }
@@ -47,15 +55,15 @@ namespace ChinookRESTierAPI.Models
         [StringLength(24)]
         public string Fax { get; set; }
 
-        [Required]
         [StringLength(60)]
         public string Email { get; set; }
 
-        public int? SupportRepId { get; set; }
-
-        public Employee Employee { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public ICollection<Customer> Customers { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public ICollection<Invoice> Invoices { get; set; }
+        public ICollection<Employee> Employee1 { get; set; }
+
+        public Employee Employee2 { get; set; }
     }
 }

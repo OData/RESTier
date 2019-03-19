@@ -1,4 +1,4 @@
-namespace ChinookRESTierAPI.Models
+namespace Microsoft.Restier.Samples.Chinook.Api.Models
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;

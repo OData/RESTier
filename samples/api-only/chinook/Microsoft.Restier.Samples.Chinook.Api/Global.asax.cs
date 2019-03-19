@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace ChinookRESTierAPI
+namespace Microsoft.Restier.Samples.Chinook.Api
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

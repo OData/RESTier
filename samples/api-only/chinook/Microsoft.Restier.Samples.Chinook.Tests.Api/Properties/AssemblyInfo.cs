@@ -1,11 +1,11 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("ChinookRESTierAPI.Tests")]
+[assembly: AssemblyTitle("Microsoft.Restier.Samples.Chinook.Api.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ChinookRESTierAPI.Tests")]
+[assembly: AssemblyProduct("Microsoft.Restier.Samples.Chinook.Api.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
