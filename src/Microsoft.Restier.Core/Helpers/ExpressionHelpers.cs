@@ -9,7 +9,6 @@ namespace System.Linq.Expressions
 {
     internal static class ExpressionHelpers
     {
-        //private const string MethodNameOfCreateQuery = "CreateQuery";
         private const string MethodNameOfQueryTake = "Take";
         private const string MethodNameOfQuerySelect = "Select";
         private const string MethodNameOfQuerySkip = "Skip";
@@ -67,56 +66,22 @@ namespace System.Linq.Expressions
             var expression = query.Expression;
 
             // This is stripping select, expand and top from input query
-            expression = StripQueryMethod(expression, MethodNameOfQuerySelect);
             expression = StripQueryMethod(expression, MethodNameOfQueryTake);
             expression = StripQueryMethod(expression, MethodNameOfQuerySkip);
+            expression = StripQueryMethod(expression, MethodNameOfQuerySelect);
 
             if (expression != query.Expression)
             {
+                // Don't need orderby for count query
+                expression = StripQueryMethod(expression, MethodNameOfQueryOrderBy);
+                
                 // If Type is Type<GenericType> to then GenericType will be returned.
                 // e.g. if type is SelectAllAndExpand<Namespace.Product>, then Namespace.Product will be returned.
                 var elementType = GetSelectExpandElementType(typeof(TElement));
 
-
-                if (FeatureFlags.UseNewCountMethod)
-                {
-
-                    // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
-                    // Get the CreateQuery method information who accepts generic type
-                    // To avoid bug from Github Issues #541,#542 use methodInfo from IQueryProvider
-                    // Bug was caused by explicit implementation of CreateQuery method in System.Linq.EnumerableQuery
-                    // This solution allows us also to cache methodInfo in ExpressionHelperMethods
-                    var method = ExpressionHelperMethods.IQueryProviderCreateQueryGeneric;
-
-                    // Replace method generic type with specified type.
-                    var generic = method.MakeGenericMethod(elementType);
-
-                    try
-                    {
-                        countQuery = generic.Invoke(query.Provider, new object[] { expression });
-                    }
-                    catch (TargetInvocationException invocationEx)
-                    {
-                        if (invocationEx.InnerException.Message.Contains("SelectExpandBinder"))
-                        {
-                            throw new NotImplementedException("The '$count' parameter is not currently supported on queries that contain projections (typically with the $select or $expand options).");
-                        }
-                    }
-                }
-                else
-                {
-                    // Create IQueryable with target type, the type is not passed in TElement but new retrieved elementType
-                    var thisType = query.Provider.GetType();
-
-                    // Get the CreateQuery method information who accepts generic type
-                    var method = thisType.GetMethods()
-                        .Single(m => m.Name == "CreateQuery" && m.IsGenericMethodDefinition);
-
-                    // Replace method generic type with specified type.
-                    var generic = method.MakeGenericMethod(elementType);
-                    countQuery = generic.Invoke(query.Provider, new object[] { expression });
-                }
-
+                var method = ExpressionHelperMethods.IQueryProviderCreateQueryGeneric;
+                var generic = method.MakeGenericMethod(elementType);
+                countQuery = generic.Invoke(query.Provider, new object[] { expression });
             }
 
             // This means there is no $expand/$skip/$top, return count directly
