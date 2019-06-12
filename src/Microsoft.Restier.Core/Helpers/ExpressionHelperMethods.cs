@@ -9,6 +9,9 @@ namespace System.Linq.Expressions
 {
     internal static class ExpressionHelperMethods
     {
+        private const string MethodNameOfCreateQuery = "CreateQuery";
+        private const string MethodNameOfAsQueryable = "AsQueryable";
+
         public static MethodInfo QueryableSelectGeneric { get; } = GenericMethodOf(_ => Queryable.Select(default(IQueryable<int>), i => i));
 
         public static MethodInfo QueryableSelectManyGeneric { get; } = GenericMethodOf(_ => Queryable.SelectMany(default(IQueryable<int>), i => default(IQueryable<int>)));
@@ -20,7 +23,7 @@ namespace System.Linq.Expressions
         public static MethodInfo QueryableCountGeneric { get; } = GenericMethodOf(_ => Queryable.LongCount(default(IQueryable<int>)));
 
         public static MethodInfo QueryableAsQueryable { get; } = typeof(Queryable).GetMethod(
-                            "AsQueryable",
+                            MethodNameOfAsQueryable,
                             BindingFlags.Static | BindingFlags.Public,
                             null,
                             new[] { typeof(IEnumerable<>) },
@@ -37,7 +40,7 @@ namespace System.Linq.Expressions
         private static MethodInfo GenericMethodOf<TReturn>(Expression<Func<object, TReturn>> expression) => GenericMethodOf(expression as Expression);
 
         public static MethodInfo IQueryProviderCreateQueryGeneric { get; } = typeof(IQueryProvider).GetMethods()
-            .Single(_ => _.Name == "CreateQuery" && _.IsGenericMethodDefinition);
+            .Single(_ => _.Name == MethodNameOfCreateQuery && _.IsGenericMethodDefinition);
 
         private static MethodInfo GenericMethodOf(Expression expression)
         {
