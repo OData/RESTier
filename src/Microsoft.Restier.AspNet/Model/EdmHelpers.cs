@@ -25,6 +25,11 @@ namespace Microsoft.Restier.AspNet.Model
         /// <returns>The edm type reference for the clr type</returns>
         public static EdmTypeReference GetPrimitiveTypeReference(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             // Only handle primitive type right now
             var primitiveTypeKind = EdmHelpers.GetPrimitiveTypeKind(type, out var isNullable);
 

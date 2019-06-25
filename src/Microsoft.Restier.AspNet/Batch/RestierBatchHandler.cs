@@ -42,7 +42,9 @@ namespace Microsoft.Restier.AspNet.Batch
             var requestContainer = request.CreateRequestContainer(ODataRouteName);
             requestContainer.GetRequiredService<ODataMessageReaderSettings>().BaseUri = GetBaseUri(request);
 
+#pragma warning disable CA1062 // Validate public arguments
             var reader = await request.Content.GetODataMessageReaderAsync(requestContainer, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA1062 // Validate public arguments
             request.RegisterForDispose(reader);
 
             var requests = new List<ODataBatchRequestItem>();

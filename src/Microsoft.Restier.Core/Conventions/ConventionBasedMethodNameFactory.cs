@@ -71,7 +71,8 @@ namespace Microsoft.Restier.Core
         /// <returns></returns>
         public static string GetEntitySetMethodName(IEdmEntitySet entitySet, RestierPipelineState restierPipelineState, RestierEntitySetOperation operation)
         {
-            if ((operation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
+            if ( entitySet == null
+                || (operation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
                 || restierPipelineState == RestierPipelineState.Submit && ExcludedEntitySetSubmitOperations.Contains(operation))
             {
                 return string.Empty;
@@ -97,7 +98,8 @@ namespace Microsoft.Restier.Core
         /// <returns></returns>
         public static string GetEntitySetMethodName(DataModificationItem item, RestierPipelineState restierPipelineState)
         {
-            if ((item.EntitySetOperation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
+            if (item == null
+                || (item.EntitySetOperation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
                 || restierPipelineState == RestierPipelineState.Submit && ExcludedEntitySetSubmitOperations.Contains(item.EntitySetOperation))
             {
                 return string.Empty;
@@ -123,6 +125,7 @@ namespace Microsoft.Restier.Core
         /// <returns>A string representing the fully-realized MethodName.</returns>
         public static string GetFunctionMethodName(IEdmOperationImport operationImport, RestierPipelineState restierPipelineState, RestierOperationMethod restierOperation)
         {
+            if (operationImport == null) return string.Empty;
             return GetFunctionMethodNameInternal(operationImport.Operation.Name, restierPipelineState, restierOperation);
         }
 
@@ -135,6 +138,7 @@ namespace Microsoft.Restier.Core
         /// <returns>A string representing the fully-realized MethodName.</returns>
         public static string GetFunctionMethodName(OperationContext operationImport, RestierPipelineState restierPipelineState, RestierOperationMethod restierOperation)
         {
+            if (operationImport == null) return string.Empty;
             return GetFunctionMethodNameInternal(operationImport.OperationName, restierPipelineState, restierOperation);
         }
 

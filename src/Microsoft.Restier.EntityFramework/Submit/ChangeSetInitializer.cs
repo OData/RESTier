@@ -32,6 +32,11 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>The task object that represents this asynchronous operation.</returns>
         public async Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var dbContext = context.GetApiService<DbContext>();
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
@@ -233,7 +238,9 @@ namespace Microsoft.Restier.EntityFramework
                 {
                     if (!(value is IReadOnlyDictionary<string, object> dic))
                     {
-                        throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.UnsupportedPropertyType, propertyPair.Key));
+                        propertyInfo.SetValue(instance, value);
+                        return;
+                        //throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.UnsupportedPropertyType, propertyPair.Key));
                     }
 
                     // TODO GithubIssue #508
