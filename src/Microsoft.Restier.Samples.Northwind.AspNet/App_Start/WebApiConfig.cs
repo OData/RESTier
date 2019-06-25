@@ -12,6 +12,11 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
         public static async void Register(HttpConfiguration config)
         {
 
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
 #if !PROD
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 #endif

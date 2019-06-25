@@ -133,6 +133,11 @@ namespace Microsoft.Restier.AspNet
         /// <returns>The task object that contains the creation result.</returns>
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
+            if (edmEntityObject == null)
+            {
+                throw new ArgumentNullException(nameof(edmEntityObject));
+            }
+
             CheckModelState();
             var path = GetPath();
             if (!(path.NavigationSource is IEdmEntitySet entitySet))
@@ -182,6 +187,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="edmEntityObject">The entity object to update.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
+#pragma warning disable CA1062 // Validate public arguments
         public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, true, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
@@ -191,6 +197,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
         public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, false, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA1062 // Validate public arguments
 
         /// <summary>
         /// Handles a DELETE request to delete an entity.
@@ -200,8 +207,7 @@ namespace Microsoft.Restier.AspNet
         public async Task<IHttpActionResult> Delete(CancellationToken cancellationToken)
         {
             var path = GetPath();
-            var entitySet = path.NavigationSource as IEdmEntitySet;
-            if (entitySet == null)
+            if (!(path.NavigationSource is IEdmEntitySet entitySet))
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }

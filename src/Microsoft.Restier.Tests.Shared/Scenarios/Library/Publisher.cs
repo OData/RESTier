@@ -11,6 +11,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// </summary>
     public class Publisher
     {
+
         public string Id { get; set; }
 
         public Address Addr { get; set; }

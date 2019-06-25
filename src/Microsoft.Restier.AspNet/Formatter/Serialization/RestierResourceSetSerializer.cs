@@ -37,12 +37,18 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            ResourceSetResult collectionResult = graph as ResourceSetResult;
-            if (collectionResult != null)
+            Ensure.NotNull(messageWriter, nameof(messageWriter));
+            Ensure.NotNull(writeContext, nameof(writeContext));
+
+            if (graph is ResourceSetResult collectionResult)
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;
+
+#pragma warning disable CA1062 // Validate public arguments
                 if (TryWriteAggregationResult(graph, type, messageWriter, writeContext, collectionResult.EdmType))
+#pragma warning restore CA1062 // Validate public arguments
+
                 {
                     return;
                 }
@@ -60,7 +66,7 @@ namespace Microsoft.Restier.AspNet.Formatter
         {
             if (typeof(IEnumerable<DynamicTypeWrapper>).IsAssignableFrom(type))
             {
-                IEdmTypeReference elementType = resourceSetType.AsCollection().ElementType();
+                var elementType = resourceSetType.AsCollection().ElementType();
                 if (elementType.IsEntity())
                 {
                     var entitySet = writeContext.NavigationSource as IEdmEntitySetBase;
