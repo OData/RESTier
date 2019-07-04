@@ -24,7 +24,7 @@
     <RuntimeIdentifier>win</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.1-Nightly201906171245" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.1-Nightly201907031246" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
