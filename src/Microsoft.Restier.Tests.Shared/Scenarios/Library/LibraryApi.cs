@@ -7,7 +7,7 @@ using Microsoft.Restier.EntityFramework;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
-    class LibraryApi : EntityFrameworkApi<LibraryContext>
+    public class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
         public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
