@@ -17,6 +17,13 @@
         <Property Name="Addr" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Address" />
         <NavigationProperty Name="Books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
       </EntityType>
+      <EntityType Name="LibraryCard">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="DateRegistered" Type="Edm.DateTimeOffset" Nullable="false" />
+      </EntityType>
       <EntityType Name="Employee">
         <Key>
           <PropertyRef Name="Id" />
@@ -70,6 +77,7 @@
         <EntitySet Name="Publishers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher">
           <NavigationPropertyBinding Path="Books" Target="Books" />
         </EntitySet>
+        <EntitySet Name="LibraryCards" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.LibraryCard" />
         <EntitySet Name="Readers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Employee" />
         <FunctionImport Name="PublishBook" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBook" EntitySet="Books" />
         <FunctionImport Name="PublishBooks" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBooks" EntitySet="Books" />

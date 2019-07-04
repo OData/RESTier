@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 {
     [TestClass]
-    public partial class AuthorizationTests : RestierTestBase
+    public class AuthorizationTests : RestierTestBase
     {
 
         /// <summary>

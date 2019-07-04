@@ -11,6 +11,16 @@ OnFilterBooks                                      |   False
 OnInsertedBook                                     |   False
 OnUpdatedBook                                      |   False
 OnDeletedBook                                      |   False
+CanInsertLibraryCard                               |   False
+CanUpdateLibraryCard                               |   False
+CanDeleteLibraryCard                               |   False
+OnInsertingLibraryCard                             |   False
+OnUpdatingLibraryCard                              |   False
+OnDeletingLibraryCard                              |   False
+OnFilterLibraryCards                               |   False
+OnInsertedLibraryCard                              |   False
+OnUpdatedLibraryCard                               |   False
+OnDeletedLibraryCard                               |   False
 CanInsertPublisher                                 |   False
 CanUpdatePublisher                                 |   False
 CanDeletePublisher                                 |   False
