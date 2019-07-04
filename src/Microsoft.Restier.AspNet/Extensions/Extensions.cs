@@ -28,11 +28,11 @@ namespace Microsoft.Restier.AspNet
             PropertyNameOfConcurrencyProperties, BindingFlags.NonPublic | BindingFlags.Instance);
 
         // TODO GithubIssue#485 considering move to API class DI instance
-        private static ConcurrentDictionary<IEdmEntitySet, bool> concurrencyCheckFlags
+        private static readonly ConcurrentDictionary<IEdmEntitySet, bool> concurrencyCheckFlags
             = new ConcurrentDictionary<IEdmEntitySet, bool>();
 
         // TODO GithubIssue#485 considering move to API class DI instance
-        private static ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>
+        private static readonly ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>
             typePropertiesAttributes
             = new ConcurrentDictionary<IEdmStructuredType, IDictionary<string, PropertyAttributes>>();
 
@@ -40,9 +40,8 @@ namespace Microsoft.Restier.AspNet
         {
             if (etag != null)
             {
-                IDictionary<string, object> concurrencyProperties =
-                    (IDictionary<string, object>)etagConcurrencyPropertiesProperty.GetValue(etag);
-                foreach (KeyValuePair<string, object> item in concurrencyProperties)
+                var concurrencyProperties = (IDictionary<string, object>)etagConcurrencyPropertiesProperty.GetValue(etag);
+                foreach (var item in concurrencyProperties)
                 {
                     propertyValues.Add(item.Key, item.Value);
                 }
@@ -51,8 +50,7 @@ namespace Microsoft.Restier.AspNet
 
         public static bool IsConcurrencyCheckEnabled(this IEdmModel model, IEdmEntitySet entitySet)
         {
-            bool needCurrencyCheck;
-            if (concurrencyCheckFlags.TryGetValue(entitySet, out needCurrencyCheck))
+            if (concurrencyCheckFlags.TryGetValue(entitySet, out var needCurrencyCheck))
             {
                 return needCurrencyCheck;
             }
@@ -75,11 +73,10 @@ namespace Microsoft.Restier.AspNet
         {
             var propertiesAttributes = RetrievePropertiesAttributes(edmType, api);
 
-            Dictionary<string, object> propertyValues = new Dictionary<string, object>();
-            foreach (string propertyName in entity.GetChangedPropertyNames())
+            var propertyValues = new Dictionary<string, object>();
+            foreach (var propertyName in entity.GetChangedPropertyNames())
             {
-                PropertyAttributes attributes;
-                if (propertiesAttributes != null && propertiesAttributes.TryGetValue(propertyName, out attributes))
+                if (propertiesAttributes != null && propertiesAttributes.TryGetValue(propertyName, out var attributes))
                 {
                     if ((isCreation && (attributes & PropertyAttributes.IgnoreForCreation) != PropertyAttributes.None)
                       || (!isCreation && (attributes & PropertyAttributes.IgnoreForUpdate) != PropertyAttributes.None))
@@ -89,11 +86,9 @@ namespace Microsoft.Restier.AspNet
                     }
                 }
 
-                object value;
-                if (entity.TryGetPropertyValue(propertyName, out value))
+                if (entity.TryGetPropertyValue(propertyName, out var value))
                 {
-                    var complexObj = value as EdmComplexObject;
-                    if (complexObj != null)
+                    if (value is EdmComplexObject complexObj)
                     {
                         value = CreatePropertyDictionary(complexObj, complexObj.ActualEdmType, api, isCreation);
                     }
@@ -108,8 +103,7 @@ namespace Microsoft.Restier.AspNet
         public static IDictionary<string, PropertyAttributes> RetrievePropertiesAttributes(
             IEdmStructuredType edmType, ApiBase api)
         {
-            IDictionary<string, PropertyAttributes> propertiesAttributes;
-            if (typePropertiesAttributes.TryGetValue(edmType, out propertiesAttributes))
+            if (typePropertiesAttributes.TryGetValue(edmType, out var propertiesAttributes))
             {
                 return propertiesAttributes;
             }
@@ -121,16 +115,14 @@ namespace Microsoft.Restier.AspNet
                 var attributes = PropertyAttributes.None;
                 foreach (var annotation in annotations)
                 {
-                    var valueAnnotation = annotation as EdmVocabularyAnnotation;
-                    if (valueAnnotation == null)
+                    if (!(annotation is EdmVocabularyAnnotation valueAnnotation))
                     {
                         continue;
                     }
 
                     if (valueAnnotation.Term.IsSameTerm(CoreVocabularyModel.ImmutableTerm))
                     {
-                        var value = valueAnnotation.Value as EdmBooleanConstant;
-                        if (value != null && value.Value)
+                        if (valueAnnotation.Value is EdmBooleanConstant value && value.Value)
                         {
                             attributes |= PropertyAttributes.IgnoreForUpdate;
                         }
@@ -138,8 +130,7 @@ namespace Microsoft.Restier.AspNet
 
                     if (valueAnnotation.Term.IsSameTerm(CoreVocabularyModel.ComputedTerm))
                     {
-                        var value = valueAnnotation.Value as EdmBooleanConstant;
-                        if (value != null && value.Value)
+                        if (valueAnnotation.Value is EdmBooleanConstant value && value.Value)
                         {
                             attributes |= PropertyAttributes.IgnoreForUpdate;
                             attributes |= PropertyAttributes.IgnoreForCreation;

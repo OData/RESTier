@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
@@ -335,7 +336,7 @@ namespace Microsoft.Restier.Core.Query
 
                 if (authorizer != null && !authorizer.Authorize(context))
                 {
-                    throw new InvalidOperationException(Resources.InspectionFailed);
+                    throw new SecurityException("The current user does not have permission to query from the requested resource.");
                 }
             }
 
@@ -359,8 +360,7 @@ namespace Microsoft.Restier.Core.Query
                 {
                     if (!visited.Type.IsAssignableFrom(expanded.Type))
                     {
-                        throw new InvalidOperationException(
-                            Resources.ExpanderCannotChangeExpressionType);
+                        throw new InvalidOperationException(Resources.ExpanderCannotChangeExpressionType);
                     }
 
                     context.PushVisitedNode(null);
