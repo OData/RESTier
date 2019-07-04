@@ -15,6 +15,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         public IDbSet<Book> Books { get; set; }
 
+        public IDbSet<LibraryCard> LibraryCards { get; set; }
+
         public IDbSet<Publisher> Publishers { get; set; }
 
         public IDbSet<Employee> Readers { get; set; }

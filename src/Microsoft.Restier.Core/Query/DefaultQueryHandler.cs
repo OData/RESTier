@@ -185,15 +185,22 @@ namespace Microsoft.Restier.Core.Query
             {
                 context, query, cancellationToken
             };
-            var task = method.Invoke(executor, parameters) as Task<QueryResult>;
-            var result = await task.ConfigureAwait(false);
 
-            var any = result.Results.Cast<object>().Any();
-            if (!any)
-            {
-                // Which means previous expression does not have result, and should throw ResourceNotFoundException.
-                throw new ResourceNotFoundException(Resources.ResourceNotFound);
-            }
+            var task = method.Invoke(executor, parameters) as Task<QueryResult>;
+            await task.ConfigureAwait(false);
+
+            // RWM: This code currently returns 404s if there are no results, instead of returning empty queries.
+            //      This means that legit EntitySets that just have no data in the table also return 404. No bueno.
+
+            //var task = method.Invoke(executor, parameters) as Task<QueryResult>;
+            //var result = await task.ConfigureAwait(false);
+
+            //var any = result.Results.Cast<object>().Any();
+            //if (!any)
+            //{
+            //    // Which means previous expression does not have result, and should throw ResourceNotFoundException.
+            //    throw new ResourceNotFoundException(Resources.ResourceNotFound);
+            //}
         }
 
         private static MethodCallExpression CheckWhereCondition(MethodCallExpression methodCallExpression)
