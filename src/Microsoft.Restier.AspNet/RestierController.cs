@@ -215,7 +215,7 @@ namespace Microsoft.Restier.AspNet
             var propertiesInEtag = await GetOriginalValues(entitySet).ConfigureAwait(false);
             if (propertiesInEtag == null)
             {
-                throw new PreconditionRequiredException(Resources.PreconditionRequired);
+                throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
 
             var deleteItem = new DataModificationItem(
@@ -351,7 +351,7 @@ namespace Microsoft.Restier.AspNet
             var propertiesInEtag = await GetOriginalValues(entitySet).ConfigureAwait(false);
             if (propertiesInEtag == null)
             {
-                throw new PreconditionRequiredException(Resources.PreconditionRequired);
+                throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
 
             // In case of type inheritance, the actual type will be different from entity type

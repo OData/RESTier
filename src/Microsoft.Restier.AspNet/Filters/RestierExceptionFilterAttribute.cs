@@ -99,30 +99,24 @@ namespace Microsoft.Restier.AspNet
                 return Task.FromResult<HttpResponseMessage>(null);
             }
 
-            var code = HttpStatusCode.InternalServerError;
-            if (exception is ODataException)
+            HttpStatusCode code;
+            switch (true)
             {
-                code = HttpStatusCode.BadRequest;
-            }
-            else if (exception is SecurityException)
-            {
-                code = HttpStatusCode.Forbidden;
-            }
-            else if (exception is ResourceNotFoundException)
-            {
-                code = HttpStatusCode.NotFound;
-            }
-            else if (exception is PreconditionFailedException)
-            {
-                code = HttpStatusCode.PreconditionFailed;
-            }
-            else if (exception is PreconditionRequiredException)
-            {
-                code = (HttpStatusCode)428;
-            }
-            else if (context.Exception is NotImplementedException)
-            {
-                code = HttpStatusCode.NotImplemented;
+                case true when exception is StatusCodeException:
+                    code = (exception as StatusCodeException).StatusCode;
+                    break;
+                case true when exception is ODataException:
+                    code = HttpStatusCode.BadRequest;
+                    break;
+                case true when exception is SecurityException:
+                    code = HttpStatusCode.Forbidden;
+                    break;
+                case true when exception is NotImplementedException:
+                    code = HttpStatusCode.NotImplemented;
+                    break;
+                default:
+                    code = HttpStatusCode.InternalServerError;
+                    break;
             }
 
             // When exception occured in a ChangeSet request,

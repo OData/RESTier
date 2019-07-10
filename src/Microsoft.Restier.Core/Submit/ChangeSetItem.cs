@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -285,7 +286,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 // If ETAG does not match, should return 412 Precondition Failed
                 var message = string.Format(CultureInfo.InvariantCulture, Resources.PreconditionCheckFailed, new object[] { EntitySetOperation, query.SingleOrDefault() });
-                throw new PreconditionFailedException(message);
+                throw new StatusCodeException(HttpStatusCode.PreconditionFailed, message);
             }
 
             return matchedResource;

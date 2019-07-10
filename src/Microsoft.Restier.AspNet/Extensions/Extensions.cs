@@ -17,6 +17,7 @@ using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.AspNet.Model;
+using System.Net;
 
 namespace Microsoft.Restier.AspNet
 {
@@ -91,6 +92,13 @@ namespace Microsoft.Restier.AspNet
                     if (value is EdmComplexObject complexObj)
                     {
                         value = CreatePropertyDictionary(complexObj, complexObj.ActualEdmType, api, isCreation);
+                    }
+
+                    //RWM: Other entities are not allowed in the payload until we support Delta payloads.
+                    if (value is EdmEntityObject entityObj)
+                    {
+                        // TODO: RWM: Turn this message into a language resource.
+                        throw new StatusCodeException(HttpStatusCode.BadRequest, "Navigation Properties were also present in the payload. Please remove related entities from your request and try again.");
                     }
 
                     propertyValues.Add(propertyName, value);

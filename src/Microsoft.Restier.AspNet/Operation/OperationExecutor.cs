@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
 using System.Security;
 using System.Threading;
@@ -114,7 +115,7 @@ namespace Microsoft.Restier.AspNet.Operation
                 var entity = bindingParameterValue.SingleOrDefault();
                 if (entity == null)
                 {
-                    throw new ResourceNotFoundException(Resources.ResourceNotFound);
+                    throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
                 }
 
                 return entity;
