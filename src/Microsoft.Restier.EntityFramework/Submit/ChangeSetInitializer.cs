@@ -9,6 +9,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Spatial;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
@@ -149,7 +150,7 @@ namespace Microsoft.Restier.EntityFramework
             var resource = result.Results.SingleOrDefault();
             if (resource == null)
             {
-                throw new ResourceNotFoundException(Resources.ResourceNotFound);
+                throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
             // This means no If-Match or If-None-Match header

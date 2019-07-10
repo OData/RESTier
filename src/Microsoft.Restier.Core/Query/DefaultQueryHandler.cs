@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -224,7 +225,7 @@ namespace Microsoft.Restier.Core.Query
             if (rightExpression != null && rightExpression.Value != null)
             {
                 // This means where statement is key segment but not for $filter
-                throw new ResourceNotFoundException(Resources.ResourceNotFound);
+                throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
             return methodCallExpression.Arguments[0] as MethodCallExpression;
