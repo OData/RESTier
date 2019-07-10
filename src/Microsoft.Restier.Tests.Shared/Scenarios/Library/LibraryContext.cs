@@ -102,6 +102,24 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             });
 
+            context.Publishers.Add(new Publisher
+            {
+                Id = "Publisher2",
+                Addr = new Address
+                {
+                    Street = "234 Anystreet St.",
+                    Zip = "10010"
+                },
+                Books = new List<Book>
+                {
+                    new Book
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "Color Purple, The"
+                    }
+                }
+            });
+
 
             context.SaveChanges();
         }
