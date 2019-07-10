@@ -70,6 +70,10 @@
         <Parameter Name="book" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
         <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
       </Action>
+      <Function Name="DiscontinueBooks" IsBound="true" IsComposable="true">
+        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+        <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+      </Function>
       <EntityContainer Name="Container">
         <EntitySet Name="Books" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
           <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
