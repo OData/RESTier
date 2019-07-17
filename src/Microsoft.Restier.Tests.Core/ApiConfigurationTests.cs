@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -55,6 +57,18 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiA : ApiBase
         {
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            {
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+
+                ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+
+                return services;
+            }
+
             public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }
@@ -92,7 +106,12 @@ namespace Microsoft.Restier.Tests.Core
 
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+
                 ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IServiceA>((sp, next) => serviceA);
                 services.AddService<IServiceB>((sp, next) => serviceB);
                 services.AddService<IServiceB, ServiceB>();
@@ -108,7 +127,12 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+
                 ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 var q1 = new ServiceB("q1Pre", "q1Post");
                 var q2 = new ServiceB("q2Pre", "q2Post");
                 services.AddService<IServiceB>((sp, next) => q1)
