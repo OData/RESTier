@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Operation;
 
 namespace Microsoft.Restier.Core
@@ -16,17 +15,14 @@ namespace Microsoft.Restier.Core
     {
         private Type targetType;
 
-        private ConventionBasedOperationAuthorizer(Type targetType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionBasedOperationAuthorizer"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type to check for authorizer functions.</param>
+        internal ConventionBasedOperationAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
-        }
-
-        public static void ApplyTo(IServiceCollection services, Type targetType)
-        {
-            Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(targetType, nameof(targetType));
-            services.AddService<IOperationAuthorizer>((sp, next) => new ConventionBasedOperationAuthorizer(targetType));
         }
 
         /// <inheritdoc/>

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
@@ -19,21 +18,18 @@ namespace Microsoft.Restier.Core
     {
         private Type targetType;
 
-        private ConventionBasedQueryExpressionProcessor(Type targetType) => this.targetType = targetType;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type to check for filter functions.</param>
+        internal ConventionBasedQueryExpressionProcessor(Type targetType)
+        {
+            Ensure.NotNull(targetType, nameof(targetType));
+            this.targetType = targetType;
+        }
 
         // Inner should be null unless user add one as inner most
         public IQueryExpressionProcessor Inner { get; set; }
-
-        /// <inheritdoc/>
-        public static void ApplyTo(IServiceCollection services, Type targetType)
-        {
-            Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(targetType, nameof(targetType));
-            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(targetType)
-            {
-                Inner = next,
-            });
-        }
 
         /// <inheritdoc/>
         public Expression Process(QueryExpressionContext context)

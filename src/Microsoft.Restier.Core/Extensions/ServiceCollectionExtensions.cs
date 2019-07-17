@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
@@ -211,6 +212,7 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
         {
+            Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
 
             services.AddScoped(apiType, apiType)
@@ -234,14 +236,18 @@ namespace Microsoft.Restier.Core
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddConventionBasedServices(this IServiceCollection services, Type apiType)
         {
+            Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
 
-            ConventionBasedChangeSetItemAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedChangeSetItemFilter.ApplyTo(services, apiType);
+            services.AddService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(apiType));
+            services.AddService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(apiType));
             services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
-            ConventionBasedQueryExpressionProcessor.ApplyTo(services, apiType);
-            ConventionBasedOperationAuthorizer.ApplyTo(services, apiType);
-            ConventionBasedOperationFilter.ApplyTo(services, apiType);
+            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(apiType)
+            {
+                Inner = next,
+            });
+            services.AddService<IOperationAuthorizer>((sp, next) => new ConventionBasedOperationAuthorizer(apiType));
+            services.AddService<IOperationFilter>((sp, next) => new ConventionBasedOperationFilter(apiType));
             return services;
         }
 
