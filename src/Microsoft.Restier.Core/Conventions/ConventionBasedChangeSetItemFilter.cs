@@ -33,6 +33,7 @@ namespace Microsoft.Restier.Core
         public Task OnChangeSetItemProcessingAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
             Ensure.NotNull(item, nameof(item));
+            Ensure.NotNull(context, nameof(context));
             return InvokeProcessorMethodAsync(context, item, RestierPipelineState.PreSubmit);
         }
 
@@ -40,6 +41,7 @@ namespace Microsoft.Restier.Core
         public Task OnChangeSetItemProcessedAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
             Ensure.NotNull(item, nameof(item));
+            Ensure.NotNull(context, nameof(context));
             return InvokeProcessorMethodAsync(context, item, RestierPipelineState.PostSubmit);
         }
 
