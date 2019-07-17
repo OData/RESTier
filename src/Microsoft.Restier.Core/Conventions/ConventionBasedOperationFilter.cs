@@ -13,7 +13,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based change set item filter.
     /// </summary>
-    internal class ConventionBasedOperationFilter : IOperationFilter
+    public class ConventionBasedOperationFilter : IOperationFilter
     {
         private Type targetType;
 
@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="ConventionBasedOperationFilter"/> class.
         /// </summary>
         /// <param name="targetType">The target type to check for filter functions.</param>
-        internal ConventionBasedOperationFilter(Type targetType)
+        public ConventionBasedOperationFilter(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
@@ -30,12 +30,14 @@ namespace Microsoft.Restier.Core
         /// <inheritdoc/>
         public Task OnOperationExecutingAsync(OperationContext context, CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context, nameof(context));
             return InvokeProcessorMethodAsync(context, RestierPipelineState.PreSubmit);
         }
 
         /// <inheritdoc/>
         public Task OnOperationExecutedAsync(OperationContext context, CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context, nameof(context));
             return InvokeProcessorMethodAsync(context, RestierPipelineState.PostSubmit);
         }
 

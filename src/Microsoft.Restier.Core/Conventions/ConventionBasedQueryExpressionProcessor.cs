@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based query expression processor which will apply OnFilter logic into query expression.
     /// </summary>
-    internal class ConventionBasedQueryExpressionProcessor : IQueryExpressionProcessor
+    public class ConventionBasedQueryExpressionProcessor : IQueryExpressionProcessor
     {
         private Type targetType;
 
@@ -22,13 +22,15 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
         /// </summary>
         /// <param name="targetType">The target type to check for filter functions.</param>
-        internal ConventionBasedQueryExpressionProcessor(Type targetType)
+        public ConventionBasedQueryExpressionProcessor(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
         }
 
-        // Inner should be null unless user add one as inner most
+        /// <summary>
+        /// Gets a reference to an inner query expression processor in case they are chained.
+        /// </summary>
         public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>

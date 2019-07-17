@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based operation authorizer.
     /// </summary>
-    internal class ConventionBasedOperationAuthorizer : IOperationAuthorizer
+    public class ConventionBasedOperationAuthorizer : IOperationAuthorizer
     {
         private Type targetType;
 
@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="ConventionBasedOperationAuthorizer"/> class.
         /// </summary>
         /// <param name="targetType">The target type to check for authorizer functions.</param>
-        internal ConventionBasedOperationAuthorizer(Type targetType)
+        public ConventionBasedOperationAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
