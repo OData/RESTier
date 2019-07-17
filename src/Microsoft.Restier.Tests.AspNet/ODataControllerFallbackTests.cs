@@ -18,6 +18,7 @@ using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -95,7 +96,12 @@ namespace Microsoft.Restier.Tests.AspNet
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model));
             services.AddService<IModelMapper>((sp, next) => new FallbackModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer());
+            var changeSetPreparer = new TestChangeSetInitializer();
+            var submitExecutor = new TestSubmitExecutor();
+
             services = ApiBase.ConfigureApi(apiType, services);
+            services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+            services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
             return services;
         }
 

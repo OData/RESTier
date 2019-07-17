@@ -11,6 +11,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -180,6 +181,18 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     public class BaseApi : ApiBase
     {
+        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        {
+            var changeSetPreparer = new TestChangeSetInitializer();
+            var submitExecutor = new TestSubmitExecutor();
+
+            ApiBase.ConfigureApi(apiType, services);
+            services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+            services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+
+            return services;
+        }
+
         public BaseApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }

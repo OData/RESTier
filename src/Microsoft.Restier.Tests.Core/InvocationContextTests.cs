@@ -5,6 +5,8 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -54,7 +56,13 @@ namespace Microsoft.Restier.Tests.Core
 
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+
                 ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+
                 services.AddService<IServiceA>((sp, next) => ApiService);
 
                 return services;
