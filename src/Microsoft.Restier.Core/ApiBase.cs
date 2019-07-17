@@ -76,7 +76,27 @@ namespace Microsoft.Restier.Core
         protected ApiBase(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
-            submitHandler = new DefaultSubmitHandler(serviceProvider);
+
+            //RWM: This stuff SHOULD be getting passed into a constructor. But the DI implementation is less than awesome.
+            //     So we'll work around it for now and still save some allocations.
+            //     There are certain unit te
+            var initializer = serviceProvider.GetService<IChangeSetInitializer>();
+            var executor = serviceProvider.GetService<ISubmitExecutor>();
+            var authorizer = serviceProvider.GetService<IChangeSetItemAuthorizer>();
+            var validator = serviceProvider.GetService<IChangeSetItemValidator>();
+            var filter = serviceProvider.GetService<IChangeSetItemFilter>();
+
+            if (initializer == null)
+            {
+                throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
+            }
+
+            if (executor == null)
+            {
+                throw new NotSupportedException(Resources.SubmitExecutorMissing);
+            }
+
+            submitHandler = new DefaultSubmitHandler(initializer, executor, authorizer, validator, filter);
         }
 
         #endregion
