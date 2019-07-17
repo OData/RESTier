@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based change set item authorizer.
     /// </summary>
-    internal class ConventionBasedChangeSetItemAuthorizer : IChangeSetItemAuthorizer
+    public class ConventionBasedChangeSetItemAuthorizer : IChangeSetItemAuthorizer
     {
         private Type targetType;
 
@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="ConventionBasedChangeSetItemAuthorizer"/> class.
         /// </summary>
         /// <param name="targetType">The target type to check for authorizer functions.</param>
-        internal ConventionBasedChangeSetItemAuthorizer(Type targetType)
+        public ConventionBasedChangeSetItemAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
