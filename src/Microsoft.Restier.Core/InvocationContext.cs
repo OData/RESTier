@@ -44,15 +44,5 @@ namespace Microsoft.Restier.Core
         {
             return ServiceProvider.GetService<T>();
         }
-
-        /// <summary>
-        /// Gets an ordered collection of service instances.
-        /// </summary>
-        /// <typeparam name="T">The API service type.</typeparam>
-        /// <returns>The ordered collection of service instances.</returns>
-        public IEnumerable<T> GetApiServices<T>() where T : class
-        {
-            return ServiceProvider.GetServices<T>();
-        }
     }
 }
