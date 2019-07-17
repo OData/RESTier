@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
@@ -20,18 +19,14 @@ namespace Microsoft.Restier.Core
     {
         private Type targetType;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionBasedChangeSetItemFilter"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type to check for filter functions.</param>
         internal ConventionBasedChangeSetItemFilter(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
-        }
-
-        /// <inheritdoc/>
-        public static void ApplyTo(IServiceCollection services, Type targetType)
-        {
-            Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(targetType, nameof(targetType));
-            services.AddService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(targetType));
         }
 
         /// <inheritdoc/>
