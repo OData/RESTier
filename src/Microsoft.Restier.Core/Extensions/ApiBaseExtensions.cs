@@ -397,7 +397,7 @@ namespace Microsoft.Restier.Core
             var queryContext = new QueryContext(api, request);
             var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
             queryContext.Model = model;
-            return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
+            return await api.QueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
