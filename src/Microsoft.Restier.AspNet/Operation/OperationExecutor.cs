@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNet.Formatter;
 using Microsoft.Restier.AspNet.Model;
@@ -82,7 +83,8 @@ namespace Microsoft.Restier.AspNet.Operation
                         parameterTypeRef,
                         model,
                         context.Request,
-                        context.ServiceProvider);
+                        context.Request.GetRequestContainer()); // JWS: As long as OData requires the ServiceProvder,
+                                                                //      we have to provide it. DI abuse smell.
                 }
                 else
                 {

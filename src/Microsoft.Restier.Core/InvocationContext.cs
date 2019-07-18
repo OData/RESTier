@@ -17,6 +17,8 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class InvocationContext
     {
+        private readonly IServiceProvider provider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
@@ -27,13 +29,8 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(provider, nameof(provider));
 
-            ServiceProvider = provider;
+            this.provider = provider;
         }
-
-        /// <summary>
-        /// Gets the <see cref="IServiceProvider"/> which contains all services of this scope.
-        /// </summary>
-        public IServiceProvider ServiceProvider { get; private set; }
 
         /// <summary>
         /// Gets an API service.
@@ -42,7 +39,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The API service instance.</returns>
         public T GetApiService<T>() where T : class
         {
-            return ServiceProvider.GetService<T>();
+            return provider.GetService<T>();
         }
     }
 }
