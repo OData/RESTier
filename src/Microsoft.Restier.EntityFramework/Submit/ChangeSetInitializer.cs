@@ -141,7 +141,7 @@ namespace Microsoft.Restier.EntityFramework
 
         private static async Task<object> FindResource(SubmitContext context, DataModificationItem item, CancellationToken cancellationToken)
         {
-            var apiBase = context.GetApiService<ApiBase>();
+            var apiBase = context.Api;
             var query = apiBase.GetQueryableSource(item.ResourceSetName);
             query = item.ApplyTo(query);
 
