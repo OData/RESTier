@@ -10,6 +10,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.AspNet;
+using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -147,10 +148,12 @@ namespace Microsoft.Restier.Tests.Core
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
                 ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
 
                 return services;
             }
