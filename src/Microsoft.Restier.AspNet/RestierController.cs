@@ -622,13 +622,11 @@ namespace Microsoft.Restier.AspNet
         {
             var executor = Api.GetApiService<IOperationExecutor>();
 
-            var context = new OperationContext(
+            var context = new OperationContext(Api,
                 getParaValueFunc,
                 operationName,
-                Api,
                 isFunction,
-                bindingParameterValue,
-                Request.GetRequestContainer())
+                bindingParameterValue)
             {
                 Request = Request
             };

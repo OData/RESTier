@@ -184,7 +184,7 @@ namespace Microsoft.Restier.Core
 
             try
             {
-                var buildContext = new ModelContext(api.ServiceProvider);
+                var buildContext = new ModelContext(api);
                 var model = await builder.GetModelAsync(buildContext, cancellationToken).ConfigureAwait(false);
                 source.SetResult(model);
                 return model;
@@ -394,7 +394,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(api, nameof(api));
             Ensure.NotNull(request, nameof(request));
 
-            var queryContext = new QueryContext(api.ServiceProvider, request);
+            var queryContext = new QueryContext(api, request);
             var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
             queryContext.Model = model;
             return await DefaultQueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
@@ -469,7 +469,7 @@ namespace Microsoft.Restier.Core
             var mapper = api.GetApiService<IModelMapper>();
             if (mapper != null)
             {
-                var modelContext = new ModelContext(api.ServiceProvider);
+                var modelContext = new ModelContext(api);
                 if (namespaceName == null)
                 {
                     mapper.TryGetRelevantType(modelContext, name, out elementType);
