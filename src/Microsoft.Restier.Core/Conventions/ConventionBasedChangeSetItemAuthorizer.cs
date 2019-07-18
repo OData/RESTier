@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Core
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.GetApiService<ApiBase>();
+                    target = context.Api;
                     if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.FromResult(result);

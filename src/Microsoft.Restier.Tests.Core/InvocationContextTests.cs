@@ -16,17 +16,6 @@ namespace Microsoft.Restier.Tests.Core
     [TestClass]
     public class InvocationContextTests : RestierTestBase
     {
-
-        [TestMethod]
-        public void InvocationContext_IsConfiguredCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApi));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var context = new InvocationContext(api);
-            context.GetApiService<ApiBase>().Should().BeSameAs(api);
-        }
-
         [TestMethod]
         public void InvocationContext_GetsApiServicesCorrectly()
         {

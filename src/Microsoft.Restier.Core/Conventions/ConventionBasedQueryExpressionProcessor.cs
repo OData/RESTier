@@ -132,7 +132,7 @@ namespace Microsoft.Restier.Core
             object apiBase = null;
             if (!expectedMethod.IsStatic)
             {
-                apiBase = context.QueryContext.GetApiService<ApiBase>();
+                apiBase = context.QueryContext.Api;
                 if (apiBase == null || !targetType.IsInstanceOfType(apiBase))
                 {
                     return null;

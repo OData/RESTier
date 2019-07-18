@@ -107,7 +107,7 @@ namespace Microsoft.Restier.Core
                 object target = null;
                 if (!expectedMethod.IsStatic)
                 {
-                    target = context.GetApiService<ApiBase>();
+                    target = context.Api;
                     if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.WhenAll();

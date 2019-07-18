@@ -88,7 +88,7 @@ namespace Microsoft.Restier.AspNet.Model
                 object target = null;
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
-                    target = context.QueryContext.GetApiService<ApiBase>();
+                    target = context.QueryContext.Api;
                     if (target == null ||
                         !targetType.IsInstanceOfType(target))
                     {
@@ -127,7 +127,7 @@ namespace Microsoft.Restier.AspNet.Model
                 object target = null;
                 if (!singletonProperty.GetMethod.IsStatic)
                 {
-                    target = context.QueryContext.GetApiService<ApiBase>();
+                    target = context.QueryContext.Api;
                     if (target == null ||
                         !targetType.IsInstanceOfType(target))
                     {
