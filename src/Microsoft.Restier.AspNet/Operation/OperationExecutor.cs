@@ -76,7 +76,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
             var parameterArray = method.GetParameters();
 
-            var model = context.GetApiService<IEdmModel>();
+            var model = await context.Api.GetModelAsync(cancellationToken).ConfigureAwait(false);
 
             // Parameters of method and model is exactly mapped or there is parsing error
             var parameters = new object[parameterArray.Length];
