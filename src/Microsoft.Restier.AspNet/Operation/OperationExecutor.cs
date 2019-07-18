@@ -24,21 +24,45 @@ namespace Microsoft.Restier.AspNet.Operation
 {
 
     /// <summary>
-    /// 
+    /// Executes an operation by invoking a method on the <see cref="ApiBase"/> instance through reflection.
     /// </summary>
-    internal class OperationExecutor : IOperationExecutor
+    public class OperationExecutor : IOperationExecutor
     {
+        private readonly IOperationAuthorizer operationAuthorizer;
+        private readonly IOperationFilter operationFilter;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="OperationExecutor"/> class.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="operationAuthorizer">The operation authorizer to be used for authorization.</param>
+        /// <param name="operationFilter">The operation filter to be used for filtering.</param>
+        public OperationExecutor(IOperationAuthorizer operationAuthorizer, IOperationFilter operationFilter)
+        {
+            this.operationAuthorizer = operationAuthorizer;
+            this.operationFilter = operationFilter;
+        }
+
+        /// <summary>
+        /// Asynchronously executes an operation.
+        /// </summary>
+        /// <param name="context">
+        /// The operation context.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// A cancellation token.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous
+        /// operation whose result is a operation result.
+        /// </returns>
         public async Task<IQueryable> ExecuteOperationAsync(OperationContext context, CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context, nameof(context));
+
             // Authorization check
+#pragma warning disable CA1062 // Validate arguments of public methods. JWS: Ensure.NotNull is there. Spurious warning.
             await InvokeAuthorizers(context, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA1062 // Validate arguments of public methods.
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
@@ -201,35 +225,32 @@ namespace Microsoft.Restier.AspNet.Operation
             return typedQueryable;
         }
 
-        private static async Task InvokeAuthorizers(OperationContext context, CancellationToken cancellationToken)
+        private async Task InvokeAuthorizers(OperationContext context, CancellationToken cancellationToken)
         {
-            var authorizor = context.GetApiService<IOperationAuthorizer>();
-            if (authorizor == null)
+            if (operationAuthorizer == null)
             {
                 return;
             }
 
-            if (!await authorizor.AuthorizeAsync(context, cancellationToken).ConfigureAwait(false))
+            if (!await operationAuthorizer.AuthorizeAsync(context, cancellationToken).ConfigureAwait(false))
             {
                 throw new SecurityException(string.Format(CultureInfo.InvariantCulture, Resources.OperationUnAuthorizationExecution, context.OperationName));
             }
         }
 
-        private static void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
+        private void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationFilter>();
-            if (processor != null)
+            if (operationFilter != null)
             {
-                processor.OnOperationExecutingAsync(context, cancellationToken);
+                operationFilter.OnOperationExecutingAsync(context, cancellationToken);
             }
         }
 
-        private static void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
+        private void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            var processor = context.GetApiService<IOperationFilter>();
-            if (processor != null)
+            if (operationFilter != null)
             {
-                processor.OnOperationExecutedAsync(context, cancellationToken);
+                operationFilter.OnOperationExecutedAsync(context, cancellationToken);
             }
         }
     }
