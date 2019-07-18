@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Tests.Core
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
-            var context = new InvocationContext(provider);
+            var context = new InvocationContext(api);
             context.GetApiService<ApiBase>().Should().BeSameAs(api);
         }
 
@@ -32,7 +32,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var context = new InvocationContext(provider);
+            var api = provider.GetService<ApiBase>();
+            var context = new InvocationContext(api);
             context.GetApiService<IServiceA>().Should().BeSameAs(TestApi.ApiService);
         }
 

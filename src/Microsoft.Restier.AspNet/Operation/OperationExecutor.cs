@@ -42,7 +42,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
             // model build does not support operation with same name
             // So method with same name but different signature is not considered.
-            var method = context.ImplementInstance.GetType().GetMethod(context.OperationName, 
+            var method = context.Api.GetType().GetMethod(context.OperationName, 
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
             if (method == null)
@@ -100,7 +100,7 @@ namespace Microsoft.Restier.AspNet.Operation
             // Invoke preprocessing on the operation execution
             PerformPreEvent(context, cancellationToken);
 
-            var result = await InvokeOperation(context.ImplementInstance, method, parameters, model).ConfigureAwait(false);
+            var result = await InvokeOperation(context.Api, method, parameters, model).ConfigureAwait(false);
 
             // Invoke preprocessing on the operation execution
             PerformPostEvent(context, cancellationToken);

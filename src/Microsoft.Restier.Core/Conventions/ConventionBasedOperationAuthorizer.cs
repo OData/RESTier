@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.ImplementInstance;
+                    target = context.Api;
                     if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.FromResult(result);

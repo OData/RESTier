@@ -22,15 +22,21 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
-        /// <param name="provider">
-        /// An API context.
+        /// <param name="api">
+        /// An Api.
         /// </param>
-        public InvocationContext(IServiceProvider provider)
+        public InvocationContext(ApiBase api)
         {
-            Ensure.NotNull(provider, nameof(provider));
-
-            this.provider = provider;
+            Ensure.NotNull(api, nameof(api));
+            // JWS: until we have removed all calls to GetApiService.
+            this.provider = api.ServiceProvider;
+            Api = api;
         }
+
+        /// <summary>
+        /// Gets the <see cref="ApiBase"/> descendant for this invocation.
+        /// </summary>
+        public ApiBase Api { get; }
 
         /// <summary>
         /// Gets an API service.
