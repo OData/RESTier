@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
@@ -87,10 +88,13 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
                 ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+
                 services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
                 services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
                 {
@@ -115,10 +119,13 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
                 ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+
                 var service = new TestSingleCallModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
                 return services;
@@ -135,10 +142,13 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
                 ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+
                 var service = new TestRetryModelBuilder();
                 services.AddService<IModelBuilder>((sp, next) => service);
 
