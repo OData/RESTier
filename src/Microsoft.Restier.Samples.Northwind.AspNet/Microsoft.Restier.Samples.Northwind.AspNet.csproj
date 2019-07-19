@@ -24,7 +24,6 @@
     <RuntimeIdentifier>win</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.1-Nightly201907031246" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
@@ -158,6 +157,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\WebAPI\src\Microsoft.AspNet.OData\Microsoft.AspNet.OData.csproj">
+      <Project>{a6f9775d-f7e2-424e-8363-79644a73038f}</Project>
+      <Name>Microsoft.AspNet.OData</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj">
       <Project>{8ecf4e97-1816-44ad-ad63-6acf287ed520}</Project>
       <Name>Microsoft.Restier.AspNet</Name>
