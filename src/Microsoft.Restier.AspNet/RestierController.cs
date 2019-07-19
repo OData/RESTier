@@ -15,7 +15,6 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Results;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
@@ -55,7 +54,7 @@ namespace Microsoft.Restier.AspNet
                 if (api == null)
                 {
                     var provider = Request.GetRequestContainer();
-                    api = provider.GetService<ApiBase>();
+                    api = provider.GetService(typeof(ApiBase)) as ApiBase;
                 }
 
                 return api;
