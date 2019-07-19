@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNet.Model;
@@ -21,9 +22,11 @@ namespace Microsoft.Restier.AspNet.Query
         private readonly ApiBase api;
         private readonly ODataPath path;
         private readonly IDictionary<Type, Action<ODataPathSegment>> handlers = new Dictionary<Type, Action<ODataPathSegment>>();
+        private readonly IEdmModel edmModel;
 
         private IQueryable queryable;
         private Type currentType;
+
 
         public RestierQueryBuilder(ApiBase api, ODataPath path)
         {
@@ -31,6 +34,10 @@ namespace Microsoft.Restier.AspNet.Query
             Ensure.NotNull(path, nameof(path));
             this.api = api;
             this.path = path;
+
+            // TODO: JWS: At best a hack to avoid a deadlock, because the only place to get the model is in a synchronous method or
+            // constructor. See https://blog.stephencleary.com/2012/07/dont-block-on-async-code.html
+            this.edmModel = Task.Run(() => this.api.GetModelAsync()).Result;
 
             handlers[typeof(EntitySetSegment)] = HandleEntitySetPathSegment;
             handlers[typeof(SingletonSegment)] = HandleSingletonPathSegment;
@@ -266,8 +273,8 @@ namespace Microsoft.Restier.AspNet.Query
             }
 
             if (edmType.TypeKind == EdmTypeKind.Entity)
-            {
-                currentType = edmType.GetClrType(api.ServiceProvider);
+            {   
+                currentType = edmType.GetClrType(this.edmModel);
                 queryable = ExpressionHelpers.OfType(queryable, currentType);
             }
         }

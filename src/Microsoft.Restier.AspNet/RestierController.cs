@@ -154,10 +154,12 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
+            var model = await Api.GetModelAsync().ConfigureAwait(false);
+
             var postItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(Api.ServiceProvider),
-                actualEntityType.GetClrType(Api.ServiceProvider),
+                expectedEntityType.GetClrType(model),
+                actualEntityType.GetClrType(model),
                 RestierEntitySetOperation.Insert,
                 null,
                 null,
@@ -218,9 +220,11 @@ namespace Microsoft.Restier.AspNet
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
 
+            var model = await Api.GetModelAsync().ConfigureAwait(false);
+
             var deleteItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.GetClrType(Api.ServiceProvider),
+                path.EdmType.GetClrType(model),
                 null,
                 RestierEntitySetOperation.Delete,
                 RestierQueryBuilder.GetPathKeyValues(path),
@@ -368,10 +372,12 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
+            var model = await Api.GetModelAsync().ConfigureAwait(false);
+
             var updateItem = new DataModificationItem(
                 entitySet.Name,
-                expectedEntityType.GetClrType(Api.ServiceProvider),
-                actualEntityType.GetClrType(Api.ServiceProvider),
+                expectedEntityType.GetClrType(model),
+                actualEntityType.GetClrType(model),
                 RestierEntitySetOperation.Update,
                 RestierQueryBuilder.GetPathKeyValues(path),
                 propertiesInEtag,
