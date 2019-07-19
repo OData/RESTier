@@ -8,8 +8,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Batch;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 
@@ -21,12 +19,20 @@ namespace Microsoft.Restier.AspNet.Batch
     public class RestierBatchChangeSetRequestItem : ChangeSetRequestItem
     {
         /// <summary>
+        /// An Api
+        /// </summary>
+        private readonly ApiBase api;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RestierBatchChangeSetRequestItem" /> class.
         /// </summary>
+        /// <param name="api">An Api.</param>
         /// <param name="requests">The request messages.</param>
-        public RestierBatchChangeSetRequestItem(IEnumerable<HttpRequestMessage> requests)
+        public RestierBatchChangeSetRequestItem(ApiBase api, IEnumerable<HttpRequestMessage> requests)
             : base(requests)
         {
+            Ensure.NotNull(api, nameof(api));
+            this.api = api;
         }
 
         /// <summary>
@@ -68,7 +74,7 @@ namespace Microsoft.Restier.AspNet.Batch
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
                                     changeSetProperty.Exceptions.Add(taskEx);
-                                    changeSetProperty.OnChangeSetCompleted(request);
+                                    changeSetProperty.OnChangeSetCompleted();
                                     tcs.SetException(taskEx);
                                 }
                                 else
@@ -118,15 +124,11 @@ namespace Microsoft.Restier.AspNet.Batch
         }
 
 #pragma warning disable CA1822 // Do not declare static members on generic types
-        internal async Task SubmitChangeSet(HttpRequestMessage request, ChangeSet changeSet)
+        internal async Task SubmitChangeSet(ChangeSet changeSet)
 #pragma warning restore CA1822 // Do not declare static members on generic types
 
         {
-            var requestContainer = request.GetRequestContainer();
-            using (var api = requestContainer.GetService<ApiBase>())
-            {
-                var submitResults = await api.SubmitAsync(changeSet).ConfigureAwait(false);
-            }
+            var submitResults = await api.SubmitAsync(changeSet).ConfigureAwait(false);
         }
 
         private static void DisposeResponses(IEnumerable<HttpResponseMessage> responses)

@@ -175,7 +175,7 @@ namespace Microsoft.Restier.AspNet
             {
                 changeSetProperty.ChangeSet.Entries.Add(postItem);
 
-                await changeSetProperty.OnChangeSetCompleted(Request).ConfigureAwait(false);
+                await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
             }
 
             return CreateCreatedODataResult(postItem.Resource);
@@ -239,7 +239,7 @@ namespace Microsoft.Restier.AspNet
             {
                 changeSetProperty.ChangeSet.Entries.Add(deleteItem);
 
-                await changeSetProperty.OnChangeSetCompleted(Request).ConfigureAwait(false);
+                await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
             }
 
             return StatusCode(HttpStatusCode.NoContent);
@@ -392,7 +392,7 @@ namespace Microsoft.Restier.AspNet
             {
                 changeSetProperty.ChangeSet.Entries.Add(updateItem);
 
-                await changeSetProperty.OnChangeSetCompleted(Request).ConfigureAwait(false);
+                await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
             }
 
             return CreateUpdatedODataResult(updateItem.Resource);

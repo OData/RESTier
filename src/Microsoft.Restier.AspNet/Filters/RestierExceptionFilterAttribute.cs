@@ -126,7 +126,7 @@ namespace Microsoft.Restier.AspNet
             if (changeSetProperty != null)
             {
                 changeSetProperty.Exceptions.Add(exception);
-                changeSetProperty.OnChangeSetCompleted(context.Request);
+                changeSetProperty.OnChangeSetCompleted();
             }
 
             if (code != HttpStatusCode.Unused)
