@@ -2,9 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter.Serialization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 
@@ -15,6 +13,18 @@ namespace Microsoft.Restier.AspNet.Formatter
     /// </summary>
     public class RestierPrimitiveSerializer : ODataPrimitiveSerializer
     {
+        private readonly ODataPayloadValueConverter payloadValueConverter;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestierPrimitiveSerializer"/> class.
+        /// </summary>
+        /// <param name="payloadValueConverter"></param>
+        public RestierPrimitiveSerializer(ODataPayloadValueConverter payloadValueConverter)
+        {
+            Ensure.NotNull(payloadValueConverter, nameof(payloadValueConverter));
+            this.payloadValueConverter = payloadValueConverter;
+        }
+
         /// <summary>
         /// Writes the entity result to the response message.
         /// </summary>
@@ -36,7 +46,7 @@ namespace Microsoft.Restier.AspNet.Formatter
 
             if (writeContext != null)
             {
-                graph = ConvertToPayloadValue(graph, writeContext);
+                graph = ConvertToPayloadValue(graph, writeContext, payloadValueConverter);
             }
 
             base.WriteObject(graph, type, messageWriter, writeContext);
@@ -77,7 +87,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             return base.CreateODataPrimitiveValue(graph, primitiveType, writeContext);
         }
 
-        internal static object ConvertToPayloadValue(object value, ODataSerializerContext writeContext)
+        internal static object ConvertToPayloadValue(object value, ODataSerializerContext writeContext, ODataPayloadValueConverter payloadValueConverter)
         {
             Ensure.NotNull(writeContext, nameof(writeContext));
 
@@ -93,8 +103,6 @@ namespace Microsoft.Restier.AspNet.Formatter
                 }
             }
 
-            var payloadValueConverter
-                = writeContext.Request.GetRequestContainer().GetService<ODataPayloadValueConverter>();
             return payloadValueConverter.ConvertToPayloadValue(value, edmTypeReference);
         }
     }
