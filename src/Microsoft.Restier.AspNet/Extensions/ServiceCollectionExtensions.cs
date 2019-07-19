@@ -42,7 +42,7 @@ namespace Microsoft.Restier.AspNet
 
             services.AddService<IModelBuilder, RestierModelBuilder>();
             AddRestierModelExtender(services, typeof(T));
-            RestierOperationModelBuilder.ApplyTo(services, typeof(T));
+            AddOperationModelBuilder(services, typeof(T));
 
             // Add OData Query Settings and validation settings
             Func<IServiceProvider, ODataQuerySettings> querySettingFactory = (sp) => new ODataQuerySettings
@@ -84,5 +84,11 @@ namespace Microsoft.Restier.AspNet
             services.AddService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
             services.AddService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
         }
+
+        internal static void AddOperationModelBuilder(IServiceCollection services, Type targetType)
+        {
+            services.AddService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
+        }
+
     }
 }
