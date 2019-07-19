@@ -41,7 +41,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             services.AddService<IModelBuilder, RestierModelBuilder>();
-            RestierModelExtender.ApplyTo(services, typeof(T));
+            AddRestierModelExtender(services, typeof(T));
             RestierOperationModelBuilder.ApplyTo(services, typeof(T));
 
             // Add OData Query Settings and validation settings
@@ -66,6 +66,23 @@ namespace Microsoft.Restier.AspNet
 
             return services.AddScoped<RestierQueryExecutorOptions>()
                     .AddService<IQueryExecutor, RestierQueryExecutor>();
+        }
+
+        internal static void AddRestierModelExtender(
+            IServiceCollection services,
+            Type targetType)
+        {
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
+
+            // The model builder must maintain a singleton life time, for holding states and being injected into
+            // some other services.
+            services.AddSingleton(new RestierModelExtender(targetType));
+
+            services.AddService<IModelBuilder, RestierModelExtender.ModelBuilder>();
+            services.AddService<IModelMapper, RestierModelExtender.ModelMapper>();
+            services.AddService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
+            services.AddService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
         }
     }
 }
