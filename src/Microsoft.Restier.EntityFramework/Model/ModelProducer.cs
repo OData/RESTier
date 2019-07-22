@@ -47,8 +47,8 @@ namespace Microsoft.Restier.EntityFramework
         {
             Ensure.NotNull(context, nameof(context));
 
+            var dbContext = (context.Api as IDbContextProvider).DbContext;
 #if EF7
-            var dbContext = context.GetApiService<DbContext>();
             context.ResourceSetTypeMap.AddRange(dbContext.GetType().GetProperties()
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
@@ -57,8 +57,7 @@ namespace Microsoft.Restier.EntityFramework
                 e => ((ICollection<PropertyInfo>)
                     e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
 #else
-            var dbContext = context.GetApiService<DbContext>();
-
+            
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 
             // @robertmclaws: The query below actually returns all registered Containers
