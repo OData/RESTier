@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
@@ -40,24 +41,91 @@ namespace Microsoft.Restier.AspNet
         private const string IfMatchKey = "@IfMatchKey";
         private const string IfNoneMatchKey = "@IfNoneMatchKey";
 
-        private ApiBase api;
+        private  ApiBase api;
+        private ODataValidationSettings validationSettings;
+        private IOperationExecutor operationExecutor;
+        private ODataQuerySettings querySettings;
+
         private bool shouldReturnCount;
         private bool shouldWriteRawValue;
 
         /// <summary>
-        /// Gets the API associated with this controller.
+        /// Initializes a new instance of the <see cref="RestierController"/> class.
         /// </summary>
-        private ApiBase Api
+        /// <remarks>Please note that this controller needs a few dependencies
+        /// to work correctly. The second constructor with arguments specifies those
+        /// dependencies. When using the constructor without arguments, a DI container
+        /// is requested from the HttpRequestMessage and the dependencies are
+        /// resolved at run time. 
+        /// It is better to use a DI framework and register RestierController yourself
+        /// to allow the DI container to explicitly resolve dependencies at the start
+        /// of your application.
+        /// It is possible that the default constructor will be removed in the future.
+        /// </remarks>
+        public RestierController()
         {
-            get
-            {
-                if (api == null)
-                {
-                    var provider = Request.GetRequestContainer();
-                    api = provider.GetService(typeof(ApiBase)) as ApiBase;
-                }
+        }
 
-                return api;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestierController"/> class.
+        /// </summary>
+        /// <param name="api">A reference to an <see cref="ApiBase"/> class to use for filtering, authorization and querying.</param>
+        /// <param name="querySettings">OData Query settings for queries.</param>
+        /// <param name="validationSettings">OData validation settings for validation.</param>
+        /// <param name="operationExecutor">An Operation Executer to execute operations.</param>
+        public RestierController(ApiBase api, ODataQuerySettings querySettings, ODataValidationSettings validationSettings, IOperationExecutor operationExecutor)
+        {
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(querySettings, nameof(querySettings));
+            Ensure.NotNull(validationSettings, nameof(validationSettings));
+            Ensure.NotNull(operationExecutor, nameof(operationExecutor));
+
+            this.api = api;
+            this.querySettings = querySettings;
+            this.validationSettings = validationSettings;
+            this.operationExecutor = operationExecutor;
+        }
+
+        /// <summary>
+        /// Initializes the <see cref="ApiController"/> instance with the specified controllerContext.
+        /// </summary>
+        /// <remarks>
+        /// Resolves the api, query settings, validation settings, operation executor from
+        /// the Request container associated with the HttpRequestMessage.
+        /// </remarks>
+        /// <param name="controllerContext"> 
+        /// The <see cref="HttpControllerContext"/> object that is used for the initialization.
+        /// </param>
+        protected override void Initialize(HttpControllerContext controllerContext)
+        {
+            base.Initialize(controllerContext);
+
+            // TODO: JWS Either properly inject RestierController into the DI Container.
+            // or provide sensible defaults for these dependencies to reduce DI dependency.
+#pragma warning disable CA1062 // Validate arguments of public methods
+            var provider = controllerContext.Request.GetRequestContainer();
+#pragma warning restore CA1062 // Validate arguments of public methods
+
+            if (provider == null)
+            {
+                return;
+            }
+
+            if (api == null)
+            {
+                api = provider.GetService(typeof(ApiBase)) as ApiBase;
+            }
+            if (querySettings == null)
+            {
+                querySettings = provider.GetService(typeof(ODataQuerySettings)) as ODataQuerySettings;
+            }
+            if (validationSettings == null)
+            {
+                validationSettings = provider.GetService(typeof(ODataValidationSettings)) as ODataValidationSettings;
+            }
+            if (operationExecutor == null)
+            {
+                operationExecutor = provider.GetService(typeof(IOperationExecutor)) as IOperationExecutor;
             }
         }
 
@@ -153,7 +221,7 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = await Api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync().ConfigureAwait(false);
 
             var postItem = new DataModificationItem(
                 entitySet.Name,
@@ -170,7 +238,7 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(postItem);
 
-                var result = await Api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -219,7 +287,7 @@ namespace Microsoft.Restier.AspNet
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
 
-            var model = await Api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync().ConfigureAwait(false);
 
             var deleteItem = new DataModificationItem(
                 entitySet.Name,
@@ -236,7 +304,7 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteItem);
 
-                var result = await Api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -371,7 +439,7 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = await Api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync().ConfigureAwait(false);
 
             var updateItem = new DataModificationItem(
                 entitySet.Name,
@@ -391,7 +459,7 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(updateItem);
 
-                var result = await Api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -514,7 +582,7 @@ namespace Microsoft.Restier.AspNet
 
         private IQueryable GetQuery(ODataPath path)
         {
-            var builder = new RestierQueryBuilder(Api, path);
+            var builder = new RestierQueryBuilder(api, path);
             var queryable = builder.BuildQuery();
             shouldReturnCount = builder.IsCountPathSegmentPresent;
             shouldWriteRawValue = builder.IsValuePathSegmentPresent;
@@ -540,7 +608,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             var properties = Request.ODataProperties();
-            var model = await Api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync().ConfigureAwait(false);
             var queryContext = new ODataQueryContext(model, queryable.ElementType, path);
             var queryOptions = new ODataQueryOptions(queryContext, Request);
 
@@ -555,35 +623,33 @@ namespace Microsoft.Restier.AspNet
             }
 
             // TODO GitHubIssue#41 : Ensure stable ordering for query
-            var settings = Api.GetApiService<ODataQuerySettings>();
-
+            
             if (shouldReturnCount)
             {
                 // Query options other than $filter and $search don't apply to $count.
-                queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
+                queryable = queryOptions.ApplyTo(queryable, querySettings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
                 return (queryable, etag);
             }
 
             if (queryOptions.Count != null && !applyCount)
             {
-                var queryExecutorOptions = Api.GetApiService<RestierQueryExecutorOptions>();
+                var queryExecutorOptions = api.GetApiService<RestierQueryExecutorOptions>();
                 queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
                 queryExecutorOptions.SetTotalCount = value => properties.TotalCount = value;
             }
 
             // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
-            var validationSettings = Api.GetApiService<ODataValidationSettings>();
             queryOptions.Validate(validationSettings);
 
             // Entity count can NOT be evaluated at this point of time because the source
             // expression is just a placeholder to be replaced by the expression sourcer.
             if (!applyCount)
             {
-                queryable = queryOptions.ApplyTo(queryable, settings, AllowedQueryOptions.Count);
+                queryable = queryOptions.ApplyTo(queryable, querySettings, AllowedQueryOptions.Count);
             }
             else
             {
-                queryable = queryOptions.ApplyTo(queryable, settings);
+                queryable = queryOptions.ApplyTo(queryable, querySettings);
             }
 
             return (queryable, etag);
@@ -596,7 +662,7 @@ namespace Microsoft.Restier.AspNet
                 ShouldReturnCount = shouldReturnCount
             };
 
-            var queryResult = await Api.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
+            var queryResult = await api.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
             var result = queryResult.Results.AsQueryable();
             return result;
         }
@@ -625,9 +691,8 @@ namespace Microsoft.Restier.AspNet
             IQueryable bindingParameterValue,
             CancellationToken cancellationToken)
         {
-            var executor = Api.GetApiService<IOperationExecutor>();
 
-            var context = new OperationContext(Api,
+            var context = new OperationContext(api,
                 getParaValueFunc,
                 operationName,
                 isFunction,
@@ -635,7 +700,7 @@ namespace Microsoft.Restier.AspNet
             {
                 Request = Request
             };
-            var result = executor.ExecuteOperationAsync(context, cancellationToken);
+            var result = operationExecutor.ExecuteOperationAsync(context, cancellationToken);
             return result;
         }
 
@@ -664,7 +729,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             // return 428(Precondition Required) if entity requires concurrency check.
-            var model = await Api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync().ConfigureAwait(false);
             var needEtag = model.IsConcurrencyCheckEnabled(entitySet);
             if (needEtag)
             {
