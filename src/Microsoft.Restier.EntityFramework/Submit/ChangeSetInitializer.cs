@@ -38,7 +38,7 @@ namespace Microsoft.Restier.EntityFramework
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var dbContext = context.GetApiService<DbContext>();
+            var dbContext = (context.Api as IDbContextProvider).DbContext;
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {

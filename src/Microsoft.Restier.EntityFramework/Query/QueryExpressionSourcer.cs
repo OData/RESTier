@@ -42,7 +42,7 @@ namespace Microsoft.Restier.EntityFramework
                 return null;
             }
 
-            var dbContext = context.QueryContext.GetApiService<DbContext>();
+            var dbContext = (context.QueryContext.Api as IDbContextProvider).DbContext;
             var dbSetProperty = dbContext.GetType().GetProperties()
                 .FirstOrDefault(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (dbSetProperty == null)
