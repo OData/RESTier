@@ -122,12 +122,12 @@ namespace Microsoft.Restier.AspNet.Operation
             context.ParameterValues = parameters;
 
             // Invoke preprocessing on the operation execution
-            PerformPreEvent(context, cancellationToken);
+            await PerformPreEvent(context, cancellationToken).ConfigureAwait(false);
 
             var result = await InvokeOperation(context.Api, method, parameters, model).ConfigureAwait(false);
 
             // Invoke preprocessing on the operation execution
-            PerformPostEvent(context, cancellationToken);
+            await PerformPostEvent(context, cancellationToken).ConfigureAwait(false);
             return result;
         }
 
@@ -238,19 +238,19 @@ namespace Microsoft.Restier.AspNet.Operation
             }
         }
 
-        private void PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
+        private async Task PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
             if (operationFilter != null)
             {
-                operationFilter.OnOperationExecutingAsync(context, cancellationToken);
+                await operationFilter.OnOperationExecutingAsync(context, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private void PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
+        private async Task PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
             if (operationFilter != null)
             {
-                operationFilter.OnOperationExecutedAsync(context, cancellationToken);
+                await operationFilter.OnOperationExecutedAsync(context, cancellationToken).ConfigureAwait(false);
             }
         }
     }
