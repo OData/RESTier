@@ -100,16 +100,16 @@ namespace Microsoft.Restier.AspNet
         {
             base.Initialize(controllerContext);
 
+            if (api != null && querySettings != null && validationSettings != null && operationExecutor != null)
+            {
+                return;
+            }
+
             // TODO: JWS Either properly inject RestierController into the DI Container.
             // or provide sensible defaults for these dependencies to reduce DI dependency.
 #pragma warning disable CA1062 // Validate arguments of public methods
             var provider = controllerContext.Request.GetRequestContainer();
 #pragma warning restore CA1062 // Validate arguments of public methods
-
-            if (provider == null)
-            {
-                return;
-            }
 
             if (api == null)
             {
@@ -127,6 +127,7 @@ namespace Microsoft.Restier.AspNet
             {
                 operationExecutor = provider.GetService(typeof(IOperationExecutor)) as IOperationExecutor;
             }
+
         }
 
         /// <summary>
