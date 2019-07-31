@@ -56,6 +56,34 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             bookEditRequest.IsSuccessStatusCode.Should().BeTrue();
         }
 
+        [TestMethod]
+        public async Task PatchBook()
+        {
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader);
+            bookRequest.IsSuccessStatusCode.Should().BeTrue();
+            var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
+
+            bookList.Should().NotBeNull();
+            bookList.Items.Should().NotBeNullOrEmpty();
+            var book = bookList.Items.First();
+
+            book.Should().NotBeNull();
+
+            var payload = new
+            {
+                Title = book.Title + " | Patch Test"
+            };
+
+            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(new HttpMethod("PATCH"), resource: $"/Books({book.Id})", payload: payload, acceptHeader: WebApiConstants.DefaultAcceptHeader);
+            bookEditRequest.IsSuccessStatusCode.Should().BeTrue();
+
+            var bookCheckRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/Books({book.Id})", acceptHeader: ODataConstants.DefaultAcceptHeader);
+            bookCheckRequest.IsSuccessStatusCode.Should().BeTrue();
+            var (book2, ErrorContent2) = await bookCheckRequest.DeserializeResponseAsync<Book>();
+            book2.Should().NotBeNull();
+            book2.Title.Should().EndWith(" | Patch Test");
+        }
+
     }
 
 }
