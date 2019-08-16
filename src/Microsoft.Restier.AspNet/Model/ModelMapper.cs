@@ -13,8 +13,20 @@ namespace Microsoft.Restier.AspNet.Model
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    internal class ModelMapper : IModelMapper
+    public class ModelMapper : IModelMapper
     {
+        private readonly IEdmModel model;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModelMapper"/> class.
+        /// </summary>
+        /// <param name="model">The Edm Model to map.</param>
+        public ModelMapper(IEdmModel model)
+        {
+            Ensure.NotNull(model, nameof(model));
+            this.model = model;
+        }
+
         internal IModelMapper InnerMapper { get; set; }
 
         /// <summary>
@@ -40,9 +52,7 @@ namespace Microsoft.Restier.AspNet.Model
             string name,
             out Type relevantType)
         {
-            // Cannot await as cannot make method async
-            var model = context.GetApiService<IEdmModel>();
-            var element = model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
+            var element = this.model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
 
             if (element != null)
             {
