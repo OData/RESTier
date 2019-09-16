@@ -11,30 +11,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataProviders", "DataProvid
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{9D3D8728-C31B-4D5E-B471-79A9DBBA0E58}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Core", "src\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj", "{300B769A-3513-49D0-A035-7DB965C8D2A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Core", "Microsoft.Restier.Core\Microsoft.Restier.Core.csproj", "{300B769A-3513-49D0-A035-7DB965C8D2A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.AspNet", "src\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj", "{8ECF4E97-1816-44AD-AD63-6ACF287ED520}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.AspNet", "Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj", "{8ECF4E97-1816-44AD-AD63-6ACF287ED520}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.EntityFramework", "src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj", "{0E373B2A-2ED2-4566-A275-6BE81CFFE00B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.EntityFramework", "Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj", "{0E373B2A-2ED2-4566-A275-6BE81CFFE00B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Core", "src\Microsoft.Restier.Tests.Core\Microsoft.Restier.Tests.Core.csproj", "{16DBAD48-C935-4BF1-BC4A-925031AEA0FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Core", "Microsoft.Restier.Tests.Core\Microsoft.Restier.Tests.Core.csproj", "{16DBAD48-C935-4BF1-BC4A-925031AEA0FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.EntityFramework", "src\Microsoft.Restier.Tests.EntityFramework\Microsoft.Restier.Tests.EntityFramework.csproj", "{EB7010EC-4AD2-4CEB-8757-46447FEC80C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.EntityFramework", "Microsoft.Restier.Tests.EntityFramework\Microsoft.Restier.Tests.EntityFramework.csproj", "{EB7010EC-4AD2-4CEB-8757-46447FEC80C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.AspNet", "src\Microsoft.Restier.Tests.AspNet\Microsoft.Restier.Tests.AspNet.csproj", "{FD305A0A-5680-4C38-9917-84233F35DE3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.AspNet", "Microsoft.Restier.Tests.AspNet\Microsoft.Restier.Tests.AspNet.csproj", "{FD305A0A-5680-4C38-9917-84233F35DE3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{901E6A2A-23EC-4BC8-B4C6-A3EF70D72702}"
 	ProjectSection(SolutionItems) = preProject
-		src\Directory.Build.props = src\Directory.Build.props
 		Directory.Build.props = Directory.Build.props
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DB42E0B8-C0C7-4DE4-9437-2B2A229B5F8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.AspNet", "src\Microsoft.Restier.Samples.Northwind.AspNet\Microsoft.Restier.Samples.Northwind.AspNet.csproj", "{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Samples.Northwind.AspNet", "Microsoft.Restier.Samples.Northwind.AspNet\Microsoft.Restier.Samples.Northwind.AspNet.csproj", "{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Shared", "src\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj", "{B75D79EE-D5C0-4E1B-82CB-9505880A2730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Shared", "Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj", "{B75D79EE-D5C0-4E1B-82CB-9505880A2730}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Product", "Product", "{76B4E51F-233E-4DD3-AABF-A6F47788040D}"
 EndProject
