@@ -1,3 +1,0 @@
-{
-  "@odata.context":"http://localhost/api/Northwind/$metadata#Edm.Single","value":1265793
-}

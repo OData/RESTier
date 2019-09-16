@@ -21,7 +21,7 @@
   
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="[0.1.4, 1.0.0)" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.1.1-Nightly201907031246" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.2.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="[5.2.7, 6.0.0)" />
   </ItemGroup>
 

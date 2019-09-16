@@ -1,1 +1,0 @@
-{"@odata.context":"http://localhost:18384/api/Trippin/$metadata#Staffs/$entity","StaffId":2,"UserName":"scottketchum","FirstName":"Scott","YearOfService":0}
