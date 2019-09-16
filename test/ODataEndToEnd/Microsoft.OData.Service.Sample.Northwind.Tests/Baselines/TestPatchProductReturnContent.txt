@@ -1,1 +1,0 @@
-{"@odata.context":"http://localhost/api/Northwind/$metadata#Products/$entity","ProductID":XX,"ProductName":"Commons","SupplierID":null,"CategoryID":null,"QuantityPerUnit":"95","UnitPrice":5.6000,"UnitsInStock":40,"UnitsOnOrder":13,"ReorderLevel":68,"Discontinued":true}

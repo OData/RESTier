@@ -1,1 +1,0 @@
-{"@odata.context":"http://localhost/api/Northwind/$metadata#Customers/$entity","CustomerID":"BLONP","CompanyName":"Blondesddsl p\u00e8re et fils","ContactName":"Fr\u00e9d\u00e9rique Citeaux","ContactTitle":"Marketing Manager","Address":"24, place Kl\u00e9ber","City":"Strasbourg","Region":null,"PostalCode":"67000","CountryRegion":"France","Phone":"88.60.15.31","Fax":"88.60.15.32"}
