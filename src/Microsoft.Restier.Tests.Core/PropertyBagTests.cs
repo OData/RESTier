@@ -7,6 +7,9 @@ using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -96,7 +99,16 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                return ApiBase.ConfigureApi(apiType, services).AddScoped<MyPropertyBag>();
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+
+                ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+
+                return services.AddScoped<MyPropertyBag>();
             }
 
             public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)

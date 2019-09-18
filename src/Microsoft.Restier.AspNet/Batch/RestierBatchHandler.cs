@@ -12,6 +12,7 @@ using Microsoft.AspNet.OData.Batch;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.AspNet.Batch
 {
@@ -42,6 +43,9 @@ namespace Microsoft.Restier.AspNet.Batch
             var requestContainer = request.CreateRequestContainer(ODataRouteName);
             requestContainer.GetRequiredService<ODataMessageReaderSettings>().BaseUri = GetBaseUri(request);
 
+            // TODO: JWS: needs to be a constructor dependency probably, but that's impossible now.
+            var api = requestContainer.GetRequiredService<ApiBase>();
+
 #pragma warning disable CA1062 // Validate public arguments
             var reader = await request.Content.GetODataMessageReaderAsync(requestContainer, cancellationToken).ConfigureAwait(false);
 #pragma warning restore CA1062 // Validate public arguments
@@ -61,7 +65,7 @@ namespace Microsoft.Restier.AspNet.Batch
                         changeSetRequest.DeleteRequestContainer(false);
                     }
 
-                    requests.Add(CreateRestierBatchChangeSetRequestItem(changeSetRequests));
+                    requests.Add(CreateRestierBatchChangeSetRequestItem(api, changeSetRequests));
                 }
                 else if (batchReader.State == ODataBatchReaderState.Operation)
                 {
@@ -78,9 +82,10 @@ namespace Microsoft.Restier.AspNet.Batch
         /// <summary>
         /// Creates the <see cref="RestierBatchChangeSetRequestItem"/> instance.
         /// </summary>
+        /// <param name="api">A reference to the Api.</param>
         /// <param name="changeSetRequests">The list of changeset requests.</param>
         /// <returns>The created <see cref="RestierBatchChangeSetRequestItem"/> instance.</returns>
-        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(IList<HttpRequestMessage> changeSetRequests) => 
-            new RestierBatchChangeSetRequestItem(changeSetRequests);
+        protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(ApiBase api, IList<HttpRequestMessage> changeSetRequests) => 
+            new RestierBatchChangeSetRequestItem(api, changeSetRequests);
     }
 }

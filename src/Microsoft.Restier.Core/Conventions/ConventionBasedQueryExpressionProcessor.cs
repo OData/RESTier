@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
@@ -15,25 +14,24 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based query expression processor which will apply OnFilter logic into query expression.
     /// </summary>
-    internal class ConventionBasedQueryExpressionProcessor : IQueryExpressionProcessor
+    public class ConventionBasedQueryExpressionProcessor : IQueryExpressionProcessor
     {
         private Type targetType;
 
-        private ConventionBasedQueryExpressionProcessor(Type targetType) => this.targetType = targetType;
-
-        // Inner should be null unless user add one as inner most
-        public IQueryExpressionProcessor Inner { get; set; }
-
-        /// <inheritdoc/>
-        public static void ApplyTo(IServiceCollection services, Type targetType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type to check for filter functions.</param>
+        public ConventionBasedQueryExpressionProcessor(Type targetType)
         {
-            Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(targetType, nameof(targetType));
-            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(targetType)
-            {
-                Inner = next,
-            });
+            this.targetType = targetType;
         }
+
+        /// <summary>
+        /// Gets a reference to an inner query expression processor in case they are chained.
+        /// </summary>
+        public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>
         public Expression Process(QueryExpressionContext context)
@@ -134,7 +132,7 @@ namespace Microsoft.Restier.Core
             object apiBase = null;
             if (!expectedMethod.IsStatic)
             {
-                apiBase = context.QueryContext.GetApiService<ApiBase>();
+                apiBase = context.QueryContext.Api;
                 if (apiBase == null || !targetType.IsInstanceOfType(apiBase))
                 {
                     return null;

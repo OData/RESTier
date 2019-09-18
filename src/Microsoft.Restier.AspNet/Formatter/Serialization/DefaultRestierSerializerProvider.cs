@@ -5,7 +5,7 @@ using System;
 using System.Net.Http;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Formatter.Serialization;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.AspNet.Formatter
@@ -26,15 +26,28 @@ namespace Microsoft.Restier.AspNet.Formatter
         /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
         /// </summary>
         /// <param name="rootContainer">The container to get the service</param>
-        public DefaultRestierSerializerProvider(IServiceProvider rootContainer) : base(rootContainer)
+        /// <param name="payloadValueConverter">The OData payload value converter to use.</param>
+        public DefaultRestierSerializerProvider(IServiceProvider rootContainer, ODataPayloadValueConverter payloadValueConverter) : base(rootContainer)
         {
+            Ensure.NotNull(rootContainer, nameof(rootContainer));
+            Ensure.NotNull(payloadValueConverter, nameof(payloadValueConverter));
+
             this.resourceSetSerializer = new RestierResourceSetSerializer(this);
-            this.primitiveSerializer = new RestierPrimitiveSerializer();
-            this.rawSerializer = new RestierRawSerializer();
+            this.primitiveSerializer = new RestierPrimitiveSerializer(payloadValueConverter);
+            this.rawSerializer = new RestierRawSerializer(payloadValueConverter);
             this.resourceSerializer = new RestierResourceSerializer(this);
             this.collectionSerializer = new RestierCollectionSerializer(this);
             this.enumSerializer = new RestierEnumSerializer(this);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultRestierSerializerProvider" /> class.
+        /// </summary>
+        /// <param name="rootContainer">The container to get the service</param>
+        public DefaultRestierSerializerProvider(IServiceProvider rootContainer) : this(rootContainer, new RestierPayloadValueConverter())
+        {
+        }
+
 
         /// <summary>
         /// Gets the serializer for the given result type.

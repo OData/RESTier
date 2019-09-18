@@ -16,14 +16,14 @@ namespace Microsoft.Restier.Core.Submit
         /// <summary>
         /// Initializes a new instance of the <see cref="SubmitContext" /> class.
         /// </summary>
-        /// <param name="provider">
-        /// The service provider used to get service from container
+        /// <param name="api">
+        /// An Api.
         /// </param>
         /// <param name="changeSet">
         /// A change set.
         /// </param>
-        public SubmitContext(IServiceProvider provider, ChangeSet changeSet)
-            : base(provider) => this.changeSet = changeSet;
+        public SubmitContext(ApiBase api, ChangeSet changeSet)
+            : base(api) => this.changeSet = changeSet;
 
         /// <summary>
         /// Gets or sets the change set.

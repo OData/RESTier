@@ -43,15 +43,14 @@ namespace Microsoft.Restier.AspNet.Batch
         /// <summary>
         /// The callback to execute when the changeset is completed.
         /// </summary>
-        /// <param name="request">The http request message.</param>
         /// <returns>The task object that represents this callback execution.</returns>
-        public Task OnChangeSetCompleted(HttpRequestMessage request)
+        public Task OnChangeSetCompleted()
         {
             if (Interlocked.Decrement(ref this.subRequestCount) == 0)
             {
                 if (Exceptions.Count == 0)
                 {
-                    this.changeSetRequestItem.SubmitChangeSet(request, this.ChangeSet)
+                    this.changeSetRequestItem.SubmitChangeSet(this.ChangeSet)
                         .ContinueWith(t =>
                         {
                             if (t.Exception != null)

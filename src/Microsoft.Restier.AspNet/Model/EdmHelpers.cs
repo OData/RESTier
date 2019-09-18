@@ -5,7 +5,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNet.OData;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 
 
@@ -47,11 +46,12 @@ namespace Microsoft.Restier.AspNet.Model
         /// Get the clr type for a specified edm type
         /// </summary>
         /// <param name="edmType">The edm type to get clr type</param>
-        /// <param name="serviceProvider">The provider to get service from DI container</param>
+        /// <param name="edmModel">The edm model </param>
         /// <returns>The clr type</returns>
-        public static Type GetClrType(this IEdmType edmType, IServiceProvider serviceProvider)
+        public static Type GetClrType(this IEdmType edmType, IEdmModel edmModel)
         {
-            var edmModel = serviceProvider.GetService<IEdmModel>();
+            Ensure.NotNull(edmType, nameof(edmType));
+            Ensure.NotNull(edmModel, nameof(edmModel));
 
             var annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
             if (annotation != null)

@@ -8,6 +8,9 @@ using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Tests.AspNet;
+using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -93,8 +96,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
+            var api = provider.GetService<TestApi>();
 
-            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var context = new OperationContext(api, (string test) => { return null; }, "TestMethod", true, null);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Authorization, RestierOperationMethod.Execute);
             name.Should().Be("CanExecuteTestMethod");
         }
@@ -105,8 +109,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
+            var api = provider.GetService<TestApi>();
 
-            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var context = new OperationContext(api, (string test) => { return null; }, "TestMethod", true, null);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.PreSubmit, RestierOperationMethod.Execute);
             name.Should().Be("OnExecutingTestMethod");
         }
@@ -116,8 +121,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
+            var api = provider.GetService<TestApi>();
 
-            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var context = new OperationContext(api, (string test) => { return null; }, "TestMethod", true, null);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Submit, RestierOperationMethod.Execute);
             name.Should().Be("");
         }
@@ -127,8 +133,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
+            var api = provider.GetService<TestApi>();
 
-            var context = new OperationContext((string test) => { return null; }, "TestMethod", null, true, null, provider);
+            var context = new OperationContext(api, (string test) => { return null; }, "TestMethod", true, null);
             var name = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.PostSubmit, RestierOperationMethod.Execute);
             name.Should().Be("OnExecutedTestMethod");
         }
@@ -136,6 +143,20 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApi : ApiBase
         {
+
+            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            {
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+
+                ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+
+                return services;
+            }
             public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }

@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
@@ -12,22 +11,18 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based change set item authorizer.
     /// </summary>
-    internal class ConventionBasedChangeSetItemAuthorizer : IChangeSetItemAuthorizer
+    public class ConventionBasedChangeSetItemAuthorizer : IChangeSetItemAuthorizer
     {
         private Type targetType;
 
-        private ConventionBasedChangeSetItemAuthorizer(Type targetType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionBasedChangeSetItemAuthorizer"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type to check for authorizer functions.</param>
+        public ConventionBasedChangeSetItemAuthorizer(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
-        }
-
-        /// <inheritdoc/>
-        public static void ApplyTo(IServiceCollection services, Type targetType)
-        {
-            Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(targetType, nameof(targetType));
-            services.AddService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(targetType));
         }
 
         /// <inheritdoc/>
@@ -46,7 +41,7 @@ namespace Microsoft.Restier.Core
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.GetApiService<ApiBase>();
+                    target = context.Api;
                     if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.FromResult(result);
