@@ -43,7 +43,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <summary>
         /// Gets the underlying DbContext for this API.
         /// </summary>
-        protected T DbContext
+        public T DbContext
         {
             get
             {
