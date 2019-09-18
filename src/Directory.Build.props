@@ -37,7 +37,7 @@
     <!-- Contact email address for NuGet packages and Linux installers. -->
     <MaintainerEmail>odata@nimbleapps.cloud</MaintainerEmail>
 
-    <PackageIconUrl>https://go.microsoft.com/fwlink/?LinkID=288859</PackageIconUrl>
+    <PackageIcon>dotnet-logo.png</PackageIcon>
     <PackageProjectUrl>https://restier.readthedocs.io/en/latest/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>odata;wcf data services;</PackageTags>
@@ -89,6 +89,9 @@
     <PackageReference Include="FluentAssertions" Version="[5.9.0, 6.0.0)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="[0.11.4, 1.0.0)" PrivateAssets="All" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>

@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{901E6A2A-23EC-4BC8-B4C6-A3EF70D72702}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
+		dotnet-logo.png = dotnet-logo.png
 		README.md = README.md
 	EndProjectSection
 EndProject
