@@ -17,11 +17,36 @@ namespace Microsoft.Restier.Core.Query
     /// <summary>
     /// Represents the default query handler.
     /// </summary>
-    internal static class DefaultQueryHandler
+    internal class DefaultQueryHandler
     {
         private const string ExpressionMethodNameOfWhere = "Where";
         private const string ExpressionMethodNameOfSelect = "Select";
         private const string ExpressionMethodNameOfSelectMany = "SelectMany";
+
+        private readonly IQueryExpressionAuthorizer authorizer;
+        private readonly IQueryExpressionExpander expander;
+        private readonly IQueryExpressionProcessor processor;
+        private readonly IQueryExpressionSourcer sourcer;
+
+        /// <summary>
+        /// Initializes a new instance of the DefaultQueryHandler class.
+        /// </summary>
+        /// <param name="sourcer">The query expression sourcer to use.</param>
+        /// <param name="authorizer">The query expression authorizer to use.</param>
+        /// <param name="expander">The query expression expander to use.</param>
+        /// <param name="processor">The query expression processor to use.</param>
+        public DefaultQueryHandler(IQueryExpressionSourcer sourcer,
+            IQueryExpressionAuthorizer authorizer = null,
+            IQueryExpressionExpander expander = null,
+            IQueryExpressionProcessor processor = null)
+        {
+            Ensure.NotNull(sourcer, nameof(sourcer));
+
+            this.authorizer = authorizer;
+            this.expander = expander;
+            this.processor = processor;
+            this.sourcer = sourcer;
+        }
 
         /// <summary>
         /// Asynchronously executes the query flow.
@@ -36,15 +61,15 @@ namespace Microsoft.Restier.Core.Query
         /// A task that represents the asynchronous
         /// operation whose result is a query result.
         /// </returns>
-        public static async Task<QueryResult> QueryAsync(
-            QueryContext context,
-            CancellationToken cancellationToken)
+        public async Task<QueryResult> QueryAsync(
+        QueryContext context,
+        CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
 
             // process query expression
             var expression = context.Request.Expression;
-            var visitor = new QueryExpressionVisitor(context);
+            var visitor = new QueryExpressionVisitor(context, sourcer, authorizer, expander, processor);
             expression = visitor.Visit(expression);
 
             // get element type
@@ -235,14 +260,24 @@ namespace Microsoft.Restier.Core.Query
         {
             private readonly QueryExpressionContext context;
             private readonly IDictionary<Expression, Expression> processedExpressions;
-            private IQueryExpressionAuthorizer authorizer;
-            private IQueryExpressionExpander expander;
-            private IQueryExpressionProcessor processor;
-            private IQueryExpressionSourcer sourcer;
+            private readonly IQueryExpressionAuthorizer authorizer;
+            private readonly IQueryExpressionExpander expander;
+            private readonly IQueryExpressionProcessor processor;
+            private readonly IQueryExpressionSourcer sourcer;
 
-            public QueryExpressionVisitor(QueryContext context)
+            public QueryExpressionVisitor(QueryContext context,
+                IQueryExpressionSourcer sourcer,
+                IQueryExpressionAuthorizer authorizer = null,
+                IQueryExpressionExpander expander = null,
+                IQueryExpressionProcessor processor = null)
             {
+                Ensure.NotNull(sourcer, nameof(sourcer));
+
                 this.context = new QueryExpressionContext(context);
+                this.authorizer = authorizer;
+                this.expander = expander;
+                this.processor = processor;
+                this.sourcer = sourcer;
                 processedExpressions = new Dictionary<Expression, Expression>();
             }
 
@@ -337,11 +372,6 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                if (authorizer == null)
-                {
-                    authorizer = context.QueryContext.GetApiService<IQueryExpressionAuthorizer>();
-                }
-
                 if (authorizer != null && !authorizer.Authorize(context))
                 {
                     throw new SecurityException("The current user does not have permission to query from the requested resource.");
@@ -350,12 +380,6 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Expand(Expression visited)
             {
-                if (expander == null)
-                {
-                    expander = context.QueryContext
-                        .GetApiService<IQueryExpressionExpander>();
-                }
-
                 if (expander == null)
                 {
                     return visited;
@@ -387,11 +411,6 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Process(Expression visited, Expression processed)
             {
-                if (processor == null)
-                {
-                    processor = context.QueryContext.GetApiService<IQueryExpressionProcessor>();
-                }
-
                 if (processor != null)
                 {
                     var filtered = processor.Process(context);
@@ -445,18 +464,6 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Source(Expression node)
             {
-                if (sourcer == null)
-                {
-                    sourcer = context.QueryContext
-                        .GetApiService<IQueryExpressionSourcer>();
-                }
-
-                if (sourcer == null)
-                {
-                    // Missing sourcer
-                    throw new NotSupportedException(Resources.QuerySourcerMissing);
-                }
-
                 node = sourcer.ReplaceQueryableSource(context, BaseQuery != null);
                 if (node == null)
                 {

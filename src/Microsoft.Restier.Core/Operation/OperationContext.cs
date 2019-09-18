@@ -18,14 +18,14 @@ namespace Microsoft.Restier.Core.Operation
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationContext" /> class.
         /// </summary>
+        /// <param name="api">
+        /// An Api.
+        /// </param>
         /// <param name="getParameterValueFunc">
         /// The function that used to retrieve the parameter value name.
         /// </param>
         /// <param name="operationName">
         /// The operation name.
-        /// </param>
-        /// <param name="implementInstance">
-        /// The instance which has the implementation of the operation and used for reflection call
         /// </param>
         /// <param name="isFunction">
         /// A flag indicates this is a function call or action call.
@@ -33,21 +33,16 @@ namespace Microsoft.Restier.Core.Operation
         /// <param name="bindingParameterValue">
         /// A queryable for binding parameter value and if it is function/action import, the value will be null.
         /// </param>
-        /// <param name="provider">
-        /// The service provider used to get service from container.
-        /// </param>
         public OperationContext(
+            ApiBase api,
             Func<string, object> getParameterValueFunc,
             string operationName,
-            object implementInstance,
             bool isFunction,
-            IEnumerable bindingParameterValue,
-            IServiceProvider provider)
-            : base(provider)
+            IEnumerable bindingParameterValue)
+            : base(api)
         {
             GetParameterValueFunc = getParameterValueFunc;
             OperationName = operationName;
-            ImplementInstance = implementInstance;
             IsFunction = isFunction;
             BindingParameterValue = bindingParameterValue;
         }
@@ -56,11 +51,6 @@ namespace Microsoft.Restier.Core.Operation
         /// Gets the operation name.
         /// </summary>
         public string OperationName { get; }
-
-        /// <summary>
-        /// Gets the instance have implemented the operation and used for reflection call.
-        /// </summary>
-        public object ImplementInstance { get; }
 
         /// <summary>
         /// Gets the function that used to retrieve the parameter value name.

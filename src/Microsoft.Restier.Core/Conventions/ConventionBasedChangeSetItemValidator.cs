@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based change set item validator.
     /// </summary>
-    internal class ConventionBasedChangeSetItemValidator :
+    public class ConventionBasedChangeSetItemValidator :
         IChangeSetItemValidator
     {
         /// <inheritdoc/>

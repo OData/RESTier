@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
@@ -20,17 +19,13 @@ namespace Microsoft.Restier.AspNet.Model
         private readonly Type targetType;
         private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
 
-        private RestierOperationModelBuilder(Type targetType) => this.targetType = targetType;
-
-        private IModelBuilder InnerHandler { get; set; }
-
-        public static void ApplyTo(IServiceCollection services, Type targetType)
+        internal RestierOperationModelBuilder(Type targetType, IModelBuilder innerHandler)
         {
-            services.AddService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType)
-            {
-                InnerHandler = next,
-            });
+            this.targetType = targetType;
+            this.InnerHandler = innerHandler;
         }
+
+        private IModelBuilder InnerHandler { get; }
 
         public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {

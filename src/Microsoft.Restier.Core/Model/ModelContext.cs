@@ -15,10 +15,10 @@ namespace Microsoft.Restier.Core.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelContext" /> class.
         /// </summary>
-        /// <param name="provider">
-        /// The service provider to get services.
+        /// <param name="api">
+        /// An Api.
         /// </param>
-        public ModelContext(IServiceProvider provider) : base(provider)
+        public ModelContext(ApiBase api) : base(api)
         {
             ResourceSetTypeMap = new Dictionary<string, Type>();
             ResourceTypeKeyPropertiesMap = new Dictionary<Type, ICollection<PropertyInfo>>();

@@ -12,6 +12,18 @@ namespace Microsoft.Restier.AspNet.Formatter
     /// </summary>
     public class RestierRawSerializer : ODataRawValueSerializer
     {
+        private readonly ODataPayloadValueConverter payloadValueConverter;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestierPrimitiveSerializer"/> class.
+        /// </summary>
+        /// <param name="payloadValueConverter"></param>
+        public RestierRawSerializer(ODataPayloadValueConverter payloadValueConverter)
+        {
+            Ensure.NotNull(payloadValueConverter, nameof(payloadValueConverter));
+            this.payloadValueConverter = payloadValueConverter;
+        }
+
         /// <summary>
         /// Writes the entity result to the response message.
         /// </summary>
@@ -34,7 +46,7 @@ namespace Microsoft.Restier.AspNet.Formatter
 
             if (writeContext != null)
             {
-                graph = RestierPrimitiveSerializer.ConvertToPayloadValue(graph, writeContext);
+                graph = RestierPrimitiveSerializer.ConvertToPayloadValue(graph, writeContext, payloadValueConverter);
             }
 
             if (graph == null)

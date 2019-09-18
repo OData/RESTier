@@ -5,6 +5,9 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,23 +17,13 @@ namespace Microsoft.Restier.Tests.Core
     [TestClass]
     public class InvocationContextTests : RestierTestBase
     {
-
-        [TestMethod]
-        public void InvocationContext_IsConfiguredCorrectly()
-        {
-            var container = new RestierContainerBuilder(typeof(TestApi));
-            var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
-            var context = new InvocationContext(provider);
-            context.GetApiService<ApiBase>().Should().BeSameAs(api);
-        }
-
         [TestMethod]
         public void InvocationContext_GetsApiServicesCorrectly()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
             var provider = container.BuildContainer();
-            var context = new InvocationContext(provider);
+            var api = provider.GetService<ApiBase>();
+            var context = new InvocationContext(api);
             context.GetApiService<IServiceA>().Should().BeSameAs(TestApi.ApiService);
         }
 
@@ -54,7 +47,15 @@ namespace Microsoft.Restier.Tests.Core
 
             public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
+                var changeSetPreparer = new TestChangeSetInitializer();
+                var submitExecutor = new TestSubmitExecutor();
+                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+
                 ApiBase.ConfigureApi(apiType, services);
+                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+                
                 services.AddService<IServiceA>((sp, next) => ApiService);
 
                 return services;

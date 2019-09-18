@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Operation;
 
 namespace Microsoft.Restier.Core
@@ -14,33 +13,31 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// A convention-based change set item filter.
     /// </summary>
-    internal class ConventionBasedOperationFilter : IOperationFilter
+    public class ConventionBasedOperationFilter : IOperationFilter
     {
         private Type targetType;
 
-        private ConventionBasedOperationFilter(Type targetType)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConventionBasedOperationFilter"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type to check for filter functions.</param>
+        public ConventionBasedOperationFilter(Type targetType)
         {
             Ensure.NotNull(targetType, nameof(targetType));
             this.targetType = targetType;
         }
 
         /// <inheritdoc/>
-        public static void ApplyTo(IServiceCollection services, Type targetType)
-        {
-            Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(targetType, nameof(targetType));
-            services.AddService<IOperationFilter>((sp, next) => new ConventionBasedOperationFilter(targetType));
-        }
-
-        /// <inheritdoc/>
         public Task OnOperationExecutingAsync(OperationContext context, CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context, nameof(context));
             return InvokeProcessorMethodAsync(context, RestierPipelineState.PreSubmit);
         }
 
         /// <inheritdoc/>
         public Task OnOperationExecutedAsync(OperationContext context, CancellationToken cancellationToken)
         {
+            Ensure.NotNull(context, nameof(context));
             return InvokeProcessorMethodAsync(context, RestierPipelineState.PostSubmit);
         }
 
@@ -65,7 +62,7 @@ namespace Microsoft.Restier.Core
                 object target = null;
                 if (!method.IsStatic)
                 {
-                    target = context.ImplementInstance;
+                    target = context.Api;
                     if (target == null || !targetType.IsInstanceOfType(target))
                     {
                         return Task.WhenAll();

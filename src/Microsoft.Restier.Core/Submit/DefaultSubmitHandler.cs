@@ -10,7 +10,6 @@ using System.Linq;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core.Submit
 {
@@ -33,22 +32,25 @@ namespace Microsoft.Restier.Core.Submit
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="DefaultSubmitHandler"/> class.
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        public DefaultSubmitHandler(IServiceProvider serviceProvider)
+        /// <param name="initializer">A reference to a service that can initialize a change set.</param>
+        /// <param name="executor">A reference to a service that executes a submission.</param>
+        /// <param name="authorizer">An optional reference to an service that authorizes a submission.</param>
+        /// <param name="validator">An optional reference to a service that validates a submission.</param>
+        /// <param name="filter">An optional reference to a service that executes logic before and after a submission.</param>
+        public DefaultSubmitHandler(IChangeSetInitializer initializer, ISubmitExecutor executor,
+                                    IChangeSetItemAuthorizer authorizer = null, IChangeSetItemValidator validator = null,
+                                    IChangeSetItemFilter filter = null)
         {
-            //RWM: This stuff SHOULD be getting passed into a constructor. But the DI implementation is less than awesome.
-            //     So we'll work around it for now and still save some allocations.
-            //     There are certain unit te
-            if (serviceProvider != null)
-            {
-                initializer = serviceProvider.GetService<IChangeSetInitializer>();
-                executor = serviceProvider.GetService<ISubmitExecutor>();
-                authorizer = serviceProvider.GetService<IChangeSetItemAuthorizer>();
-                validator = serviceProvider.GetService<IChangeSetItemValidator>();
-                filter = serviceProvider.GetService<IChangeSetItemFilter>();
-            }
+            Ensure.NotNull(initializer, nameof(initializer));
+            Ensure.NotNull(executor, nameof(executor));
+
+            this.initializer = initializer;
+            this.authorizer = authorizer;
+            this.validator = validator;
+            this.filter = filter;
+            this.executor = executor;
         }
 
         #endregion
@@ -66,11 +68,6 @@ namespace Microsoft.Restier.Core.Submit
         public async Task<SubmitResult> SubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
-
-            if (initializer == null)
-            {
-                throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
-            }
 
             await initializer.InitializeAsync(context, cancellationToken).ConfigureAwait(false);
 
@@ -229,11 +226,6 @@ namespace Microsoft.Restier.Core.Submit
 
         private async Task PerformPersist(SubmitContext context, CancellationToken cancellationToken)
         {
-            if (executor == null)
-            {
-                throw new NotSupportedException(Resources.SubmitExecutorMissing);
-            }
-
             context.Result = await executor.ExecuteSubmitAsync(context, cancellationToken).ConfigureAwait(false);
         }
 

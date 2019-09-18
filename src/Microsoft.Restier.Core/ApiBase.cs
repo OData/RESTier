@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
@@ -33,6 +34,8 @@ namespace Microsoft.Restier.Core
         private ApiConfiguration apiConfiguration;
 
         private readonly DefaultSubmitHandler submitHandler;
+
+        private readonly DefaultQueryHandler queryHandler;
 
         #endregion
 
@@ -63,6 +66,11 @@ namespace Microsoft.Restier.Core
             }
         }
 
+        /// <summary>
+        /// Gets a reference to the Query Handler for this <see cref="ApiBase"/> instance.
+        /// </summary>
+        internal DefaultQueryHandler QueryHandler => queryHandler;
+
         #endregion
 
         #region Constructors
@@ -76,7 +84,38 @@ namespace Microsoft.Restier.Core
         protected ApiBase(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
-            submitHandler = new DefaultSubmitHandler(serviceProvider);
+
+            //RWM: This stuff SHOULD be getting passed into a constructor. But the DI implementation is less than awesome.
+            //     So we'll work around it for now and still save some allocations.
+            //     There are certain unit te
+            var queryExpressionSourcer = serviceProvider.GetService<IQueryExpressionSourcer>();
+            var queryExpressionAuthorizer = serviceProvider.GetService<IQueryExpressionAuthorizer>();
+            var queryExpressionExpander = serviceProvider.GetService<IQueryExpressionExpander>();
+            var queryExpressionProcessor = serviceProvider.GetService<IQueryExpressionProcessor>();
+            var changeSetInitializer = serviceProvider.GetService<IChangeSetInitializer>();
+            var changeSetItemAuthorizer = serviceProvider.GetService<IChangeSetItemAuthorizer>();
+            var changeSetItemValidator = serviceProvider.GetService<IChangeSetItemValidator>();
+            var changeSetItemFilter = serviceProvider.GetService<IChangeSetItemFilter>();
+            var submitExecutor = serviceProvider.GetService<ISubmitExecutor>();
+
+            if (queryExpressionSourcer == null)
+            {
+                // Missing sourcer
+                throw new NotSupportedException(Resources.QuerySourcerMissing);
+            }
+
+            if (changeSetInitializer == null)
+            {
+                throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
+            }
+
+            if (submitExecutor == null)
+            {
+                throw new NotSupportedException(Resources.SubmitExecutorMissing);
+            }
+
+            queryHandler = new DefaultQueryHandler(queryExpressionSourcer, queryExpressionAuthorizer, queryExpressionExpander, queryExpressionProcessor);
+            submitHandler = new DefaultSubmitHandler(changeSetInitializer, submitExecutor, changeSetItemAuthorizer, changeSetItemValidator, changeSetItemFilter);
         }
 
         #endregion
@@ -150,7 +189,7 @@ namespace Microsoft.Restier.Core
         /// <returns>A task that represents the asynchronous operation whose result is a submit result.</returns>
         public async Task<SubmitResult> SubmitAsync(ChangeSet changeSet = null, CancellationToken cancellationToken = default)
         {
-            var submitContext = new SubmitContext(ServiceProvider, changeSet);
+            var submitContext = new SubmitContext(this, changeSet);
             return await submitHandler.SubmitAsync(submitContext, cancellationToken).ConfigureAwait(false);
         }
 
