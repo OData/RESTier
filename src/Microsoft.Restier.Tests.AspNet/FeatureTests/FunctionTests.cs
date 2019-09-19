@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             results.Should().NotBeNull();
             results.Items.Should().NotBeNullOrEmpty();
             results.Items.Should().HaveCount(2);
-            results.Items.All(c => c.Title.EndsWith(" | Discontinued")).Should().BeTrue();
+            results.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             results.Should().NotBeNull();
             results.Items.Should().NotBeNullOrEmpty();
             results.Items.Should().HaveCount(3);
-            results.Items.All(c => c.Title.EndsWith(" | Discontinued")).Should().BeTrue();
+            results.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
     }

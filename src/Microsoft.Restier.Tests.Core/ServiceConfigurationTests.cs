@@ -432,7 +432,9 @@ namespace Microsoft.Restier.Tests.Core
             {
                 if (Inner == null)
                 {
+#pragma warning disable CA1305 // Specify IFormatProvider
                     return Value.ToString();
+#pragma warning restore CA1305 // Specify IFormatProvider
                 }
 
                 return Value + Inner.Call();

@@ -67,11 +67,13 @@ namespace Microsoft.Restier.Tests.Core.Model
                 var tasks = PrepareThreads(6, provider, wait);
                 wait.Set();
 
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
                 await Task.WhenAll(tasks).ContinueWith(t =>
                 {
                     t.IsFaulted.Should().BeTrue();
-                    tasks.All(e => e.IsFaulted).Should().BeTrue() ;
+                    tasks.All(e => e.IsFaulted).Should().BeTrue();
                 });
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
 
                 tasks = PrepareThreads(150, provider, wait);
 

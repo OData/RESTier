@@ -19,20 +19,22 @@ using Microsoft.Restier.AspNet.Query;
 
 namespace Microsoft.Restier.AspNet
 {
-     /// <summary>
-     /// Contains extension methods of <see cref="IServiceCollection"/>.
-     /// This method is used to add odata publisher service into container.
-     /// </summary>
+    /// <summary>
+    /// Contains extension methods of <see cref="IServiceCollection"/>.
+    /// This method is used to add odata publisher service into container.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+
+        #region Public Methods
+
         /// <summary>
         /// This method is used to add odata publisher service into container.
         /// </summary>
         /// <typeparam name="T">The Api type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        //[CLSCompliant(false)]
-        public static IServiceCollection AddODataServices<T>(this IServiceCollection services)
+        public static IServiceCollection AddRestierServices<T>(this IServiceCollection services)
         {
             if (services.HasService<RestierQueryExecutor>())
             {
@@ -64,10 +66,20 @@ namespace Microsoft.Restier.AspNet
 
             services.AddService<IModelMapper, ModelMapper>();
 
-            return services.AddScoped<RestierQueryExecutorOptions>()
-                    .AddService<IQueryExecutor, RestierQueryExecutor>();
+            services.AddScoped<RestierQueryExecutorOptions>();
+            services.AddService<IQueryExecutor, RestierQueryExecutor>();
+            return services;
         }
 
+        #endregion
+
+        #region Internal Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="targetType"></param>
         internal static void AddRestierModelExtender(
             IServiceCollection services,
             Type targetType)
@@ -85,10 +97,17 @@ namespace Microsoft.Restier.AspNet
             services.AddService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="targetType"></param>
         internal static void AddOperationModelBuilder(IServiceCollection services, Type targetType)
         {
             services.AddService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
         }
+
+        #endregion
 
     }
 }

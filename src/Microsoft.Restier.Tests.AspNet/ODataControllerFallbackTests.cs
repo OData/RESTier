@@ -160,7 +160,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
             if (!embedded)
             {
-                if (context.VisitedNode.ToString().StartsWith("GetQueryableSource(\"Orders\""))
+                if (context.VisitedNode.ToString().StartsWith("GetQueryableSource(\"Orders\"", StringComparison.CurrentCulture))
                 {
                     return Expression.Constant(orders.AsQueryable());
                 }

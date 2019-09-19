@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
@@ -17,14 +18,35 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class RestierContainerBuilder : IContainerBuilder
     {
-        private readonly IServiceCollection services = new ServiceCollection();
+
+        #region Private Members
+
         private readonly Type apiType;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ServiceCollection Services { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
         /// <param name="apiType">The Api Type</param>
-        public RestierContainerBuilder(Type apiType) => this.apiType = apiType;
+        public RestierContainerBuilder(Type apiType)
+        {
+            this.apiType = apiType;
+            Services = new ServiceCollection();
+        }
+
+        #endregion
 
         /// <summary>
         /// Adds a service of <paramref name="serviceType"/> with an <paramref name="implementationType"/>.
@@ -37,15 +59,15 @@ namespace Microsoft.Restier.Core
         {
             if (serviceType == null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "serviceType"));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(serviceType)));
             }
 
             if (implementationType == null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "implementationType"));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(implementationType)));
             }
 
-            services.Add(new ServiceDescriptor(serviceType, implementationType, TranslateServiceLifetime(lifetime)));
+            Services.Add(new ServiceDescriptor(serviceType, implementationType, TranslateServiceLifetime(lifetime)));
 
             return this;
         }
@@ -61,15 +83,15 @@ namespace Microsoft.Restier.Core
         {
             if (serviceType == null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "serviceType"));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(serviceType)));
             }
 
             if (implementationFactory == null)
             {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "implementationFactory"));
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(implementationFactory)));
             }
 
-            services.Add(new ServiceDescriptor(serviceType, implementationFactory, TranslateServiceLifetime(lifetime)));
+            Services.Add(new ServiceDescriptor(serviceType, implementationFactory, TranslateServiceLifetime(lifetime)));
 
             return this;
         }
@@ -82,7 +104,7 @@ namespace Microsoft.Restier.Core
         public virtual IServiceProvider BuildContainer()
         {
             AddRestierService();
-            return services.BuildServiceProvider();
+            return Services.BuildServiceProvider();
         }
 
         internal IContainerBuilder AddRestierService()
@@ -94,23 +116,23 @@ namespace Microsoft.Restier.Core
                 return model;
             }
 
-            // Configure the API via reflection call
-            var methodDeclaredType = apiType;
+            //// Configure the API via reflection call
+            //var methodDeclaredType = apiType;
 
-            MethodInfo method = null;
-            while (method == null && methodDeclaredType != null)
-            {
-                // In case the subclass does not override the method, call super class method
-                method = methodDeclaredType.GetMethod("ConfigureApi");
-                methodDeclaredType = methodDeclaredType.BaseType;
-            }
+            //MethodInfo method = null;
+            //while (method == null && methodDeclaredType != null)
+            //{
+            //    // In case the subclass does not override the method, call super class method
+            //    method = methodDeclaredType.GetMethod("ConfigureApi");
+            //    methodDeclaredType = methodDeclaredType.BaseType;
+            //}
 
-            method.Invoke(null, new object[]
-            {
-                apiType, services
-            });
+            //method.Invoke(null, new object[]
+            //{
+            //    apiType, Services
+            //});
 
-            services.AddSingleton(modelFactory);
+            Services.AddSingleton(modelFactory);
             return this;
         }
 
