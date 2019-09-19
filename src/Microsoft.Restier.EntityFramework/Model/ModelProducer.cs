@@ -34,15 +34,9 @@ namespace Microsoft.Restier.EntityFramework
         /// This class will not real build a model, but only get entity set name and entity map from data source
         /// Then pass the information to publisher layer to build the model.
         /// </summary>
-        /// <param name="context">
-        /// The context for processing
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
-        /// <returns>
-        /// Always a null model.
-        /// </returns>
+        /// <param name="context">The context for processing.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>Always a null model.</returns>
         public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
@@ -72,7 +66,7 @@ namespace Microsoft.Restier.EntityFramework
             var efEntityContainer = efEntityContainers.FirstOrDefault(c => c.Name == dbContext.GetType().Name);
 
             // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(),
-            // we wont' crash if more than one is returned, and we can check for null
+            // we won't crash if more than one is returned, and we can check for null
             // and inform the user specifically what happened.
             if (efEntityContainer == null)
             {
@@ -105,16 +99,21 @@ namespace Microsoft.Restier.EntityFramework
                 var objectSpaceType = efModel.GetObjectSpaceType(efEntityType);
                 var clrType = itemCollection.GetClrType(objectSpaceType);
 
-                // As entity set name and type map
-                context.ResourceSetTypeMap.Add(efEntitySet.Name, clrType);
-
-                ICollection<PropertyInfo> keyProperties = new List<PropertyInfo>();
-                foreach (var property in efEntityType.KeyProperties)
+                // RWM: We should not have to do this, and should not be getting here more than once.
+                if (!context.ResourceSetTypeMap.ContainsKey(efEntitySet.Name))
                 {
-                    keyProperties.Add(clrType.GetProperty(property.Name));
-                }
 
-                context.ResourceTypeKeyPropertiesMap.Add(clrType, keyProperties);
+                    // As entity set name and type map
+                    context.ResourceSetTypeMap.Add(efEntitySet.Name, clrType);
+
+                    ICollection<PropertyInfo> keyProperties = new List<PropertyInfo>();
+                    foreach (var property in efEntityType.KeyProperties)
+                    {
+                        keyProperties.Add(clrType.GetProperty(property.Name));
+                    }
+
+                    context.ResourceTypeKeyPropertiesMap.Add(clrType, keyProperties);
+                }
             }
 #endif
             if (InnerModelBuilder != null)

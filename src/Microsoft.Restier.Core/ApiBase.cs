@@ -135,12 +135,14 @@ namespace Microsoft.Restier.Core
         //[CLSCompliant(false)]
         public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            // Add core and convention's services
-            services = services.AddCoreServices(apiType)
-                .AddConventionBasedServices(apiType);
 
-            // This is used to add the publisher's services
-            GetPublisherServiceCallback(apiType)(services);
+            var type = apiType;
+            // Add core and convention's services
+            //services = services.AddCoreServices(apiType)
+            //    .AddConventionBasedServices(apiType);
+
+            //// This is used to add the publisher's services
+            //GetPublisherServiceCallback(apiType)(services);
 
             return services;
         }

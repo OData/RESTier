@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet.Controllers
         protected internal IQueryable<Category> OnFilterCategories(IQueryable<Category> entitySet)
         {
             //TraceEvent("CompanyEmployee", RestierOperationTypes.Filtered);
-            return entitySet;//.Take(1);
+            return entitySet.Take(1);
         }
 
         /// <summary>
