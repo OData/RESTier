@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     internal class FallbackApi : ApiBase
     {
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model));
             services.AddService<IModelMapper>((sp, next) => new FallbackModelMapper());
@@ -99,7 +99,7 @@ namespace Microsoft.Restier.Tests.AspNet
             var changeSetPreparer = new TestChangeSetInitializer();
             var submitExecutor = new TestSubmitExecutor();
 
-            services = ApiBase.ConfigureApi(apiType, services);
+            //services = ApiBase.ConfigureApi(apiType, services);
             services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
             services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
             return services;

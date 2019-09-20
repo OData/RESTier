@@ -45,13 +45,13 @@ namespace Microsoft.Restier.Tests.Core
                 }
             }
 
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);

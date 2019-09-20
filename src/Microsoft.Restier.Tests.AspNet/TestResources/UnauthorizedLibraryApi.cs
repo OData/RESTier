@@ -15,10 +15,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         {
         }
 
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            return LibraryApi.ConfigureApi(apiType, services)
-                .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
+            //return LibraryApi.ConfigureApi(apiType, services)
+            //    .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
+            return services;
         }
 
     }

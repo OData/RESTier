@@ -158,12 +158,12 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiA : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 var i = 0;
@@ -198,12 +198,12 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiB : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<ISomeService>((sp, next) => new SomeService
@@ -223,12 +223,12 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiC : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
 
@@ -244,12 +244,12 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiD : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<ISomeService>((sp, next) => new SomeService
@@ -269,13 +269,13 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiE : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
@@ -298,13 +298,13 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiF : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
@@ -327,13 +327,13 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiG : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
@@ -360,12 +360,12 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiH : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<ISomeService>((sp, next) => new SomeService
@@ -386,13 +386,13 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiI : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);

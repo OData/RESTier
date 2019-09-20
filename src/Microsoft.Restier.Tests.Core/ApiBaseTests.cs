@@ -318,7 +318,7 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApi : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var modelBuilder = new TestModelBuilder();
                 var modelMapper = new TestModelMapper();
@@ -343,12 +343,12 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiEmpty : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
 

@@ -38,9 +38,9 @@ namespace Microsoft.Restier.Tests.AspNet
 
     internal class StoreApi : ApiBase
     {
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
         {
-            services = ApiBase.ConfigureApi(apiType, services);
+            //services = ApiBase.ConfigureApi(apiType, services);
             services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
             services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer());

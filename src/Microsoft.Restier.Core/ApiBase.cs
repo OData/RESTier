@@ -26,11 +26,6 @@ namespace Microsoft.Restier.Core
 
         #region Private Members
 
-        private static ConcurrentDictionary<Type, Action<IServiceCollection>> publisherServicesCallback =
-            new ConcurrentDictionary<Type, Action<IServiceCollection>>();
-
-        private static readonly Action<IServiceCollection> emptyConfig = _ => { };
-
         private ApiConfiguration apiConfiguration;
 
         private readonly DefaultSubmitHandler submitHandler;
@@ -116,67 +111,6 @@ namespace Microsoft.Restier.Core
 
             queryHandler = new DefaultQueryHandler(queryExpressionSourcer, queryExpressionAuthorizer, queryExpressionExpander, queryExpressionProcessor);
             submitHandler = new DefaultSubmitHandler(changeSetInitializer, submitExecutor, changeSetItemAuthorizer, changeSetItemValidator, changeSetItemFilter);
-        }
-
-        #endregion
-
-        #region Static Methods
-
-        /// <summary>
-        /// Configure services for this API.
-        /// </summary>
-        /// <param name="apiType">
-        /// The Api type.
-        /// </param>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> with which is used to store all services.
-        /// </param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        //[CLSCompliant(false)]
-        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-
-            var type = apiType;
-            // Add core and convention's services
-            //services = services.AddCoreServices(apiType)
-            //    .AddConventionBasedServices(apiType);
-
-            //// This is used to add the publisher's services
-            //GetPublisherServiceCallback(apiType)(services);
-
-            return services;
-        }
-
-        /// <summary>
-        /// Adds a configuration procedure for apiType.
-        /// This is expected to be called by publisher like WebApi to add services.
-        /// </summary>
-        /// <param name="apiType">
-        /// The Api Type.
-        /// </param>
-        /// <param name="configurationCallback">
-        /// An action that will be called during the configuration of apiType.
-        /// </param>
-        //[CLSCompliant(false)]
-        public static void AddPublisherServices(Type apiType, Action<IServiceCollection> configurationCallback)
-        {
-            publisherServicesCallback.AddOrUpdate(apiType, configurationCallback, (type, existing) => existing + configurationCallback);
-        }
-
-        /// <summary>
-        /// Get publisher registering service callback for specified Api.
-        /// </summary>
-        /// <param name="apiType">The Api type of which to get the publisher registering service callback.</param>
-        /// <returns>The service registering callback.</returns>
-        //[CLSCompliant(false)]
-        public static Action<IServiceCollection> GetPublisherServiceCallback(Type apiType)
-        {
-            if (publisherServicesCallback.TryGetValue(apiType, out var val))
-            {
-                return val;
-            }
-
-            return emptyConfig;
         }
 
         #endregion

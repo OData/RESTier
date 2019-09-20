@@ -86,13 +86,13 @@ namespace Microsoft.Restier.Tests.Core.Model
 
         private class TestApiA : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
@@ -117,13 +117,13 @@ namespace Microsoft.Restier.Tests.Core.Model
 
         private class TestApiB : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                ///ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
@@ -140,13 +140,13 @@ namespace Microsoft.Restier.Tests.Core.Model
 
         private class TestApiC : ApiBase
         {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
                 var changeSetPreparer = new TestChangeSetInitializer();
                 var submitExecutor = new TestSubmitExecutor();
                 var queryExpressionSourcer = new TestQueryExpressionSourcer();
 
-                ApiBase.ConfigureApi(apiType, services);
+                ///ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
                 services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
                 services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
@@ -167,10 +167,8 @@ namespace Microsoft.Restier.Tests.Core.Model
             public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
-                var entityType = new EdmEntityType(
-                    "TestNamespace", "TestName");
-                var entityContainer = new EdmEntityContainer(
-                    "TestNamespace", "Entities");
+                var entityType = new EdmEntityType("TestNamespace", "TestName");
+                var entityContainer = new EdmEntityContainer("TestNamespace", "Entities");
                 entityContainer.AddEntitySet("TestEntitySet", entityType);
                 model.AddElement(entityType);
                 model.AddElement(entityContainer);
