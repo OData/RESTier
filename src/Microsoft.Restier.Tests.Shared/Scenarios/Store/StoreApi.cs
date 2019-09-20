@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
@@ -38,16 +37,6 @@ namespace Microsoft.Restier.Tests.AspNet
 
     internal class StoreApi : ApiBase
     {
-        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-            //services = ApiBase.ConfigureApi(apiType, services);
-            services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(StoreModel.Model));
-            services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
-            services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer());
-            services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer());
-            services.AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
-            return services;
-        }
 
         public StoreApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
