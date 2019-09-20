@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
 
             config.UseRestier<NorthwindApi>((services) =>
             {
-                services.AddEfProviderServices<NorthwindEntities>();
+                services.AddEF6ProviderServices<NorthwindEntities>();
 
                 // RWM: Add you replacement services here.
                 services.AddSingleton(new ODataValidationSettings

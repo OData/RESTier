@@ -24,7 +24,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
         public async Task ComplexTypeUpdate()
         {
             // Arrange
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
             var api = provider.GetTestableApiInstance<LibraryApi>();
 
             var item = new DataModificationItem(

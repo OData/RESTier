@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Entity;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
@@ -46,7 +47,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task PropertyBag_InstancesDoNotConflict()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>();
 
             api.SetProperty("Test", 2);
             api.GetProperty<int>("Test").Should().Be(2);
@@ -97,19 +98,13 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApi : ApiBase
         {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
-
-                //ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
-
-                return services.AddScoped<MyPropertyBag>();
-            }
+            //public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
+            //{
+            //    services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer())
+            //        .AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor())
+            //        .AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer())
+            //        .AddScoped<MyPropertyBag>();
+            //}
 
             public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
             {

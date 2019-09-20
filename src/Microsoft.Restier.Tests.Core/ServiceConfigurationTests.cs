@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Entity;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
@@ -23,7 +24,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task ContributorsAreCalledCorrectly()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiA>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiA, DbContext>();
             var value = api.GetApiService<ISomeService>().Call();
             value.Should().Be("03210");
         }
@@ -31,7 +32,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task NextInjectedViaProperty()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiB>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiB, DbContext>();
             var value = api.GetApiService<ISomeService>().Call();
             value.Should().Be("01");
         }
@@ -39,15 +40,15 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task ContextApiScopeWorksCorrectly()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiC>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiC, DbContext>();
             var service1 = api.GetApiService<ISomeService>();
 
-            var api2 = await RestierTestHelpers.GetTestableApiInstance<TestApiC>();
+            var api2 = await RestierTestHelpers.GetTestableApiInstance<TestApiC, DbContext>();
             var service2 = api2.GetApiService<ISomeService>();
 
             service1.Should().NotBe(service2);
 
-            var api3 = await RestierTestHelpers.GetTestableApiInstance<TestApiC>();
+            var api3 = await RestierTestHelpers.GetTestableApiInstance<TestApiC, DbContext>();
             var service3 = api3.GetApiService<ISomeService>();
 
             service3.Should().NotBe(service2);
@@ -58,7 +59,7 @@ namespace Microsoft.Restier.Tests.Core
         public async Task NothingInjectedStillWorks()
         {
             // Outmost service does not call inner service
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiD>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiD, DbContext>();
 
             var value = api.GetApiService<ISomeService>().Call();
             value.Should().Be("42");
@@ -146,7 +147,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task ThrowOnNoServiceFound()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiH>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiH, DbContext>();
 
             Action exceptionTest = () => { api.GetApiService<ISomeService>(); };
             exceptionTest.Should().Throw<InvalidOperationException>();

@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -26,10 +27,26 @@ namespace Microsoft.Restier.Tests.Core
     public class ApiBaseTests : RestierTestBase
     {
 
+        void di(IServiceCollection services)
+        {
+            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
+            services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
+            services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQuerySourcer());
+            diEmpty(services);
+
+        }
+
+        void diEmpty(IServiceCollection services)
+        {
+            services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer())
+                .AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
+
+        }
+
         [TestMethod]
         public async Task DefaultApiBaseCanBeCreatedAndDisposed()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di);
 
             Action exceptionTest = () => { api.Dispose(); };
             exceptionTest.Should().NotThrow<Exception>();
@@ -40,7 +57,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_EntitySet_IsConfiguredCorrectly()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var arguments = new object[0];
             var source = api.GetQueryableSource("Test", arguments);
 
@@ -50,7 +67,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_OfT_EntitySet_IsConfiguredCorrectly()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var arguments = new object[0];
             var source = api.GetQueryableSource<string>("Test", arguments);
 
@@ -60,7 +77,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_EntitySet_ThrowsIfNotMapped()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiEmpty>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiEmpty, DbContext>(configureServices: diEmpty) as ApiBase;
             var arguments = new object[0];
 
             Action exceptionTest = () => { api.GetQueryableSource("Test", arguments); };
@@ -70,7 +87,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_OfT_ContainerElementThrowsIfWrongType()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var arguments = new object[0];
 
             Action exceptionTest = () => { api.GetQueryableSource<object>("Test", arguments); };
@@ -85,7 +102,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_ComposableFunction_IsConfiguredCorrectly()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var arguments = new object[0];
             var source = api.GetQueryableSource("Namespace", "Function", arguments);
 
@@ -95,7 +112,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_OfT_ComposableFunction_IsConfiguredCorrectly()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var arguments = new object[0];
             var source = api.GetQueryableSource<DateTime>("Namespace", "Function", arguments);
 
@@ -105,7 +122,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_ComposableFunction_ThrowsIfNotMapped()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiEmpty>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiEmpty, DbContext>(configureServices: diEmpty) as ApiBase;
             var arguments = new object[0];
 
             Action exceptionTest = () => { api.GetQueryableSource("Namespace", "Function", arguments); };
@@ -115,7 +132,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_OfT_ComposableFunction_ThrowsIfNotMapped()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiEmpty>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApiEmpty, DbContext>(configureServices: diEmpty) as ApiBase;
             var arguments = new object[0];
 
             Action exceptionTest = () => { api.GetQueryableSource<DateTime>("Namespace", "Function", arguments); };
@@ -125,7 +142,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_ComposableFunction_ThrowsIfWrongType()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var arguments = new object[0];
 
             Action exceptionTest = () => { api.GetQueryableSource<object>("Namespace", "Function", arguments); };
@@ -140,7 +157,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task QueryAsync_WithQueryReturnsResults()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
 
             var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
             var result = await api.QueryAsync(request);
@@ -152,7 +169,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task QueryAsync_CorrectlyForwardsCall()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var queryRequest = new QueryRequest(api.GetQueryableSource<string>("Test"));
             var queryResult = await api.QueryAsync(queryRequest);
 
@@ -166,7 +183,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task SubmitAsync_CorrectlyForwardsCall()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var submitResult = await api.SubmitAsync();
 
             submitResult.CompletedChangeSet.Should().NotBeNull();
@@ -179,7 +196,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_CannotEnumerate()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var source = api.GetQueryableSource<string>("Test");
 
             Action exceptionTest = () => { source.GetEnumerator(); };
@@ -190,7 +207,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_CannotEnumerateIEnumerable()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var source = api.GetQueryableSource<string>("Test");
 
             Action exceptionTest = () => { (source as IEnumerable).GetEnumerator(); };
@@ -200,7 +217,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_ProviderCannotGenericExecute()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var source = api.GetQueryableSource<string>("Test");
 
             Action exceptionTest = () => { source.Provider.Execute<string>(null); };
@@ -211,7 +228,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task GetQueryableSource_ProviderCannotExecute()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi>() as ApiBase;
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>(configureServices: di) as ApiBase;
             var source = api.GetQueryableSource<string>("Test");
 
             Action exceptionTest = () => { source.Provider.Execute(null); };
@@ -318,23 +335,6 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApi : ApiBase
         {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var modelBuilder = new TestModelBuilder();
-                var modelMapper = new TestModelMapper();
-                var querySourcer = new TestQuerySourcer();
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-
-                services.AddCoreServices(apiType);
-                services.AddService<IModelBuilder>((sp, next) => modelBuilder);
-                services.AddService<IModelMapper>((sp, next) => modelMapper);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => querySourcer);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-
-                return services;
-            }
 
             public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
             {
@@ -343,20 +343,11 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestApiEmpty : ApiBase
         {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
 
-                //ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-
-                return services;
-            }
             public TestApiEmpty(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }
+
         }
 
         #endregion

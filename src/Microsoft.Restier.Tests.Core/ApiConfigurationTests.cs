@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Entity;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,12 +27,12 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task ConfigurationRegistersApiServicesCorrectly()
         {
-            var apiA = await RestierTestHelpers.GetTestableApiInstance<TestApiA>();
+            var apiA = await RestierTestHelpers.GetTestableApiInstance<TestApiA, DbContext>();
 
             apiA.GetApiService<IServiceA>().Should().BeNull();
             apiA.GetApiService<IServiceB>().Should().BeNull();
 
-            var apiB = await RestierTestHelpers.GetTestableApiInstance<TestApiB>();
+            var apiB = await RestierTestHelpers.GetTestableApiInstance<TestApiB, DbContext>();
 
             apiB.GetApiService<IServiceA>().Should().BeSameAs(TestApiB.serviceA);
 

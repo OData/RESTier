@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace Microsoft.Restier.Tests.Core.Model
         [TestMethod]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestApiA>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestApiA, DbContext>();
             model.SchemaElements.Should().HaveCount(4);
             model.SchemaElements.SingleOrDefault(e => e.Name == "TestName").Should().NotBeNull();
             model.SchemaElements.SingleOrDefault(e => e.Name == "TestName2").Should().NotBeNull();
