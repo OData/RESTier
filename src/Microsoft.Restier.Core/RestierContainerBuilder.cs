@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -32,6 +33,11 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public ServiceCollection Services { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public ServiceCollection RestierServices { get; private set; }
+
         #endregion
 
         #region Constructors
@@ -44,9 +50,12 @@ namespace Microsoft.Restier.Core
         {
             this.apiType = apiType;
             Services = new ServiceCollection();
+            RestierServices = new ServiceCollection();
         }
 
         #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a service of <paramref name="serviceType"/> with an <paramref name="implementationType"/>.
@@ -103,11 +112,24 @@ namespace Microsoft.Restier.Core
         /// <returns>The container built by this builder.</returns>
         public virtual IServiceProvider BuildContainer()
         {
-            AddRestierService();
+            foreach (var descriptor in RestierServices)
+            {
+                Services.Add(descriptor);
+            }
+            AddRestierService(!RestierServices.Any());
             return Services.BuildServiceProvider();
         }
 
-        internal IContainerBuilder AddRestierService()
+        #endregion
+
+        #region Internal methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="useReflection"></param>
+        /// <returns></returns>
+        internal IContainerBuilder AddRestierService(bool useReflection = false)
         {
             IEdmModel modelFactory(IServiceProvider sp)
             {
@@ -116,25 +138,32 @@ namespace Microsoft.Restier.Core
                 return model;
             }
 
-            //// Configure the API via reflection call
-            //var methodDeclaredType = apiType;
+            if (useReflection)
+            {
+                // Configure the API via reflection call
+                var methodDeclaredType = apiType;
 
-            //MethodInfo method = null;
-            //while (method == null && methodDeclaredType != null)
-            //{
-            //    // In case the subclass does not override the method, call super class method
-            //    method = methodDeclaredType.GetMethod("ConfigureApi");
-            //    methodDeclaredType = methodDeclaredType.BaseType;
-            //}
+                MethodInfo method = null;
+                while (method == null && methodDeclaredType != null)
+                {
+                    // In case the subclass does not override the method, call super class method
+                    method = methodDeclaredType.GetMethod("ConfigureApi");
+                    methodDeclaredType = methodDeclaredType.BaseType;
+                }
 
-            //method.Invoke(null, new object[]
-            //{
-            //    apiType, Services
-            //});
+                method.Invoke(null, new object[]
+                {
+                    apiType, Services
+                });
+            }
 
             Services.AddSingleton(modelFactory);
             return this;
         }
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// 
@@ -153,5 +182,9 @@ namespace Microsoft.Restier.Core
                     return DIServiceLifetime.Transient;
             }
         }
+
+        #endregion
+
     }
+
 }
