@@ -5,6 +5,7 @@ using System;
 
 namespace Microsoft.Restier.AspNet.Model
 {
+
     /// <summary>
     /// Attribute that indicates a property is an entity set or singleton.
     /// If the property type is IQueryable, it will be built as entity set or it will be built as singleton.
@@ -14,4 +15,5 @@ namespace Microsoft.Restier.AspNet.Model
     public sealed class ResourceAttribute : Attribute
     {
     }
+
 }

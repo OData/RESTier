@@ -10,6 +10,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Query;
+using System.Data.Entity;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -94,6 +95,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_Authorize()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
+            container.RestierServices.AddCoreServices(typeof(TestApi)).AddConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 
@@ -107,6 +109,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_PreSubmit()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
+            container.RestierServices.AddCoreServices(typeof(TestApi)).AddConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 
@@ -119,6 +122,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_Submit()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
+            container.RestierServices.AddCoreServices(typeof(TestApi)).AddConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 
@@ -131,6 +135,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_PostSubmit()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
+            container.RestierServices.AddCoreServices(typeof(TestApi)).AddConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 

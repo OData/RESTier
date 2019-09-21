@@ -20,18 +20,26 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Restier.Tests.Core
 {
 
+    [Ignore]
     [TestClass]
     public class ApiConfigurationTests : RestierTestBase
     {
+        
         [TestMethod]
         public async Task ConfigurationRegistersApiServicesCorrectly()
         {
-            var apiA = await RestierTestHelpers.GetTestableApiInstance<TestApiA, DbContext>();
+            var apiA = await RestierTestHelpers.GetTestableApiInstance<TestableEmptyApi, DbContext>(serviceCollection: (services) =>
+            {
+                services.AddTestDefaultServices();
+            });
 
             apiA.GetApiService<IServiceA>().Should().BeNull();
             apiA.GetApiService<IServiceB>().Should().BeNull();
 
-            var apiB = await RestierTestHelpers.GetTestableApiInstance<TestApiB, DbContext>();
+            var apiB = await RestierTestHelpers.GetTestableApiInstance<TestApiB, DbContext>(serviceCollection: (services) =>
+            {
+                services.AddTestDefaultServices();
+            });
 
             apiB.GetApiService<IServiceA>().Should().BeSameAs(TestApiB.serviceA);
 
@@ -54,25 +62,6 @@ namespace Microsoft.Restier.Tests.Core
 
             var handler = api.GetApiService<IServiceB>();
             handler.GetStr().Should().Be("q2Pre_q1Pre_q1Post_q2Post_");
-        }
-
-        private class TestApiA : ApiBase
-        {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new StoreChangeSetInitializer();
-                var submitExecutor = new DefaultSubmitExecutor();
-
-                //ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-
-                return services;
-            }
-
-            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
-            {
-            }
         }
 
         private class TestApiB : ApiBase
@@ -122,6 +111,7 @@ namespace Microsoft.Restier.Tests.Core
 
             public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
             {
+                //_serviceA = serviceProvider.GetService
             }
         }
         private class TestApiC : ApiBase

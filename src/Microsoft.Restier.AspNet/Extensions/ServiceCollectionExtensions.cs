@@ -61,10 +61,10 @@ namespace Microsoft.Restier.AspNet
             services.AddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
             services.AddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
 
-            services.TryAddSingleton<IOperationExecutor, OperationExecutor>();
+            services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
             services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
 
-            services.AddService<IModelMapper, ModelMapper>();
+            services.AddService<IModelMapper, RestierModelMapper>();
 
             services.AddScoped<RestierQueryExecutorOptions>();
             services.AddService<IQueryExecutor, RestierQueryExecutor>();
