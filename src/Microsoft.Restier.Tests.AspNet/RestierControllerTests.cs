@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task GetTest()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products(1)", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products(1)", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task GetNonExistingEntityTest()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products(-1)", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products(-1)", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Tests.AspNet
             };
 
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Post, resource: "/Products", payload: payload, 
-                acceptHeader: WebApiConstants.DefaultAcceptHeader, configureServices: di);
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task FunctionImportNotInModelShouldReturnNotFound()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/GetBestProduct2", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/GetBestProduct2", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task FunctionImportNotInControllerShouldReturnNotImplemented()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/GetBestProduct", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/GetBestProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
@@ -79,7 +79,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task ActionImportNotInModelShouldReturnNotFound()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/RemoveWorstProduct2", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/RemoveWorstProduct2", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task ActionImportNotInControllerShouldReturnNotImplemented()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Post, resource: "/RemoveWorstProduct", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Post, resource: "/RemoveWorstProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
@@ -98,7 +98,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task GetActionImportShouldReturnNotFound()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/RemoveWorstProduct", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/RemoveWorstProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -107,7 +107,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task PostFunctionImportShouldReturnNotFound()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Post, resource: "/GetBestProduct", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Post, resource: "/GetBestProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             // TODO: standalone testing shows 501, but here is 500, will figure out detail reason

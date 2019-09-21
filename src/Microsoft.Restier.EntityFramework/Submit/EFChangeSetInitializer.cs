@@ -23,7 +23,7 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// To prepare changed entries for the given <see cref="ChangeSet"/>.
     /// </summary>
-    public class ChangeSetInitializer : IChangeSetInitializer
+    public class EFChangeSetInitializer : DefaultChangeSetInitializer
     {
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <param name="context">The submit context class used for preparation.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public async Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
+        public async override Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {
             if (context == null)
             {

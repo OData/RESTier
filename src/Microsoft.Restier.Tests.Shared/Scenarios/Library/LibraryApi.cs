@@ -8,6 +8,11 @@ using Microsoft.Restier.EntityFramework;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
+
+    /// <summary>
+    /// A testable API that implements an Entity Framework model and has secondary operations
+    /// against a SQL 2017 LocalDB database.
+    /// </summary>
     public class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 

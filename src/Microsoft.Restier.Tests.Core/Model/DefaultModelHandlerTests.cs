@@ -14,7 +14,6 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,10 +24,28 @@ namespace Microsoft.Restier.Tests.Core.Model
     public class DefaultModelHandlerTests : RestierTestBase
     {
 
+        void addTestServices(IServiceCollection services)
+        {
+            services.AddService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
+                .AddService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor())
+                .AddService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer());
+        }
+
         [TestMethod]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestApiA, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) => {
+                addTestServices(services);
+                services.AddService<IModelBuilder>((sp, next) => new TestModelProducer())
+                    .AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
+                    {
+                        InnerHandler = next,
+                    })
+                    .AddService<IModelBuilder>((sp, next) => new TestModelExtender(3)
+                    {
+                        InnerHandler = next,
+                    });
+            });
             model.SchemaElements.Should().HaveCount(4);
             model.SchemaElements.SingleOrDefault(e => e.Name == "TestName").Should().NotBeNull();
             model.SchemaElements.SingleOrDefault(e => e.Name == "TestName2").Should().NotBeNull();
@@ -46,7 +63,11 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 for (var i = 0; i < 2; i++)
                 {
-                    var container = new RestierContainerBuilder(typeof(TestApiB));
+                    var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+                    container.RestierServices.AddCoreServices(typeof(TestableEmptyApi))
+                        .AddService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
+                    addTestServices(container.RestierServices);
+
                     var provider = container.BuildContainer();
                     var tasks = PrepareThreads(50, provider, wait);
                     wait.Set();
@@ -62,7 +83,11 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                var container = new RestierContainerBuilder(typeof(TestApiC));
+                var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+                container.RestierServices.AddCoreServices(typeof(TestableEmptyApi))
+                    .AddService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
+                addTestServices(container.RestierServices);
+
                 var provider = container.BuildContainer();
 
                 var tasks = PrepareThreads(6, provider, wait);
@@ -84,84 +109,6 @@ namespace Microsoft.Restier.Tests.Core.Model
         }
 
         #region Test Resources
-
-        private class TestApiA : ApiBase
-        {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
-
-                //ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
-
-                services.AddService<IModelBuilder>((sp, next) => new TestModelProducer());
-                services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
-                {
-                    InnerHandler = next,
-                });
-                services.AddService<IModelBuilder>((sp, next) => new TestModelExtender(3)
-                {
-                    InnerHandler = next,
-                });
-
-                return services;
-            }
-
-            public TestApiA(IServiceProvider serviceProvider) : base(serviceProvider)
-            {
-            }
-        }
-
-        private class TestApiB : ApiBase
-        {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
-
-                ///ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
-
-                var service = new TestSingleCallModelBuilder();
-                services.AddService<IModelBuilder>((sp, next) => service);
-                return services;
-            }
-
-            public TestApiB(IServiceProvider serviceProvider) : base(serviceProvider)
-            {
-            }
-        }
-
-        private class TestApiC : ApiBase
-        {
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
-
-                ///ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
-
-                var service = new TestRetryModelBuilder();
-                services.AddService<IModelBuilder>((sp, next) => service);
-
-                return services;
-            }
-
-            public TestApiC(IServiceProvider serviceProvider) : base(serviceProvider)
-            {
-            }
-        }
 
         private class TestModelProducer : IModelBuilder
         {
@@ -267,7 +214,6 @@ namespace Microsoft.Restier.Tests.Core.Model
 
         #endregion
 
-
-
     }
+
 }

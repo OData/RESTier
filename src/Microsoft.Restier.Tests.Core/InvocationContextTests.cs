@@ -5,15 +5,15 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core
 {
 
+    /// <summary>
+    /// RWM: Not sure this test is useful anymore, at least not in this structure.
+    /// </summary>
     [TestClass]
     public class InvocationContextTests : RestierTestBase
     {
@@ -21,6 +21,10 @@ namespace Microsoft.Restier.Tests.Core
         public void InvocationContext_GetsApiServicesCorrectly()
         {
             var container = new RestierContainerBuilder(typeof(TestApi));
+            container.RestierServices.AddCoreServices(typeof(TestApi))
+                .AddConventionBasedServices(typeof(TestApi))
+                .AddTestStoreApiServices()
+                .AddService<IServiceA>((sp, next) => TestApi.ApiService);
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
             var context = new InvocationContext(api);
@@ -45,22 +49,6 @@ namespace Microsoft.Restier.Tests.Core
                 }
             }
 
-            public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
-
-                //ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
-                
-                services.AddService<IServiceA>((sp, next) => ApiService);
-
-                return services;
-            }
-
             public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
             {
             }
@@ -77,4 +65,5 @@ namespace Microsoft.Restier.Tests.Core
         #endregion
 
     }
+
 }

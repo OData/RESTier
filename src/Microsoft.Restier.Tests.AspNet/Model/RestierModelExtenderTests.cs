@@ -23,10 +23,21 @@ namespace Microsoft.Restier.Tests.AspNet.Model
     public class RestierModelExtenderTests : RestierTestBase
     {
 
+        void di(IServiceCollection services)
+        {
+            diEmpty(services);
+            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
+        }
+
+        void diEmpty(IServiceCollection services)
+        {
+            services.AddTestDefaultServices();
+        }
+
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceEmptyModelForEmptyApi()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<EmptyApi, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: diEmpty);
             model.SchemaElements.Should().HaveCount(1);
             model.EntityContainer.Elements.Should().BeEmpty();
         }
@@ -34,7 +45,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForBasicScenario()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiA, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiA, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
@@ -44,7 +55,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForDerivedApi()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiB, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiB, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("Customers").Should().NotBeNull();
@@ -55,7 +66,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForOverridingProperty()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
@@ -66,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForIgnoringInheritedProperty()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiD, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiD, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("Customers").EntityType().Name.Should().Be("Customer");
@@ -76,7 +87,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldSkipEntitySetWithUndeclaredType()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiE, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiE, DbContext>(serviceCollection: di);
             model.EntityContainer.FindEntitySet("People").EntityType().Name.Should().Be("Person");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Orders");
         }
@@ -84,7 +95,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldSkipExistingEntitySet()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiF, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiF, DbContext>(serviceCollection: di);
             model.EntityContainer.FindEntitySet("VipCustomers").EntityType().Name.Should().Be("VipCustomer");
         }
 
@@ -94,7 +105,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             // In this case, only one entity set People has entity type Person.
             // Bindings for collection navigation property Customer.Friends should be added.
             // Bindings for singleton navigation property Customer.BestFriend should be added.
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>(serviceCollection: di);
 
             var customersBindings = model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.ToArray();
 
@@ -123,7 +134,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             // In this case, only one singleton Me has entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should be added.
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiH, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiH, DbContext>(serviceCollection: di);
             var binding = model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.Single();
             binding.NavigationProperty.Name.Should().Be("BestFriend");
             binding.Target.Name.Should().Be("Me");
@@ -138,7 +149,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             // In this case, two entity sets Employees and People have entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should NOT be added.
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiG, DbContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiG, DbContext>(serviceCollection: di);
             model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.Should().BeEmpty();
             model.EntityContainer.FindSingleton("Me").NavigationPropertyBindings.Should().BeEmpty();
         }
@@ -180,71 +191,45 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         }
     }
 
-    public class BaseApi : ApiBase
-    {
-        public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-            var changeSetPreparer = new TestChangeSetInitializer();
-            var submitExecutor = new TestSubmitExecutor();
-
-            //ApiBase.ConfigureApi(apiType, services);
-            services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-            services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-
-            return services;
-        }
-
-        public BaseApi(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-    }
-
-    public class EmptyApi : BaseApi
-    {
-        public EmptyApi(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
-    }
-
     public class Person
     {
         public int PersonId { get; set; }
     }
 
-    public class ApiA : BaseApi
+    public class ApiA : TestableEmptyApi
     {
+
         [Resource]
         public IQueryable<Person> People { get; set; }
         [Resource]
         public Person Me { get; set; }
         public IQueryable<Person> Invisible { get; set; }
 
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return BaseApi.ConfigureApi(apiType, services);
-        }
-
         public ApiA(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     public class ApiB : ApiA
     {
+
         [Resource]
         public IQueryable<Person> Customers { get; set; }
 
         public ApiB(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     public class Customer
     {
+
         public int CustomerId { get; set; }
         public ICollection<Person> Friends { get; set; }
         public Person BestFriend { get; set; }
+
     }
 
     public class VipCustomer : Customer
@@ -253,6 +238,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     public class ApiC : ApiB
     {
+
         [Resource]
         public new IQueryable<Customer> Customers { get; set; }
         [Resource]
@@ -261,13 +247,16 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         public ApiC(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     public class ApiD : ApiC
     {
+
         public ApiD(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     public class Order
@@ -275,51 +264,46 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         public int OrderId { get; set; }
     }
 
-    public class ApiE : BaseApi
+    public class ApiE : TestableEmptyApi
     {
+
         [Resource]
         public IQueryable<Person> People { get; set; }
         [Resource]
         public IQueryable<Order> Orders { get; set; }
 
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return BaseApi.ConfigureApi(apiType, services);
-        }
-
         public ApiE(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
-    public class ApiF : BaseApi
+    public class ApiF : TestableEmptyApi
     {
-        public IQueryable<Customer> VipCustomers { get; set; }
 
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return BaseApi.ConfigureApi(apiType, services);
-        }
+        public IQueryable<Customer> VipCustomers { get; set; }
 
         public ApiF(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     public class ApiG : ApiC
     {
+
         [Resource]
         public IQueryable<Person> Employees { get; set; }
 
         public ApiG(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
-    public class ApiH : BaseApi
+    public class ApiH : TestableEmptyApi
     {
+
         [Resource]
         public Person Me { get; set; }
         [Resource]
@@ -327,15 +311,10 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [Resource]
         public Customer Me2 { get; set; }
 
-        public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-        {
-            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
-            return BaseApi.ConfigureApi(apiType, services);
-        }
-
         public ApiH(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
+
     }
 
     #endregion

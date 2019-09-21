@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Tests.AspNet;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -161,8 +160,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -201,8 +200,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -226,8 +225,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -247,8 +246,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -272,9 +271,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
+                var queryExpressionSourcer = new StoreQueryExpressionSourcer();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -301,9 +300,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
+                var queryExpressionSourcer = new StoreQueryExpressionSourcer();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -330,9 +329,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
+                var queryExpressionSourcer = new StoreQueryExpressionSourcer();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -363,8 +362,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
@@ -389,9 +388,9 @@ namespace Microsoft.Restier.Tests.Core
         {
             public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
             {
-                var changeSetPreparer = new TestChangeSetInitializer();
-                var submitExecutor = new TestSubmitExecutor();
-                var queryExpressionSourcer = new TestQueryExpressionSourcer();
+                var changeSetPreparer = new StoreChangeSetInitializer();
+                var submitExecutor = new DefaultSubmitExecutor();
+                var queryExpressionSourcer = new StoreQueryExpressionSourcer();
 
                 //ApiBase.ConfigureApi(apiType, services);
                 services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);

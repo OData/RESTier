@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -79,7 +80,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task StoreApi_SaveVisibilityMatrix()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
             await api.WriteCurrentVisibilityMatrix(relativePath);
 
             File.Exists($"{relativePath}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
@@ -92,14 +93,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists(fileName).Should().BeTrue();
 
             var oldReport = File.ReadAllText(fileName);
-            var newReport = await RestierTestHelpers.GetApiMetadata<StoreApi, DbContext>();
+            var newReport = await RestierTestHelpers.GetApiMetadata<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
             oldReport.Should().BeEquivalentTo(newReport.ToString());
         }
 
         [TestMethod]
         public async Task StoreApi_CompareCurrentVisibilityMatrixToPriorRun()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
             var fileName = $"{relativePath}{api.GetType().Name}-ApiSurface.txt";
 
             File.Exists(fileName).Should().BeTrue();

@@ -26,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    internal class ModelProducer : IModelBuilder
+    internal class EFModelProducer : IModelBuilder
     {
         public IModelBuilder InnerModelBuilder { get; set; }
 
