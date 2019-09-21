@@ -28,6 +28,7 @@ namespace Microsoft.Restier.Tests.Core
 
         void di(IServiceCollection services)
         {
+            //services.AddCoreServices(typeof(TestableEmptyApi));
             services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
             services.AddService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddService<IQueryExpressionSourcer>((sp, next) => new TestQuerySourcer());
@@ -287,18 +288,13 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestModelMapper : IModelMapper
         {
-            public bool TryGetRelevantType(
-                ModelContext context,
-                string name, out Type relevantType)
+            public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
             {
                 relevantType = typeof(string);
                 return true;
             }
 
-            public bool TryGetRelevantType(
-                ModelContext context,
-                string namespaceName, string name,
-                out Type relevantType)
+            public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType)
             {
                 relevantType = typeof(DateTime);
                 return true;

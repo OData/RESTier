@@ -35,7 +35,9 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet.Controllers
         {
             //CompanyEmployeeManager.OnInserting(entity);
             //TrackEvent(entity, RestierOperationTypes.Inserting);
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
             Console.WriteLine("Inserting Category...");
+#pragma warning restore CA1303 // Do not pass literals as localized parameters
         }
 
 

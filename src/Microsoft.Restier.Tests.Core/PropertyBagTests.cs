@@ -20,9 +20,14 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void PropertyBag_ManipulatesPropertiesCorrectly()
         {
-            var container = new RestierContainerBuilder(typeof(TestApi));
+            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            container.RestierServices
+                .AddCoreServices(typeof(TestableEmptyApi))
+                .AddConventionBasedServices(typeof(TestableEmptyApi))
+                .AddTestStoreApiServices()
+                .AddScoped<MyPropertyBag>();
             var provider = container.BuildContainer();
-            var api = provider.GetService<ApiBase>();
+            var api = provider.GetService<TestableEmptyApi>();
 
             api.HasProperty("Test").Should().BeFalse();
             api.GetProperty("Test").Should().BeNull();
@@ -44,7 +49,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task PropertyBag_InstancesDoNotConflict()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestApi, DbContext>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestableEmptyApi, DbContext>();
 
             api.SetProperty("Test", 2);
             api.GetProperty<int>("Test").Should().Be(2);
@@ -53,7 +58,13 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void PropertyBagsAreDisposedCorrectly()
         {
-            var container = new RestierContainerBuilder(typeof(TestApi));
+            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            container.RestierServices
+                .AddCoreServices(typeof(TestableEmptyApi))
+                .AddConventionBasedServices(typeof(TestableEmptyApi))
+                .AddTestStoreApiServices()
+                .AddScoped<MyPropertyBag>();
+
             var provider = container.BuildContainer();
             var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var scopedProvider  = scope.ServiceProvider;
@@ -93,19 +104,6 @@ namespace Microsoft.Restier.Tests.Core
             }
         }
 
-        private class TestApi : ApiBase
-        {
-            //public static IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            //{
-            //    services.AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer())
-            //        .AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor())
-            //        .AddService<IQueryExpressionSourcer>((sp, next) => new TestQueryExpressionSourcer())
-            //        .AddScoped<MyPropertyBag>();
-            //}
-
-            public TestApi(IServiceProvider serviceProvider) : base(serviceProvider)
-            {
-            }
-        }
     }
+
 }

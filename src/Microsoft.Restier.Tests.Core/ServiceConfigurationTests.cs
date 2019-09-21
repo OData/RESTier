@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Restier.Tests.Core
 {
 
+    [Ignore]
     [TestClass]
     public class ServiceConfigurationTests : RestierTestBase
     {

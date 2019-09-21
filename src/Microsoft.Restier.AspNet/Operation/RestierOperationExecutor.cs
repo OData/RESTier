@@ -26,17 +26,17 @@ namespace Microsoft.Restier.AspNet.Operation
     /// <summary>
     /// Executes an operation by invoking a method on the <see cref="ApiBase"/> instance through reflection.
     /// </summary>
-    public class OperationExecutor : IOperationExecutor
+    public class RestierOperationExecutor : IOperationExecutor
     {
         private readonly IOperationAuthorizer operationAuthorizer;
         private readonly IOperationFilter operationFilter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OperationExecutor"/> class.
+        /// Initializes a new instance of the <see cref="RestierOperationExecutor"/> class.
         /// </summary>
         /// <param name="operationAuthorizer">The operation authorizer to be used for authorization.</param>
         /// <param name="operationFilter">The operation filter to be used for filtering.</param>
-        public OperationExecutor(IOperationAuthorizer operationAuthorizer, IOperationFilter operationFilter)
+        public RestierOperationExecutor(IOperationAuthorizer operationAuthorizer, IOperationFilter operationFilter)
         {
             this.operationAuthorizer = operationAuthorizer;
             this.operationFilter = operationFilter;

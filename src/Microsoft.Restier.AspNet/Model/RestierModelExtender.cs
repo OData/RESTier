@@ -52,8 +52,7 @@ namespace Microsoft.Restier.AspNet.Model
                 return null;
             }
 
-            var dataSourceStubReference = context.ModelReference as DataSourceStubModelReference;
-            if (dataSourceStubReference == null)
+            if (!(context.ModelReference is DataSourceStubModelReference dataSourceStubReference))
             {
                 return null;
             }

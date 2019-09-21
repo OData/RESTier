@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         {
         }
 
-        [Operation(HasSideEffects = false)]
+        [Operation]
         public Book PublishBook(bool IsActive)
         {
             Console.WriteLine($"IsActive = {IsActive}");
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        [Operation(HasSideEffects = false)]
+        [Operation]
         public Book PublishBooks(int Count)
         {
             Console.WriteLine($"Count = {Count}");
@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        [Operation(HasSideEffects = false)]
+        [Operation]
         public Book SubmitTransaction(Guid Id)
         {
             Console.WriteLine($"Id = {Id}");
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        [Operation(HasSideEffects = true, EntitySet = "Books")]
+        [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
         {
             if (book == null)
@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return book;
         }
 
-        [Operation(HasSideEffects = false, IsBound = true, IsComposable = true)]
+        [Operation(IsBound = true, IsComposable = true)]
         public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
         {
             if (books == null)
