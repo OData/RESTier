@@ -1,6 +1,6 @@
 ﻿using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+namespace Microsoft.Restier.Tests.Shared
 {
 
     /// <summary>

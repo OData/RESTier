@@ -14,17 +14,17 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    internal class ModelMapper : IModelMapper
+    internal class EFModelMapper : IModelMapper
     {
         private readonly Type dbContextType;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelMapper" /> class.
+        /// Initializes a new instance of the <see cref="EFModelMapper" /> class.
         /// </summary>
         /// <param name="dbContextType">
         /// The type of a DbContext class.
         /// </param>
-        public ModelMapper(Type dbContextType)
+        public EFModelMapper(Type dbContextType)
         {
             Ensure.NotNull(dbContextType, nameof(dbContextType));
             this.dbContextType = dbContextType;

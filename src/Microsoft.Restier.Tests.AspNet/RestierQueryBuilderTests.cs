@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task TestInt16AsKey()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Customers(1)", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Customers(1)", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeTrue();
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
         }
@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task TestInt64AsKey()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Stores(1)", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Stores(1)", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeTrue();
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
         }

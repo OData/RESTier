@@ -30,20 +30,20 @@ namespace Microsoft.Restier.Tests.AspNet
     public class ODataControllerFallbackTests : RestierTestBase
     {
 
-        void di(IServiceCollection services)
+        void addTestServices(IServiceCollection services)
         {
-            services.AddService<IModelBuilder>((sp, next) => new TestModelProducer(FallbackModel.Model))
+            services.AddService<IModelBuilder>((sp, next) => new StoreModelProducer(FallbackModel.Model))
                 .AddService<IModelMapper>((sp, next) => new FallbackModelMapper())
                 .AddService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())
-                .AddService<IChangeSetInitializer>((sp, next) => new TestChangeSetInitializer())
-                .AddService<ISubmitExecutor>((sp, next) => new TestSubmitExecutor());
+                .AddService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
+                .AddService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
         }
 
         [TestMethod]
         public async Task FallbackApi_EntitySet_ShouldFallBack()
         {
             // Should fallback to PeopleController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             ((Person[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(999);
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FallbackApi_NavigationProperty_ShouldFallBack()
         {
             // Should fallback to PeopleController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People(1)/Orders", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             ((Order[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(123);
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FallbackApi_EntitySet_ShouldNotFallBack()
         {
             // Should be routed to RestierController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/Orders", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");
@@ -73,7 +73,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FallbackApi_Resource_ShouldNotFallBack()
         {
             // Should be routed to RestierController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/PreservedOrders", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/PreservedOrders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");

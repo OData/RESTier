@@ -35,13 +35,13 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             return services
-                .AddService<IModelBuilder, ModelProducer>()
-                .AddService<IModelMapper>((sp, next) => new ModelMapper(typeof(TDbContext)))
-                .AddService<IQueryExpressionSourcer, QueryExpressionSourcer>()
-                .AddService<IQueryExecutor, QueryExecutor>()
-                .AddService<IQueryExpressionProcessor, QueryExpressionProcessor>()
-                .AddService<IChangeSetInitializer, ChangeSetInitializer>()
-                .AddService<ISubmitExecutor, SubmitExecutor>();
+                .AddService<IModelBuilder, EFModelProducer>()
+                .AddService<IModelMapper>((sp, next) => new EFModelMapper(typeof(TDbContext)))
+                .AddService<IQueryExpressionSourcer, EFQueryExpressionSourcer>()
+                .AddService<IQueryExecutor, EFQueryExecutor>()
+                .AddService<IQueryExpressionProcessor, EFQueryExpressionProcessor>()
+                .AddService<IChangeSetInitializer, EFChangeSetInitializer>()
+                .AddService<ISubmitExecutor, EFSubmitExecutor>();
         }
 
     }

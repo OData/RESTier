@@ -25,7 +25,7 @@ namespace Microsoft.Restier.EntityFramework
     /// This class only executes queries against EF provider, it'll
     /// delegate other queries to inner IQueryExecutor.
     /// </summary>
-    internal class QueryExecutor : IQueryExecutor
+    internal class EFQueryExecutor : IQueryExecutor
     {
         public IQueryExecutor Inner { get; set; }
 

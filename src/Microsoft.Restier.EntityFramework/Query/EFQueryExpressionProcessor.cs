@@ -12,7 +12,7 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// A query expression filter to handle EF related logic.
     /// </summary>
-    internal class QueryExpressionProcessor : IQueryExpressionProcessor
+    internal class EFQueryExpressionProcessor : IQueryExpressionProcessor
     {
         // It will be ConventionBasedEntitySetProcessor
         public IQueryExpressionProcessor Inner { get; set; }

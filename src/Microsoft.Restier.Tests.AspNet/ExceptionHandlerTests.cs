@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Tests.AspNet
                 services.AddTestStoreApiServices()
                     .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products", configureServices: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
