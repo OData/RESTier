@@ -34,7 +34,7 @@ namespace Microsoft.Restier.AspNet
         /// <typeparam name="T">The Api type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddRestierServices<T>(this IServiceCollection services)
+        public static IServiceCollection AddRestierDefaultServices<T>(this IServiceCollection services)
         {
             if (services.HasService<RestierQueryExecutor>())
             {
@@ -46,14 +46,11 @@ namespace Microsoft.Restier.AspNet
             AddRestierModelExtender(services, typeof(T));
             AddOperationModelBuilder(services, typeof(T));
 
-            // Add OData Query Settings and validation settings
-            Func<IServiceProvider, ODataQuerySettings> querySettingFactory = (sp) => new ODataQuerySettings
+            services.AddSingleton(new ODataQuerySettings
             {
                 HandleNullPropagation = HandleNullPropagationOption.False,
                 PageSize = null,  // no support for server enforced PageSize, yet
-            };
-
-            services.AddSingleton(typeof(ODataQuerySettings), querySettingFactory);
+            });
             services.AddSingleton<ODataValidationSettings>();
 
             // Make serializer and deserializer provider as DI services

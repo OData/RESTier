@@ -22,8 +22,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
             container.Services
-                .AddCoreServices(typeof(TestableEmptyApi))
-                .AddConventionBasedServices(typeof(TestableEmptyApi))
+                .AddRestierCoreServices(typeof(TestableEmptyApi))
+                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
                 .AddTestStoreApiServices()
                 .AddScoped<MyPropertyBag>();
             var provider = container.BuildContainer();
@@ -60,8 +60,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
             container.Services
-                .AddCoreServices(typeof(TestableEmptyApi))
-                .AddConventionBasedServices(typeof(TestableEmptyApi))
+                .AddRestierCoreServices(typeof(TestableEmptyApi))
+                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
                 .AddTestStoreApiServices()
                 .AddScoped<MyPropertyBag>();
 

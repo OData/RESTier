@@ -33,19 +33,9 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
             config.UseRestier<NorthwindApi>(
             (services) =>
             {
-                // This delegate is executed before OData is added to the container.
-                // This delegate is optional. 
-                services.AddEF6ProviderServices<NorthwindEntities>();
-            },
-            (services) =>
-            {
                 // This delegate is executed after OData is added to the container.
                 // Add you replacement services here.
-
-                // or even add the RestierServices explicitly yourself to be able to register services after
-                // Restier registration.
-
-                // services.AddRestierServices<NorthwindApi>();
+                services.AddEF6ProviderServices<NorthwindEntities>();
 
                 services.AddSingleton(new ODataValidationSettings
                 {

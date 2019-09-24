@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Core
 
         private readonly Type apiType;
 
-        private readonly Action<IServiceCollection> postOdataConfigureAction;
+        private readonly Action<IServiceCollection> configureAction;
 
         #endregion
 
@@ -43,17 +43,14 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
         /// <param name="apiType">The Api Type</param>
-        /// <param name="preOdataConfigureAction">Action to register services Pre OData service registration.</param>
-        /// <param name="postOdataConfigureAction">Action to register services post OData service registration.</param>
+        /// <param name="configureAction">Action to register services post OData service registration.</param>
         public RestierContainerBuilder(
             Type apiType, 
-            Action<IServiceCollection> preOdataConfigureAction = null, 
-            Action<IServiceCollection> postOdataConfigureAction = null)
+            Action<IServiceCollection> configureAction = null)
         {
             this.apiType = apiType;
-            this.postOdataConfigureAction = postOdataConfigureAction;
+            this.configureAction = configureAction;
             Services = new ServiceCollection();
-            preOdataConfigureAction?.Invoke(Services);
         }
 
         #endregion
@@ -115,7 +112,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The container built by this builder.</returns>
         public virtual IServiceProvider BuildContainer()
         {
-            postOdataConfigureAction?.Invoke(Services);
+            configureAction?.Invoke(Services);
             AddRestierService(!Services.Any(x => x.ServiceType == typeof(ApiBase)));
             return Services.BuildServiceProvider();
         }
