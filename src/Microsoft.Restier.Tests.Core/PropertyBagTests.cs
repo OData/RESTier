@@ -21,9 +21,9 @@ namespace Microsoft.Restier.Tests.Core
         public void PropertyBag_ManipulatesPropertiesCorrectly()
         {
             var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
-            container.RestierServices
-                .AddCoreServices(typeof(TestableEmptyApi))
-                .AddConventionBasedServices(typeof(TestableEmptyApi))
+            container.Services
+                .AddRestierCoreServices(typeof(TestableEmptyApi))
+                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
                 .AddTestStoreApiServices()
                 .AddScoped<MyPropertyBag>();
             var provider = container.BuildContainer();
@@ -59,9 +59,9 @@ namespace Microsoft.Restier.Tests.Core
         public void PropertyBagsAreDisposedCorrectly()
         {
             var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
-            container.RestierServices
-                .AddCoreServices(typeof(TestableEmptyApi))
-                .AddConventionBasedServices(typeof(TestableEmptyApi))
+            container.Services
+                .AddRestierCoreServices(typeof(TestableEmptyApi))
+                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
                 .AddTestStoreApiServices()
                 .AddScoped<MyPropertyBag>();
 
