@@ -20,7 +20,6 @@ namespace System.Web.Http
     /// </summary>
     public static class HttpConfigurationExtensions
     {
-
         /// <summary>
         /// 
         /// </summary>
@@ -32,14 +31,17 @@ namespace System.Web.Http
         {
             config.UseCustomContainerBuilder(() =>
             {
-                var builder = new RestierContainerBuilder(typeof(TApi));
-                builder.RestierServices
-                    .AddCoreServices(typeof(TApi))
-                    .AddConventionBasedServices(typeof(TApi));
+                var builder = new RestierContainerBuilder(typeof(TApi), (services) =>
+                {
+                    services
+                   .AddRestierCoreServices(typeof(TApi))
+                   .AddRestierConventionBasedServices(typeof(TApi));
 
-                configureAction(builder.RestierServices);
+                    configureAction(services);
 
-                builder.RestierServices.AddRestierServices<TApi>();
+                    services.AddRestierDefaultServices<TApi>();
+                });
+
                 return builder;
             });
 

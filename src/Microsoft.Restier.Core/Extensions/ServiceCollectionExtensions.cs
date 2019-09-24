@@ -210,7 +210,7 @@ namespace Microsoft.Restier.Core
         /// The type of a class on which code-based conventions are used.
         /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddCoreServices(this IServiceCollection services, Type apiType)
+        public static IServiceCollection AddRestierCoreServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
@@ -234,7 +234,7 @@ namespace Microsoft.Restier.Core
         /// The type of a class on which code-based conventions are used.
         /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddConventionBasedServices(this IServiceCollection services, Type apiType)
+        public static IServiceCollection AddRestierConventionBasedServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
