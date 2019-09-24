@@ -3,6 +3,7 @@ using System.Web.Http;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.AspNet;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
 using Microsoft.Restier.Samples.Northwind.AspNet.Data;
@@ -29,11 +30,23 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
 
             config.MapHttpAttributeRoutes();
 
-            config.UseRestier<NorthwindApi>((services) =>
+            config.UseRestier<NorthwindApi>(
+            (services) =>
             {
+                // This delegate is executed before OData is added to the container.
+                // This delegate is optional. 
                 services.AddEF6ProviderServices<NorthwindEntities>();
+            },
+            (services) =>
+            {
+                // This delegate is executed after OData is added to the container.
+                // Add you replacement services here.
 
-                // RWM: Add you replacement services here.
+                // or even add the RestierServices explicitly yourself to be able to register services after
+                // Restier registration.
+
+                // services.AddRestierServices<NorthwindApi>();
+
                 services.AddSingleton(new ODataValidationSettings
                 {
                     MaxAnyAllExpressionDepth = 3,

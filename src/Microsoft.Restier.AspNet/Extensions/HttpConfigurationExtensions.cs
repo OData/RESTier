@@ -30,19 +30,32 @@ namespace System.Web.Http
         /// <returns></returns>
         public static HttpConfiguration UseRestier<TApi>(this HttpConfiguration config, Action<IServiceCollection> configureAction) where TApi : ApiBase
         {
+            return UseRestier<TApi>(config, null, configureAction);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TApi"></typeparam>
+        /// <param name="config"></param>
+        /// <param name="preOdataConfigureAction"></param>
+        /// <param name="postOdataConfigureAction"></param>
+        /// <returns></returns>
+        public static HttpConfiguration UseRestier<TApi>(this HttpConfiguration config, Action<IServiceCollection> preOdataConfigureAction, Action<IServiceCollection> postOdataConfigureAction) where TApi : ApiBase
+        {
             config.UseCustomContainerBuilder(() =>
             {
-                var builder = new RestierContainerBuilder(typeof(TApi), null, (services) =>
+                var builder = new RestierContainerBuilder(typeof(TApi), preOdataConfigureAction, (services) =>
                 {
                     services
                    .AddCoreServices(typeof(TApi))
                    .AddConventionBasedServices(typeof(TApi));
 
-                    configureAction(services);
+                    postOdataConfigureAction(services);
 
                     services.AddRestierServices<TApi>();
                 });
-               
+
                 return builder;
             });
 
