@@ -32,14 +32,17 @@ namespace System.Web.Http
         {
             config.UseCustomContainerBuilder(() =>
             {
-                var builder = new RestierContainerBuilder(typeof(TApi));
-                builder.RestierServices
-                    .AddCoreServices(typeof(TApi))
-                    .AddConventionBasedServices(typeof(TApi));
+                var builder = new RestierContainerBuilder(typeof(TApi), null, (services) =>
+                {
+                    services
+                   .AddCoreServices(typeof(TApi))
+                   .AddConventionBasedServices(typeof(TApi));
 
-                configureAction(builder.RestierServices);
+                    configureAction(services);
 
-                builder.RestierServices.AddRestierServices<TApi>();
+                    services.AddRestierServices<TApi>();
+                });
+               
                 return builder;
             });
 

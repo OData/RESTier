@@ -24,6 +24,8 @@ namespace Microsoft.Restier.Core
 
         private readonly Type apiType;
 
+        private readonly Action<IServiceCollection> postOdataConfigureAction;
+
         #endregion
 
         #region Properties
@@ -33,11 +35,6 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public ServiceCollection Services { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ServiceCollection RestierServices { get; private set; }
-
         #endregion
 
         #region Constructors
@@ -46,11 +43,17 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
         /// <param name="apiType">The Api Type</param>
-        public RestierContainerBuilder(Type apiType)
+        /// <param name="preOdataConfigureAction">Action to register services Pre OData service registration.</param>
+        /// <param name="postOdataConfigureAction">Action to register services post OData service registration.</param>
+        public RestierContainerBuilder(
+            Type apiType, 
+            Action<IServiceCollection> preOdataConfigureAction = null, 
+            Action<IServiceCollection> postOdataConfigureAction = null)
         {
             this.apiType = apiType;
+            this.postOdataConfigureAction = postOdataConfigureAction;
             Services = new ServiceCollection();
-            RestierServices = new ServiceCollection();
+            preOdataConfigureAction?.Invoke(Services);
         }
 
         #endregion
@@ -112,11 +115,8 @@ namespace Microsoft.Restier.Core
         /// <returns>The container built by this builder.</returns>
         public virtual IServiceProvider BuildContainer()
         {
-            foreach (var descriptor in RestierServices)
-            {
-                Services.Add(descriptor);
-            }
-            AddRestierService(!RestierServices.Any());
+            postOdataConfigureAction?.Invoke(Services);
+            AddRestierService(!Services.Any(x => x.ServiceType == typeof(ApiBase)));
             return Services.BuildServiceProvider();
         }
 
@@ -184,7 +184,5 @@ namespace Microsoft.Restier.Core
         }
 
         #endregion
-
     }
-
 }

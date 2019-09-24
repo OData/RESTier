@@ -64,9 +64,9 @@ namespace Microsoft.Restier.Tests.Core.Model
                 for (var i = 0; i < 2; i++)
                 {
                     var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
-                    container.RestierServices.AddCoreServices(typeof(TestableEmptyApi))
+                    container.Services.AddCoreServices(typeof(TestableEmptyApi))
                         .AddService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
-                    addTestServices(container.RestierServices);
+                    addTestServices(container.Services);
 
                     var provider = container.BuildContainer();
                     var tasks = PrepareThreads(50, provider, wait);
@@ -84,9 +84,9 @@ namespace Microsoft.Restier.Tests.Core.Model
             using (var wait = new ManualResetEventSlim(false))
             {
                 var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
-                container.RestierServices.AddCoreServices(typeof(TestableEmptyApi))
+                container.Services.AddCoreServices(typeof(TestableEmptyApi))
                     .AddService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
-                addTestServices(container.RestierServices);
+                addTestServices(container.Services);
 
                 var provider = container.BuildContainer();
 
