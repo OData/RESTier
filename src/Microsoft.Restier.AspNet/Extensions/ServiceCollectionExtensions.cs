@@ -63,7 +63,7 @@ namespace Microsoft.Restier.AspNet
             //      added one, or we already did.
             if (services.HasServiceCount<ODataQuerySettings>() < 2)
             {
-                services.AddSingleton(new ODataQuerySettings
+                services.AddScoped((sp) => new ODataQuerySettings
                 {
                     HandleNullPropagation = HandleNullPropagationOption.False,
                     PageSize = null,  // no support for server enforced PageSize, yet
