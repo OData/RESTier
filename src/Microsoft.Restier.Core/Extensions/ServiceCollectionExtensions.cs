@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -19,12 +18,8 @@ namespace Microsoft.Restier.Core
     /// All registered contributors form a chain, and the last registered will be called first.
     /// </summary>
     /// <typeparam name="T">The service type.</typeparam>
-    /// <param name="serviceProvider">
-    /// The <see cref="IServiceProvider"/> to which this contributor call is registered.
-    /// </param>
-    /// <param name="next">
-    /// Return the result of the previous contributor on the chain.
-    /// </param>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to which this contributor call is registered.</param>
+    /// <param name="next">Return the result of the previous contributor on the chain.</param>
     /// <returns>A service instance of <typeparamref name="T"/>.</returns>
     internal delegate T ApiServiceContributor<T>(IServiceProvider serviceProvider, Func<T> next) where T : class;
 
@@ -37,10 +32,10 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Return true if the <see cref="IServiceCollection"/> has any <typeparamref name="TService"/> service registered.
         /// </summary>
-        /// <typeparam name="TService">The API service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <typeparam name="TService">The service type to register with the <see cref="IServiceCollection"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to register the <typeparamref name="TService"/> with.</param>
         /// <returns>
-        /// True if the service is registered.
+        /// A <see cref="bool"/> specifying whether or not the <typeparamref name="TService"/>
         /// </returns>
         public static bool HasService<TService>(this IServiceCollection services) where TService : class
         {
@@ -52,10 +47,10 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Returns the number of services that match the given <see cref="ServiceDescriptor.ServiceType"/> in a given <see cref="ServiceCollection"/>.
         /// </summary>
-        /// <typeparam name="TService">The API service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <typeparam name="TService">The service type to register with the <see cref="IServiceCollection"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to register the <typeparamref name="TService"/> with.</param>
         /// <returns>
-        /// The number of Services that match the given ServiceType.
+        /// An <see cref="int"/> representing the number of Services that match the given ServiceType.
         /// </returns>
         public static int HasServiceCount<TService>(this IServiceCollection services) where TService : class
         {
@@ -65,19 +60,20 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Adds a service contributor, which has a chance to chain previously registered service instances.
-        /// If want to cutoff previous registration, not define a property with type of TService or do not use it.
-        /// The first TService in function is the service of inner, and the second TService is the service returned.
+        /// A Restier-specific method that adds a "service contributor", which has a chance to chain previously registered service instances. 
+        /// DO NOT use this method outside of a Restier app. 
         /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="factory">
-        /// A factory method to create a new instance of service TService, wrapping previous instance."/>.
-        /// </param>
-        /// <param name="serviceLifetime">
-        /// The service lifetime.
-        /// </param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
+        /// <typeparam name="TService">The service type to register with the <see cref="IServiceCollection"/>.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to register the <typeparamref name="TService"/> with.</param>
+        /// <param name="factory">A factory method to create a new instance of service TService, wrapping previous instance."/>.</param>
+        /// <param name="serviceLifetime">The <see cref="ServiceLifetime"/> of the service being added.</param>
+        /// <returns>
+        /// The <paramref name="services"/> instance modified with the new <typeparamref name="TService"/> reference.
+        /// </returns>
+        /// <remarks>
+        /// This process is being deprecated. Please DO NOT rely on it for future behavior in your own apps. V2 will properly handle 
+        /// multiple instances of a registration by firing them in succession.
+        /// </remarks>
         public static IServiceCollection AddChainedService<TService>(
             this IServiceCollection services,
             Func<IServiceProvider, TService, TService> factory,
@@ -90,30 +86,37 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Adds a service contributor, which has a chance to chain previously registered service instances.
+        /// A Restier-specific method that adds a "service contributor", which has a chance to chain previously registered service instances. 
+        /// DO NOT use this method outside of a Restier app. 
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This process is being deprecated. Please DO NOT rely on it for future behavior in your own apps. V2 will properly handle 
+        /// multiple instances of a registration by firing them in succession.
+        /// </para>
+        /// <para>
         /// If want to cutoff previous registration, not define a property with type of TService or do not use it.
         /// The contributor added will get an instance of <typeparamref name="TImplement"/> from the container, i.e.
         /// <see cref="IServiceProvider"/>, every time it's get called.
         /// This method will try to register <typeparamref name="TImplement"/> as a service with
         /// <see cref="ServiceLifetime.Transient"/> life time, if it's not yet registered. To override, you can
         /// register <typeparamref name="TImplement"/> before or after calling this method.
-        /// </summary>
-        /// <remarks>
+        /// </para>
+        /// <para>
         /// Note: When registering <typeparamref name="TImplement"/>, you must NOT give it a
         /// <see cref="ServiceLifetime"/> that makes it outlives <typeparamref name="TService"/>, that could possibly
         /// make an instance of <typeparamref name="TImplement"/> be used in multiple instantiations of
         /// <typeparamref name="TService"/>, which leads to unpredictable behaviors.
+        /// </para>
         /// </remarks>
-        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TService">The service type to register with the <see cref="IServiceCollection"/>.</typeparam>
         /// <typeparam name="TImplement">The implementation type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        ///  /// <param name="serviceLifetime">
-        /// The service lifetime.
-        /// </param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddChainedService<TService, TImplement>(
-            this IServiceCollection services, 
-            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        /// <param name="services">The <see cref="IServiceCollection"/> to register the <typeparamref name="TService"/> with.</param>
+        /// <param name="serviceLifetime">The <see cref="ServiceLifetime"/> of the service being added.</param>
+        /// <returns>
+        /// Current <see cref="IServiceCollection"/>
+        /// </returns>
+        public static IServiceCollection AddChainedService<TService, TImplement>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
             where TImplement : class, TService
         {
@@ -183,17 +186,14 @@ namespace Microsoft.Restier.Core
             }, serviceLifetime);
         }
 
-
         /// <summary>
         /// Add core services.
         /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="apiType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
+        /// <param name="services">he <see cref="IServiceCollection"/> containing API service registrations.</param>
+        /// <param name="apiType">The type of a class on which code-based conventions are used.</param>
+        /// <returns>
+        /// Current <see cref="IServiceCollection"/>
+        /// </returns>
         public static IServiceCollection AddRestierCoreServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(services, nameof(services));
@@ -211,12 +211,8 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Enables code-based conventions for an API.
         /// </summary>
-        /// <param name="services">
-        /// The <see cref="IServiceCollection"/> containing API service registrations.
-        /// </param>
-        /// <param name="apiType">
-        /// The type of a class on which code-based conventions are used.
-        /// </param>
+        /// <param name="services">The <see cref="IServiceCollection"/> containing API service registrations.</param>
+        /// <param name="apiType">The type of a class on which code-based conventions are used.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddRestierConventionBasedServices(this IServiceCollection services, Type apiType)
         {
@@ -249,9 +245,7 @@ namespace Microsoft.Restier.Core
             return services;
         }
 
-        private static MemberInfo FindInnerMemberAndInject<TService, TImplement>(
-            TImplement instance,
-            Func<TService> next)
+        private static MemberInfo FindInnerMemberAndInject<TService, TImplement>(TImplement instance, Func<TService> next)
         {
             var typeInfo = typeof(TImplement).GetTypeInfo();
             var nextProperty = typeInfo
