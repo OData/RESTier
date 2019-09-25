@@ -74,15 +74,19 @@ namespace Microsoft.Restier.Core
         /// <param name="factory">
         /// A factory method to create a new instance of service TService, wrapping previous instance."/>.
         /// </param>
+        /// <param name="serviceLifetime">
+        /// The service lifetime.
+        /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddChainedService<TService>(
             this IServiceCollection services,
-            Func<IServiceProvider, TService, TService> factory)
+            Func<IServiceProvider, TService, TService> factory,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(factory, nameof(factory));
-            return services.AddContributorNoCheck<TService>((sp, next) => factory(sp, next()));
+            return services.AddContributorNoCheck<TService>((sp, next) => factory(sp, next()), serviceLifetime);
         }
 
         /// <summary>
@@ -103,8 +107,13 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TImplement">The implementation type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        ///  /// <param name="serviceLifetime">
+        /// The service lifetime.
+        /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddChainedService<TService, TImplement>(this IServiceCollection services)
+        public static IServiceCollection AddChainedService<TService, TImplement>(
+            this IServiceCollection services, 
+            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
             where TImplement : class, TService
         {
@@ -171,49 +180,9 @@ namespace Microsoft.Restier.Core
                 };
 
                 return instance;
-            });
+            }, serviceLifetime);
         }
 
-        /// <summary>
-        /// Call this to make singleton lifetime of a service.
-        /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeChainedSingleton<TService>(this IServiceCollection services)
-            where TService : class
-        {
-            Ensure.NotNull(services, nameof(services));
-            services.AddSingleton<TService>(ChainedService<TService>.DefaultFactory);
-            return services;
-        }
-
-        /// <summary>
-        /// Call this to make scoped lifetime of a service.
-        /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeChainedScoped<TService>(this IServiceCollection services) where TService : class
-        {
-            Ensure.NotNull(services, nameof(services));
-            services.AddScoped<TService>(ChainedService<TService>.DefaultFactory);
-            return services;
-        }
-
-        /// <summary>
-        /// Call this to make transient lifetime of a service.
-        /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeChainedTransient<TService>(this IServiceCollection services)
-            where TService : class
-        {
-            Ensure.NotNull(services, nameof(services));
-            services.AddTransient<TService>(ChainedService<TService>.DefaultFactory);
-            return services;
-        }
 
         /// <summary>
         /// Add core services.
@@ -268,11 +237,13 @@ namespace Microsoft.Restier.Core
 
         private static IServiceCollection AddContributorNoCheck<TService>(
             this IServiceCollection services,
-            ApiServiceContributor<TService> contributor)
+            ApiServiceContributor<TService> contributor,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
         {
-            // Services have singleton lifetime by default, call Make... to change.
-            services.TryAddSingleton(typeof(TService), ChainedService<TService>.DefaultFactory);
+            var serviceDescriptor = new ServiceDescriptor(typeof(TService), ChainedService<TService>.DefaultFactory, serviceLifetime);
+
+            services.TryAdd(serviceDescriptor);
             services.AddSingleton(contributor);
 
             return services;
