@@ -26,9 +26,9 @@ namespace Microsoft.Restier.Tests.Core.Model
 
         void addTestServices(IServiceCollection services)
         {
-            services.AddService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
-                .AddService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor())
-                .AddService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer());
+            services.AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
+                .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor())
+                .AddChainedService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer());
         }
 
         [TestMethod]
@@ -36,12 +36,12 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) => {
                 addTestServices(services);
-                services.AddService<IModelBuilder>((sp, next) => new TestModelProducer())
-                    .AddService<IModelBuilder>((sp, next) => new TestModelExtender(2)
+                services.AddChainedService<IModelBuilder>((sp, next) => new TestModelProducer())
+                    .AddChainedService<IModelBuilder>((sp, next) => new TestModelExtender(2)
                     {
                         InnerHandler = next,
                     })
-                    .AddService<IModelBuilder>((sp, next) => new TestModelExtender(3)
+                    .AddChainedService<IModelBuilder>((sp, next) => new TestModelExtender(3)
                     {
                         InnerHandler = next,
                     });
@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Tests.Core.Model
                 {
                     var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
                     container.Services.AddRestierCoreServices(typeof(TestableEmptyApi))
-                        .AddService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
+                        .AddChainedService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
                     addTestServices(container.Services);
 
                     var provider = container.BuildContainer();
@@ -85,7 +85,7 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
                 container.Services.AddRestierCoreServices(typeof(TestableEmptyApi))
-                    .AddService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
+                    .AddChainedService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
                 addTestServices(container.Services);
 
                 var provider = container.BuildContainer();

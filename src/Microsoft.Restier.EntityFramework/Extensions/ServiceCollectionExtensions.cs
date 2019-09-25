@@ -3,13 +3,14 @@
 
 using System;
 using System.Data.Entity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Restier.EntityFramework
 {
 
     /// <summary>
@@ -35,13 +36,13 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             return services
-                .AddService<IModelBuilder, EFModelProducer>()
-                .AddService<IModelMapper>((sp, next) => new EFModelMapper(typeof(TDbContext)))
-                .AddService<IQueryExpressionSourcer, EFQueryExpressionSourcer>()
-                .AddService<IQueryExecutor, EFQueryExecutor>()
-                .AddService<IQueryExpressionProcessor, EFQueryExpressionProcessor>()
-                .AddService<IChangeSetInitializer, EFChangeSetInitializer>()
-                .AddService<ISubmitExecutor, EFSubmitExecutor>();
+                .AddChainedService<IModelBuilder, EFModelProducer>()
+                .AddChainedService<IModelMapper>((sp, next) => new EFModelMapper(typeof(TDbContext)))
+                .AddChainedService<IQueryExpressionSourcer, EFQueryExpressionSourcer>()
+                .AddChainedService<IQueryExecutor, EFQueryExecutor>()
+                .AddChainedService<IQueryExpressionProcessor, EFQueryExpressionProcessor>()
+                .AddChainedService<IChangeSetInitializer, EFChangeSetInitializer>()
+                .AddChainedService<ISubmitExecutor, EFSubmitExecutor>();
         }
 
     }

@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Tests.Core
             container.Services.AddRestierCoreServices(typeof(TestApi))
                 .AddRestierConventionBasedServices(typeof(TestApi))
                 .AddTestStoreApiServices()
-                .AddService<IServiceA>((sp, next) => TestApi.ApiService);
+                .AddChainedService<IServiceA>((sp, next) => TestApi.ApiService);
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
             var context = new InvocationContext(api);

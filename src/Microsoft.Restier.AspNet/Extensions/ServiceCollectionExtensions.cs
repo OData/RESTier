@@ -12,6 +12,7 @@ using Microsoft.Restier.AspNet.Formatter;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.AspNet.Operation;
 using Microsoft.Restier.AspNet.Query;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
@@ -44,7 +45,7 @@ namespace Microsoft.Restier.AspNet
 
             if (!services.HasService<RestierModelBuilder>())
             {
-                services.AddService<IModelBuilder, RestierModelBuilder>();
+                services.AddChainedService<IModelBuilder, RestierModelBuilder>();
             }
 
             if (!services.HasService<RestierModelExtender>())
@@ -98,7 +99,7 @@ namespace Microsoft.Restier.AspNet
 
             if (!services.HasService<RestierModelMapper>())
             {
-                services.AddService<IModelMapper, RestierModelMapper>();
+                services.AddChainedService<IModelMapper, RestierModelMapper>();
             }
 
             if (!services.HasService<RestierQueryExecutorOptions>())
@@ -108,7 +109,7 @@ namespace Microsoft.Restier.AspNet
 
             if (!services.HasService<RestierQueryExecutor>())
             {
-                services.AddService<IQueryExecutor, RestierQueryExecutor>();
+                services.AddChainedService<IQueryExecutor, RestierQueryExecutor>();
             }
 
             return services;
@@ -132,10 +133,10 @@ namespace Microsoft.Restier.AspNet
             // some other services.
             services.AddSingleton(new RestierModelExtender(targetType));
 
-            services.AddService<IModelBuilder, RestierModelExtender.ModelBuilder>();
-            services.AddService<IModelMapper, RestierModelExtender.ModelMapper>();
-            services.AddService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
-            services.AddService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
+            services.AddChainedService<IModelBuilder, RestierModelExtender.ModelBuilder>();
+            services.AddChainedService<IModelMapper, RestierModelExtender.ModelMapper>();
+            services.AddChainedService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
+            services.AddChainedService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
         }
 
         /// <summary>
@@ -145,7 +146,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="targetType"></param>
         internal static void AddOperationModelBuilder(IServiceCollection services, Type targetType)
         {
-            services.AddService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
+            services.AddChainedService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
         }
 
         #endregion

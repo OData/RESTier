@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         void di(IServiceCollection services)
         {
             diEmpty(services);
-            services.AddService<IModelBuilder>((sp, next) => new TestModelBuilder());
+            services.AddChainedService<IModelBuilder>((sp, next) => new TestModelBuilder());
         }
 
         void diEmpty(IServiceCollection services)
