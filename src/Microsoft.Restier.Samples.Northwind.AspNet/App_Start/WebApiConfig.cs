@@ -3,6 +3,7 @@ using System.Web.Http;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
 using Microsoft.Restier.Samples.Northwind.AspNet.Data;
 
@@ -33,6 +34,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
 
                 services.AddSingleton(new ODataValidationSettings
                 {
+                    MaxTop = 5,
                     MaxAnyAllExpressionDepth = 3,
                     MaxExpansionDepth = 3,
                 });

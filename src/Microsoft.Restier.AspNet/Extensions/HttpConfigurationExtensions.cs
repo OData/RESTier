@@ -4,8 +4,10 @@
 using System.Collections.Generic;
 using Microsoft.AspNet.OData.Batch;
 using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Routing.Conventions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
 using Microsoft.Restier.AspNet;
 using Microsoft.Restier.AspNet.Batch;
@@ -33,6 +35,9 @@ namespace System.Web.Http
             {
                 var builder = new RestierContainerBuilder(typeof(TApi), (services) =>
                 {
+                    // remove the default ODataQuerySettings from OData as we will add our own.
+                    services.RemoveAll<ODataQuerySettings>();
+
                     services
                    .AddRestierCoreServices(typeof(TApi))
                    .AddRestierConventionBasedServices(typeof(TApi));

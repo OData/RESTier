@@ -1,10 +1,11 @@
-﻿using Microsoft.Restier.Core;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Restier.Tests.Shared
 {
 
     /// <summary>
@@ -20,11 +21,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddTestStoreApiServices(this IServiceCollection services)
         {
-            services.AddService<IModelBuilder>((sp, next) => new StoreModelProducer(StoreModel.Model))
-                .AddService<IModelMapper>((sp, next) => new StoreModelMapper())
-                .AddService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer())
-                .AddService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
-                .AddService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
+            services.AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(StoreModel.Model))
+                .AddChainedService<IModelMapper>((sp, next) => new StoreModelMapper())
+                .AddChainedService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer())
+                .AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
+                .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
             return services;
         }
 
@@ -35,8 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddTestDefaultServices(this IServiceCollection services)
         {
-            services.AddService<IChangeSetInitializer>((sp, next) => new DefaultChangeSetInitializer())
-                .AddService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
+            services.AddChainedService<IChangeSetInitializer>((sp, next) => new DefaultChangeSetInitializer())
+                .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
             return services;
         }
 

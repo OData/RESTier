@@ -5,13 +5,14 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A delegate which participate in service creation.
@@ -73,15 +74,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="factory">
         /// A factory method to create a new instance of service TService, wrapping previous instance."/>.
         /// </param>
+        /// <param name="serviceLifetime">
+        /// The service lifetime.
+        /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddService<TService>(
+        public static IServiceCollection AddChainedService<TService>(
             this IServiceCollection services,
-            Func<IServiceProvider, TService, TService> factory)
+            Func<IServiceProvider, TService, TService> factory,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(factory, nameof(factory));
-            return services.AddContributorNoCheck<TService>((sp, next) => factory(sp, next()));
+            return services.AddContributorNoCheck<TService>((sp, next) => factory(sp, next()), serviceLifetime);
         }
 
         /// <summary>
@@ -102,8 +107,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TImplement">The implementation type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        ///  /// <param name="serviceLifetime">
+        /// The service lifetime.
+        /// </param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddService<TService, TImplement>(this IServiceCollection services)
+        public static IServiceCollection AddChainedService<TService, TImplement>(
+            this IServiceCollection services, 
+            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
             where TImplement : class, TService
         {
@@ -170,49 +180,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 };
 
                 return instance;
-            });
+            }, serviceLifetime);
         }
 
-        /// <summary>
-        /// Call this to make singleton lifetime of a service.
-        /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeSingleton<TService>(this IServiceCollection services)
-            where TService : class
-        {
-            Ensure.NotNull(services, nameof(services));
-            services.AddSingleton<TService>(ChainedService<TService>.DefaultFactory);
-            return services;
-        }
-
-        /// <summary>
-        /// Call this to make scoped lifetime of a service.
-        /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeScoped<TService>(this IServiceCollection services) where TService : class
-        {
-            Ensure.NotNull(services, nameof(services));
-            services.AddScoped<TService>(ChainedService<TService>.DefaultFactory);
-            return services;
-        }
-
-        /// <summary>
-        /// Call this to make transient lifetime of a service.
-        /// </summary>
-        /// <typeparam name="TService">The service type.</typeparam>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection MakeTransient<TService>(this IServiceCollection services)
-            where TService : class
-        {
-            Ensure.NotNull(services, nameof(services));
-            services.AddTransient<TService>(ChainedService<TService>.DefaultFactory);
-            return services;
-        }
 
         /// <summary>
         /// Add core services.
@@ -234,7 +204,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddSingleton<ApiConfiguration>();
 
-            return services.AddService<IQueryExecutor, DefaultQueryExecutor>()
+            return services.AddChainedService<IQueryExecutor, DefaultQueryExecutor>()
                             .AddScoped<PropertyBag>();
         }
 
@@ -253,25 +223,27 @@ namespace Microsoft.Extensions.DependencyInjection
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
 
-            services.AddService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(apiType));
-            services.AddService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(apiType));
-            services.AddService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
-            services.AddService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(apiType)
+            services.AddChainedService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(apiType));
+            services.AddChainedService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(apiType));
+            services.AddChainedService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
+            services.AddChainedService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(apiType)
             {
                 Inner = next,
             });
-            services.AddService<IOperationAuthorizer>((sp, next) => new ConventionBasedOperationAuthorizer(apiType));
-            services.AddService<IOperationFilter>((sp, next) => new ConventionBasedOperationFilter(apiType));
+            services.AddChainedService<IOperationAuthorizer>((sp, next) => new ConventionBasedOperationAuthorizer(apiType));
+            services.AddChainedService<IOperationFilter>((sp, next) => new ConventionBasedOperationFilter(apiType));
             return services;
         }
 
         private static IServiceCollection AddContributorNoCheck<TService>(
             this IServiceCollection services,
-            ApiServiceContributor<TService> contributor)
+            ApiServiceContributor<TService> contributor,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
             where TService : class
         {
-            // Services have singleton lifetime by default, call Make... to change.
-            services.TryAddSingleton(typeof(TService), ChainedService<TService>.DefaultFactory);
+            var serviceDescriptor = new ServiceDescriptor(typeof(TService), ChainedService<TService>.DefaultFactory, serviceLifetime);
+
+            services.TryAdd(serviceDescriptor);
             services.AddSingleton(contributor);
 
             return services;

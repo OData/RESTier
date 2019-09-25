@@ -32,11 +32,11 @@ namespace Microsoft.Restier.Tests.AspNet
 
         void addTestServices(IServiceCollection services)
         {
-            services.AddService<IModelBuilder>((sp, next) => new StoreModelProducer(FallbackModel.Model))
-                .AddService<IModelMapper>((sp, next) => new FallbackModelMapper())
-                .AddService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())
-                .AddService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
-                .AddService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
+            services.AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(FallbackModel.Model))
+                .AddChainedService<IModelMapper>((sp, next) => new FallbackModelMapper())
+                .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())
+                .AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
+                .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
         }
 
         [TestMethod]
