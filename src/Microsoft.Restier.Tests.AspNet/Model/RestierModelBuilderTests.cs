@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ComplexTypeShoudWork()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
 
             model.Validate(out var errors).Should().BeTrue();
             errors.Should().BeEmpty();
@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task PrimitiveTypesShouldWork()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
 
             model.Validate(out var errors).Should().BeTrue();
             errors.Should().BeEmpty();

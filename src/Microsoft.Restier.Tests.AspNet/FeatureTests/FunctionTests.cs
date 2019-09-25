@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task FunctionParameters_BooleanParameter ()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBook(IsActive=true)");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/PublishBook(IsActive=true)");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task FunctionParameters_IntParameter()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBooks(Count=5)");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/PublishBooks(Count=5)");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -45,7 +45,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task FunctionParameters_GuidParameter()
         {
             var testGuid = Guid.NewGuid();
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/SubmitTransaction(Id={testGuid})");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: $"/SubmitTransaction(Id={testGuid})");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -60,7 +60,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BoundFunctions_CanHaveFilterPathSegment()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books/$filter(endswith(Title,'The'))/DiscontinueBooks()");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books/$filter(endswith(Title,'The'))/DiscontinueBooks()");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             results.Should().NotBeNull();
             results.Items.Should().NotBeNullOrEmpty();
             results.Items.Should().HaveCount(2);
-            results.Items.All(c => c.Title.EndsWith(" | Discontinued")).Should().BeTrue();
+            results.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BoundFunctions_Returns200()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books/DiscontinueBooks()");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books/DiscontinueBooks()");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             results.Should().NotBeNull();
             results.Items.Should().NotBeNullOrEmpty();
             results.Items.Should().HaveCount(3);
-            results.Items.All(c => c.Title.EndsWith(" | Discontinued")).Should().BeTrue();
+            results.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
     }

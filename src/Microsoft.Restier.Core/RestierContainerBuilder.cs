@@ -3,8 +3,8 @@
 
 using System;
 using System.Globalization;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
@@ -17,14 +17,41 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class RestierContainerBuilder : IContainerBuilder
     {
-        private readonly IServiceCollection services = new ServiceCollection();
+
+        #region Private Members
+
         private readonly Type apiType;
+
+        private readonly Action<IServiceCollection> configureAction;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ServiceCollection Services { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
         /// <param name="apiType">The Api Type</param>
-        public RestierContainerBuilder(Type apiType) => this.apiType = apiType;
+        /// <param name="configureAction">Action to register services post OData service registration.</param>
+        public RestierContainerBuilder(Type apiType, Action<IServiceCollection> configureAction = null)
+        {
+            this.apiType = apiType;
+            this.configureAction = configureAction;
+            Services = new ServiceCollection();
+        }
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a service of <paramref name="serviceType"/> with an <paramref name="implementationType"/>.
@@ -35,18 +62,10 @@ namespace Microsoft.Restier.Core
         /// <returns>The <see cref="IContainerBuilder"/> instance itself.</returns>
         public virtual IContainerBuilder AddService(ODataServiceLifetime lifetime, Type serviceType, Type implementationType)
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "serviceType"));
-            }
-
-            if (implementationType == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "implementationType"));
-            }
-
-            services.Add(new ServiceDescriptor(serviceType, implementationType, TranslateServiceLifetime(lifetime)));
-
+            Ensure.NotNull(serviceType, nameof(serviceType));
+            Ensure.NotNull(implementationType, nameof(implementationType));
+            
+            Services.Add(new ServiceDescriptor(serviceType, implementationType, TranslateServiceLifetime(lifetime)));
             return this;
         }
 
@@ -59,18 +78,10 @@ namespace Microsoft.Restier.Core
         /// <returns>The <see cref="IContainerBuilder"/> instance itself.</returns>
         public IContainerBuilder AddService(ODataServiceLifetime lifetime, Type serviceType, Func<IServiceProvider, object> implementationFactory)
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "serviceType"));
-            }
+            Ensure.NotNull(serviceType, nameof(serviceType));
+            Ensure.NotNull(implementationFactory, nameof(implementationFactory));
 
-            if (implementationFactory == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, "implementationFactory"));
-            }
-
-            services.Add(new ServiceDescriptor(serviceType, implementationFactory, TranslateServiceLifetime(lifetime)));
-
+            Services.Add(new ServiceDescriptor(serviceType, implementationFactory, TranslateServiceLifetime(lifetime)));
             return this;
         }
 
@@ -81,11 +92,20 @@ namespace Microsoft.Restier.Core
         /// <returns>The container built by this builder.</returns>
         public virtual IServiceProvider BuildContainer()
         {
-            AddRestierService();
-            return services.BuildServiceProvider();
+            configureAction?.Invoke(Services);
+            AddRestierModelFactory();
+            return Services.BuildServiceProvider();
         }
 
-        internal IContainerBuilder AddRestierService()
+        #endregion
+
+        #region Internal methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal IContainerBuilder AddRestierModelFactory()
         {
             IEdmModel modelFactory(IServiceProvider sp)
             {
@@ -94,25 +114,13 @@ namespace Microsoft.Restier.Core
                 return model;
             }
 
-            // Configure the API via reflection call
-            var methodDeclaredType = apiType;
-
-            MethodInfo method = null;
-            while (method == null && methodDeclaredType != null)
-            {
-                // In case the subclass does not override the method, call super class method
-                method = methodDeclaredType.GetMethod("ConfigureApi");
-                methodDeclaredType = methodDeclaredType.BaseType;
-            }
-
-            method.Invoke(null, new object[]
-            {
-                apiType, services
-            });
-
-            services.AddSingleton(modelFactory);
+            Services.AddSingleton(modelFactory);
             return this;
         }
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// 
@@ -131,5 +139,7 @@ namespace Microsoft.Restier.Core
                     return DIServiceLifetime.Transient;
             }
         }
+
+        #endregion
     }
 }
