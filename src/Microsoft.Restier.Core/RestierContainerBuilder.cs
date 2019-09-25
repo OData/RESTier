@@ -3,8 +3,6 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
@@ -44,9 +42,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         /// <param name="apiType">The Api Type</param>
         /// <param name="configureAction">Action to register services post OData service registration.</param>
-        public RestierContainerBuilder(
-            Type apiType, 
-            Action<IServiceCollection> configureAction = null)
+        public RestierContainerBuilder(Type apiType, Action<IServiceCollection> configureAction = null)
         {
             this.apiType = apiType;
             this.configureAction = configureAction;
@@ -66,18 +62,10 @@ namespace Microsoft.Restier.Core
         /// <returns>The <see cref="IContainerBuilder"/> instance itself.</returns>
         public virtual IContainerBuilder AddService(ODataServiceLifetime lifetime, Type serviceType, Type implementationType)
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(serviceType)));
-            }
-
-            if (implementationType == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(implementationType)));
-            }
-
+            Ensure.NotNull(serviceType, nameof(serviceType));
+            Ensure.NotNull(implementationType, nameof(implementationType));
+            
             Services.Add(new ServiceDescriptor(serviceType, implementationType, TranslateServiceLifetime(lifetime)));
-
             return this;
         }
 
@@ -90,18 +78,10 @@ namespace Microsoft.Restier.Core
         /// <returns>The <see cref="IContainerBuilder"/> instance itself.</returns>
         public IContainerBuilder AddService(ODataServiceLifetime lifetime, Type serviceType, Func<IServiceProvider, object> implementationFactory)
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(serviceType)));
-            }
-
-            if (implementationFactory == null)
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Resources.ArgumentCanNotBeNull, nameof(implementationFactory)));
-            }
+            Ensure.NotNull(serviceType, nameof(serviceType));
+            Ensure.NotNull(implementationFactory, nameof(implementationFactory));
 
             Services.Add(new ServiceDescriptor(serviceType, implementationFactory, TranslateServiceLifetime(lifetime)));
-
             return this;
         }
 
@@ -113,7 +93,7 @@ namespace Microsoft.Restier.Core
         public virtual IServiceProvider BuildContainer()
         {
             configureAction?.Invoke(Services);
-            AddRestierService(!Services.Any(x => x.ServiceType == typeof(ApiBase)));
+            AddRestierModelFactory();
             return Services.BuildServiceProvider();
         }
 
@@ -124,34 +104,14 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="useReflection"></param>
         /// <returns></returns>
-        internal IContainerBuilder AddRestierService(bool useReflection = false)
+        internal IContainerBuilder AddRestierModelFactory()
         {
             IEdmModel modelFactory(IServiceProvider sp)
             {
                 var api = sp.GetService<ApiBase>();
                 var model = api.GetModelAsync(default).GetAwaiter().GetResult();
                 return model;
-            }
-
-            if (useReflection)
-            {
-                // Configure the API via reflection call
-                var methodDeclaredType = apiType;
-
-                MethodInfo method = null;
-                while (method == null && methodDeclaredType != null)
-                {
-                    // In case the subclass does not override the method, call super class method
-                    method = methodDeclaredType.GetMethod("ConfigureApi");
-                    methodDeclaredType = methodDeclaredType.BaseType;
-                }
-
-                method.Invoke(null, new object[]
-                {
-                    apiType, Services
-                });
             }
 
             Services.AddSingleton(modelFactory);

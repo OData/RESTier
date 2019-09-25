@@ -5,13 +5,13 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Core
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// A delegate which participate in service creation.
@@ -30,12 +30,11 @@ namespace Microsoft.Restier.Core
     /// <summary>
     /// Contains extension methods of <see cref="IServiceCollection"/>.
     /// </summary>
-    //[CLSCompliant(false)]
     public static class ServiceCollectionExtensions
     {
+
         /// <summary>
-        /// Return true if the <see cref="IServiceCollection"/> has any <typeparamref name="TService"/> service
-        /// registered.
+        /// Return true if the <see cref="IServiceCollection"/> has any <typeparamref name="TService"/> service registered.
         /// </summary>
         /// <typeparam name="TService">The API service type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -47,6 +46,21 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(services, nameof(services));
 
             return services.Any(sd => sd.ServiceType == typeof(TService));
+        }
+
+        /// <summary>
+        /// Returns the number of services that match the given <see cref="ServiceDescriptor.ServiceType"/> in a given <see cref="ServiceCollection"/>.
+        /// </summary>
+        /// <typeparam name="TService">The API service type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>
+        /// The number of Services that match the given ServiceType.
+        /// </returns>
+        public static int HasServiceCount<TService>(this IServiceCollection services) where TService : class
+        {
+            Ensure.NotNull(services, nameof(services));
+
+            return services.Count(sd => sd.ServiceType == typeof(TService));
         }
 
         /// <summary>
