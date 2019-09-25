@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task CountPlusExpandShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers?$expand=Books");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers?$expand=Books");
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();

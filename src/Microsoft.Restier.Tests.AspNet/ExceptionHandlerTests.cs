@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Data.Entity;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
@@ -22,25 +22,17 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task ShouldReturn403HandlerThrowsSecurityException()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<SecurityExceptionApi>(HttpMethod.Get, resource: "/Products");
+            void di(IServiceCollection services)
+            {
+                services.AddTestStoreApiServices()
+                    .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
+            }
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         #region Test Resources
-
-        private class SecurityExceptionApi : StoreApi
-        {
-            public static new IServiceCollection ConfigureApi(Type apiType, IServiceCollection services)
-            {
-                return StoreApi.ConfigureApi(apiType, services)
-                    .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
-            }
-
-            public SecurityExceptionApi(IServiceProvider serviceProvider) : base(serviceProvider)
-            {
-            }
-        }
 
         private class FakeSourcer : IQueryExpressionSourcer
         {

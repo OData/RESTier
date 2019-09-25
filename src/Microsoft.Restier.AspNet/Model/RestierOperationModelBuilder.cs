@@ -8,12 +8,15 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using EdmPathExpression = Microsoft.OData.Edm.EdmPathExpression;
 
 namespace Microsoft.Restier.AspNet.Model
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     internal class RestierOperationModelBuilder : IModelBuilder
     {
         private readonly Type targetType;
@@ -176,22 +179,11 @@ namespace Microsoft.Restier.AspNet.Model
 
                 if (operationMethodInfo.HasSideEffects)
                 {
-                    operation = new EdmAction(
-                        namespaceName,
-                        operationMethodInfo.Name,
-                        returnTypeReference,
-                        isBound,
-                        path);
+                    operation = new EdmAction(namespaceName, operationMethodInfo.Name, returnTypeReference, isBound, path);
                 }
                 else
                 {
-                    operation = new EdmFunction(
-                        namespaceName,
-                        operationMethodInfo.Name,
-                        returnTypeReference,
-                        isBound,
-                        path,
-                        operationMethodInfo.IsComposable);
+                    operation = new EdmFunction(namespaceName, operationMethodInfo.Name, returnTypeReference, isBound, path, operationMethodInfo.IsComposable);
                 }
 
                 BuildOperationParameters(operation, operationMethodInfo.Method, model);
@@ -233,7 +225,9 @@ namespace Microsoft.Restier.AspNet.Model
 
             public bool IsBound => OperationAttribute.IsBound;
 
-            public bool HasSideEffects => OperationAttribute.HasSideEffects;
+            public bool HasSideEffects => OperationAttribute.OperationType == OperationType.Action;
         }
+
     }
+
 }

@@ -3,7 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
@@ -18,7 +22,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task Authorization_FilterReturns403()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<UnauthorizedLibraryApi>(HttpMethod.Get, resource: "/Books");
+            void di(IServiceCollection services)
+            {
+                services.AddEF6ProviderServices<LibraryContext>()
+                    .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
+            }
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeFalse();

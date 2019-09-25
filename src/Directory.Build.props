@@ -63,7 +63,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(IsTestProject) == 'true' ">
-    <NoWarn>$(NoWarn);CA1001;CA1707;CA2007;CA1801</NoWarn>
+    <NoWarn>$(NoWarn);CA1001;CA1031;CA1062;CA1301;CA1303;AC1307;CA1707;CA1716;CA1801;CA1819;CA1822;CA1825;CA2000;CA2007;CA2227;CA2234</NoWarn>
   </PropertyGroup>
   
     <PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
@@ -88,6 +88,7 @@
   <ItemGroup Condition=" $(IsTestProject) == 'true' ">
     <PackageReference Include="FluentAssertions" Version="[5.9.0, 6.0.0)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="[0.11.4, 1.0.0)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="2.9.3" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

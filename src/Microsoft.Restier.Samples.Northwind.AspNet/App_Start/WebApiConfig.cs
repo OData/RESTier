@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Web.Http;
 using Microsoft.AspNet.OData.Extensions;
-using Microsoft.Restier.AspNet.Batch;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
+using Microsoft.Restier.Samples.Northwind.AspNet.Data;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNet
 {
     public static class WebApiConfig
     {
 
-        public static async void Register(HttpConfiguration config)
+        public static void Register(HttpConfiguration config)
         {
 
             if (config == null)
@@ -21,16 +24,28 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 #endif
 
-            config.Filter().Expand().Select().OrderBy().MaxTop(100).Count();
-            config.SetTimeZoneInfo(TimeZoneInfo.Utc);
+            config.Filter().Expand().Select().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
+
+            config.UseRestier<NorthwindApi>((services) =>
+            {
+                // This delegate is executed after OData is added to the container.
+                // Add you replacement services here.
+                services.AddEF6ProviderServices<NorthwindEntities>();
+
+                services.AddSingleton(new ODataValidationSettings
+                {
+                    MaxTop = 5,
+                    MaxAnyAllExpressionDepth = 3,
+                    MaxExpansionDepth = 3,
+                });
+            });
 
             config.MapHttpAttributeRoutes();
 
-            var batchHandler = new RestierBatchHandler(GlobalConfiguration.DefaultServer);
-#pragma warning disable CA2007 // Do not directly await a Task
-            await config.MapRestierRoute<NorthwindApi>("ApiV1", "", batchHandler);
-#pragma warning restore CA2007 // Do not directly await a Task
+            config.MapRestier<NorthwindApi>("ApiV1", "", true);
 
         }
+
     }
+
 }

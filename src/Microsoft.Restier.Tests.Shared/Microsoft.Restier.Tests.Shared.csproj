@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20190918-025814" />
+    <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20190922-023239" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.2.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
