@@ -25,7 +25,7 @@ namespace Microsoft.Restier.Tests.AspNet
             void di(IServiceCollection services)
             {
                 services.AddTestStoreApiServices()
-                    .AddService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
+                    .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeFalse();

@@ -155,9 +155,9 @@ namespace Microsoft.Restier.Tests.Core
                 var queryExpressionSourcer = new StoreQueryExpressionSourcer();
 
                 //ApiBase.ConfigureApi(apiType, services);
-                services.AddService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
-                services.AddService<ISubmitExecutor>((sp, next) => submitExecutor);
-                services.AddService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
+                services.AddChainedService<IChangeSetInitializer>((sp, next) => changeSetPreparer);
+                services.AddChainedService<ISubmitExecutor>((sp, next) => submitExecutor);
+                services.AddChainedService<IQueryExpressionSourcer>((sp, next) => queryExpressionSourcer);
 
                 return services;
             }

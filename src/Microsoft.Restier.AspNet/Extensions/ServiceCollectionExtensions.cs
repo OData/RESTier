@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using Microsoft.AspNet.OData.Formatter.Deserialization;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.AspNet.OData.Query;
@@ -12,6 +13,7 @@ using Microsoft.Restier.AspNet.Formatter;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.AspNet.Operation;
 using Microsoft.Restier.AspNet.Query;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
@@ -25,7 +27,6 @@ namespace Microsoft.Restier.AspNet
     /// </summary>
     public static class ServiceCollectionExtensions
     {
-
         #region Public Methods
 
         /// <summary>
@@ -36,79 +37,79 @@ namespace Microsoft.Restier.AspNet
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddRestierDefaultServices<T>(this IServiceCollection services)
         {
-            if (services.HasService<RestierQueryExecutor>())
+            Ensure.NotNull(services, nameof(services));
+
+            if (services.HasService<DefaultRestierServicesDetectionDummy>())
             {
                 // Avoid applying multiple times to a same service collection.
                 return services;
             }
+            services.AddSingleton<DefaultRestierServicesDetectionDummy>();
 
+            // Do not add Restier implementation of chained service inside the container twice.
             if (!services.HasService<RestierModelBuilder>())
             {
-                services.AddService<IModelBuilder, RestierModelBuilder>();
+                services.AddChainedService<IModelBuilder, RestierModelBuilder>();
             }
 
+            // Do not add Restier implementation of chained service inside the container twice.
             if (!services.HasService<RestierModelExtender>())
             {
                 AddRestierModelExtender(services, typeof(T));
             }
 
-            // RWM: I'm not sure if we shuld wrap this call, because it is chained.
-            //if (!services.HasService<RestierOperationModelBuilder>())
-            //{
+            // Do not add Restier implementation of chained service inside the container twice.
+            if (!services.HasService<RestierOperationModelBuilder>())
+            {
                 AddOperationModelBuilder(services, typeof(T));
-            //}
-
-            // RWM: OData already registers the default settings, so if we have 2, either the developer
-            //      added one, or we already did.
-            if (services.HasServiceCount<ODataQuerySettings>() < 2)
-            {
-                services.AddSingleton(new ODataQuerySettings
-                {
-                    HandleNullPropagation = HandleNullPropagationOption.False,
-                    PageSize = null,  // no support for server enforced PageSize, yet
-                });
             }
 
-            if (!services.HasService<ODataValidationSettings>())
+            // Only add if none are there. We have removed the default OData one before.
+            services.TryAddScoped((sp) => new ODataQuerySettings
             {
-                services.AddSingleton<ODataValidationSettings>();
-            }
+                HandleNullPropagation = HandleNullPropagationOption.False,
+                PageSize = null,  // no support for server enforced PageSize, yet
+            });
 
-            // RWM: Override the default OData serializer with Restier's.
-            if (!services.HasService<DefaultRestierSerializerProvider>())
+            // default registration, same as OData. Should not be neccesary but just in case.
+            services.TryAddSingleton<ODataValidationSettings>();
+
+            // OData already registers the ODataSerializerProvider, so if we have 2, either the developer
+            // added one, or we already did. OData resolves the right one so multiple can be registered.
+            if (services.HasServiceCount<ODataSerializerProvider>() < 2)
             {
                 services.AddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
             }
 
-            // RWM: Override the default OData deserializer with Restier's.
-            if (!services.HasService<DefaultRestierDeserializerProvider>())
+            // OData already registers the ODataDeserializerProvider, so if we have 2, either the developer
+            // added one, or we already did. OData resolves the right one so multiple can be registered.
+            if (services.HasServiceCount<ODataDeserializerProvider>() < 2)
             {
                 services.AddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
             }
 
-            if (!services.HasService<RestierOperationExecutor>())
-            {
-                services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
-            }
+            // TryAdd only adds if no other implementation is already registered.
+            services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
 
-            if (!services.HasService<RestierPayloadValueConverter>())
-            {
+            // OData already registers the ODataPayloadValueConverter, so if we have 2, either the developer
+            // added one, or we already did. OData resolves the right one so multiple can be registered.
+            if (services.HasServiceCount<ODataPayloadValueConverter>() < 2)
+            { 
                 services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
             }
 
+            // Do not add Restier implementation of chained service inside the container twice.
             if (!services.HasService<RestierModelMapper>())
             {
-                services.AddService<IModelMapper, RestierModelMapper>();
+                services.AddChainedService<IModelMapper, RestierModelMapper>();
             }
 
-            if (!services.HasService<RestierQueryExecutorOptions>())
-            {
-                services.AddScoped<RestierQueryExecutorOptions>();
-            }
+            services.TryAddScoped<RestierQueryExecutorOptions>();
 
+            // Do not add Restier implementation of chained service inside the container twice.
             if (!services.HasService<RestierQueryExecutor>())
             {
-                services.AddService<IQueryExecutor, RestierQueryExecutor>();
+                services.AddChainedService<IQueryExecutor, RestierQueryExecutor>();
             }
 
             return services;
@@ -132,10 +133,10 @@ namespace Microsoft.Restier.AspNet
             // some other services.
             services.AddSingleton(new RestierModelExtender(targetType));
 
-            services.AddService<IModelBuilder, RestierModelExtender.ModelBuilder>();
-            services.AddService<IModelMapper, RestierModelExtender.ModelMapper>();
-            services.AddService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
-            services.AddService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
+            services.AddChainedService<IModelBuilder, RestierModelExtender.ModelBuilder>();
+            services.AddChainedService<IModelMapper, RestierModelExtender.ModelMapper>();
+            services.AddChainedService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
+            services.AddChainedService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
         }
 
         /// <summary>
@@ -145,11 +146,22 @@ namespace Microsoft.Restier.AspNet
         /// <param name="targetType"></param>
         internal static void AddOperationModelBuilder(IServiceCollection services, Type targetType)
         {
-            services.AddService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
+            services.AddChainedService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
         }
 
         #endregion
 
+        #region Private Members
+
+        /// <summary>
+        /// Dummy class to detect double registration of Default restier services inside a container.
+        /// </summary>
+        private sealed class DefaultRestierServicesDetectionDummy
+        {
+
+        }
+
+        #endregion
     }
 
 }
