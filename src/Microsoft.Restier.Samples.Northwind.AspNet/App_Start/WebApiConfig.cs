@@ -34,6 +34,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
 
                 services.AddSingleton(new ODataValidationSettings
                 {
+                    MaxTop = 5,
                     MaxAnyAllExpressionDepth = 3,
                     MaxExpansionDepth = 3,
                 });

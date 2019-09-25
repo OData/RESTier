@@ -4,6 +4,7 @@
 using System;
 using System.Data.Entity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -28,7 +29,7 @@ namespace Microsoft.Restier.EntityFramework
         public static IServiceCollection AddEF6ProviderServices<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
-            services.AddScoped<DbContext>(sp =>
+            services.TryAddScoped<DbContext>(sp =>
             {
                 var dbContext = Activator.CreateInstance<TDbContext>();
                 dbContext.Configuration.ProxyCreationEnabled = false;

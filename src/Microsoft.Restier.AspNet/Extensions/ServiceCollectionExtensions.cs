@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using Microsoft.AspNet.OData.Formatter.Deserialization;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.AspNet.OData.Query;
@@ -36,6 +37,8 @@ namespace Microsoft.Restier.AspNet
         /// <returns>Current <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddRestierDefaultServices<T>(this IServiceCollection services)
         {
+            Ensure.NotNull(services, nameof(services));
+
             if (services.HasService<DefaultRestierServicesDetectionDummy>())
             {
                 // Avoid applying multiple times to a same service collection.
@@ -61,33 +64,25 @@ namespace Microsoft.Restier.AspNet
                 AddOperationModelBuilder(services, typeof(T));
             }
 
-            // OData already registers the default settings, so if we have 2, either the developer
-            // added one, or we already did.
-            if (services.HasServiceCount<ODataQuerySettings>() < 2)
+            // Only add if none are there. We have removed the default OData one before.
+            services.TryAddScoped((sp) => new ODataQuerySettings
             {
-                services.AddScoped((sp) => new ODataQuerySettings
-                {
-                    HandleNullPropagation = HandleNullPropagationOption.False,
-                    PageSize = null,  // no support for server enforced PageSize, yet
-                });
-            }
+                HandleNullPropagation = HandleNullPropagationOption.False,
+                PageSize = null,  // no support for server enforced PageSize, yet
+            });
 
-            // OData already registers the validation settings, so if we have 2, either the developer
-            // added one, or we already did.
-            if (services.HasServiceCount<ODataValidationSettings>() < 2)
-            {
-                services.AddSingleton<ODataValidationSettings>();
-            }
+            // default registration, same as OData. Should not be neccesary but just in case.
+            services.TryAddSingleton<ODataValidationSettings>();
 
             // OData already registers the ODataSerializerProvider, so if we have 2, either the developer
-            // added one, or we already did.
+            // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<ODataSerializerProvider>() < 2)
             {
                 services.AddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
             }
 
             // OData already registers the ODataDeserializerProvider, so if we have 2, either the developer
-            // added one, or we already did.
+            // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<ODataDeserializerProvider>() < 2)
             {
                 services.AddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
@@ -97,7 +92,7 @@ namespace Microsoft.Restier.AspNet
             services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
 
             // OData already registers the ODataPayloadValueConverter, so if we have 2, either the developer
-            // added one, or we already did.
+            // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<ODataPayloadValueConverter>() < 2)
             { 
                 services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
