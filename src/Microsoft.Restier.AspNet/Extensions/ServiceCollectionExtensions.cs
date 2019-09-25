@@ -8,17 +8,17 @@ using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Operation;
-using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.AspNet.Formatter;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.AspNet.Operation;
 using Microsoft.Restier.AspNet.Query;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Operation;
+using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.AspNet
 {
+
     /// <summary>
     /// Contains extension methods of <see cref="IServiceCollection"/>.
     /// This method is used to add odata publisher service into container.
@@ -42,29 +42,75 @@ namespace Microsoft.Restier.AspNet
                 return services;
             }
 
-            services.AddService<IModelBuilder, RestierModelBuilder>();
-            AddRestierModelExtender(services, typeof(T));
-            AddOperationModelBuilder(services, typeof(T));
-
-            services.AddSingleton(new ODataQuerySettings
+            if (!services.HasService<RestierModelBuilder>())
             {
-                HandleNullPropagation = HandleNullPropagationOption.False,
-                PageSize = null,  // no support for server enforced PageSize, yet
-            });
-            services.AddSingleton<ODataValidationSettings>();
+                services.AddService<IModelBuilder, RestierModelBuilder>();
+            }
 
-            // Make serializer and deserializer provider as DI services
-            // WebApi OData service provider will be added first, need to overwrite.
-            services.AddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
-            services.AddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
+            if (!services.HasService<RestierModelExtender>())
+            {
+                AddRestierModelExtender(services, typeof(T));
+            }
 
-            services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
-            services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
+            // RWM: I'm not sure if we shuld wrap this call, because it is chained.
+            //if (!services.HasService<RestierOperationModelBuilder>())
+            //{
+                AddOperationModelBuilder(services, typeof(T));
+            //}
 
-            services.AddService<IModelMapper, RestierModelMapper>();
+            // RWM: OData already registers the default settings, so if we have 2, either the developer
+            //      added one, or we already did.
+            if (services.HasServiceCount<ODataQuerySettings>() < 2)
+            {
+                services.AddSingleton(new ODataQuerySettings
+                {
+                    HandleNullPropagation = HandleNullPropagationOption.False,
+                    PageSize = null,  // no support for server enforced PageSize, yet
+                });
+            }
 
-            services.AddScoped<RestierQueryExecutorOptions>();
-            services.AddService<IQueryExecutor, RestierQueryExecutor>();
+            if (!services.HasService<ODataValidationSettings>())
+            {
+                services.AddSingleton<ODataValidationSettings>();
+            }
+
+            // RWM: Override the default OData serializer with Restier's.
+            if (!services.HasService<DefaultRestierSerializerProvider>())
+            {
+                services.AddSingleton<ODataSerializerProvider, DefaultRestierSerializerProvider>();
+            }
+
+            // RWM: Override the default OData deserializer with Restier's.
+            if (!services.HasService<DefaultRestierDeserializerProvider>())
+            {
+                services.AddSingleton<ODataDeserializerProvider, DefaultRestierDeserializerProvider>();
+            }
+
+            if (!services.HasService<RestierOperationExecutor>())
+            {
+                services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
+            }
+
+            if (!services.HasService<RestierPayloadValueConverter>())
+            {
+                services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
+            }
+
+            if (!services.HasService<RestierModelMapper>())
+            {
+                services.AddService<IModelMapper, RestierModelMapper>();
+            }
+
+            if (!services.HasService<RestierQueryExecutorOptions>())
+            {
+                services.AddScoped<RestierQueryExecutorOptions>();
+            }
+
+            if (!services.HasService<RestierQueryExecutor>())
+            {
+                services.AddService<IQueryExecutor, RestierQueryExecutor>();
+            }
+
             return services;
         }
 
@@ -77,9 +123,7 @@ namespace Microsoft.Restier.AspNet
         /// </summary>
         /// <param name="services"></param>
         /// <param name="targetType"></param>
-        internal static void AddRestierModelExtender(
-            IServiceCollection services,
-            Type targetType)
+        internal static void AddRestierModelExtender(IServiceCollection services, Type targetType)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(targetType, nameof(targetType));
@@ -107,4 +151,5 @@ namespace Microsoft.Restier.AspNet
         #endregion
 
     }
+
 }

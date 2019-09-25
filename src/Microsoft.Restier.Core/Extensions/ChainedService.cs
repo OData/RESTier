@@ -13,18 +13,17 @@ namespace Microsoft.Restier.Core
         {
             var instances = sp.GetServices<ApiServiceContributor<TService>>().Reverse();
 
-            using (var e = instances.GetEnumerator())
+            using (var enumerator = instances.GetEnumerator())
             {
-                Func<TService> next = null;
-                next = () =>
+                TService next()
                 {
-                    if (e.MoveNext())
+                    if (enumerator.MoveNext())
                     {
-                        return e.Current(sp, next);
+                        return enumerator.Current(sp, next);
                     }
 
                     return null;
-                };
+                }
 
                 return next();
             }
