@@ -64,7 +64,7 @@ Restier is used in solutions from:
 There is also a growing set of tools to support Restier-based development
 - [Breakdance.Restier](https://github.com/cloudnimble/breakdance): Convention-based name troubleshooting and integration test support.
 ## Community
-After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws and Chris Woodruff.
+After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws, Mike Pizzo, and Chris Woodruff.
 
 ### Weekly Standups
 The core development team meets once a week on Google Hangouts to discuss pressing items and work through the issues list. A history of
