@@ -42,7 +42,7 @@ the rest.
 Coming Soon!
 
 ## Supported Platforms
-Restier 1.0 currently ships with support for Classic ASP.NET 5.2.3 and later. Support for ASP.NET Core 2.2 is coming in the first half of 2019. (More specifics will be provided in a few weeks.)
+Restier 1.0 currently ships with support for Classic ASP.NET 5.2.7 and later. Support for ASP.NET Core 3.0 is coming in the first half of 2020.
 
 ## Restier Components
 The Classic ASP.NET flavor of Restier is made up of the following components:
@@ -50,16 +50,12 @@ The Classic ASP.NET flavor of Restier is made up of the following components:
 - **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
 - **Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
 
-While the ASP.NET Core flavor of Restier (when is ships) will consist of the following:
-- **Microsoft.Restier.AspNetCore:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
-- **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
-- **Microsoft.Restier.EntityFrameworkCore:** Translates intercepted queries down to the database level to be executed.
-
 ## Ecosystem
 Restier is used in solutions from:
 - [BurnRate.io](https://burnrate.io)
 - [CloudNimble, Inc.](https://nimbleapps.cloud)
 - [Florida Agency for Health Care Administration](https://ahca.myflorida.com)
+- [Miller's Ale House](https://millersalehouse.com)
 
 There is also a growing set of tools to support Restier-based development
 - [Breakdance.Restier](https://github.com/cloudnimble/breakdance): Convention-based name troubleshooting and integration test support.
