@@ -78,18 +78,19 @@ If you'd like to help out with the project, our Contributor's Handbook is also l
 Special thanks to everyone involved in making RESTier the best API development platform for .NET. The following people
 have made various contributions to the codebase:
 
-| Microsoft     | External       |
-|---------------|----------------|
-| Lewis Cheng   | Cengiz Ilerler |
-| Challenh      | Kemal M        |
-| Eric Erhardt  | Robert McLaws  |
-| Vincent He    |                |
-| Dong Liu      |                |
-| Layla Liu     |                |
-| Fan Ouyang    |                |
-| Congyong S    |                |
-| Mark Stafford |                |
-| Ray Yao       |                |
+| Microsoft     | External         |
+|---------------|------------------|
+| Lewis Cheng   | Cengiz Ilerler   |
+| Challenh      | Kemal M          |
+| Eric Erhardt  | Robert McLaws    |
+| Vincent He    | Jan-Willem Spuij |
+| Dong Liu      | Chris Woodruff   |
+| Layla Liu     |                  |
+| Fan Ouyang    |                  |
+| Mike Pizzo    |                  |
+| Congyong S    |                  |
+| Mark Stafford |                  |
+| Ray Yao       |                  |
 
 ## 
 
