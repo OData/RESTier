@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 using Microsoft.OData.Edm;
 
@@ -87,7 +88,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     Street = "123 Sesame St.",
                     Zip = "00010"
                 },
-                Books = new List<Book>
+                Books = new ObservableCollection<Book>
                 {
                     new Book
                     {
@@ -110,7 +111,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     Street = "234 Anystreet St.",
                     Zip = "10010"
                 },
-                Books = new List<Book>
+                Books = new ObservableCollection<Book>
                 {
                     new Book
                     {
