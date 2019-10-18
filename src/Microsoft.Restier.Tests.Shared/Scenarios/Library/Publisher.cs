@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
@@ -16,7 +17,12 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         public Address Addr { get; set; }
 
-        public virtual ICollection<Book> Books { get; set; }
+        public virtual ObservableCollection<Book> Books { get; set; }
+
+        public Publisher()
+        {
+            Books = new ObservableCollection<Book>();
+        }
 
     }
 

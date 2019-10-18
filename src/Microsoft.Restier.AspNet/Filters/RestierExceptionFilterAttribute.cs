@@ -48,12 +48,12 @@ namespace Microsoft.Restier.AspNet
             CancellationToken cancellationToken)
         {
             var config = actionExecutedContext.Request.GetConfiguration();
-            var useVerboseErros = config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.Always ||
+            var useVerboseErrors = config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.Always ||
                 (actionExecutedContext.Request.RequestUri.Host.ToLower().Contains("localhost") && config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.LocalOnly);
 
             foreach (var handler in Handlers)
             {
-                var result = await handler.Invoke(actionExecutedContext, useVerboseErros, cancellationToken).ConfigureAwait(false);
+                var result = await handler.Invoke(actionExecutedContext, useVerboseErrors, cancellationToken).ConfigureAwait(false);
 
                 if (result != null)
                 {
@@ -84,7 +84,7 @@ namespace Microsoft.Restier.AspNet
 
         private static Task<HttpResponseMessage> HandleCommonException(
             HttpActionExecutedContext context,
-            bool useVerboseErros,
+            bool useVerboseErrors,
             CancellationToken cancellationToken)
         {
             var exception = context.Exception.Demystify();
@@ -131,7 +131,7 @@ namespace Microsoft.Restier.AspNet
 
             if (code != HttpStatusCode.Unused)
             {
-                if (useVerboseErros)
+                if (useVerboseErrors)
                 {
                     return Task.FromResult(context.Request.CreateErrorResponse(code, exception));
                 }

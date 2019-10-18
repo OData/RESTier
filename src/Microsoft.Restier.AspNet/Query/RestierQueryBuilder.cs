@@ -192,11 +192,6 @@ namespace Microsoft.Restier.AspNet.Query
             var navigationPropertyExpression =
                 Expression.Property(entityParameterExpression, navigationSegment.NavigationProperty.Name);
 
-            // Check whether property is null or not before further selection
-            var whereExpression =
-                CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
-            queryable = ExpressionHelpers.Where(queryable, whereExpression, currentType);
-
             if (navigationSegment.NavigationProperty.TargetMultiplicity() == EdmMultiplicity.Many)
             {
                 // get the element type of the target
@@ -214,6 +209,11 @@ namespace Microsoft.Restier.AspNet.Query
             }
             else
             {
+                // Check whether property is null or not before further selection
+                // RWM: Removed from the outer loop because I don't believe it is necessary for Collection properties.
+                var whereExpression = CreateNotEqualsNullExpression(navigationPropertyExpression, entityParameterExpression);
+                queryable = ExpressionHelpers.Where(queryable, whereExpression, currentType);
+
                 currentType = navigationPropertyExpression.Type;
                 var selectBody =
                     Expression.Lambda(navigationPropertyExpression, entityParameterExpression);
