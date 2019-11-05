@@ -65,33 +65,32 @@
   <PropertyGroup Condition=" $(IsTestProject) == 'true' ">
     <NoWarn>$(NoWarn);CA1001;CA1031;CA1062;CA1301;CA1303;AC1307;CA1707;CA1716;CA1801;CA1819;CA1822;CA1825;CA2000;CA2007;CA2227;CA2234</NoWarn>
   </PropertyGroup>
-  
-    <PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
+
+  <PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
     <NoWarn>$(NoWarn);CA1001;CA1707;CA1716;CA1801;CA1822</NoWarn>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '!$(IsSampleProject)' != 'true' and $(Configuration) == 'Debug' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
-    <StandardTestTfms>netcoreapp2.2;net461</StandardTestTfms>
+    <StandardTestTfms>netcoreapp2.2;net72</StandardTestTfms>
   </PropertyGroup>
 
   <ItemGroup Condition=" $(IsTestProject) != 'true' and  $(IsSampleProject) != 'true'">
     <!-- RWM: The code quality on the unit tests right now is not awesome, so let's skip checking it for now. -->
-    <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="[2.9.3, 3.0.0)" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(IsTestProject) == 'true' ">
     <PackageReference Include="FluentAssertions" Version="[5.9.0, 6.0.0)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="[0.11.4, 1.0.0)" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="2.9.3" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="2.9.7" PrivateAssets="All" />
     <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 

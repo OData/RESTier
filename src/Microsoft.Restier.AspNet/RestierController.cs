@@ -323,8 +323,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="parameters">Parameters from action request content.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the action result.</returns>
-        public async Task<HttpResponseMessage> PostAction(
-            ODataActionParameters parameters, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> PostAction(ODataActionParameters parameters, CancellationToken cancellationToken)
         {
             CheckModelState();
             var path = GetPath();
@@ -336,7 +335,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             IQueryable result = null;
-            Func<string, object> getParaValueFunc = p =>
+            object getParaValueFunc(string p)
             {
                 if (parameters == null)
                 {
@@ -344,10 +343,9 @@ namespace Microsoft.Restier.AspNet
                 }
 
                 return parameters[p];
-            };
+            }
 
-            var segment = lastSegment as OperationImportSegment;
-            if (segment != null)
+            if (lastSegment is OperationImportSegment segment)
             {
                 var unboundSegment = segment;
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
@@ -359,10 +357,7 @@ namespace Microsoft.Restier.AspNet
                 var queryable = GetQuery(path);
                 if (queryable == null)
                 {
-                    throw new HttpResponseException(
-                        Request.CreateErrorResponse(
-                            HttpStatusCode.NotFound,
-                            Resources.ResourceNotFound));
+                    throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound, Resources.ResourceNotFound));
                 }
 
                 if (lastSegment is OperationSegment)
@@ -460,6 +455,7 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(updateItem);
 
+                //RWM: Seems like we should be using the result here. For something else.
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -472,6 +468,7 @@ namespace Microsoft.Restier.AspNet
             return CreateUpdatedODataResult(updateItem.Resource);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private HttpResponseMessage CreateQueryResponse(IQueryable query, IEdmType edmType, ETag etag)
         {
             var typeReference = GetTypeReference(edmType);

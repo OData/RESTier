@@ -96,7 +96,7 @@ namespace System.ComponentModel.DataAnnotations
 
         private static class TypeDescriptorCache
         {
-            private static readonly Attribute[] emptyAttributes = new Attribute[0];
+            private static readonly Attribute[] emptyAttributes = Array.Empty<Attribute>();
             // Stores the associated metadata type for a type
             private static readonly ConcurrentDictionary<Type, Type> _metadataTypeCache = new ConcurrentDictionary<Type, Type>();
 
@@ -152,7 +152,7 @@ namespace System.ComponentModel.DataAnnotations
 
                     throw new InvalidOperationException(string.Format(SR.AssociatedMetadataTypeTypeDescriptor_MetadataTypeContainsUnknownProperties,
                         mainType.FullName,
-                        String.Join(", ", buddyTypeMembers.ToArray())));
+                        string.Join(", ", buddyTypeMembers.ToArray())));
                 }
             }
 

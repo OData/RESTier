@@ -73,6 +73,15 @@ namespace Microsoft.Restier.Core
             StatusCode = statusCode;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serializationInfo"></param>
+        /// <param name="streamingContext"></param>
+        protected StatusCodeException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

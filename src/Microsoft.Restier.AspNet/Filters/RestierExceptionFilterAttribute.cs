@@ -49,7 +49,7 @@ namespace Microsoft.Restier.AspNet
         {
             var config = actionExecutedContext.Request.GetConfiguration();
             var useVerboseErrors = config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.Always ||
-                (actionExecutedContext.Request.RequestUri.Host.ToLower().Contains("localhost") && config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.LocalOnly);
+                (actionExecutedContext.Request.RequestUri.Host.ToUpperInvariant().Contains("LOCALHOST") && config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.LocalOnly);
 
             foreach (var handler in Handlers)
             {
