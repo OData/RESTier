@@ -96,7 +96,7 @@ namespace System.Linq.Expressions
         public static IQueryable CreateEmptyQueryable(Type elementType)
         {
             var constructor = typeof(List<>).MakeGenericType(elementType).GetConstructor(Type.EmptyTypes);
-            var instance = constructor.Invoke(new object[] { });
+            var instance = constructor.Invoke(Array.Empty<object>());
             var emptyQuerable = ExpressionHelperMethods.QueryableAsQueryable
                 .Invoke(null, new object[] { instance }) as IQueryable;
             return emptyQuerable;

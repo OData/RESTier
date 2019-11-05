@@ -10,6 +10,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents an exception that indicates validation errors occurred on entities.
     /// </summary>
+    [Serializable]
     public class ChangeSetValidationException : Exception
     {
         private IEnumerable<ChangeSetItemValidationResult> errorValidationResults;
@@ -60,6 +61,15 @@ namespace Microsoft.Restier.Core.Submit
             set => errorValidationResults = value;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serializationInfo"></param>
+        /// <param name="streamingContext"></param>
+        protected ChangeSetValidationException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

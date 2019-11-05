@@ -10,7 +10,7 @@
     </Description>
     <PackageTags>$(PackageTags);webapi;batch</PackageTags>
 
-    <TargetFrameworks>net462;net472</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +21,7 @@
   
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="[0.1.4, 2.0.0)" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="[7.2.1, 8.0.0)" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="[7.2.0, 8.0.0)" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="[5.2.7, 6.0.0)" />
   </ItemGroup>
 
@@ -44,10 +44,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Microsoft.Restier.AspNet</CustomToolNamespace>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeQuality.Analyzers" Version="[2.9.3, 3.0.0)" />
   </ItemGroup>
 
 </Project>
