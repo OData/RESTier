@@ -64,13 +64,28 @@ namespace System.Web.Http
         /// <returns></returns>
         public static HttpConfiguration MapRestier<TApi>(this HttpConfiguration config, string routeName, string routePrefix, bool allowBatching = true)
         {
+            return MapRestier<TApi>(config, routeName, routePrefix, allowBatching, GlobalConfiguration.DefaultServer);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TApi"></typeparam>
+        /// <param name="config"></param>
+        /// <param name="routeName"></param>
+        /// <param name="routePrefix"></param>
+        /// <param name="allowBatching"></param>
+        /// <param name="httpServer"></param>
+        /// <returns></returns>
+        public static HttpConfiguration MapRestier<TApi>(this HttpConfiguration config, string routeName, string routePrefix, bool allowBatching, HttpServer httpServer)
+        {
             ODataBatchHandler batchHandler = null;
             var conventions = CreateRestierRoutingConventions(config, routeName);
 
             if (allowBatching)
             {
 #pragma warning disable IDE0067 // Dispose objects before losing scope
-                batchHandler = new RestierBatchHandler(GlobalConfiguration.DefaultServer)
+                batchHandler = new RestierBatchHandler(httpServer)
                 {
                     ODataRouteName = routeName
                 };
@@ -82,7 +97,7 @@ namespace System.Web.Http
                 builder.AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions);
                 if (batchHandler != null)
                 {
-                    builder.AddService(ServiceLifetime.Singleton, sp => batchHandler);
+                    builder.AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
                 }
             });
 
