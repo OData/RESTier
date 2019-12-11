@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     public class ActionTests : RestierTestBase
     {
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public async Task ActionParameters_MissingParameter()
         {
@@ -23,7 +23,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeFalse();
-            content.Should().Contain("ArgumentNullException");
+            content.Should().Contain("NullReferenceException");
+            //content.Should().Contain("ArgumentNullException");
         }
 
         [TestMethod]

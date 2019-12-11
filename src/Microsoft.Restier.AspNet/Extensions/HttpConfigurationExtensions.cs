@@ -22,6 +22,14 @@ namespace System.Web.Http
     /// </summary>
     public static class HttpConfigurationExtensions
     {
+
+        #region Private Members
+
+        private const string owinException = "Restier could not use the GlobalConfiguration to register the Batch handler. This is usually because you're running a self-hosted OWIN context.\r\n"
+                    + "Please call `config.MapRestier<ApiType>(routeName, routePrefix, true, new HttpServer(config))` instead to correct this.";
+
+        #endregion
+
         /// <summary>
         /// 
         /// </summary>
@@ -64,7 +72,13 @@ namespace System.Web.Http
         /// <returns></returns>
         public static HttpConfiguration MapRestier<TApi>(this HttpConfiguration config, string routeName, string routePrefix, bool allowBatching = true)
         {
-            return MapRestier<TApi>(config, routeName, routePrefix, allowBatching, GlobalConfiguration.DefaultServer);
+            var httpServer = GlobalConfiguration.DefaultServer;
+            if (httpServer == null)
+            {
+                throw new Exception(owinException);
+            }
+
+            return MapRestier<TApi>(config, routeName, routePrefix, allowBatching, httpServer);
         }
 
         /// <summary>
@@ -84,6 +98,11 @@ namespace System.Web.Http
 
             if (allowBatching)
             {
+                if (httpServer == null)
+                {
+                    throw new ArgumentNullException(nameof(httpServer), owinException);
+                }
+
 #pragma warning disable IDE0067 // Dispose objects before losing scope
                 batchHandler = new RestierBatchHandler(httpServer)
                 {
@@ -97,6 +116,7 @@ namespace System.Web.Http
                 builder.AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions);
                 if (batchHandler != null)
                 {
+                    //RWM: DO NOT simplify this generic signature. It HAS to stay this way, otherwise the code breaks.
                     builder.AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
                 }
             });
@@ -119,7 +139,7 @@ namespace System.Web.Http
             var index = 0;
             for (; index < conventions.Count; index++)
             {
-                if (conventions[index] is AttributeRoutingConvention attributeRouting)
+                if (conventions[index] is AttributeRoutingConvention)
                 {
                     break;
                 }
