@@ -12,6 +12,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     /// <summary>
     /// Regression tests for https://github.com/OData/RESTier/issues/541.
     /// </summary>
+    [TestClass]
     public class Issue541_CountPlusParametersFails : RestierTestBase
     {
 
@@ -19,24 +20,30 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         public async Task CountShouldntThrowExceptions()
         {
             var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi, LibraryContext>();
-            var response = await client.GetStringAsync("http://localhost/api/test/Readers?$count=true");
-            response.Should().Contain("\"@odata.count\":2,");
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$count=true");
+            var content = await response.Content.ReadAsStringAsync();
+
+            content.Should().Contain("\"@odata.count\":2,");
         }
 
         [TestMethod]
         public async Task CountPlusTopShouldntThrowExceptions()
         {
             var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi, LibraryContext>();
-            var response = await client.GetStringAsync("http://localhost/api/test/Readers?$top=5&$count=true");
-            response.Should().Contain("\"@odata.count\":2,");
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true");
+            var content = await response.Content.ReadAsStringAsync();
+
+            content.Should().Contain("\"@odata.count\":2,");
         }
 
         [TestMethod]
         public async Task CountPlusTopPlusFilterShouldntThrowExceptions()
         {
             var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi, LibraryContext>();
-            var response = await client.GetStringAsync("http://localhost/api/test/Readers?$top=5&$count=true&$filter=FullName eq 'p1'");
-            response.Should().Contain("\"@odata.count\":1,");
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$filter=FullName eq 'p1'");
+            var content = await response.Content.ReadAsStringAsync();
+
+            content.Should().Contain("\"@odata.count\":1,");
         }
 
         [TestMethod]

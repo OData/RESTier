@@ -92,12 +92,12 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 {
                     new Book
                     {
-                         Id = Guid.NewGuid(),
+                         Id = new Guid("19d68c75-1313-4369-b2bf-521f2b260a59"),
                          Title = "A Clockwork Orange"
                     },
                     new Book
                     {
-                        Id = Guid.NewGuid(),
+                        Id = new Guid("c2081e58-21a5-4a15-b0bd-fff03ebadd30"),
                         Title = "Jungle Book, The"
                     }
                 }
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 {
                     new Book
                     {
-                        Id = Guid.NewGuid(),
+                        Id = new Guid("0697576b-d616-4057-9d28-ed359775129e"),
                         Title = "Color Purple, The"
                     }
                 }
