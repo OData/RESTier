@@ -70,12 +70,28 @@ namespace Microsoft.Restier.AspNet
         {
             if (context.Exception is ChangeSetValidationException validationException)
             {
-                var exceptionResult = new NegotiatedContentResult<IEnumerable<ValidationResultDto>>(
-                    HttpStatusCode.BadRequest,
-                    validationException.ValidationResults.Select(r => new ValidationResultDto(r)),
+                var result = new
+                {
+                    error = new
+                    {
+                        code = "",
+                        innererror = new
+                        {
+                            message = validationException.Message,
+                            type = validationException.GetType().FullName
+                        },
+                        message = "Validaion failed for one or more objects.",
+                        validationentries = validationException.ValidationResults
+                    },
+                };
+
+                var exceptionResult = new NegotiatedContentResult<object>(
+                    (HttpStatusCode)422,
+                    result,
                     context.ActionContext.RequestContext.Configuration.Services.GetContentNegotiator(),
                     context.Request,
                     new MediaTypeFormatterCollection());
+
                 return await exceptionResult.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             }
 

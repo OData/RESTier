@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -81,7 +81,7 @@
 
   <ItemGroup Condition=" $(IsTestProject) != 'true' and  $(IsSampleProject) != 'true'">
     <!-- RWM: The code quality on the unit tests right now is not awesome, so let's skip checking it for now. -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(IsTestProject) == 'true' ">
@@ -90,7 +90,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="2.9.7" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="2.9.8" PrivateAssets="All" />
     <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 

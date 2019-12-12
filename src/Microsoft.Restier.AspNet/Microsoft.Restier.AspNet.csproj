@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
-    <!--<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>

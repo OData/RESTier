@@ -6,6 +6,7 @@
           <PropertyRef Name="Id" />
         </Key>
         <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Isbn" Type="Edm.String" MaxLength="13" />
         <Property Name="Title" Type="Edm.String" />
         <NavigationProperty Name="Publisher" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher" />
       </EntityType>
