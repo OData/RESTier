@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Core
                         {
                             validationResults.Add(new ChangeSetItemValidationResult()
                             {
-                                Id = validationAttribute.GetType().FullName,
+                                ValidatorType = validationAttribute.GetType().FullName,
                                 Message = validationResult.ErrorMessage,
                                 Severity = EventLevel.Error,
                                 Target = resource,

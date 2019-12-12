@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
@@ -16,6 +17,10 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         /// 
         /// </summary>
         public Guid Id { get; set; }
+
+        [MinLength(13)]
+        [MaxLength(13)]
+        public string Isbn { get; set; }
 
         /// <summary>
         /// 
