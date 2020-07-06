@@ -20,7 +20,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Ben.Demystifier" Version="[0.1.4, 2.0.0)" />
+    <PackageReference Include="Ben.Demystifier" Version="[0.1.6, 2.0.0)" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="[7.2.0, 8.0.0)" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="[5.2.7, 6.0.0)" />
   </ItemGroup>

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20191027-152246" />
+    <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20200121-203156" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.2.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />

@@ -65,6 +65,24 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return book;
         }
 
+        protected internal void OnExecutingDiscontinueBooks(IQueryable<Book> books)
+        {
+            books.ToList().ForEach(c =>
+            {
+                Console.WriteLine($"Id = {c.Id}");
+                c.Title += " | Intercepted";
+            });
+        }
+
+        protected internal void OnExecutedDiscontinueBooks(IQueryable<Book> books)
+        {
+            books.ToList().ForEach(c =>
+            {
+                Console.WriteLine($"Id = {c.Id}");
+                c.Title += " | Intercepted";
+            });
+        }
+
         [Operation(IsBound = true, IsComposable = true)]
         public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
         {
