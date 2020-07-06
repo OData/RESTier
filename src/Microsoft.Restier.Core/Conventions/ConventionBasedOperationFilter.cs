@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Core
             object[] parameters = null;
             if (context.ParameterValues != null)
             {
-                context.ParameterValues.ToArray();
+                parameters = context.ParameterValues.ToArray();
             }
 
             var method = targetType.GetQualifiedMethod(methodName);

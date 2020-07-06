@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
         //[Ignore]
         [TestMethod]
-        public async Task FunctionParameters_BooleanParameter ()
+        public async Task FunctionParameters_BooleanParameter()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/PublishBook(IsActive=true)");
             var content = await response.Content.ReadAsStringAsync();
@@ -88,8 +88,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var results = JsonConvert.DeserializeObject<ODataV4List<Book>>(content);
             results.Should().NotBeNull();
             results.Items.Should().NotBeNullOrEmpty();
-            results.Items.Should().HaveCount(3);
-            results.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
+            results.Items.Count.Should().BeOneOf(3, 5);
+            results.Items.All(c => c.Title.EndsWith(" | Intercepted | Discontinued | Intercepted", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
     }
