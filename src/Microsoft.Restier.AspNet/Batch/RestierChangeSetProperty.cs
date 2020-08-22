@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -60,7 +61,7 @@ namespace Microsoft.Restier.AspNet.Batch
                                      && t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
-                                this.changeSetCompletedTaskSource.SetException(taskEx);
+                                this.changeSetCompletedTaskSource.SetException(taskEx.Demystify());
                             }
                             else
                             {
@@ -70,7 +71,7 @@ namespace Microsoft.Restier.AspNet.Batch
                 }
                 else
                 {
-                    this.changeSetCompletedTaskSource.SetException(Exceptions);
+                    this.changeSetCompletedTaskSource.SetException(Exceptions.Select(c => c.Demystify()));
                 }
             }
 
