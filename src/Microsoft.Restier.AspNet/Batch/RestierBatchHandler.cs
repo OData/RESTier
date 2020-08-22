@@ -52,9 +52,9 @@ namespace Microsoft.Restier.AspNet.Batch
             request.RegisterForDispose(reader);
 
             var requests = new List<ODataBatchRequestItem>();
-            var batchReader = reader.CreateODataBatchReader();
+            var batchReader = await reader.CreateODataBatchReaderAsync().ConfigureAwait(false);
             var batchId = Guid.NewGuid();
-            while (batchReader.Read())
+            while (await batchReader.ReadAsync().ConfigureAwait(false))
             {
                 if (batchReader.State == ODataBatchReaderState.ChangesetStart)
                 {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -75,7 +76,7 @@ namespace Microsoft.Restier.AspNet.Batch
                                         : t.Exception;
                                     changeSetProperty.Exceptions.Add(taskEx);
                                     changeSetProperty.OnChangeSetCompleted();
-                                    tcs.SetException(taskEx);
+                                    tcs.SetException(taskEx.Demystify());
                                 }
                                 else
                                 {
