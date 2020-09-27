@@ -84,13 +84,13 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(IsTestProject) == 'true' ">
-    <PackageReference Include="FluentAssertions" Version="[5.9.0, 6.0.0)" PrivateAssets="All" />
+  <ItemGroup Condition=" $(IsTestProject) == 'true'  and  $(IsSampleProject) != 'true'">
+    <PackageReference Include="FluentAssertions" Version="[5.10.3, 6.0.0)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="[0.11.4, 1.0.0)" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="2.9.8" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="3.3.0" PrivateAssets="All" />
     <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 

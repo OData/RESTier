@@ -160,11 +160,11 @@ namespace Microsoft.Restier.EntityFramework
                 n++;
                 if (n != lineString.Points.Count)
                 {
-                    sb.Append(",");
+                    sb.Append(',');
                 }
             }
 
-            sb.Append(")");
+            sb.Append(')');
 
             return DbGeography.FromText(sb.ToString());
         }
