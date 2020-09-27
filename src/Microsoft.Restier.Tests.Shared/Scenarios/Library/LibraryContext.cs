@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     public class LibraryContext : DbContext
     {
         public LibraryContext()
-            : base("LibraryContext") => Database.SetInitializer(new TestInitializer());
+            : base("LibraryContext") => Database.SetInitializer(new LibraryTestInitializer());
 
         public IDbSet<Book> Books { get; set; }
 
@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public IDbSet<Employee> Readers { get; set; }
     }
 
-    public class TestInitializer : DropCreateDatabaseAlways<LibraryContext>
+    public class LibraryTestInitializer : DropCreateDatabaseAlways<LibraryContext>
     {
         protected override void Seed(LibraryContext context)
         {

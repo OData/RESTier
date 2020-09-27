@@ -250,6 +250,7 @@ namespace Microsoft.Restier.Core.Query
             if (rightExpression != null && rightExpression.Value != null)
             {
                 // This means where statement is key segment but not for $filter
+                Console.WriteLine("Restier: You may need to set 'HandleNullPropagationOption.False' in your app startup. See https://github.com/OData/RESTier/issues/669#issuecomment-656743185");
                 throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
@@ -363,8 +364,7 @@ namespace Microsoft.Restier.Core.Query
 
                 if (context.VisitedNode != null)
                 {
-                    EntitySet = context.ModelReference != null ?
-                        context.ModelReference.EntitySet : null;
+                    EntitySet = context.ModelReference?.EntitySet;
                 }
 
                 return node;

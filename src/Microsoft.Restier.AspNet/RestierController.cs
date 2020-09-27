@@ -222,7 +222,7 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = await api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
 
             var postItem = new DataModificationItem(
                 entitySet.Name,
@@ -288,7 +288,7 @@ namespace Microsoft.Restier.AspNet
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
 
-            var model = await api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
 
             var deleteItem = new DataModificationItem(
                 entitySet.Name,
@@ -435,7 +435,7 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = await api.GetModelAsync().ConfigureAwait(false);
+            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
 
             var updateItem = new DataModificationItem(
                 entitySet.Name,

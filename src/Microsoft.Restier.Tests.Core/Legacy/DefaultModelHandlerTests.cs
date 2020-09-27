@@ -159,7 +159,7 @@ namespace Microsoft.Restier.Tests.Core.Model
 
             public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
-                await Task.Delay(30);
+                await Task.Delay(30, cancellationToken);
 
                 Interlocked.Increment(ref CalledCount);
                 return new EdmModel();
@@ -204,7 +204,7 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 if (CalledCount++ == 0)
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(100, cancellationToken);
                     throw new Exception("Deliberate failure");
                 }
 
