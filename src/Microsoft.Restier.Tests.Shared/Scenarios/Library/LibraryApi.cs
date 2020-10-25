@@ -98,6 +98,12 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return books;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected internal bool CanUpdateEmployee() => false;
+
     }
 
 }

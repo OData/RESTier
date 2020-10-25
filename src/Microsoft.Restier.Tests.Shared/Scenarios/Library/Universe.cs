@@ -16,7 +16,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         public byte ByteProperty { get; set; }
 
-        public Date DateProperty { get; set; }
+        //public Date DateProperty { get; set; }
 
         public DateTimeOffset DateTimeOffsetProperty { get; set; }
 

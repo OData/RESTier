@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
@@ -36,23 +37,37 @@ namespace Microsoft.Restier.Core
             var methodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
             var method = targetType.GetQualifiedMethod(methodName);
 
-            if (method != null && method.IsFamily && method.ReturnType == returnType)
+            if (method == null)
             {
-                object target = null;
-                if (!method.IsStatic)
-                {
-                    target = context.Api;
-                    if (target == null || !targetType.IsInstanceOfType(target))
-                    {
-                        return Task.FromResult(result);
-                    }
-                }
+                return Task.FromResult(result);
+            }
 
-                var parameters = method.GetParameters();
-                if (parameters.Length == 0)
+            if (!method.IsFamily && !method.IsFamilyOrAssembly)
+            {
+                Trace.WriteLine($"Restier Authorizer found '{methodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                return Task.FromResult(result);
+            }
+
+            if (method.ReturnType != returnType)
+            {
+                Trace.WriteLine($"Restier Authorizer found '{methodName}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
+                return Task.FromResult(result);
+            }
+
+            object target = null;
+            if (!method.IsStatic)
+            {
+                target = context.Api;
+                if (target == null || !targetType.IsInstanceOfType(target))
                 {
-                    result = (bool)method.Invoke(target, null);
+                    return Task.FromResult(result);
                 }
+            }
+
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0)
+            {
+                result = (bool)method.Invoke(target, null);
             }
 
             return Task.FromResult(result);
