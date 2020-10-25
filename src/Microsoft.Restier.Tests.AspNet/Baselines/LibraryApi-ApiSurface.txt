@@ -32,7 +32,7 @@ OnInsertedPublisher                                |   False
 OnUpdatedPublisher                                 |   False
 OnDeletedPublisher                                 |   False
 CanInsertEmployee                                  |   False
-CanUpdateEmployee                                  |   False
+CanUpdateEmployee                                  |    True
 CanDeleteEmployee                                  |   False
 OnInsertingEmployee                                |   False
 OnUpdatingEmployee                                 |   False

@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Core
             {
                 if (expectedMethod != null)
                 {
-                    Debug.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Change it to be 'protected internal'.");
+                    Trace.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace Microsoft.Restier.Core
                     var actualMethod = targetType.GetQualifiedMethod(actualMethodName);
                     if (actualMethod != null)
                     {
-                        Debug.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Please correct the method name.");
+                        Trace.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                     }
                 }
                 return null;
