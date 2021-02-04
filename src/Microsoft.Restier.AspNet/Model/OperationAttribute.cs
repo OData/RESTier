@@ -27,6 +27,12 @@ namespace Microsoft.Restier.AspNet.Model
         public string EntitySet { get; set; }
 
         /// <summary>
+        /// Gets or sets the path from the binding parameter to the entity set associated with the operation result.
+        /// Only used for bound operations
+        /// </summary>
+        public string EntitySetPath { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the function is composable.
         /// The default value is false.
         /// </summary>
