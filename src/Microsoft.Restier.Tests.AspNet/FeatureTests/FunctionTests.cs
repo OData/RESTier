@@ -17,6 +17,39 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     [TestClass]
     public class FunctionTests : RestierTestBase
     {
+        //[Ignore]
+        [TestMethod]
+        public async Task FunctionWithFilter()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/FavoriteBooks()?$filter=contains(Title,'Cat')");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Cat");
+            content.Should().NotContain("Mouse");
+        }
+
+        //[Ignore]
+        [TestMethod]
+        public async Task FunctionWithExpand()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/FavoriteBooks()?$expand=Publisher");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Publisher Way");
+        }
+
+        //[Ignore]
+        [TestMethod]
+        public async Task BoundFunctionWithExpand()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers/Publisher1/PublishedBooks()?$expand=Publisher");
+            var content = await response.Content.ReadAsStringAsync();
+            TestContext.WriteLine(content);
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Publisher Way");
+        }
 
         //[Ignore]
         [TestMethod]
