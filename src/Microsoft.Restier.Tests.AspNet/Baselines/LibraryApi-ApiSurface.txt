@@ -47,6 +47,9 @@ OnExecutedPublishBook                              |   False
 CanExecutePublishBooks                             |   False
 OnExecutingPublishBooks                            |   False
 OnExecutedPublishBooks                             |   False
+CanExecuteFavoriteBooks                            |   False
+OnExecutingFavoriteBooks                           |   False
+OnExecutedFavoriteBooks                            |   False
 CanExecuteSubmitTransaction                        |   False
 OnExecutingSubmitTransaction                       |   False
 OnExecutedSubmitTransaction                        |   False

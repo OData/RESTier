@@ -71,7 +71,7 @@ namespace Microsoft.Restier.AspNet.Model
         }
 
         private static EdmPathExpression BuildBoundOperationReturnTypePathExpression(
-            IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter)
+            IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter, IEdmModel model)
         {
             // Bound actions or functions that return an entity or a collection of entities
             // MAY specify a value for the EntitySetPath attribute
@@ -80,9 +80,16 @@ namespace Microsoft.Restier.AspNet.Model
             // joined together with forward slashes.
             // The first segment of the entity set path MUST be the name of the binding parameter.
             // The remaining segments of the entity set path MUST represent navigation segments or type casts.
+
+            // Here, if the return type matches the binding parameter type, (and no bindingPath has already been set)
+            // assume they are from the same entity set
+            IEdmStructuredType parameterType;
+            IEdmEntityType returnType;
             if (returnTypeReference != null &&
-                returnTypeReference.IsEntity() &&
-                bindingParameter != null)
+                  (returnType = returnTypeReference.Definition.AsElementType() as IEdmEntityType) != null &&
+                bindingParameter != null &&
+                  (parameterType = bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() as IEdmStructuredType) != null &&
+                parameterType.IsOrInheritsFrom(returnType))
             {
                 return new EdmPathExpression(bindingParameter.Name);
             }
@@ -174,7 +181,14 @@ namespace Microsoft.Restier.AspNet.Model
                 if (isBound)
                 {
                     // Unbound actions or functions should not have EntitySetPath attribute
-                    path = BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter);
+                    if (string.IsNullOrEmpty(operationMethodInfo.EntitySetPath))
+                    {
+                        path = BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter, model);
+                    }
+                    else
+                    {
+                        path = new EdmPathExpression(operationMethodInfo.EntitySetPath);
+                    }
                 }
 
                 if (operationMethodInfo.HasSideEffects)
@@ -220,6 +234,8 @@ namespace Microsoft.Restier.AspNet.Model
             public string Namespace => OperationAttribute.Namespace ?? Method.DeclaringType.Namespace;
 
             public string EntitySet => OperationAttribute.EntitySet;
+
+            public string EntitySetPath => OperationAttribute.EntitySetPath;
 
             public bool IsComposable => OperationAttribute.IsComposable;
 
