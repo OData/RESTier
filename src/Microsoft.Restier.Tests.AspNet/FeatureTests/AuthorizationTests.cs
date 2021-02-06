@@ -33,9 +33,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                     .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
             }
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeFalse();
+
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
@@ -53,9 +54,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
             };
 
-            var employeeRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader);
-            employeeRequest.IsSuccessStatusCode.Should().BeTrue();
-            var (employeeList, ErrorContent) = await employeeRequest.DeserializeResponseAsync<ODataV4List<Employee>>(settings);
+            var employeeResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader);
+            var content = await TestContext.LogAndReturnMessageContentAsync(employeeResponse);
+
+            employeeResponse.IsSuccessStatusCode.Should().BeTrue();
+            var (employeeList, ErrorContent) = await employeeResponse.DeserializeResponseAsync<ODataV4List<Employee>>(settings);
 
             employeeList.Should().NotBeNull();
             employeeList.Items.Should().NotBeNullOrEmpty();
@@ -66,9 +69,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             employee.FullName += " Can't Update";
             //employee.Universe = null;
 
-            var employeeEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Put, resource: $"/Readers({employee.Id})", payload: employee, acceptHeader: WebApiConstants.DefaultAcceptHeader, jsonSerializerSettings: settings);
-            employeeEditRequest.IsSuccessStatusCode.Should().BeFalse();
-            employeeEditRequest.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            var employeeEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Put, resource: $"/Readers({employee.Id})", payload: employee, acceptHeader: WebApiConstants.DefaultAcceptHeader, jsonSerializerSettings: settings);
+            var editResponseContent = await TestContext.LogAndReturnMessageContentAsync(employeeEditResponse);
+
+            employeeEditResponse.IsSuccessStatusCode.Should().BeFalse();
+            employeeEditResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
 

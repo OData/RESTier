@@ -20,9 +20,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task ActionParameters_MissingParameter()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook");
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeFalse();
+
             content.Should().Contain("NullReferenceException");
             //content.Should().Contain("ArgumentNullException");
         }
@@ -40,9 +41,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             };
 
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook", acceptHeader: WebApiConstants.DefaultAcceptHeader, payload: bookPayload);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeFalse();
+
             content.Should().Contain("Model state is not valid");
         }
 
@@ -59,9 +61,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             };
 
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook", acceptHeader: WebApiConstants.DefaultAcceptHeader, payload: bookPayload);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeTrue();
+
             content.Should().Contain("Robert McLaws");
             content.Should().Contain("| Submitted");
         }

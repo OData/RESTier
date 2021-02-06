@@ -20,9 +20,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task CountPlusExpandShouldntThrowExceptions()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers?$expand=Books");
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeTrue();
+
             content.Should().Contain("A Clockwork Orange");
         }
 
