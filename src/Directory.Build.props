@@ -13,11 +13,12 @@
 
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
+
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
     <Product>Microsoft Restier</Product>
-
     <Authors>Microsoft</Authors>
     <Company>Microsoft Corporation.</Company>
     <RpmPackageVendor>.NET Foundation</RpmPackageVendor>

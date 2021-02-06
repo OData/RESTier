@@ -21,8 +21,6 @@ namespace Microsoft.Restier.AspNet.Model
 
         /// <summary>
         /// Gets or sets the entity set associated with the operation result.
-        /// Only need to be set for unbound operations
-        /// when there are multiple entity sets with same entity type as result entity type.
         /// </summary>
         public string EntitySet { get; set; }
 
