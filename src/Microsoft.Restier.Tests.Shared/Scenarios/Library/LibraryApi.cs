@@ -3,6 +3,8 @@
 
 using System;
 using System.Linq;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.EntityFramework;
 
@@ -40,6 +42,48 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 Id = Guid.NewGuid(),
                 Title = "The Cat in the Hat Comes Back"
             };
+        }
+
+        [Operation]
+        [EnableQuery(AllowedQueryOptions=AllowedQueryOptions.All)]
+        public IQueryable<Book> FavoriteBooks()
+        {
+            var publisher = new Publisher
+            {
+                Id = "123",
+                Addr = new Address
+                {
+                    Street = "Publisher Way",
+                    Zip = "12345"
+                }
+            };
+
+            foreach (var book in new Book[]
+            {
+                new Book
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "The Cat in the Hat Comes Back",
+                    Publisher = publisher
+                },
+                new Book
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "If You Give a Mouse a Cookie",
+                    Publisher = publisher
+                }
+            })
+            {
+                publisher.Books.Add(book);
+            }
+
+            return publisher.Books.AsQueryable();
+        }
+
+        [Operation(IsBound = true, IsComposable = true, EntitySet = "publisher/Books")]
+        public IQueryable<Book> PublishedBooks(Publisher publisher)
+        {
+            return FavoriteBooks();
         }
 
         [Operation]

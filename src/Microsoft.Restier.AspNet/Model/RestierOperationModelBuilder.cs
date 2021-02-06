@@ -71,7 +71,7 @@ namespace Microsoft.Restier.AspNet.Model
         }
 
         private static EdmPathExpression BuildBoundOperationReturnTypePathExpression(
-            IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter)
+            IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter, IEdmModel model)
         {
             // Bound actions or functions that return an entity or a collection of entities
             // MAY specify a value for the EntitySetPath attribute
@@ -80,9 +80,14 @@ namespace Microsoft.Restier.AspNet.Model
             // joined together with forward slashes.
             // The first segment of the entity set path MUST be the name of the binding parameter.
             // The remaining segments of the entity set path MUST represent navigation segments or type casts.
+
+            // Here, if the return type matches the binding parameter type, (and no bindingPath has already been set)
+            // assume they are from the same entity set
             if (returnTypeReference != null &&
-                returnTypeReference.IsEntity() &&
-                bindingParameter != null)
+                  returnTypeReference.Definition.AsElementType() is IEdmEntityType returnType &&
+                bindingParameter != null &&
+                  bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() is IEdmStructuredType parameterType &&
+                parameterType.IsOrInheritsFrom(returnType))
             {
                 return new EdmPathExpression(bindingParameter.Name);
             }
@@ -173,8 +178,9 @@ namespace Microsoft.Restier.AspNet.Model
                 EdmPathExpression path = null;
                 if (isBound)
                 {
-                    // Unbound actions or functions should not have EntitySetPath attribute
-                    path = BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter);
+                    path = string.IsNullOrEmpty(operationMethodInfo.EntitySet)
+                        ? BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter, model)
+                        : new EdmPathExpression(operationMethodInfo.EntitySet);
                 }
 
                 if (operationMethodInfo.HasSideEffects)
@@ -193,8 +199,7 @@ namespace Microsoft.Restier.AspNet.Model
                 {
                     // entitySetReferenceExpression refer to an entity set containing entities returned
                     // by this function/action import.
-                    var entitySetExpression = BuildEntitySetExpression(
-                        model, operationMethodInfo.EntitySet, returnTypeReference);
+                    var entitySetExpression = BuildEntitySetExpression(model, operationMethodInfo.EntitySet, returnTypeReference);
                     var entityContainer = model.EnsureEntityContainer(targetType);
                     if (operationMethodInfo.HasSideEffects)
                     {
@@ -202,8 +207,7 @@ namespace Microsoft.Restier.AspNet.Model
                     }
                     else
                     {
-                        entityContainer.AddFunctionImport(
-                            operation.Name, (EdmFunction)operation, entitySetExpression);
+                        entityContainer.AddFunctionImport(operation.Name, (EdmFunction)operation, entitySetExpression);
                     }
                 }
             }
