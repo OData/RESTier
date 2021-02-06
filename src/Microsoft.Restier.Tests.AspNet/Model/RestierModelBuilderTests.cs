@@ -47,7 +47,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             propertyArray[i++].Type.AsPrimitive().IsBinary().Should().BeTrue();
             propertyArray[i++].Type.AsPrimitive().IsBoolean().Should().BeTrue();
             propertyArray[i++].Type.AsPrimitive().IsByte().Should().BeTrue();
-            propertyArray[i++].Type.AsPrimitive().IsDate().Should().BeTrue();
+//            propertyArray[i++].Type.AsPrimitive().IsDate().Should().BeTrue();
             propertyArray[i++].Type.AsPrimitive().IsDateTimeOffset().Should().BeTrue();
             propertyArray[i++].Type.AsPrimitive().IsDecimal().Should().BeTrue();
             propertyArray[i++].Type.AsPrimitive().IsDouble().Should().BeTrue();
