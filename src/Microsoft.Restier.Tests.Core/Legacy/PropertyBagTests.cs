@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void PropertyBag_ManipulatesPropertiesCorrectly()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             container.Services
                 .AddRestierCoreServices(typeof(TestableEmptyApi))
                 .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void PropertyBagsAreDisposedCorrectly()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             container.Services
                 .AddRestierCoreServices(typeof(TestableEmptyApi))
                 .AddRestierConventionBasedServices(typeof(TestableEmptyApi))

@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Tests.Core.Model
             {
                 for (var i = 0; i < 2; i++)
                 {
-                    var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+                    var container = new RestierContainerBuilder();
                     container.Services.AddRestierCoreServices(typeof(TestableEmptyApi))
                         .AddChainedService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
                     addTestServices(container.Services);
@@ -83,7 +83,7 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+                var container = new RestierContainerBuilder();
                 container.Services.AddRestierCoreServices(typeof(TestableEmptyApi))
                     .AddChainedService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
                 addTestServices(container.Services);

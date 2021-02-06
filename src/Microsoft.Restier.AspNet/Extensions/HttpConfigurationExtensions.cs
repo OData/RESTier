@@ -41,7 +41,7 @@ namespace System.Web.Http
         {
             config.UseCustomContainerBuilder(() =>
             {
-                var builder = new RestierContainerBuilder(typeof(TApi), (services) =>
+                var builder = new RestierContainerBuilder((services) =>
                 {
                     // remove the default ODataQuerySettings from OData as we will add our own.
                     services.RemoveAll<ODataQuerySettings>();
