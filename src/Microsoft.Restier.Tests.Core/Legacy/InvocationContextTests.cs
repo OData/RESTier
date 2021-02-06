@@ -20,7 +20,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void InvocationContext_GetsApiServicesCorrectly()
         {
-            var container = new RestierContainerBuilder(typeof(TestApi));
+            var container = new RestierContainerBuilder();
             container.Services.AddRestierCoreServices(typeof(TestApi))
                 .AddRestierConventionBasedServices(typeof(TestApi))
                 .AddTestStoreApiServices()

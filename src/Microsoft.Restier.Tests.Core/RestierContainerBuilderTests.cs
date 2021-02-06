@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void Constructor_CreatesServiceCollection()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             container.Should().NotBeNull();
             container.Services.Should().NotBeNull().And.BeEmpty();
         }
@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void AddService_Single_ServiceType_NullShouldThrow()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             Action addService = () => { container.AddService(ODataServiceLifetime.Scoped, null, typeof(DefaultSubmitHandler)); };
             addService.Should().Throw<ArgumentNullException>();
         }
@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void AddService_Single_ImplementationType_NullShouldThrow()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             Action addService = () => { container.AddService(ODataServiceLifetime.Scoped, typeof(DefaultSubmitHandler), implementationType: null); };
             addService.Should().Throw<ArgumentNullException>();
         }
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void AddService_Factory_ServiceType_NullShouldThrow()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             Action addService = () => { container.AddService(ODataServiceLifetime.Scoped, null, (sp) => new DefaultSubmitExecutor()); };
             addService.Should().Throw<ArgumentNullException>();
         }
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void AddService_Factory_ImplementationFactory_NullShouldThrow()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             Action addService = () => { container.AddService(ODataServiceLifetime.Scoped, typeof(DefaultSubmitHandler), implementationFactory: null); };
             addService.Should().Throw<ArgumentNullException>();
         }
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void BuildContainer_HasServices()
         {
-            var container = new RestierContainerBuilder(typeof(TestableEmptyApi));
+            var container = new RestierContainerBuilder();
             container.BuildContainer();
             container.Services.Should().HaveCount(1);
         }

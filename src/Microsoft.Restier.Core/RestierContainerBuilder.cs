@@ -20,8 +20,6 @@ namespace Microsoft.Restier.Core
 
         #region Private Members
 
-        private readonly Type apiType;
-
         private readonly Action<IServiceCollection> configureAction;
 
         #endregion
@@ -40,11 +38,9 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
-        /// <param name="apiType">The Api Type</param>
         /// <param name="configureAction">Action to register services post OData service registration.</param>
-        public RestierContainerBuilder(Type apiType, Action<IServiceCollection> configureAction = null)
+        public RestierContainerBuilder(Action<IServiceCollection> configureAction = null)
         {
-            this.apiType = apiType;
             this.configureAction = configureAction;
             Services = new ServiceCollection();
         }
