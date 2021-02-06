@@ -31,10 +31,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             book.Isbn = "This is a really really long string.";
 
-            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader);
-            bookEditRequest.IsSuccessStatusCode.Should().BeFalse();
-            var content = await bookEditRequest.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var bookEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader);
+            var content = await TestContext.LogAndReturnMessageContentAsync(bookEditResponse);
+
+            bookEditResponse.IsSuccessStatusCode.Should().BeFalse();
             content.Should().Contain("validationentries");
             content.Should().Contain("MaxLengthAttribute");
         }

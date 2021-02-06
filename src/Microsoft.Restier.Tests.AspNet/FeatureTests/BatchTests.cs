@@ -76,9 +76,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             }
 
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books?$expand=Publisher");
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeTrue();
+
             content.Should().Contain("1111111111111");
             content.Should().Contain("2222222222222");
         }
