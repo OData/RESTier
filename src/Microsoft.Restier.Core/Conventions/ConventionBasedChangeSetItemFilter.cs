@@ -17,16 +17,16 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class ConventionBasedChangeSetItemFilter : IChangeSetItemFilter
     {
-        private Type targetType;
+        private readonly Type targetApiType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionBasedChangeSetItemFilter"/> class.
         /// </summary>
-        /// <param name="targetType">The target type to check for filter functions.</param>
-        public ConventionBasedChangeSetItemFilter(Type targetType)
+        /// <param name="targetApiType">The target type to check for filter functions.</param>
+        public ConventionBasedChangeSetItemFilter(Type targetApiType)
         {
-            Ensure.NotNull(targetType, nameof(targetType));
-            this.targetType = targetType;
+            Ensure.NotNull(targetApiType, nameof(targetApiType));
+            this.targetApiType = targetApiType;
         }
 
         /// <inheritdoc/>
@@ -85,7 +85,7 @@ namespace Microsoft.Restier.Core
         {
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);
-            var expectedMethod = targetType.GetQualifiedMethod(expectedMethodName);
+            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
             if (!IsUsable(expectedMethod))
             {
                 if (expectedMethod != null)
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Core
                 else
                 {
                     var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
-                    var actualMethod = targetType.GetQualifiedMethod(actualMethodName);
+                    var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
                     if (actualMethod != null)
                     {
                         Trace.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.Core
                 if (!expectedMethod.IsStatic)
                 {
                     target = context.Api;
-                    if (target == null || !targetType.IsInstanceOfType(target))
+                    if (target == null || !targetApiType.IsInstanceOfType(target))
                     {
                         return Task.WhenAll();
                     }

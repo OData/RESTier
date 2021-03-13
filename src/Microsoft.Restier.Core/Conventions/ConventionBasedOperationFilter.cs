@@ -15,16 +15,16 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class ConventionBasedOperationFilter : IOperationFilter
     {
-        private Type targetType;
+        private readonly Type targetApiType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionBasedOperationFilter"/> class.
         /// </summary>
-        /// <param name="targetType">The target type to check for filter functions.</param>
-        public ConventionBasedOperationFilter(Type targetType)
+        /// <param name="targetApiType">The target type to check for filter functions.</param>
+        public ConventionBasedOperationFilter(Type targetApiType)
         {
-            Ensure.NotNull(targetType, nameof(targetType));
-            this.targetType = targetType;
+            Ensure.NotNull(targetApiType, nameof(targetApiType));
+            this.targetApiType = targetApiType;
         }
 
         /// <inheritdoc/>
@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Core
                 parameters = context.ParameterValues.ToArray();
             }
 
-            var method = targetType.GetQualifiedMethod(methodName);
+            var method = targetApiType.GetQualifiedMethod(methodName);
 
             if (method != null && (method.ReturnType == typeof(void) || typeof(Task).IsAssignableFrom(method.ReturnType)))
             {
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Core
                 if (!method.IsStatic)
                 {
                     target = context.Api;
-                    if (target == null || !targetType.IsInstanceOfType(target))
+                    if (target == null || !targetApiType.IsInstanceOfType(target))
                     {
                         return Task.WhenAll();
                     }

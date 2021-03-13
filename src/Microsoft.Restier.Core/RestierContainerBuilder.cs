@@ -2,11 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Globalization;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Routing;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
 
@@ -22,6 +24,8 @@ namespace Microsoft.Restier.Core
 
         private readonly Action<IServiceCollection> configureAction;
 
+        internal RestierRouteBuilder RouteBuilder;
+
         #endregion
 
         #region Properties
@@ -29,7 +33,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// 
         /// </summary>
-        public ServiceCollection Services { get; private set; }
+        internal ServiceCollection Services { get; private set; }
 
         #endregion
 
@@ -60,7 +64,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(serviceType, nameof(serviceType));
             Ensure.NotNull(implementationType, nameof(implementationType));
-            
+
             Services.Add(new ServiceDescriptor(serviceType, implementationType, TranslateServiceLifetime(lifetime)));
             return this;
         }
@@ -89,29 +93,17 @@ namespace Microsoft.Restier.Core
         public virtual IServiceProvider BuildContainer()
         {
             configureAction?.Invoke(Services);
-            AddRestierModelFactory();
-            return Services.BuildServiceProvider();
-        }
-
-        #endregion
-
-        #region Internal methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        internal IContainerBuilder AddRestierModelFactory()
-        {
-            IEdmModel modelFactory(IServiceProvider sp)
+            if (RouteBuilder != null)
             {
-                var api = sp.GetService<ApiBase>();
-                var model = api.GetModelAsync(default).GetAwaiter().GetResult();
-                return model;
+                var routes = RouteBuilder.ToRestierApiRouteDictionary(Services.BuildServiceProvider());
+                foreach (var route in routes)
+                {
+                    AddService(ODataServiceLifetime.Scoped, typeof(IEdmModel), sp => route.Value.Model);
+                }
+                AddService(ODataServiceLifetime.Singleton, typeof(RestierApiRouteDictionary), sp => routes);
             }
 
-            Services.AddSingleton(modelFactory);
-            return this;
+            return Services.BuildServiceProvider();
         }
 
         #endregion
