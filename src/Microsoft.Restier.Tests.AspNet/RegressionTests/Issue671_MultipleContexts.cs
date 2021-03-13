@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using CloudNimble.Breakdance.Restier;
+using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
@@ -54,23 +54,23 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         public async Task MultipleContexts_ShouldQueryFirstContext()
         {
             var config = new HttpConfiguration();
-            Action<IServiceCollection> libraryServices = (services) =>
-            {
-                services.AddEF6ProviderServices<LibraryContext>();
-            };
-            Action<IServiceCollection> marvelServices = (services) =>
-            {
-                services.AddEF6ProviderServices<MarvelContext>();
-            };
 
             config.SetDefaultQuerySettings(QueryDefaults);
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.SetTimeZoneInfo(TimeZoneInfo.Utc);
 
-            config.UseRestier<LibraryApi>(libraryServices);
-            config.UseRestier<MarvelApi>(marvelServices);
-            config.MapRestier<LibraryApi>("Library", "Library", false);
-            config.MapRestier<MarvelApi>("Marvel", "Marvel", false);
+            config.UseRestier((services) => {
+                services.AddRestierApi<LibraryApi>();
+                services.AddRestierApi<MarvelApi>();
+                services.AddEF6ProviderServices<LibraryContext>();
+                services.AddEF6ProviderServices<MarvelContext>();
+            });
+
+            config.MapRestier((builder) =>
+            {
+                builder.MapApiRoute<LibraryApi>("Library", "Library", false);
+                builder.MapApiRoute<MarvelApi>("Marvel", "Marvel", false);
+            });
 
             var client = config.GetTestableHttpClient();
             var response = await client.ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books");
@@ -85,23 +85,23 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         public async Task MultipleContexts_ShouldQuerySecondContext()
         {
             var config = new HttpConfiguration();
-            Action<IServiceCollection> libraryServices = (services) =>
-            {
-                services.AddEF6ProviderServices<LibraryContext>();
-            };
-            Action<IServiceCollection> marvelServices = (services) =>
-            {
-                services.AddEF6ProviderServices<MarvelContext>();
-            };
 
             config.SetDefaultQuerySettings(QueryDefaults);
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.SetTimeZoneInfo(TimeZoneInfo.Utc);
 
-            config.UseRestier<LibraryApi>(libraryServices);
-            config.UseRestier<MarvelApi>(marvelServices);
-            config.MapRestier<LibraryApi>("Library", "Library", false);
-            config.MapRestier<MarvelApi>("Marvel", "Marvel", false);
+            config.UseRestier((services) => {
+                services.AddRestierApi<LibraryApi>();
+                services.AddRestierApi<MarvelApi>();
+                services.AddEF6ProviderServices<LibraryContext>();
+                services.AddEF6ProviderServices<MarvelContext>();
+            });
+
+            config.MapRestier((builder) =>
+            {
+                builder.MapApiRoute<LibraryApi>("Library", "Library", false);
+                builder.MapApiRoute<MarvelApi>("Marvel", "Marvel", false);
+            });
 
             var client = config.GetTestableHttpClient();
             var response = await client.ExecuteTestRequest(HttpMethod.Get, routePrefix: "Marvel", resource: "/Characters?$count=true");

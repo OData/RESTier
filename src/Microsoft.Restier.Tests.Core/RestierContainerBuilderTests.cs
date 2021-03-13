@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder();
             container.BuildContainer();
-            container.Services.Should().HaveCount(1);
+            container.Services.Should().HaveCount(0);
         }
 
     }

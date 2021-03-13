@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_Authorize()
         {
             var container = new RestierContainerBuilder();
-            container.Services.AddRestierCoreServices(typeof(TestApi)).AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
+            container.Services.AddRestierCoreServices().AddRestierApi<TestApi>().AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 
@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_PreSubmit()
         {
             var container = new RestierContainerBuilder();
-            container.Services.AddRestierCoreServices(typeof(TestApi)).AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
+            container.Services.AddRestierCoreServices().AddRestierApi<TestApi>().AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 
@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_Submit()
         {
             var container = new RestierContainerBuilder();
-            container.Services.AddRestierCoreServices(typeof(TestApi)).AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
+            container.Services.AddRestierCoreServices().AddRestierApi<TestApi>().AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 
@@ -135,7 +135,7 @@ namespace Microsoft.Restier.Tests.Core
         public void ConventionBasedMethodNameFactory_ExecuteMethod_PostSubmit()
         {
             var container = new RestierContainerBuilder();
-            container.Services.AddRestierCoreServices(typeof(TestApi)).AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
+            container.Services.AddRestierCoreServices().AddRestierApi<TestApi>().AddRestierConventionBasedServices(typeof(TestApi)).AddTestStoreApiServices();
             var provider = container.BuildContainer();
             var api = provider.GetService<TestApi>();
 

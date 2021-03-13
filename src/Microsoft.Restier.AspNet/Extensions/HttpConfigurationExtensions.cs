@@ -11,7 +11,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
 using Microsoft.Restier.AspNet;
 using Microsoft.Restier.AspNet.Batch;
+using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Routing;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace System.Web.Http
@@ -33,26 +36,35 @@ namespace System.Web.Http
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TApi"></typeparam>
         /// <param name="config"></param>
         /// <param name="configureAction"></param>
         /// <returns></returns>
-        public static HttpConfiguration UseRestier<TApi>(this HttpConfiguration config, Action<IServiceCollection> configureAction) where TApi : ApiBase
+        public static HttpConfiguration UseRestier(this HttpConfiguration config, Action<IServiceCollection> configureAction)
         {
+            Ensure.NotNull(config, nameof(config));
+
+            if (config.Properties.ContainsKey("Microsoft.AspNet.OData.ContainerBuilderFactoryKey"))
+            {
+                throw new InvalidOperationException("You can't call \"UseRestier()\" more than once in an application. Check your code and try again.");
+            }
+
             config.UseCustomContainerBuilder(() =>
             {
                 var builder = new RestierContainerBuilder((services) =>
                 {
-                    // remove the default ODataQuerySettings from OData as we will add our own.
-                    services.RemoveAll<ODataQuerySettings>();
+                    // RWM: Remove the default ODataQuerySettings from OData as we will add our own.
+                    //      Has to be here because ODataQuerySettings is in the ASP.NET library.
+                    services.RemoveAll<ODataQuerySettings>()
+                        .AddRestierCoreServices();
 
-                    services
-                   .AddRestierCoreServices(typeof(TApi))
-                   .AddRestierConventionBasedServices(typeof(TApi));
+                    // RWM: Same problem here, can't move this call lower down the stack.
+                    services.AddChainedService<IModelBuilder, RestierWebApiModelBuilder>();
 
+                    //RWM: This is where people will register their own APIs and EF Contexts.
                     configureAction(services);
 
-                    services.AddRestierDefaultServices<TApi>();
+                    //RWM: Register anything else that hasn't been registered already.
+                    services.AddRestierDefaultServices();
                 });
 
                 return builder;
@@ -61,16 +73,14 @@ namespace System.Web.Http
             return config;
         }
 
+
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TApi"></typeparam>
         /// <param name="config"></param>
-        /// <param name="routeName"></param>
-        /// <param name="routePrefix"></param>
-        /// <param name="allowBatching"></param>
+        /// <param name="routeBuilder"></param>
         /// <returns></returns>
-        public static HttpConfiguration MapRestier<TApi>(this HttpConfiguration config, string routeName, string routePrefix, bool allowBatching = true)
+        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder)
         {
             var httpServer = GlobalConfiguration.DefaultServer;
             if (httpServer == null)
@@ -78,52 +88,57 @@ namespace System.Web.Http
                 throw new Exception(owinException);
             }
 
-            return MapRestier<TApi>(config, routeName, routePrefix, allowBatching, httpServer);
+            return MapRestier(config, routeBuilder, httpServer);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="TApi"></typeparam>
         /// <param name="config"></param>
-        /// <param name="routeName"></param>
-        /// <param name="routePrefix"></param>
-        /// <param name="allowBatching"></param>
+        /// <param name="routeBuilder"></param>
         /// <param name="httpServer"></param>
         /// <returns></returns>
-        public static HttpConfiguration MapRestier<TApi>(this HttpConfiguration config, string routeName, string routePrefix, bool allowBatching, HttpServer httpServer)
+        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder, HttpServer httpServer)
         {
-            ODataBatchHandler batchHandler = null;
-            var conventions = CreateRestierRoutingConventions(config, routeName);
+            Ensure.NotNull(routeBuilder, nameof(routeBuilder));
 
-            if (allowBatching)
+            var rrb = new RestierRouteBuilder();
+            routeBuilder.Invoke(rrb);
+
+            foreach (var route in rrb.Routes)
             {
-                if (httpServer == null)
+                ODataBatchHandler batchHandler = null;
+                var conventions = CreateRestierRoutingConventions(config, route.RouteName);
+
+                if (route.AllowBatching)
                 {
-                    throw new ArgumentNullException(nameof(httpServer), owinException);
-                }
+                    if (httpServer == null)
+                    {
+                        throw new ArgumentNullException(nameof(httpServer), owinException);
+                    }
 
 #pragma warning disable IDE0067 // Dispose objects before losing scope
-                batchHandler = new RestierBatchHandler(httpServer)
-                {
-                    ODataRouteName = routeName
-                };
+                    batchHandler = new RestierBatchHandler(httpServer)
+                    {
+                        ODataRouteName = route.RouteName
+                    };
 #pragma warning restore IDE0067 // Dispose objects before losing scope
-            }
-
-            config.MapODataServiceRoute(routeName, routePrefix, (builder) =>
-            {
-                builder.AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions);
-                if (batchHandler != null)
-                {
-                    //RWM: DO NOT simplify this generic signature. It HAS to stay this way, otherwise the code breaks.
-                    builder.AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
                 }
-            });
+
+                config.MapODataServiceRoute(route.RouteName, route.RoutePrefix, (containerBuilder) =>
+                {
+                    (containerBuilder as RestierContainerBuilder).RouteBuilder = rrb;
+                    containerBuilder.AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions);
+                    if (batchHandler != null)
+                    {
+                        //RWM: DO NOT simplify this generic signature. It HAS to stay this way, otherwise the code breaks.
+                        containerBuilder.AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
+                    }
+                });
+            }
 
             return config;
         }
-
 
         #region Private Methods
 

@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Routing;
 
 namespace Microsoft.Restier.Core
 {
@@ -126,55 +127,18 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Asynchronously gets an API model using an API context.
         /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
+        /// <param name="api">An API.</param>
         /// <returns>
-        /// A task that represents the asynchronous
-        /// operation whose result is the API model.
+        /// A task that represents the asynchronous operation whose result is the API model.
         /// </returns>
-        public static async Task<IEdmModel> GetModelAsync(this ApiBase api, CancellationToken cancellationToken = default)
+        public static IEdmModel GetModel(this ApiBase api)
         {
             Ensure.NotNull(api, nameof(api));
 
-            var config = api.Configuration;
-            if (config.Model != null)
-            {
-                return config.Model;
-            }
+            var registrations = api.GetApiService<RestierApiRouteDictionary>();
+            var entry = registrations.FirstOrDefault(c => c.Value.ApiType == api.GetType());
+            return entry.Value.Model;
 
-            var builder = api.GetApiService<IModelBuilder>();
-            if (builder == null)
-            {
-                throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
-            }
-
-            var source = config.CompleteModelGeneration(out var running);
-            if (source == null)
-            {
-                return await running.ConfigureAwait(false);
-            }
-
-            try
-            {
-                var buildContext = new ModelContext(api);
-                var model = await builder.GetModelAsync(buildContext, cancellationToken).ConfigureAwait(false);
-                source.SetResult(model);
-                return model;
-            }
-            catch (AggregateException e)
-            {
-                source.SetException(e.InnerExceptions);
-                throw;
-            }
-            catch (Exception e)
-            {
-                source.SetException(e);
-                throw;
-            }
         }
 
         #endregion
@@ -371,7 +335,7 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(request, nameof(request));
 
             var queryContext = new QueryContext(api, request);
-            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
+            var model = api.GetModel();
             queryContext.Model = model;
             return await api.QueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
         }

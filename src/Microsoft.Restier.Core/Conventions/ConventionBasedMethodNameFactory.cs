@@ -231,7 +231,7 @@ namespace Microsoft.Restier.Core
                 case RestierPipelineState.PreSubmit:
                 case RestierPipelineState.PostSubmit:
                     //RWM: If the last letter of the string is an e, cut off it's head.
-                    return operation.LastIndexOf("e") == operation.Length - 1 ? operation.Substring(0, operation.Length - 1) : operation;
+                    return operation.LastIndexOf("e", System.StringComparison.InvariantCultureIgnoreCase) == operation.Length - 1 ? operation.Substring(0, operation.Length - 1) : operation;
                 default:
                     return operation;
             }
