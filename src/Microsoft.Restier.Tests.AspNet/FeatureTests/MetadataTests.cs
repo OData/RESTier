@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
+using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task LibraryApi_SaveVisibilityMatrix()
         {
             var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi, LibraryContext>();
-            api.WriteCurrentVisibilityMatrix(relativePath);
+            await api.WriteCurrentVisibilityMatrix(relativePath);
 
             File.Exists($"{relativePath}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             File.Exists(fileName).Should().BeTrue();
             var oldReport = File.ReadAllText(fileName);
-            var newReport = api.GenerateVisibilityMatrix();
+            var newReport = await api.GenerateVisibilityMatrix();
             oldReport.Should().BeEquivalentTo(newReport);
         }
 
@@ -80,7 +80,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task StoreApi_SaveVisibilityMatrix()
         {
             var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
-            api.WriteCurrentVisibilityMatrix(relativePath);
+            await api.WriteCurrentVisibilityMatrix(relativePath);
 
             File.Exists($"{relativePath}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             File.Exists(fileName).Should().BeTrue();
             var oldReport = File.ReadAllText(fileName);
-            var newReport = api.GenerateVisibilityMatrix();
+            var newReport = await api.GenerateVisibilityMatrix();
             oldReport.Should().BeEquivalentTo(newReport);
         }
 

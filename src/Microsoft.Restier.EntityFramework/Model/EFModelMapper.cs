@@ -16,6 +16,19 @@ namespace Microsoft.Restier.EntityFramework
     /// </summary>
     internal class EFModelMapper : IModelMapper
     {
+        private readonly Type dbContextType;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EFModelMapper" /> class.
+        /// </summary>
+        /// <param name="dbContextType">
+        /// The type of a DbContext class.
+        /// </param>
+        public EFModelMapper(Type dbContextType)
+        {
+            Ensure.NotNull(dbContextType, nameof(dbContextType));
+            this.dbContextType = dbContextType;
+        }
 
         /// <summary>
         /// Tries to get the relevant type of an entity
@@ -42,10 +55,6 @@ namespace Microsoft.Restier.EntityFramework
         {
             // TODO GitHubIssue#39 : support something beyond entity sets
             relevantType = null;
-
-            dynamic api = context.Api;
-            var dbContextType = api.ContextType as Type;
-
             var property = dbContextType.GetProperty(name);
             if (property != null)
             {

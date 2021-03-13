@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Restier.Breakdance;
+using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Builder;
@@ -32,9 +32,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
         void addTestServices(IServiceCollection services)
         {
-            services
-                .AddRestierApi<FallbackApi>()
-                .AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(FallbackModel.Model))
+            services.AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(FallbackModel.Model))
                 .AddChainedService<IModelMapper>((sp, next) => new FallbackModelMapper())
                 .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())
                 .AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
+using CloudNimble.Breakdance.Restier;
 using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BoundFunctionWithExpand()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers/Id/FavoriteBooks()?$expand=Publisher");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers/Publisher1/PublishedBooks()?$expand=Publisher");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

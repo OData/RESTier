@@ -6,7 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
+using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
@@ -16,8 +16,6 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Restier.Core.Routing;
-using System.Collections.Generic;
 
 namespace Microsoft.Restier.Tests.Core.Model
 {
@@ -37,9 +35,6 @@ namespace Microsoft.Restier.Tests.Core.Model
         public async Task GetModelUsingDefaultModelHandler()
         {
             var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) => {
-                services.AddRestierCoreServices()
-                .AddRestierApi<TestableEmptyApi>();
-
                 addTestServices(services);
                 services.AddChainedService<IModelBuilder>((sp, next) => new TestModelProducer())
                     .AddChainedService<IModelBuilder>((sp, next) => new TestModelExtender(2)
@@ -69,9 +64,7 @@ namespace Microsoft.Restier.Tests.Core.Model
                 for (var i = 0; i < 2; i++)
                 {
                     var container = new RestierContainerBuilder();
-                    container.RouteBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>("", "", true);
-                    container.Services.AddRestierCoreServices()
-                        .AddRestierApi<TestableEmptyApi>()
+                    container.Services.AddRestierCoreServices(typeof(TestableEmptyApi))
                         .AddChainedService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
                     addTestServices(container.Services);
 
@@ -85,16 +78,13 @@ namespace Microsoft.Restier.Tests.Core.Model
             }
         }
 
-        [Ignore]
         [TestMethod]
         public async Task GetModelAsyncRetriableAfterFailure()
         {
             using (var wait = new ManualResetEventSlim(false))
             {
                 var container = new RestierContainerBuilder();
-                container.RouteBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>("", "", true);
-                container.Services.AddRestierCoreServices()
-                    .AddRestierApi<TestableEmptyApi>()
+                container.Services.AddRestierCoreServices(typeof(TestableEmptyApi))
                     .AddChainedService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
                 addTestServices(container.Services);
 
@@ -122,7 +112,7 @@ namespace Microsoft.Restier.Tests.Core.Model
 
         private class TestModelProducer : IModelBuilder
         {
-            public IEdmModel GetModel(ModelContext context)
+            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 var model = new EdmModel();
                 var entityType = new EdmEntityType("TestNamespace", "TestName");
@@ -131,7 +121,7 @@ namespace Microsoft.Restier.Tests.Core.Model
                 model.AddElement(entityType);
                 model.AddElement(entityContainer);
 
-                return model;
+                return Task.FromResult<IEdmModel>(model);
             }
         }
 
@@ -143,12 +133,12 @@ namespace Microsoft.Restier.Tests.Core.Model
 
             public IModelBuilder InnerHandler { get; set; }
 
-            public IEdmModel GetModel(ModelContext context)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 IEdmModel innerModel = null;
                 if (InnerHandler != null)
                 {
-                    innerModel = InnerHandler.GetModel(context);
+                    innerModel = await InnerHandler.GetModelAsync(context, cancellationToken);
                 }
 
                 var entityType = new EdmEntityType("TestNamespace", "TestName" + _index);
@@ -167,9 +157,9 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             public int CalledCount;
 
-            public IEdmModel GetModel(ModelContext context)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
-                Thread.Sleep(30);
+                await Task.Delay(30, cancellationToken);
 
                 Interlocked.Increment(ref CalledCount);
                 return new EdmModel();
@@ -191,7 +181,7 @@ namespace Microsoft.Restier.Tests.Core.Model
                     var api = scopedProvider.GetService<ApiBase>();
                     try
                     {
-                        var model = api.GetModel();
+                        var model = api.GetModelAsync().Result;
                         source.SetResult(model);
                     }
                     catch (Exception e)
@@ -210,11 +200,11 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             public int CalledCount;
 
-            public IEdmModel GetModel(ModelContext context)
+            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
             {
                 if (CalledCount++ == 0)
                 {
-                    Thread.Sleep(100);
+                    await Task.Delay(100, cancellationToken);
                     throw new Exception("Deliberate failure");
                 }
 

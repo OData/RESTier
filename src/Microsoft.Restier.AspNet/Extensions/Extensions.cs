@@ -105,14 +105,15 @@ namespace Microsoft.Restier.AspNet
             return propertyValues;
         }
 
-        public static IDictionary<string, PropertyAttributes> RetrievePropertiesAttributes(IEdmStructuredType edmType, ApiBase api)
+        public static IDictionary<string, PropertyAttributes> RetrievePropertiesAttributes(
+            IEdmStructuredType edmType, ApiBase api)
         {
             if (typePropertiesAttributes.TryGetValue(edmType, out var propertiesAttributes))
             {
                 return propertiesAttributes;
             }
 
-            var model = api.GetModel();
+            var model = api.GetModelAsync().Result;
             foreach (var property in edmType.DeclaredProperties)
             {
                 var annotations = model.FindVocabularyAnnotations(property);

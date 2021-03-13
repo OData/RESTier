@@ -5,14 +5,13 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Routing;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// A delegate which participate in service creation.
@@ -187,25 +186,26 @@ namespace Microsoft.Extensions.DependencyInjection
             }, serviceLifetime);
         }
 
-
         /// <summary>
         /// Add core services.
         /// </summary>
         /// <param name="services">he <see cref="IServiceCollection"/> containing API service registrations.</param>
+        /// <param name="apiType">The type of a class on which code-based conventions are used.</param>
         /// <returns>
         /// Current <see cref="IServiceCollection"/>
         /// </returns>
-        internal static IServiceCollection AddRestierCoreServices(this IServiceCollection services)
+        public static IServiceCollection AddRestierCoreServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(apiType, nameof(apiType));
 
-            //RWM: Inject this early so we can get the ServiceProvider for when we add registrations.
-            services.TryAddSingleton(typeof(RestierApiRouteDictionary));
-            services
-                .AddChainedService<IQueryExecutor, DefaultQueryExecutor>()
-                .AddScoped<PropertyBag>();
+            services.AddScoped(apiType, apiType)
+                .AddScoped(typeof(ApiBase), apiType);
 
-            return services;
+            services.TryAddSingleton<ApiConfiguration>();
+
+            return services.AddChainedService<IQueryExecutor, DefaultQueryExecutor>()
+                            .AddScoped<PropertyBag>();
         }
 
         /// <summary>
@@ -214,19 +214,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> containing API service registrations.</param>
         /// <param name="apiType">The type of a class on which code-based conventions are used.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        internal static IServiceCollection AddRestierConventionBasedServices(this IServiceCollection services, Type apiType)
+        public static IServiceCollection AddRestierConventionBasedServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
 
             services.AddChainedService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(apiType));
             services.AddChainedService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(apiType));
-            
-            if (!services.HasService<IChangeSetItemValidator>())
-            {
-                services.AddChainedService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
-            }
-
+            services.AddChainedService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
             services.AddChainedService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(apiType)
             {
                 Inner = next,

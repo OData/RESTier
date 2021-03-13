@@ -22,10 +22,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>The task object that represents this asynchronous operation.</returns>
         public async override Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-
-
-            dynamic api = context.Api;
-            var dbContext = api.DbContext as DbContext;
+            var dbContext = context.GetApiService<DbContext>();
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return await base.ExecuteSubmitAsync(context, cancellationToken).ConfigureAwait(false);
         }
