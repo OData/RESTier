@@ -4,7 +4,7 @@
 using System.Data.Entity;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
+using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;

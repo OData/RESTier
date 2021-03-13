@@ -4,7 +4,7 @@
 using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
+using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
@@ -22,8 +22,8 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder();
             container.Services
-                .AddRestierCoreServices()
-                .AddRestierApi<TestableEmptyApi>()
+                .AddRestierCoreServices(typeof(TestableEmptyApi))
+                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
                 .AddTestStoreApiServices()
                 .AddScoped<MyPropertyBag>();
             var provider = container.BuildContainer();
@@ -60,8 +60,7 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder();
             container.Services
-                .AddRestierCoreServices()
-                .AddRestierApi<TestableEmptyApi>()
+                .AddRestierCoreServices(typeof(TestableEmptyApi))
                 .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
                 .AddTestStoreApiServices()
                 .AddScoped<MyPropertyBag>();

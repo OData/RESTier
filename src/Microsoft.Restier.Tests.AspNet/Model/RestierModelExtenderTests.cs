@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNet.Model;
-using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,12 +22,6 @@ namespace Microsoft.Restier.Tests.AspNet.Model
     [TestClass]
     public class RestierModelExtenderTests : RestierTestBase
     {
-
-        void Api<TApi>(IServiceCollection services) where TApi : ApiBase
-        {
-            services.AddRestierApi<TApi>();
-            di(services);
-        }
 
         void di(IServiceCollection services)
         {
@@ -41,7 +37,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceEmptyModelForEmptyApi()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: Api<TestableEmptyApi>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: diEmpty);
             model.SchemaElements.Should().HaveCount(1);
             model.EntityContainer.Elements.Should().BeEmpty();
         }
@@ -49,7 +45,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForBasicScenario()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiA, DbContext>(serviceCollection: Api<ApiA>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiA, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
@@ -59,7 +55,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForDerivedApi()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiB, DbContext>(serviceCollection: Api<ApiB>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiB, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("Customers").Should().NotBeNull();
@@ -70,7 +66,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForOverridingProperty()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>(serviceCollection: Api<ApiC>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
@@ -81,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceCorrectModelForIgnoringInheritedProperty()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiD, DbContext>(serviceCollection: Api<ApiD>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiD, DbContext>(serviceCollection: di);
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("ApiConfiguration");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Invisible");
             model.EntityContainer.FindEntitySet("Customers").EntityType().Name.Should().Be("Customer");
@@ -91,7 +87,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldSkipEntitySetWithUndeclaredType()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiE, DbContext>(serviceCollection: Api<ApiE>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiE, DbContext>(serviceCollection: di);
             model.EntityContainer.FindEntitySet("People").EntityType().Name.Should().Be("Person");
             model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Orders");
         }
@@ -99,7 +95,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldSkipExistingEntitySet()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiF, DbContext>(serviceCollection: Api<ApiF>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiF, DbContext>(serviceCollection: di);
             model.EntityContainer.FindEntitySet("VipCustomers").EntityType().Name.Should().Be("VipCustomer");
         }
 
@@ -109,7 +105,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             // In this case, only one entity set People has entity type Person.
             // Bindings for collection navigation property Customer.Friends should be added.
             // Bindings for singleton navigation property Customer.BestFriend should be added.
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>(serviceCollection: Api<ApiC>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiC, DbContext>(serviceCollection: di);
 
             var customersBindings = model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.ToArray();
 
@@ -138,7 +134,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             // In this case, only one singleton Me has entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should be added.
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiH, DbContext>(serviceCollection: Api<ApiH>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiH, DbContext>(serviceCollection: di);
             var binding = model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.Single();
             binding.NavigationProperty.Name.Should().Be("BestFriend");
             binding.Target.Name.Should().Be("Me");
@@ -153,7 +149,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             // In this case, two entity sets Employees and People have entity type Person.
             // Bindings for collection navigation property Customer.Friends should NOT be added.
             // Bindings for singleton navigation property Customer.BestFriend should NOT be added.
-            var model = await RestierTestHelpers.GetTestableModelAsync<ApiG, DbContext>(serviceCollection: Api<ApiG>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<ApiG, DbContext>(serviceCollection: di);
             model.EntityContainer.FindEntitySet("Customers").NavigationPropertyBindings.Should().BeEmpty();
             model.EntityContainer.FindSingleton("Me").NavigationPropertyBindings.Should().BeEmpty();
         }
@@ -164,7 +160,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     public class TestModelBuilder : IModelBuilder
     {
-        public IEdmModel GetModel(ModelContext context)
+        public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
             var model = new EdmModel();
             var ns = typeof(Person).Namespace;
@@ -191,7 +187,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
             var container = new EdmEntityContainer(ns, "DefaultContainer");
             container.AddEntitySet("VipCustomers", vipCustomerType);
             model.AddElement(container);
-            return model;
+            return Task.FromResult<IEdmModel>(model);
         }
     }
 

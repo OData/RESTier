@@ -76,7 +76,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
             var parameterArray = method.GetParameters();
 
-            var model = context.Api.GetModel();
+            var model = await context.Api.GetModelAsync(cancellationToken).ConfigureAwait(false);
 
             // Parameters of method and model is exactly mapped or there is parsing error
             var parameters = new object[parameterArray.Length];
@@ -112,7 +112,8 @@ namespace Microsoft.Restier.AspNet.Operation
                 }
                 else
                 {
-                    convertedValue = DeserializationHelpers.ConvertCollectionType(currentParameterValue, parameter.ParameterType);
+                    convertedValue = DeserializationHelpers.ConvertCollectionType(
+                        currentParameterValue, parameter.ParameterType);
                 }
 
                 parameters[paraIndex] = convertedValue;

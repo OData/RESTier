@@ -2,12 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 using Microsoft.AspNet.OData.Formatter.Deserialization;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.AspNet.OData.Query;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
-using Microsoft.Restier.AspNet;
 using Microsoft.Restier.AspNet.Formatter;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.AspNet.Operation;
@@ -17,7 +18,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Restier.AspNet
 {
 
     /// <summary>
@@ -26,47 +27,15 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class ServiceCollectionExtensions
     {
-
         #region Public Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TApi"></typeparam>
-        /// <param name="services"></param>
-        public static IServiceCollection AddRestierApi<TApi>(this IServiceCollection services) where TApi : ApiBase
-        {
-            Ensure.NotNull(services, nameof(services));
-
-            services.AddScoped(typeof(TApi), typeof(TApi))
-                .AddScoped(typeof(ApiBase), typeof(TApi));
-
-            services.AddRestierConventionBasedServices(typeof(TApi));
-
-            // The model builder must maintain a singleton life time, for holding states and being injected into
-            // some other services.
-            services.AddSingleton(new RestierWebApiModelExtender(typeof(TApi)))
-                .AddChainedService<IModelBuilder, RestierWebApiModelExtender.ModelBuilder>()
-                .AddChainedService<IModelMapper, RestierWebApiModelExtender.ModelMapper>()
-                .AddChainedService<IQueryExpressionExpander, RestierWebApiModelExtender.QueryExpressionExpander>()
-                .AddChainedService<IQueryExpressionSourcer, RestierWebApiModelExtender.QueryExpressionSourcer>()
-                .AddChainedService<IModelBuilder>((sp, next) => new RestierWebApiOperationModelBuilder(typeof(TApi), next));
-
-
-
-            return services;
-        }
-
-        #endregion
-
-        #region Internal Members
 
         /// <summary>
         /// This method is used to add odata publisher service into container.
         /// </summary>
+        /// <typeparam name="T">The Api type.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        internal static IServiceCollection AddRestierDefaultServices(this IServiceCollection services)
+        public static IServiceCollection AddRestierDefaultServices<T>(this IServiceCollection services)
         {
             Ensure.NotNull(services, nameof(services));
 
@@ -77,11 +46,23 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             services.AddSingleton<DefaultRestierServicesDetectionDummy>();
 
-            //// Do not add Restier implementation of chained service inside the container twice.
-            //if (!services.HasService<RestierWebApiOperationModelBuilder>())
-            //{
-            //    AddOperationModelBuilder(services, typeof(T));
-            //}
+            // Do not add Restier implementation of chained service inside the container twice.
+            if (!services.HasService<RestierModelBuilder>())
+            {
+                services.AddChainedService<IModelBuilder, RestierModelBuilder>();
+            }
+
+            // Do not add Restier implementation of chained service inside the container twice.
+            if (!services.HasService<RestierModelExtender>())
+            {
+                AddRestierModelExtender(services, typeof(T));
+            }
+
+            // Do not add Restier implementation of chained service inside the container twice.
+            if (!services.HasService<RestierOperationModelBuilder>())
+            {
+                AddOperationModelBuilder(services, typeof(T));
+            }
 
             // Only add if none are there. We have removed the default OData one before.
             services.TryAddScoped((sp) => new ODataQuerySettings
@@ -113,14 +94,14 @@ namespace Microsoft.Extensions.DependencyInjection
             // OData already registers the ODataPayloadValueConverter, so if we have 2, either the developer
             // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<ODataPayloadValueConverter>() < 2)
-            {
+            { 
                 services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
             }
 
             // Do not add Restier implementation of chained service inside the container twice.
-            if (!services.HasService<RestierWebApiModelMapper>())
+            if (!services.HasService<RestierModelMapper>())
             {
-                services.AddChainedService<IModelMapper, RestierWebApiModelMapper>();
+                services.AddChainedService<IModelMapper, RestierModelMapper>();
             }
 
             services.TryAddScoped<RestierQueryExecutorOptions>();
@@ -132,6 +113,40 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return services;
+        }
+
+        #endregion
+
+        #region Internal Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="targetType"></param>
+        internal static void AddRestierModelExtender(IServiceCollection services, Type targetType)
+        {
+            Ensure.NotNull(services, nameof(services));
+            Ensure.NotNull(targetType, nameof(targetType));
+
+            // The model builder must maintain a singleton life time, for holding states and being injected into
+            // some other services.
+            services.AddSingleton(new RestierModelExtender(targetType));
+
+            services.AddChainedService<IModelBuilder, RestierModelExtender.ModelBuilder>();
+            services.AddChainedService<IModelMapper, RestierModelExtender.ModelMapper>();
+            services.AddChainedService<IQueryExpressionExpander, RestierModelExtender.QueryExpressionExpander>();
+            services.AddChainedService<IQueryExpressionSourcer, RestierModelExtender.QueryExpressionSourcer>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="targetType"></param>
+        internal static void AddOperationModelBuilder(IServiceCollection services, Type targetType)
+        {
+            services.AddChainedService<IModelBuilder>((sp, next) => new RestierOperationModelBuilder(targetType, next));
         }
 
         #endregion

@@ -14,9 +14,9 @@ namespace Microsoft.Restier.Tests.Shared
             this.model = model;
         }
 
-        public IEdmModel GetModel(ModelContext context)
+        public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
         {
-            return model;
+            return Task.FromResult<IEdmModel>(model);
         }
     }
 }

@@ -6,28 +6,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.6" />
+    <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20201025-153538" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="Microsoft.OData.Core" Version="7.8.3" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.1" />
+    <PackageReference Include="Microsoft.OData.Core" Version="7.8.1" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
   </ItemGroup>
 
 

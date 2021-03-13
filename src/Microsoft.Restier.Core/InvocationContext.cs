@@ -47,17 +47,5 @@ namespace Microsoft.Restier.Core
         {
             return provider.GetService<T>();
         }
-
-        /// <summary>
-        /// Gets an API service.
-        /// </summary>
-        /// <param name="type">The API service type.</param>
-        /// <returns>The API service instance.</returns>
-        public object GetApiService(Type type)
-        {
-            return provider.GetService(type);
-        }
-
     }
-
 }

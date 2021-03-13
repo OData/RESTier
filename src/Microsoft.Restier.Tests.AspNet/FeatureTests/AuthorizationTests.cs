@@ -3,11 +3,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CloudNimble.Breakdance.Restier;
 using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Common;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
@@ -28,9 +29,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         {
             void di(IServiceCollection services)
             {
-                services
-                    .AddRestierApi<LibraryApi>()
-                    .AddEF6ProviderServices<LibraryContext>()
+                services.AddEF6ProviderServices<LibraryContext>()
                     .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
             }
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books", serviceCollection: di);
