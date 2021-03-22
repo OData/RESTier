@@ -39,7 +39,8 @@ namespace Microsoft.Restier.Core.Startup
             Ensure.NotNull(builder, nameof(builder));
             Ensure.NotNull(services, nameof(services));
 
-            builder.Apis.Add(typeof(TApi), (serviceCollection) => {
+            builder.Apis.Add(typeof(TApi), (serviceCollection) =>
+            {
 
                 serviceCollection.AddScoped(typeof(TApi), typeof(TApi))
                     .AddScoped(typeof(ApiBase), typeof(TApi));
@@ -55,8 +56,8 @@ namespace Microsoft.Restier.Core.Startup
                 // The model builder must maintain a singleton life time, for holding states and being injected into
                 // some other services.
                 serviceCollection.AddSingleton(new RestierWebApiModelExtender(typeof(TApi)))
-                    .AddChainedService<IModelBuilder>((sp, next) => new RestierWebApiOperationModelBuilder(typeof(TApi), next))
                     .AddChainedService<IModelBuilder, RestierWebApiModelExtender.ModelBuilder>()
+                    .AddChainedService<IModelBuilder>((sp, next) => new RestierWebApiOperationModelBuilder(typeof(TApi), next))
 
                     .AddChainedService<IModelMapper, RestierWebApiModelExtender.ModelMapper>()
                     .AddChainedService<IQueryExpressionExpander, RestierWebApiModelExtender.QueryExpressionExpander>()

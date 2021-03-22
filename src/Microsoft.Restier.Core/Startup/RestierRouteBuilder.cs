@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Restier.Core.Startup
 {
@@ -41,47 +42,15 @@ namespace Microsoft.Restier.Core.Startup
         /// <returns></returns>
         public RestierRouteBuilder MapApiRoute<TApi>(string routeName, string routePrefix, bool allowBatching = true)
         {
+            if (string.IsNullOrWhiteSpace(routeName))
+            {
+                Trace.TraceWarning("Restier: You mapped an ApiRoute with a blank RouteName. Registering the route as 'RestierDefault' for now, if this doesn't work for you then please change the name.");
+                routeName = "RestierDefault";
+            }
+
             Routes.Add(routeName, new RestierRouteEntry(routeName, routePrefix, typeof(TApi), allowBatching));
             return this;
         }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <returns></returns>
-        //public RestierApiRouteDictionary ToRestierApiRouteDictionary(IServiceProvider sp)
-        //{
-        //    Ensure.NotNull(sp, nameof(sp));
-        //    var scope = sp.GetService<IServiceScopeFactory>().CreateScope();
-
-        //    var routes = new RestierApiRouteDictionary();
-        //    foreach (var route in Routes)
-        //    {
-        //        var api = scope.ServiceProvider.GetService(route.ApiType) as ApiBase;
-        //        if (api == null)
-        //        {
-        //            throw new Exception($"Could not find the API. Please make sure you registered the API using the new 'UseRestier((services) => services.AddRestierApi<{route.ApiType.Name}>());' syntax.");
-        //        }
-
-        //        var builder = sp.GetServices<IModelBuilder>();
-        //        if (sp.GetService(typeof(IModelBuilder)) is not IModelBuilder modelBuilder)
-        //        {
-        //            throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
-        //        }
-
-        //        var buildContext = new ModelContext(api);
-        //        var model = modelBuilder.GetModel(buildContext);
-
-        //        routes.Add(route.RouteName, new RestierApiModelMap(route.ApiType, model));
-        //    }
-        //    return routes;
-        //}
-
-
-
-
-
-
 
     }
 

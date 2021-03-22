@@ -3,18 +3,16 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core.Startup;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions.Common;
-using Microsoft.Restier.Core.Startup;
 
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests
 {
@@ -79,12 +77,12 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             });
 
             var client = config.GetTestableHttpClient();
-            var response = await client.ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books");
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books?$count=true");
 
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
-            content.Should().Contain("\"@odata.count\":3,");
+            content.Should().Contain("\"@odata.count\":5,");
         }
 
         [TestMethod]

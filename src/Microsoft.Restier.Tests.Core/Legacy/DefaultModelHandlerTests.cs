@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Tests.Core.Model
         [TestMethod]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) => 
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) =>
             {
                 addTestServices(services);
                 services.AddChainedService<IModelBuilder>((sp, next) => new TestModelProducer())
@@ -74,7 +74,7 @@ namespace Microsoft.Restier.Tests.Core.Model
 
                     });
                 });
-                container.routeBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>("", "", true);
+                container.routeBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>(i.ToString(), "", true);
 
                 var provider = container.BuildContainer();
                 var tasks = PrepareThreads(50, provider, wait);
@@ -91,7 +91,7 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                                var container = new RestierContainerBuilder(builder =>
+                var container = new RestierContainerBuilder(builder =>
                 {
                     builder.AddRestierApi<TestableEmptyApi>(services =>
                     {

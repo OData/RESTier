@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ApiModelBuilder_ShouldProduceEmptyModelForEmptyApi()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: Api<TestableEmptyApi>);
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: diEmpty);
             model.SchemaElements.Should().HaveCount(1);
             model.EntityContainer.Elements.Should().BeEmpty();
         }

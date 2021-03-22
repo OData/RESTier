@@ -2,10 +2,12 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
+using Microsoft.Restier.Core.Model;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
 
@@ -28,15 +30,11 @@ namespace Microsoft.Restier.Core.Startup
 
         internal RestierApiBuilder apiBuilder;
 
-        //internal List<Action<IServiceCollection>> preRegistrationActions;
-
-        //internal List<Action<IServiceCollection>> postRegistrationActions;
-
         #endregion
 
         #region Properties
 
-        internal string RouteName { get; set; }
+        internal string RouteName { get; set; } = "RestierDefault";
 
         /// <summary>
         /// 
@@ -58,8 +56,6 @@ namespace Microsoft.Restier.Core.Startup
         public RestierContainerBuilder(Action<RestierApiBuilder> configureApis = null)
         {
             this.configureApis = configureApis;
-            //preRegistrationActions = new();
-            //postRegistrationActions = new();
             Services = new ServiceCollection();
             apiBuilder = new();
             routeBuilder = new();
@@ -68,7 +64,6 @@ namespace Microsoft.Restier.Core.Startup
         #endregion
 
         #region Public Methods
-
 
         /// <summary>
         /// Adds a service of <paramref name="serviceType"/> with an <paramref name="implementationType"/>.
@@ -111,25 +106,72 @@ namespace Microsoft.Restier.Core.Startup
         {
             configureApis?.Invoke(apiBuilder);
 
-            if (!apiBuilder.Apis.Any())
+            Type apiType = null;
+
+            if (routeBuilder.Routes.Any())
             {
-                throw new Exception("Restier was registered without adding any Apis. Please see the documentation for adding an Api to the 'config.UseRestier()' call.");
+                if (routeBuilder.Routes.ContainsKey(RouteName))
+                {
+                    var route = routeBuilder.Routes[RouteName];
+                    var apiServiceActions = apiBuilder.Apis[route.ApiType];
+                    apiType = route.ApiType;
+                    apiServiceActions.Invoke(Services);
+                }
+                else
+                {
+                    Trace.TraceWarning($"Restier: The requested Route {RouteName}, which is not registered. Please check your configuration and try again.");
+                }
+            }
+            else
+            {
+                Trace.TraceWarning("Restier was registered without mapping any Routes. Please see the documentation for adding a Route to the 'config.MapRestier()' call.");
             }
 
-            if (!routeBuilder.Routes.Any())
+            //RWM: We might not have had any Routes registered, so if there are any APIs, then grab the first one and run it.
+            if (apiBuilder.Apis.Any())
             {
-                throw new Exception("Restier was registered without mapping any Routes. Please see the documentation for adding a Route to the 'config.MapRestier()' call.");
+                //RWM: If we already have an API type, then skip this.
+                if (apiType == null)
+                {
+                    var apiRecord = apiBuilder.Apis.FirstOrDefault();
+                    apiType = apiRecord.Key;
+                    apiRecord.Value.Invoke(Services);
+                }
+            }
+            else
+            {
+                Trace.TraceWarning("Restier was registered without adding any Apis. Please see the documentation for adding an Api to the 'config.UseRestier()' call.");
             }
 
-            var route = routeBuilder.Routes[RouteName];
-            var apiServiceActions = apiBuilder.Apis[route.ApiType];
+            //RWM: Warn the user they need to specify Routes if they registered more than one API.
+            if (apiBuilder.Apis.Count != routeBuilder.Routes.Count)
+            {
+                Trace.TraceWarning($"Restier detected at API mismatch. There are {routeBuilder.Routes.Count} routest registered but {apiBuilder.Apis.Count} Apis registered. Please double-check your configuration.");
+            }
 
-            apiServiceActions.Invoke(Services);
+            //RWM: It's entirely possible that this container was used some other way. 
+            if (apiType != null)
+            {
+                var sp = Services.BuildServiceProvider();
+                var scope = sp.GetService<IServiceScopeFactory>().CreateScope();
 
+                var api = scope.ServiceProvider.GetService<ApiBase>();
+                if (api is null)
+                {
+                    throw new Exception($"Could not find the API. Please make sure you registered the API using the new 'UseRestier((services) => services.AddRestierApi<{apiType.Name}>());' syntax.");
+                }
 
-            //RWM: Build temp container, build model, add to container.
+                if (sp.GetService(typeof(IModelBuilder)) is not IModelBuilder modelBuilder)
+                {
+                    throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
+                }
 
-
+                var buildContext = new ModelContext(api);
+                var model = modelBuilder.GetModel(buildContext);
+                Services.AddSingleton(model);
+                scope.Dispose();
+                sp.Dispose();
+            }
 
             return Services.BuildServiceProvider();
         }
