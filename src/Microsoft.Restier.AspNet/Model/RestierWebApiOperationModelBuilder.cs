@@ -20,20 +20,20 @@ namespace Microsoft.Restier.AspNet.Model
         private readonly Type targetApiType;
         private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
 
-        internal RestierWebApiOperationModelBuilder(Type targetApiType, IModelBuilder innerHandler)
+        internal RestierWebApiOperationModelBuilder(Type targetApiType, IModelBuilder innerModelBuilder)
         {
             this.targetApiType = targetApiType;
-            this.InnerHandler = innerHandler;
+            this.InnerModelBuilder = innerModelBuilder;
         }
 
-        private IModelBuilder InnerHandler { get; }
+        private IModelBuilder InnerModelBuilder { get; }
 
         public IEdmModel GetModel(ModelContext context)
         {
             EdmModel model = null;
-            if (InnerHandler != null)
+            if (InnerModelBuilder != null)
             {
-                model = InnerHandler.GetModel(context) as EdmModel;
+                model = InnerModelBuilder.GetModel(context) as EdmModel;
             }
 
             if (model == null)

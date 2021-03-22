@@ -33,7 +33,6 @@ namespace Microsoft.Restier.Tests.AspNet
         void addTestServices(IServiceCollection services)
         {
             services
-                .AddRestierApi<FallbackApi>()
                 .AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(FallbackModel.Model))
                 .AddChainedService<IModelMapper>((sp, next) => new FallbackModelMapper())
                 .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())

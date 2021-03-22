@@ -24,7 +24,6 @@ namespace Microsoft.Restier.Tests.AspNet
             void di(IServiceCollection services)
             {
                 services
-                    .AddRestierApi<StoreApi>()
                     .AddTestStoreApiServices()
                     .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }

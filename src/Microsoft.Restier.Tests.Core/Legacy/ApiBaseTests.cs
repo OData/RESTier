@@ -27,7 +27,6 @@ namespace Microsoft.Restier.Tests.Core
 
         void di(IServiceCollection services)
         {
-            services.AddRestierApi<TestableEmptyApi>();
             services.AddChainedService<IModelBuilder>((sp, next) => new TestModelBuilder());
             services.AddChainedService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddChainedService<IQueryExpressionSourcer>((sp, next) => new TestQuerySourcer());
@@ -38,7 +37,6 @@ namespace Microsoft.Restier.Tests.Core
         void diEmpty(IServiceCollection services)
         {
             services
-                .AddRestierApi<TestableEmptyApi>()
                 .AddTestDefaultServices();
         }
 

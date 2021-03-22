@@ -42,8 +42,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services
                 .AddSingleton<DefaultEF6ProviderServicesDetectionDummy>()
-                .AddChainedService<IModelBuilder, EFModelBuilder>()
-                .AddChainedService<IModelMapper, EFModelMapper>()
+                .AddChainedService<IModelBuilder, EF6ModelBuilder>()
+                .AddChainedService<IModelMapper, EF6ModelMapper>()
                 .AddChainedService<IQueryExpressionSourcer, EFQueryExpressionSourcer>()
                 .AddChainedService<IQueryExecutor, EFQueryExecutor>()
                 .AddChainedService<IQueryExpressionProcessor, EFQueryExpressionProcessor>()

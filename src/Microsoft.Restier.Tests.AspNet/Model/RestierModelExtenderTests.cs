@@ -23,7 +23,6 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
         void Api<TApi>(IServiceCollection services) where TApi : ApiBase
         {
-            services.AddRestierApi<TApi>();
             di(services);
         }
 

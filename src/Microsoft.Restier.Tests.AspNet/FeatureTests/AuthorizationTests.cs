@@ -29,8 +29,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             void di(IServiceCollection services)
             {
                 services
-                    .AddRestierApi<LibraryApi>()
-                    .AddEF6ProviderServices<LibraryContext>()
+                    //.AddEF6ProviderServices<LibraryContext>()
                     .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
             }
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books", serviceCollection: di);

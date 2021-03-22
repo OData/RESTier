@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Routing;
 using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -187,7 +186,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }, serviceLifetime);
         }
 
-
         /// <summary>
         /// Add core services.
         /// </summary>
@@ -199,8 +197,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             Ensure.NotNull(services, nameof(services));
 
-            //RWM: Inject this early so we can get the ServiceProvider for when we add registrations.
-            services.TryAddSingleton(typeof(RestierApiRouteDictionary));
             services
                 .AddChainedService<IQueryExecutor, DefaultQueryExecutor>()
                 .AddScoped<PropertyBag>();

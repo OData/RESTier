@@ -14,7 +14,7 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    internal class EFModelMapper : IModelMapper
+    internal class EF6ModelMapper : IModelMapper
     {
 
         /// <summary>

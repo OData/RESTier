@@ -1,18 +1,20 @@
-﻿using CloudNimble.Breakdance.WebApi;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.EntityFramework;
-using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Xml.Linq;
+using CloudNimble.Breakdance.WebApi;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Startup;
+using Newtonsoft.Json;
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -41,6 +43,8 @@ namespace Microsoft.Restier.Breakdance
         #endregion
 
         #region Public Methods
+
+        #region ExecuteTestRequest
 
         /// <summary>
         /// Configures the Restier pipeline in-memory and executes a test request against a given service, returning an <see cref="HttpResponseMessage"/> for inspection.
@@ -76,6 +80,52 @@ namespace Microsoft.Restier.Breakdance
             return await client.ExecuteTestRequest(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings).ConfigureAwait(false);
         }
 
+        #endregion
+
+        #region GetModelBuilderHierarchy
+
+        /// <summary>
+        /// Gets a list of fully-qualified builder instances that are registered down the ModelBuilder chain. The order is really important, so this is a great way to troubleshoot.
+        /// </summary>
+        /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
+        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
+        /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
+        /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static async Task<List<string>> GetModelBuilderHierarchy<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+            Action<IServiceCollection> serviceCollection = default)
+            where TApi : ApiBase
+            where TDbContext : DbContext
+
+        {
+            var modelBuilder = await GetTestableInjectedService<TApi, TDbContext, IModelBuilder>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
+
+            var innerBuilders = new List<string>
+            {
+                modelBuilder.GetType().FullName
+            };
+            var builder = GetInnerBuilder(modelBuilder);
+            do
+            {
+                innerBuilders.Add(builder.GetType().FullName);
+                builder = GetInnerBuilder(builder);
+            }
+            while (builder != null);
+            return innerBuilders;
+
+            //RWM: Only need this here, so make it a private function
+            static IModelBuilder GetInnerBuilder(object builder)
+            {
+                return (IModelBuilder)builder.GetPropertyValue("InnerHandler", false) ?? (IModelBuilder)builder.GetPropertyValue("InnerModelBuilder", false);
+            }
+
+        }
+
+        #endregion
+
+        #region GetTestableApiInstance
+
         /// <summary>
         /// Retrieves the instance of the Restier API (inheriting from <see cref="ApiBase"/> from the Dependency Injection container.
         /// </summary>
@@ -89,6 +139,10 @@ namespace Microsoft.Restier.Breakdance
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
             where TDbContext : DbContext => await GetTestableInjectedService<TApi, TDbContext, ApiBase>(routeName, routePrefix, serviceCollection).ConfigureAwait(false) as TApi;
+
+        #endregion
+
+        #region GetTestableInjectedService
 
         /// <summary>
         /// Retrieves class instance of type <typeparamref name="TService"/> from the Dependency Injection container.
@@ -105,6 +159,10 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
             where TDbContext : DbContext
             where TService : class => (await GetTestableInjectionContainer<TApi, TDbContext>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
+
+        #endregion
+
+        #region GetTestableInjectionContainer
 
         /// <summary>
         /// Retrieves the Dependency Injection container that was created as a part of the request pipeline.
@@ -126,6 +184,10 @@ namespace Microsoft.Restier.Breakdance
             return request.CreateRequestContainer(routeName);
         }
 
+        #endregion
+
+        #region GetTestableRestierConfiguration
+
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
         /// </summary>
@@ -143,14 +205,28 @@ namespace Microsoft.Restier.Breakdance
             where TDbContext : DbContext
         {
             var config = new HttpConfiguration();
-            Action<IServiceCollection> defaultConfigureServices = (services) => { services.AddRestierApi<TApi>(); services.AddEF6ProviderServices<TDbContext>(); };
+            Action<IServiceCollection> defaultConfigureServices = (services) => { services.AddEF6ProviderServices<TDbContext>(); };
             config.SetDefaultQuerySettings(defaultQuerySettings ?? QueryDefaults);
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.SetTimeZoneInfo(timeZoneInfo ?? TimeZoneInfo.Utc);
-            config.UseRestier(serviceCollection ?? defaultConfigureServices);
+            config.UseRestier((builder) => builder.AddRestierApi<TApi>(services =>
+            {
+                if (serviceCollection != null)
+                {
+                    serviceCollection.Invoke(services);
+                }
+                else
+                {
+                    defaultConfigureServices.Invoke(services);
+                }
+            }));
             config.MapRestier((builder) => builder.MapApiRoute<TApi>(routeName, routePrefix, true), config.GetTestableHttpServer());
             return await Task.FromResult(config).ConfigureAwait(false);
         }
+
+        #endregion
+
+        #region GetTestableHttpClient
 
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
@@ -170,6 +246,10 @@ namespace Microsoft.Restier.Breakdance
             return new HttpClient(new HttpServer(config));
         }
 
+        #endregion
+
+        #region GetTestableModelAsync
+
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
         /// </summary>
@@ -188,6 +268,10 @@ namespace Microsoft.Restier.Breakdance
             return api.GetModel();
         }
 
+        #endregion
+
+        #region GetApiMetadataAsync
+
         /// <summary>
         /// Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
         /// </summary>
@@ -198,7 +282,7 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns>An <see cref="XDocument"/> containing the results of the metadata request.</returns>
-        public static async Task<XDocument> GetApiMetadata<TApi, TDbContext>(string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<XDocument> GetApiMetadataAsync<TApi, TDbContext>(string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
             where TDbContext : DbContext
@@ -212,6 +296,10 @@ namespace Microsoft.Restier.Breakdance
             }
             return XDocument.Parse(result);
         }
+
+        #endregion
+
+        #region WriteCurrentApiMetadata
 
         /// <summary>
         /// 
@@ -227,9 +315,11 @@ namespace Microsoft.Restier.Breakdance
             where TDbContext : DbContext
         {
             var filePath = $"{sourceDirectory}{typeof(TApi).Name}-{suffix}.txt";
-            var result = await GetApiMetadata<TApi, TDbContext>(serviceCollection: serviceCollection).ConfigureAwait(false);
+            var result = await GetApiMetadataAsync<TApi, TDbContext>(serviceCollection: serviceCollection).ConfigureAwait(false);
             System.IO.File.WriteAllText(filePath, result.ToString());
         }
+
+        #endregion
 
         #endregion
 

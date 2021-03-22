@@ -13,6 +13,8 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions.Common;
+using Microsoft.Restier.Core.Startup;
 
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests
 {
@@ -59,11 +61,15 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.SetTimeZoneInfo(TimeZoneInfo.Utc);
 
-            config.UseRestier((services) => {
-                services.AddRestierApi<LibraryApi>();
-                services.AddRestierApi<MarvelApi>();
-                services.AddEF6ProviderServices<LibraryContext>();
-                services.AddEF6ProviderServices<MarvelContext>();
+            config.UseRestier((builder) => {
+                builder.AddRestierApi<LibraryApi>(services =>
+                {
+                    services.AddEF6ProviderServices<LibraryContext>();
+                });
+                builder.AddRestierApi<MarvelApi>(services =>
+                {
+                    services.AddEF6ProviderServices<MarvelContext>();
+                });
             });
 
             config.MapRestier((builder) =>
@@ -90,11 +96,15 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.SetTimeZoneInfo(TimeZoneInfo.Utc);
 
-            config.UseRestier((services) => {
-                services.AddRestierApi<LibraryApi>();
-                services.AddRestierApi<MarvelApi>();
-                services.AddEF6ProviderServices<LibraryContext>();
-                services.AddEF6ProviderServices<MarvelContext>();
+            config.UseRestier((builder) => {
+                builder.AddRestierApi<LibraryApi>(services =>
+                {
+                    services.AddEF6ProviderServices<LibraryContext>();
+                });
+                builder.AddRestierApi<MarvelApi>(services =>
+                {
+                    services.AddEF6ProviderServices<MarvelContext>();
+                });
             });
 
             config.MapRestier((builder) =>

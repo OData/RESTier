@@ -92,7 +92,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="3.3.1" PrivateAssets="All" />
-    <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\"/>
+    <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
   </ItemGroup>
 
 </Project>

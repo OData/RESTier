@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Routing;
 
 namespace Microsoft.Restier.Core
 {
@@ -135,9 +134,10 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(api, nameof(api));
 
-            var registrations = api.GetApiService<RestierApiRouteDictionary>();
-            var entry = registrations.FirstOrDefault(c => c.Value.ApiType == api.GetType());
-            return entry.Value.Model;
+            return api.GetApiService<IEdmModel>();
+            //var registrations = api.GetApiService<IEdmModel>();
+            //var entry = registrations.FirstOrDefault(c => c.Value.ApiType == api.GetType());
+            //return entry.Value.Model;
 
         }
 

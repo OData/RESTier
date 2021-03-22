@@ -20,7 +20,6 @@ namespace Microsoft.Restier.Tests.Shared
         public static IServiceCollection AddTestStoreApiServices(this IServiceCollection services)
         {
             services
-                .AddRestierApi<StoreApi>()
                 .AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(StoreModel.Model))
                 .AddChainedService<IModelMapper>((sp, next) => new StoreModelMapper())
                 .AddChainedService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer())

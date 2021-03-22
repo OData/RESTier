@@ -12,7 +12,6 @@ using Microsoft.Restier.AspNet.Formatter;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.AspNet.Operation;
 using Microsoft.Restier.AspNet.Query;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
@@ -26,38 +25,6 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class ServiceCollectionExtensions
     {
-
-        #region Public Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="TApi"></typeparam>
-        /// <param name="services"></param>
-        public static IServiceCollection AddRestierApi<TApi>(this IServiceCollection services) where TApi : ApiBase
-        {
-            Ensure.NotNull(services, nameof(services));
-
-            services.AddScoped(typeof(TApi), typeof(TApi))
-                .AddScoped(typeof(ApiBase), typeof(TApi));
-
-            services.AddRestierConventionBasedServices(typeof(TApi));
-
-            // The model builder must maintain a singleton life time, for holding states and being injected into
-            // some other services.
-            services.AddSingleton(new RestierWebApiModelExtender(typeof(TApi)))
-                .AddChainedService<IModelBuilder, RestierWebApiModelExtender.ModelBuilder>()
-                .AddChainedService<IModelMapper, RestierWebApiModelExtender.ModelMapper>()
-                .AddChainedService<IQueryExpressionExpander, RestierWebApiModelExtender.QueryExpressionExpander>()
-                .AddChainedService<IQueryExpressionSourcer, RestierWebApiModelExtender.QueryExpressionSourcer>()
-                .AddChainedService<IModelBuilder>((sp, next) => new RestierWebApiOperationModelBuilder(typeof(TApi), next));
-
-
-
-            return services;
-        }
-
-        #endregion
 
         #region Internal Members
 
@@ -76,12 +43,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 return services;
             }
             services.AddSingleton<DefaultRestierServicesDetectionDummy>();
-
-            //// Do not add Restier implementation of chained service inside the container twice.
-            //if (!services.HasService<RestierWebApiOperationModelBuilder>())
-            //{
-            //    AddOperationModelBuilder(services, typeof(T));
-            //}
 
             // Only add if none are there. We have removed the default OData one before.
             services.TryAddScoped((sp) => new ODataQuerySettings

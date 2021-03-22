@@ -16,8 +16,8 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Restier.Core.Routing;
 using System.Collections.Generic;
+using Microsoft.Restier.Core.Startup;
 
 namespace Microsoft.Restier.Tests.Core.Model
 {
@@ -36,10 +36,8 @@ namespace Microsoft.Restier.Tests.Core.Model
         [TestMethod]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) => {
-                services.AddRestierCoreServices()
-                .AddRestierApi<TestableEmptyApi>();
-
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) => 
+            {
                 addTestServices(services);
                 services.AddChainedService<IModelBuilder>((sp, next) => new TestModelProducer())
                     .AddChainedService<IModelBuilder>((sp, next) => new TestModelExtender(2)
@@ -64,24 +62,26 @@ namespace Microsoft.Restier.Tests.Core.Model
         [TestMethod]
         public async Task ModelBuilderShouldBeCalledOnlyOnceIfSucceeded()
         {
-            using (var wait = new ManualResetEventSlim(false))
+            using var wait = new ManualResetEventSlim(false);
+            for (var i = 0; i < 2; i++)
             {
-                for (var i = 0; i < 2; i++)
+                var container = new RestierContainerBuilder(builder =>
                 {
-                    var container = new RestierContainerBuilder();
-                    container.RouteBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>("", "", true);
-                    container.Services.AddRestierCoreServices()
-                        .AddRestierApi<TestableEmptyApi>()
-                        .AddChainedService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
-                    addTestServices(container.Services);
+                    builder.AddRestierApi<TestableEmptyApi>(services =>
+                    {
+                        services.AddChainedService<IModelBuilder>((sp, next) => new TestSingleCallModelBuilder());
+                        addTestServices(services);
 
-                    var provider = container.BuildContainer();
-                    var tasks = PrepareThreads(50, provider, wait);
-                    wait.Set();
+                    });
+                });
+                container.routeBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>("", "", true);
 
-                    var models = await Task.WhenAll(tasks);
-                    models.All(e => object.ReferenceEquals(e, models[42])).Should().BeTrue();
-                }
+                var provider = container.BuildContainer();
+                var tasks = PrepareThreads(50, provider, wait);
+                wait.Set();
+
+                var models = await Task.WhenAll(tasks);
+                models.All(e => object.ReferenceEquals(e, models[42])).Should().BeTrue();
             }
         }
 
@@ -91,13 +91,15 @@ namespace Microsoft.Restier.Tests.Core.Model
         {
             using (var wait = new ManualResetEventSlim(false))
             {
-                var container = new RestierContainerBuilder();
-                container.RouteBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>("", "", true);
-                container.Services.AddRestierCoreServices()
-                    .AddRestierApi<TestableEmptyApi>()
-                    .AddChainedService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
-                addTestServices(container.Services);
+                                var container = new RestierContainerBuilder(builder =>
+                {
+                    builder.AddRestierApi<TestableEmptyApi>(services =>
+                    {
+                        services.AddChainedService<IModelBuilder>((sp, next) => new TestRetryModelBuilder());
+                        addTestServices(services);
 
+                    });
+                });
                 var provider = container.BuildContainer();
 
                 var tasks = PrepareThreads(6, provider, wait);

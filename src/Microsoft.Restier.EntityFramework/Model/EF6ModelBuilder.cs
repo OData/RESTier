@@ -11,13 +11,10 @@ using System.Data.Entity.Infrastructure;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.EntityFramework
@@ -26,7 +23,7 @@ namespace Microsoft.Restier.EntityFramework
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    internal class EFModelBuilder : IModelBuilder
+    internal class EF6ModelBuilder : IModelBuilder
     {
 
         #region Properties
@@ -65,7 +62,7 @@ namespace Microsoft.Restier.EntityFramework
             }
 
             dynamic api = context.Api;
-            var dbContext = api.DbContext as DbContext;
+            var dbContext = (DbContext)api.DbContext;
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 

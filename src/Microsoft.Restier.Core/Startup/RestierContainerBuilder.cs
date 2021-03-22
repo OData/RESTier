@@ -2,17 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Routing;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
 
-namespace Microsoft.Restier.Core
+namespace Microsoft.Restier.Core.Startup
 {
     /// <summary>
     /// The default container builder implementation based on the Microsoft dependency injection framework.
@@ -22,13 +19,24 @@ namespace Microsoft.Restier.Core
 
         #region Private Members
 
-        private readonly Action<IServiceCollection> configureAction;
+        internal readonly Action<RestierApiBuilder> configureApis;
 
-        internal RestierRouteBuilder RouteBuilder;
+        /// <summary>
+        /// The Builder instance used to map 
+        /// </summary>
+        internal RestierRouteBuilder routeBuilder;
+
+        internal RestierApiBuilder apiBuilder;
+
+        //internal List<Action<IServiceCollection>> preRegistrationActions;
+
+        //internal List<Action<IServiceCollection>> postRegistrationActions;
 
         #endregion
 
         #region Properties
+
+        internal string RouteName { get; set; }
 
         /// <summary>
         /// 
@@ -42,16 +50,25 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierContainerBuilder" /> class.
         /// </summary>
-        /// <param name="configureAction">Action to register services post OData service registration.</param>
-        public RestierContainerBuilder(Action<IServiceCollection> configureAction = null)
+        /// <param name="configureApis">Action to configure the <see cref="ApiBase"/> registrations that are available to the Container.</param>
+        /// <remarks>
+        /// The API registrations are re-created every time because new Containers are spun up per-route. It make make more sense to create a static 
+        /// instance to do this, so the Dictionary is only created once.
+        /// </remarks>
+        public RestierContainerBuilder(Action<RestierApiBuilder> configureApis = null)
         {
-            this.configureAction = configureAction;
+            this.configureApis = configureApis;
+            //preRegistrationActions = new();
+            //postRegistrationActions = new();
             Services = new ServiceCollection();
+            apiBuilder = new();
+            routeBuilder = new();
         }
 
         #endregion
 
         #region Public Methods
+
 
         /// <summary>
         /// Adds a service of <paramref name="serviceType"/> with an <paramref name="implementationType"/>.
@@ -60,7 +77,7 @@ namespace Microsoft.Restier.Core
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationType">The implementation type of the service.</param>
         /// <returns>The <see cref="IContainerBuilder"/> instance itself.</returns>
-        public virtual IContainerBuilder AddService(ODataServiceLifetime lifetime, Type serviceType, Type implementationType)
+        public IContainerBuilder AddService(ODataServiceLifetime lifetime, Type serviceType, Type implementationType)
         {
             Ensure.NotNull(serviceType, nameof(serviceType));
             Ensure.NotNull(implementationType, nameof(implementationType));
@@ -92,16 +109,27 @@ namespace Microsoft.Restier.Core
         /// <returns>The container built by this builder.</returns>
         public virtual IServiceProvider BuildContainer()
         {
-            configureAction?.Invoke(Services);
-            if (RouteBuilder != null)
+            configureApis?.Invoke(apiBuilder);
+
+            if (!apiBuilder.Apis.Any())
             {
-                var routes = RouteBuilder.ToRestierApiRouteDictionary(Services.BuildServiceProvider());
-                foreach (var route in routes)
-                {
-                    AddService(ODataServiceLifetime.Scoped, typeof(IEdmModel), sp => route.Value.Model);
-                }
-                AddService(ODataServiceLifetime.Singleton, typeof(RestierApiRouteDictionary), sp => routes);
+                throw new Exception("Restier was registered without adding any Apis. Please see the documentation for adding an Api to the 'config.UseRestier()' call.");
             }
+
+            if (!routeBuilder.Routes.Any())
+            {
+                throw new Exception("Restier was registered without mapping any Routes. Please see the documentation for adding a Route to the 'config.MapRestier()' call.");
+            }
+
+            var route = routeBuilder.Routes[RouteName];
+            var apiServiceActions = apiBuilder.Apis[route.ApiType];
+
+            apiServiceActions.Invoke(Services);
+
+
+            //RWM: Build temp container, build model, add to container.
+
+
 
             return Services.BuildServiceProvider();
         }

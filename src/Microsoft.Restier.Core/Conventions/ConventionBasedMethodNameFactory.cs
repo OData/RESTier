@@ -4,6 +4,7 @@
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Submit;
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core
@@ -231,7 +232,7 @@ namespace Microsoft.Restier.Core
                 case RestierPipelineState.PreSubmit:
                 case RestierPipelineState.PostSubmit:
                     //RWM: If the last letter of the string is an e, cut off it's head.
-                    return operation.LastIndexOf("e", System.StringComparison.InvariantCultureIgnoreCase) == operation.Length - 1 ? operation.Substring(0, operation.Length - 1) : operation;
+                    return operation.LastIndexOf("e", StringComparison.InvariantCulture) == operation.Length - 1 ? operation.Substring(0, operation.Length - 1) : operation;
                 default:
                     return operation;
             }

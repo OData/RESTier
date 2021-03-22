@@ -11,13 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
-using System.Web.Http.Routing;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Results;
-using Microsoft.AspNet.OData.Routing;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
@@ -26,7 +24,6 @@ using Microsoft.Restier.AspNet.Query;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Routing;
 using Microsoft.Restier.Core.Submit;
 // This is a must for creating response with correct extension method
 using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
@@ -114,9 +111,10 @@ namespace Microsoft.Restier.AspNet
 
             if (api == null)
             {
-                var registrations = provider.GetService(typeof(RestierApiRouteDictionary)) as RestierApiRouteDictionary;
-                var apiType = registrations[(((controllerContext.RouteData as HttpRouteData).Route as ODataRoute).RouteConstraint as ODataPathRouteConstraint).RouteName].ApiType;
-                api = provider.GetService(apiType) as ApiBase;
+                //var registrations = provider.GetService(typeof(RestierApiRouteDictionary)) as RestierApiRouteDictionary;
+                //var apiType = registrations[(((controllerContext.RouteData as HttpRouteData).Route as ODataRoute).RouteConstraint as ODataPathRouteConstraint).RouteName].ApiType;
+                //api = provider.GetService(apiType) as ApiBase;
+                api = provider.GetService(typeof(ApiBase)) as ApiBase;
             }
             if (querySettings == null)
             {
