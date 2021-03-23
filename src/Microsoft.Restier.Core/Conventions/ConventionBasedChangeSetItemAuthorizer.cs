@@ -14,16 +14,16 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class ConventionBasedChangeSetItemAuthorizer : IChangeSetItemAuthorizer
     {
-        private readonly Type targetApiType;
+        private Type targetType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionBasedChangeSetItemAuthorizer"/> class.
         /// </summary>
-        /// <param name="targetApiType">The target type to check for authorizer functions.</param>
-        public ConventionBasedChangeSetItemAuthorizer(Type targetApiType)
+        /// <param name="targetType">The target type to check for authorizer functions.</param>
+        public ConventionBasedChangeSetItemAuthorizer(Type targetType)
         {
-            Ensure.NotNull(targetApiType, nameof(targetApiType));
-            this.targetApiType = targetApiType;
+            Ensure.NotNull(targetType, nameof(targetType));
+            this.targetType = targetType;
         }
 
         /// <inheritdoc/>
@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Core
             var returnType = typeof(bool);
             var dataModification = (DataModificationItem)item;
             var methodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
-            var method = targetApiType.GetQualifiedMethod(methodName);
+            var method = targetType.GetQualifiedMethod(methodName);
 
             if (method == null)
             {
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core
             if (!method.IsStatic)
             {
                 target = context.Api;
-                if (target == null || !targetApiType.IsInstanceOfType(target))
+                if (target == null || !targetType.IsInstanceOfType(target))
                 {
                     return Task.FromResult(result);
                 }

@@ -22,9 +22,11 @@
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="[0.3.0, 2.0.0)" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="[7.5.6, 8.0.0)" />
+    <PackageReference Include="Ben.Demystifier" Version="[0.1.6, 2.0.0)" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="[7.5.5, 8.0.0)" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="[5.2.7, 6.0.0)" />
-    <PackageReference Include="Microsoft.OData.Core" Version="[7.8.3, 8.0.0)" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="[7.8.3, 8.0.0)" />
+    <PackageReference Include="Microsoft.OData.Core" Version="[7.8.1, 8.0.0)" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="[7.8.1, 8.0.0)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,10 +47,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Microsoft.Restier.AspNet</CustomToolNamespace>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
   </ItemGroup>
 
 </Project>

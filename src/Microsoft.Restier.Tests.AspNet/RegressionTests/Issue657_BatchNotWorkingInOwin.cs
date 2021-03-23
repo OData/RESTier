@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         {
             //RWM: Need a way to make this test work.
             var config = new HttpConfiguration();
-            Action mapRestier = () => { config.MapRestier((builder) => builder.MapApiRoute<LibraryApi>("Restier", "v1/")); };
+            Action mapRestier = () => { config.MapRestier<LibraryApi>("Restier", "v1/"); };
             mapRestier.Should().Throw<Exception>().WithMessage("*MapRestier*");
         }
 
@@ -29,7 +29,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         public void MapRestier_ThrowsExceptionOnNullHttpServer()
         {
             var config = new HttpConfiguration();
-            Action mapRestier = () => { config.MapRestier((builder) => builder.MapApiRoute<LibraryApi>("Restier", "v1/", true), null); };
+            Action mapRestier = () => { config.MapRestier<LibraryApi>("Restier", "v1/", true, null); };
             mapRestier.Should().Throw<Exception>().WithMessage("*MapRestier*");
         }
 

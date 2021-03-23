@@ -16,16 +16,16 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class ConventionBasedQueryExpressionProcessor : IQueryExpressionProcessor
     {
-        private readonly Type targetApiType;
+        private Type targetType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
         /// </summary>
-        /// <param name="targetApiType">The target type to check for filter functions.</param>
-        public ConventionBasedQueryExpressionProcessor(Type targetApiType)
+        /// <param name="targetType">The target type to check for filter functions.</param>
+        public ConventionBasedQueryExpressionProcessor(Type targetType)
         {
-            Ensure.NotNull(targetApiType, nameof(targetApiType));
-            this.targetApiType = targetApiType;
+            Ensure.NotNull(targetType, nameof(targetType));
+            this.targetType = targetType;
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.Core
         private Expression AppendOnFilterExpression(QueryExpressionContext context, IEdmEntitySet entitySet, IEdmEntityType entityType)
         {
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, RestierPipelineState.Submit, RestierEntitySetOperation.Filter);
-            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
+            var expectedMethod = targetType.GetQualifiedMethod(expectedMethodName);
             if (expectedMethod == null || (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly))
             {
                 if (expectedMethod != null)
@@ -114,7 +114,7 @@ namespace Microsoft.Restier.Core
                 else
                 {
                     var actualMethodName = expectedMethodName.Replace(entitySet.Name, entityType.Name);
-                    var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
+                    var actualMethod = targetType.GetQualifiedMethod(actualMethodName);
                     if (actualMethod != null)
                     {
                         Trace.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
@@ -133,7 +133,7 @@ namespace Microsoft.Restier.Core
             if (!expectedMethod.IsStatic)
             {
                 apiBase = context.QueryContext.Api;
-                if (apiBase == null || !targetApiType.IsInstanceOfType(apiBase))
+                if (apiBase == null || !targetType.IsInstanceOfType(apiBase))
                 {
                     return null;
                 }

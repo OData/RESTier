@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.ComponentModel;
+using System.Net.Http;
 using Microsoft.Restier.AspNet.Batch;
 
-namespace System.Net.Http
+namespace Microsoft.Restier.AspNet
 {
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpRequestMessage"/>.

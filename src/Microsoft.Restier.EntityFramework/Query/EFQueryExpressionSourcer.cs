@@ -20,8 +20,6 @@ namespace Microsoft.Restier.EntityFramework
     /// </summary>
     internal class EFQueryExpressionSourcer : IQueryExpressionSourcer
     {
-
-
         /// <summary>
         /// Sources an expression.
         /// </summary>
@@ -44,10 +42,8 @@ namespace Microsoft.Restier.EntityFramework
                 return null;
             }
 
-            dynamic api = context.QueryContext.Api;
-
-            var dbContext = api.DbContext as DbContext;
-            var dbSetProperty = (api.ContextType as Type).GetProperties()
+            var dbContext = context.QueryContext.GetApiService<DbContext>();
+            var dbSetProperty = dbContext.GetType().GetProperties()
                 .FirstOrDefault(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (dbSetProperty == null)
             {

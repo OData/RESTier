@@ -14,16 +14,16 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public class ConventionBasedOperationAuthorizer : IOperationAuthorizer
     {
-        private readonly Type targetApiType;
+        private Type targetType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionBasedOperationAuthorizer"/> class.
         /// </summary>
-        /// <param name="targetApiType">The target type to check for authorizer functions.</param>
-        public ConventionBasedOperationAuthorizer(Type targetApiType)
+        /// <param name="targetType">The target type to check for authorizer functions.</param>
+        public ConventionBasedOperationAuthorizer(Type targetType)
         {
-            Ensure.NotNull(targetApiType, nameof(targetApiType));
-            this.targetApiType = targetApiType;
+            Ensure.NotNull(targetType, nameof(targetType));
+            this.targetType = targetType;
         }
 
         /// <inheritdoc/>
@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Core
 
             var returnType = typeof(bool);
             var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Authorization, RestierOperationMethod.Execute);
-            var method = targetApiType.GetQualifiedMethod(methodName);
+            var method = targetType.GetQualifiedMethod(methodName);
 
             if (method == null)
             {
@@ -57,7 +57,7 @@ namespace Microsoft.Restier.Core
             if (!method.IsStatic)
             {
                 target = context.Api;
-                if (target == null || !targetApiType.IsInstanceOfType(target))
+                if (target == null || !targetType.IsInstanceOfType(target))
                 {
                     return Task.FromResult(result);
                 }

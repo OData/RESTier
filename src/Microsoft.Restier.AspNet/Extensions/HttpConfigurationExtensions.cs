@@ -40,18 +40,12 @@ namespace System.Web.Http
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="TApi"></typeparam>
         /// <param name="config"></param>
         /// <param name="configureApis"></param>
         /// <returns></returns>
         public static HttpConfiguration UseRestier(this HttpConfiguration config, Action<RestierApiBuilder> configureApis)
         {
-            Ensure.NotNull(config, nameof(config));
-
-            if (config.Properties.ContainsKey("Microsoft.AspNet.OData.ContainerBuilderFactoryKey"))
-            {
-                throw new InvalidOperationException("You can't call \"UseRestier()\" more than once in an application. Check your code and try again.");
-            }
-
             config.UseCustomContainerBuilder(() =>
             {
                 return new RestierContainerBuilder(configureApis);
@@ -63,10 +57,13 @@ namespace System.Web.Http
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="TApi"></typeparam>
         /// <param name="config"></param>
-        /// <param name="routeBuilder"></param>
+        /// <param name="routeName"></param>
+        /// <param name="routePrefix"></param>
+        /// <param name="allowBatching"></param>
         /// <returns></returns>
-        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder)
+        public static HttpConfiguration MapRestier<TApi>(this HttpConfiguration config, string routeName, string routePrefix, bool allowBatching = true)
         {
             var httpServer = GlobalConfiguration.DefaultServer;
             if (httpServer == null)
@@ -74,14 +71,17 @@ namespace System.Web.Http
                 throw new Exception(owinException);
             }
 
-            return MapRestier(config, routeBuilder, httpServer);
+            return MapRestier<TApi>(config, routeName, routePrefix, allowBatching, httpServer);
         }
 
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="TApi"></typeparam>
         /// <param name="config"></param>
-        /// <param name="routeBuilder"></param>
+        /// <param name="routeName"></param>
+        /// <param name="routePrefix"></param>
+        /// <param name="allowBatching"></param>
         /// <param name="httpServer"></param>
         /// <returns></returns>
         public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder, HttpServer httpServer)
@@ -109,7 +109,7 @@ namespace System.Web.Http
                         ODataRouteName = route.Key
                     };
 #pragma warning restore IDE0067 // Dispose objects before losing scope
-                }
+            }
 
                 var odataRoute = config.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder, routeName) =>
                 {
@@ -128,6 +128,7 @@ namespace System.Web.Http
 
             return config;
         }
+
 
         #region Private Methods
 
