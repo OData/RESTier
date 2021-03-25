@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.Restier;
+using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task EmptyEntitySetQueryReturns200Not404()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/LibraryCards");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/LibraryCards", routeName: "ApiTests");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

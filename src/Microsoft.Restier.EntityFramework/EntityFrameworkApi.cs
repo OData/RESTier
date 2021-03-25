@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 #if !EF7
 using System.Data.Entity;
 #endif
@@ -47,9 +48,14 @@ namespace Microsoft.Restier.EntityFramework
         {
             get
             {
-                return (T)this.GetApiService<DbContext>();
+                return this.GetApiService<T>();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Type ContextType => typeof(T);
 
     }
 

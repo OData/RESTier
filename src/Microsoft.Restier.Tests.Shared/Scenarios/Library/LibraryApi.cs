@@ -83,6 +83,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [Operation(IsBound = true, IsComposable = true, EntitySet = "publisher/Books")]
         public IQueryable<Book> PublishedBooks(Publisher publisher)
         {
+            var test = publisher.Id;
             return FavoriteBooks();
         }
 

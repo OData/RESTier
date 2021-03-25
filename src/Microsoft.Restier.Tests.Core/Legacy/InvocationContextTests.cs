@@ -5,6 +5,7 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Startup;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,11 +21,15 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void InvocationContext_GetsApiServicesCorrectly()
         {
-            var container = new RestierContainerBuilder();
-            container.Services.AddRestierCoreServices(typeof(TestApi))
-                .AddRestierConventionBasedServices(typeof(TestApi))
-                .AddTestStoreApiServices()
-                .AddChainedService<IServiceA>((sp, next) => TestApi.ApiService);
+            var container = new RestierContainerBuilder((configureApis) =>
+            {
+                configureApis.AddRestierApi<TestApi>(services =>
+                {
+                    services.AddTestStoreApiServices()
+                        .AddChainedService<IServiceA>((sp, next) => TestApi.ApiService);
+
+                });
+            });
             var provider = container.BuildContainer();
             var api = provider.GetService<ApiBase>();
             var context = new InvocationContext(api);

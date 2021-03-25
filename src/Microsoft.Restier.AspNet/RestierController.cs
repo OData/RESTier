@@ -41,7 +41,7 @@ namespace Microsoft.Restier.AspNet
         private const string IfMatchKey = "@IfMatchKey";
         private const string IfNoneMatchKey = "@IfNoneMatchKey";
 
-        private  ApiBase api;
+        private ApiBase api;
         private ODataValidationSettings validationSettings;
         private IOperationExecutor operationExecutor;
         private ODataQuerySettings querySettings;
@@ -69,18 +69,15 @@ namespace Microsoft.Restier.AspNet
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierController"/> class.
         /// </summary>
-        /// <param name="api">A reference to an <see cref="ApiBase"/> class to use for filtering, authorization and querying.</param>
         /// <param name="querySettings">OData Query settings for queries.</param>
         /// <param name="validationSettings">OData validation settings for validation.</param>
         /// <param name="operationExecutor">An Operation Executer to execute operations.</param>
-        public RestierController(ApiBase api, ODataQuerySettings querySettings, ODataValidationSettings validationSettings, IOperationExecutor operationExecutor)
+        public RestierController(ODataQuerySettings querySettings, ODataValidationSettings validationSettings, IOperationExecutor operationExecutor)
         {
-            Ensure.NotNull(api, nameof(api));
             Ensure.NotNull(querySettings, nameof(querySettings));
             Ensure.NotNull(validationSettings, nameof(validationSettings));
             Ensure.NotNull(operationExecutor, nameof(operationExecutor));
 
-            this.api = api;
             this.querySettings = querySettings;
             this.validationSettings = validationSettings;
             this.operationExecutor = operationExecutor;
@@ -111,8 +108,12 @@ namespace Microsoft.Restier.AspNet
             var provider = controllerContext.Request.GetRequestContainer();
 #pragma warning restore CA1062 // Validate arguments of public methods
 
+
             if (api == null)
             {
+                //var registrations = provider.GetService(typeof(RestierApiRouteDictionary)) as RestierApiRouteDictionary;
+                //var apiType = registrations[(((controllerContext.RouteData as HttpRouteData).Route as ODataRoute).RouteConstraint as ODataPathRouteConstraint).RouteName].ApiType;
+                //api = provider.GetService(apiType) as ApiBase;
                 api = provider.GetService(typeof(ApiBase)) as ApiBase;
             }
             if (querySettings == null)
@@ -157,7 +158,7 @@ namespace Microsoft.Restier.AspNet
                 Func<string, object> getParaValueFunc = p => unboundSegment.Parameters.FirstOrDefault(c => c.Name == p).Value;
                 result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
 
-                var applied = await ApplyQueryOptionsAsync(result, path, true).ConfigureAwait(false);
+                var applied = ApplyQueryOptions(result, path, true);
                 result = applied.Queryable;
                 etag = applied.Etag;
             }
@@ -177,14 +178,14 @@ namespace Microsoft.Restier.AspNet
                     Func<string, object> getParaValueFunc = p => boundSeg.Parameters.FirstOrDefault(c => c.Name == p).Value;
                     result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken).ConfigureAwait(false);
 
-                    var applied = await ApplyQueryOptionsAsync(result, path, true).ConfigureAwait(false);
+                    var applied = ApplyQueryOptions(result, path, true);
                     result = applied.Queryable;
                     etag = applied.Etag;
 
                 }
                 else
                 {
-                    var applied = await ApplyQueryOptionsAsync(queryable, path, false).ConfigureAwait(false);
+                    var applied = ApplyQueryOptions(queryable, path, false);
                     result = await ExecuteQuery(applied.Queryable, cancellationToken).ConfigureAwait(false);
                     etag = applied.Etag;
                 }
@@ -222,7 +223,7 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
+            var model = api.GetModel();
 
             var postItem = new DataModificationItem(
                 entitySet.Name,
@@ -282,13 +283,13 @@ namespace Microsoft.Restier.AspNet
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = await GetOriginalValues(entitySet).ConfigureAwait(false);
+            var propertiesInEtag = GetOriginalValues(entitySet);
             if (propertiesInEtag == null)
             {
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
 
-            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
+            var model = api.GetModel();
 
             var deleteItem = new DataModificationItem(
                 entitySet.Name,
@@ -415,7 +416,7 @@ namespace Microsoft.Restier.AspNet
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = await GetOriginalValues(entitySet).ConfigureAwait(false);
+            var propertiesInEtag = GetOriginalValues(entitySet);
             if (propertiesInEtag == null)
             {
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
@@ -435,7 +436,7 @@ namespace Microsoft.Restier.AspNet
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = await api.GetModelAsync(cancellationToken).ConfigureAwait(false);
+            var model = api.GetModel();
 
             var updateItem = new DataModificationItem(
                 entitySet.Name,
@@ -595,7 +596,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="path"></param>
         /// <param name="applyCount"></param>
         /// <returns></returns>
-        private async Task<(IQueryable Queryable, ETag Etag)> ApplyQueryOptionsAsync(IQueryable queryable, ODataPath path, bool applyCount)
+        private (IQueryable Queryable, ETag Etag) ApplyQueryOptions(IQueryable queryable, ODataPath path, bool applyCount)
         {
             ETag etag = null;
 
@@ -606,7 +607,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             var properties = Request.ODataProperties();
-            var model = await api.GetModelAsync().ConfigureAwait(false);
+            var model = api.GetModel();
             var queryContext = new ODataQueryContext(model, queryable.ElementType, path);
             var queryOptions = new ODataQueryOptions(queryContext, Request);
 
@@ -702,7 +703,7 @@ namespace Microsoft.Restier.AspNet
             return result;
         }
 
-        private async Task<IReadOnlyDictionary<string, object>> GetOriginalValues(IEdmEntitySet entitySet)
+        private IReadOnlyDictionary<string, object> GetOriginalValues(IEdmEntitySet entitySet)
         {
             var originalValues = new Dictionary<string, object>();
 
@@ -727,7 +728,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             // return 428(Precondition Required) if entity requires concurrency check.
-            var model = await api.GetModelAsync().ConfigureAwait(false);
+            var model = api.GetModel();
             var needEtag = model.IsConcurrencyCheckEnabled(entitySet);
             if (needEtag)
             {

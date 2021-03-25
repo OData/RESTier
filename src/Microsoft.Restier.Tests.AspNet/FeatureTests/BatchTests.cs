@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using CloudNimble.Breakdance.Restier;
+using Microsoft.Restier.Breakdance;
 using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
