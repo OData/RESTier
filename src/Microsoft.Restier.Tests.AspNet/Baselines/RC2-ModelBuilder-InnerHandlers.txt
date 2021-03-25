@@ -1,0 +1,4 @@
+Microsoft.Restier.AspNet.Model.RestierOperationModelBuilder
+Microsoft.Restier.AspNet.Model.RestierModelExtender+ModelBuilder
+Microsoft.Restier.AspNet.Model.RestierModelBuilder
+Microsoft.Restier.EntityFramework.EFModelProducer

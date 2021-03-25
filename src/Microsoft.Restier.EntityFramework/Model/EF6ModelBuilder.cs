@@ -11,13 +11,10 @@ using System.Data.Entity.Infrastructure;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 #if EF7
 using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.EntityFramework
@@ -26,18 +23,24 @@ namespace Microsoft.Restier.EntityFramework
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    internal class EFModelProducer : IModelBuilder
+    internal class EF6ModelBuilder : IModelBuilder
     {
-        public IModelBuilder InnerModelBuilder { get; set; }
+
+        #region Properties
 
         /// <summary>
-        /// This class will not real build a model, but only get entity set name and entity map from data source
-        /// Then pass the information to publisher layer to build the model.
+        /// A way to chain ModelBuilders together.
         /// </summary>
-        /// <param name="context">The context for processing.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>Always a null model.</returns>
-        public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+        public IModelBuilder InnerModelBuilder { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public IEdmModel GetModel(ModelContext context)
         {
             Ensure.NotNull(context, nameof(context));
 
@@ -51,7 +54,15 @@ namespace Microsoft.Restier.EntityFramework
                 e => ((ICollection<PropertyInfo>)
                     e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
 #else
-            var dbContext = context.GetApiService<DbContext>();
+
+            if (!context.Api.GetType().GetProperties().Any(c => c.Name == "DbContext"))
+            {
+                //RWM: This isn't an EF context, don't build anything.
+                return null;
+            }
+
+            dynamic api = context.Api;
+            var dbContext = (DbContext)api.DbContext;
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 
@@ -118,10 +129,14 @@ namespace Microsoft.Restier.EntityFramework
 #endif
             if (InnerModelBuilder != null)
             {
-                return InnerModelBuilder.GetModelAsync(context, cancellationToken);
+                return InnerModelBuilder.GetModel(context);
             }
 
-            return Task.FromResult<IEdmModel>(null);
+            //RWM: This doesn't return anything because the RestierModelBuilder in the ASP.NET project is the one that actually returns the model.
+            return null;
+
         }
+
+
     }
 }

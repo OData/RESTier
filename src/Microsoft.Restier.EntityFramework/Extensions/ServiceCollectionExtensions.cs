@@ -3,15 +3,13 @@
 
 using System;
 using System.Data.Entity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFramework;
 
-namespace Microsoft.Restier.EntityFramework
+namespace Microsoft.Extensions.DependencyInjection
 {
 
     /// <summary>
@@ -29,22 +27,43 @@ namespace Microsoft.Restier.EntityFramework
         public static IServiceCollection AddEF6ProviderServices<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
-            services.TryAddScoped<DbContext>(sp =>
+            services.TryAddScoped(sp =>
             {
                 var dbContext = Activator.CreateInstance<TDbContext>();
                 dbContext.Configuration.ProxyCreationEnabled = false;
                 return dbContext;
             });
 
-            return services
-                .AddChainedService<IModelBuilder, EFModelProducer>()
-                .AddChainedService<IModelMapper>((sp, next) => new EFModelMapper(typeof(TDbContext)))
+            if (services.HasService<DefaultEF6ProviderServicesDetectionDummy>())
+            {
+                // Avoid applying multiple times to a same service collection.
+                return services;
+            }
+
+            services
+                .AddSingleton<DefaultEF6ProviderServicesDetectionDummy>()
+                .AddChainedService<IModelBuilder, EF6ModelBuilder>()
+                .AddChainedService<IModelMapper, EF6ModelMapper>()
                 .AddChainedService<IQueryExpressionSourcer, EFQueryExpressionSourcer>()
                 .AddChainedService<IQueryExecutor, EFQueryExecutor>()
                 .AddChainedService<IQueryExpressionProcessor, EFQueryExpressionProcessor>()
                 .AddChainedService<IChangeSetInitializer, EFChangeSetInitializer>()
                 .AddChainedService<ISubmitExecutor, EFSubmitExecutor>();
+
+            return services;
         }
+
+        #region Private Members
+
+        /// <summary>
+        /// Dummy class to detect double registration of Default restier services inside a container.
+        /// </summary>
+        private sealed class DefaultEF6ProviderServicesDetectionDummy
+        {
+
+        }
+
+        #endregion
 
     }
 

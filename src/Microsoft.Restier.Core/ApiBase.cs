@@ -26,8 +26,6 @@ namespace Microsoft.Restier.Core
 
         #region Private Members
 
-        private ApiConfiguration apiConfiguration;
-
         private readonly DefaultSubmitHandler submitHandler;
 
         private readonly DefaultQueryHandler queryHandler;
@@ -37,29 +35,13 @@ namespace Microsoft.Restier.Core
         #region Public Properties
 
         /// <summary>
-        /// Gets the <see cref="IServiceProvider"/> which contains all services of this <see cref="ApiConfiguration"/>.
+        /// Gets the <see cref="IServiceProvider"/> which contains all services.
         /// </summary>
         public IServiceProvider ServiceProvider { get; private set; }
 
         #endregion
 
         #region Internal Properties
-
-        /// <summary>
-        /// Gets the API configuration for this API.
-        /// </summary>
-        internal ApiConfiguration Configuration
-        {
-            get
-            {
-                if (apiConfiguration == null)
-                {
-                    apiConfiguration = ServiceProvider.GetService<ApiConfiguration>();
-                }
-
-                return apiConfiguration;
-            }
-        }
 
         /// <summary>
         /// Gets a reference to the Query Handler for this <see cref="ApiBase"/> instance.
@@ -74,7 +56,7 @@ namespace Microsoft.Restier.Core
         /// Initializes a new instance of the <see cref="ApiBase" /> class.
         /// </summary>
         /// <param name="serviceProvider">
-        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="ApiConfiguration"/>.
+        /// An <see cref="IServiceProvider"/> containing all services.
         /// </param>
         protected ApiBase(IServiceProvider serviceProvider)
         {

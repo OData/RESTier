@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.AspNet.Model
@@ -12,19 +13,8 @@ namespace Microsoft.Restier.AspNet.Model
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    public class RestierModelMapper : IModelMapper
+    public class RestierWebApiModelMapper : IModelMapper
     {
-        private readonly IEdmModel model;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RestierModelMapper"/> class.
-        /// </summary>
-        /// <param name="model">The Edm Model to map.</param>
-        public RestierModelMapper(IEdmModel model)
-        {
-            Ensure.NotNull(model, nameof(model));
-            this.model = model;
-        }
 
         internal IModelMapper InnerMapper { get; set; }
 
@@ -40,7 +30,11 @@ namespace Microsoft.Restier.AspNet.Model
         /// </returns>
         public bool TryGetRelevantType(ModelContext context, string name,  out Type relevantType)
         {
-            var element = this.model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
+            Ensure.NotNull(context, nameof(context));
+
+            var model = context.Api.GetModel();
+
+            var element = model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
 
             if (element != null)
             {

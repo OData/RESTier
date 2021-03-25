@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 using EdmPathExpression = Microsoft.OData.Edm.EdmPathExpression;
@@ -17,25 +15,25 @@ namespace Microsoft.Restier.AspNet.Model
     /// <summary>
     /// 
     /// </summary>
-    internal class RestierOperationModelBuilder : IModelBuilder
+    internal class RestierWebApiOperationModelBuilder : IModelBuilder
     {
-        private readonly Type targetType;
+        private readonly Type targetApiType;
         private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
 
-        internal RestierOperationModelBuilder(Type targetType, IModelBuilder innerHandler)
+        internal RestierWebApiOperationModelBuilder(Type targetApiType, IModelBuilder innerModelBuilder)
         {
-            this.targetType = targetType;
-            this.InnerHandler = innerHandler;
+            this.targetApiType = targetApiType;
+            this.InnerModelBuilder = innerModelBuilder;
         }
 
-        private IModelBuilder InnerHandler { get; }
+        private IModelBuilder InnerModelBuilder { get; }
 
-        public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+        public IEdmModel GetModel(ModelContext context)
         {
             EdmModel model = null;
-            if (InnerHandler != null)
+            if (InnerModelBuilder != null)
             {
-                model = await InnerHandler.GetModelAsync(context, cancellationToken).ConfigureAwait(false) as EdmModel;
+                model = InnerModelBuilder.GetModel(context) as EdmModel;
             }
 
             if (model == null)
@@ -136,7 +134,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void ScanForOperations()
         {
-            var methods = targetType.GetMethods(
+            var methods = targetApiType.GetMethods(
                 BindingFlags.NonPublic |
                 BindingFlags.Public |
                 BindingFlags.Static |
@@ -200,7 +198,7 @@ namespace Microsoft.Restier.AspNet.Model
                     // entitySetReferenceExpression refer to an entity set containing entities returned
                     // by this function/action import.
                     var entitySetExpression = BuildEntitySetExpression(model, operationMethodInfo.EntitySet, returnTypeReference);
-                    var entityContainer = model.EnsureEntityContainer(targetType);
+                    var entityContainer = model.EnsureEntityContainer(targetApiType);
                     if (operationMethodInfo.HasSideEffects)
                     {
                         entityContainer.AddActionImport(operation.Name, (EdmAction)operation, entitySetExpression);

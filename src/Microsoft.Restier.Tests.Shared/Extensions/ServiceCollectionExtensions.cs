@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.Tests.Shared;
 
 namespace Microsoft.Restier.Tests.Shared
 {
@@ -21,7 +19,8 @@ namespace Microsoft.Restier.Tests.Shared
         /// <returns></returns>
         public static IServiceCollection AddTestStoreApiServices(this IServiceCollection services)
         {
-            services.AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(StoreModel.Model))
+            services
+                .AddChainedService<IModelBuilder>((sp, next) => new StoreModelProducer(StoreModel.Model))
                 .AddChainedService<IModelMapper>((sp, next) => new StoreModelMapper())
                 .AddChainedService<IQueryExpressionSourcer>((sp, next) => new StoreQueryExpressionSourcer())
                 .AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())

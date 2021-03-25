@@ -3,7 +3,7 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.Restier;
+using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Validation;
