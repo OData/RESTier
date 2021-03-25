@@ -4,12 +4,13 @@
 using System;
 using System.Data.Entity;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.Restier;
+using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Restier.Core.Startup;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -20,12 +21,17 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void PropertyBag_ManipulatesPropertiesCorrectly()
         {
-            var container = new RestierContainerBuilder();
-            container.Services
-                .AddRestierCoreServices(typeof(TestableEmptyApi))
-                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
-                .AddTestStoreApiServices()
-                .AddScoped<MyPropertyBag>();
+
+
+            var container = new RestierContainerBuilder((configureApis) =>
+            {
+                configureApis.AddRestierApi<TestableEmptyApi>(services =>
+                {
+                    services.AddTestStoreApiServices()
+                    .AddScoped<MyPropertyBag>();
+                });
+            });
+            
             var provider = container.BuildContainer();
             var api = provider.GetService<TestableEmptyApi>();
 
@@ -58,12 +64,14 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public void PropertyBagsAreDisposedCorrectly()
         {
-            var container = new RestierContainerBuilder();
-            container.Services
-                .AddRestierCoreServices(typeof(TestableEmptyApi))
-                .AddRestierConventionBasedServices(typeof(TestableEmptyApi))
-                .AddTestStoreApiServices()
-                .AddScoped<MyPropertyBag>();
+            var container = new RestierContainerBuilder((configureApis) =>
+            {
+                configureApis.AddRestierApi<TestableEmptyApi>(services =>
+                {
+                    services.AddTestStoreApiServices()
+                    .AddScoped<MyPropertyBag>();
+                });
+            });
 
             var provider = container.BuildContainer();
             var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope();

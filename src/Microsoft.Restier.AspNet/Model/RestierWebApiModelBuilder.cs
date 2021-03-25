@@ -3,8 +3,6 @@
 
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
@@ -15,19 +13,19 @@ namespace Microsoft.Restier.AspNet.Model
     /// This is a RESTier model build which retrieve information from providers like entity framework provider,
     /// then build entity set and entity type based on retrieved information.
     /// </summary>
-    internal class RestierModelBuilder : IModelBuilder
+    internal class RestierWebApiModelBuilder : IModelBuilder
     {
         public IModelBuilder InnerModelBuilder { get; set; }
 
         /// <inheritdoc/>
-        public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+        public IEdmModel GetModel(ModelContext context)
         {
             // This means user build a model with customized model builder registered as inner most
             // Its element will be added to built model.
             IEdmModel innerModel = null;
             if (InnerModelBuilder != null)
             {
-                innerModel = await InnerModelBuilder.GetModelAsync(context, cancellationToken).ConfigureAwait(false);
+                innerModel = InnerModelBuilder.GetModel(context);
             }
 
             var entitySetTypeMap = context.ResourceSetTypeMap;
@@ -126,13 +124,11 @@ namespace Microsoft.Restier.AspNet.Model
                         {
                             if (operation.IsFunctionImport())
                             {
-                                entityContainer.AddFunctionImport(
-                                    operation.Name, (EdmFunction)operation.Operation, operation.EntitySet);
+                                entityContainer.AddFunctionImport(operation.Name, (EdmFunction)operation.Operation, operation.EntitySet);
                             }
                             else
                             {
-                                entityContainer.AddActionImport(
-                                    operation.Name, (EdmAction)operation.Operation, operation.EntitySet);
+                                entityContainer.AddActionImport(operation.Name, (EdmAction)operation.Operation, operation.EntitySet);
                             }
                         }
                     }

@@ -18,13 +18,12 @@ namespace Microsoft.Restier.Core.Model
         /// <param name="context">
         /// The context for processing
         /// </param>
-        /// <param name="cancellationToken">
-        /// An optional cancellation token.
-        /// </param>
         /// <returns>
         /// A task that represents the asynchronous
         /// operation whose result is the API model.
         /// </returns>
-        Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken);
+        IEdmModel GetModel(ModelContext context);
+
     }
+
 }

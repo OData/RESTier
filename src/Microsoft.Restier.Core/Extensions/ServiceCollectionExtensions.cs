@@ -5,13 +5,13 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 
-namespace Microsoft.Restier.Core
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// A delegate which participate in service creation.
@@ -190,22 +190,18 @@ namespace Microsoft.Restier.Core
         /// Add core services.
         /// </summary>
         /// <param name="services">he <see cref="IServiceCollection"/> containing API service registrations.</param>
-        /// <param name="apiType">The type of a class on which code-based conventions are used.</param>
         /// <returns>
         /// Current <see cref="IServiceCollection"/>
         /// </returns>
-        public static IServiceCollection AddRestierCoreServices(this IServiceCollection services, Type apiType)
+        internal static IServiceCollection AddRestierCoreServices(this IServiceCollection services)
         {
             Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(apiType, nameof(apiType));
 
-            services.AddScoped(apiType, apiType)
-                .AddScoped(typeof(ApiBase), apiType);
+            services
+                .AddChainedService<IQueryExecutor, DefaultQueryExecutor>()
+                .AddScoped<PropertyBag>();
 
-            services.TryAddSingleton<ApiConfiguration>();
-
-            return services.AddChainedService<IQueryExecutor, DefaultQueryExecutor>()
-                            .AddScoped<PropertyBag>();
+            return services;
         }
 
         /// <summary>
@@ -214,14 +210,19 @@ namespace Microsoft.Restier.Core
         /// <param name="services">The <see cref="IServiceCollection"/> containing API service registrations.</param>
         /// <param name="apiType">The type of a class on which code-based conventions are used.</param>
         /// <returns>Current <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddRestierConventionBasedServices(this IServiceCollection services, Type apiType)
+        internal static IServiceCollection AddRestierConventionBasedServices(this IServiceCollection services, Type apiType)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(apiType, nameof(apiType));
 
             services.AddChainedService<IChangeSetItemAuthorizer>((sp, next) => new ConventionBasedChangeSetItemAuthorizer(apiType));
             services.AddChainedService<IChangeSetItemFilter>((sp, next) => new ConventionBasedChangeSetItemFilter(apiType));
-            services.AddChainedService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
+            
+            if (!services.HasService<IChangeSetItemValidator>())
+            {
+                services.AddChainedService<IChangeSetItemValidator, ConventionBasedChangeSetItemValidator>();
+            }
+
             services.AddChainedService<IQueryExpressionProcessor>((sp, next) => new ConventionBasedQueryExpressionProcessor(apiType)
             {
                 Inner = next,

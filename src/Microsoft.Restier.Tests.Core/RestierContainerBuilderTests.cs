@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Startup;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Tests.Core
         {
             var container = new RestierContainerBuilder();
             container.BuildContainer();
-            container.Services.Should().HaveCount(1);
+            container.Services.Should().HaveCount(0);
         }
 
     }

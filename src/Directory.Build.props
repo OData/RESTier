@@ -14,7 +14,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
 
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -91,8 +91,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="3.3.0" PrivateAssets="All" />
-    <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="3.3.1" PrivateAssets="All" />
+    <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
   </ItemGroup>
 
 </Project>
