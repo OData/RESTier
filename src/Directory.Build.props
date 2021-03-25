@@ -1,6 +1,4 @@
 <Project>
-  <!--<Import Project="version.props" />-->
-
   <!-- Folder layout -->
   <PropertyGroup>
     <IsBenchmarkProject Condition="$(MSBuildProjectName.EndsWith('.Performance'))">true</IsBenchmarkProject>
@@ -88,9 +86,9 @@
   <ItemGroup Condition=" $(IsTestProject) == 'true'  and  $(IsSampleProject) != 'true'">
     <PackageReference Include="FluentAssertions" Version="[5.10.3, 6.0.0)" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="[0.11.4, 1.0.0)" PrivateAssets="All" />
-    <PackageReference Update="MSTest.TestAdapter" Version="2.2.3" />
-    <PackageReference Update="MSTest.TestFramework" Version="2.2.3" />
-
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
   </ItemGroup>
 
   <ItemGroup>
