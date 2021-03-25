@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
@@ -19,9 +17,9 @@ namespace Microsoft.Restier.AspNet.Model
     /// A convention-based API model builder that extends a model, maps between
     /// the model space and the object space, and expands a query expression.
     /// </summary>
-    internal class RestierModelExtender
+    internal class RestierWebApiModelExtender
     {
-        private readonly Type targetType;
+        private readonly Type targetApiType;
         private readonly ICollection<PropertyInfo> publicProperties = new List<PropertyInfo>();
         private readonly ICollection<PropertyInfo> entitySetProperties = new List<PropertyInfo>();
         private readonly ICollection<PropertyInfo> singletonProperties = new List<PropertyInfo>();
@@ -33,7 +31,7 @@ namespace Microsoft.Restier.AspNet.Model
         private readonly IDictionary<IEdmEntityType, IEdmSingleton[]> singletonCache =
             new Dictionary<IEdmEntityType, IEdmSingleton[]>();
 
-        internal RestierModelExtender(Type targetType) => this.targetType = targetType;
+        internal RestierWebApiModelExtender(Type targetApiType) => this.targetApiType = targetApiType;
 
         private static bool IsEntitySetProperty(PropertyInfo property)
         {
@@ -71,7 +69,7 @@ namespace Microsoft.Restier.AspNet.Model
                 {
                     target = context.QueryContext.Api;
                     if (target == null ||
-                        !targetType.IsInstanceOfType(target))
+                        !targetApiType.IsInstanceOfType(target))
                     {
                         return null;
                     }
@@ -110,7 +108,7 @@ namespace Microsoft.Restier.AspNet.Model
                 {
                     target = context.QueryContext.Api;
                     if (target == null ||
-                        !targetType.IsInstanceOfType(target))
+                        !targetApiType.IsInstanceOfType(target))
                     {
                         return null;
                     }
@@ -126,7 +124,7 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void ScanForDeclaredPublicProperties()
         {
-            var currentType = targetType;
+            var currentType = targetApiType;
             while (currentType != null && currentType != typeof(ApiBase))
             {
                 var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
@@ -180,7 +178,7 @@ namespace Microsoft.Restier.AspNet.Model
                     continue;
                 }
 
-                var container = model.EnsureEntityContainer(targetType);
+                var container = model.EnsureEntityContainer(targetApiType);
                 if (isEntitySet)
                 {
                     if (container.FindEntitySet(property.Name) == null)
@@ -278,23 +276,23 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class ModelBuilder : IModelBuilder
         {
-            public ModelBuilder(RestierModelExtender modelCache) => ModelCache = modelCache;
+            public ModelBuilder(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
             public IModelBuilder InnerModelBuilder { get; private set; }
 
-            private RestierModelExtender ModelCache { get; set; }
+            private RestierWebApiModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
-            public async Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+            public IEdmModel GetModel(ModelContext context)
             {
                 Ensure.NotNull(context, nameof(context));
 
-                var modelReturned = await GetModelReturnedByInnerHandlerAsync(context, cancellationToken).ConfigureAwait(false);
+                var modelReturned = GetModelReturnedByInnerHandler(context);
                 if (modelReturned == null)
                 {
                     // There is no model returned so return an empty model.
                     var emptyModel = new EdmModel();
-                    emptyModel.EnsureEntityContainer(ModelCache.targetType);
+                    emptyModel.EnsureEntityContainer(ModelCache.targetApiType);
                     return emptyModel;
                 }
 
@@ -311,13 +309,12 @@ namespace Microsoft.Restier.AspNet.Model
                 return edmModel;
             }
 
-            private async Task<IEdmModel> GetModelReturnedByInnerHandlerAsync(
-                ModelContext context, CancellationToken cancellationToken)
+            private IEdmModel GetModelReturnedByInnerHandler(ModelContext context)
             {
                 var innerHandler = InnerModelBuilder;
                 if (innerHandler != null)
                 {
-                    return await innerHandler.GetModelAsync(context, cancellationToken).ConfigureAwait(false);
+                    return innerHandler.GetModel(context);
                 }
 
                 return null;
@@ -326,17 +323,14 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class ModelMapper : IModelMapper
         {
-            public ModelMapper(RestierModelExtender modelCache) => ModelCache = modelCache;
+            public ModelMapper(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
-            public RestierModelExtender ModelCache { get; set; }
+            public RestierWebApiModelExtender ModelCache { get; set; }
 
             private IModelMapper InnerModelMapper { get; set; }
 
             /// <inheritdoc/>
-            public bool TryGetRelevantType(
-                ModelContext context,
-                string name,
-                out Type relevantType)
+            public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
             {
                 if (InnerModelMapper != null &&
                     InnerModelMapper.TryGetRelevantType(context, name, out relevantType))
@@ -383,12 +377,12 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class QueryExpressionExpander : IQueryExpressionExpander
         {
-            public QueryExpressionExpander(RestierModelExtender modelCache) => ModelCache = modelCache;
+            public QueryExpressionExpander(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
             /// <inheritdoc/>
             public IQueryExpressionExpander InnerHandler { get; set; }
 
-            private RestierModelExtender ModelCache { get; set; }
+            private RestierWebApiModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression Expand(QueryExpressionContext context)
@@ -429,11 +423,11 @@ namespace Microsoft.Restier.AspNet.Model
 
         internal class QueryExpressionSourcer : IQueryExpressionSourcer
         {
-            public QueryExpressionSourcer(RestierModelExtender modelCache) => ModelCache = modelCache;
+            public QueryExpressionSourcer(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
             public IQueryExpressionSourcer InnerHandler { get; set; }
 
-            private RestierModelExtender ModelCache { get; set; }
+            private RestierWebApiModelExtender ModelCache { get; set; }
 
             /// <inheritdoc/>
             public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)

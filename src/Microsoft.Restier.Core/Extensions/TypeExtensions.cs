@@ -2,12 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace System
 {
-    internal static partial class TypeExtensions
+    internal static class TypeExtensions
     {
+
         private const BindingFlags QualifiedMethodBindingFlags = BindingFlags.NonPublic |
                                                                  BindingFlags.Static |
                                                                  BindingFlags.Instance |
@@ -99,6 +101,18 @@ namespace System
             return type.IsGenericType &&
                    type.GetGenericTypeDefinition() == definition;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        internal static List<FieldInfo> GetConstants(this Type type)
+        {
+            return type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly).ToList();
+        }
+
     }
 
     internal static class TypeHelper

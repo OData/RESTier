@@ -7,12 +7,11 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.Restier;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
+using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -28,7 +27,6 @@ namespace Microsoft.Restier.Tests.Core
 
         void di(IServiceCollection services)
         {
-            //services.AddCoreServices(typeof(TestableEmptyApi));
             services.AddChainedService<IModelBuilder>((sp, next) => new TestModelBuilder());
             services.AddChainedService<IModelMapper>((sp, next) => new TestModelMapper());
             services.AddChainedService<IQueryExpressionSourcer>((sp, next) => new TestQuerySourcer());
@@ -38,7 +36,8 @@ namespace Microsoft.Restier.Tests.Core
 
         void diEmpty(IServiceCollection services)
         {
-            services.AddTestDefaultServices();
+            services
+                .AddTestDefaultServices();
         }
 
         [TestMethod]
@@ -274,7 +273,7 @@ namespace Microsoft.Restier.Tests.Core
 
         private class TestModelBuilder : IModelBuilder
         {
-            public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+            public IEdmModel GetModel(ModelContext context)
             {
                 var model = new EdmModel();
                 var dummyType = new EdmEntityType("NS", "Dummy");
@@ -282,7 +281,7 @@ namespace Microsoft.Restier.Tests.Core
                 var container = new EdmEntityContainer("NS", "DefaultContainer");
                 container.AddEntitySet("Test", dummyType);
                 model.AddElement(container);
-                return Task.FromResult((IEdmModel)model);
+                return model;
             }
         }
 
