@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !RELEASE
+
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -156,3 +158,4 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     }
 
 }
+#endif

@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{0FA3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Breakdance", "Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj", "{14E2BD0E-30C7-472E-9EFE-AA7A63505493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.Legacy", "Microsoft.Restier.Tests.Legacy\Microsoft.Restier.Tests.Legacy.csproj", "{589F129E-4EF8-41D3-A07F-4D20714BF29F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Legacy", "Microsoft.Restier.Tests.Legacy\Microsoft.Restier.Tests.Legacy.csproj", "{589F129E-4EF8-41D3-A07F-4D20714BF29F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

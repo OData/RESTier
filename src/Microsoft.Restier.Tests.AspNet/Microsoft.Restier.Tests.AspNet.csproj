@@ -6,14 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Brutal.Dev.StrongNameSigner" Version="2.7.1" />
+    <PackageReference Include="Brutal.Dev.StrongNameSigner" Version="2.7.1" Condition=" '$(Configuration)' != 'Release' " />
     <PackageReference Include="Breakdance.Assemblies" Version="2.0.0-CI-20210317-172529" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.6" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.20.0" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.20.0" Condition=" '$(Configuration)' != 'Release' "  />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,5 +27,10 @@
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
+
+  <Target Name="BeforeBuild">
+    <Exec ContinueOnError="false"
+          Command="&quot;..\packages\Brutal.Dev.StrongNameSigner.2.7.1\build\StrongNameSigner.Console.exe&quot; -in &quot;..\packages&quot;" />
+  </Target>
 
 </Project>
