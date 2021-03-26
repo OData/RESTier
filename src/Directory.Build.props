@@ -12,7 +12,11 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
 
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>9.0</LangVersion>    
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
