@@ -8,7 +8,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
-using Microsoft.Restier.Core.Startup;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;

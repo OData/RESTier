@@ -5,7 +5,6 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Startup;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

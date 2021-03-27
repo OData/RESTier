@@ -7,20 +7,24 @@ namespace Microsoft.AspNet.OData
 {
 
     /// <summary>
-    /// 
+    /// A set of <see cref="PerRouteContainer"/> extension methods to help ensure the RestierContainerBuilder is built with the correct
+    /// services for the given Route.
     /// </summary>
-    public static class PerRouteContainerExtensions
+    /// <remarks>
+    /// This method uses Reflection wherever possible to ensure that changes to the default OData services for the container are always picked up.
+    /// </remarks>
+    internal static class PerRouteContainerExtensions
     {
 
         /// <summary>
         /// Create a root container for a given route name.
         /// </summary>
-        /// <param name="prc"></param>
+        /// <param name="prc">The <see cref="PerRouteContainer"/> instance to enhance.</param>
         /// <param name="routeName">The route name.</param>
         /// <param name="internalAction">The configuration actions to apply to the container.</param>
         /// <param name="developerAction">The configuration actions to apply to the container.</param>
         /// <returns>An instance of <see cref="IServiceProvider"/> to manage services for a route.</returns>
-        public static IServiceProvider CreateODataRouteContainer(this PerRouteContainer prc, string routeName, Action<IContainerBuilder> internalAction, Action<IContainerBuilder, string> developerAction)
+        internal static IServiceProvider CreateODataRouteContainer(this PerRouteContainer prc, string routeName, Action<IContainerBuilder> internalAction, Action<IContainerBuilder, string> developerAction)
         {
             if (prc == null)
             {

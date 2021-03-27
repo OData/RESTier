@@ -11,7 +11,7 @@ using Microsoft.Restier.Core.Model;
 using DIServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
 
-namespace Microsoft.Restier.Core.Startup
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// The default container builder implementation based on the Microsoft dependency injection framework.
@@ -21,14 +21,20 @@ namespace Microsoft.Restier.Core.Startup
 
         #region Private Members
 
+        /// <summary>
+        /// The <see cref="RestierApiBuilder"/> instance to use for this Container.
+        /// </summary>
+        internal RestierApiBuilder apiBuilder;
+
+        /// <summary>
+        /// 
+        /// </summary>
         internal readonly Action<RestierApiBuilder> configureApis;
 
         /// <summary>
-        /// The Builder instance used to map 
+        /// The <see cref="RestierRouteBuilder"/> instance to use for this Container.
         /// </summary>
         internal RestierRouteBuilder routeBuilder;
-
-        internal RestierApiBuilder apiBuilder;
 
         #endregion
 
@@ -101,7 +107,7 @@ namespace Microsoft.Restier.Core.Startup
         /// Builds a container which implements <see cref="IServiceProvider"/> and contains
         /// all the services registered.
         /// </summary>
-        /// <returns>The container built by this builder.</returns>
+        /// <returns>The <see cref="IServiceProvider">dependency injection container</see> for the registered services.</returns>
         public virtual IServiceProvider BuildContainer()
         {
             configureApis?.Invoke(apiBuilder);

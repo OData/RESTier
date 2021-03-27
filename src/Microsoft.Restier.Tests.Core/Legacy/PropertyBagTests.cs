@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Restier.Core.Startup;
 
 namespace Microsoft.Restier.Tests.Core
 {

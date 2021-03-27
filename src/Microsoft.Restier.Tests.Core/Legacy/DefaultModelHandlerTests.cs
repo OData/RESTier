@@ -17,7 +17,6 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using Microsoft.Restier.Core.Startup;
 
 namespace Microsoft.Restier.Tests.Core.Model
 {

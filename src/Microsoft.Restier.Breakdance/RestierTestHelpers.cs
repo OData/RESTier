@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Startup;
 using Newtonsoft.Json;
 
 namespace Microsoft.Restier.Breakdance
