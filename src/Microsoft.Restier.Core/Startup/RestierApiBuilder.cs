@@ -9,7 +9,7 @@ namespace Microsoft.Restier.Core
 {
 
     /// <summary>
-    /// 
+    /// A fluent configuration helper that registers <see cref="ApiBase"/> instances and tracks the additional Dependency Injection services those APIs need.
     /// </summary>
     /// <remarks>
     /// The implementation of adding specific APIs is left to the implementing Web framework, either in ASP.NET or ASP.NET Core.

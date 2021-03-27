@@ -14,7 +14,7 @@ using ODataServiceLifetime = Microsoft.OData.ServiceLifetime;
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// The default container builder implementation based on the Microsoft dependency injection framework.
+    /// The default Dependency Injection container builder for Restier.
     /// </summary>
     public class RestierContainerBuilder : IContainerBuilder
     {
@@ -104,15 +104,19 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Builds a container which implements <see cref="IServiceProvider"/> and contains
-        /// all the services registered.
+        /// Builds a container which implements <see cref="IServiceProvider"/> and contains all the services registered for a specific route.
         /// </summary>
         /// <returns>The <see cref="IServiceProvider">dependency injection container</see> for the registered services.</returns>
+        /// <remarks>
+        /// RWM: For unit test scenarios, this container may be built without any APIs opr Routes. If you are experiencing unexpected behavior, 
+        /// turn on Tracing so you can see the warning messages Restier might be generating.
+        /// </remarks>
         public virtual IServiceProvider BuildContainer()
         {
             configureApis?.Invoke(apiBuilder);
 
             Type apiType = null;
+
 
             if (routeBuilder.Routes.Any())
             {
@@ -164,7 +168,7 @@ namespace Microsoft.Restier.Core
                 var api = scope.ServiceProvider.GetService<ApiBase>();
                 if (api is null)
                 {
-                    throw new Exception($"Could not find the API. Please make sure you registered the API using the new 'UseRestier((services) => services.AddRestierApi<{apiType.Name}>());' syntax.");
+                    throw new Exception($"Could not find the API. Please make sure you registered the API using the new 'UseRestier(services => services.AddRestierApi<{apiType.Name}>());' syntax.");
                 }
 
                 if (sp.GetService(typeof(IModelBuilder)) is not IModelBuilder modelBuilder)
