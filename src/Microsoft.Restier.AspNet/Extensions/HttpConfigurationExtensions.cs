@@ -8,24 +8,20 @@ using System.Reflection;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Batch;
 using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNet.OData.Routing.Conventions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
 using Microsoft.Restier.AspNet;
 using Microsoft.Restier.AspNet.Batch;
-using Microsoft.Restier.AspNet.Model;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Startup;
+using Microsoft.Restier.Core;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace System.Web.Http
 {
 
     /// <summary>
-    /// Methods that extend <see cref="HttpConfiguration"/> to make registering Restier easier.
+    /// A set of <see cref="HttpConfiguration"/> extension methods to help ensure proper Restier configuration.
     /// </summary>
     public static class HttpConfigurationExtensions
     {
@@ -38,11 +34,39 @@ namespace System.Web.Http
         #endregion
 
         /// <summary>
-        /// 
+        /// Instructs WebApi to use Restier in this application, and allows you to register multiple APIs, each with their own additional services.
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="configureApis"></param>
-        /// <returns></returns>
+        /// <param name="config">The <see cref="HttpConfiguration"/> instance to enhance.</param>
+        /// <param name="configureApis">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
+        /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
+        /// <example>
+        /// <code>
+        /// config.UseRestier(builder =>
+        ///     builder
+        ///         .AddRestierApi<SomeApi>(services =>
+        ///             services
+        ///                 .AddEF6ProviderServices<SomeDbContext>()
+        ///                 .AddChainedService<IModelBuilder, SomeDbContextModelBuilder>()
+        ///                 .AddSingleton(new ODataValidationSettings
+        ///                 {
+        ///                     MaxAnyAllExpressionDepth = 3,
+        ///                     MaxExpansionDepth = 3,
+        ///                 })
+        ///         )
+        ///  
+        ///         .AddRestierApi<AnotherApi>(services =>
+        ///             services
+        ///                 .AddEF6ProviderServices<AnotherDbContext>()
+        ///                 .AddChainedService<IModelBuilder, AnotherDbContextModelBuilder>()
+        ///                 .AddSingleton(new ODataValidationSettings
+        ///                 {
+        ///                     MaxAnyAllExpressionDepth = 3,
+        ///                     MaxExpansionDepth = 3,
+        ///                 })
+        ///         );
+        ///    );
+        /// </code>
+        /// </example>
         public static HttpConfiguration UseRestier(this HttpConfiguration config, Action<RestierApiBuilder> configureApis)
         {
             Ensure.NotNull(config, nameof(config));
@@ -65,7 +89,7 @@ namespace System.Web.Http
         /// </summary>
         /// <param name="config"></param>
         /// <param name="routeBuilder"></param>
-        /// <returns></returns>
+        /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
         public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder)
         {
             var httpServer = GlobalConfiguration.DefaultServer;
@@ -83,7 +107,7 @@ namespace System.Web.Http
         /// <param name="config"></param>
         /// <param name="routeBuilder"></param>
         /// <param name="httpServer"></param>
-        /// <returns></returns>
+        /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
         public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder, HttpServer httpServer)
         {
             Ensure.NotNull(routeBuilder, nameof(routeBuilder));

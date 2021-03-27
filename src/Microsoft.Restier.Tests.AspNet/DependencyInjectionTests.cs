@@ -5,7 +5,7 @@ using CloudNimble.Breakdance.Assemblies;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
-using Microsoft.Restier.Core.Startup;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;

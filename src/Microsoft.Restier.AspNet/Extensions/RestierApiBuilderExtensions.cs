@@ -6,7 +6,7 @@ using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 
-namespace Microsoft.Restier.Core.Startup
+namespace Microsoft.Restier.Core
 {
 
     /// <summary>
@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Core.Startup
         /// </summary>
         /// <typeparam name="TApi"></typeparam>
         /// <param name="builder"></param>
-        /// <returns></returns>
+        /// <returns>The <see cref="RestierApiBuilder"/> instance to allow for fluent method chaining.</returns>
         public static RestierApiBuilder AddRestierApi<TApi>(this RestierApiBuilder builder) where TApi : ApiBase
         {
             return AddRestierApi<TApi>(builder, services => { });

@@ -20,8 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
 
     /// <summary>
-    /// Contains extension methods of <see cref="IServiceCollection"/>.
-    /// This method is used to add odata publisher service into container.
+    /// A set of <see cref="IServiceCollection"/> extension methods to help register required Restier services for a given Route.
     /// </summary>
     public static class ServiceCollectionExtensions
     {
@@ -29,10 +28,10 @@ namespace Microsoft.Extensions.DependencyInjection
         #region Internal Members
 
         /// <summary>
-        /// This method is used to add odata publisher service into container.
+        /// Adds any missing Restier default services to the <see cref="IServiceCollection"/>. Should be called last in the service registration process.
         /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>Current <see cref="IServiceCollection"/></returns>
+        /// <param name="services">The <see cref="IServiceCollection"/> instance to add services to.</param>
+        /// <returns>The <see cref="IServiceCollection"/> instance to allow for fluent method chaining.</returns>
         internal static IServiceCollection AddRestierDefaultServices(this IServiceCollection services)
         {
             Ensure.NotNull(services, nameof(services));

@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using Microsoft.Restier.Core.Startup;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
