@@ -14,14 +14,12 @@
     <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
   </ItemGroup>
 
-  <Choose>
-    <When Condition="$(DefineConstants.Contains('DEBUG'))">
-      <ItemGroup>
-        <PackageReference Include="Brutal.Dev.StrongNameSigner" Version="2.7.1" ExcludeAssets="*.targets" />
-        <PackageReference Include="Simple.OData.V4.Client" Version="5.20.0" GeneratePathProperty="true" />
-      </ItemGroup>
-    </When>
-  </Choose>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <PackageReference Include="Brutal.Dev.StrongNameSigner" Version="2.7.1" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.20.0" GeneratePathProperty="true" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
@@ -34,10 +32,5 @@
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
-
-  <Target Name="BeforeBuild">
-    <Message Text="SimpleODataClientPath: $(PkgSimple_OData_V4_Client)" Importance="high" />
-    <Exec ContinueOnError="false" Command="&quot;$(StrongNameSignerDirectory)\StrongNameSigner.Console.exe&quot; -in &quot;$(PkgSimple_OData_V4_Client)&quot;" />
-  </Target>
 
 </Project>
