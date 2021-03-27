@@ -34,10 +34,10 @@ namespace System.Web.Http
         #endregion
 
         /// <summary>
-        /// Instructs WebApi to use Restier in this application, and allows you to register multiple APIs, each with their own additional services.
+        /// Instructs WebApi to use one or more Restier APIs in this application, each with their own additional services.
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance to enhance.</param>
-        /// <param name="configureApis">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
+        /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
         /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
         /// <example>
         /// <code>
@@ -67,7 +67,7 @@ namespace System.Web.Http
         ///    );
         /// </code>
         /// </example>
-        public static HttpConfiguration UseRestier(this HttpConfiguration config, Action<RestierApiBuilder> configureApis)
+        public static HttpConfiguration UseRestier(this HttpConfiguration config, Action<RestierApiBuilder> configureApisAction)
         {
             Ensure.NotNull(config, nameof(config));
 
@@ -78,19 +78,30 @@ namespace System.Web.Http
 
             config.UseCustomContainerBuilder(() =>
             {
-                return new RestierContainerBuilder(configureApis);
+                return new RestierContainerBuilder(configureApisAction);
             });
 
             return config;
         }
 
         /// <summary>
-        /// 
+        /// Instructs WebApi to map one or more of the registered Restier APIs to the specified Routes, each with it's own isolated Dependency Injection container.
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="routeBuilder"></param>
+        /// <param name="config">The <see cref="HttpConfiguration"/> instance to enhance.</param>
+        /// <param name="configureRoutesAction">
+        /// An <see cref="Action{RestierRouteBuilder}" /> that allows you to add map APIs added through the <see cref="RestierApiBuilder"/> to your desired routes via a <see cref="RestierRouteBuilder"/>.
+        /// </param>
         /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
-        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder)
+        /// <example>
+        /// <code>
+        /// config.MapRestier(builder =>
+        ///     builder.
+        ///         .MapApiRoute<SomeApi>("SomeApiV1", "someapi/")
+        ///         .MapApiRoute<AnotherApi>("AnotherApiV1", "anotherapi/")
+        /// );
+        /// </code>
+        /// </example>
+        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> configureRoutesAction)
         {
             var httpServer = GlobalConfiguration.DefaultServer;
             if (httpServer == null)
@@ -98,22 +109,31 @@ namespace System.Web.Http
                 throw new Exception(owinException);
             }
 
-            return MapRestier(config, routeBuilder, httpServer);
+            return MapRestier(config, configureRoutesAction, httpServer);
         }
 
         /// <summary>
-        /// 
+        /// Instructs WebApi to map one or more of the registered Restier APIs to the specified Routes, each with it's own isolated Dependency Injection container.
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="routeBuilder"></param>
+        /// <param name="config">The <see cref="HttpConfiguration"/> instance to enhance.</param>
+        /// <param name="configureRoutesAction"></param>
         /// <param name="httpServer"></param>
         /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
-        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> routeBuilder, HttpServer httpServer)
+        /// <example>
+        /// <code>
+        /// config.MapRestier(builder =>
+        ///     builder
+        ///         .MapApiRoute<SomeApi>("SomeApiV1", "someapi/")
+        ///         .MapApiRoute<AnotherApi>("AnotherApiV1", "anotherapi/")
+        /// );
+        /// </code>
+        /// </example>
+        public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> configureRoutesAction, HttpServer httpServer)
         {
-            Ensure.NotNull(routeBuilder, nameof(routeBuilder));
+            Ensure.NotNull(configureRoutesAction, nameof(configureRoutesAction));
 
             var rrb = new RestierRouteBuilder();
-            routeBuilder.Invoke(rrb);
+            configureRoutesAction.Invoke(rrb);
 
             foreach (var route in rrb.Routes)
             {
