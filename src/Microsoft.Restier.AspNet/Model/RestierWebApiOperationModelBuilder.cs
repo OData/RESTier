@@ -17,17 +17,37 @@ namespace Microsoft.Restier.AspNet.Model
     /// </summary>
     internal class RestierWebApiOperationModelBuilder : IModelBuilder
     {
+
+        #region Private Members
+
         private readonly Type targetApiType;
         private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
+
+        #endregion
+
+        #region Properties
+
+        private IModelBuilder InnerModelBuilder { get; }
+
+        #endregion
+
+        #region Constructors
 
         internal RestierWebApiOperationModelBuilder(Type targetApiType, IModelBuilder innerModelBuilder)
         {
             this.targetApiType = targetApiType;
-            this.InnerModelBuilder = innerModelBuilder;
+            InnerModelBuilder = innerModelBuilder;
         }
 
-        private IModelBuilder InnerModelBuilder { get; }
+        #endregion
 
+        #region Public Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public IEdmModel GetModel(ModelContext context)
         {
             EdmModel model = null;
@@ -54,22 +74,18 @@ namespace Microsoft.Restier.AspNet.Model
             return model;
         }
 
-        private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
-        {
-            foreach (var parameter in method.GetParameters())
-            {
-                var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
-                var operationParam = new EdmOperationParameter(
-                    operation,
-                    parameter.Name,
-                    parameterTypeReference);
+        #endregion
 
-                operation.AddParameter(operationParam);
-            }
-        }
+        #region Private Methods
 
-        private static EdmPathExpression BuildBoundOperationReturnTypePathExpression(
-            IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter, IEdmModel model)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="returnTypeReference"></param>
+        /// <param name="bindingParameter"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private static EdmPathExpression BuildBoundOperationReturnTypePathExpression(IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter, IEdmModel model)
         {
             // Bound actions or functions that return an entity or a collection of entities
             // MAY specify a value for the EntitySetPath attribute
@@ -82,9 +98,9 @@ namespace Microsoft.Restier.AspNet.Model
             // Here, if the return type matches the binding parameter type, (and no bindingPath has already been set)
             // assume they are from the same entity set
             if (returnTypeReference != null &&
-                  returnTypeReference.Definition.AsElementType() is IEdmEntityType returnType &&
+                returnTypeReference.Definition.AsElementType() is IEdmEntityType returnType &&
                 bindingParameter != null &&
-                  bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() is IEdmStructuredType parameterType &&
+                bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() is IEdmStructuredType parameterType &&
                 parameterType.IsOrInheritsFrom(returnType))
             {
                 return new EdmPathExpression(bindingParameter.Name);
@@ -93,8 +109,7 @@ namespace Microsoft.Restier.AspNet.Model
             return null;
         }
 
-        private static IEdmExpression BuildEntitySetExpression(
-            IEdmModel model, string entitySetName, IEdmTypeReference returnTypeReference)
+        private static IEdmExpression BuildEntitySetExpression(IEdmModel model, string entitySetName, IEdmTypeReference returnTypeReference)
         {
             if (entitySetName == null && returnTypeReference != null)
             {
@@ -113,44 +128,13 @@ namespace Microsoft.Restier.AspNet.Model
             return null;
         }
 
-        private static string GetNamespaceName(OperationMethodInfo methodInfo, string modelNamespace)
+        private static void BuildOperationParameters(EdmOperation operation, MethodInfo method, IEdmModel model)
         {
-            // customized the namespace logic, customized namespace is P0
-            var namespaceName = methodInfo.OperationAttribute.Namespace;
-
-            if (namespaceName != null)
+            foreach (var parameter in method.GetParameters())
             {
-                return namespaceName;
-            }
-
-            if (modelNamespace != null)
-            {
-                return modelNamespace;
-            }
-
-            // This returns defined class namespace
-            return methodInfo.Namespace;
-        }
-
-        private void ScanForOperations()
-        {
-            var methods = targetApiType.GetMethods(
-                BindingFlags.NonPublic |
-                BindingFlags.Public |
-                BindingFlags.Static |
-                BindingFlags.Instance);
-
-            foreach (var method in methods)
-            {
-                var operationAttribute = method.GetCustomAttributes<OperationAttribute>(true).FirstOrDefault();
-                if (operationAttribute != null)
-                {
-                    operationInfos.Add(new OperationMethodInfo
-                    {
-                        Method = method,
-                        OperationAttribute = operationAttribute
-                    });
-                }
+                var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
+                var operationParam = new EdmOperationParameter(operation, parameter.Name, parameterTypeReference);
+                operation.AddParameter(operationParam);
             }
         }
 
@@ -210,6 +194,49 @@ namespace Microsoft.Restier.AspNet.Model
                 }
             }
         }
+
+        private static string GetNamespaceName(OperationMethodInfo methodInfo, string modelNamespace)
+        {
+            // customized the namespace logic, customized namespace is P0
+            var namespaceName = methodInfo.OperationAttribute.Namespace;
+
+            if (namespaceName != null)
+            {
+                return namespaceName;
+            }
+
+            if (modelNamespace != null)
+            {
+                return modelNamespace;
+            }
+
+            // This returns defined class namespace
+            return methodInfo.Namespace;
+        }
+
+        private void ScanForOperations()
+        {
+            var methods = targetApiType.GetMethods(
+                BindingFlags.NonPublic |
+                BindingFlags.Public |
+                BindingFlags.Static |
+                BindingFlags.Instance);
+
+            foreach (var method in methods)
+            {
+                var operationAttribute = method.GetCustomAttributes<OperationAttribute>(true).FirstOrDefault();
+                if (operationAttribute != null)
+                {
+                    operationInfos.Add(new OperationMethodInfo
+                    {
+                        Method = method,
+                        OperationAttribute = operationAttribute
+                    });
+                }
+            }
+        }
+
+        #endregion
 
         private class OperationMethodInfo
         {

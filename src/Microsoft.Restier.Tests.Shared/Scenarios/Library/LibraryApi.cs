@@ -18,34 +18,45 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     public class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
+        #region Constructors
+
         public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
-        [Operation]
-        public Book PublishBook(bool IsActive)
+        #endregion
+
+        #region API Methods
+
+        [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
+        public Book CheckoutBook(Book book)
         {
-            Console.WriteLine($"IsActive = {IsActive}");
-            return new Book
+            if (book == null)
             {
-                Id = Guid.NewGuid(),
-                Title = "The Cat in the Hat"
-            };
+                throw new ArgumentNullException(nameof(book));
+            }
+            Console.WriteLine($"Id = {book.Id}");
+            book.Title += " | Submitted";
+            return book;
+        }
+
+        [Operation(IsBound = true, IsComposable = true)]
+        public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
+        {
+            if (books == null)
+            {
+                throw new ArgumentNullException(nameof(books));
+            }
+            books.ToList().ForEach(c =>
+            {
+                Console.WriteLine($"Id = {c.Id}");
+                c.Title += " | Discontinued";
+            });
+            return books;
         }
 
         [Operation]
-        public Book PublishBooks(int Count)
-        {
-            Console.WriteLine($"Count = {Count}");
-            return new Book
-            {
-                Id = Guid.NewGuid(),
-                Title = "The Cat in the Hat Comes Back"
-            };
-        }
-
-        [Operation]
-        [EnableQuery(AllowedQueryOptions=AllowedQueryOptions.All)]
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All)]
         public IQueryable<Book> FavoriteBooks()
         {
             var publisher = new Publisher
@@ -80,6 +91,39 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return publisher.Books.AsQueryable();
         }
 
+        [Operation]
+        public Book PublishBook(bool IsActive)
+        {
+            Console.WriteLine($"IsActive = {IsActive}");
+            return new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "The Cat in the Hat"
+            };
+        }
+
+        [Operation]
+        public Book PublishBooks(int Count)
+        {
+            Console.WriteLine($"Count = {Count}");
+            return new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "The Cat in the Hat Comes Back"
+            };
+        }
+
+        [Operation(IsBound = true, OperationType = OperationType.Action)]
+        public Publisher PublishNewBook(Publisher publisher, Guid bookId)
+        {
+            var book = DbContext.Set<Book>().Find(bookId);
+
+            publisher.Books.Add(book);
+            DbContext.SaveChanges();
+
+            return publisher;
+        }
+
         [Operation(IsBound = true, IsComposable = true, EntitySet = "publisher/Books")]
         public IQueryable<Book> PublishedBooks(Publisher publisher)
         {
@@ -98,17 +142,15 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
-        public Book CheckoutBook(Book book)
-        {
-            if (book == null)
-            {
-                throw new ArgumentNullException(nameof(book));
-            }
-            Console.WriteLine($"Id = {book.Id}");
-            book.Title += " | Submitted";
-            return book;
-        }
+        #endregion
+
+        #region Restier Interceptors
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected internal bool CanUpdateEmployee() => false;
 
         protected internal void OnExecutingDiscontinueBooks(IQueryable<Book> books)
         {
@@ -128,26 +170,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             });
         }
 
-        [Operation(IsBound = true, IsComposable = true)]
-        public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
-        {
-            if (books == null)
-            {
-                throw new ArgumentNullException(nameof(books));
-            }
-            books.ToList().ForEach(c =>
-            {
-                Console.WriteLine($"Id = {c.Id}");
-                c.Title += " | Discontinued";
-            });
-            return books;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        protected internal bool CanUpdateEmployee() => false;
+        #endregion
 
     }
 

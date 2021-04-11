@@ -35,7 +35,8 @@ namespace Microsoft.Restier.Tests.Shared
         /// <returns></returns>
         public static IServiceCollection AddTestDefaultServices(this IServiceCollection services)
         {
-            services.AddChainedService<IChangeSetInitializer>((sp, next) => new DefaultChangeSetInitializer())
+            services
+                .AddChainedService<IChangeSetInitializer>((sp, next) => new DefaultChangeSetInitializer())
                 .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
             return services;
         }

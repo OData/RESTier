@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Formatter.Deserialization;
 using Microsoft.OData.Edm;
@@ -22,8 +23,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             Type expectedReturnType,
             IEdmTypeReference propertyType,
             IEdmModel model,
-            HttpRequestMessage request,
-            IServiceProvider serviceProvider)
+            HttpRequestMessage request)
         {
             var readContext = new ODataDeserializerContext
             {
@@ -31,7 +31,7 @@ namespace Microsoft.Restier.AspNet.Formatter
                 Request = request
             };
 
-            var returnValue = ODataModelBinderConverter.Convert(odataValue, propertyType, expectedReturnType, parameterName, readContext, serviceProvider);
+            var returnValue = ODataModelBinderConverter.Convert(odataValue, propertyType, expectedReturnType, parameterName, readContext, request.GetRequestContainer());
 
             if (!propertyType.IsCollection())
             {

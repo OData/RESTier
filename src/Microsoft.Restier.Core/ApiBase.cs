@@ -78,17 +78,17 @@ namespace Microsoft.Restier.Core
             if (queryExpressionSourcer == null)
             {
                 // Missing sourcer
-                throw new NotSupportedException(Resources.QuerySourcerMissing);
+                throw new NotSupportedException(Resources.MissingQueryExpressionSourcer);
             }
 
             if (changeSetInitializer == null)
             {
-                throw new NotSupportedException(Resources.ChangeSetPreparerMissing);
+                throw new NotSupportedException(Resources.MissingChangeSetInitializer);
             }
 
             if (submitExecutor == null)
             {
-                throw new NotSupportedException(Resources.SubmitExecutorMissing);
+                throw new NotSupportedException(Resources.MissingSubmitExecutor);
             }
 
             queryHandler = new DefaultQueryHandler(queryExpressionSourcer, queryExpressionAuthorizer, queryExpressionExpander, queryExpressionProcessor);

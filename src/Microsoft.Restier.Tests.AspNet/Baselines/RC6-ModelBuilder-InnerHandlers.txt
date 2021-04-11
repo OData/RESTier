@@ -1,4 +1,4 @@
-Microsoft.Restier.AspNet.Model.RestierWebApiModelExtender+ModelBuilder
 Microsoft.Restier.AspNet.Model.RestierWebApiOperationModelBuilder
+Microsoft.Restier.AspNet.Model.RestierWebApiModelExtender+ModelBuilder
 Microsoft.Restier.AspNet.Model.RestierWebApiModelBuilder
 Microsoft.Restier.EntityFramework.EF6ModelBuilder

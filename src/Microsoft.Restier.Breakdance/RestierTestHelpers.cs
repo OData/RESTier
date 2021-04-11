@@ -32,7 +32,7 @@ namespace Microsoft.Restier.Breakdance
 
         #region Private Members
 
-        private static readonly DefaultQuerySettings QueryDefaults = new DefaultQuerySettings
+        private static readonly DefaultQuerySettings QueryDefaults = new()
         {
             EnableCount = true,
             EnableExpand = true,

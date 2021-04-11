@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -111,15 +111,6 @@ namespace Microsoft.Restier.Core {
         internal static string CannotSetTotalCountIfThereIsNoResult {
             get {
                 return ResourceManager.GetString("CannotSetTotalCountIfThereIsNoResult", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Change set preparer is missing..
-        /// </summary>
-        internal static string ChangeSetPreparerMissing {
-            get {
-                return ResourceManager.GetString("ChangeSetPreparerMissing", resourceCulture);
             }
         }
         
@@ -232,47 +223,47 @@ namespace Microsoft.Restier.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An IChangeSetInitializer has not been registered with the DI container..
+        /// </summary>
+        internal static string MissingChangeSetInitializer {
+            get {
+                return ResourceManager.GetString("MissingChangeSetInitializer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An IQueryExecutor has not been registered with the DI container..
+        /// </summary>
+        internal static string MissingQueryExecutor {
+            get {
+                return ResourceManager.GetString("MissingQueryExecutor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An IQueryExpressionSourcer has not been registered with the DI container..
+        /// </summary>
+        internal static string MissingQueryExpressionSourcer {
+            get {
+                return ResourceManager.GetString("MissingQueryExpressionSourcer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An ISubmitExecutor has not been registered with the DI container..
+        /// </summary>
+        internal static string MissingSubmitExecutor {
+            get {
+                return ResourceManager.GetString("MissingSubmitExecutor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IEdmModel cannot be generated since API service IModelBuilder is not registered..
         /// </summary>
         internal static string ModelBuilderNotRegistered {
             get {
                 return ResourceManager.GetString("ModelBuilderNotRegistered", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to InvalidChangeSetEntryType.
-        /// </summary>
-        internal static string NoPermissionToDeleteEntity {
-            get {
-                return ResourceManager.GetString("NoPermissionToDeleteEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The current user does not have permission to insert entities into the EntitySet &apos;{0}&apos;..
-        /// </summary>
-        internal static string NoPermissionToInsertEntity {
-            get {
-                return ResourceManager.GetString("NoPermissionToInsertEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The current user does not have permission to invoke the requested action &apos;{0}&apos;..
-        /// </summary>
-        internal static string NoPermissionToInvokeAction {
-            get {
-                return ResourceManager.GetString("NoPermissionToInvokeAction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The current user does not have permission to update entities in the EntitySet &apos;{0}&apos;..
-        /// </summary>
-        internal static string NoPermissionToUpdateEntity {
-            get {
-                return ResourceManager.GetString("NoPermissionToUpdateEntity", resourceCulture);
             }
         }
         
@@ -304,6 +295,42 @@ namespace Microsoft.Restier.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to delete entities from the EntitySet &apos;{0}&apos;..
+        /// </summary>
+        internal static string PermissionToDeleteDenied {
+            get {
+                return ResourceManager.GetString("PermissionToDeleteDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to insert entities into the EntitySet &apos;{0}&apos;..
+        /// </summary>
+        internal static string PermissionToInsertDenied {
+            get {
+                return ResourceManager.GetString("PermissionToInsertDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to invoke the requested action &apos;{0}&apos;..
+        /// </summary>
+        internal static string PermissionToInvokeActionDenied {
+            get {
+                return ResourceManager.GetString("PermissionToInvokeActionDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current user does not have permission to update entities in the EntitySet &apos;{0}&apos;..
+        /// </summary>
+        internal static string PermissionToUpdateDenied {
+            get {
+                return ResourceManager.GetString("PermissionToUpdateDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The precondition check for request {0} on resource {1} is failed..
         /// </summary>
         internal static string PreconditionCheckFailed {
@@ -331,15 +358,6 @@ namespace Microsoft.Restier.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Query executor is missing..
-        /// </summary>
-        internal static string QueryExecutorMissing {
-            get {
-                return ResourceManager.GetString("QueryExecutorMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The LINQ expression for part {0} was not accessible. This may indicate your query has static member components, possibly from an extension method. This is not currently supported./r/nPlease check the EntitySet filter, and see https://github.com/OData/RESTier/issues/564 for more information..
         /// </summary>
         internal static string QueryMemberNotAccessible {
@@ -354,15 +372,6 @@ namespace Microsoft.Restier.Core {
         internal static string QueryShouldGetSingleRecord {
             get {
                 return ResourceManager.GetString("QueryShouldGetSingleRecord", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Query expression sourcer is missing..
-        /// </summary>
-        internal static string QuerySourcerMissing {
-            get {
-                return ResourceManager.GetString("QuerySourcerMissing", resourceCulture);
             }
         }
         
@@ -390,15 +399,6 @@ namespace Microsoft.Restier.Core {
         internal static string SourceExpressionMissing {
             get {
                 return ResourceManager.GetString("SourceExpressionMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Submit executor is missing..
-        /// </summary>
-        internal static string SubmitExecutorMissing {
-            get {
-                return ResourceManager.GetString("SubmitExecutorMissing", resourceCulture);
             }
         }
         

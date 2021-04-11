@@ -66,7 +66,7 @@
     <BuildProjectReferences Condition=" '$(NoBuild)' == 'true' ">false</BuildProjectReferences>
 
     <!-- Suppress warnings about uninstantiated classes. -->
-    <NoWarn>$(NoWarn);CA1812</NoWarn>
+    <NoWarn>$(NoWarn);CA1812;CS1570</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(IsTestProject) == 'true' ">
@@ -92,11 +92,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(IsTestProject) == 'true'  and  $(IsSampleProject) != 'true'">
-    <PackageReference Include="FluentAssertions" Version="[5.10.3, 6.0.0)" PrivateAssets="All" />
-    <PackageReference Include="FluentAssertions.Analyzers" Version="[0.11.4, 1.0.0)" PrivateAssets="All" />
+    <PackageReference Include="FluentAssertions" Version="5.10.3" PrivateAssets="All" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.11.4" PrivateAssets="All" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
   </ItemGroup>
 
   <ItemGroup>

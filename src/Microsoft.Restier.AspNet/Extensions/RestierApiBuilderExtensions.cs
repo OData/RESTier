@@ -42,8 +42,11 @@ namespace Microsoft.Restier.Core
             builder.Apis.Add(typeof(TApi), (serviceCollection) =>
             {
 
-                serviceCollection.AddScoped(typeof(TApi), typeof(TApi))
-                    .AddScoped(typeof(ApiBase), typeof(TApi));
+                //RWM: Add the API as the specifc API type first, then if an ApiBase instance is requested from the container,
+                //     get the existing instance.
+                serviceCollection
+                    .AddScoped(typeof(TApi), typeof(TApi))
+                    .AddScoped(sp => (ApiBase)sp.GetService(typeof(TApi)));
 
                 serviceCollection.RemoveAll<ODataQuerySettings>()
                     .AddRestierCoreServices()

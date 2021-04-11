@@ -106,9 +106,7 @@ namespace Microsoft.Restier.AspNet.Operation
                         parameter.ParameterType,
                         parameterTypeRef,
                         model,
-                        context.Request,
-                        context.Request.GetRequestContainer()); // JWS: As long as OData requires the ServiceProvder,
-                                                                //      we have to provide it. DI abuse smell.
+                        context.Request);
                 }
                 else
                 {

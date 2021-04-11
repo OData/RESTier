@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Tests.Core
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             result.Should().NotBeNullOrEmpty();
 
-            var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines/RC2-LibraryApi-ServiceProvider.txt");
+            var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines//RC2-LibraryApi-ServiceProvider.txt");
             result.Should().Be(baseline);
         }
 
@@ -71,6 +71,7 @@ namespace Microsoft.Restier.Tests.Core
             Console.WriteLine($"File exists: {File.Exists(fullPath)}");
         }
 
+        //[TestMethod]
         [BreakdanceManifestGenerator]
         public async Task IModelBuilder_LogChildren(string projectPath)
         {

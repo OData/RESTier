@@ -116,7 +116,7 @@ namespace Microsoft.Restier.AspNet
 
         private static bool IsMetadataPath(ODataPath odataPath)
         {
-            return odataPath.PathTemplate == "~" ||  odataPath.PathTemplate == "~/$metadata";
+            return odataPath.PathTemplate == "~" || odataPath.PathTemplate == "~/$metadata";
         }
 
         private static bool HasControllerForEntitySetOrSingleton(ODataPath odataPath, HttpRequestMessage request)

@@ -92,7 +92,7 @@ namespace Microsoft.Restier.Core.Query
             var executor = context.GetApiService<IQueryExecutor>();
             if (executor == null)
             {
-                throw new NotSupportedException(Resources.QueryExecutorMissing);
+                throw new NotSupportedException(Resources.MissingQueryExecutor);
             }
 
             if (elementType != null)

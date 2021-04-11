@@ -21,9 +21,10 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         public async Task ComplexTypeShoudWork()
         {
             var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
-
-            model.Validate(out var errors).Should().BeTrue();
+            model.Should().NotBeNull();
+            var result = model.Validate(out var errors);
             errors.Should().BeEmpty();
+            result.Should().BeTrue();
 
             var address = model.FindDeclaredType("Microsoft.Restier.Tests.Shared.Scenarios.Library.Address") as IEdmComplexType;
             address.Should().NotBeNull();

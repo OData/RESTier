@@ -129,8 +129,8 @@
   <data name="CannotSetTotalCountIfThereIsNoResult" xml:space="preserve">
     <value>The total count cannot be set if there is no result yet.</value>
   </data>
-  <data name="ChangeSetPreparerMissing" xml:space="preserve">
-    <value>Change set preparer is missing.</value>
+  <data name="MissingChangeSetInitializer" xml:space="preserve">
+    <value>An IChangeSetInitializer has not been registered with the DI container.</value>
   </data>
   <data name="DataModificationMustBeCUD" xml:space="preserve">
     <value>A DataModification must be either: IsNew, IsUpdate, or IsDelete.</value>
@@ -165,16 +165,16 @@
   <data name="InvalidChangeSetEntryType" xml:space="preserve">
     <value>Invalid ChangeSetItem Type: {0}.</value>
   </data>
-  <data name="NoPermissionToDeleteEntity" xml:space="preserve">
-    <value>InvalidChangeSetEntryType</value>
+  <data name="PermissionToDeleteDenied" xml:space="preserve">
+    <value>The current user does not have permission to delete entities from the EntitySet '{0}'.</value>
   </data>
-  <data name="NoPermissionToInsertEntity" xml:space="preserve">
+  <data name="PermissionToInsertDenied" xml:space="preserve">
     <value>The current user does not have permission to insert entities into the EntitySet '{0}'.</value>
   </data>
-  <data name="NoPermissionToInvokeAction" xml:space="preserve">
+  <data name="PermissionToInvokeActionDenied" xml:space="preserve">
     <value>The current user does not have permission to invoke the requested action '{0}'.</value>
   </data>
-  <data name="NoPermissionToUpdateEntity" xml:space="preserve">
+  <data name="PermissionToUpdateDenied" xml:space="preserve">
     <value>The current user does not have permission to update entities in the EntitySet '{0}'.</value>
   </data>
   <data name="NotSupportedType" xml:space="preserve">
@@ -189,11 +189,11 @@
   <data name="QueryableSourceCannotBeUsedAsQuery" xml:space="preserve">
     <value>'QueryableSource' cannot be used as query.</value>
   </data>
-  <data name="QueryExecutorMissing" xml:space="preserve">
-    <value>Query executor is missing.</value>
+  <data name="MissingQueryExecutor" xml:space="preserve">
+    <value>An IQueryExecutor has not been registered with the DI container.</value>
   </data>
-  <data name="QuerySourcerMissing" xml:space="preserve">
-    <value>Query expression sourcer is missing.</value>
+  <data name="MissingQueryExpressionSourcer" xml:space="preserve">
+    <value>An IQueryExpressionSourcer has not been registered with the DI container.</value>
   </data>
   <data name="ShouldBeInterfaceType" xml:space="preserve">
     <value>Should specify an interface type T for the handler.</value>
@@ -201,8 +201,8 @@
   <data name="SourceExpressionMissing" xml:space="preserve">
     <value>Expression returned by sourcer is missing.</value>
   </data>
-  <data name="SubmitExecutorMissing" xml:space="preserve">
-    <value>Submit executor is missing.</value>
+  <data name="MissingSubmitExecutor" xml:space="preserve">
+    <value>An ISubmitExecutor has not been registered with the DI container.</value>
   </data>
   <data name="ValidationFailsTheOperation" xml:space="preserve">
     <value>The operation cannot be performed because one or more objects are invalid.  Please inspect the ChangeSetValidationException.ValidationResults property for more information.</value>
