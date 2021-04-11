@@ -82,7 +82,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
-            content.Should().Contain("\"@odata.count\":5,");
+            content.Should().Contain("\"@odata.count\":4,");
         }
 
         [TestMethod]

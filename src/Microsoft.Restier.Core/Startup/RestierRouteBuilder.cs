@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core
         /// <typeparam name="TApi"></typeparam>
         /// <param name="routeName">The name of the Route. Used to map the Route to a specific OData per-route container. Defaults to 'RestierDefault'.</param>
         /// <param name="routePrefix">A string </param>
-        /// <param name="allowBatching">A boolean specifying if the <see cref="RestierBatchHandler" /> will be mapped to the '$batch' route.</param>
+        /// <param name="allowBatching">A boolean specifying if the RestierBatchHandler will be mapped to the '$batch' route.</param>
         /// <returns>The <see cref="RestierRouteBuilder"/> instance to allow for fluent method chaining.</returns>
         public RestierRouteBuilder MapApiRoute<TApi>(string routeName, string routePrefix, bool allowBatching = true) where TApi : ApiBase
         {

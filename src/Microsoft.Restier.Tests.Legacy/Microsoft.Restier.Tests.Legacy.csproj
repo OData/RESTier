@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.0.0-CI-20210317-172529" />
+    <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
     <PackageReference Include="Breakdance.Restier" Version="2.0.0-CI-20200121-203156" />
-    <PackageReference Include="Breakdance.WebApi" Version="2.0.0-CI-20210317-172529" />
+    <PackageReference Include="Breakdance.WebApi" Version="2.0.0" />
     <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.13" />
     <PackageReference Include="Microsoft.Restier.AspNet" Version="1.0.0-rc2.20191212.1" />

@@ -2,13 +2,16 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     public class LibraryContext : DbContext
     {
         public LibraryContext()
@@ -124,6 +127,12 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             });
 
+            context.Books.Add(new Book
+            {
+                Id = new Guid("2D760F15-974D-4556-8CDF-D610128B537E"),
+                Isbn = "1122334455667",
+                Title = "Sea of Rust"
+            });
 
             context.SaveChanges();
         }

@@ -30,7 +30,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             {
                 services
                     .AddTestDefaultServices()
-
                     .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
             }
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books", serviceCollection: di);
