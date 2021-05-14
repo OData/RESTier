@@ -10,14 +10,8 @@
     </Description>
     <PackageTags>$(PackageTags)</PackageTags>
 
-    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net472</TargetFrameworks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Exceptions\PreconditionFailedException.cs" />
-    <Compile Remove="Exceptions\PreconditionRequiredException.cs" />
-    <Compile Remove="Exceptions\ResourceNotFoundException.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
@@ -36,13 +30,6 @@
       <_Parameter1>Microsoft.Restier.Tests.AspNet, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f1fcc0061e7ed7476808f86fdecd6a9585915f329fc6312d08331c971da86230330e42ed8ffbd528c523fa023d92c3db1123b5d044b3aad9e04fd3877ffca8e4ba836a740ec3074f0fcbef770ff14d2fa1b5a8403ab16f398ac14998bd011c35505b6bc555326037a7ab7dcca118000a19a5475377358e9dea38df76452b01c9</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
-    <Compile Remove="DataAnnotations\AssociatedMetadataTypeTypeDescriptionProvider.cs" />
-    <Compile Remove="DataAnnotations\AssociatedMetadataTypeTypeDescriptor.cs" />
-    <Compile Remove="DataAnnotations\MetadataPropertyDescriptorWrapper.cs" />
-    <Compile Remove="DataAnnotations\MetadataTypeAttribute.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
@@ -50,11 +37,11 @@
     <PackageReference Include="Microsoft.OData.Core" Version="[7.8.3, 8.0.0)" />
     <PackageReference Include="Microsoft.OData.Edm" Version="[7.8.3, 8.0.0)" />
     <PackageReference Include="Newtonsoft.Json" Version="[10.0.1, 14.0.0)" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="[4.5.0, 6.0.0)" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="[4.6.0, 6.0.0)" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' != 'netstandard2.0' " />
+    <Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' == 'net472' " />
   </ItemGroup>
 
   <ItemGroup>

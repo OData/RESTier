@@ -11,6 +11,11 @@ namespace Microsoft.Restier.Core.Query
     /// </summary>
     public class ParameterModelReference : QueryModelReference
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParameterModelReference"/> class.
+        /// </summary>
+        /// <param name="entitySet">The EntitySet to reference.</param>
+        /// <param name="type">The item Type.</param>
         internal ParameterModelReference(IEdmEntitySet entitySet, IEdmType type)
             : base(entitySet, type)
         {

@@ -46,19 +46,8 @@ namespace Microsoft.Restier.Core.Submit
         /// </summary>
         public IEnumerable<ChangeSetItemValidationResult> ValidationResults
         {
-            get
-            {
-                if (errorValidationResults == null)
-                {
-                    return Enumerable.Empty<ChangeSetItemValidationResult>();
-                }
-                else
-                {
-                    return errorValidationResults;
-                }
-            }
-
-            set => errorValidationResults = value;
+            get => this.errorValidationResults ?? Enumerable.Empty<ChangeSetItemValidationResult>();
+            set => this.errorValidationResults = value;
         }
 
         /// <summary>

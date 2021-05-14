@@ -25,12 +25,12 @@ namespace Microsoft.Restier.Core.Model
         }
 
         /// <summary>
-        /// Gets or sets resource set and resource type map dictionary, it will be used by publisher for model build.
+        /// Gets resource set and resource type map dictionary, it will be used by publisher for model build.
         /// </summary>
         public IDictionary<string, Type> ResourceSetTypeMap { get; }
 
         /// <summary>
-        /// Gets or sets resource type and its key properties map dictionary, and used by publisher for model build.
+        /// Gets resource type and its key properties map dictionary, and used by publisher for model build.
         /// This is useful when key properties does not have key attribute
         /// or follow Web Api OData key property naming convention.
         /// Otherwise, this collection is not needed.

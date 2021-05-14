@@ -54,20 +54,6 @@ namespace Microsoft.Restier.Core
             return api.ServiceProvider.GetService<T>();
         }
 
-        /// <summary>
-        /// Gets all registered service instances.
-        /// </summary>
-        /// <param name="api">
-        /// An API.
-        /// </param>
-        /// <typeparam name="T">The service type.</typeparam>
-        /// <returns>The ordered collection of service instances.</returns>
-        public static IEnumerable<T> GetApiServices<T>(this ApiBase api) where T : class
-        {
-            Ensure.NotNull(api, nameof(api));
-            return api.ServiceProvider.GetServices<T>();
-        }
-
         #endregion
 
         #region PropertyBag

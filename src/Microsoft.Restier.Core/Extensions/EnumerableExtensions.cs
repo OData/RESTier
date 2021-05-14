@@ -3,8 +3,16 @@
 
 namespace System.Collections
 {
+    /// <summary>
+    /// ExtensionMethods for enumerables.
+    /// </summary>
     internal static class EnumerableExtensions
     {
+        /// <summary>
+        /// An implementation of SingleOrDefault on IEnumerable.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns>The result.</returns>
         public static object SingleOrDefault(this IEnumerable enumerable)
         {
             var enumerator = enumerable.GetEnumerator();
