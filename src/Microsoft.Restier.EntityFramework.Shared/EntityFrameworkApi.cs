@@ -3,16 +3,19 @@
 
 using System;
 using System.Linq;
-#if !EF7
-using System.Data.Entity;
-#endif
 #if EF7
-using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+#else
+using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 
+#if EF7
+namespace Microsoft.Restier.EntityFrameworkCore
+#else
 namespace Microsoft.Restier.EntityFramework
+#endif
 {
     /// <summary>
     /// Represents an API over a DbContext.
@@ -26,9 +29,6 @@ namespace Microsoft.Restier.EntityFramework
     /// <typeparamref name="T"/> under Entity Framework 6.
     /// </para>
     /// </remarks>
-#if EF7
-    [CLSCompliant(false)]
-#endif
     public class EntityFrameworkApi<T> : ApiBase where T : DbContext
     {
         /// <summary>
@@ -56,7 +56,5 @@ namespace Microsoft.Restier.EntityFramework
         /// 
         /// </summary>
         public Type ContextType => typeof(T);
-
     }
-
 }

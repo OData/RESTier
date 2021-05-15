@@ -7,14 +7,23 @@ using System.Linq.Expressions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
+#if EF7
+namespace Microsoft.Restier.EntityFrameworkCore
+#else
 namespace Microsoft.Restier.EntityFramework
+#endif
 {
     /// <summary>
     /// A query expression filter to handle EF related logic.
     /// </summary>
     internal class EFQueryExpressionProcessor : IQueryExpressionProcessor
     {
-        // It will be ConventionBasedEntitySetProcessor
+        /// <summary>
+        /// Gets or sets the inner query processor.
+        /// </summary>
+        /// <remarks>
+        /// It will be ConventionBasedEntitySetProcessor.
+        /// </remarks>
         public IQueryExpressionProcessor Inner { get; set; }
 
         /// <inheritdoc/>

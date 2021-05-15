@@ -17,13 +17,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 
+#if EF7
+namespace Microsoft.Restier.EntityFrameworkCore
+#else
 namespace Microsoft.Restier.EntityFramework
+#endif
 {
     /// <summary>
     /// Represents a model producer that uses the
     /// metadata workspace accessible from a DbContext.
     /// </summary>
-    internal class EF6ModelBuilder : IModelBuilder
+    internal class EFModelBuilder : IModelBuilder
     {
 
         #region Properties
@@ -44,17 +48,6 @@ namespace Microsoft.Restier.EntityFramework
         {
             Ensure.NotNull(context, nameof(context));
 
-#if EF7
-            var dbContext = context.GetApiService<DbContext>();
-            context.ResourceSetTypeMap.AddRange(dbContext.GetType().GetProperties()
-                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
-                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
-            context.ResourceTypeKeyPropertiesMap.AddRange(dbContext.Model.GetEntityTypes().ToDictionary(
-                e => e.ClrType,
-                e => ((ICollection<PropertyInfo>)
-                    e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
-#else
-
             if (!context.Api.GetType().GetProperties().Any(c => c.Name == "DbContext"))
             {
                 //RWM: This isn't an EF context, don't build anything.
@@ -63,6 +56,16 @@ namespace Microsoft.Restier.EntityFramework
 
             dynamic api = context.Api;
             var dbContext = (DbContext)api.DbContext;
+
+#if EF7
+            AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()
+                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
+                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
+            AddRange(context.ResourceTypeKeyPropertiesMap, dbContext.Model.GetEntityTypes().ToDictionary(
+                e => e.ClrType,
+                e => ((ICollection<PropertyInfo>)e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
+#else
+
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 
@@ -137,6 +140,27 @@ namespace Microsoft.Restier.EntityFramework
 
         }
 
+        private static void AddRange<TKey, TValue>(
+          IDictionary<TKey, TValue> source,
+          IDictionary<TKey, TValue> collection)
+        {
+            if (source is null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
 
+            if (collection is null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            foreach (var item in collection)
+            {
+                if (!source.ContainsKey(item.Key))
+                {
+                    source.Add(item.Key, item.Value);
+                }
+            }
+        }
     }
 }
