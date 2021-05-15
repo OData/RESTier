@@ -24,6 +24,9 @@ namespace Microsoft.Restier.Core
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(validationResults, nameof(validationResults));
+            Ensure.NotNull(context, nameof(context));
+            Ensure.NotNull(item, nameof(item));
+
             if (item is DataModificationItem dataModificationItem)
             {
                 var resource = dataModificationItem.Resource;
@@ -51,14 +54,14 @@ namespace Microsoft.Restier.Core
                                 Message = validationResult.ErrorMessage,
                                 Severity = EventLevel.Error,
                                 Target = resource,
-                                PropertyName = property.Name
+                                PropertyName = property.Name,
                             });
                         }
                     }
                 }
             }
 
-            return Task.WhenAll();
+            return Task.CompletedTask;
         }
     }
 }

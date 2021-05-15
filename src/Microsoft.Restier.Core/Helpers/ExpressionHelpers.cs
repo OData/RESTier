@@ -7,6 +7,9 @@ using Microsoft.Restier.Core;
 
 namespace System.Linq.Expressions
 {
+    /// <summary>
+    /// Helper methods to execute expressions.
+    /// </summary>
     internal static class ExpressionHelpers
     {
         private const string MethodNameOfQueryTake = "Take";
@@ -17,6 +20,12 @@ namespace System.Linq.Expressions
         private const string InterfaceNameISelectExpandWrapper = "ISelectExpandWrapper";
         private const string ExpandClauseReflectedTypeName = "SelectExpandBinder";
 
+        /// <summary>
+        /// Executes <see cref="Queryable.Select{TSource, TResult}(IQueryable{TSource}, Expression{Func{TSource, int, TResult}})"/> using the specified select expression.
+        /// </summary>
+        /// <param name="query">The <see cref="IQueryable"/>.</param>
+        /// <param name="select">The select expression.</param>
+        /// <returns>The new <see cref="IQueryable"/>.</returns>
         public static IQueryable Select(IQueryable query, LambdaExpression select)
         {
             var selectMethod =
@@ -26,6 +35,13 @@ namespace System.Linq.Expressions
             return selectMethod.Invoke(null, new object[] { query, select }) as IQueryable;
         }
 
+        /// <summary>
+        /// Executes <see cref="Queryable.SelectMany{TSource, TCollection, TResult}(IQueryable{TSource}, Expression{Func{TSource, int, IEnumerable{TCollection}}}, Expression{Func{TSource, TCollection, TResult}})"/> using the specified select expression.
+        /// </summary>
+        /// <param name="query">The <see cref="IQueryable"/>.</param>
+        /// <param name="selectMany">The select expression.</param>
+        /// <param name="selectedElementType">The type of the element that select operates on.</param>
+        /// <returns>The new <see cref="IQueryable"/>.</returns>
         public static IQueryable SelectMany(IQueryable query, LambdaExpression selectMany, Type selectedElementType)
         {
             var selectManyMethod =
@@ -35,18 +51,37 @@ namespace System.Linq.Expressions
             return selectManyMethod.Invoke(null, new object[] { query, selectMany }) as IQueryable;
         }
 
+        /// <summary>
+        /// Executes <see cref="Queryable.Where{TSource}(IQueryable{TSource}, Expression{Func{TSource, int, bool}})"/> using the specified where expression.
+        /// </summary>
+        /// <param name="query">The <see cref="IQueryable"/>.</param>
+        /// <param name="where">The select expression.</param>
+        /// <param name="type">The type of the element.</param>
+        /// <returns>The new <see cref="IQueryable"/>.</returns>
         public static IQueryable Where(IQueryable query, LambdaExpression where, Type type)
         {
             var whereMethod = ExpressionHelperMethods.QueryableWhereGeneric.MakeGenericMethod(type);
             return whereMethod.Invoke(null, new object[] { query, where }) as IQueryable;
         }
 
+        /// <summary>
+        /// Executes <see cref="Queryable.OfType{TResult}(IQueryable)"/> using the specified type.
+        /// </summary>
+        /// <param name="query">The <see cref="IQueryable"/>.</param>
+        /// <param name="type">The desired type of the element.</param>
+        /// <returns>The new <see cref="IQueryable"/>.</returns>
         public static IQueryable OfType(IQueryable query, Type type)
         {
             var ofTypeMethod = ExpressionHelperMethods.QueryableOfTypeGeneric.MakeGenericMethod(type);
             return ofTypeMethod.Invoke(null, new object[] { query }) as IQueryable;
         }
 
+        /// <summary>
+        /// creates a <see cref="Queryable.Count{TSource}(IQueryable{TSource})"/> expression using the specified <paramref name="elementType"/>.
+        /// </summary>
+        /// <param name="queryExpression">The query expression to use.</param>
+        /// <param name="elementType">The type of the element.</param>
+        /// <returns>The expression.</returns>
         public static Expression Count(Expression queryExpression, Type elementType)
         {
             var countMethod = ExpressionHelperMethods.QueryableCountGeneric.MakeGenericMethod(elementType);
@@ -54,11 +89,11 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Get count IQueryable of the elements with $skip/$top ignored
+        /// Get count IQueryable of the elements with $skip/$top ignored.
         /// </summary>
-        /// <typeparam name="TElement">The type parameter for IQueryable</typeparam>
+        /// <typeparam name="TElement">The type parameter for IQueryable.</typeparam>
         /// <param name="query">The input query.</param>
-        /// <returns>The count IQueryable</returns>
+        /// <returns>The count IQueryable.</returns>
         public static IQueryable<object> GetCountableQuery<TElement>(IQueryable<TElement> query)
         {
             Ensure.NotNull(query, nameof(query));
@@ -74,7 +109,7 @@ namespace System.Linq.Expressions
             {
                 // Don't need orderby for count query
                 expression = StripQueryMethod(expression, MethodNameOfQueryOrderBy);
-                
+
                 // If Type is Type<GenericType> to then GenericType will be returned.
                 // e.g. if type is SelectAllAndExpand<Namespace.Product>, then Namespace.Product will be returned.
                 var elementType = GetSelectExpandElementType(typeof(TElement));
@@ -89,10 +124,10 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Create am empty Queryable of specified type
+        /// Create am empty Queryable of specified type.
         /// </summary>
-        /// <param name="elementType">The element type of IQueryable</param>
-        /// <returns>The empty IQueryable</returns>
+        /// <param name="elementType">The element type of IQueryable.</param>
+        /// <returns>The empty IQueryable.</returns>
         public static IQueryable CreateEmptyQueryable(Type elementType)
         {
             var constructor = typeof(List<>).MakeGenericType(elementType).GetConstructor(Type.EmptyTypes);
@@ -102,6 +137,11 @@ namespace System.Linq.Expressions
             return emptyQuerable;
         }
 
+        /// <summary>
+        /// Gets the item type for an enumberable type.
+        /// </summary>
+        /// <param name="enumerableType">The enumberable type.</param>
+        /// <returns>The item type.</returns>
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
             var type = enumerableType.FindGenericType(typeof(IEnumerable<>));
@@ -113,6 +153,11 @@ namespace System.Linq.Expressions
             return enumerableType;
         }
 
+        /// <summary>
+        /// Removes UnneededStatement from a LinQ MethodCallExpression.
+        /// </summary>
+        /// <param name="methodCallExpression">The methodcall expression.</param>
+        /// <returns>A new MethodCallExpression.</returns>
         internal static MethodCallExpression RemoveUnneededStatement(this MethodCallExpression methodCallExpression)
         {
             if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
@@ -163,6 +208,11 @@ namespace System.Linq.Expressions
             return methodCallExpression;
         }
 
+        /// <summary>
+        /// Removes the Select call after an Expand Statement.
+        /// </summary>
+        /// <param name="methodCallExpression">The methodcall expression.</param>
+        /// <returns>A new MethodCallExpression.</returns>
         internal static MethodCallExpression RemoveSelectExpandStatement(this MethodCallExpression methodCallExpression)
         {
             // This means a select for expand is appended, will remove it for resource existing check
@@ -187,6 +237,11 @@ namespace System.Linq.Expressions
             return methodCallExpression;
         }
 
+        /// <summary>
+        /// Removes a where statement that checks a property for non-null.
+        /// </summary>
+        /// <param name="expression">The methodcall expression.</param>
+        /// <returns>A new Expression.</returns>
         internal static Expression RemoveAppendWhereStatement(this Expression expression)
         {
             if (!(expression is MethodCallExpression methodCallExpression) || methodCallExpression.Method.Name != MethodNameOfQueryWhere)

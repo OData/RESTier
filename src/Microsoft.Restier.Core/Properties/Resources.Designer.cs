@@ -268,6 +268,15 @@ namespace Microsoft.Restier.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There were no pending changes and no ChangeSet was specified..
+        /// </summary>
+        internal static string NoPendingChangedAndNoChangeSet {
+            get {
+                return ResourceManager.GetString("NoPendingChangedAndNoChangeSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not supported type: {0}..
         /// </summary>
         internal static string NotSupportedType {

@@ -30,7 +30,7 @@
         /// <summary>
         /// Represents the fifth step of the pipeline, where you can spin off other work after the action has completed successfully.
         /// </summary>
-        PostSubmit = 5
+        PostSubmit = 5,
 
     }
 

@@ -26,14 +26,11 @@ namespace Microsoft.Restier.Core.Query
         /// <param name="source">
         /// A source query model reference.
         /// </param>
-        internal PropertyModelReference(string propertyName, IEdmProperty property, QueryModelReference source)
+        internal PropertyModelReference(QueryModelReference source, string propertyName, IEdmProperty property) :
+            this(source, propertyName)
         {
-            Ensure.NotNull(propertyName, nameof(propertyName));
-            this.propertyName = propertyName;
-
             Ensure.NotNull(property, nameof(property));
             this.property = property;
-            Source = source;
         }
 
         /// <summary>

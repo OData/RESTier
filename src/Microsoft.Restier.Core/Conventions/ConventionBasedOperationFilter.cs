@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -48,39 +49,50 @@ namespace Microsoft.Restier.Core
 
         private Task InvokeProcessorMethodAsync(OperationContext context, RestierPipelineState pipelineState)
         {
-            var methodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethod.Execute);
-            object[] parameters = null;
-            if (context.ParameterValues != null)
+            var parameters = context.ParameterValues?.ToArray() ?? Array.Empty<object>();
+            var expectedMethodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethod.Execute);
+            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
+
+            if (expectedMethod == null)
             {
-                parameters = context.ParameterValues.ToArray();
+                return Task.CompletedTask;
             }
 
-            var method = targetApiType.GetQualifiedMethod(methodName);
-
-            if (method != null && (method.ReturnType == typeof(void) || typeof(Task).IsAssignableFrom(method.ReturnType)))
+            if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
             {
-                object target = null;
-                if (!method.IsStatic)
-                {
-                    target = context.Api;
-                    if (target == null || !targetApiType.IsInstanceOfType(target))
-                    {
-                        return Task.WhenAll();
-                    }
-                }
+                Trace.WriteLine($"Restier Filter found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                return Task.CompletedTask;
+            }
 
-                var methodParameters = method.GetParameters();
-                if (ParametersMatch(methodParameters, parameters))
+            if (expectedMethod.ReturnType != typeof(void) && !typeof(Task).IsAssignableFrom(expectedMethod.ReturnType))
+            {
+                Trace.WriteLine($"Restier Filter found '{expectedMethod}' but it does not return void or a Task. Your method will not be called until you correct the return type.");
+                return Task.CompletedTask;
+            }
+
+            object target = null;
+            if (!expectedMethod.IsStatic)
+            {
+                target = context.Api;
+                if (!targetApiType.IsInstanceOfType(target))
                 {
-                    var result = method.Invoke(target, parameters);
-                    if (result is Task resultTask)
-                    {
-                        return resultTask;
-                    }
+                    Trace.WriteLine("The Restier API is of the incorrect type.");
+                    return Task.CompletedTask;
                 }
             }
 
-            return Task.WhenAll();
+            var methodParameters = expectedMethod.GetParameters();
+            if (ParametersMatch(methodParameters, parameters))
+            {
+                var result = expectedMethod.Invoke(target, parameters);
+                if (result is Task resultTask)
+                {
+                    return resultTask;
+                }
+            }
+
+            Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
+            return Task.CompletedTask;
         }
     }
 }
