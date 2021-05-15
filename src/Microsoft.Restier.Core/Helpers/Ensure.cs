@@ -11,9 +11,9 @@ namespace System
         /// <summary>
         /// Ensures that a value of a parameter is not null.
         /// </summary>
-        /// <typeparam name="T">The type of the value.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <param name="paramName">The name of the parameter.</param>
+        /// <typeparam name="T">The type of the value to check.</typeparam>
+        /// <param name="value">The value to check.</param>
+        /// <param name="paramName">The name of the parameter to check.</param>
         public static void NotNull<T>([ValidatedNotNull] T? value, string paramName)
             where T : struct
         {
@@ -26,9 +26,9 @@ namespace System
         /// <summary>
         /// Ensures that a value of a parameter is not null.
         /// </summary>
-        /// <typeparam name="T">The type of the value.</typeparam>
-        /// <param name="value">The value.</param>
-        /// <param name="paramName">The name of the parameter.</param>
+        /// <typeparam name="T">The type of the value to check.</typeparam>
+        /// <param name="value">The value to check.</param>
+        /// <param name="paramName">The name of the parameter to check.</param>
         public static void NotNull<T>([ValidatedNotNull] T value, string paramName)
             where T : class
         {
@@ -41,8 +41,8 @@ namespace System
         /// <summary>
         /// Ensures that a value of a parameter is not null or white space.
         /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="paramName">The name of the parameter.</param>
+        /// <param name="value">The value to check.</param>
+        /// <param name="paramName">The name of the parameter to check.</param>
         public static void NotNullOrWhiteSpace([ValidatedNotNull] string value, string paramName)
         {
             if (string.IsNullOrWhiteSpace(value))
