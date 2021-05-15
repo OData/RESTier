@@ -25,7 +25,7 @@
         /// <summary>
         /// Represents a Delete operation.
         /// </summary>
-        Delete = 4
+        Delete = 4,
 
     }
 

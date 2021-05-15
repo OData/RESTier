@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 #pragma warning disable CA1801 // Unused method parameters
@@ -16,6 +17,7 @@ namespace Microsoft.Restier.Core
     /// data source in API. Later in the query pipeline the sourcer from
     /// the data provider will replace the stub with the actual data source.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public static class DataSourceStub
     {
         /// <summary>

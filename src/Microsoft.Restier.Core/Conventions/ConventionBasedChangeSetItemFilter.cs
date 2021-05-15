@@ -86,51 +86,55 @@ namespace Microsoft.Restier.Core
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
-            if (!IsUsable(expectedMethod))
+
+            if (expectedMethod == null)
             {
-                if (expectedMethod != null)
+                var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
+                var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
+                if (actualMethod != null)
                 {
-                    Trace.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
-                }
-                else
-                {
-                    var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
-                    var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
-                    if (actualMethod != null)
-                    {
-                        Trace.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
-                    }
-                }
-            }
-            else
-            {
-                object target = null;
-                if (!expectedMethod.IsStatic)
-                {
-                    target = context.Api;
-                    if (target == null || !targetApiType.IsInstanceOfType(target))
-                    {
-                        return Task.WhenAll();
-                    }
+                    Trace.WriteLine($"Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                 }
 
-                var parameters = GetParameters(item);
-                var methodParameters = expectedMethod.GetParameters();
-                if (ParametersMatch(methodParameters, parameters))
+                return Task.CompletedTask;
+            }
+
+            if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
+            {
+                Trace.WriteLine($"Restier Filter found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                return Task.CompletedTask;
+            }
+
+            if (expectedMethod.ReturnType != typeof(void) && !typeof(Task).IsAssignableFrom(expectedMethod.ReturnType))
+            {
+                Trace.WriteLine($"Restier Filter found '{expectedMethod}' but it does not return void or a Task. Your method will not be called until you correct the return type.");
+                return Task.CompletedTask;
+            }
+
+            object target = null;
+            if (!expectedMethod.IsStatic)
+            {
+                target = context.Api;
+                if (target == null || !targetApiType.IsInstanceOfType(target))
                 {
-                    var result = expectedMethod.Invoke(target, parameters);
-                    if (result is Task resultTask)
-                    {
-                        return resultTask;
-                    }
+                    Trace.WriteLine("The Restier API is of the incorrect type.");
+                    return Task.CompletedTask;
                 }
             }
 
-            return Task.WhenAll();
+            var parameters = GetParameters(item);
+            var methodParameters = expectedMethod.GetParameters();
+            if (ParametersMatch(methodParameters, parameters))
+            {
+                var result = expectedMethod.Invoke(target, parameters);
+                if (result is Task resultTask)
+                {
+                    return resultTask;
+                }
+            }
+
+            Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
+            return Task.CompletedTask;
         }
-
-        private static bool IsUsable(MethodInfo info) => (info != null && (info.ReturnType == typeof(void) || typeof(Task).IsAssignableFrom(info.ReturnType)));
-
-
     }
 }

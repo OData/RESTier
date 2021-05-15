@@ -399,7 +399,7 @@ namespace Microsoft.Restier.AspNet
                 case EdmTypeKind.Primitive:
                     return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
                 default:
-                    throw Error.NotSupported(Resources.EdmTypeNotSupported, edmType.ToTraceString());
+                    throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString()));
             }
         }
 

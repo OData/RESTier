@@ -4,19 +4,12 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Core.Submit
 {
-
     /// <summary>
-    /// 
+    /// Default implementation of <see cref="ISubmitExecutor"/>.
     /// </summary>
     public class DefaultSubmitExecutor : ISubmitExecutor
     {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public virtual Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
