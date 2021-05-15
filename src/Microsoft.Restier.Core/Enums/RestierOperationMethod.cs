@@ -12,7 +12,7 @@ namespace Microsoft.Restier.Core
         /// <summary>
         /// Represents the OperationImport being executed.
         /// </summary>
-        Execute = 1
+        Execute = 1,
 
     }
 

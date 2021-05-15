@@ -54,7 +54,6 @@ namespace Microsoft.Restier.Core
             return api.ServiceProvider.GetService<T>();
         }
 
-        /// <summary>
         /// Gets all registered service instances.
         /// </summary>
         /// <param name="api">

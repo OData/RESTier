@@ -42,13 +42,14 @@ the rest.
 Coming Soon!
 
 ## Supported Platforms
-Restier 1.0 currently ships with support for Classic ASP.NET 5.2.7 and later. Support for ASP.NET Core 3.0 is coming in the first half of 2020.
+Restier 1.0 currently ships with support for Classic ASP.NET 5.2.7 and later. Support for .NET 5 and later is coming in the second half of 2021.
 
 ## Restier Components
 The Classic ASP.NET flavor of Restier is made up of the following components:
 - **Microsoft.Restier.AspNet:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
 - **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
 - **Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
+- **Microsoft.Restier.Breakdance:** Unit test Restier services and components in-memory without spnning up a separate IIS instance.
 
 ## Ecosystem
 Restier is used in solutions from:
@@ -60,10 +61,10 @@ Restier is used in solutions from:
 There is also a growing set of tools to support Restier-based development
 - [Breakdance.Restier](https://github.com/cloudnimble/breakdance): Convention-based name troubleshooting and integration test support.
 ## Community
-After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws, Mike Pizzo, and Chris Woodruff.
+After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws and Mike Pizzo.
 
 ### Weekly Standups
-The core development team meets once a week on Google Hangouts to discuss pressing items and work through the issues list. A history of
+The core development team meets twice a month on Microsoft Teams to discuss pressing items and work through the issues list. A history of
 those meetings can be found in the Wiki.
 
 ### Contributing
@@ -95,13 +96,13 @@ Link References
 -->
 
 [devops-build]:https://dev.azure.com/dotnet/OData/_build?definitionId=89
-[devops-release]:https://dev.azure.com/cloudnimble/Restier/_release?view=all&definitionId=1
+[devops-release]:https://dev.azure.com/dotnet/odata/_release?view=all&definitionId=2
 [nightly-feed]:https://www.myget.org/F/restier-nightly/api/v3/index.json
 [twitter-intent]:https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2FOData%2FRESTier&via=robertmclaws&text=Check%20out%20Restier%21%20It%27s%20the%20simple%2C%20queryable%20framework%20for%20building%20data-driven%20APIs%20in%20.NET%21&hashtags=odata
 [code-of-conduct]:https://opensource.microsoft.com/codeofconduct/
 
 [devops-build-img]:https://img.shields.io/azure-devops/build/dotnet/odata/89.svg?style=for-the-badge&logo=azuredevops
-[devops-release-img]:https://img.shields.io/azure-devops/release/cloudnimble/d3aaa016-9aea-4903-b6a6-abda1d4c84f0/1/1.svg?style=for-the-badge&logo=azuredevops
+[devops-release-img]:https://img.shields.io/azure-devops/release/dotnet/f69f4a5b-2486-494e-ad83-7ba2b889f752/2/2.svg?style=for-the-badge&logo=azuredevops
 [nightly-feed-img]:https://img.shields.io/badge/continuous%20integration-feed-0495dc.svg?style=for-the-badge&logo=nuget&logoColor=fff
 [github-version-img]:https://img.shields.io/github/release/ryanoasis/nerd-fonts.svg?style=for-the-badge
 [gitter-img]:https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=for-the-badge
