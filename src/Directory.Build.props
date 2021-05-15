@@ -8,6 +8,8 @@
 
     <IncludeSource>false</IncludeSource>
     <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
