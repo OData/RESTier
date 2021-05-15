@@ -41,6 +41,9 @@ namespace Microsoft.Restier.Core.Operation
             IEnumerable bindingParameterValue)
             : base(api)
         {
+            Ensure.NotNull(getParameterValueFunc, nameof(getParameterValueFunc));
+            Ensure.NotNullOrWhiteSpace(operationName, nameof(operationName));
+
             GetParameterValueFunc = getParameterValueFunc;
             OperationName = operationName;
             IsFunction = isFunction;

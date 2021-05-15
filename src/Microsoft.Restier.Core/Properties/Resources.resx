@@ -234,4 +234,7 @@
   <data name="QueryMemberNotAccessible" xml:space="preserve">
     <value>The LINQ expression for part {0} was not accessible. This may indicate your query has static member components, possibly from an extension method. This is not currently supported./r/nPlease check the EntitySet filter, and see https://github.com/OData/RESTier/issues/564 for more information.</value>
   </data>
+  <data name="NoPendingChangedAndNoChangeSet" xml:space="preserve">
+    <value>There were no pending changes and no ChangeSet was specified.</value>
+  </data>
 </root>

@@ -40,10 +40,10 @@ namespace Microsoft.Restier.Core
 
             if (Inner != null)
             {
-                var innerFilteredExpression = Inner.Process(context);
-                if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
+                var innerProcessedExpression = this.Inner.Process(context);
+                if (innerProcessedExpression != null && innerProcessedExpression != context.VisitedNode)
                 {
-                    return innerFilteredExpression;
+                    return innerProcessedExpression;
                 }
             }
 
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Core
                     entityType = (IEdmEntityType)entityType.BaseType;
                 }
 
-                //Get the model, query it for the entity set of a given type.
+                // Get the model, query it for the entity set of a given type.
                 var entitySet = context.QueryContext.Model.EntityContainer.EntitySets().FirstOrDefault(c => c.EntityType() == entityType);
                 if (entitySet == null)
                 {
@@ -120,6 +120,7 @@ namespace Microsoft.Restier.Core
                         Trace.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                     }
                 }
+
                 return null;
             }
 

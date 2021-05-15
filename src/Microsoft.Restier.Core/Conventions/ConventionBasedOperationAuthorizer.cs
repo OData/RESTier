@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core
 
             if (!method.IsFamily && !method.IsFamilyOrAssembly)
             {
-                Trace.WriteLine($"Restier Authorizer found '{methodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                Trace.WriteLine($"Restier Authorizer found '{methodName}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
                 return Task.FromResult(result);
             }
 
@@ -57,8 +57,9 @@ namespace Microsoft.Restier.Core
             if (!method.IsStatic)
             {
                 target = context.Api;
-                if (target == null || !targetApiType.IsInstanceOfType(target))
+                if (!targetApiType.IsInstanceOfType(target))
                 {
+                    Trace.WriteLine("The Restier API is of the incorrect type.");
                     return Task.FromResult(result);
                 }
             }
@@ -69,6 +70,7 @@ namespace Microsoft.Restier.Core
                 result = (bool)method.Invoke(target, null);
             }
 
+            Trace.WriteLine($"Restier Authorizer found '{methodName}', but it has an incorrect number of arguments. The number of arguments should be 0.");
             return Task.FromResult(result);
         }
     }

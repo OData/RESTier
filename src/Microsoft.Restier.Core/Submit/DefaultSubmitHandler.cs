@@ -75,6 +75,10 @@ namespace Microsoft.Restier.Core.Submit
             {
                 return context.Result;
             }
+            else if (context.ChangeSet == null)
+            {
+                throw new InvalidOperationException(Resources.NoPendingChangedAndNoChangeSet);
+            }
 
             var eventsChangeSet = context.ChangeSet;
 

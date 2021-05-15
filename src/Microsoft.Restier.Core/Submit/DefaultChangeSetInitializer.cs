@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             Ensure.NotNull(context, nameof(context));
             context.ChangeSet = new ChangeSet();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
     }

@@ -360,7 +360,7 @@ namespace Microsoft.Restier.Core.Query
                     {
                         var property = structuredType.FindProperty(member.Member.Name);
                         modelReference = GetModelReferenceForNode(parameterExpression);
-                        modelReference = new PropertyModelReference(member.Member.Name, property, modelReference);
+                        modelReference = new PropertyModelReference(modelReference, member.Member.Name, property);
                         return modelReference;
                     }
                 }

@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public bool HasProperty(string name)
         {
-            Ensure.NotNull(name, nameof(name));
+            Ensure.NotNullOrWhiteSpace(name, nameof(name));
             return properties.ContainsKey(name);
         }
 
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Core
         /// </returns>
         public T GetProperty<T>(string name)
         {
-            Ensure.NotNull(name, nameof(name));
+            Ensure.NotNullOrWhiteSpace(name, nameof(name));
             var value = GetProperty(name);
             if (!(value is T))
             {
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Core
         /// <returns>The value of the property.</returns>
         public object GetProperty(string name)
         {
-            Ensure.NotNull(name, nameof(name));
+            Ensure.NotNullOrWhiteSpace(name, nameof(name));
             properties.TryGetValue(name, out var value);
             return value;
         }
@@ -74,7 +74,7 @@ namespace Microsoft.Restier.Core
         /// </param>
         public void SetProperty(string name, object value)
         {
-            Ensure.NotNull(name, nameof(name));
+            Ensure.NotNullOrWhiteSpace(name, nameof(name));
             properties[name] = value;
         }
 
@@ -86,7 +86,7 @@ namespace Microsoft.Restier.Core
         /// </param>
         public void RemoveProperty(string name)
         {
-            Ensure.NotNull(name, nameof(name));
+            Ensure.NotNullOrWhiteSpace(name, nameof(name));
             properties.Remove(name);
         }
     }
