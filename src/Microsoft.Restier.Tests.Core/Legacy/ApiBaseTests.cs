@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Tests.Core
 {
 
     [TestClass]
-    public class ApiBaseTests : RestierTestBase
+    public partial class ApiBaseTests : RestierTestBase
     {
 
         void di(IServiceCollection services)
