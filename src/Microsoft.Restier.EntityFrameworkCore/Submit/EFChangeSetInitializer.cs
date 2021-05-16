@@ -37,7 +37,14 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var dbContext = context.GetApiService<DbContext>();
+            if (!(context.Api is IEntityFrameworkApi frameworkApi))
+            {
+                // Not an EF Api.
+                return;
+            }
+
+            var dbContextType = frameworkApi.ContextType;
+            var dbContext = frameworkApi.DbContext;
 
             var methodCall = this.GetType().GetMethod("HandleEntitySet", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
@@ -53,7 +60,8 @@ namespace Microsoft.Restier.EntityFrameworkCore
                     resourceType = entry.ActualResourceType;
                 }
 
-                var task = methodCall.Invoke(this, new object[] { context, dbContext, entry, resourceType, cancellationToken }) as Task;
+                var typedMethodCall = methodCall.MakeGenericMethod(new Type[] { resourceType });
+                var task = typedMethodCall.Invoke(this, new object[] { context, dbContext, entry, resourceType, cancellationToken }) as Task;
                 await task.ConfigureAwait(false);
             }
         }

@@ -10,7 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)EntityFrameworkApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\RestierEntityFrameworkServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IEntityFrameworkApi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EFModelMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EFModelBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Query\EFQueryExecutor.cs" />

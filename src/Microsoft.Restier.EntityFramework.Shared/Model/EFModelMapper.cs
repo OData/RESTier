@@ -47,8 +47,12 @@ namespace Microsoft.Restier.EntityFramework
             // TODO GitHubIssue#39 : support something beyond entity sets
             relevantType = null;
 
-            dynamic api = context.Api;
-            var dbContextType = api.ContextType as Type;
+            if (!(context.Api is IEntityFrameworkApi frameworkApi))
+            {
+                return false;
+            }
+
+            var dbContextType = frameworkApi.ContextType;
 
             var property = dbContextType.GetProperty(name);
             if (property != null)

@@ -48,14 +48,13 @@ namespace Microsoft.Restier.EntityFramework
         {
             Ensure.NotNull(context, nameof(context));
 
-            if (!context.Api.GetType().GetProperties().Any(c => c.Name == "DbContext"))
+            if (!(context.Api is IEntityFrameworkApi frameworkApi))
             {
                 //RWM: This isn't an EF context, don't build anything.
                 return null;
             }
 
-            dynamic api = context.Api;
-            var dbContext = (DbContext)api.DbContext;
+            var dbContext = frameworkApi.DbContext;
 
 #if EF7
             AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()

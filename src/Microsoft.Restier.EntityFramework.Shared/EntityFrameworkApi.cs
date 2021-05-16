@@ -29,7 +29,8 @@ namespace Microsoft.Restier.EntityFramework
     /// <typeparamref name="T"/> under Entity Framework 6.
     /// </para>
     /// </remarks>
-    public class EntityFrameworkApi<T> : ApiBase where T : DbContext
+    public class EntityFrameworkApi<T> : ApiBase, IEntityFrameworkApi
+        where T : DbContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkApi{T}" /> class.
@@ -53,8 +54,13 @@ namespace Microsoft.Restier.EntityFramework
         }
 
         /// <summary>
-        /// 
+        /// Gets the Context Type.
         /// </summary>
         public Type ContextType => typeof(T);
+
+        /// <summary>
+        /// Gets the underlying DbContext for this API.
+        /// </summary>
+        DbContext IEntityFrameworkApi.DbContext => DbContext;
     }
 }
