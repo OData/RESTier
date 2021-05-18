@@ -9,12 +9,16 @@ using System.Data.Entity;
 #endif
 using Microsoft.Restier.Core.Model;
 
+#if EF7
+namespace Microsoft.Restier.EntityFrameworkCore
+#else
 namespace Microsoft.Restier.EntityFramework
+#endif
 {
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    internal class EF6ModelMapper : IModelMapper
+    internal class EFModelMapper : IModelMapper
     {
 
         /// <summary>

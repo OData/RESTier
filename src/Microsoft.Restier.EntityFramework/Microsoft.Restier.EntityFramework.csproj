@@ -10,7 +10,7 @@
     </Description>
     <PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
 
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net472;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="[6.2.0, 7.0.0)" />
+    <PackageReference Include="EntityFramework" Version="[6.4.0, 7.0.0)" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.OData.Core" Version="[7.8.3, 8.0.0)" />
     <PackageReference Include="Microsoft.OData.Edm" Version="[7.8.3, 8.0.0)" />
@@ -40,5 +40,7 @@
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
   </ItemGroup>
+  
+  <Import Project="..\Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems" Label="Shared" />
   
 </Project>

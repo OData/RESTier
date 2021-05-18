@@ -15,10 +15,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Core.Query;
 
 #if EF7
-using IAsyncQueryProvider = Microsoft.EntityFrameworkCore.Query.Internal.IAsyncQueryProvider;
+using IAsyncQueryProvider = Microsoft.EntityFrameworkCore.Query.IAsyncQueryProvider;
 #endif
 
+#if EF7
+namespace Microsoft.Restier.EntityFrameworkCore
+#else
 namespace Microsoft.Restier.EntityFramework
+#endif
 {
     /// <summary>
     /// Represents a query executor that uses Entity Framework methods.
@@ -27,6 +31,9 @@ namespace Microsoft.Restier.EntityFramework
     /// </summary>
     internal class EFQueryExecutor : IQueryExecutor
     {
+        /// <summary>
+        /// Gets or sets the Inner IQueryExecutor.
+        /// </summary>
         public IQueryExecutor Inner { get; set; }
 
         /// <summary>
@@ -101,8 +108,13 @@ namespace Microsoft.Restier.EntityFramework
 #endif
             if (provider != null)
             {
+#if EF7
+                var result = await provider.ExecuteAsync<Task<TResult>>(expression, cancellationToken).ConfigureAwait(false);
+                return new QueryResult(new TResult[] { result });
+#else
                 var result = await provider.ExecuteAsync<TResult>(expression, cancellationToken).ConfigureAwait(false);
                 return new QueryResult(new TResult[] { result });
+#endif
             }
 
             return await Inner.ExecuteExpressionAsync<TResult>(context, queryProvider, expression, cancellationToken).ConfigureAwait(false);

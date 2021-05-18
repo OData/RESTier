@@ -13,15 +13,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
+#if EF7
+namespace Microsoft.Restier.EntityFrameworkCore
+#else
 namespace Microsoft.Restier.EntityFramework
+#endif
 {
     /// <summary>
     /// Represents a query expression sourcer that uses a DbContext.
     /// </summary>
     internal class EFQueryExpressionSourcer : IQueryExpressionSourcer
     {
-
-
         /// <summary>
         /// Sources an expression.
         /// </summary>
