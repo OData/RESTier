@@ -50,7 +50,7 @@ namespace Microsoft.Restier.Tests.Core
             result.Should().NotBeNullOrWhiteSpace();
 
             var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines/RC2-ModelBuilder-InnerHandlers.txt");
-            baseline = baseline.Replace("Model.Restier", "Model.RestierWebApi").Replace("EFModelProducer", typeof(EF6ModelBuilder).Name);
+            baseline = baseline.Replace("Model.Restier", "Model.RestierWebApi").Replace("EFModelProducer", typeof(EFModelBuilder).Name);
             result.Should().Be(baseline);
         }
 
