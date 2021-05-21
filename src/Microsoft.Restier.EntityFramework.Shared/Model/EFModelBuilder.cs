@@ -48,7 +48,7 @@ namespace Microsoft.Restier.EntityFramework
         {
             Ensure.NotNull(context, nameof(context));
 
-            if (!(context.Api is IEntityFrameworkApi frameworkApi))
+            if (context.Api is not IEntityFrameworkApi frameworkApi)
             {
                 //RWM: This isn't an EF context, don't build anything.
                 return null;

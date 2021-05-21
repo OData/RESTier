@@ -25,7 +25,65 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class RestierEntityFrameworkServiceCollectionExtensions
     {
-#if !EF7
+#if EF7
+        /// <summary>
+        /// This method is used to add entity framework providers service into container.
+        /// </summary>
+        /// <typeparam name="TDbContext">The DbContext type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="optionsAction">
+        /// An optional action to configure the Microsoft.EntityFrameworkCore.DbContextOptions
+        /// for the context. This provides an alternative to performing configuration of
+        /// the context by overriding the Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)
+        /// method in your derived context.
+        /// If an action is supplied here, the Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)
+        /// method will still be run if it has been overridden on the derived context. Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)
+        /// configuration will be applied in addition to configuration performed here.
+        /// In order for the options to be passed into your context, you need to expose a
+        /// constructor on your context that takes Microsoft.EntityFrameworkCore.DbContextOptions`1
+        /// and passes it to the base constructor of Microsoft.EntityFrameworkCore.DbContext.</param>
+        /// <returns>Current <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddEFCoreProviderServices<TDbContext>(
+            this IServiceCollection services,
+            Action<IServiceProvider, DbContextOptionsBuilder> optionsAction = null)
+            where TDbContext : DbContext
+        {
+            Ensure.NotNull(services, nameof(services));
+
+            services.AddDbContext<TDbContext>(optionsAction);
+
+            return AddEFProviderServices(services);
+        }
+
+        /// <summary>
+        /// This method is used to add entity framework providers service into container.
+        /// </summary>
+        /// <typeparam name="TDbContext">The DbContext type.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="optionsAction">
+        /// An optional action to configure the Microsoft.EntityFrameworkCore.DbContextOptions
+        /// for the context. This provides an alternative to performing configuration of
+        /// the context by overriding the Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)
+        /// method in your derived context.
+        /// If an action is supplied here, the Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)
+        /// method will still be run if it has been overridden on the derived context. Microsoft.EntityFrameworkCore.DbContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)
+        /// configuration will be applied in addition to configuration performed here.
+        /// In order for the options to be passed into your context, you need to expose a
+        /// constructor on your context that takes Microsoft.EntityFrameworkCore.DbContextOptions`1
+        /// and passes it to the base constructor of Microsoft.EntityFrameworkCore.DbContext.</param>
+        /// <returns>Current <see cref="IServiceCollection"/>.</returns>
+        public static IServiceCollection AddEFCoreProviderServices<TDbContext>(
+            this IServiceCollection services,
+            Action<DbContextOptionsBuilder> optionsAction = null) 
+            where TDbContext : DbContext
+        {
+            Ensure.NotNull(services, nameof(services));
+
+            services.AddDbContext<TDbContext>(optionsAction);
+
+            return AddEFProviderServices(services);
+        }
+#else
         /// <summary>
         /// This method is used to add entity framework providers service into container.
         /// </summary>
@@ -35,6 +93,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddEF6ProviderServices<TDbContext>(this IServiceCollection services)
             where TDbContext : DbContext
         {
+            Ensure.NotNull(services, nameof(services));
+
             services.TryAddScoped(sp =>
             {
                 var dbContext = Activator.CreateInstance<TDbContext>();
@@ -51,15 +111,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>Current <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddEFProviderServices(this IServiceCollection services)
+        internal static IServiceCollection AddEFProviderServices(this IServiceCollection services)
         {
-            if (services.HasService<DefaultEF6ProviderServicesDetectionDummy>())
+            if (services.HasService<DefaultEFProviderServicesDetectionDummy>())
             {
                 // Avoid applying multiple times to a same service collection.
                 return services;
             }
 
-            services.AddSingleton<DefaultEF6ProviderServicesDetectionDummy>()
+            services.AddSingleton<DefaultEFProviderServicesDetectionDummy>()
                 .AddChainedService<IModelBuilder, EFModelBuilder>()
                 .AddChainedService<IModelMapper, EFModelMapper>()
                 .AddChainedService<IQueryExpressionSourcer, EFQueryExpressionSourcer>()
@@ -70,19 +130,5 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
-
-        #region Private Members
-
-        /// <summary>
-        /// Dummy class to detect double registration of Default restier services inside a container.
-        /// </summary>
-        private sealed class DefaultEF6ProviderServicesDetectionDummy
-        {
-
-        }
-
-        #endregion
-
     }
-
 }

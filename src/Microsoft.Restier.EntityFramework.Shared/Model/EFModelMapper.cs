@@ -47,7 +47,7 @@ namespace Microsoft.Restier.EntityFramework
             // TODO GitHubIssue#39 : support something beyond entity sets
             relevantType = null;
 
-            if (!(context.Api is IEntityFrameworkApi frameworkApi))
+            if (context.Api is not IEntityFrameworkApi frameworkApi)
             {
                 return false;
             }

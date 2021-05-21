@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\RestierApiBuilderExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\RestierWebApiServiceCollectionExtensions.cs" />
+    <Compile Include="..\Microsoft.Restier.AspNet.Shared\Extensions\RestierApiServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatter\Deserialization\DefaultRestierDeserializerProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatter\Deserialization\DeserializationHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formatter\Deserialization\RestierEnumDeserializer.cs" />

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-namespace Microsoft.Restier.AspNetCore
+namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using Microsoft.AspNet.OData.Extensions;
@@ -14,7 +14,7 @@ namespace Microsoft.Restier.AspNetCore
     /// Contains extension methods of <see cref="IServiceCollection"/>.
     /// This method is used to add odata publisher service into container.
     /// </summary>
-    public static partial class RestierWebApiServiceCollectionExtensions
+    public static partial class RestierApiServiceCollectionExtensions
     {
         /// <summary>
         /// Adds the Restier and OData Services to the Service collection.

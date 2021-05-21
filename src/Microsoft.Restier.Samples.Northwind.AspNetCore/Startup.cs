@@ -43,12 +43,11 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
             {
                 // This delegate is executed after OData is added to the container.
                 // Add you replacement services here.
-                builder.AddRestierApi<NorthwindApi>(services =>
+                builder.AddRestierApi<NorthwindApi>(routeServices =>
                 {
 
-                    services
-                        .AddDbContext<NorthwindContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
-                        .AddEFProviderServices()
+                    routeServices
+                        .AddEFCoreProviderServices<NorthwindContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
                         .AddSingleton(new ODataValidationSettings
                         {
                             MaxTop = 5,

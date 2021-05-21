@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// A set of <see cref="IServiceCollection"/> extension methods to help register required Restier services for a given Route.
     /// </summary>
-    public static partial class RestierWebApiServiceCollectionExtensions
+    public static partial class RestierApiServiceCollectionExtensions
     {
 #region Internal Members
 

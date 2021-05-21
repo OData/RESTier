@@ -38,7 +38,7 @@ namespace Microsoft.Restier.EntityFramework
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (!(context.Api is IEntityFrameworkApi frameworkApi))
+            if (context.Api is not IEntityFrameworkApi frameworkApi)
             {
                 // Not an EF Api.
                 return;
