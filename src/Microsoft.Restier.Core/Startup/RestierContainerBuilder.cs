@@ -162,25 +162,23 @@ namespace Microsoft.Restier.Core
             //RWM: It's entirely possible that this container was used some other way. 
             if (apiType != null)
             {
-                var sp = Services.BuildServiceProvider();
-                var scope = sp.GetService<IServiceScopeFactory>().CreateScope();
-
-                var api = scope.ServiceProvider.GetService<ApiBase>();
-                if (api is null)
+                Services.AddSingleton(sp =>
                 {
-                    throw new Exception($"Could not find the API. Please make sure you registered the API using the new 'UseRestier(services => services.AddRestierApi<{apiType.Name}>());' syntax.");
-                }
+                    var api = sp.GetService<ApiBase>();
+                    if (api is null)
+                    {
+                        throw new Exception($"Could not find the API. Please make sure you registered the API using the new 'UseRestier(services => services.AddRestierApi<{apiType.Name}>());' syntax.");
+                    }
 
-                if (sp.GetService(typeof(IModelBuilder)) is not IModelBuilder modelBuilder)
-                {
-                    throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
-                }
+                    if (sp.GetService(typeof(IModelBuilder)) is not IModelBuilder modelBuilder)
+                    {
+                        throw new InvalidOperationException(Resources.ModelBuilderNotRegistered);
+                    }
 
-                var buildContext = new ModelContext(api);
-                var model = modelBuilder.GetModel(buildContext);
-                Services.AddSingleton(model);
-                scope.Dispose();
-                sp.Dispose();
+                    var buildContext = new ModelContext(api);
+                    return modelBuilder.GetModel(buildContext);
+                });
+
             }
 
             return Services.BuildServiceProvider();

@@ -46,10 +46,17 @@ namespace Microsoft.Restier.EntityFramework
                 return null;
             }
 
-            dynamic api = context.QueryContext.Api;
 
-            var dbContext = api.DbContext as DbContext;
-            var dbSetProperty = (api.ContextType as Type).GetProperties()
+            if (!(context.QueryContext.Api is IEntityFrameworkApi frameworkApi))
+            {
+                // Not an EF Api.
+                return null;
+            }
+
+            var dbContextType = frameworkApi.ContextType;
+            var dbContext = frameworkApi.DbContext;
+
+            var dbSetProperty = frameworkApi.ContextType.GetProperties()
                 .FirstOrDefault(prop => prop.Name == context.ModelReference.EntitySet.Name);
             if (dbSetProperty == null)
             {

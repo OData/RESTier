@@ -51,10 +51,19 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Restier.EntityFra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.EntityFrameworkCore", "Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj", "{99059346-006C-4F99-9C9B-52DBB8493E80}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Restier.AspNet.Shared", "Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.shproj", "{8F4E985B-F5C9-4A03-A1A4-4CB8494B8188}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.AspNetCore", "Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj", "{802C856E-1709-45B3-844B-F9C7996E6E52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Samples.Northwind.AspNetCore", "Microsoft.Restier.Samples.Northwind.AspNetCore\Microsoft.Restier.Samples.Northwind.AspNetCore.csproj", "{1ECDB4A3-3B37-458E-B1D1-DBED2BB4FF93}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{0e373b2a-2ed2-4566-a275-6be81cffe00b}*SharedItemsImports = 5
+		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{802c856e-1709-45b3-844b-f9c7996e6e52}*SharedItemsImports = 5
 		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{83ad7aa8-9ed8-4b9f-966a-73ce9cae51c6}*SharedItemsImports = 13
+		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{8ecf4e97-1816-44ad-ad63-6acf287ed520}*SharedItemsImports = 5
+		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{8f4e985b-f5c9-4a03-a1a4-4cb8494b8188}*SharedItemsImports = 13
 		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{99059346-006c-4f99-9c9b-52dbb8493e80}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +115,14 @@ Global
 		{99059346-006C-4F99-9C9B-52DBB8493E80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99059346-006C-4F99-9C9B-52DBB8493E80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99059346-006C-4F99-9C9B-52DBB8493E80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{802C856E-1709-45B3-844B-F9C7996E6E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{802C856E-1709-45B3-844B-F9C7996E6E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{802C856E-1709-45B3-844B-F9C7996E6E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{802C856E-1709-45B3-844B-F9C7996E6E52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECDB4A3-3B37-458E-B1D1-DBED2BB4FF93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECDB4A3-3B37-458E-B1D1-DBED2BB4FF93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECDB4A3-3B37-458E-B1D1-DBED2BB4FF93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECDB4A3-3B37-458E-B1D1-DBED2BB4FF93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,6 +144,9 @@ Global
 		{589F129E-4EF8-41D3-A07F-4D20714BF29F} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 		{83AD7AA8-9ED8-4B9F-966A-73CE9CAE51C6} = {37B52FD3-E72B-406F-8C5A-F146256D7743}
 		{99059346-006C-4F99-9C9B-52DBB8493E80} = {37B52FD3-E72B-406F-8C5A-F146256D7743}
+		{8F4E985B-F5C9-4A03-A1A4-4CB8494B8188} = {9D3D8728-C31B-4D5E-B471-79A9DBBA0E58}
+		{802C856E-1709-45B3-844B-F9C7996E6E52} = {9D3D8728-C31B-4D5E-B471-79A9DBBA0E58}
+		{1ECDB4A3-3B37-458E-B1D1-DBED2BB4FF93} = {DB42E0B8-C0C7-4DE4-9437-2B2A229B5F8F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}

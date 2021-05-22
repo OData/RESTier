@@ -28,7 +28,7 @@ namespace System.Web.Http
 
         #region Private Members
 
-        private const string owinException = "Restier could not use the GlobalConfiguration to register the Batch handler. This is usually because you're running a self-hosted OWIN context.\r\n"
+        private const string OwinException = "Restier could not use the GlobalConfiguration to register the Batch handler. This is usually because you're running a self-hosted OWIN context.\r\n"
                     + "Please call `config.MapRestier<ApiType>(routeName, routePrefix, true, new HttpServer(config))` instead to correct this.";
 
         #endregion
@@ -88,7 +88,7 @@ namespace System.Web.Http
         /// Instructs WebApi to map one or more of the registered Restier APIs to the specified Routes, each with it's own isolated Dependency Injection container.
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance to enhance.</param>
-        /// <param name="configureRoutesAction">
+        /// <param name="configureRoutesAction">The action for configuring a set of routes.</param>
         /// An <see cref="Action{RestierRouteBuilder}" /> that allows you to add map APIs added through the <see cref="RestierApiBuilder"/> to your desired routes via a <see cref="RestierRouteBuilder"/>.
         /// </param>
         /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
@@ -106,7 +106,7 @@ namespace System.Web.Http
             var httpServer = GlobalConfiguration.DefaultServer;
             if (httpServer == null)
             {
-                throw new Exception(owinException);
+                throw new Exception(OwinException);
             }
 
             return MapRestier(config, configureRoutesAction, httpServer);
@@ -116,8 +116,8 @@ namespace System.Web.Http
         /// Instructs WebApi to map one or more of the registered Restier APIs to the specified Routes, each with it's own isolated Dependency Injection container.
         /// </summary>
         /// <param name="config">The <see cref="HttpConfiguration"/> instance to enhance.</param>
-        /// <param name="configureRoutesAction"></param>
-        /// <param name="httpServer"></param>
+        /// <param name="configureRoutesAction">The action for configuring a set of routes.</param>
+        /// <param name="httpServer">The HttpServer instance to create the routes on.</param>
         /// <returns>The <see cref="HttpConfiguration"/> instance to allow for fluent method chaining.</returns>
         /// <example>
         /// <code>
@@ -144,7 +144,7 @@ namespace System.Web.Http
                 {
                     if (httpServer == null)
                     {
-                        throw new ArgumentNullException(nameof(httpServer), owinException);
+                        throw new ArgumentNullException(nameof(httpServer), OwinException);
                     }
 
 #pragma warning disable IDE0067 // Dispose objects before losing scope

@@ -196,6 +196,15 @@ namespace Microsoft.Restier.AspNet {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is an unsupported OperationContext type..
+        /// </summary>
+        internal static string NoSupportedOperationContext {
+            get {
+                return ResourceManager.GetString("NoSupportedOperationContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not supported type: {0}..
         /// </summary>
         internal static string NotSupportedType {

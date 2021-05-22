@@ -1,11 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.OData;
 
 namespace Microsoft.AspNet.OData
 {
-
     /// <summary>
     /// A set of <see cref="PerRouteContainer"/> extension methods to help ensure the RestierContainerBuilder is built with the correct
     /// services for the given Route.
@@ -15,7 +17,6 @@ namespace Microsoft.AspNet.OData
     /// </remarks>
     internal static class PerRouteContainerExtensions
     {
-
         /// <summary>
         /// Create a root container for a given route name.
         /// </summary>
@@ -51,7 +52,5 @@ namespace Microsoft.AspNet.OData
 
             return rootContainer;
         }
-
     }
-
 }
