@@ -8,7 +8,7 @@
       Commonly used types:
       Microsoft.Restier.EntityFrameworkCore.EntityFrameworkApi
     </Description>
-    <PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
+    <PackageTags>$(PackageTags)entityframework;entityframeworkcore</PackageTags>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 

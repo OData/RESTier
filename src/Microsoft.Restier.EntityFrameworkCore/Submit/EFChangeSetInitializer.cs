@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,8 @@ namespace Microsoft.Restier.EntityFrameworkCore
     /// </summary>
     public class EFChangeSetInitializer : DefaultChangeSetInitializer
     {
+        private static readonly MethodInfo HandleMethod = typeof(EFChangeSetInitializer).GetMethod("HandleEntitySet", BindingFlags.Instance | BindingFlags.NonPublic);
+
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
         /// </summary>
@@ -37,9 +40,13 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var dbContext = context.GetApiService<DbContext>();
+            if (context.Api is not IEntityFrameworkApi frameworkApi)
+            {
+                // Not an EF Api.
+                return;
+            }
 
-            var methodCall = this.GetType().GetMethod("HandleEntitySet", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var dbContext = frameworkApi.DbContext;
 
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
@@ -53,7 +60,8 @@ namespace Microsoft.Restier.EntityFrameworkCore
                     resourceType = entry.ActualResourceType;
                 }
 
-                var task = methodCall.Invoke(this, new object[] { context, dbContext, entry, resourceType, cancellationToken }) as Task;
+                var typedMethodCall = HandleMethod.MakeGenericMethod(new Type[] { resourceType });
+                var task = typedMethodCall.Invoke(this, new object[] { context, dbContext, entry, resourceType, cancellationToken }) as Task;
                 await task.ConfigureAwait(false);
             }
         }

@@ -51,4 +51,6 @@
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
   </ItemGroup>
 
+  <Import Project="..\Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems" Label="Shared" />
+
 </Project>

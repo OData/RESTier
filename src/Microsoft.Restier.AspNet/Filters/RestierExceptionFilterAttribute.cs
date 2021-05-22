@@ -74,7 +74,7 @@ namespace Microsoft.Restier.AspNet
                 {
                     error = new
                     {
-                        code = "",
+                        code = string.Empty,
                         innererror = new
                         {
                             message = validationException.Message,

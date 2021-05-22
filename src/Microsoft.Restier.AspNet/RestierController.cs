@@ -20,6 +20,7 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNet.Model;
+using Microsoft.Restier.AspNet.Operation;
 using Microsoft.Restier.AspNet.Query;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
@@ -336,7 +337,7 @@ namespace Microsoft.Restier.AspNet
             }
 
             IQueryable result = null;
-            object getParaValueFunc(string p)
+            object GetParaValueFunc(string p)
             {
                 if (parameters == null)
                 {
@@ -350,7 +351,7 @@ namespace Microsoft.Restier.AspNet
             {
                 var unboundSegment = segment;
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
-                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, false, null, cancellationToken).ConfigureAwait(false);
+                result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, null, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -366,7 +367,7 @@ namespace Microsoft.Restier.AspNet
                     var operationSegment = lastSegment as OperationSegment;
                     var operation = operationSegment.Operations.FirstOrDefault();
                     var queryResult = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
-                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, false, queryResult, cancellationToken).ConfigureAwait(false);
+                    result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, queryResult, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -691,7 +692,7 @@ namespace Microsoft.Restier.AspNet
             CancellationToken cancellationToken)
         {
 
-            var context = new OperationContext(api,
+            var context = new RestierOperationContext(api,
                 getParaValueFunc,
                 operationName,
                 isFunction,

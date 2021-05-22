@@ -39,6 +39,9 @@ namespace Microsoft.Restier.AspNet.Batch
         /// </summary>
         public ChangeSet ChangeSet { get; set; }
 
+        /// <summary>
+        /// Gets the list of Exceptions.
+        /// </summary>
         public IList<Exception> Exceptions { get; set; }
 
         /// <summary>

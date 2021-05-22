@@ -4,6 +4,7 @@
 #if EF7
     using Microsoft.EntityFrameworkCore;
 #else
+using System;
 using System.Data.Entity;
 #endif
 using System.Threading;
@@ -29,8 +30,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>The task object that represents this asynchronous operation.</returns>
         public async override Task<SubmitResult> ExecuteSubmitAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            dynamic api = context.Api;
-            var dbContext = api.DbContext as DbContext;
+            var dbContext = ((IEntityFrameworkApi)context.Api).DbContext;
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return await base.ExecuteSubmitAsync(context, cancellationToken).ConfigureAwait(false);
         }
