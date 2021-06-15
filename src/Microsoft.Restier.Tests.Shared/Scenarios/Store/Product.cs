@@ -11,6 +11,8 @@ namespace Microsoft.Restier.Tests.Shared
 
         public string Name { get; set; }
 
+        public bool IsActive { get; set; }
+
         [Required]
         public Address Addr { get; set; }
 
