@@ -3,13 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Xml.Linq;
-using CloudNimble.Breakdance.WebApi;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +14,23 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Newtonsoft.Json;
+#if NET5_0_OR_GREATER
+    using Microsoft.AspNetCore.TestHost;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Restier.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using WebApiConstants = CloudNimble.Breakdance.AspNetCore.WebApiConstants;
+    using ODataConstants = CloudNimble.Breakdance.AspNetCore.ODataConstants;
+    using CloudNimble.Breakdance.AspNetCore;
+#else
+    using System.Web.Http;
+    using System.Data.Entity;
+    using WebApiConstants = CloudNimble.Breakdance.WebApi.WebApiConstants;
+    using ODataConstants = CloudNimble.Breakdance.WebApi.ODataConstants;
+    using CloudNimble.Breakdance.WebApi;
+#endif
+
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -32,6 +46,7 @@ namespace Microsoft.Restier.Breakdance
 
         #region Private Members
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1823:Avoid unused private fields", Justification = "<Pending>")]
         private static readonly DefaultQuerySettings QueryDefaults = new()
         {
             EnableCount = true,
@@ -71,15 +86,27 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="payload">When the <paramref name="httpMethod"/> is <see cref="HttpMethod.Post"/> or <see cref="HttpMethod.Put"/>, this object is serialized to JSON and inserted into the <see cref="HttpRequestMessage.Content"/>.</param>
         /// <param name="jsonSerializerSettings">A <see cref="JsonSerializerSettings"/> instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones.</param>
         /// <returns>An <see cref="HttpResponseMessage"/> that contains the managed response for the request for inspection.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
         public static async Task<HttpResponseMessage> ExecuteTestRequest<TApi, TDbContext>(HttpMethod httpMethod, string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName,
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, Action<IServiceCollection> serviceCollection = default, string acceptHeader = ODataConstants.MinimalAcceptHeader,
             DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null, JsonSerializerSettings jsonSerializerSettings = null)
             where TApi : ApiBase
             where TDbContext : DbContext
         {
+#if NET5_0_OR_GREATER
+            var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
+            var client = server.CreateClient();
+            var requestUri = new Uri($"{host}{routePrefix}{resource}");
+            var message = new HttpRequestMessage(httpMethod, requestUri);
+            message.Headers.Add("accept", acceptHeader);
+            //message.Content =  payload;
+            return await client.SendAsync(message).ConfigureAwait(false);
+
+#else
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, defaultQuerySettings, timeZoneInfo, serviceCollection).ConfigureAwait(false);
             var client = config.GetTestableHttpClient();
             return await client.ExecuteTestRequest(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings).ConfigureAwait(false);
+#endif
         }
 
         #endregion
@@ -175,21 +202,31 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
         public static async Task<IServiceProvider> GetTestableInjectionContainer<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
              where TApi : ApiBase
             where TDbContext : DbContext
         {
+#if NET5_0_OR_GREATER
+
+            var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
+            var client = server.CreateClient();
+            return server.Services;
+#else
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             var request = HttpClientHelpers.GetTestableHttpRequestMessage(HttpMethod.Get, WebApiConstants.Localhost, routePrefix);
             request.SetConfiguration(config);
             return request.CreateRequestContainer(routeName);
+#endif
         }
 
-        #endregion
+#endregion
 
-        #region GetTestableRestierConfiguration
+#region GetTestableRestierConfiguration
 
+#if NET5_0_OR_GREATER
+#else
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
         /// </summary>
@@ -225,11 +262,14 @@ namespace Microsoft.Restier.Breakdance
             config.MapRestier((builder) => builder.MapApiRoute<TApi>(routeName, routePrefix, true), config.GetTestableHttpServer());
             return await Task.FromResult(config).ConfigureAwait(false);
         }
+#endif
 
-        #endregion
+#endregion
 
-        #region GetTestableHttpClient
+#region GetTestableHttpClient
 
+#if NET5_0_OR_GREATER
+#else
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
         /// </summary>
@@ -247,10 +287,11 @@ namespace Microsoft.Restier.Breakdance
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             return new HttpClient(new HttpServer(config));
         }
+#endif
 
-        #endregion
+#endregion
 
-        #region GetTestableModelAsync
+#region GetTestableModelAsync
 
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
@@ -270,9 +311,9 @@ namespace Microsoft.Restier.Breakdance
             return api.GetModel();
         }
 
-        #endregion
+#endregion
 
-        #region GetApiMetadataAsync
+#region GetApiMetadataAsync
 
         /// <summary>
         /// Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
@@ -299,9 +340,9 @@ namespace Microsoft.Restier.Breakdance
             return XDocument.Parse(result);
         }
 
-        #endregion
+#endregion
 
-        #region WriteCurrentApiMetadata
+#region WriteCurrentApiMetadata
 
         /// <summary>
         /// 
@@ -321,10 +362,59 @@ namespace Microsoft.Restier.Breakdance
             System.IO.File.WriteAllText(filePath, result.ToString());
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
+
+#region Private Methods
+
+#if NET5_0_OR_GREATER
+        /// <summary>
+        /// Gets a new <see cref="TestServer" /> using the provided startup class in T.
+        /// </summary>
+        /// <returns>A new <see cref="TestServer" /> instance.</returns>
+        public static async Task<TestServer> GetTestableRestierServer<TApi, TContext>(Action<IServiceCollection> registration = default)
+            where TApi : class
+            where TContext : class
+        {
+            var server = AspNetCoreTestHelpers.GetTestableHttpServer(services =>
+            {
+                if (registration != null)
+                {
+                    registration.Invoke(services);
+                }
+                else {
+                    /* JHC Almost there...  maybe this needs to be in restier rather than in breakdance
+                    services.AddRestier((builder) =>
+                    {
+                        // This delegate is executed after OData is added to the container.
+                        // Add you replacement services here.
+                        builder.AddRestierApi<TApi>(routeServices =>
+                        {
+
+                            routeServices
+                                .AddEFCoreProviderServices<TContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))  // << JHC TODO: change this to use IConfiguration
+                                .AddSingleton(new ODataValidationSettings
+                                {
+                                    MaxTop = 5,
+                                    MaxAnyAllExpressionDepth = 3,
+                                    MaxExpansionDepth = 3,
+                                });
+
+                        });
+                    });
+                    */
+                }
+            });
+
+            await server.Host.StartAsync().ConfigureAwait(false);
+
+            return server;
+
+        }
+#endif
+
+#endregion
 
     }
-
 }

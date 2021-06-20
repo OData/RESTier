@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>Microsoft.Restier.Breakdance</AssemblyName>
     <RootNamespace>Microsoft.Restier.Breakdance</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;net5</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -32,14 +32,22 @@
     <NoWarn>;NU5125;NU5105;NU5048;NU5014;NU5104</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
     <PackageReference Include="Breakdance.WebApi" Version="2.0.0" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210617-211813" />
+    <PackageReference Include="Breakdance.AspNetCore" Version="2.1.0-CI-20210617-211813" />
+  </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
+    <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

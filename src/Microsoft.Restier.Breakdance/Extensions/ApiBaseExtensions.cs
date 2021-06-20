@@ -8,7 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
+#if NET5_0_OR_GREATER
+using Microsoft.Restier.EntityFrameworkCore;
+#else
 using Microsoft.Restier.EntityFramework;
+#endif
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -19,13 +23,13 @@ namespace Microsoft.Restier.Breakdance
     public static class ApiBaseExtensions
     {
 
-        #region Constants
+#region Constants
 
         const string separator = "------------------------------------------------------------";
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
         /// <summary>
         /// An extension method that generates a Markdown table of all of the possible Restier methods for the given API in the first column, and a boolean
@@ -122,9 +126,9 @@ namespace Microsoft.Restier.Breakdance
             System.IO.File.WriteAllText(filePath, report);
         }
 
-        #endregion
+#endregion
 
-        #region Private Members
+#region Private Members
 
         /// <summary>
         /// This method recreates parts of the code in <see cref="ConventionBasedChangeSetItemAuthorizer" /> to determine if
@@ -192,7 +196,7 @@ namespace Microsoft.Restier.Breakdance
             return false;
         }
 
-        #endregion
+#endregion
 
     }
 
