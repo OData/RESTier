@@ -2,8 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
-using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.EntityFramework;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel

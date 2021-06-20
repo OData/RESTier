@@ -20,14 +20,10 @@ using Newtonsoft.Json;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Restier.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    using WebApiConstants = CloudNimble.Breakdance.AspNetCore.WebApiConstants;
-    using ODataConstants = CloudNimble.Breakdance.AspNetCore.ODataConstants;
     using CloudNimble.Breakdance.AspNetCore;
 #else
     using System.Web.Http;
     using System.Data.Entity;
-    using WebApiConstants = CloudNimble.Breakdance.WebApi.WebApiConstants;
-    using ODataConstants = CloudNimble.Breakdance.WebApi.ODataConstants;
     using CloudNimble.Breakdance.WebApi;
 #endif
 
@@ -208,9 +204,11 @@ namespace Microsoft.Restier.Breakdance
              where TApi : ApiBase
             where TDbContext : DbContext
         {
+
 #if NET5_0_OR_GREATER
 
             var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
+            //TODO: RWM: Why do you need to call CreateClient here to get the services?
             var client = server.CreateClient();
             return server.Services;
 #else
@@ -219,14 +217,15 @@ namespace Microsoft.Restier.Breakdance
             request.SetConfiguration(config);
             return request.CreateRequestContainer(routeName);
 #endif
+
         }
 
 #endregion
 
-#region GetTestableRestierConfiguration
+        #region GetTestableRestierConfiguration
 
-#if NET5_0_OR_GREATER
-#else
+#if !NET5_0_OR_GREATER
+
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
         /// </summary>
@@ -262,14 +261,15 @@ namespace Microsoft.Restier.Breakdance
             config.MapRestier((builder) => builder.MapApiRoute<TApi>(routeName, routePrefix, true), config.GetTestableHttpServer());
             return await Task.FromResult(config).ConfigureAwait(false);
         }
+
 #endif
 
-#endregion
+        #endregion
 
-#region GetTestableHttpClient
+        #region GetTestableHttpClient
 
-#if NET5_0_OR_GREATER
-#else
+#if !NET5_0_OR_GREATER
+
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
         /// </summary>
@@ -287,11 +287,12 @@ namespace Microsoft.Restier.Breakdance
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             return new HttpClient(new HttpServer(config));
         }
+
 #endif
 
-#endregion
+        #endregion
 
-#region GetTestableModelAsync
+        #region GetTestableModelAsync
 
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
@@ -311,9 +312,9 @@ namespace Microsoft.Restier.Breakdance
             return api.GetModel();
         }
 
-#endregion
+        #endregion
 
-#region GetApiMetadataAsync
+        #region GetApiMetadataAsync
 
         /// <summary>
         /// Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
@@ -340,9 +341,9 @@ namespace Microsoft.Restier.Breakdance
             return XDocument.Parse(result);
         }
 
-#endregion
+        #endregion
 
-#region WriteCurrentApiMetadata
+        #region WriteCurrentApiMetadata
 
         /// <summary>
         /// 
@@ -364,11 +365,12 @@ namespace Microsoft.Restier.Breakdance
 
 #endregion
 
-#endregion
+        #endregion
 
-#region Private Methods
+        #region Private Methods
 
 #if NET5_0_OR_GREATER
+
         /// <summary>
         /// Gets a new <see cref="TestServer" /> using the provided startup class in T.
         /// </summary>
@@ -412,9 +414,10 @@ namespace Microsoft.Restier.Breakdance
             return server;
 
         }
+
 #endif
 
-#endregion
+        #endregion
 
     }
 }

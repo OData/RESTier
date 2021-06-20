@@ -14,7 +14,7 @@
     <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.EFCore.Shared\Microsoft.Restier.Tests.EFCore.Shared.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

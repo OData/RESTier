@@ -24,15 +24,11 @@
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\Address.cs" Link="LibraryApi\Address.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\Book.cs" Link="LibraryApi\Book.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\Employee.cs" Link="LibraryApi\Employee.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\LibraryApi.cs" Link="LibraryApi\LibraryApi.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryApi.cs" Link="LibraryApi\LibraryApi.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\LibraryCard.cs" Link="LibraryApi\LibraryCard.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\LibraryContext.cs" Link="LibraryApi\LibraryContext.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryContext.cs" Link="LibraryApi\LibraryContext.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\Publisher.cs" Link="LibraryApi\Publisher.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\Universe.cs" Link="LibraryApi\Universe.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="LibraryApi\" />
   </ItemGroup>
 
 </Project>
