@@ -106,20 +106,20 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                             Zip = "00010"
                         },
                         Books = new ObservableCollection<Book>
-                {
-                    new Book
-                    {
-                         Id = new Guid("19d68c75-1313-4369-b2bf-521f2b260a59"),
-                         Isbn = "9476324472648",
-                         Title = "A Clockwork Orange"
-                    },
-                    new Book
-                    {
-                        Id = new Guid("c2081e58-21a5-4a15-b0bd-fff03ebadd30"),
-                        Isbn = "7273389962644",
-                        Title = "Jungle Book, The"
-                    }
-                }
+                        {
+                            new Book
+                            {
+                                 Id = new Guid("19d68c75-1313-4369-b2bf-521f2b260a59"),
+                                 Isbn = "9476324472648",
+                                 Title = "A Clockwork Orange"
+                            },
+                            new Book
+                            {
+                                Id = new Guid("c2081e58-21a5-4a15-b0bd-fff03ebadd30"),
+                                Isbn = "7273389962644",
+                                Title = "Jungle Book, The"
+                            }
+                        }
                     });
 
                     context.Publishers.Add(new Publisher
@@ -131,14 +131,14 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                             Zip = "10010"
                         },
                         Books = new ObservableCollection<Book>
-                {
-                    new Book
-                    {
-                        Id = new Guid("0697576b-d616-4057-9d28-ed359775129e"),
-                        Isbn = "1315290642409",
-                        Title = "Color Purple, The"
-                    }
-                }
+                        {
+                            new Book
+                            {
+                                Id = new Guid("0697576b-d616-4057-9d28-ed359775129e"),
+                                Isbn = "1315290642409",
+                                Title = "Color Purple, The"
+                            }
+                        }
                     });
 
                     context.Books.Add(new Book
