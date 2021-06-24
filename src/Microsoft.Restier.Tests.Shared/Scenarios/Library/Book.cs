@@ -12,9 +12,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// </summary>
     public class Book
     {
-
         /// <summary>
-        /// 
+        /// Without this property, EntityFramework will complain that this object doesn't have a key.
         /// </summary>
         public Guid Id { get; set; }
 
@@ -33,5 +32,4 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public Publisher Publisher { get; set; }
 
     }
-
 }

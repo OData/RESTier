@@ -6,8 +6,8 @@ using System;
     using Microsoft.Restier.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 #else
-using Microsoft.Restier.EntityFramework;
-using System.Data.Entity;
+    using Microsoft.Restier.EntityFramework;
+    using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -55,6 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddEFProviderServices(services);
         }
 
+        /* JHC: not sure why we had this overload, the simpler builder should work file
         /// <summary>
         /// This method is used to add entity framework providers service into container.
         /// </summary>
@@ -83,6 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return AddEFProviderServices(services);
         }
+        */
 #else
         /// <summary>
         /// This method is used to add entity framework providers service into container.

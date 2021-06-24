@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210617-211813" />
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210623-151121" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />

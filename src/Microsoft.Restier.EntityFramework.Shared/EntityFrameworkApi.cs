@@ -6,7 +6,7 @@ using System.Linq;
 #if EF7
     using Microsoft.EntityFrameworkCore;
 #else
-using System.Data.Entity;
+    using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;

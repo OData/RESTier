@@ -9,14 +9,15 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.OData.Core" Version="7.8.3" />
     <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210617-211813" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.7" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210623-151121" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.5, 8.0.0)" />
   </ItemGroup>
 

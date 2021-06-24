@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
@@ -12,6 +13,10 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     [ComplexType]
     public class Address
     {
+        /// <summary>
+        /// Without this property, EntityFramework will complain that this object doesn't have a key.
+        /// </summary>
+        public Guid Id { get; set; }
 
         /// <summary>
         /// 
@@ -24,5 +29,4 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public string Zip { get; set; }
 
     }
-
 }

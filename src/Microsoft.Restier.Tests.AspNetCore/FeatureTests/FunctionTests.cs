@@ -18,13 +18,25 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
     {
 
         /// <summary>
+        /// Tests if the a simple unbound function returns content and a success status code.
+        /// </summary>
+        [TestMethod]
+        public async Task UnboundFunction_ReturnsContent()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/IsOnline()");
+            var content = await response.Content.ReadAsStringAsync();
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Should().NotBeNullOrEmpty();
+        }
+
+        /// <summary>
         /// Tests if the query pipeline is correctly returning 200 StatusCodes when legitimate queries to a resource simply return no results.
         /// </summary>
         [TestMethod]
-        public async Task BoundFunctions_Returns200()
+        public async Task BoundFunction_Returns200()
         {
-            await Task.CompletedTask;
-
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books/DiscontinueBooks()");
             var content = await response.Content.ReadAsStringAsync();
 
@@ -36,6 +48,15 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
             results.Items.Should().NotBeNullOrEmpty();
             results.Items.Count.Should().BeOneOf(4);
             results.Items.All(c => c.Title.EndsWith(" | Intercepted | Discontinued | Intercepted", StringComparison.CurrentCulture)).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task EntityQuery_Returns200()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "books");
+            var content = await response.Content.ReadAsStringAsync();
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
     }

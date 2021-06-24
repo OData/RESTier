@@ -7,9 +7,18 @@ using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     [ComplexType]
     public class Universe
     {
+        /// <summary>
+        /// Without this property, EntityFramework will complain that this object doesn't have a key.
+        /// </summary>
+        public Guid Id { get; set; }
+
         public byte[] BinaryProperty { get; set; }
 
         public bool BooleanProperty { get; set; }
@@ -43,5 +52,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public string StringProperty { get; set; }
 
         public TimeOfDay TimeOfDayProperty { get; set; }
+
     }
 }

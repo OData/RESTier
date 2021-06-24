@@ -12,7 +12,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// </summary>
     public class Publisher
     {
-
+        /// <summary>
+        /// Without this property, EntityFramework will complain that this object doesn't have a key.
+        /// </summary>
         public string Id { get; set; }
 
         public Address Addr { get; set; }
@@ -25,5 +27,4 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         }
 
     }
-
 }

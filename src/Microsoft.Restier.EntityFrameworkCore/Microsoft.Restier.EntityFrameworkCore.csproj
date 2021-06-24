@@ -9,7 +9,7 @@
       Microsoft.Restier.EntityFrameworkCore.EntityFrameworkApi
     </Description>
     <PackageTags>$(PackageTags)entityframework;entityframeworkcore</PackageTags>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

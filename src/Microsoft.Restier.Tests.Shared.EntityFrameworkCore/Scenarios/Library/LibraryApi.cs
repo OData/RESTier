@@ -15,7 +15,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// A testable API that implements an Entity Framework model and has secondary operations
     /// against a SQL 2017 LocalDB database.
     /// </summary>
-    public class LibraryApi : EntityFrameworkApi<LibraryContext>
+    public partial class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
         #region Constructors
@@ -28,6 +28,13 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         #region API Methods
 
+        [Operation(OperationType = OperationType.Function)]
+        public bool IsOnline()
+        {
+            return true;
+        }
+
+        /*
         [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
         {
@@ -141,7 +148,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 Title = "Atlas Shrugged"
             };
         }
-
+        */
         #endregion
 
         #region Restier Interceptors

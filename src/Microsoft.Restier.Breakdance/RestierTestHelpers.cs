@@ -15,12 +15,17 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Newtonsoft.Json;
 #if NET5_0_OR_GREATER
-    using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Restier.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
-    using CloudNimble.Breakdance.AspNetCore;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Restier.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using CloudNimble.Breakdance.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Restier.AspNetCore;
+// remove these
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 #else
     using System.Web.Http;
     using System.Data.Entity;
@@ -90,14 +95,44 @@ namespace Microsoft.Restier.Breakdance
             where TDbContext : DbContext
         {
 #if NET5_0_OR_GREATER
-            var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
-            var client = server.CreateClient();
-            var requestUri = new Uri($"{host}{routePrefix}{resource}");
-            var message = new HttpRequestMessage(httpMethod, requestUri);
-            message.Headers.Add("accept", acceptHeader);
-            //message.Content =  payload;
-            return await client.SendAsync(message).ConfigureAwait(false);
+            //routeName = "APIv1";
+            //routePrefix = "";
 
+            /* returns 404
+            var server = await GetTestableRestierServer<TApi, TDbContext>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
+            var request = server.CreateRequest($"{host}{routePrefix}{resource}").AddHeader("accept", acceptHeader);
+            return await request.SendAsync(httpMethod?.Method ?? HttpMethod.Get.Method).ConfigureAwait(false);
+            */
+
+            /* returns 404
+            var request = server.CreateRequest($"{routePrefix}{resource}");
+            return await request.SendAsync(httpMethod?.Method ?? HttpMethod.Get.Method).ConfigureAwait(false);
+            */
+
+            /* returns 404 */
+            var server = await GetTestableRestierServer2<TApi, TDbContext>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
+            var client = server.CreateClient();
+            client.BaseAddress = new Uri($"{host}{routePrefix}");
+            var requestUri = new Uri(resource, UriKind.Relative);
+            var message = new HttpRequestMessage(httpMethod, requestUri);
+            //message.Content = payload;
+            return await client.SendAsync(message).ConfigureAwait(false);
+            /* */
+
+            /* this at least hits some of the builder/factory stuff in restier 
+            var client = server.CreateClient();
+            client.BaseAddress = new Uri($"{host}{routePrefix}");
+            var message = new HttpRequestMessage(httpMethod, $"{host}{routePrefix}{resource}");
+            message.Headers.Add("accept", acceptHeader);
+            //message.Content = payload;
+
+            return await client.SendAsync(message).ConfigureAwait(false);
+            */
+
+            /* still hits the restier stuff but returns 404 
+            var request = server.CreateRequest($"{host}{routePrefix}{resource}").AddHeader("accept", acceptHeader);
+            return await request.SendAsync(httpMethod?.Method ?? HttpMethod.Get.Method).ConfigureAwait(false);
+            */
 #else
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, defaultQuerySettings, timeZoneInfo, serviceCollection).ConfigureAwait(false);
             var client = config.GetTestableHttpClient();
@@ -208,8 +243,6 @@ namespace Microsoft.Restier.Breakdance
 #if NET5_0_OR_GREATER
 
             var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
-            //TODO: RWM: Why do you need to call CreateClient here to get the services?
-            var client = server.CreateClient();
             return server.Services;
 #else
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
@@ -220,7 +253,7 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-#endregion
+        #endregion
 
         #region GetTestableRestierConfiguration
 
@@ -268,8 +301,6 @@ namespace Microsoft.Restier.Breakdance
 
         #region GetTestableHttpClient
 
-#if !NET5_0_OR_GREATER
-
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
         /// </summary>
@@ -284,11 +315,15 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
             where TDbContext : DbContext
         {
+#if NET5_0_OR_GREATER
+
+            var server = await GetTestableRestierServer<TApi, TDbContext>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
+            return server.CreateClient();
+#else
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             return new HttpClient(new HttpServer(config));
-        }
-
 #endif
+        }
 
         #endregion
 
@@ -363,7 +398,7 @@ namespace Microsoft.Restier.Breakdance
             System.IO.File.WriteAllText(filePath, result.ToString());
         }
 
-#endregion
+        #endregion
 
         #endregion
 
@@ -372,30 +407,114 @@ namespace Microsoft.Restier.Breakdance
 #if NET5_0_OR_GREATER
 
         /// <summary>
+        /// Provides an overload to call the method with simplified parameters
+        /// </summary>
+        /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
+        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static async Task<TestServer> GetTestableRestierServer<TApi, TDbContext>(Action<IServiceCollection> serviceCollection)
+            where TApi : ApiBase
+            where TDbContext : DbContext
+            => await GetTestableRestierServer<TApi, TDbContext>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, serviceCollection).ConfigureAwait(false);
+
+        /// <summary>
         /// Gets a new <see cref="TestServer" /> using the provided startup class in T.
         /// </summary>
+        /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
+        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <returns>A new <see cref="TestServer" /> instance.</returns>
-        public static async Task<TestServer> GetTestableRestierServer<TApi, TContext>(Action<IServiceCollection> registration = default)
-            where TApi : class
-            where TContext : class
+        public static async Task<TestServer> GetTestableRestierServer<TApi, TDbContext>(string routeName, string routePrefix, Action<IServiceCollection> serviceCollection = default)
+            where TApi : ApiBase
+            where TDbContext : DbContext
         {
-            var server = AspNetCoreTestHelpers.GetTestableHttpServer(services =>
+            var server = await AspNetCoreTestHelpers.GetTestableHttpServer(services =>
             {
-                if (registration != null)
+                if (serviceCollection != null)
                 {
-                    registration.Invoke(services);
+                    serviceCollection.Invoke(services);
                 }
-                else {
-                    /* JHC Almost there...  maybe this needs to be in restier rather than in breakdance
-                    services.AddRestier((builder) =>
+
+                services.AddRestier(apiBuilder =>
+                {
+                    // This delegate is executed after OData is added to the container.
+                    // Add replacement services here.
+                    apiBuilder.AddRestierApi<TApi>(restierServices =>
+                    {
+                        restierServices
+                            .AddEFCoreProviderServices<TDbContext>()
+                            .AddSingleton(new ODataValidationSettings
+                            {
+                                MaxTop = 5,
+                                MaxAnyAllExpressionDepth = 3,
+                                MaxExpansionDepth = 3,
+                            });
+
+                    });
+
+                });
+
+                services.AddMvc(mvcOptions =>
+                {
+                    mvcOptions.EnableEndpointRouting = false;
+                });
+
+            },
+            app =>
+            {
+                app.UseMvc(routeBuilder =>
+                {
+                    routeBuilder.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
+
+                    routeBuilder.MapRestier(restierRouteBuilder =>
+                    {
+                        restierRouteBuilder.MapApiRoute<TApi>(routeName, routePrefix, true);
+                    });
+
+                });
+
+            }).ConfigureAwait(false);
+
+            //// configure the client if route data is provided
+            //if (routeName != null || routePrefix != null)
+            //{ 
+            //    server.CreateClient().BaseAddress = new Uri($"{routeName}{routePrefix}");
+            //}
+
+            // return the configured TestServer to the caller
+            return server;
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TApi"></typeparam>
+        /// <typeparam name="TDbContext"></typeparam>
+        /// <returns></returns>
+        public static async Task<TestServer> GetTestableRestierServer2<TApi, TDbContext>(string routeName, string routePrefix, Action<IServiceCollection> serviceCollection)
+            where TApi : ApiBase
+            where TDbContext : DbContext
+        {
+            await Task.CompletedTask.ConfigureAwait(false);
+
+            var hostBuilder = new WebHostBuilder()
+                .UseTestServer()
+                .ConfigureServices(services =>
+                {
+                    if (serviceCollection != null)
+                    {
+                        serviceCollection.Invoke(services);
+                    }
+
+                    services.AddRestier(apiBuilder =>
                     {
                         // This delegate is executed after OData is added to the container.
-                        // Add you replacement services here.
-                        builder.AddRestierApi<TApi>(routeServices =>
+                        // Add replacement services here.
+                        apiBuilder.AddRestierApi<TApi>(restierServices =>
                         {
-
-                            routeServices
-                                .AddEFCoreProviderServices<TContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))  // << JHC TODO: change this to use IConfiguration
+                            restierServices
+                                .AddEFCoreProviderServices<TDbContext>()
                                 .AddSingleton(new ODataValidationSettings
                                 {
                                     MaxTop = 5,
@@ -404,15 +523,40 @@ namespace Microsoft.Restier.Breakdance
                                 });
 
                         });
+
                     });
-                    */
-                }
-            });
 
-            await server.Host.StartAsync().ConfigureAwait(false);
+                    services.AddMvc(mvcOptions =>
+                    {
+                        mvcOptions.EnableEndpointRouting = false;
+                    });
 
+                })
+                .Configure(app =>
+                {
+                    app.UseRouting();
+
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapControllers();
+                    });
+
+                    app.UseMvc(routeBuilder =>
+                    {
+                        routeBuilder.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
+
+                        routeBuilder.MapRestier(restierRouteBuilder =>
+                        {
+                            restierRouteBuilder.MapApiRoute<TApi>(routeName, routePrefix, true);
+                        });
+
+                    });
+
+                });
+
+            var server = new TestServer(hostBuilder);
+            
             return server;
-
         }
 
 #endif
