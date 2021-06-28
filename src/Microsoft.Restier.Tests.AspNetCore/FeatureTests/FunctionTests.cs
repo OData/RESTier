@@ -25,8 +25,6 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/IsOnline()");
             var content = await response.Content.ReadAsStringAsync();
-
-            response.IsSuccessStatusCode.Should().BeTrue();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             content.Should().NotBeNullOrEmpty();
         }
@@ -53,7 +51,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
         [TestMethod]
         public async Task EntityQuery_Returns200()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "books");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/books");
             var content = await response.Content.ReadAsStringAsync();
             response.IsSuccessStatusCode.Should().BeTrue();
             response.StatusCode.Should().Be(HttpStatusCode.OK);

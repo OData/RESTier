@@ -34,7 +34,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return true;
         }
 
-        /*
         [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
         {
@@ -148,7 +147,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 Title = "Atlas Shrugged"
             };
         }
-        */
+ 
         #endregion
 
         #region Restier Interceptors
