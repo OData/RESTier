@@ -14,6 +14,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Newtonsoft.Json;
+using System.Text;
 #if NET5_0_OR_GREATER
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,6 @@ namespace Microsoft.Restier.Breakdance
     /// A set of methods that make it easier to pull out Restier runtime components for unit testing.
     /// </summary>
     /// <remarks>See RestierTestHelperTests.cs for more examples of how to use these methods.</remarks>
-    /// 
     public static class RestierTestHelpers
     {
 
@@ -89,20 +89,37 @@ namespace Microsoft.Restier.Breakdance
         {
 
 #if NET5_0_OR_GREATER
-            /* this works and does not set BaseAddress for the server or the client */
+            routePrefix = "";
+
+            // JHC note: must set the base address for the client, even if the full URI is used for the resource
+            var server = GetTestableRestierServer<TApi, TDbContext>(host, routeName, routePrefix, serviceCollection);
+            server.BaseAddress = new Uri($"{host}{routePrefix}");                                           // test passes whether this is set or not
+            var client = server.CreateClient();
+            client.BaseAddress = new Uri($"{host}{routePrefix}");                                           // test passes whether this is set or not
+            //var message = new HttpRequestMessage(httpMethod, new Uri($"{host}{routePrefix}{resource}"));    // this way fails
+            var message = new HttpRequestMessage(httpMethod, new Uri(resource, UriKind.Relative));        // this way works
+            message.Headers.Add("accept", acceptHeader);
+            
+            if (payload != null)
+            {
+                message.Content = new StringContent(JsonConvert.SerializeObject(payload, jsonSerializerSettings), Encoding.UTF8, "application/json");
+            }
+
+            return await client.SendAsync(message).ConfigureAwait(false);
+
+            /* this works and does not set BaseAddress for the server or the client
             routePrefix = "";
 
             // JHC note: must generate a relative URI for the request to work this way
             var server = GetTestableRestierServer<TApi, TDbContext>(host, routeName, routePrefix, serviceCollection);
             var request = server.CreateRequest(new Uri(resource, UriKind.Relative).ToString()).AddHeader("accept", acceptHeader);
             return await request.SendAsync(httpMethod?.Method ?? HttpMethod.Get.Method).ConfigureAwait(false);
-            /* */
+            */
 
             /* this works and does not set BaseAddress for the server or the client
             routeName = "ApiV1";
             routePrefix = "";
 
-            // JHC note: must set the base address for the client, even if the full URI is used for the resource
             var server = GetTestableRestierServer<TApi, TDbContext>(host, routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             var message = new HttpRequestMessage(httpMethod, new Uri(resource, UriKind.Relative));        // this way works

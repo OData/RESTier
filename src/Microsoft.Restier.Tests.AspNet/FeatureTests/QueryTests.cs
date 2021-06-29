@@ -8,7 +8,11 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
 
     /// <summary>

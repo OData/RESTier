@@ -34,6 +34,9 @@
       <_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Microsoft.Restier.Tests.Shared, $(StrongNamePublicKey)</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
