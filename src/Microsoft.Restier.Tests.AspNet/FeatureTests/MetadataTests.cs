@@ -1,4 +1,8 @@
-﻿using System.Data.Entity;
+﻿#if NET5_0_OR_GREATER
+    using Microsoft.EntityFrameworkCore;
+#else
+    using System.Data.Entity;
+#endif
 using System.IO;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
@@ -8,7 +12,11 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
 
     [TestClass]
@@ -17,12 +25,16 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
         #region Private Members
 
+#if NET5_0_OR_GREATER
+        private const string relativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNetCore//";
+#else
         private const string relativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNet//";
+#endif
         private const string baselineFolder = "Baselines//";
 
-        #endregion
+    #endregion
 
-        #region LibraryApi
+    #region LibraryApi
 
         [TestMethod]
         public async Task LibraryApi_CompareCurrentApiMetadataToPriorRun()
@@ -63,9 +75,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
 
-        #endregion
+#endregion
 
-        #region StoreApi
+#region StoreApi
 
         [TestMethod]
         public async Task StoreApi_CompareCurrentApiMetadataToPriorRun()
@@ -106,7 +118,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
 
-        #endregion
+#endregion
 
 
     }

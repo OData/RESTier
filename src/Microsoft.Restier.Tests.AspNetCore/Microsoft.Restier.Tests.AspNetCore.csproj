@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\QueryTests.cs" Link="FeatureTests\QueryTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\MetadataTests.cs" Link="FeatureTests\MetadataTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,16 +15,15 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
     public class ActionTests : RestierTestBase
     {
 
-        //[Ignore]
+        /// <summary>
+        /// Tests that calling an action without a required parameter returns a failure status.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task ActionParameters_MissingParameter()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook");
-            var content = await TestContext.LogAndReturnMessageContentAsync(response);
-
             response.IsSuccessStatusCode.Should().BeFalse();
-
-            content.Should().Contain("ArgumentNullException");
         }
 
         [TestMethod]
