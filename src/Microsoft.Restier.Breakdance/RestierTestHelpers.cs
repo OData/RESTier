@@ -92,7 +92,7 @@ namespace Microsoft.Restier.Breakdance
             //var server = GetTestableRestierServer<TApi, TDbContext>(host, routeName, routePrefix, serviceCollection);
             var server = GetTestableRestierServer<TApi, TDbContext>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
-            var message = new HttpRequestMessage(httpMethod, new Uri($"{host}{routePrefix}{resource}"));    // this way fails
+            using var message = new HttpRequestMessage(httpMethod, new Uri($"{host}{routePrefix}{resource}"));    // this way fails
             message.Headers.Add("accept", acceptHeader);
             
             if (payload != null)
@@ -400,7 +400,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
             where TDbContext : DbContext
         {
-            var restierTests = new RestierBreakdanceTests<TApi, TDbContext>(routeName, routePrefix);
+            using var restierTests = new RestierBreakdanceTestsBase<TApi, TDbContext>(routeName, routePrefix);
             if (serviceCollection is not null)
             {
                 restierTests.TestHostBuilder.ConfigureServices(services => serviceCollection.Invoke(services));

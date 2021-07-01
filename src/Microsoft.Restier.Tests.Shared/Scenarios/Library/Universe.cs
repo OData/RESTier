@@ -11,7 +11,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// <summary>
     /// 
     /// </summary>
-    [ComplexType]
+    //[ComplexType]
     public class Universe
     {
         /// <summary>

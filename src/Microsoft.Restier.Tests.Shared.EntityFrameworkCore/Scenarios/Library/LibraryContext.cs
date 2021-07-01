@@ -12,10 +12,27 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
 
     /// <summary>
-    /// 
+    /// The EntityFrameworkCore data context for the Library scenario.
     /// </summary>
     public class LibraryContext : DbContext
     {
+
+        #region EntitySet Properties
+
+        public DbSet<Book> Books { get; set; }
+
+        public DbSet<LibraryCard> LibraryCards { get; set; }
+
+        public DbSet<Publisher> Publishers { get; set; }
+
+        public DbSet<Employee> Readers { get; set; }
+
+        public DbSet<Address> Addresses { get; set; }
+
+        public DbSet<Universe> Universes { get; set; }
+
+        #endregion
+
         public LibraryContext(DbContextOptions<LibraryContext> options)
         : base(options)
         { }
@@ -27,16 +44,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // JHC Note: EF Core will cache the seeded model for reuse
             modelBuilder.Seed();
         }
-
-        public DbSet<Book> Books { get; set; }
-
-        public DbSet<LibraryCard> LibraryCards { get; set; }
-
-        public DbSet<Publisher> Publishers { get; set; }
-
-        public DbSet<Employee> Readers { get; set; }
 
     }
 }

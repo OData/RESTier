@@ -11,11 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Scenarios\Marvel\" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.7" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryApi.cs" Link="Scenarios\Library\LibraryApi.cs" />
   </ItemGroup>
 
 </Project>

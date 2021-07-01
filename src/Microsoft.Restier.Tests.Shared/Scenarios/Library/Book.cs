@@ -17,6 +17,11 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// A reference key to <see cref="Publisher"/> is required to support both EntityFramework and EntityFrameworkCore.
+        /// </summary>
+        public string PublisherId { get; set; }
+
         [MinLength(13)]
         [MaxLength(13)]
         public string Isbn { get; set; }

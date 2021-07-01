@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.WebApi;
+#if NET5_0_OR_GREATER
+    using CloudNimble.Breakdance.AspNetCore;
+#else
+    using CloudNimble.Breakdance.WebApi;
+#endif
 using FluentAssertions;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
 
+    /// <summary>
+    /// A class for testing OData Actions.
+    /// </summary>
     [TestClass]
     public class ActionTests : RestierTestBase
     {
 
-        //[Ignore]
         [TestMethod]
         public async Task ActionParameters_MissingParameter()
         {
@@ -23,9 +33,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
-
+            
+            // JHC NOTE: this test failse with AspNetCore because the response content is empty
             content.Should().Contain("NullReferenceException");
-            //content.Should().Contain("ArgumentNullException");
         }
 
         [TestMethod]

@@ -17,6 +17,16 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public Guid Id { get; set; }
 
         /// <summary>
+        /// A reference key to <see cref="Address"/> is required to support both EntityFramework and EntityFrameworkCore.
+        /// </summary>
+        public Guid AddrId { get; set; }
+
+        /// <summary>
+        /// A reference key to <see cref="Universe"/> is required to support both EntityFramework and EntityFrameworkCore.
+        /// </summary>
+        public Guid UniverseId { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public string FullName { get; set; }

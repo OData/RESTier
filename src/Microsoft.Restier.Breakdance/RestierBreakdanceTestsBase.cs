@@ -10,6 +10,7 @@ using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Builder;
 using System;
 using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -17,29 +18,17 @@ namespace Microsoft.Restier.Breakdance
     /// <summary>
     /// A test class that comes configured with everything you need to get a <see cref="TestServer"/> configured for use with Restier.
     /// </summary>
-    public class RestierBreakdanceTests<TApi, TDbContext> : AspNetCoreBreakdanceTestBase
+    public class RestierBreakdanceTestsBase<TApi, TDbContext> : AspNetCoreBreakdanceTestBase
         where TApi : ApiBase
         where TDbContext : DbContext
     {
 
         /// <summary>
-        /// 
+        /// A constructor that accepts the two values needed to configure the ResTIER controller.
         /// </summary>
-        public string RouteName { get; init; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string RoutePrefix { get; init; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public RestierBreakdanceTests(string routeName, string routePrefix)
+        public RestierBreakdanceTestsBase(string routeName, string routePrefix)
         {
-            RouteName = routeName;
-            RoutePrefix = routePrefix;
-
+            // configure the TestHostBuilder with everything needed for ResTIER
             TestHostBuilder.ConfigureServices(services =>
             {
                 services.AddRestier(apiBuilder =>
@@ -59,10 +48,9 @@ namespace Microsoft.Restier.Breakdance
                     });
 
                 })
-                    .AddApplicationPart(typeof(RestierController).Assembly);        // this may be establishing a route that is causing problems
-            });
-
-            AddMinimalMvc(app: builder =>
+                    .AddApplicationPart(typeof(RestierController).Assembly);
+            })
+           .Configure(builder =>
             {
                 /* JHC Note: the code below shows some code from the OData project
                  *           we want to change how this class starts up the server so that it doesn't need to call UseMvc() because that loads

@@ -14,33 +14,37 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Book>().HasData(
-                new Book
-                {
-                    Id = new Guid("2D760F15-974D-4556-8CDF-D610128B537E"),
-                    Isbn = "1122334455667",
-                    Title = "Sea of Rust"
-                },
-                new Book
-                {
-                    Id = new Guid("19d68c75-1313-4369-b2bf-521f2b260a59"),
-                    Isbn = "9476324472648",
-                    Title = "A Clockwork Orange"
-                },
-                new Book
-                {
-                    Id = new Guid("c2081e58-21a5-4a15-b0bd-fff03ebadd30"),
-                    Isbn = "7273389962644",
-                    Title = "Jungle Book, The"
-                },
-                new Book
-                {
-                    Id = new Guid("0697576b-d616-4057-9d28-ed359775129e"),
-                    Isbn = "1315290642409",
-                    Title = "Color Purple, The"
-                }
-                );
+            var sourceData = new LibraryTestDataFactory();
 
+            if (sourceData.Addresses is not null)
+            {
+                modelBuilder.Entity<Address>().HasData(sourceData.Addresses.ToArray());
+            }
+
+            if (sourceData.Universes is not null)
+            {
+                modelBuilder.Entity<Universe>().HasData(sourceData.Universes.ToArray());
+            }
+
+            if (sourceData.Books is not null)
+            {
+                modelBuilder.Entity<Book>().HasData(sourceData.Books.ToArray());
+            }
+
+            if (sourceData.LibraryCards is not null)
+            {
+                modelBuilder.Entity<LibraryCard>().HasData(sourceData.LibraryCards.ToArray());
+            }
+
+            if (sourceData.Publishers is not null)
+            {
+                modelBuilder.Entity<Publisher>().HasData(sourceData.Publishers.ToArray());
+            }
+
+            if (sourceData.Readers is not null)
+            {
+                modelBuilder.Entity<Employee>().HasData(sourceData.Readers.ToArray());
+            }
         }
 
     }

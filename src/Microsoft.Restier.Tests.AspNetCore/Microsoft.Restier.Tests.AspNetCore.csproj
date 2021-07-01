@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\QueryTests.cs" Link="FeatureTests\QueryTests.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\MetadataTests.cs" Link="FeatureTests\MetadataTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
   </ItemGroup>
 
   <ItemGroup>
