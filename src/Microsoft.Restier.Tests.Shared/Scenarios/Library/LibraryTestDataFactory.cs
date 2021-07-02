@@ -37,17 +37,17 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
             context.Addresses = new List<Address>
             {
-                new Address { Id = Guid.NewGuid(), Street = "street1" },
-                new Address { Id = Guid.NewGuid(), Street = "street2" },
-                new Address { Id = Guid.NewGuid(), Street = "123 Sesame St.", Zip = "00010" },
-                new Address { Id = Guid.NewGuid(), Street = "234 Anystreet St.", Zip = "10010" },
+                new Address { Id = new Guid("B692094E-5930-4E59-A985-55EB59E13F14"), Street = "street1" },
+                new Address { Id = new Guid("F59C41D5-877B-4BB3-8D43-447610A80156"), Street = "street2" },
+                new Address { Id = new Guid("0483ECE5-64A9-460C-889E-F1085BD2093E"), Street = "123 Publisher Way", Zip = "00010" },
+                new Address { Id = new Guid("F784BCDE-C203-4C0B-B718-B8D74FE56CF6"), Street = "234 Anystreet St.", Zip = "10010" },
             };
 
             context.Universes = new List<Universe>
             {
                 new Universe
                 {
-                    Id = Guid.NewGuid(),
+                    Id = new Guid("22A07C43-7B6A-4089-AF20-840EB24E4443"),
                     BinaryProperty = new byte[] { 0x1, 0x2 },
                     BooleanProperty = true,
                     ByteProperty = 0x3,
@@ -68,7 +68,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 },
                 new Universe
                 {
-                    Id = Guid.NewGuid(),
+                    Id = new Guid("E8858E23-E6E4-4BE2-8463-10CDB6A8D480"),
                     BinaryProperty = new byte[] { 0x1, 0x2 },
                     BooleanProperty = true,
                     ByteProperty = 0x3,
@@ -94,16 +94,16 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 new Employee
                 {
                     Id = new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461"),
-                    AddrId = context.Addresses[0].Id,
+                    AddrId = new Guid("B692094E-5930-4E59-A985-55EB59E13F14"),
                     FullName = "p1",
-                    UniverseId = context.Universes[0].Id,
+                    UniverseId = new Guid("22A07C43-7B6A-4089-AF20-840EB24E4443"),
                 },
                 new Employee
                 {
                     Id = new Guid("8B04EA8B-37B1-4211-81CB-6196C9A1FE36"),
-                    AddrId = context.Addresses[1].Id,
+                    AddrId = new Guid("F59C41D5-877B-4BB3-8D43-447610A80156"),
                     FullName = "p2",
-                    UniverseId = context.Universes[1].Id,
+                    UniverseId = new Guid("E8858E23-E6E4-4BE2-8463-10CDB6A8D480"),
                 }
             };
 
@@ -112,13 +112,15 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 new Publisher
                 {
                     Id = "Publisher1",
-                    AddrId = context.Addresses[2].Id,
+                    Name = "Tor Books",
+                    AddrId = new Guid("0483ECE5-64A9-460C-889E-F1085BD2093E"),
                 },
 
                 new Publisher
                 {
                     Id = "Publisher2",
-                    AddrId = context.Addresses[3].Id,
+                    Name = "DelRay Books",
+                    AddrId = new Guid("F784BCDE-C203-4C0B-B718-B8D74FE56CF6"),
                 }
             };
 

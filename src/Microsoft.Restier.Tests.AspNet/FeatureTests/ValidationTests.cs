@@ -2,20 +2,27 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
-using CloudNimble.Breakdance.WebApi;
+#if NET5_0_OR_GREATER
+    using CloudNimble.Breakdance.AspNetCore;
+#else
+    using CloudNimble.Breakdance.WebApi;
+#endif
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
 
     [TestClass]
     public class ValidationTests : RestierTestBase
     {
 
-        //[Ignore]
         [TestMethod]
         public async Task Validation_StringLengthExceeded()
         {

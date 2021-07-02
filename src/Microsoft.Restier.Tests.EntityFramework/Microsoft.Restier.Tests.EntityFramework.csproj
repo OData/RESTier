@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210630-013048" />
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210702-042312" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.5, 8.0.0)" />
   </ItemGroup>
 

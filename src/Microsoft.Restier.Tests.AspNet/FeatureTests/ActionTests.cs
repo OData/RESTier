@@ -29,12 +29,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task ActionParameters_MissingParameter()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNetCore, this test fails because because the response content is empty
+             * 
+             * */
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
-            
-            // JHC NOTE: this test failse with AspNetCore because the response content is empty
             content.Should().Contain("NullReferenceException");
         }
 

@@ -4,14 +4,22 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
-using CloudNimble.Breakdance.WebApi;
+#if NET5_0_OR_GREATER
+    using CloudNimble.Breakdance.AspNetCore;
+#else
+    using CloudNimble.Breakdance.WebApi;
+#endif
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
 
     [TestClass]
@@ -21,10 +29,21 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         /// <summary>
         /// Tests if the query pipeline is correctly returning 200 StatusCodes when legitimate queries to a resource simply return no results.
         /// </summary>
-        [Ignore]
         [TestMethod]
         public async Task BoundFunctions_CanHaveFilterPathSegment()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test throws an exception
+             * type:    System.NotImplementedException
+             * message: The method or operation is not implemented.
+             * site:    Microsoft.OData.UriParser.PathSegmentHandler.Handle
+             * 
+             * in Restier.Tests.AspNetCore,  this test throws an exception
+             * type:    System.NotImplementedException
+             * message: The method or operation is not implemented.
+             * site:    Microsoft.OData.UriParser.PathSegmentHandler.Handle
+             * 
+             * */
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books/$filter(endswith(Title,'The'))/DiscontinueBooks()");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
@@ -44,6 +63,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BoundFunctions_Returns200()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNetCore, this test fails because results is empty after deserialization
+             * 
+             * */
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books/DiscontinueBooks()");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
@@ -85,6 +108,17 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Random House");
+            content.Should().NotContain("Publisher Way");
+        }
+
+        [TestMethod]
+        public async Task BoundFunctions_WithExpandChildren()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers('Publisher1')/PublishedBooks()?$expand=Publisher($expand=Addr)");
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
             content.Should().Contain("Publisher Way");
         }
 
@@ -103,6 +137,17 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task FunctionWithExpand()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/FavoriteBooks()?$expand=Publisher");
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Random House");
+            content.Should().NotContain("Publisher Way");
+        }
+
+        [TestMethod]
+        public async Task FunctionWithExpandChildren()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/FavoriteBooks()?$expand=Publisher($expand=Addr)");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

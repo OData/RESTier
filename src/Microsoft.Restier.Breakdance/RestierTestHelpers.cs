@@ -212,6 +212,18 @@ namespace Microsoft.Restier.Breakdance
 #if NET5_0_OR_GREATER
             var server = GetTestableRestierServer<TApi, TDbContext>(serviceCollection);
             return await Task.FromResult(server.Services).ConfigureAwait(false);
+
+            /* JHC NOTE:
+             * swap this out for a call to HttpClientHelpers.GetTestableHttpRequestMessage() after the next update to Breakdance
+             * */
+
+            /* JHC NOTE: 
+             * this isn't working because the CreateRequestContainer() method isn't showing up on the HttpRequestMessage, even though the namespace is included above
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{WebApiConstants.Localhost}{routePrefix}");
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse(WebApiConstants.DefaultAcceptHeader));
+            var container = request.CreateRequestContainer(routeName);
+            return await Task.FromResult(container).ConfigureAwait(false);
+            */
 #else
             // JHC TODO: change this so that GetTestableHttpClient() is no longer async and refactor the net472 code as well
             var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);

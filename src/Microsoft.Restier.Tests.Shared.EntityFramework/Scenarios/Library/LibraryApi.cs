@@ -66,6 +66,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             var publisher = new Publisher
             {
                 Id = "123",
+                Name = "Random House",
                 Addr = new Address
                 {
                     Street = "Publisher Way",
@@ -73,24 +74,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             };
 
-            foreach (var book in new Book[]
-            {
-                new Book
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "The Cat in the Hat Comes Back",
-                    Publisher = publisher
-                },
-                new Book
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "If You Give a Mouse a Cookie",
-                    Publisher = publisher
-                }
-            })
-            {
-                publisher.Books.Add(book);
-            }
+            publisher.Books.Add(new Book { Id = Guid.NewGuid(), Title = "The Cat in the Hat Comes Back", Publisher = publisher });
+            publisher.Books.Add(new Book { Id = Guid.NewGuid(), Title = "If You Give a Mouse a Cookie", Publisher = publisher });
 
             return publisher.Books.AsQueryable();
         }
@@ -131,7 +116,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [Operation(IsBound = true, IsComposable = true, EntitySet = "publisher/Books")]
         public IQueryable<Book> PublishedBooks(Publisher publisher)
         {
-            var test = publisher.Id;
             return FavoriteBooks();
         }
 

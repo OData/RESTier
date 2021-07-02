@@ -14,7 +14,7 @@
     <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210630-013048" />
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210702-042312" />
   </ItemGroup>
 
   <ItemGroup>

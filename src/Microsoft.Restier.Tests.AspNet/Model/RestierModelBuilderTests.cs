@@ -18,7 +18,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
     public class RestierModelBuilderTests : RestierTestBase
     {
         [TestMethod]
-        public async Task ComplexTypeShoudWork()
+        public async Task ComplexTypeShouldWork()
         {
             var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
             model.Should().NotBeNull();

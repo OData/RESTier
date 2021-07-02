@@ -18,6 +18,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         /// </summary>
         public string Id { get; set; }
 
+        public string Name { get; set; }
+
         /// <summary>
         /// A reference key to <see cref="Address"/> is required to support both EntityFramework and EntityFrameworkCore.
         /// </summary>

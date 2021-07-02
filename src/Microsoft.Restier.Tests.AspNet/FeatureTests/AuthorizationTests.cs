@@ -3,7 +3,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.WebApi;
+#if NET5_0_OR_GREATER
+    using CloudNimble.Breakdance.AspNetCore;
+#else
+    using CloudNimble.Breakdance.WebApi;
+#endif
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
@@ -14,7 +18,11 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
     [TestClass]
     public class AuthorizationTests : RestierTestBase
@@ -26,6 +34,15 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task Authorization_FilterReturns403()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test throws an exception
+             * type:    System.NotSupportedException
+             * message: Not supported type: Microsoft.Restier.Tests.Shared.Scenarios.Library.Book
+             * site:    Microsoft.Restier.AspNet.Model.EdmHelpers.GetPrimitiveTypeKind
+             * 
+             * in Restier.Tests.AspNetCore, the request returns HttpStatusCode 200 instead of the expected 403, so the test fails
+             * 
+             * */
             void di(IServiceCollection services)
             {
                 services
@@ -43,6 +60,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task UpdateEmployee_ShouldReturn400()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNetCore, this test fails because the employeeList is empty after deserialization
+             * 
+             * */
             var settings = new JsonSerializerSettings
             {
                 Converters = new List<JsonConverter>

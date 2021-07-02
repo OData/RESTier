@@ -39,6 +39,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task LibraryApi_CompareCurrentApiMetadataToPriorRun()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata
+             * 
+             * */
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(LibraryApi).Name}-ApiMetadata.txt";
             File.Exists(fileName).Should().BeTrue();
 
@@ -50,7 +54,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task LibraryApi_CompareCurrentVisibilityMatrixToPriorRun()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiSurface
+             * in Restier.Tests.AspNetCore, the call to GetTestableApiInstance() returns null, so the test fails
+             * 
+             * */
             var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi, LibraryContext>();
+            api.Should().NotBeNull();
+
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt";
 
             File.Exists(fileName).Should().BeTrue();
@@ -62,6 +73,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task LibraryApi_SaveMetadataDocument(string projectPath)
         {
+            Directory.CreateDirectory(Path.Combine(projectPath, baselineFolder));
             await RestierTestHelpers.WriteCurrentApiMetadata<LibraryApi, LibraryContext>(Path.Combine(projectPath, baselineFolder));
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(LibraryApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
@@ -69,9 +81,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task LibraryApi_SaveVisibilityMatrix(string projectPath)
         {
+            Directory.CreateDirectory(Path.Combine(projectPath, baselineFolder));
             var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi, LibraryContext>();
             api.WriteCurrentVisibilityMatrix(Path.Combine(projectPath, baselineFolder));
-
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
 
@@ -82,6 +94,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task StoreApi_CompareCurrentApiMetadataToPriorRun()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata
+             * 
+             * */
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(StoreApi).Name}-ApiMetadata.txt";
             File.Exists(fileName).Should().BeTrue();
 
@@ -93,7 +109,13 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task StoreApi_CompareCurrentVisibilityMatrixToPriorRun()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNetCore, the call to GetTestableApiInstance() returns null, so the test fails
+             * 
+             * */
             var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
+            api.Should().NotBeNull();
+
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt";
 
             File.Exists(fileName).Should().BeTrue();
@@ -105,6 +127,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task StoreApi_SaveMetadataDocument(string projectPath)
         {
+            Directory.CreateDirectory(Path.Combine(projectPath, baselineFolder));
             await RestierTestHelpers.WriteCurrentApiMetadata<StoreApi, DbContext>(Path.Combine(projectPath, baselineFolder));
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(StoreApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
@@ -112,9 +135,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task StoreApi_SaveVisibilityMatrix(string projectPath)
         {
+            Directory.CreateDirectory(Path.Combine(projectPath, baselineFolder));
             var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
             api.WriteCurrentVisibilityMatrix(Path.Combine(projectPath, baselineFolder));
-
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
 
