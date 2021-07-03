@@ -1,21 +1,16 @@
+using System;
+using System.Linq;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 {
@@ -57,7 +52,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 
                 });
             });
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddControllers(options => options.EnableEndpointRouting = false);
         }
 
         /// <summary>
@@ -78,7 +73,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 
                 builder.MapRestier(builder =>
                 {
-                    builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
+                    builder.MapApiRoute<NorthwindApi>("ApiV1", "/v1", true);
                 });
             });
         }
