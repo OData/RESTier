@@ -1,25 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+#if NET5_0_OR_GREATER
+    using Microsoft.EntityFrameworkCore;
+#else
+    using System.Data.Entity;
+#endif
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.AspNet.Model;
+#if NET5_0_OR_GREATER
+    using Microsoft.Restier.AspNetCore.Model;
+#else
+    using Microsoft.Restier.AspNet.Model;
+#endif
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.Model
+#else
 namespace Microsoft.Restier.Tests.AspNet.Model
+#endif
 {
 
     [TestClass]
     public class RestierModelExtenderTests : RestierTestBase
     {
+
+        /* JHC Note:
+         * in Restier.Tests.AspNetCore, all of these tests fails because RestierHelpers.GetTestableModel() is not working
+         * 
+         * */
 
         void Api<TApi>(IServiceCollection services) where TApi : ApiBase
         {
@@ -159,7 +176,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     }
 
-    #region Test Resources
+#region Test Resources
 
     public class TestModelBuilder : IModelBuilder
     {
@@ -320,6 +337,6 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     }
 
-    #endregion
+#endregion
 
 }

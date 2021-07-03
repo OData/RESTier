@@ -6,6 +6,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 
 #if NET5_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -21,12 +22,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task InQueries_IdInList()
         {
-            /* data isn't being populated correctly as this extra work up front shows
-            using var context = new LibraryContext(new Microsoft.EntityFrameworkCore.DbContextOptions<LibraryContext>());
-            context.Books.Add(new Book { Id = Guid.NewGuid(), Title = "Nobody's Business" });
-            context.SaveChanges();
-            */
-
             //var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books?$filter=Id in ['c2081e58-21a5-4a15-b0bd-fff03ebadd30','0697576b-d616-4057-9d28-ed359775129e']");
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books");
             var result = await response.Content.ReadAsStringAsync();

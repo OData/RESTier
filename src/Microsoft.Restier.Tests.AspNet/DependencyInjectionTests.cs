@@ -6,12 +6,20 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.EntityFramework;
+#if NET5_0_OR_GREATER
+    using Microsoft.Restier.EntityFrameworkCore;
+#else
+    using Microsoft.Restier.EntityFramework;
+#endif
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Tests.Core
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore
+#else
+namespace Microsoft.Restier.Tests.AspNet
+#endif
 {
 
     /// <summary>

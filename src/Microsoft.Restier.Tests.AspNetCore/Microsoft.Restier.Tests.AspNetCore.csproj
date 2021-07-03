@@ -6,11 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\ODataControllerFallbackTests.cs" Link="ODataControllerFallbackTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="1.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

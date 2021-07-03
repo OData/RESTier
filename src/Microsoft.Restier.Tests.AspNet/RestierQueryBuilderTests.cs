@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System.Data.Entity;
+#if NET5_0_OR_GREATER
+using Microsoft.EntityFrameworkCore;
+#else
+    using System.Data.Entity;
+#endif
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
@@ -10,7 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore
+#else
 namespace Microsoft.Restier.Tests.AspNet
+#endif
 {
 
     [TestClass]

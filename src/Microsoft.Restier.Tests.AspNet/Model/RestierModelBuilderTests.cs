@@ -11,7 +11,11 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.Model
+#else
 namespace Microsoft.Restier.Tests.AspNet.Model
+#endif
 {
 
     [TestClass]
@@ -20,6 +24,10 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ComplexTypeShouldWork()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNetCore, this test fails because RestierHelpers.GetTestableInjectionContainer() is returning null
+             * 
+             * */
             var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
             model.Should().NotBeNull();
             var result = model.Validate(out var errors);
@@ -34,6 +42,10 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task PrimitiveTypesShouldWork()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNetCore, this test fails because RestierHelpers.GetTestableInjectionContainer() is returning null
+             * 
+             * */
             var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
 
             model.Validate(out var errors).Should().BeTrue();

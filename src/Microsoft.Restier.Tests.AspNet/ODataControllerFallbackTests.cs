@@ -3,27 +3,44 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+#if NET5_0_OR_GREATER
+    using Microsoft.EntityFrameworkCore;
+#else
+    using System.Data.Entity;
+#endif
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
+#if NET5_0_OR_GREATER
+    using Microsoft.AspNetCore.Mvc;
+#else
+    using System.Web.Http;
+#endif
 using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.AspNet.Model;
+#if NET5_0_OR_GREATER
+    using Microsoft.Restier.AspNetCore.Model;
+#else
+    using Microsoft.Restier.AspNet.Model;
+#endif
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.AspNetCore.Mvc.Filters;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore
+#else
 namespace Microsoft.Restier.Tests.AspNet
+#endif
 {
 
     [TestClass]
@@ -40,6 +57,7 @@ namespace Microsoft.Restier.Tests.AspNet
                 .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
         }
 
+#if !NET5_0_OR_GREATER
         [TestMethod]
         public async Task FallbackApi_EntitySet_ShouldFallBack()
         {
@@ -59,6 +77,7 @@ namespace Microsoft.Restier.Tests.AspNet
             response.IsSuccessStatusCode.Should().BeTrue();
             ((Order[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(123);
         }
+#endif
 
         [TestMethod]
         public async Task FallbackApi_EntitySet_ShouldNotFallBack()
@@ -82,7 +101,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     }
 
-    #region Test Resources
+#region Test Resources
 
     internal static class FallbackModel
     {
@@ -114,7 +133,12 @@ namespace Microsoft.Restier.Tests.AspNet
 
     public class PeopleController : ODataController
     {
+
+#if NET5_0_OR_GREATER
+        public ActionResult Get()
+#else
         public IHttpActionResult Get()
+#endif
         {
             var people = new[]
             {
@@ -124,7 +148,11 @@ namespace Microsoft.Restier.Tests.AspNet
             return Ok(people);
         }
 
-        public IHttpActionResult GetOrders(int key)
+#if NET5_0_OR_GREATER
+        public ActionResult GetOrders()
+#else
+        public IHttpActionResult GetOrders()
+#endif
         {
             var orders = new[]
             {
@@ -180,7 +208,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType) => TryGetRelevantType(context, name, out relevantType);
     }
 
-    #endregion
+#endregion
 
 
 }
