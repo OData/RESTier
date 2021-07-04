@@ -3,44 +3,39 @@
 
 using System;
 using System.Collections.Generic;
-#if NET5_0_OR_GREATER
-    using Microsoft.EntityFrameworkCore;
-#else
-    using System.Data.Entity;
-#endif
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
-#if NET5_0_OR_GREATER
-    using Microsoft.AspNetCore.Mvc;
-#else
-    using System.Web.Http;
-#endif
 using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-#if NET5_0_OR_GREATER
-    using Microsoft.Restier.AspNetCore.Model;
-#else
-    using Microsoft.Restier.AspNet.Model;
-#endif
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 #if NET5_0_OR_GREATER
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.AspNetCore.Model;
+
 namespace Microsoft.Restier.Tests.AspNetCore
+
 #else
+using Microsoft.Restier.AspNet.Model;
+using System.Data.Entity;
+using System.Web.Http;
+
 namespace Microsoft.Restier.Tests.AspNet
 #endif
+
 {
 
     [TestClass]
@@ -101,7 +96,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     }
 
-#region Test Resources
+    #region Test Resources
 
     internal static class FallbackModel
     {
@@ -208,7 +203,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType) => TryGetRelevantType(context, name, out relevantType);
     }
 
-#endregion
+    #endregion
 
 
 }

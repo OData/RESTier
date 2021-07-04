@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net5.0</TargetFrameworks>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="3.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" Condition=" '$(TargetFramework)' == 'net472' " />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" Condition=" '$(TargetFramework)' == 'net5.0' " />
+  </ItemGroup>
+  
+  
+
+</Project>

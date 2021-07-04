@@ -82,7 +82,9 @@ namespace Microsoft.Restier.AspNetCore.Batch
 
                                 return tcs.Task;
                             },
-                            context.RequestAborted);
+                            context.RequestAborted,
+                            TaskContinuationOptions.None,
+                            TaskScheduler.Current);
 
                 responseTasks.Add(task);
             }

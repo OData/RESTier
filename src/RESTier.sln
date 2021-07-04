@@ -25,6 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Asp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{901E6A2A-23EC-4BC8-B4C6-A3EF70D72702}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		dotnet-logo.png = dotnet-logo.png
 		global.json = global.json
@@ -65,7 +66,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{2BF9B9A4-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{5DDE9DB9-8739-4178-9C7A-6026FB3F3814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.Shared.EntityFrameworkCore", "Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj", "{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Shared.EntityFrameworkCore", "Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj", "{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Breakdance", "Microsoft.Restier.Tests.Breakdance\Microsoft.Restier.Tests.Breakdance.csproj", "{4ED74763-33E0-432A-B009-1423F7FC03CF}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -145,6 +148,10 @@ Global
 		{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,6 +181,7 @@ Global
 		{2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 		{5DDE9DB9-8739-4178-9C7A-6026FB3F3814} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 		{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578} = {5DDE9DB9-8739-4178-9C7A-6026FB3F3814}
+		{4ED74763-33E0-432A-B009-1423F7FC03CF} = {2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}

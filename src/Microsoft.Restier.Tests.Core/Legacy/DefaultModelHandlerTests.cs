@@ -17,6 +17,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Microsoft.Restier.Tests.Core.Model
 {
@@ -73,7 +74,7 @@ namespace Microsoft.Restier.Tests.Core.Model
 
                     });
                 });
-                container.routeBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>(i.ToString(), "", true);
+                container.routeBuilder = new RestierRouteBuilder().MapApiRoute<TestableEmptyApi>(i.ToString(CultureInfo.InvariantCulture), "", true);
 
                 var provider = container.BuildContainer();
                 var tasks = PrepareThreads(50, provider, wait);

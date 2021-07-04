@@ -33,10 +33,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <PackageReference Include="Breakdance.WebApi" Version="2.0.0" />
+    <PackageReference Include="Breakdance.WebApi" Version="2.1.0-CI-20210704-053458" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
-    <PackageReference Include="Breakdance.AspNetCore" Version="2.1.0-CI-20210702-042312" />
+    <PackageReference Include="Breakdance.AspNetCore" Version="2.1.0-CI-20210704-053458" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">

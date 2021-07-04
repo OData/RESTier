@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -333,7 +334,7 @@ namespace Microsoft.Restier.Core.Query
 
             if (memberExp == null)
             {
-                throw new Exception(string.Format(Resources.QueryMemberNotAccessible, member.ToString()));
+                throw new Exception(string.Format(CultureInfo.InvariantCulture, Resources.QueryMemberNotAccessible, member.ToString()));
             }
 
             if (memberExp.NodeType == ExpressionType.Parameter)
