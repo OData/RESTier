@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -22,8 +23,7 @@
 
   <ItemGroup>
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\**\*.cs" LinkBase="LibraryApi" />
-    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryApi.cs" Link="LibraryApi\LibraryApi.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryContext.cs" Link="LibraryApi\LibraryContext.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\*.cs" LinkBase="LibraryApi" />
   </ItemGroup>
 
 </Project>

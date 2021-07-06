@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

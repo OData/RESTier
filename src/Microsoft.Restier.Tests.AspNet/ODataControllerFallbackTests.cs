@@ -20,17 +20,23 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+#if EFCore
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.AspNetCore.Model;
-
-namespace Microsoft.Restier.Tests.AspNetCore
 
 #else
 using Microsoft.Restier.AspNet.Model;
 using System.Data.Entity;
+
+#endif
+
+#if NETCORE3 || NET5_0_OR_GREATER
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace Microsoft.Restier.Tests.AspNetCore
+
+#else
 using System.Web.Http;
 
 namespace Microsoft.Restier.Tests.AspNet
@@ -50,6 +56,19 @@ namespace Microsoft.Restier.Tests.AspNet
                 .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())
                 .AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
                 .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
+
+#if EFCore
+        //using var tempServices = restierServices.BuildServiceProvider();
+
+        //var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
+        //using var scope = scopeFactory.CreateScope();
+        //var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
+
+        //dbContext.Database.EnsureCreated();
+        //var initializer = new LibraryContextInitializer();
+        //dbInitializer.Seed(dbContext);
+#endif
+
         }
 
 #if !NET5_0_OR_GREATER
@@ -96,7 +115,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     }
 
-    #region Test Resources
+#region Test Resources
 
     internal static class FallbackModel
     {
@@ -203,7 +222,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType) => TryGetRelevantType(context, name, out relevantType);
     }
 
-    #endregion
+#endregion
 
 
 }

@@ -17,7 +17,7 @@ namespace Microsoft.Restier.Tests.Breakdance
 {
 
     [TestClass]
-    public class RestierBreakdanceTestBaseTests
+    public class RestierBreakdanceTestBase_CoreTests
     {
 
 #if NET5_0_OR_GREATER
@@ -36,6 +36,19 @@ namespace Microsoft.Restier.Tests.Breakdance
                         MaxAnyAllExpressionDepth = 3,
                         MaxExpansionDepth = 3,
                     });
+
+#if EFCore
+                using var tempServices = restierServices.BuildServiceProvider();
+
+                var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
+                using var scope = scopeFactory.CreateScope();
+                var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
+
+                dbContext.Database.EnsureCreated();
+                var initializer = new LibraryContextInitializer();
+                dbInitializer.Seed(dbContext);
+#endif
+
             });
         };
 
@@ -44,7 +57,7 @@ namespace Microsoft.Restier.Tests.Breakdance
             routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix);
         };
 
-        #endregion
+#endregion
 
         [TestMethod]
         public void TestSetup_ServerAndServicesAreAvailable()
@@ -102,9 +115,9 @@ namespace Microsoft.Restier.Tests.Breakdance
             api.Should().NotBeNull();
         }
 
-        private RestierBreakdanceTestBase<LibraryApi, LibraryContext> GetTestBaseInstance()
+        private RestierBreakdanceTestBase<LibraryApi> GetTestBaseInstance()
         {
-            var testBase = new RestierBreakdanceTestBase<LibraryApi, LibraryContext>
+            var testBase = new RestierBreakdanceTestBase<LibraryApi>
             {
                 AddRestierAction = addRestierAction,
                 MapRestierAction = mapRestierAction
@@ -115,6 +128,6 @@ namespace Microsoft.Restier.Tests.Breakdance
 
 #endif
 
-    }
+            }
 
 }

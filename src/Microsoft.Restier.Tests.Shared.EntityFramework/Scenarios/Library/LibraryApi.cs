@@ -7,30 +7,34 @@ using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
 #if NET5_0_OR_GREATER
     using Microsoft.Restier.AspNetCore.Model;
-    using Microsoft.Restier.EntityFrameworkCore;
 #else
     using Microsoft.Restier.AspNet.Model;
-    using Microsoft.Restier.EntityFramework;
 #endif
+
+#if EF6
+    using Microsoft.Restier.EntityFramework;
+#else
+    using Microsoft.Restier.EntityFrameworkCore;
+#endif
+
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
 
     /// <summary>
     /// A testable API that implements an Entity Framework model and has secondary operations
-    /// against a SQL 2017 LocalDB database.
     /// </summary>
     public class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
-#region Constructors
+        #region Constructors
 
         public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
-#endregion
+        #endregion
 
-#region API Methods
+        #region API Methods
 
         [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
@@ -130,9 +134,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-#endregion
+        #endregion
 
-#region Restier Interceptors
+        #region Restier Interceptors
 
         /// <summary>
         /// 
@@ -158,7 +162,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             });
         }
 
-#endregion
+        #endregion
 
     }
 

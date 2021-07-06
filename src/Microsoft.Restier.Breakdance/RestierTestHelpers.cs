@@ -87,7 +87,6 @@ namespace Microsoft.Restier.Breakdance
         {
 
 #if NET5_0_OR_GREATER
-            //var server = GetTestableRestierServer<TApi, TDbContext>(host, routeName, routePrefix, serviceCollection);
             var server = GetTestableRestierServer<TApi, TDbContext>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             using var message = new HttpRequestMessage(httpMethod, new Uri($"{host}{routePrefix}{resource}"));    // this way fails
@@ -383,9 +382,9 @@ namespace Microsoft.Restier.Breakdance
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <returns>A new <see cref="TestServer" /> instance.</returns>
-        public static TestServer GetTestableRestierServer<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> serviceCollection = default)
+        public static TestServer GetTestableRestierServer<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext => GetTestBaseInstance<TApi, TDbContext>(routeName, routePrefix, serviceCollection).TestServer;
+            where TDbContext : DbContext => GetTestBaseInstance<TApi, TDbContext>(routeName, routePrefix, apiServiceCollection).TestServer;
 
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
@@ -393,12 +392,12 @@ namespace Microsoft.Restier.Breakdance
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <returns>A new <see cref="TestServer" /> instance.</returns>
-        public static RestierBreakdanceTestBase<TApi, TDbContext> GetTestBaseInstance<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, 
-            string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> serviceCollection = default)
+        public static RestierBreakdanceTestBase<TApi> GetTestBaseInstance<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, 
+            string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default)
             where TApi : ApiBase
             where TDbContext : DbContext
         {
-            using var restierTests = new RestierBreakdanceTestBase<TApi, TDbContext>();
+            using var restierTests = new RestierBreakdanceTestBase<TApi>();
 
             restierTests.AddRestierAction = (apiBuilder) =>
             {
@@ -412,7 +411,7 @@ namespace Microsoft.Restier.Breakdance
                             MaxAnyAllExpressionDepth = 3,
                             MaxExpansionDepth = 3,
                         });
-                    serviceCollection?.Invoke(restierServices);
+                    apiServiceCollection?.Invoke(restierServices);
                 });
             };
 
@@ -423,6 +422,20 @@ namespace Microsoft.Restier.Breakdance
 
             // make sure the TestServer has been started
             restierTests.TestSetup();
+
+            // JHC TODO: my attempts at doing seeding in the unit test after the service starts up
+
+            //using (var scope = restierTests.TestServer.Services.CreateScope())
+            //{
+            //    var services = scope.ServiceProvider;
+            //    var context = services.GetRequiredService<TDbContext>();
+            //    // NOTE: we aren't adding the initializer to the services, so this won't work
+            //    //initializer.Seed(context);
+            //}
+
+            /* NOTE: or is this right?  if we do it this way, then it is up to the initializer to initializer ALL DbContexts found in the service collection
+             * */
+
 
             return restierTests;
         }

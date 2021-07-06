@@ -70,6 +70,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Sha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Breakdance", "Microsoft.Restier.Tests.Breakdance\Microsoft.Restier.Tests.Breakdance.csproj", "{4ED74763-33E0-432A-B009-1423F7FC03CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.AspNetCorePlusEF6", "Microsoft.Restier.Tests.AspNetCorePlusEF6\Microsoft.Restier.Tests.AspNetCorePlusEF6.csproj", "{42646361-1D62-4AB7-9735-009EB2DD0F38}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{0e373b2a-2ed2-4566-a275-6be81cffe00b}*SharedItemsImports = 5
@@ -152,6 +154,10 @@ Global
 		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ED74763-33E0-432A-B009-1423F7FC03CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42646361-1D62-4AB7-9735-009EB2DD0F38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42646361-1D62-4AB7-9735-009EB2DD0F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42646361-1D62-4AB7-9735-009EB2DD0F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42646361-1D62-4AB7-9735-009EB2DD0F38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +188,7 @@ Global
 		{5DDE9DB9-8739-4178-9C7A-6026FB3F3814} = {724F25F3-B47A-4A80-8F7A-08B2E8121D10}
 		{6BAA65B7-79FD-4AFE-8EB8-F3A0CB3A7578} = {5DDE9DB9-8739-4178-9C7A-6026FB3F3814}
 		{4ED74763-33E0-432A-B009-1423F7FC03CF} = {2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F}
+		{42646361-1D62-4AB7-9735-009EB2DD0F38} = {2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}

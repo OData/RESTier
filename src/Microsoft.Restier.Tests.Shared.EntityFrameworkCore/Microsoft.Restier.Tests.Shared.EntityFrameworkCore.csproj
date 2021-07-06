@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryApi.cs" Link="Scenarios\Library\LibraryApi.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\*.cs" LinkBase="Scenarios\Library" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Marvel\*.cs" LinkBase="Scenarios\Marvel" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scenarios\Marvel\" />
   </ItemGroup>
 
 </Project>

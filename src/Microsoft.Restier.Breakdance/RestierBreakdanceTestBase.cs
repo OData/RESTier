@@ -23,9 +23,8 @@ namespace Microsoft.Restier.Breakdance
     /// <summary>
     /// Simplifies testing Restier services by providing the necessary infrastructure to ensure correct test setup &amp; teardown.
     /// </summary>
-    public class RestierBreakdanceTestBase<TApi, TDbContext> : AspNetCoreBreakdanceTestBase
+    public class RestierBreakdanceTestBase<TApi> : AspNetCoreBreakdanceTestBase
         where TApi : ApiBase
-        where TDbContext : DbContext
     {
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace Microsoft.Restier.Breakdance
         public Action<RestierRouteBuilder> MapRestierAction { get; set; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi, TDbContext}"/>.
+        /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/>.
         /// </summary>
         /// <remarks>
         /// To properly configure these tests, please set your <see cref="AddRestierAction"/> and <see cref="MapRestierAction"/> actions before
