@@ -49,6 +49,17 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
+        public async Task DI_CompareCurrentVersion_ToRC6()
+        {
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
+            result.Should().NotBeNullOrEmpty();
+
+            var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines//RC6-LibraryApi-ServiceProvider.txt");
+            result.Should().Be(baseline);
+        }
+
+        [TestMethod]
         public async Task DI_VerifyModelBuilderInnerHandlers_ToRC2()
         {
             var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi, LibraryContext>();

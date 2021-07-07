@@ -17,7 +17,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     {
 
 #if EF6
-        #region EntitySet Properties
+        public LibraryContext()
+           : base("LibraryContext") => Database.SetInitializer(new LibraryTestInitializer());
 
         public IDbSet<Book> Books { get; set; }
 
@@ -26,15 +27,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public IDbSet<Publisher> Publishers { get; set; }
 
         public IDbSet<Employee> Readers { get; set; }
-
-        public IDbSet<Address> Addresses { get; set; }
-
-        public IDbSet<Universe> Universes { get; set; }
-
-        #endregion
-
-        public LibraryContext()
-            : base("LibraryContext") => Database.SetInitializer(new LibraryTestInitializer());
 
 #else
 

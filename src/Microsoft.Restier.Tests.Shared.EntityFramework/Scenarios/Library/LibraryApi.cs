@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
     /// <summary>
     /// A testable API that implements an Entity Framework model and has secondary operations
+    /// against a SQL 2017 LocalDB database.
     /// </summary>
     public class LibraryApi : EntityFrameworkApi<LibraryContext>
     {
@@ -70,10 +71,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             var publisher = new Publisher
             {
                 Id = "123",
-                Name = "Random House",
                 Addr = new Address
                 {
-                    Id = new Guid("0F971989-1FA3-4D3E-BDB0-84B7EC4D4B36"),
                     Street = "Publisher Way",
                     Zip = "12345"
                 }

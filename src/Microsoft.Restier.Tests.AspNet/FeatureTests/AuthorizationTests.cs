@@ -42,8 +42,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
              * note:    This is happening because the line below is returning null on the object Book in Shared.Scenarios.Library
              *              var edmType = model.FindDeclaredType(type.FullName);  << this returns null for all EntityTypes in the scenario
              * 
-             * in Restier.Tests.AspNetCore, the request returns HttpStatusCode 200 instead of the expected 403, so the test fails
-             * 
              * */
             void di(IServiceCollection services)
             {
@@ -62,10 +60,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task UpdateEmployee_ShouldReturn400()
         {
-            /* JHC Note:
-             * in Restier.Tests.AspNetCore, this test fails because the employeeList is empty after deserialization
-             * 
-             * */
             var settings = new JsonSerializerSettings
             {
                 Converters = new List<JsonConverter>

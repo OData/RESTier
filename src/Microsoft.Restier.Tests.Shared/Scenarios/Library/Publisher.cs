@@ -15,8 +15,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         public string Id { get; set; }
 
-        public string Name { get; set; }
-
         public Address Addr { get; set; }
 
         public virtual ObservableCollection<Book> Books { get; set; }

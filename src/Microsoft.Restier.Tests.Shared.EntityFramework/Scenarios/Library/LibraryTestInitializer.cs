@@ -28,12 +28,11 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
             context.Readers.Add(new Employee
             {
-                Addr = new Address { Id = new Guid("CAE49262-23D9-4F01-A0AB-EE3D0986B22D"), Street = "street1" },
+                Addr = new Address { Street = "street1" },
                 FullName = "p1",
                 Id = new Guid("53162782-EA1B-4712-AF26-8AA1D2AC0461"),
                 Universe = new Universe
                 {
-                    Id = new Guid("8B9F3463-B235-43BB-B995-E1EAB7A25299"),
                     BinaryProperty = new byte[] { 0x1, 0x2 },
                     BooleanProperty = true,
                     ByteProperty = 0x3,
@@ -55,12 +54,11 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             });
             context.Readers.Add(new Employee
             {
-                Addr = new Address { Id = new Guid("5F90A897-DF2D-4A66-9C62-D7EF8109C12C"), Street = "street2" },
+                Addr = new Address { Street = "street2" },
                 FullName = "p2",
                 Id = new Guid("8B04EA8B-37B1-4211-81CB-6196C9A1FE36"),
                 Universe = new Universe
                 {
-                    Id = new Guid("9F48BD42-0B80-402F-B299-5D04D3737255"),
                     BinaryProperty = new byte[] { 0x1, 0x2 },
                     BooleanProperty = true,
                     ByteProperty = 0x3,
@@ -86,7 +84,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 Id = "Publisher1",
                 Addr = new Address
                 {
-                    Id = new Guid("8E37E9A3-0D0C-4495-AD06-2E78C9532835"),
                     Street = "123 Sesame St.",
                     Zip = "00010"
                 },
@@ -112,7 +109,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 Id = "Publisher2",
                 Addr = new Address
                 {
-                    Id = new Guid("64E96601-8BDB-499A-8BCF-3028A885F64D"),
                     Street = "234 Anystreet St.",
                     Zip = "10010"
                 },

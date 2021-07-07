@@ -23,11 +23,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 #if EFCore
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.AspNetCore.Model;
+#endif
 
-#else
+#if EF6
 using Microsoft.Restier.AspNet.Model;
 using System.Data.Entity;
-
 #endif
 
 #if NETCORE3 || NET5_0_OR_GREATER

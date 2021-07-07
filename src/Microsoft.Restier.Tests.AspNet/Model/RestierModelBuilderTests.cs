@@ -24,11 +24,6 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task ComplexTypeShouldWork()
         {
-            /* JHC Note:
-             * in Restier.Tests.AspNet, this test fails with the message: Expected address not to be <null>.
-             * This is very similar to the failure of "Authorization_FilterReturns403" where the call to model.FindDeclaredType(string) returns null
-             * 
-             * */
             var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
             model.Should().NotBeNull();
             var result = model.Validate(out var errors);
@@ -43,11 +38,6 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task PrimitiveTypesShouldWork()
         {
-            /* JHC Note:
-             * in Restier.Tests.AspNet, this test fails with the message: Expected universe not to be <null>.
-             * This is very similar to the failure of "Authorization_FilterReturns403" where the call to model.FindDeclaredType(string) returns null
-             * 
-             * */
             var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
 
             model.Validate(out var errors).Should().BeTrue();

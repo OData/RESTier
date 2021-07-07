@@ -23,10 +23,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task CountPlusExpandShouldntThrowExceptions()
         {
-            /* JHC Note:
-             * in Restier.Tests.AspNetCore, this test fails because the query returns empty results
-             * 
-             * */
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers?$expand=Books");
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 

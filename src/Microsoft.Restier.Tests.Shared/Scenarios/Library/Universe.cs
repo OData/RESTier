@@ -7,13 +7,9 @@ using Microsoft.OData.Edm;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
-#if EF6
     [ComplexType]
-#endif
     public class Universe
     {
-        public Guid Id { get; set; }
-
         public byte[] BinaryProperty { get; set; }
 
         public bool BooleanProperty { get; set; }

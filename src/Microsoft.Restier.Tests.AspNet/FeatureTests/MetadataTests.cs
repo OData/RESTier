@@ -48,6 +48,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             var oldReport = File.ReadAllText(fileName);
             var newReport = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi, LibraryContext>();
+
+            TestContext.WriteLine($"Old Report: {oldReport}");
+            TestContext.WriteLine($"New Report: {newReport}");
+
             oldReport.Should().BeEquivalentTo(newReport.ToString());
         }
 
@@ -66,6 +70,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists(fileName).Should().BeTrue();
             var oldReport = File.ReadAllText(fileName);
             var newReport = api.GenerateVisibilityMatrix();
+
+            TestContext.WriteLine($"Old Report: {oldReport}");
+            TestContext.WriteLine($"New Report: {newReport}");
+
             oldReport.Should().BeEquivalentTo(newReport);
         }
 
@@ -102,6 +110,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             var oldReport = File.ReadAllText(fileName);
             var newReport = await RestierTestHelpers.GetApiMetadataAsync<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
+
+            TestContext.WriteLine($"Old Report: {oldReport}");
+            TestContext.WriteLine($"New Report: {newReport}");
+
             oldReport.Should().BeEquivalentTo(newReport.ToString());
         }
 

@@ -33,11 +33,6 @@ namespace Microsoft.Restier.Tests.AspNet.Model
     public class RestierModelExtenderTests : RestierTestBase
     {
 
-        /* JHC Note:
-         * in Restier.Tests.AspNetCore, all of these tests fails because RestierHelpers.GetTestableModel() is not working
-         * 
-         * */
-
         void Api<TApi>(IServiceCollection services) where TApi : ApiBase
         {
             di(services);
