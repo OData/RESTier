@@ -39,6 +39,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
              * type:    System.NotSupportedException
              * message: Not supported type: Microsoft.Restier.Tests.Shared.Scenarios.Library.Book
              * site:    Microsoft.Restier.AspNet.Model.EdmHelpers.GetPrimitiveTypeKind
+             * note:    This is happening because the line below is returning null on the object Book in Shared.Scenarios.Library
+             *              var edmType = model.FindDeclaredType(type.FullName);  << this returns null for all EntityTypes in the scenario
              * 
              * in Restier.Tests.AspNetCore, the request returns HttpStatusCode 200 instead of the expected 403, so the test fails
              * 

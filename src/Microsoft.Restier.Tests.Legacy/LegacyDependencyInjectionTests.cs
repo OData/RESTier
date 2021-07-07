@@ -20,6 +20,12 @@ namespace Microsoft.Restier.Tests.Legacy
         [TestMethod]
         public async Task RestierRC2_VerifyContainerContents()
         {
+            /* JHC Note:
+             * This test is failing because we've made some change to the LibraryApi and LibraryContext.  We need to determine the best way
+             * to maintain this test.  We might need a LegacyLibraryApi and LegacyLibraryContext
+             * 
+             * */
+
             var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             result.Should().NotBeNullOrEmpty();

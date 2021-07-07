@@ -1,3 +1,5 @@
+#if NET5_0_OR_GREATER
+
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,11 +9,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Restier.Core;
 using System;
 using Microsoft.AspNet.OData.Query;
-
-#if NET5_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNetCore.Http;
-#endif
 
 namespace Microsoft.Restier.Tests.Breakdance
 {
@@ -19,8 +18,6 @@ namespace Microsoft.Restier.Tests.Breakdance
     [TestClass]
     public class RestierBreakdanceTestBase_CoreTests
     {
-
-#if NET5_0_OR_GREATER
 
         #region Private Members
 
@@ -57,7 +54,7 @@ namespace Microsoft.Restier.Tests.Breakdance
             routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix);
         };
 
-#endregion
+        #endregion
 
         [TestMethod]
         public void TestSetup_ServerAndServicesAreAvailable()
@@ -126,8 +123,8 @@ namespace Microsoft.Restier.Tests.Breakdance
             return testBase;
         }
 
-#endif
-
-            }
+    }
 
 }
+
+#endif

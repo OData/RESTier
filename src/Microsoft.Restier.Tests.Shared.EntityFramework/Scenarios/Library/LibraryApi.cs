@@ -8,11 +8,11 @@ using Microsoft.AspNet.OData.Query;
 #if NET5_0_OR_GREATER
     using Microsoft.Restier.AspNetCore.Model;
 #else
-    using Microsoft.Restier.AspNet.Model;
+using Microsoft.Restier.AspNet.Model;
 #endif
 
 #if EF6
-    using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.EntityFramework;
 #else
     using Microsoft.Restier.EntityFrameworkCore;
 #endif
@@ -73,13 +73,30 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 Name = "Random House",
                 Addr = new Address
                 {
+                    Id = new Guid("0F971989-1FA3-4D3E-BDB0-84B7EC4D4B36"),
                     Street = "Publisher Way",
                     Zip = "12345"
                 }
             };
 
-            publisher.Books.Add(new Book { Id = Guid.NewGuid(), Title = "The Cat in the Hat Comes Back", Publisher = publisher });
-            publisher.Books.Add(new Book { Id = Guid.NewGuid(), Title = "If You Give a Mouse a Cookie", Publisher = publisher });
+            foreach (var book in new Book[]
+            {
+                new Book
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "The Cat in the Hat Comes Back",
+                    Publisher = publisher
+                },
+                new Book
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "If You Give a Mouse a Cookie",
+                    Publisher = publisher
+                }
+            })
+            {
+                publisher.Books.Add(book);
+            }
 
             return publisher.Books.AsQueryable();
         }
@@ -120,6 +137,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [Operation(IsBound = true, IsComposable = true, EntitySet = "publisher/Books")]
         public IQueryable<Book> PublishedBooks(Publisher publisher)
         {
+            var test = publisher.Id;
             return FavoriteBooks();
         }
 

@@ -75,6 +75,10 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task FallbackApi_EntitySet_ShouldFallBack()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test fails with an internal error message:  Multiple actions were found that match the request: \r\nGet on type Microsoft.Restier.Tests.AspNet.PeopleController
+             * */
+
             // Should fallback to PeopleController.
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
@@ -85,6 +89,10 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task FallbackApi_NavigationProperty_ShouldFallBack()
         {
+            /* JHC Note:
+             * in Restier.Tests.AspNet, this test fails with an internal error message:  Multiple actions were found that match the request: \r\nGet on type Microsoft.Restier.Tests.AspNet.PeopleController
+             * */
+
             // Should fallback to PeopleController.
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());

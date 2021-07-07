@@ -15,12 +15,11 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// </summary>
     public class LibraryCard
     {
-        /// <summary>
-        /// Without this property, EntityFramework will complain that this object doesn't have a key.
-        /// </summary>
+
         public Guid Id { get; set; }
 
         public DateTimeOffset DateRegistered { get; set; }
 
     }
+
 }

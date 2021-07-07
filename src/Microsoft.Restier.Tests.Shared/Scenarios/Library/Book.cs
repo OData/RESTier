@@ -12,15 +12,11 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
     /// </summary>
     public class Book
     {
-        /// <summary>
-        /// Without this property, EntityFramework will complain that this object doesn't have a key.
-        /// </summary>
-        public Guid Id { get; set; }
 
         /// <summary>
-        /// A reference key to <see cref="Publisher"/> is required to support both EntityFramework and EntityFrameworkCore.
+        /// 
         /// </summary>
-        public string PublisherId { get; set; }
+        public Guid Id { get; set; }
 
         [MinLength(13)]
         [MaxLength(13)]
@@ -37,4 +33,5 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public Publisher Publisher { get; set; }
 
     }
+
 }

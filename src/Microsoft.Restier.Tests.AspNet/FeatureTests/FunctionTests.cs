@@ -119,6 +119,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain("Random House");
             content.Should().Contain("Publisher Way");
         }
 

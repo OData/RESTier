@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task LibraryApi_CompareCurrentApiMetadataToPriorRun()
         {
             /* JHC Note:
-             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata
+             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata after making some changes to the data model
              * 
              * */
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(LibraryApi).Name}-ApiMetadata.txt";
@@ -55,8 +55,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task LibraryApi_CompareCurrentVisibilityMatrixToPriorRun()
         {
             /* JHC Note:
-             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiSurface
-             * in Restier.Tests.AspNetCore, the call to GetTestableApiInstance() returns null, so the test fails
+             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiSurface after making some changes to the data model
              * 
              * */
             var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi, LibraryContext>();
@@ -109,10 +108,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task StoreApi_CompareCurrentVisibilityMatrixToPriorRun()
         {
-            /* JHC Note:
-             * in Restier.Tests.AspNetCore, the call to GetTestableApiInstance() returns null, so the test fails
-             * 
-             * */
             var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi, DbContext>(serviceCollection: (services) => { services.AddTestStoreApiServices(); });
             api.Should().NotBeNull();
 

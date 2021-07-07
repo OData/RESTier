@@ -16,6 +16,11 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     public class Issue541_CountPlusParametersFails : RestierTestBase
     {
 
+        /* JHC Note:
+         * in Restier.Tests.Aspnet, all of these tests are failing with the message:  Expected content "{"Message":"The server is no longer available."}" to contain ""@odata.count":2,".
+         *
+         * */
+
         [TestMethod]
         public async Task CountShouldntThrowExceptions()
         {

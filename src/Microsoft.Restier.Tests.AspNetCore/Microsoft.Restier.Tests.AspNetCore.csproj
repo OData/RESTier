@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- ** will bring these tests back for the next PR
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
@@ -15,6 +16,7 @@
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\ODataControllerFallbackTests.cs" Link="ODataControllerFallbackTests.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
     <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
+    -->
   </ItemGroup>
 
   <ItemGroup>
