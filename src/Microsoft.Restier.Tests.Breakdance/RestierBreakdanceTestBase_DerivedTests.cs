@@ -38,15 +38,18 @@ namespace Microsoft.Restier.Tests.Breakdance
                         });
 
 #if EFCore
-        using var tempServices = restierServices.BuildServiceProvider();
+                    using var tempServices = restierServices.BuildServiceProvider();
 
-        var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
-        using var scope = scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
+                    var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
+                    using var scope = scopeFactory.CreateScope();
+                    var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
 
-        dbContext.Database.EnsureCreated();
-        var initializer = new LibraryContextInitializer();
-        dbInitializer.Seed(dbContext);
+                    // EnsureCreated() returns false if the database already exists
+                    if (dbContext.Database.EnsureCreated())
+                    {
+                        var initializer = new LibraryTestInitializer();
+                        initializer.Seed(dbContext);
+                    }
 #endif
 
                 });

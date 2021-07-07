@@ -10,7 +10,6 @@ using Microsoft.Restier.Core;
 using System;
 using Microsoft.AspNet.OData.Query;
 using CloudNimble.Breakdance.AspNetCore;
-using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Restier.Tests.Breakdance
 {
@@ -41,9 +40,12 @@ namespace Microsoft.Restier.Tests.Breakdance
                 using var scope = scopeFactory.CreateScope();
                 var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
 
-                dbContext.Database.EnsureCreated();
-                var initializer = new LibraryContextInitializer();
-                dbInitializer.Seed(dbContext);
+                // EnsureCreated() returns false if the database already exists
+                if (dbContext.Database.EnsureCreated())
+                {
+                    var initializer = new LibraryTestInitializer();
+                    initializer.Seed(dbContext);
+                }
 #endif
 
             });

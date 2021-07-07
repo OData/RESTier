@@ -22,7 +22,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 #else
     {
 
-        protected void Seed(LibraryContext context)
+        internal void Seed(LibraryContext context)
 #endif
         {
 

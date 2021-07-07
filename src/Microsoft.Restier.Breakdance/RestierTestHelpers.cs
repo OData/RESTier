@@ -423,20 +423,6 @@ namespace Microsoft.Restier.Breakdance
             // make sure the TestServer has been started
             restierTests.TestSetup();
 
-            // JHC TODO: my attempts at doing seeding in the unit test after the service starts up
-
-            //using (var scope = restierTests.TestServer.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-            //    var context = services.GetRequiredService<TDbContext>();
-            //    // NOTE: we aren't adding the initializer to the services, so this won't work
-            //    //initializer.Seed(context);
-            //}
-
-            /* NOTE: or is this right?  if we do it this way, then it is up to the initializer to initializer ALL DbContexts found in the service collection
-             * */
-
-
             return restierTests;
         }
 
