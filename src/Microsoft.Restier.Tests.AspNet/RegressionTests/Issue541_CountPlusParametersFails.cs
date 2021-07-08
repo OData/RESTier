@@ -5,8 +5,13 @@ using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests
+#endif
 {
 
     /// <summary>
@@ -19,7 +24,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task CountShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$count=true");
+            var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$count=true");
             var content = await response.Content.ReadAsStringAsync();
 
             content.Should().Contain("\"@odata.count\":2,");
@@ -28,7 +34,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task CountPlusTopShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$top=5&$count=true");
+            var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true");
             var content = await response.Content.ReadAsStringAsync();
 
             content.Should().Contain("\"@odata.count\":2,");
@@ -37,7 +44,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task CountPlusTopPlusFilterShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$filter=FullName eq 'p1'");
+            var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$filter=FullName eq 'p1'");
             var content = await response.Content.ReadAsStringAsync();
 
             content.Should().Contain("\"@odata.count\":1,");
@@ -46,7 +54,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task CountPlusTopPlusProjectionShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$select=Id,FullName");
+            var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$select=Id,FullName");
             var content = await response.Content.ReadAsStringAsync();
 
             content.Should().Contain("\"@odata.count\":2,");
@@ -55,7 +64,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task CountPlusSelectShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Readers?$count=true&$select=Id,FullName");
+            var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$count=true&$select=Id,FullName");
             var content = await response.Content.ReadAsStringAsync();
 
             content.Should().Contain("\"@odata.count\":2,");
@@ -64,7 +74,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task CountPlusExpandShouldntThrowExceptions()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers?$top=5&$count=true&$expand=Books");
+            var client = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await client.ExecuteTestRequest(HttpMethod.Get, resource: "/Publishers?$top=5&$count=true&$expand=Books");
             var content = await response.Content.ReadAsStringAsync();
 
             content.Should().Contain("\"@odata.count\":2,");

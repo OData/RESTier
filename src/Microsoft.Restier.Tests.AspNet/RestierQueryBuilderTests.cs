@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-#if NET5_0_OR_GREATER
-using Microsoft.EntityFrameworkCore;
-#else
-    using System.Data.Entity;
-#endif
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
@@ -33,7 +28,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task TestInt16AsKey()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Customers(1)", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Customers(1)", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeTrue();
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
         }
@@ -41,7 +36,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task TestInt64AsKey()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Stores(1)", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Stores(1)", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeTrue();
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
         }

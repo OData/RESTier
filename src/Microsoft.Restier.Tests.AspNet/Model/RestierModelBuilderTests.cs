@@ -10,6 +10,7 @@ using Microsoft.OData.Edm.Validation;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
 
 #if NET5_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.Model
@@ -21,10 +22,11 @@ namespace Microsoft.Restier.Tests.AspNet.Model
     [TestClass]
     public class RestierModelBuilderTests : RestierTestBase
     {
+
         [TestMethod]
         public async Task ComplexTypeShouldWork()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             model.Should().NotBeNull();
             var result = model.Validate(out var errors);
             errors.Should().BeEmpty();
@@ -38,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task PrimitiveTypesShouldWork()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi, LibraryContext>();
+            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
 
             model.Validate(out var errors).Should().BeTrue();
             errors.Should().BeEmpty();

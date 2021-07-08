@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
 
 #if NET5_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -28,7 +29,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task EmptyEntitySetQueryReturns200Not404()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/LibraryCards", routeName: "ApiTests");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/LibraryCards", routeName: "ApiTests", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -41,7 +42,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task EmptyFilterQueryReturns200Not404()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books?$filter=Title eq 'Sesame Street'");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$filter=Title eq 'Sesame Street'", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -54,7 +55,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task NonExistentEntitySetReturns404()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Subscribers");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Subscribers", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
@@ -67,7 +68,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task ObservableCollectionsAsCollectionNavigationProperties()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Publishers('Publisher2')/Books");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher2')/Books", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

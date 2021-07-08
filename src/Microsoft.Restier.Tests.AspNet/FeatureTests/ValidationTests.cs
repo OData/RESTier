@@ -11,6 +11,7 @@ using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
 
 #if NET5_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -23,10 +24,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     public class ValidationTests : RestierTestBase
     {
 
+        //[Ignore]
         [TestMethod]
         public async Task Validation_StringLengthExceeded()
         {
-            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader);
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             bookRequest.IsSuccessStatusCode.Should().BeTrue();
             var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
 
@@ -38,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             book.Isbn = "This is a really really long string.";
 
-            var bookEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader);
+            var bookEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(bookEditResponse);
 
             bookEditResponse.IsSuccessStatusCode.Should().BeFalse();

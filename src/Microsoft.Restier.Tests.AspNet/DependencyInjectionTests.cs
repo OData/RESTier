@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task DI_CompareCurrentVersion_ToRC2()
         {
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             result.Should().NotBeNullOrEmpty();
 
@@ -49,20 +49,9 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task DI_CompareCurrentVersion_ToRC6()
-        {
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
-            var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
-            result.Should().NotBeNullOrEmpty();
-
-            var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines//RC6-LibraryApi-ServiceProvider.txt");
-            result.Should().Be(baseline);
-        }
-
-        [TestMethod]
         public async Task DI_VerifyModelBuilderInnerHandlers_ToRC2()
         {
-            var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi, LibraryContext>();
+            var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             names.Should().NotBeNull();
 
             var result = string.Join(Environment.NewLine, names);
@@ -77,7 +66,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task ContainerContents_WriteOutput(string projectPath)
         {
             //var projectPath = "..//..//..//";
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-LibraryApi-ServiceProvider.txt");
             Console.WriteLine(fullPath);
@@ -96,7 +85,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             //var projectPath = "..//..//..//";
 
-            var result = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi, LibraryContext>();
+            var result = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
 
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-ModelBuilder-InnerHandlers.txt");
             Console.WriteLine(fullPath);

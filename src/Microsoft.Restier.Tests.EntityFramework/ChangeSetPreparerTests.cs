@@ -12,6 +12,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.EntityFramework.Tests
 {
@@ -24,7 +25,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
         public async Task ComplexTypeUpdate()
         {
             // Arrange
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEF6ProviderServices<LibraryContext>());
             var api = provider.GetTestableApiInstance<LibraryApi>();
 
             var item = new DataModificationItem(

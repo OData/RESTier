@@ -20,14 +20,14 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if EFCore
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Restier.AspNetCore.Model;
-#endif
-
 #if EF6
 using Microsoft.Restier.AspNet.Model;
 using System.Data.Entity;
+#endif
+
+#if EFCore
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.AspNetCore.Model;
 #endif
 
 #if NETCORE3 || NET5_0_OR_GREATER
@@ -74,16 +74,14 @@ namespace Microsoft.Restier.Tests.AspNet
 
         }
 
-#if !NET5_0_OR_GREATER
         [TestMethod]
         public async Task FallbackApi_EntitySet_ShouldFallBack()
         {
             /* JHC Note:
              * in Restier.Tests.AspNet, this test fails with an internal error message:  Multiple actions were found that match the request: \r\nGet on type Microsoft.Restier.Tests.AspNet.PeopleController
              * */
-
             // Should fallback to PeopleController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             ((Person[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(999);
@@ -95,20 +93,18 @@ namespace Microsoft.Restier.Tests.AspNet
             /* JHC Note:
              * in Restier.Tests.AspNet, this test fails with an internal error message:  Multiple actions were found that match the request: \r\nGet on type Microsoft.Restier.Tests.AspNet.PeopleController
              * */
-
             // Should fallback to PeopleController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             ((Order[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(123);
         }
-#endif
 
         [TestMethod]
         public async Task FallbackApi_EntitySet_ShouldNotFallBack()
         {
             // Should be routed to RestierController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/Orders", serviceCollection: addTestServices);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");
@@ -118,7 +114,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FallbackApi_Resource_ShouldNotFallBack()
         {
             // Should be routed to RestierController.
-            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi, DbContext>(HttpMethod.Get, resource: "/PreservedOrders", serviceCollection: addTestServices);
+            var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/PreservedOrders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
             (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");
@@ -126,7 +122,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     }
 
-#region Test Resources
+    #region Test Resources
 
     internal static class FallbackModel
     {
@@ -158,12 +154,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     public class PeopleController : ODataController
     {
-
-#if NET5_0_OR_GREATER
-        public ActionResult Get()
-#else
         public IHttpActionResult Get()
-#endif
         {
             var people = new[]
             {
@@ -173,11 +164,7 @@ namespace Microsoft.Restier.Tests.AspNet
             return Ok(people);
         }
 
-#if NET5_0_OR_GREATER
-        public ActionResult GetOrders()
-#else
-        public IHttpActionResult GetOrders()
-#endif
+        public IHttpActionResult GetOrders(int key)
         {
             var orders = new[]
             {
@@ -233,7 +220,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType) => TryGetRelevantType(context, name, out relevantType);
     }
 
-#endregion
+    #endregion
 
 
 }

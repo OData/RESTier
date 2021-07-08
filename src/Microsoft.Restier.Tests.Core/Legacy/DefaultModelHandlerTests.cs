@@ -36,7 +36,7 @@ namespace Microsoft.Restier.Tests.Core.Model
         [TestMethod]
         public async Task GetModelUsingDefaultModelHandler()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi, DbContext>(serviceCollection: (services) =>
+            var model = await RestierTestHelpers.GetTestableModelAsync<TestableEmptyApi>(serviceCollection: (services) =>
             {
                 addTestServices(services);
                 services.AddChainedService<IModelBuilder>((sp, next) => new TestModelProducer())

@@ -1,4 +1,9 @@
 ﻿using System;
+#if NET5_0_OR_GREATER
+    using Microsoft.EntityFrameworkCore;
+#else
+using System.Data.Entity;
+#endif
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,7 +19,11 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NET5_0_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests
+#endif
 {
 
     /// <summary>
@@ -30,7 +39,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task SingleContext_LibraryApiWorks()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/LibraryCards");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/LibraryCards", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -43,7 +52,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task SingleContext_MarvelApiWorks()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<MarvelApi, MarvelContext>(HttpMethod.Get, resource: "/Characters");
+            var response = await RestierTestHelpers.ExecuteTestRequest<MarvelApi>(HttpMethod.Get, resource: "/Characters", serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>());
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -62,11 +71,11 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             config.UseRestier((builder) => {
                 builder.AddRestierApi<LibraryApi>(services =>
                 {
-                    services.AddEF6ProviderServices<LibraryContext>();
+                    services.AddEntityFrameworkServices<LibraryContext>();
                 });
                 builder.AddRestierApi<MarvelApi>(services =>
                 {
-                    services.AddEF6ProviderServices<MarvelContext>();
+                    services.AddEntityFrameworkServices<MarvelContext>();
                 });
             });
 
@@ -97,11 +106,11 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             config.UseRestier((builder) => {
                 builder.AddRestierApi<LibraryApi>(services =>
                 {
-                    services.AddEF6ProviderServices<LibraryContext>();
+                    services.AddEntityFrameworkServices<LibraryContext>();
                 });
                 builder.AddRestierApi<MarvelApi>(services =>
                 {
-                    services.AddEF6ProviderServices<MarvelContext>();
+                    services.AddEntityFrameworkServices<MarvelContext>();
                 });
             });
 

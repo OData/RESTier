@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task PropertyBag_InstancesDoNotConflict()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestableEmptyApi, DbContext>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestableEmptyApi>();
 
             api.SetProperty("Test", 2);
             api.GetProperty<int>("Test").Should().Be(2);
