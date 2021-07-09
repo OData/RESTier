@@ -17,11 +17,9 @@ using Newtonsoft.Json;
 using System.Text;
 #if NET5_0_OR_GREATER
     using Microsoft.AspNetCore.TestHost;
-    using Microsoft.EntityFrameworkCore;
     using CloudNimble.Breakdance.AspNetCore;
 #else
     using System.Web.Http;
-    using System.Data.Entity;
     using CloudNimble.Breakdance.WebApi;
 #endif
 
@@ -198,7 +196,6 @@ namespace Microsoft.Restier.Breakdance
         {
 
 #if NET5_0_OR_GREATER
-
             using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
             return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
 #else
@@ -348,7 +345,6 @@ namespace Microsoft.Restier.Breakdance
         #region Private Methods
 
 #if NET5_0_OR_GREATER
-
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>

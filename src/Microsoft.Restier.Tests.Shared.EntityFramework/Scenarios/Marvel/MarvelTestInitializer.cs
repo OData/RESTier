@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
 #else
     {
 
-        protected void Seed(MarvelContext context)
+        internal void Seed(MarvelContext context)
 #endif
         {
             context.Comics.Add(new Comic

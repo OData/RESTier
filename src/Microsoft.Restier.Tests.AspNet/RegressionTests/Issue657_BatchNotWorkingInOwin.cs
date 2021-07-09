@@ -1,15 +1,13 @@
-﻿using System;
+﻿#if !NET5_0_OR_GREATER
+
+using System;
 using System.Web.Http;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
-namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
-#else
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests
-#endif
 {
 
     /// <summary>
@@ -40,3 +38,5 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     }
 
 }
+
+#endif

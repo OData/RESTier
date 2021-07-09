@@ -55,6 +55,15 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             optionsBuilder.UseInMemoryDatabase(nameof(LibraryContext));
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Address>().HasNoKey();
+            modelBuilder.Entity<Employee>().Ignore(c => c.Addr);
+            modelBuilder.Entity<Employee>().Ignore(c => c.Universe);
+            modelBuilder.Entity<Publisher>().Ignore(c => c.Addr);
+            modelBuilder.Entity<Universe>().HasNoKey();
+        }
+
 #endif
     }
 

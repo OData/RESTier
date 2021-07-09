@@ -10,7 +10,8 @@ using System;
 
 #if EF6
     using Microsoft.Restier.EntityFramework;
-#else
+#endif
+#if EFCore
     using Microsoft.Restier.EntityFrameworkCore;
 #endif
 

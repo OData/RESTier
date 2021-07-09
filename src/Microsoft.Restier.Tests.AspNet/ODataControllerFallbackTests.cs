@@ -32,7 +32,7 @@ using Microsoft.Restier.AspNetCore.Model;
 
 #if NETCORE3 || NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+using System.Text.Json;
 
 namespace Microsoft.Restier.Tests.AspNetCore
 
@@ -56,22 +56,6 @@ namespace Microsoft.Restier.Tests.AspNet
                 .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FallbackQueryExpressionSourcer())
                 .AddChainedService<IChangeSetInitializer>((sp, next) => new StoreChangeSetInitializer())
                 .AddChainedService<ISubmitExecutor>((sp, next) => new DefaultSubmitExecutor());
-
-#if EFCore
-                using var tempServices = services.BuildServiceProvider();
-
-                var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
-                using var scope = scopeFactory.CreateScope();
-                var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
-
-                // EnsureCreated() returns false if the database already exists
-                if (dbContext.Database.EnsureCreated())
-                {
-                    var initializer = new LibraryTestInitializer();
-                    initializer.Seed(dbContext);
-                }
-#endif
-
         }
 
         [TestMethod]
@@ -84,7 +68,13 @@ namespace Microsoft.Restier.Tests.AspNet
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
+#if NETCORE3 || NET5_0_OR_GREATER
+            var content = await response.Content.ReadAsStringAsync();
+            var person = JsonSerializer.Deserialize<Person[]>(content);
+            person.Single().Id.Should().Be(999);
+#else
             ((Person[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(999);
+#endif
         }
 
         [TestMethod]
@@ -97,7 +87,13 @@ namespace Microsoft.Restier.Tests.AspNet
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
+#if NETCORE3 || NET5_0_OR_GREATER
+            var content = await response.Content.ReadAsStringAsync();
+            var order = JsonSerializer.Deserialize<Order[]>(content);
+            order.Single().Id.Should().Be(999);
+#else
             ((Order[])((ObjectContent)response.Content).Value).Single().Id.Should().Be(123);
+#endif
         }
 
         [TestMethod]
@@ -122,7 +118,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     }
 
-    #region Test Resources
+#region Test Resources
 
     internal static class FallbackModel
     {
@@ -154,7 +150,11 @@ namespace Microsoft.Restier.Tests.AspNet
 
     public class PeopleController : ODataController
     {
+#if NET5_0_OR_GREATER
+        public IActionResult Get()
+#else
         public IHttpActionResult Get()
+#endif
         {
             var people = new[]
             {
@@ -164,7 +164,11 @@ namespace Microsoft.Restier.Tests.AspNet
             return Ok(people);
         }
 
+#if NET5_0_OR_GREATER
+        public IActionResult GetOrders(int key)
+#else
         public IHttpActionResult GetOrders(int key)
+#endif
         {
             var orders = new[]
             {
@@ -220,7 +224,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType) => TryGetRelevantType(context, name, out relevantType);
     }
 
-    #endregion
+#endregion
 
 
 }

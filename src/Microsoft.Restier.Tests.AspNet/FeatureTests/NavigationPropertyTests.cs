@@ -1,6 +1,10 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
-using CloudNimble.Breakdance.WebApi;
+#if NET5_0_OR_GREATER
+    using CloudNimble.Breakdance.AspNetCore;
+#else
+    using CloudNimble.Breakdance.WebApi;
+#endif
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;

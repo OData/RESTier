@@ -1,19 +1,16 @@
-﻿using System;
-#if NET5_0_OR_GREATER
-    using Microsoft.EntityFrameworkCore;
-#else
-using System.Data.Entity;
+﻿#if !NET5_0_OR_GREATER
+    using System;
+    using System.Web.Http;
+    using Microsoft.AspNet.OData.Extensions;
+    using Microsoft.Restier.Core;
+    using Microsoft.AspNet.OData.Query;
 #endif
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using FluentAssertions;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
@@ -59,6 +56,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
+#if !NET5_0_OR_GREATER
         [TestMethod]
         public async Task MultipleContexts_ShouldQueryFirstContext()
         {
@@ -139,6 +137,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             EnableSelect = true,
             MaxTop = 10
         };
+#endif
 
     }
 

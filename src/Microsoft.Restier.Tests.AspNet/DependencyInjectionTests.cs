@@ -6,10 +6,11 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
-#if NET5_0_OR_GREATER
-    using Microsoft.Restier.EntityFrameworkCore;
-#else
+#if EF6
     using Microsoft.Restier.EntityFramework;
+#endif
+#if EFCore
+    using Microsoft.Restier.EntityFrameworkCore;
 #endif
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
