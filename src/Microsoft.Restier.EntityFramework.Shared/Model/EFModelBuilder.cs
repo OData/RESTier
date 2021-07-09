@@ -57,14 +57,27 @@ namespace Microsoft.Restier.EntityFramework
             var dbContext = frameworkApi.DbContext;
 
 #if EF7
+
+            //RWM: Grab Owned EntityTypes and make sure there are no DbSets that map to that type.
+            var ownedTypes = dbContext.Model.GetEntityTypes().Where(c => c.IsOwned()).ToList();
+
+            /* JHC TODO: for each entry in ownedTypes, check to see if there is a DbSet<> mapping in the context.  If there is, we need to throw an
+             *           exception because there will be an EF failure in the call to GetModel().  The exception should inform the user that they have
+             *           created a DbSet<> mapping for an Owned type and that this is not supported.
+             * */
+
+            // @caldwell0414: This code is looking for all of the DBSets on the context and generating a dictionary of DbSet Name and the Entity type.
             AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
-            AddRange(context.ResourceTypeKeyPropertiesMap, dbContext.Model.GetEntityTypes().ToDictionary(
-                e => e.ClrType,
-                e => ((ICollection<PropertyInfo>)e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
-#else
 
+            // @caldwell0414: This code goes through all of the Entity types in the model, and where not marked as "owned" builds a dictionary of name and primary-key type.
+            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned()).ToDictionary(
+                e => e.ClrType,
+                e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
+
+            AddRange(context.ResourceTypeKeyPropertiesMap, keys/*.Where(c => c.Value != null)*/);   // JHC NOTE: only add this .Where() if we need it
+#else
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 

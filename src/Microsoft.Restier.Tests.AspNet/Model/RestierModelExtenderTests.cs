@@ -26,6 +26,9 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     [TestClass]
     public class RestierModelExtenderTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <TestableEmptyApi>
+#endif
     {
 
         void Api<TApi>(IServiceCollection services) where TApi : ApiBase

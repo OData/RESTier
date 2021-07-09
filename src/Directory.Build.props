@@ -5,6 +5,7 @@
     <IsTestProject Condition="$(MSBuildProjectName.ToLower().Contains('.tests.'))">true</IsTestProject>
     <IsTestAssetProject Condition="$(RepoRelativeProjectDir.Contains('testassets'))">true</IsTestAssetProject>
     <IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
+    <IsNetCore Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net5.0' OR '$(TargetFramework)' == 'net6.0' ">true</IsNetCore>
 
     <IncludeSource>false</IncludeSource>
     <IncludeSymbols>true</IncludeSymbols>

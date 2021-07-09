@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Tests.Breakdance
     public class RestierBreakdanceTestBase_DerivedTests : RestierBreakdanceTestBase<LibraryApi>
     {
 
-#region Constructors
+        #region Constructors
 
         public RestierBreakdanceTestBase_DerivedTests()
         {
@@ -61,7 +61,7 @@ namespace Microsoft.Restier.Tests.Breakdance
             };
         }
 
-#endregion
+        #endregion
 
         [TestInitialize]
         public void TestInitialize() => base.TestSetup();

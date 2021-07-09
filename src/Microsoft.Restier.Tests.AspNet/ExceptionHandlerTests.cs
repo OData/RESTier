@@ -19,6 +19,9 @@ namespace Microsoft.Restier.Tests.AspNet
 
     [TestClass]
     public class ExceptionHandlerTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <StoreApi>
+#endif
     {
 
         [TestMethod]

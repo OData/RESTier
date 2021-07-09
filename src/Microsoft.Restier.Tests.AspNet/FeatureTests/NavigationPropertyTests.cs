@@ -20,6 +20,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 {
     [TestClass]
     public class NavigationPropertyTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <StoreApi>
+#endif
     {
         void di(IServiceCollection services)
         {

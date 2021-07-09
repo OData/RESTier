@@ -24,6 +24,9 @@ namespace Microsoft.Restier.Tests.AspNet
 
     [TestClass]
     public class RestierControllerTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <StoreApi>
+#endif
     {
 
         void di(IServiceCollection services)

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210704-053458" />
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210709-195532" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
 

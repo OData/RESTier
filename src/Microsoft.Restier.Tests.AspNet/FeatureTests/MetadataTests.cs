@@ -8,7 +8,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NET5_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
@@ -17,11 +17,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class MetadataTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         #region Private Members
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NET5_0_OR_GREATER
         private const string relativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNetCore//";
 #else
         private const string relativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNet//";

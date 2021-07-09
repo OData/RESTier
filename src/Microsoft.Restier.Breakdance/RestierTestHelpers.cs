@@ -13,12 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Newtonsoft.Json;
+
 using System.Text;
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
     using Microsoft.AspNetCore.TestHost;
     using CloudNimble.Breakdance.AspNetCore;
+    using System.Text.Json;
 #else
+    using Newtonsoft.Json;
     using System.Web.Http;
     using CloudNimble.Breakdance.WebApi;
 #endif
@@ -49,9 +51,9 @@ namespace Microsoft.Restier.Breakdance
 
         #endregion
 
-        #region Public Methods
+#region Public Methods
 
-        #region ExecuteTestRequest
+#region ExecuteTestRequest
 
         /// <summary>
         /// Configures the Restier pipeline in-memory and executes a test request against a given service, returning an <see cref="HttpResponseMessage"/> for inspection.
@@ -73,26 +75,24 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="defaultQuerySettings">A <see cref="DefaultQuerySettings"/> instabce that defines how OData operations should work. Defaults to everything enabled with a <see cref="DefaultQuerySettings.MaxTop"/> of 10.</param>
         /// <param name="timeZoneInfo">A <see cref="TimeZoneInfo"/> instenace specifying what time zone should be used to translate time payloads into. Defaults to <see cref="TimeZoneInfo.Utc"/>.</param>
         /// <param name="payload">When the <paramref name="httpMethod"/> is <see cref="HttpMethod.Post"/> or <see cref="HttpMethod.Put"/>, this object is serialized to JSON and inserted into the <see cref="HttpRequestMessage.Content"/>.</param>
-        /// <param name="jsonSerializerSettings">A <see cref="JsonSerializerSettings"/> instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones.</param>
+        /// <param name="jsonSerializerSettings">A JsonSerializerSettings or JsonSerializerOptions instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones.</param>
         /// <returns>An <see cref="HttpResponseMessage"/> that contains the managed response for the request for inspection.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
         public static async Task<HttpResponseMessage> ExecuteTestRequest<TApi>(HttpMethod httpMethod, string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName,
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, Action<IServiceCollection> serviceCollection = default, string acceptHeader = ODataConstants.MinimalAcceptHeader,
-            DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null, JsonSerializerSettings jsonSerializerSettings = null)
+            DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null,
+#if NETCOREAPP3_1_OR_GREATER
+            JsonSerializerOptions jsonSerializerSettings = null)
+#else
+            JsonSerializerSettings jsonSerializerSettings = null)
+#endif
             where TApi : ApiBase
         {
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NET5_0_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
-            using var message = new HttpRequestMessage(httpMethod, new Uri($"{host}{routePrefix}{resource}"));    // this way fails
-            message.Headers.Add("accept", acceptHeader);
-            
-            if (payload != null)
-            {
-                message.Content = new StringContent(JsonConvert.SerializeObject(payload, jsonSerializerSettings), Encoding.UTF8, "application/json");
-            }
-
+            using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings);
             return await client.SendAsync(message).ConfigureAwait(false);
 
 #else
@@ -102,9 +102,9 @@ namespace Microsoft.Restier.Breakdance
 #endif
         }
 
-        #endregion
+#endregion
 
-        #region GetModelBuilderHierarchy
+#region GetModelBuilderHierarchy
 
         /// <summary>
         /// Gets a list of fully-qualified builder instances that are registered down the ModelBuilder chain. The order is really important, so this is a great way to troubleshoot.
@@ -141,9 +141,9 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-        #endregion
+#endregion
 
-        #region GetTestableApiInstance
+#region GetTestableApiInstance
 
         /// <summary>
         /// Retrieves the instance of the Restier API (inheriting from <see cref="ApiBase"/> from the Dependency Injection container.
@@ -158,9 +158,9 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
             => await GetTestableInjectedService<TApi, ApiBase>(routeName, routePrefix, serviceCollection).ConfigureAwait(false) as TApi;
 
-        #endregion
+#endregion
 
-        #region GetTestableInjectedService
+#region GetTestableInjectedService
 
         /// <summary>
         /// Retrieves class instance of type <typeparamref name="TService"/> from the Dependency Injection container.
@@ -177,9 +177,9 @@ namespace Microsoft.Restier.Breakdance
             where TService : class 
             => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
 
-        #endregion
+#endregion
 
-        #region GetTestableInjectionContainer
+#region GetTestableInjectionContainer
 
         /// <summary>
         /// Retrieves the Dependency Injection container that was created as a part of the request pipeline.
@@ -195,7 +195,7 @@ namespace Microsoft.Restier.Breakdance
              where TApi : ApiBase
         {
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NET5_0_OR_GREATER
             using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
             return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
 #else
@@ -207,11 +207,11 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-        #endregion
+#endregion
 
-        #region GetTestableRestierConfiguration
+#region GetTestableRestierConfiguration
 
-#if !NET5_0_OR_GREATER
+#if !(NETCOREAPP3_1 || NET5_0_OR_GREATER)
 
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
@@ -241,9 +241,9 @@ namespace Microsoft.Restier.Breakdance
 
 #endif
 
-        #endregion
+#endregion
 
-        #region GetTestableHttpClient
+#region GetTestableHttpClient
 
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
@@ -258,7 +258,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NET5_0_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             return await Task.FromResult(client).ConfigureAwait(false);
@@ -271,9 +271,9 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-        #endregion
+#endregion
 
-        #region GetTestableModelAsync
+#region GetTestableModelAsync
 
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
@@ -291,9 +291,9 @@ namespace Microsoft.Restier.Breakdance
             return api.GetModel();
         }
 
-        #endregion
+#endregion
 
-        #region GetApiMetadataAsync
+#region GetApiMetadataAsync
 
         /// <summary>
         /// Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
@@ -318,9 +318,9 @@ namespace Microsoft.Restier.Breakdance
             return XDocument.Parse(result);
         }
 
-        #endregion
+#endregion
 
-        #region WriteCurrentApiMetadata
+#region WriteCurrentApiMetadata
 
         /// <summary>
         /// 
@@ -338,13 +338,13 @@ namespace Microsoft.Restier.Breakdance
             System.IO.File.WriteAllText(filePath, result.ToString());
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NET5_0_OR_GREATER
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>
@@ -393,7 +393,7 @@ namespace Microsoft.Restier.Breakdance
 
 #endif
 
-        #endregion
+#endregion
 
     }
 }

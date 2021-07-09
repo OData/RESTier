@@ -21,6 +21,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     /// </summary>
     [TestClass]
     public class QueryTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         /// <summary>

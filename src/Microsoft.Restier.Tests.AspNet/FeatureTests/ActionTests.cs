@@ -25,6 +25,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     /// </summary>
     [TestClass]
     public class ActionTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         /* JHC note: just leaving this here temporarily for reference

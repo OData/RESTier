@@ -25,6 +25,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class FunctionTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         /// <summary>

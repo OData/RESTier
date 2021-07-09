@@ -22,6 +22,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class ValidationTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         //[Ignore]

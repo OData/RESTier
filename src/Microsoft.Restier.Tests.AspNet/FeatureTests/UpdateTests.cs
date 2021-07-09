@@ -23,6 +23,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class UpdateTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         [TestMethod]

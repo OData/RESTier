@@ -28,8 +28,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         public IDbSet<Employee> Readers { get; set; }
 
-#else
+#endif
 
+#if EFCore
         #region EntitySet Properties
 
         public DbSet<Book> Books { get; set; }
@@ -39,10 +40,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         public DbSet<Publisher> Publishers { get; set; }
 
         public DbSet<Employee> Readers { get; set; }
-
-        public DbSet<Address> Addresses { get; set; }
-
-        public DbSet<Universe> Universes { get; set; }
 
         #endregion
 
@@ -57,14 +54,14 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Address>().HasNoKey();
-            modelBuilder.Entity<Employee>().Ignore(c => c.Addr);
-            modelBuilder.Entity<Employee>().Ignore(c => c.Universe);
-            modelBuilder.Entity<Publisher>().Ignore(c => c.Addr);
-            modelBuilder.Entity<Universe>().HasNoKey();
+            //modelBuilder.Entity<Address>().HasNoKey();
+            modelBuilder.Entity<Employee>().OwnsOne(c => c.Addr);
+            modelBuilder.Entity<Employee>().OwnsOne(c => c.Universe);
+            modelBuilder.Entity<Publisher>().OwnsOne(c => c.Addr);
+            //modelBuilder.Entity<Universe>().HasNoKey();
         }
-
 #endif
+
     }
 
 }

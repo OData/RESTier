@@ -6,7 +6,6 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <!--<TargetFrameworks>net472;netcoreapp3.1;net5.0</TargetFrameworks>-->
     <TargetFrameworks>net472;net5.0</TargetFrameworks>
-    <IsNetCore Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net5.0' ">true</IsNetCore>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -35,8 +34,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.WebApi" Version="2.1.0-CI-20210704-053458" Condition="'$(IsNetCore)' != 'true'" />
-    <PackageReference Include="Breakdance.AspNetCore" Version="2.1.0-CI-20210704-053458" Condition="'$(IsNetCore)' == 'true'" />
+    <PackageReference Include="Breakdance.WebApi" Version="2.1.0-CI-20210709-195532" Condition="'$(IsNetCore)' != 'true'" />
+    <PackageReference Include="Breakdance.AspNetCore" Version="2.1.0-CI-20210709-195532" Condition="'$(IsNetCore)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,9 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     /// </summary>
     [TestClass]
     public class Issue541_CountPlusParametersFails : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         [TestMethod]

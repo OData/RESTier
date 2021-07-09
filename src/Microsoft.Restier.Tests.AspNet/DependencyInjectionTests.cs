@@ -28,6 +28,9 @@ namespace Microsoft.Restier.Tests.AspNet
     /// </summary>
     [TestClass]
     public class DependencyInjectionTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         [TestMethod]
@@ -57,6 +60,9 @@ namespace Microsoft.Restier.Tests.AspNet
 
             var result = string.Join(Environment.NewLine, names);
             result.Should().NotBeNullOrWhiteSpace();
+
+            //RWM: If we're in a .NET Core test, remove the Core crap.
+            result = result.Replace("Core", "");
 
             var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines/RC2-ModelBuilder-InnerHandlers.txt");
             baseline = baseline.Replace("Model.Restier", "Model.RestierWebApi").Replace("EFModelProducer", typeof(EFModelBuilder).Name);

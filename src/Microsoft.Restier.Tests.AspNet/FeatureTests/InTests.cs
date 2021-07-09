@@ -18,9 +18,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class InTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
-        //[Ignore]
         [TestMethod]
         public async Task InQueries_IdInList()
         {

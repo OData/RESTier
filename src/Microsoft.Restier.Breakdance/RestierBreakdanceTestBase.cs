@@ -1,8 +1,9 @@
-﻿#if NET5_0_OR_GREATER
+﻿#if NETCOREAPP3_1_OR_GREATER
 
 using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CloudNimble.Breakdance.AspNetCore;
@@ -66,6 +67,27 @@ namespace Microsoft.Restier.Breakdance
                         });
                 });
             });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="httpMethod"></param>
+        /// <param name="host"></param>
+        /// <param name="routePrefix"></param>
+        /// <param name="resource"></param>
+        /// <param name="acceptHeader"></param>
+        /// <param name="payload"></param>
+        /// <param name="jsonSerializerOptions"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> ExecuteTestRequest(HttpMethod httpMethod, string host = WebApiConstants.Localhost,
+            string routePrefix = WebApiConstants.RoutePrefix, string resource = null, string acceptHeader = ODataConstants.MinimalAcceptHeader,
+            object payload = null, JsonSerializerOptions jsonSerializerOptions = null)
+        {
+            var client = GetHttpClient();
+            using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerOptions);
+            var metadata = await GetApiMetadataAsync().ConfigureAwait(false);
+            return await client.SendAsync(message).ConfigureAwait(false);
         }
 
         /// <summary>

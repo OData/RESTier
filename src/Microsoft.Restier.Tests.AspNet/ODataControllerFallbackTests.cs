@@ -38,6 +38,9 @@ namespace Microsoft.Restier.Tests.AspNet
 
     [TestClass]
     public class ODataControllerFallbackTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <FallbackApi>
+#endif
     {
 
         void addTestServices(IServiceCollection services)
@@ -112,7 +115,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
 #region Test Resources
 
-    internal static class FallbackModel
+    public static class FallbackModel
     {
         public static EdmModel Model { get; private set; }
 
@@ -128,7 +131,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
     }
 
-    internal class FallbackApi : ApiBase
+    public class FallbackApi : ApiBase
     {
 
         [Resource]
@@ -178,7 +181,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public IEnumerable<Order> Orders { get; set; }
     }
 
-    internal class Order
+    public class Order
     {
         public int Id { get; set; }
     }

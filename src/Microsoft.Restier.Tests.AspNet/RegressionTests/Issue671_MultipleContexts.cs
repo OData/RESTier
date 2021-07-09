@@ -28,6 +28,9 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     /// </summary>
     [TestClass]
     public class Issue671_MultipleContexts : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         /// <summary>
