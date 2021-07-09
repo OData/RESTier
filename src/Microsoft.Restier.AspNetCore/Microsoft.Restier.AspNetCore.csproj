@@ -11,6 +11,7 @@
     <PackageTags>$(PackageTags);aspnetcore;batch</PackageTags>
 
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,4 +46,10 @@
   
   <Import Project="..\Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems" Label="Shared" />
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+  
 </Project>

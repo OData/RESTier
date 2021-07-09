@@ -20,24 +20,16 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if EF6
-using Microsoft.Restier.AspNet.Model;
-using System.Data.Entity;
-#endif
-
-#if EFCore
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Restier.AspNetCore.Model;
-#endif
-
 #if NETCORE3 || NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using Microsoft.Restier.AspNetCore.Model;
 
 namespace Microsoft.Restier.Tests.AspNetCore
 
 #else
 using System.Web.Http;
+using Microsoft.Restier.AspNet.Model;
 
 namespace Microsoft.Restier.Tests.AspNet
 #endif

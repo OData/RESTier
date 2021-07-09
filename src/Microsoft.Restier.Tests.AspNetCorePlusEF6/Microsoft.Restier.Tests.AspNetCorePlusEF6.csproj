@@ -7,12 +7,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RegressionTests\**\*.cs" LinkBase="RegressionTests" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\ODataControllerFallbackTests.cs" Link="ODataControllerFallbackTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+    <!--<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
+    <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
 
 </Project>
