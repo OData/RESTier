@@ -70,7 +70,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Sha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Breakdance", "Microsoft.Restier.Tests.Breakdance\Microsoft.Restier.Tests.Breakdance.csproj", "{4ED74763-33E0-432A-B009-1423F7FC03CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.AspNetCorePlusEF6", "Microsoft.Restier.Tests.AspNetCorePlusEF6\Microsoft.Restier.Tests.AspNetCorePlusEF6.csproj", "{42646361-1D62-4AB7-9735-009EB2DD0F38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.AspNetCorePlusEF6", "Microsoft.Restier.Tests.AspNetCorePlusEF6\Microsoft.Restier.Tests.AspNetCorePlusEF6.csproj", "{42646361-1D62-4AB7-9735-009EB2DD0F38}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

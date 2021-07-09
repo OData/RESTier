@@ -10,10 +10,7 @@
     <PackageReference Include="Moq" Version="4.16.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210704-053458" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net5'))">
+  <ItemGroup>
     <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210704-053458" />
   </ItemGroup>
 
