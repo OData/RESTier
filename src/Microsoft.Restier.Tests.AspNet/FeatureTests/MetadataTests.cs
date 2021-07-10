@@ -24,9 +24,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
         #region Private Members
 
-#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
+#if EFCore
         private const string relativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNetCore//";
-#else
+#endif
+#if EF6
         private const string relativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNet//";
 #endif
         private const string baselineFolder = "Baselines//";

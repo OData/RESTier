@@ -1,0 +1,40 @@
+------------------------------------------------------------
+Function Name                                      |  Found?
+------------------------------------------------------------
+CanInsertCustomer                                  |   False
+CanUpdateCustomer                                  |   False
+CanDeleteCustomer                                  |   False
+OnInsertingCustomer                                |   False
+OnUpdatingCustomer                                 |   False
+OnDeletingCustomer                                 |   False
+OnFilterCustomers                                  |   False
+OnInsertedCustomer                                 |   False
+OnUpdatedCustomer                                  |   False
+OnDeletedCustomer                                  |   False
+CanInsertProduct                                   |   False
+CanUpdateProduct                                   |   False
+CanDeleteProduct                                   |   False
+OnInsertingProduct                                 |   False
+OnUpdatingProduct                                  |   False
+OnDeletingProduct                                  |   False
+OnFilterProducts                                   |   False
+OnInsertedProduct                                  |   False
+OnUpdatedProduct                                   |   False
+OnDeletedProduct                                   |   False
+CanInsertStore                                     |   False
+CanUpdateStore                                     |   False
+CanDeleteStore                                     |   False
+OnInsertingStore                                   |   False
+OnUpdatingStore                                    |   False
+OnDeletingStore                                    |   False
+OnFilterStores                                     |   False
+OnInsertedStore                                    |   False
+OnUpdatedStore                                     |   False
+OnDeletedStore                                     |   False
+CanExecuteGetBestProduct                           |   False
+OnExecutingGetBestProduct                          |   False
+OnExecutedGetBestProduct                           |   False
+CanExecuteRemoveWorstProduct                       |   False
+OnExecutingRemoveWorstProduct                      |   False
+OnExecutedRemoveWorstProduct                       |   False
+------------------------------------------------------------
