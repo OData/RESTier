@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for integrating with ASP.NET Core 3.1 and later to automatically handle incoming requests.</Summary>
@@ -15,9 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ben.Demystifier" Version="[0.1.6, 2.0.0)" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.5, 8.0.0)" />
-    <PackageReference Include="Microsoft.OData.Core" Version="[7.8.3, 8.0.0)" />
+    <PackageReference Include="Ben.Demystifier" Version="[0.4.1, 2.0.0)" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.8, 8.0.0)" />
+    <PackageReference Include="Microsoft.OData.Core" Version="[7.9.0, 8.0.0)" />
   </ItemGroup>
 
   <ItemGroup>

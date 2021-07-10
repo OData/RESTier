@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net5.0</TargetFrameworks>
-    <IsNetCore Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net5.0' ">true</IsNetCore>
     <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
