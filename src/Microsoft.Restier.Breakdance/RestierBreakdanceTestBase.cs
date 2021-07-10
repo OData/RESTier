@@ -57,6 +57,7 @@ namespace Microsoft.Restier.Breakdance
             })
            .Configure(builder =>
             {
+                builder.UseAuthorization();
                 builder.UseMvc(routeBuilder =>
                 {
                     routeBuilder

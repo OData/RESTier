@@ -6,7 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
     using Microsoft.Restier.AspNetCore.Model;
 #else
     using Microsoft.Restier.AspNet.Model;
@@ -17,7 +17,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.Model
 #else
 namespace Microsoft.Restier.Tests.AspNet.Model

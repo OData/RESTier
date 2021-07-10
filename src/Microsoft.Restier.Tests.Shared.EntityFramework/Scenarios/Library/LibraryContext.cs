@@ -43,9 +43,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         #endregion
 
-        public LibraryContext(DbContextOptions<LibraryContext> options)
-        : base(options)
-        { }
+        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
+        {
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -54,11 +54,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Address>().HasNoKey();
             modelBuilder.Entity<Employee>().OwnsOne(c => c.Addr);
             modelBuilder.Entity<Employee>().OwnsOne(c => c.Universe);
             modelBuilder.Entity<Publisher>().OwnsOne(c => c.Addr);
-            //modelBuilder.Entity<Universe>().HasNoKey();
         }
 #endif
 

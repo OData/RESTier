@@ -17,6 +17,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
     {
 
 #if EF6
+
         #region EntitySet Properties
 
         public IDbSet<Character> Characters { get; set; }
@@ -31,6 +32,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
             : base("MarvelContext") => Database.SetInitializer(new MarvelTestInitializer());
 
 #else
+
         #region EntitySet Properties
 
         public DbSet<Character> Characters { get; set; }
@@ -41,11 +43,17 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
 
         #endregion
 
-        public MarvelContext(DbContextOptions<MarvelContext> options)
-        : base(options)
-        { }
+        public MarvelContext(DbContextOptions<MarvelContext> options) : base(options)
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseInMemoryDatabase(nameof(MarvelContext));
+        }
 
 #endif
+
     }
 
 }

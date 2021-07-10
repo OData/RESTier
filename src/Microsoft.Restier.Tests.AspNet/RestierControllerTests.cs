@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
     using CloudNimble.Breakdance.AspNetCore;
 #else
     using CloudNimble.Breakdance.WebApi;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore
 #else
 namespace Microsoft.Restier.Tests.AspNet

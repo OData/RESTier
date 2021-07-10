@@ -54,6 +54,8 @@ namespace Microsoft.Restier.Tests.Legacy
 
         #region Manifest Generators
 
+        //[DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        //[DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task ContainerContents_WriteOutput(string projectPath)
         {
@@ -70,6 +72,8 @@ namespace Microsoft.Restier.Tests.Legacy
             Console.WriteLine($"File exists: {File.Exists(fullPath)}");
         }
 
+        //[DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        //[DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task IModelBuilder_LogChildren(string projectPath)
         {

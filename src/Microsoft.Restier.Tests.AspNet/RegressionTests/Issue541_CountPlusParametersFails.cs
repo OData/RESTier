@@ -7,7 +7,7 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests

@@ -41,19 +41,19 @@ OnFilterReaders                                    |   False
 OnInsertedEmployee                                 |   False
 OnUpdatedEmployee                                  |   False
 OnDeletedEmployee                                  |   False
+CanExecuteCheckoutBook                             |   False
+OnExecutingCheckoutBook                            |   False
+OnExecutedCheckoutBook                             |   False
+CanExecuteFavoriteBooks                            |   False
+OnExecutingFavoriteBooks                           |   False
+OnExecutedFavoriteBooks                            |   False
 CanExecutePublishBook                              |   False
 OnExecutingPublishBook                             |   False
 OnExecutedPublishBook                              |   False
 CanExecutePublishBooks                             |   False
 OnExecutingPublishBooks                            |   False
 OnExecutedPublishBooks                             |   False
-CanExecuteFavoriteBooks                            |   False
-OnExecutingFavoriteBooks                           |   False
-OnExecutedFavoriteBooks                            |   False
 CanExecuteSubmitTransaction                        |   False
 OnExecutingSubmitTransaction                       |   False
 OnExecutedSubmitTransaction                        |   False
-CanExecuteCheckoutBook                             |   False
-OnExecutingCheckoutBook                            |   False
-OnExecutedCheckoutBook                             |   False
 ------------------------------------------------------------

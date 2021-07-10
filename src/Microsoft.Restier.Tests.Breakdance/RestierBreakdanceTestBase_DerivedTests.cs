@@ -1,4 +1,4 @@
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Tests.Breakdance
             var result = await client.GetAsync("");
             var resultContent = await result.Content.ReadAsStringAsync();
 
-            resultContent.Should().ContainAll("$metadata", "Books", "LibraryCards", "Publishers", "Readers", "Addresses", "Universes");
+            resultContent.Should().ContainAll("$metadata", "Books", "LibraryCards", "Publishers", "Readers");
         }
 
         [TestMethod]

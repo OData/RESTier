@@ -10,7 +10,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore
 #else
 namespace Microsoft.Restier.Tests.AspNet

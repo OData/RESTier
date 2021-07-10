@@ -2,7 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
     using Microsoft.Restier.AspNetCore.Model;
 #else
     using Microsoft.Restier.AspNet.Model;

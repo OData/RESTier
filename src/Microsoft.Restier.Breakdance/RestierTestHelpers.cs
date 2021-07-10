@@ -16,13 +16,13 @@ using Microsoft.Restier.Core.Model;
 
 using System.Text;
 #if NETCOREAPP3_1_OR_GREATER
-    using Microsoft.AspNetCore.TestHost;
-    using CloudNimble.Breakdance.AspNetCore;
-    using System.Text.Json;
+using Microsoft.AspNetCore.TestHost;
+using CloudNimble.Breakdance.AspNetCore;
+using System.Text.Json;
 #else
-    using Newtonsoft.Json;
-    using System.Web.Http;
-    using CloudNimble.Breakdance.WebApi;
+using Newtonsoft.Json;
+using System.Web.Http;
+using CloudNimble.Breakdance.WebApi;
 #endif
 
 
@@ -51,9 +51,9 @@ namespace Microsoft.Restier.Breakdance
 
         #endregion
 
-#region Public Methods
+        #region Public Methods
 
-#region ExecuteTestRequest
+        #region ExecuteTestRequest
 
         /// <summary>
         /// Configures the Restier pipeline in-memory and executes a test request against a given service, returning an <see cref="HttpResponseMessage"/> for inspection.
@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1 || NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings);
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.Breakdance
 
 #endregion
 
-#region GetModelBuilderHierarchy
+        #region GetModelBuilderHierarchy
 
         /// <summary>
         /// Gets a list of fully-qualified builder instances that are registered down the ModelBuilder chain. The order is really important, so this is a great way to troubleshoot.
@@ -141,9 +141,9 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-#endregion
+        #endregion
 
-#region GetTestableApiInstance
+        #region GetTestableApiInstance
 
         /// <summary>
         /// Retrieves the instance of the Restier API (inheriting from <see cref="ApiBase"/> from the Dependency Injection container.
@@ -158,9 +158,9 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
             => await GetTestableInjectedService<TApi, ApiBase>(routeName, routePrefix, serviceCollection).ConfigureAwait(false) as TApi;
 
-#endregion
+        #endregion
 
-#region GetTestableInjectedService
+        #region GetTestableInjectedService
 
         /// <summary>
         /// Retrieves class instance of type <typeparamref name="TService"/> from the Dependency Injection container.
@@ -177,9 +177,9 @@ namespace Microsoft.Restier.Breakdance
             where TService : class 
             => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
 
-#endregion
+        #endregion
 
-#region GetTestableInjectionContainer
+        #region GetTestableInjectionContainer
 
         /// <summary>
         /// Retrieves the Dependency Injection container that was created as a part of the request pipeline.
@@ -195,7 +195,7 @@ namespace Microsoft.Restier.Breakdance
              where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1 || NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
             using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
             return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
 #else
@@ -209,9 +209,9 @@ namespace Microsoft.Restier.Breakdance
 
 #endregion
 
-#region GetTestableRestierConfiguration
+        #region GetTestableRestierConfiguration
 
-#if !(NETCOREAPP3_1 || NET5_0_OR_GREATER)
+#if !(NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER)
 
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
@@ -241,9 +241,9 @@ namespace Microsoft.Restier.Breakdance
 
 #endif
 
-#endregion
+        #endregion
 
-#region GetTestableHttpClient
+        #region GetTestableHttpClient
 
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
@@ -258,7 +258,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1 || NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             return await Task.FromResult(client).ConfigureAwait(false);
@@ -271,9 +271,9 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-#endregion
+        #endregion
 
-#region GetTestableModelAsync
+        #region GetTestableModelAsync
 
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
@@ -291,9 +291,9 @@ namespace Microsoft.Restier.Breakdance
             return api.GetModel();
         }
 
-#endregion
+        #endregion
 
-#region GetApiMetadataAsync
+        #region GetApiMetadataAsync
 
         /// <summary>
         /// Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
@@ -318,9 +318,9 @@ namespace Microsoft.Restier.Breakdance
             return XDocument.Parse(result);
         }
 
-#endregion
+        #endregion
 
-#region WriteCurrentApiMetadata
+        #region WriteCurrentApiMetadata
 
         /// <summary>
         /// 
@@ -338,13 +338,13 @@ namespace Microsoft.Restier.Breakdance
             System.IO.File.WriteAllText(filePath, result.ToString());
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Private Methods
+        #region Private Methods
 
-#if NETCOREAPP3_1 || NET5_0_OR_GREATER
+#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>
@@ -393,7 +393,7 @@ namespace Microsoft.Restier.Breakdance
 
 #endif
 
-#endregion
+        #endregion
 
     }
 }

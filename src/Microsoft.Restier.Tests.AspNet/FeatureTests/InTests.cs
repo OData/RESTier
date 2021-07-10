@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests

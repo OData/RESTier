@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
     using CloudNimble.Breakdance.AspNetCore;
 #else
     using CloudNimble.Breakdance.WebApi;
@@ -13,10 +13,9 @@ using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
@@ -50,11 +49,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             response.IsSuccessStatusCode.Should().BeTrue();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var results = JsonConvert.DeserializeObject<ODataV4List<Book>>(content);
+            var results = await response.DeserializeResponseAsync<ODataV4List<Book>>();
             results.Should().NotBeNull();
-            results.Items.Should().NotBeNullOrEmpty();
-            results.Items.Should().HaveCount(2);
-            results.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
+            results.Response.Should().NotBeNull();
+            results.Response.Items.Should().NotBeNullOrEmpty();
+            results.Response.Items.Should().HaveCount(2);
+            results.Response.Items.All(c => c.Title.EndsWith(" | Discontinued", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
         /// <summary>
@@ -69,11 +69,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             response.IsSuccessStatusCode.Should().BeTrue();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var results = JsonConvert.DeserializeObject<ODataV4List<Book>>(content);
+            var results = await response.DeserializeResponseAsync<ODataV4List<Book>>();
             results.Should().NotBeNull();
-            results.Items.Should().NotBeNullOrEmpty();
-            results.Items.Count.Should().BeOneOf(4);
-            results.Items.All(c => c.Title.EndsWith(" | Intercepted | Discontinued | Intercepted", StringComparison.CurrentCulture)).Should().BeTrue();
+            results.Response.Should().NotBeNull();
+            results.Response.Items.Should().NotBeNullOrEmpty();
+            results.Response.Items.Count.Should().BeOneOf(4);
+            results.Response.Items.All(c => c.Title.EndsWith(" | Intercepted | Discontinued | Intercepted", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 
         /// <summary>
@@ -92,9 +93,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             response.IsSuccessStatusCode.Should().BeTrue();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var results = JsonConvert.DeserializeObject<Publisher>(content);
+            var results = await response.DeserializeResponseAsync<Publisher>();
             results.Should().NotBeNull();
-            results.Books.All(c => c.Title == "Sea of Rust").Should().BeTrue();
+            results.Response.Should().NotBeNull();
+            results.Response.Books.All(c => c.Title == "Sea of Rust").Should().BeTrue();
         }
 
         [TestMethod]

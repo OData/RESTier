@@ -20,7 +20,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCORE3 || NET5_0_OR_GREATER
+#if NETCORE3 || NETCOREAPP3_1_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Microsoft.Restier.AspNetCore.Model;
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.Tests.AspNet
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
-#if NETCORE3 || NET5_0_OR_GREATER
+#if NETCORE3 || NETCOREAPP3_1_OR_GREATER
             var content = await response.Content.ReadAsStringAsync();
             var person = JsonSerializer.Deserialize<Person[]>(content);
             person.Single().Id.Should().Be(999);
@@ -82,7 +82,7 @@ namespace Microsoft.Restier.Tests.AspNet
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
             TestContext.WriteLine(await response.Content.ReadAsStringAsync());
             response.IsSuccessStatusCode.Should().BeTrue();
-#if NETCORE3 || NET5_0_OR_GREATER
+#if NETCORE3 || NETCOREAPP3_1_OR_GREATER
             var content = await response.Content.ReadAsStringAsync();
             var order = JsonSerializer.Deserialize<Order[]>(content);
             order.Single().Id.Should().Be(999);
@@ -145,7 +145,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     public class PeopleController : ODataController
     {
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
         public IActionResult Get()
 #else
         public IHttpActionResult Get()
@@ -159,7 +159,7 @@ namespace Microsoft.Restier.Tests.AspNet
             return Ok(people);
         }
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
         public IActionResult GetOrders(int key)
 #else
         public IHttpActionResult GetOrders(int key)

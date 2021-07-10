@@ -1,4 +1,4 @@
-﻿#if !NET5_0_OR_GREATER
+﻿#if !NETCOREAPP3_1_OR_GREATER
     using System;
     using System.Web.Http;
     using Microsoft.AspNet.OData.Extensions;
@@ -16,7 +16,7 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.RegressionTests
@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-#if !NET5_0_OR_GREATER
+#if !NETCOREAPP3_1_OR_GREATER
         [TestMethod]
         public async Task MultipleContexts_ShouldQueryFirstContext()
         {
