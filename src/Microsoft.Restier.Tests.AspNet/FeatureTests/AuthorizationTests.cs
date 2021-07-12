@@ -124,11 +124,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var settings = new JsonSerializerOptions
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                Converters =
-                {
-                    new SystemTextJsonTimeSpanConverter()
-                }
             };
+            settings.Converters.Add(new SystemTextJsonTimeSpanConverter());
+            settings.Converters.Add(new SystemTextJsonTimeOfDayConverter());
 
             var employeeResponse = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, jsonSerializerOptions: settings);
 
@@ -137,8 +135,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             {
                 Converters = new List<JsonConverter>
                 {
-                    new JsonTimeSpanConverter(),
-                    new JsonTimeOfDayConverter()
+                    new NewtonsoftTimeSpanConverter(),
+                    new NewtonsoftTimeOfDayConverter()
                 },
                 NullValueHandling = NullValueHandling.Ignore,
                 DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
@@ -149,11 +147,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var content = await TestContext.LogAndReturnMessageContentAsync(employeeResponse);
 
             employeeResponse.IsSuccessStatusCode.Should().BeTrue();
-#if NETCOREAPP3_1_OR_GREATER
-            var (employeeList, ErrorContent) = await employeeResponse.DeserializeResponseAsync<ODataV4List<Employee>>();
-#else
             var (employeeList, ErrorContent) = await employeeResponse.DeserializeResponseAsync<ODataV4List<Employee>>(settings);
-#endif
+
             employeeList.Should().NotBeNull();
             employeeList.Items.Should().NotBeNullOrEmpty();
             var employee = employeeList.Items.First();

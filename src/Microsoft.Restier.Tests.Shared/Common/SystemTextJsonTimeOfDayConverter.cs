@@ -2,11 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 #if NETCOREAPP3_1_OR_GREATER
+using Microsoft.OData.Edm;
 using System;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml;
 
 namespace Microsoft.Restier.Tests.Shared.Common
 {
@@ -14,7 +14,7 @@ namespace Microsoft.Restier.Tests.Shared.Common
     /// <summary>
     /// 
     /// </summary>
-    public class SystemTextJsonTimeSpanConverter : JsonConverter<TimeSpan>
+    public class SystemTextJsonTimeOfDayConverter : JsonConverter<TimeOfDay>
     {
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace Microsoft.Restier.Tests.Shared.Common
         /// <param name="typeToConvert"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override TimeOfDay Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (typeToConvert != typeof(TimeSpan))
+            if (typeToConvert != typeof(TimeOfDay))
             {
                 throw new ArgumentException("Object passed in was not a TimeSpan.", nameof(typeToConvert));
             }
@@ -34,12 +34,7 @@ namespace Microsoft.Restier.Tests.Shared.Common
             var value = reader.GetString();
             if (string.IsNullOrWhiteSpace(value)) return default;
 
-  
-            if (value.Contains("-") && value.IndexOf("-", StringComparison.InvariantCultureIgnoreCase) != 0)
-            {
-                value = $"-{value.Replace("-", "")}";
-            }
-            return XmlConvert.ToTimeSpan(value);
+            return TimeOfDay.Parse(value, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -48,9 +43,9 @@ namespace Microsoft.Restier.Tests.Shared.Common
         /// <param name="writer"></param>
         /// <param name="value"></param>
         /// <param name="options"></param>
-        public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, TimeOfDay value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString(XmlConvert.ToString(value), CultureInfo.InvariantCulture));
+            writer.WriteStringValue(value.ToString());
         }
 
     }

@@ -3,12 +3,17 @@
 
 #if !NETCOREAPP3_1_OR_GREATER
 using System;
+using System.Globalization;
 using Microsoft.OData.Edm;
 using Newtonsoft.Json;
 
 namespace Microsoft.Restier.Tests.Shared.Common
 {
-    public class JsonTimeOfDayConverter : JsonConverter
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class NewtonsoftTimeOfDayConverter : JsonConverter
     {
 
         public override bool CanConvert(Type objectType)
@@ -31,9 +36,7 @@ namespace Microsoft.Restier.Tests.Shared.Common
                 return null;
             }
 
-#pragma warning disable CA1305 // Specify IFormatProvider
-            return TimeOfDay.Parse(spanString);
-#pragma warning restore CA1305 // Specify IFormatProvider
+            return TimeOfDay.Parse(spanString, CultureInfo.InvariantCulture);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -41,6 +44,8 @@ namespace Microsoft.Restier.Tests.Shared.Common
             var duration = (TimeOfDay)value;
             writer.WriteValue(duration.ToString());
         }
+
     }
+
 }
 #endif

@@ -8,7 +8,11 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Restier.Tests.Shared.Common
 {
-    public class JsonTimeSpanConverter : JsonConverter
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class NewtonsoftTimeSpanConverter : JsonConverter
     {
 
         public override bool CanConvert(Type objectType)
@@ -43,6 +47,8 @@ namespace Microsoft.Restier.Tests.Shared.Common
             var duration = (TimeSpan)value;
             writer.WriteValue(XmlConvert.ToString(duration));
         }
+
     }
+
 }
 #endif
