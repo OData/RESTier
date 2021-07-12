@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddEFCoreProviderServices<TDbContext>();
 
-            if (typeof(TDbContext) == typeof(LibraryContext))
+            if (typeof(TDbContext) == typeof(LibraryContext) || typeof(TDbContext).BaseType == typeof(LibraryContext))
             {
                 services.SeedDatabase<LibraryContext, LibraryTestInitializer>();
             }

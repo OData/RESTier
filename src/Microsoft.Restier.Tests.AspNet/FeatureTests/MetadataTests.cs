@@ -8,7 +8,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests

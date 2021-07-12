@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings);
@@ -195,7 +195,7 @@ namespace Microsoft.Restier.Breakdance
              where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
             using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
             return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
 #else
@@ -211,7 +211,7 @@ namespace Microsoft.Restier.Breakdance
 
         #region GetTestableRestierConfiguration
 
-#if !(NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER)
+#if !(NETCOREAPP3_1_OR_GREATER)
 
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
@@ -258,7 +258,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             return await Task.FromResult(client).ConfigureAwait(false);
@@ -344,7 +344,7 @@ namespace Microsoft.Restier.Breakdance
 
         #region Private Methods
 
-#if NETCOREAPP3_1 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>

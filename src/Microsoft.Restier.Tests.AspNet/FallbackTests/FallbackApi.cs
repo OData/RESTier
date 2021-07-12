@@ -8,7 +8,7 @@ using Microsoft.Restier.Core.Query;
 using System.Linq.Expressions;
 using Microsoft.Restier.Core.Model;
 
-#if NETCORE3 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FallbackTests

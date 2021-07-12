@@ -123,7 +123,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             AuthTestSetup();
             var settings = new JsonSerializerOptions
             {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+#if NETCOREAPP3_1
+                IgnoreNullValues = true,
+#endif
+#if NET5_0_OR_GREATER
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+#endif
             };
             settings.Converters.Add(new SystemTextJsonTimeSpanConverter());
             settings.Converters.Add(new SystemTextJsonTimeOfDayConverter());

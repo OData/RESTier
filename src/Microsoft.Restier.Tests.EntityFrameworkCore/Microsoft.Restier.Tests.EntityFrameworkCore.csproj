@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -11,10 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Microsoft.OData.Core" Version="7.8.3" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
     <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210709-195532" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.5, 8.0.0)" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.8, 8.0.0)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +20,6 @@
     <ProjectReference Include="..\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
   </ItemGroup>
 
 </Project>

@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Submit;
 
 #if EF7
 namespace Microsoft.Restier.EntityFrameworkCore
@@ -61,10 +62,17 @@ namespace Microsoft.Restier.EntityFramework
             //RWM: Grab Owned EntityTypes and make sure there are no DbSets that map to that type.
             var ownedTypes = dbContext.Model.GetEntityTypes().Where(c => c.IsOwned()).ToList();
 
-            /* JHC TODO: for each entry in ownedTypes, check to see if there is a DbSet<> mapping in the context.  If there is, we need to throw an
-             *           exception because there will be an EF failure in the call to GetModel().  The exception should inform the user that they have
-             *           created a DbSet<> mapping for an Owned type and that this is not supported.
+            /* @caldwell0414:
+             * for each entry in ownedTypes, check to see if there is a DbSet<> mapping in the context.  If there is, we need to throw an
+             * exception because there will be an EF failure in the call to GetModel().  The exception should inform the user that they have
+             * created a DbSet<> mapping for an Owned type and that this is not supported.
              * */
+            var dbSetMappedTypes = ownedTypes.Where(c => dbContext.IsDbSetMapped(c.ClrType)).ToList();
+
+            if (dbSetMappedTypes.Count > 0)
+            {
+                throw new ChangeSetValidationException($"DbSet mappings for the following Owned types is not supported: {string.Join(",", dbSetMappedTypes.Select(c => c.ShortName()))}.");
+            }
 
             // @caldwell0414: This code is looking for all of the DBSets on the context and generating a dictionary of DbSet Name and the Entity type.
             AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()

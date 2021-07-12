@@ -23,12 +23,11 @@ namespace Microsoft.Restier.EntityFramework.Tests
         <LibraryApi>
 #endif
     {
-
         [TestMethod]
         public async Task ComplexTypeUpdate()
         {
             // Arrange
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEF6ProviderServices<LibraryContext>());
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var api = provider.GetTestableApiInstance<LibraryApi>();
 
             var item = new DataModificationItem(

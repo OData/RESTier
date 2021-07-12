@@ -12,7 +12,7 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCORE3 || NETCOREAPP3_1_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.Core;
