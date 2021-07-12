@@ -3,6 +3,7 @@
 #endif
 #if EFCore
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 #endif
@@ -21,36 +22,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddEFCoreProviderServices<TDbContext>();
 
-            // initialize the context in a new scope
-            using var tempServices = services.BuildServiceProvider();
-
-            var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
-            using var scope = scopeFactory.CreateScope();
-            // JHC TODO: work out how to replace this with an interface instead of this ridiculousness
-
             if (typeof(TDbContext) == typeof(LibraryContext))
             {
-                var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
-
-                // EnsureCreated() returns false if the database already exists
-                if (dbContext.Database.EnsureCreated())
-                {
-                    var initializer = new LibraryTestInitializer();
-                    initializer.Seed(dbContext);
-                }
-
+                services.SeedDatabase<LibraryContext, LibraryTestInitializer>();
             }
             else if (typeof(TDbContext) == typeof(MarvelContext))
             {
-                var dbContext = scope.ServiceProvider.GetService<MarvelContext>();
-
-                // EnsureCreated() returns false if the database already exists
-                if (dbContext.Database.EnsureCreated())
-                {
-                    var initializer = new MarvelTestInitializer();
-                    initializer.Seed(dbContext);
-                }
-
+                services.SeedDatabase<MarvelContext, MarvelTestInitializer>();
             }
 
             return services;

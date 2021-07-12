@@ -6,6 +6,10 @@ using System.Collections.ObjectModel;
 #if EF6
 using System.Data.Entity;
 #endif
+#if EFCore
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
+#endif
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
 {
@@ -16,13 +20,17 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
     {
 
         protected override void Seed(MarvelContext context)
-#else
-    {
-
-        internal void Seed(MarvelContext context)
-#endif
         {
             context.Comics.Add(new Comic
+#else
+        : IDatabaseInitializer
+    {
+
+        public void Seed(DbContext context)
+        {
+            (context as MarvelContext).Comics.Add(new Comic
+#endif
+
             {
                 Id = new Guid("C64BFB73-74C0-4C5E-9DD9-3D102D821461"),
                 Isbn = "1234567890123",

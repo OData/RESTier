@@ -29,4 +29,8 @@
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FallbackTests\Resources\" />
+  </ItemGroup>
+
 </Project>

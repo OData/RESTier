@@ -7,6 +7,11 @@ using System.Collections.ObjectModel;
 #if EF6
 using System.Data.Entity;
 #endif
+#if EFCore
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
+#endif
+
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
@@ -18,15 +23,20 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         : DropCreateDatabaseAlways<LibraryContext>
     {
 
-        protected override void Seed(LibraryContext context)
-#else
-    {
-
-        internal void Seed(LibraryContext context)
-#endif
+        protected override void Seed(LibraryContext libraryContext)
         {
 
-            context.Readers.Add(new Employee
+#else
+        : IDatabaseInitializer
+
+    {
+
+        public void Seed(DbContext context)
+        {
+            var libraryContext = context as LibraryContext;
+#endif
+
+            libraryContext.Readers.Add(new Employee
             {
                 Addr = new Address { Street = "street1" },
                 FullName = "p1",
@@ -52,7 +62,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     TimeOfDayProperty = TimeOfDay.Now
                 }
             });
-            context.Readers.Add(new Employee
+            libraryContext.Readers.Add(new Employee
             {
                 Addr = new Address { Street = "street2" },
                 FullName = "p2",
@@ -79,7 +89,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             });
 
-            context.Publishers.Add(new Publisher
+            libraryContext.Publishers.Add(new Publisher
             {
                 Id = "Publisher1",
                 Addr = new Address
@@ -104,7 +114,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             });
 
-            context.Publishers.Add(new Publisher
+            libraryContext.Publishers.Add(new Publisher
             {
                 Id = "Publisher2",
                 Addr = new Address
@@ -123,14 +133,14 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             });
 
-            context.Books.Add(new Book
+            libraryContext.Books.Add(new Book
             {
                 Id = new Guid("2D760F15-974D-4556-8CDF-D610128B537E"),
                 Isbn = "1122334455667",
                 Title = "Sea of Rust"
             });
 
-            context.SaveChanges();
+            libraryContext.SaveChanges();
 
         }
 

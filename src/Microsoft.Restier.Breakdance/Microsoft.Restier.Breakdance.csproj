@@ -4,8 +4,7 @@
     <AssemblyName>Microsoft.Restier.Breakdance</AssemblyName>
     <RootNamespace>Microsoft.Restier.Breakdance</RootNamespace>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <!--<TargetFrameworks>net472;netcoreapp3.1;net5.0</TargetFrameworks>-->
-    <TargetFrameworks>net472;net5.0</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1;net5.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

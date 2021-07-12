@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -48,16 +49,25 @@ namespace Microsoft.Restier.Breakdance
         {
             TestHostBuilder.ConfigureServices(services =>
             {
+                services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                        .AddCookie(options => {
+                            options.Events.OnRedirectToAccessDenied = context => {
+                                context.Response.StatusCode = 403;
+                                return Task.CompletedTask;
+                            };
+                        });
                 services
                     .AddRestier(apiBuilder =>
                     {
                         AddRestierAction?.Invoke(apiBuilder);
                     })
+                    .AddApplicationPart(typeof(TApi).Assembly)
                     .AddApplicationPart(typeof(RestierController).Assembly);
             })
            .Configure(builder =>
             {
                 builder.UseAuthorization();
+                builder.UseDeveloperExceptionPage();
                 builder.UseMvc(routeBuilder =>
                 {
                     routeBuilder
@@ -65,7 +75,8 @@ namespace Microsoft.Restier.Breakdance
                         .MapRestier(restierRouteBuilder =>
                         {
                             MapRestierAction?.Invoke(restierRouteBuilder);
-                        });
+                        })
+                        .MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 });
             });
         }
@@ -87,7 +98,7 @@ namespace Microsoft.Restier.Breakdance
         {
             var client = GetHttpClient();
             using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerOptions);
-            var metadata = await GetApiMetadataAsync().ConfigureAwait(false);
+            //var metadata = await GetApiMetadataAsync().ConfigureAwait(false);
             return await client.SendAsync(message).ConfigureAwait(false);
         }
 

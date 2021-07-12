@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+#if !NETCOREAPP3_1_OR_GREATER
 using System;
 using Microsoft.OData.Edm;
 using Newtonsoft.Json;
@@ -42,3 +43,4 @@ namespace Microsoft.Restier.Tests.Shared.Common
         }
     }
 }
+#endif

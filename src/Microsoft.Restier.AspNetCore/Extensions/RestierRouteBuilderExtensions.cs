@@ -3,19 +3,17 @@
 
 namespace Microsoft.Restier.AspNetCore
 {
-    using System;
-    using System.Collections.Generic;
     using Microsoft.AspNet.OData;
     using Microsoft.AspNet.OData.Batch;
     using Microsoft.AspNet.OData.Extensions;
-    using Microsoft.AspNet.OData.Query;
     using Microsoft.AspNet.OData.Routing.Conventions;
     using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.OData;
     using Microsoft.Restier.AspNetCore.Batch;
     using Microsoft.Restier.Core;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Extension methods for the <see cref="IRouteBuilder"/> interface.

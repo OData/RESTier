@@ -2,17 +2,6 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-#if NETCOREAPP3_1_OR_GREATER
-using CloudNimble.Breakdance.AspNetCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-
-#else
-using CloudNimble.Breakdance.WebApi;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Microsoft.Restier.Tests.Shared.Common;
-#endif
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
@@ -24,8 +13,20 @@ using Microsoft.Restier.Core;
 using Microsoft.AspNet.OData.Query;
 
 #if NETCOREAPP3_1_OR_GREATER
+using CloudNimble.Breakdance.AspNetCore;
+using Microsoft.Restier.Tests.Shared.Common;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
+
+using CloudNimble.Breakdance.WebApi;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using Microsoft.Restier.Tests.Shared.Common;
+
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
@@ -56,7 +57,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         /// </summary>
         public void AuthTestSetup()
         {
-            TestHostBuilder.Configure(app => app.UseAuthorization());
             TestSetup();
         }
 
@@ -77,21 +77,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                         .AddEntityFrameworkServices<LibraryContext>()
                         .AddTestDefaultServices()
                         .AddSingleton<IQueryExpressionAuthorizer, DisallowEverythingAuthorizer>();
-
-#if EFCore
-                    using var tempServices = restierServices.BuildServiceProvider();
-
-                    var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
-                    using var scope = scopeFactory.CreateScope();
-                    var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
-
-                    // EnsureCreated() returns false if the database already exists
-                    if (dbContext.Database.EnsureCreated())
-                    {
-                        var initializer = new LibraryTestInitializer();
-                        initializer.Seed(dbContext);
-                    }
-#endif
                 });
 
             };
@@ -118,19 +103,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task UpdateEmployee_ShouldReturn400()
         {
-#if !NETCOREAPP3_1_OR_GREATER
-            var settings = new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter>
-                {
-                    new JsonTimeSpanConverter(),
-                    new JsonTimeOfDayConverter()
-                },
-                NullValueHandling = NullValueHandling.Ignore,
-                DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
-            };
-            var employeeResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-#else
+#if NETCOREAPP3_1_OR_GREATER
             AddRestierAction = (apiBuilder) =>
             {
                 apiBuilder.AddRestierApi<LibraryApi>(restierServices =>
@@ -143,27 +116,36 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                             MaxAnyAllExpressionDepth = 3,
                             MaxExpansionDepth = 3,
                         });
-
-#if EFCore
-                    using var tempServices = restierServices.BuildServiceProvider();
-
-                    var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
-                    using var scope = scopeFactory.CreateScope();
-                    var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
-
-                    // EnsureCreated() returns false if the database already exists
-                    if (dbContext.Database.EnsureCreated())
-                    {
-                        var initializer = new LibraryTestInitializer();
-                        initializer.Seed(dbContext);
-                    }
-#endif
                 });
 
             };
+
             AuthTestSetup();
-            var employeeResponse = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader);
+            var settings = new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Converters =
+                {
+                    new SystemTextJsonTimeSpanConverter()
+                }
+            };
+
+            var employeeResponse = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, jsonSerializerOptions: settings);
+
+#else
+            var settings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>
+                {
+                    new JsonTimeSpanConverter(),
+                    new JsonTimeOfDayConverter()
+                },
+                NullValueHandling = NullValueHandling.Ignore,
+                DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
+            };
+            var employeeResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
 #endif
+
             var content = await TestContext.LogAndReturnMessageContentAsync(employeeResponse);
 
             employeeResponse.IsSuccessStatusCode.Should().BeTrue();

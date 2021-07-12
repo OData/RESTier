@@ -3,12 +3,10 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using System;
     using Microsoft.AspNet.OData.Extensions;
-    using Microsoft.AspNet.OData.Interfaces;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OData;
     using Microsoft.Restier.Core;
+    using System;
 
     /// <summary>
     /// Contains extension methods of <see cref="IServiceCollection"/>.
