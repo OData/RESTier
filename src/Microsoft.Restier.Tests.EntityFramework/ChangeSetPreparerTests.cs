@@ -26,9 +26,11 @@ namespace Microsoft.Restier.EntityFramework.Tests
         [TestMethod]
         public async Task ComplexTypeUpdate()
         {
-            // Arrange
             var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            provider.Should().NotBeNull();
+            
             var api = provider.GetTestableApiInstance<LibraryApi>();
+            api.Should().NotBeNull();
 
             var item = new DataModificationItem(
                 "Readers",
@@ -41,12 +43,12 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var changeSet = new ChangeSet(new[] { item });
             var sc = new SubmitContext(api, changeSet);
 
-            // Act
             var changeSetPreparer = api.GetApiService<IChangeSetInitializer>();
+            changeSetPreparer.Should().NotBeNull();
+
             await changeSetPreparer.InitializeAsync(sc, CancellationToken.None).ConfigureAwait(false);
             var person = item.Resource as Employee;
 
-            // Assert
             person.Should().NotBeNull();
             person.Addr.Zip.Should().Be("332");
         }

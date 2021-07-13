@@ -7,7 +7,7 @@ using Microsoft.AspNet.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Model
 #else
 namespace Microsoft.Restier.AspNet.Model

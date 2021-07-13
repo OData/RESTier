@@ -9,16 +9,13 @@
       Microsoft.Restier.EntityFrameworkCore.EntityFrameworkApi
     </Description>
     <PackageTags>$(PackageTags)entityframework;entityframeworkcore</PackageTags>
-    <TargetFrameworks>netcoreapp3.1;net5.0;netstandard2.1</TargetFrameworks>
-    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);EF7</DefineConstants>
+    <TargetFrameworks>netcoreapp3.1;net5.0;netstandard2.1</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
   </PropertyGroup>
 
   <ItemGroup>

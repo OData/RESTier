@@ -9,13 +9,13 @@
       Microsoft.Restier.EntityFramework.EntityFrameworkApi
     </Description>
     <PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
-
-    <TargetFrameworks>net472;netstandard2.1</TargetFrameworks>
-    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetFrameworks>net472;netstandard2.1</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
+    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
   </PropertyGroup>
 
   <ItemGroup>

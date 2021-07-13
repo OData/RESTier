@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-#if EF7
+#if EFCore
     using Microsoft.EntityFrameworkCore;
 #else
     using System.Data.Entity;
@@ -11,7 +11,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework

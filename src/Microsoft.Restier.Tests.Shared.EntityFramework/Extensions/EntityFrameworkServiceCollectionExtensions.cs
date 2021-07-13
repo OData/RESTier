@@ -10,14 +10,29 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class EntityFrameworkServiceCollectionExtensions
+    public static class EFServiceCollectionExtensions
     {
 
 #if EF6
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TDbContext"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddEntityFrameworkServices<TDbContext>(this IServiceCollection services) where TDbContext : DbContext => services.AddEF6ProviderServices<TDbContext>();
+
 #endif
 
 #if EFCore
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TDbContext"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddEntityFrameworkServices<TDbContext>(this IServiceCollection services) where TDbContext : DbContext
         {
             services.AddEFCoreProviderServices<TDbContext>();
@@ -33,7 +48,35 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <typeparam name="TInitializer"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static void SeedDatabase<TContext, TInitializer>(this IServiceCollection services)
+            where TContext : DbContext
+            where TInitializer : IDatabaseInitializer, new()
+        {
+            using var tempServices = services.BuildServiceProvider();
+
+            var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
+            using var scope = scopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetService<TContext>();
+
+            // EnsureCreated() returns false if the database already exists
+            if (dbContext.Database.EnsureCreated())
+            {
+                var initializer = new TInitializer();
+                initializer.Seed(dbContext);
+            }
+
+        }
+
 #endif
 
     }
+
 }

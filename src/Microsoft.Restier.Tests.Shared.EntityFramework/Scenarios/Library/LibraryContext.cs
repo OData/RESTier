@@ -11,14 +11,14 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
 
     /// <summary>
-    /// The data context for the Library scenario.
+    /// The Entity Framework <see cref="DbContext"/> for the Library scenario.
     /// </summary>
     public class LibraryContext : DbContext
     {
 
 #if EF6
-        public LibraryContext()
-           : base("LibraryContext") => Database.SetInitializer(new LibraryTestInitializer());
+
+        #region Properties
 
         public IDbSet<Book> Books { get; set; }
 
@@ -28,10 +28,23 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         public IDbSet<Employee> Readers { get; set; }
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public LibraryContext() : base("LibraryContext") 
+            => Database.SetInitializer(new LibraryTestInitializer());
+
+        #endregion
+
 #endif
 
 #if EFCore
-        #region EntitySet Properties
+
+        #region Properties
 
         public DbSet<Book> Books { get; set; }
 
@@ -43,9 +56,16 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         #endregion
 
+        #region Constructors
+
+        ///
         public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
         {
         }
+
+        #endregion
+
+        #region Overrides
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -58,6 +78,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             modelBuilder.Entity<Employee>().OwnsOne(c => c.Universe);
             modelBuilder.Entity<Publisher>().OwnsOne(c => c.Addr);
         }
+
+        #endregion
+
 #endif
 
     }

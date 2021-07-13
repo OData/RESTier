@@ -2,18 +2,18 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-#if !EF7
+#if !EFCore
 using System.Data.Entity;
 #endif
 using System.Linq;
 using System.Linq.Expressions;
-#if EF7
+#if EFCore
 using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework

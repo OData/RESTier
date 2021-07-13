@@ -2,7 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-#if EF7
+#if EFCore
     using Microsoft.Restier.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 #else
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class RestierEntityFrameworkServiceCollectionExtensions
     {
-#if EF7
+#if EFCore
         /// <summary>
         /// This method is used to add entity framework providers service into container.
         /// </summary>

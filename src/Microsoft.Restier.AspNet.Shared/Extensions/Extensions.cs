@@ -13,14 +13,14 @@ using Microsoft.AspNet.OData.Formatter;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.Edm.Vocabularies.V1;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 #else
 using Microsoft.Restier.AspNet.Model;
 #endif
 using Microsoft.Restier.Core;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore
 #else
 namespace Microsoft.Restier.AspNet

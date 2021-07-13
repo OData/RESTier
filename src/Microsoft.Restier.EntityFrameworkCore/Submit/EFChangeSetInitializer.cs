@@ -106,7 +106,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 return Convert.ToInt64(value, CultureInfo.InvariantCulture);
             }
 
-#if !EF7
+#if !EFCore
             // Todo: Restore geometry handling
             if (type == typeof(DbGeography))
             {

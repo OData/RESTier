@@ -1,8 +1,11 @@
-﻿using FluentAssertions;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.EntityFrameworkCore.EFModelBuilderScenario;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +29,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore
             var provider = await RestierTestHelpers.GetTestableInjectionContainer<IncorrectLibraryApi>(serviceCollection: (services) => services.AddEFCoreProviderServices<IncorrectLibraryContext>());
             var api = provider.GetTestableApiInstance<IncorrectLibraryApi>();
             Action getModelAction = () =>  new EFModelBuilder().GetModel(new ModelContext(api));
-            getModelAction.Should().Throw<ChangeSetValidationException>().Where(c => c.Message.Contains("Address") && c.Message.Contains("Universe"));
+            getModelAction.Should().Throw<EdmModelValidationException>().Where(c => c.Message.Contains("Address") && c.Message.Contains("Universe"));
         }
 
     }

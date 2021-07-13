@@ -5,7 +5,7 @@ using System;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 #else
 using Microsoft.Restier.AspNet.Model;
