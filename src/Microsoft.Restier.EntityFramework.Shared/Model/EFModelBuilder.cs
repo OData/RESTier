@@ -55,6 +55,13 @@ namespace Microsoft.Restier.EntityFramework
                 return null;
             }
 
+            if (frameworkApi.DbContext is null)
+            {
+                throw new Exception("The Restier API inherits from EntityFrameworkApi, but the API instance " +
+                    "is not populated with the correct DbContext. This could be because you tried to pass in " +
+                    "a subclassed DbContext, and the DI container can't match it up.");
+            }
+
             var dbContext = frameworkApi.DbContext;
 
 #if EF7

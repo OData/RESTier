@@ -9,7 +9,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
     /// <summary>
     /// Provides extensions to work with EntityFramework models.
     /// </summary>
-    public static class ModelExtensions
+    public static class EFCoreDbContextExtensions
     {
 
         /// <summary>
@@ -31,4 +31,5 @@ namespace Microsoft.Restier.EntityFrameworkCore
         }
 
     }
+
 }
