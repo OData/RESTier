@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Builder;
@@ -9,8 +11,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
-using System;
-using System.Linq;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 {
@@ -42,7 +42,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 {
 
                     routeServices
-                        .AddEFCoreProviderServices<NorthwindContext>((provider, options) => options.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
+                        .AddEFCoreProviderServices<NorthwindContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
                         .AddSingleton(new ODataValidationSettings
                         {
                             MaxTop = 5,
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 
                 });
             });
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddControllers(options => options.EnableEndpointRouting = false);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 
                 builder.MapRestier(builder =>
                 {
-                    builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
+                    builder.MapApiRoute<NorthwindApi>("ApiV1", "/v1", true);
                 });
             });
         }
