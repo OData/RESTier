@@ -118,6 +118,7 @@ namespace Microsoft.Restier.AspNetCore
                     break;
                 default:
                     code = HttpStatusCode.InternalServerError;
+                    Trace.TraceError($"Exception: {exception.Message} \nStackTrace: {exception.StackTrace}");
                     context.Result = new StatusCodeResult((int)code);
                     break;
             }

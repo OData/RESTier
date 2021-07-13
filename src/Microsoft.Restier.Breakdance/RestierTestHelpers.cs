@@ -13,18 +13,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Newtonsoft.Json;
-#if NET5_0_OR_GREATER
-    using Microsoft.AspNetCore.TestHost;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Restier.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
-    using CloudNimble.Breakdance.AspNetCore;
+
+using System.Text;
+#if NETCOREAPP3_1_OR_GREATER
+using Microsoft.AspNetCore.TestHost;
+using CloudNimble.Breakdance.AspNetCore;
+using System.Text.Json;
 #else
-    using System.Web.Http;
-    using System.Data.Entity;
-    using CloudNimble.Breakdance.WebApi;
+using Newtonsoft.Json;
+using System.Web.Http;
+using CloudNimble.Breakdance.WebApi;
 #endif
 
 
@@ -35,8 +33,6 @@ namespace Microsoft.Restier.Breakdance
     /// A set of methods that make it easier to pull out Restier runtime components for unit testing.
     /// </summary>
     /// <remarks>See RestierTestHelperTests.cs for more examples of how to use these methods.</remarks>
-    /// 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public static class RestierTestHelpers
     {
 
@@ -63,7 +59,6 @@ namespace Microsoft.Restier.Breakdance
         /// Configures the Restier pipeline in-memory and executes a test request against a given service, returning an <see cref="HttpResponseMessage"/> for inspection.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="httpMethod">The <see cref="HttpMethod"/> to use for the request.</param>
         /// <param name="host">
         /// The protocol and host to connect to in order to run the tests. Must end with a forward-slash. Defaults to "http://localhost/", and should not normally be changed. NOTE: This should
@@ -80,32 +75,34 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="defaultQuerySettings">A <see cref="DefaultQuerySettings"/> instabce that defines how OData operations should work. Defaults to everything enabled with a <see cref="DefaultQuerySettings.MaxTop"/> of 10.</param>
         /// <param name="timeZoneInfo">A <see cref="TimeZoneInfo"/> instenace specifying what time zone should be used to translate time payloads into. Defaults to <see cref="TimeZoneInfo.Utc"/>.</param>
         /// <param name="payload">When the <paramref name="httpMethod"/> is <see cref="HttpMethod.Post"/> or <see cref="HttpMethod.Put"/>, this object is serialized to JSON and inserted into the <see cref="HttpRequestMessage.Content"/>.</param>
-        /// <param name="jsonSerializerSettings">A <see cref="JsonSerializerSettings"/> instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones.</param>
+        /// <param name="jsonSerializerSettings">A JsonSerializerSettings or JsonSerializerOptions instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones.</param>
         /// <returns>An <see cref="HttpResponseMessage"/> that contains the managed response for the request for inspection.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
-        public static async Task<HttpResponseMessage> ExecuteTestRequest<TApi, TDbContext>(HttpMethod httpMethod, string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName,
+        public static async Task<HttpResponseMessage> ExecuteTestRequest<TApi>(HttpMethod httpMethod, string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName,
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, Action<IServiceCollection> serviceCollection = default, string acceptHeader = ODataConstants.MinimalAcceptHeader,
-            DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null, JsonSerializerSettings jsonSerializerSettings = null)
+            DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null,
+#if NETCOREAPP3_1_OR_GREATER
+            JsonSerializerOptions jsonSerializerSettings = null)
+#else
+            JsonSerializerSettings jsonSerializerSettings = null)
+#endif
             where TApi : ApiBase
-            where TDbContext : DbContext
         {
-#if NET5_0_OR_GREATER
-            var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
+
+#if NETCOREAPP3_1_OR_GREATER
+            var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
-            var requestUri = new Uri($"{host}{routePrefix}{resource}");
-            var message = new HttpRequestMessage(httpMethod, requestUri);
-            message.Headers.Add("accept", acceptHeader);
-            //message.Content =  payload;
+            using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings);
             return await client.SendAsync(message).ConfigureAwait(false);
 
 #else
-            var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, defaultQuerySettings, timeZoneInfo, serviceCollection).ConfigureAwait(false);
+            using var config = await GetTestableRestierConfiguration<TApi>(routeName, routePrefix, defaultQuerySettings, timeZoneInfo, serviceCollection).ConfigureAwait(false);
             var client = config.GetTestableHttpClient();
             return await client.ExecuteTestRequest(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings).ConfigureAwait(false);
 #endif
         }
 
-        #endregion
+#endregion
 
         #region GetModelBuilderHierarchy
 
@@ -113,18 +110,15 @@ namespace Microsoft.Restier.Breakdance
         /// Gets a list of fully-qualified builder instances that are registered down the ModelBuilder chain. The order is really important, so this is a great way to troubleshoot.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static async Task<List<string>> GetModelBuilderHierarchy<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<List<string>> GetModelBuilderHierarchy<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
-
         {
-            var modelBuilder = await GetTestableInjectedService<TApi, TDbContext, IModelBuilder>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
+            var modelBuilder = await GetTestableInjectedService<TApi, IModelBuilder>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
 
             var innerBuilders = new List<string>
             {
@@ -155,15 +149,14 @@ namespace Microsoft.Restier.Breakdance
         /// Retrieves the instance of the Restier API (inheriting from <see cref="ApiBase"/> from the Dependency Injection container.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static async Task<TApi> GetTestableApiInstance<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<TApi> GetTestableApiInstance<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext => await GetTestableInjectedService<TApi, TDbContext, ApiBase>(routeName, routePrefix, serviceCollection).ConfigureAwait(false) as TApi;
+            => await GetTestableInjectedService<TApi, ApiBase>(routeName, routePrefix, serviceCollection).ConfigureAwait(false) as TApi;
 
         #endregion
 
@@ -173,17 +166,16 @@ namespace Microsoft.Restier.Breakdance
         /// Retrieves class instance of type <typeparamref name="TService"/> from the Dependency Injection container.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <typeparam name="TService">The type whose instance should be retrieved from the DI container.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static async Task<TService> GetTestableInjectedService<TApi, TDbContext, TService>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<TService> GetTestableInjectedService<TApi, TService>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
-            where TService : class => (await GetTestableInjectionContainer<TApi, TDbContext>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
+            where TService : class 
+            => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
 
         #endregion
 
@@ -193,26 +185,21 @@ namespace Microsoft.Restier.Breakdance
         /// Retrieves the Dependency Injection container that was created as a part of the request pipeline.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
-        public static async Task<IServiceProvider> GetTestableInjectionContainer<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<IServiceProvider> GetTestableInjectionContainer<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
              where TApi : ApiBase
-            where TDbContext : DbContext
         {
 
-#if NET5_0_OR_GREATER
-
-            var server = await GetTestableRestierServer<TApi, TDbContext>(serviceCollection).ConfigureAwait(false);
-            //TODO: RWM: Why do you need to call CreateClient here to get the services?
-            var client = server.CreateClient();
-            return server.Services;
+#if NETCOREAPP3_1_OR_GREATER
+            using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
+            return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
 #else
-            var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
+            using var config = await GetTestableRestierConfiguration<TApi>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             var request = HttpClientHelpers.GetTestableHttpRequestMessage(HttpMethod.Get, WebApiConstants.Localhost, routePrefix);
             request.SetConfiguration(config);
             return request.CreateRequestContainer(routeName);
@@ -224,39 +211,29 @@ namespace Microsoft.Restier.Breakdance
 
         #region GetTestableRestierConfiguration
 
-#if !NET5_0_OR_GREATER
+#if !(NETCOREAPP3_1_OR_GREATER)
 
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="defaultQuerySettings">A <see cref="DefaultQuerySettings"/> instabce that defines how OData operations should work. Defaults to everything enabled with a <see cref="DefaultQuerySettings.MaxTop"/> of 10.</param>
         /// <param name="timeZoneInfo">A <see cref="TimeZoneInfo"/> instenace specifying what time zone should be used to translate time payloads into. Defaults to <see cref="TimeZoneInfo.Utc"/>.</param>
         /// <param name="serviceCollection"></param>
         /// <returns>An <see cref="HttpConfiguration"/> instance</returns>
-        public static async Task<HttpConfiguration> GetTestableRestierConfiguration<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<HttpConfiguration> GetTestableRestierConfiguration<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
         {
             var config = new HttpConfiguration();
-            Action<IServiceCollection> defaultConfigureServices = (services) => { services.AddEF6ProviderServices<TDbContext>(); };
             config.SetDefaultQuerySettings(defaultQuerySettings ?? QueryDefaults);
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.SetTimeZoneInfo(timeZoneInfo ?? TimeZoneInfo.Utc);
             config.UseRestier((builder) => builder.AddRestierApi<TApi>(services =>
             {
-                if (serviceCollection != null)
-                {
-                    serviceCollection.Invoke(services);
-                }
-                else
-                {
-                    defaultConfigureServices.Invoke(services);
-                }
+                serviceCollection?.Invoke(services);
             }));
             config.MapRestier((builder) => builder.MapApiRoute<TApi>(routeName, routePrefix, true), config.GetTestableHttpServer());
             return await Task.FromResult(config).ConfigureAwait(false);
@@ -268,27 +245,31 @@ namespace Microsoft.Restier.Breakdance
 
         #region GetTestableHttpClient
 
-#if !NET5_0_OR_GREATER
-
         /// <summary>
         /// Returns a properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns>A properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.</returns>
-        public static async Task<HttpClient> GetTestableHttpClient<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<HttpClient> GetTestableHttpClient<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
         {
-            var config = await GetTestableRestierConfiguration<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
-            return new HttpClient(new HttpServer(config));
-        }
 
+#if NETCOREAPP3_1_OR_GREATER
+            var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
+            var client = server.CreateClient();
+            return await Task.FromResult(client).ConfigureAwait(false);
+#else
+            // JHC TODO: change this so that GetTestableHttpClient() is no longer async and refactor the net472 code as well
+            using var config = await GetTestableRestierConfiguration<TApi>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
+            using var server = new HttpServer(config);
+            return new HttpClient(server);
 #endif
+
+        }
 
         #endregion
 
@@ -298,17 +279,15 @@ namespace Microsoft.Restier.Breakdance
         /// Retrieves the <see cref="IEdmModel"/> instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns>An <see cref="IEdmModel"/> instance containing the model used to configure both OData and Restier processing.</returns>
-        public static async Task<IEdmModel> GetTestableModelAsync<TApi, TDbContext>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<IEdmModel> GetTestableModelAsync<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
         {
-            var api = await GetTestableApiInstance<TApi, TDbContext>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
+            var api = await GetTestableApiInstance<TApi>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             return api.GetModel();
         }
 
@@ -320,18 +299,16 @@ namespace Microsoft.Restier.Breakdance
         /// Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="host"></param>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
         /// <returns>An <see cref="XDocument"/> containing the results of the metadata request.</returns>
-        public static async Task<XDocument> GetApiMetadataAsync<TApi, TDbContext>(string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+        public static async Task<XDocument> GetApiMetadataAsync<TApi>(string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
             Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
         {
-            var response = await ExecuteTestRequest<TApi, TDbContext>(HttpMethod.Get, host, routeName, routePrefix, "/$metadata", acceptHeader: "application/xml", serviceCollection: serviceCollection).ConfigureAwait(false);
+            var response = await ExecuteTestRequest<TApi>(HttpMethod.Get, host, routeName, routePrefix, "/$metadata", acceptHeader: "application/xml", serviceCollection: serviceCollection).ConfigureAwait(false);
             var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
@@ -349,70 +326,69 @@ namespace Microsoft.Restier.Breakdance
         /// 
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
-        /// <typeparam name="TDbContext">The class inheriting from <see cref="DbContext"/> that connects to the database used bt <typeparamref name="TApi"/>.</typeparam>
         /// <param name="sourceDirectory"></param>
         /// <param name="suffix"></param>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static async Task WriteCurrentApiMetadata<TApi, TDbContext>(string sourceDirectory = "", string suffix = "ApiMetadata", Action<IServiceCollection> serviceCollection = default)
+        public static async Task WriteCurrentApiMetadata<TApi>(string sourceDirectory = "", string suffix = "ApiMetadata", Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
-            where TDbContext : DbContext
         {
             var filePath = $"{sourceDirectory}{typeof(TApi).Name}-{suffix}.txt";
-            var result = await GetApiMetadataAsync<TApi, TDbContext>(serviceCollection: serviceCollection).ConfigureAwait(false);
+            var result = await GetApiMetadataAsync<TApi>(serviceCollection: serviceCollection).ConfigureAwait(false);
             System.IO.File.WriteAllText(filePath, result.ToString());
         }
 
-#endregion
+        #endregion
 
         #endregion
 
         #region Private Methods
 
-#if NET5_0_OR_GREATER
+#if NETCOREAPP3_1_OR_GREATER
+        /// <summary>
+        /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
+        /// </summary>
+        /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
+        /// <returns>A new <see cref="TestServer" /> instance.</returns>
+        public static TestServer GetTestableRestierServer<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default)
+            where TApi : ApiBase
+            => GetTestBaseInstance<TApi>(routeName, routePrefix, apiServiceCollection).TestServer;
 
         /// <summary>
-        /// Gets a new <see cref="TestServer" /> using the provided startup class in T.
+        /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>
+        /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <returns>A new <see cref="TestServer" /> instance.</returns>
-        public static async Task<TestServer> GetTestableRestierServer<TApi, TContext>(Action<IServiceCollection> registration = default)
-            where TApi : class
-            where TContext : class
+        public static RestierBreakdanceTestBase<TApi> GetTestBaseInstance<TApi>(string routeName = WebApiConstants.RouteName, 
+            string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default)
+            where TApi : ApiBase
         {
-            var server = AspNetCoreTestHelpers.GetTestableHttpServer(services =>
+            using var restierTests = new RestierBreakdanceTestBase<TApi>();
+
+            restierTests.AddRestierAction = (apiBuilder) =>
             {
-                if (registration != null)
+                apiBuilder.AddRestierApi<TApi>(restierServices =>
                 {
-                    registration.Invoke(services);
-                }
-                else {
-                    /* JHC Almost there...  maybe this needs to be in restier rather than in breakdance
-                    services.AddRestier((builder) =>
-                    {
-                        // This delegate is executed after OData is added to the container.
-                        // Add you replacement services here.
-                        builder.AddRestierApi<TApi>(routeServices =>
+                    restierServices
+                        .AddSingleton(new ODataValidationSettings
                         {
-
-                            routeServices
-                                .AddEFCoreProviderServices<TContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))  // << JHC TODO: change this to use IConfiguration
-                                .AddSingleton(new ODataValidationSettings
-                                {
-                                    MaxTop = 5,
-                                    MaxAnyAllExpressionDepth = 3,
-                                    MaxExpansionDepth = 3,
-                                });
-
+                            MaxTop = 5,
+                            MaxAnyAllExpressionDepth = 3,
+                            MaxExpansionDepth = 3,
                         });
-                    });
-                    */
-                }
-            });
+                    apiServiceCollection?.Invoke(restierServices);
+                });
+            };
 
-            await server.Host.StartAsync().ConfigureAwait(false);
+            restierTests.MapRestierAction = (routeBuilder) =>
+            {
+                routeBuilder.MapApiRoute<TApi>(routeName, routePrefix);
+            };
 
-            return server;
+            // make sure the TestServer has been started
+            restierTests.TestSetup();
 
+            return restierTests;
         }
 
 #endif

@@ -1,7 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +13,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Scenarios\Marvel\" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\*.cs" LinkBase="Scenarios\Library" />
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Marvel\*.cs" LinkBase="Scenarios\Marvel" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.Breakdance, $(StrongNamePublicKey)</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Extensions\EntityFrameworkServiceCollectionExtensions.cs" Link="Extensions\EntityFrameworkServiceCollectionExtensions.cs" />
   </ItemGroup>
 
 </Project>

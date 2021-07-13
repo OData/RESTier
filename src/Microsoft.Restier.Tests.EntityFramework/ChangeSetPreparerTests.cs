@@ -12,20 +12,25 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.EntityFramework.Tests
 {
 
     [TestClass]
     public class ChangeSetPreparerTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
-
         [TestMethod]
         public async Task ComplexTypeUpdate()
         {
-            // Arrange
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            provider.Should().NotBeNull();
+            
             var api = provider.GetTestableApiInstance<LibraryApi>();
+            api.Should().NotBeNull();
 
             var item = new DataModificationItem(
                 "Readers",
@@ -38,12 +43,12 @@ namespace Microsoft.Restier.EntityFramework.Tests
             var changeSet = new ChangeSet(new[] { item });
             var sc = new SubmitContext(api, changeSet);
 
-            // Act
             var changeSetPreparer = api.GetApiService<IChangeSetInitializer>();
+            changeSetPreparer.Should().NotBeNull();
+
             await changeSetPreparer.InitializeAsync(sc, CancellationToken.None).ConfigureAwait(false);
             var person = item.Resource as Employee;
 
-            // Assert
             person.Should().NotBeNull();
             person.Addr.Zip.Should().Be("332");
         }

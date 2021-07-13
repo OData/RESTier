@@ -20,6 +20,12 @@ namespace Microsoft.Restier.Tests.Legacy
         [TestMethod]
         public async Task RestierRC2_VerifyContainerContents()
         {
+            /* JHC Note:
+             * This test is failing because we've made some change to the LibraryApi and LibraryContext.  We need to determine the best way
+             * to maintain this test.  We might need a LegacyLibraryApi and LegacyLibraryContext
+             * 
+             * */
+
             var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             result.Should().NotBeNullOrEmpty();
@@ -48,6 +54,8 @@ namespace Microsoft.Restier.Tests.Legacy
 
         #region Manifest Generators
 
+        //[DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        //[DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task ContainerContents_WriteOutput(string projectPath)
         {
@@ -64,6 +72,8 @@ namespace Microsoft.Restier.Tests.Legacy
             Console.WriteLine($"File exists: {File.Exists(fullPath)}");
         }
 
+        //[DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        //[DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task IModelBuilder_LogChildren(string projectPath)
         {

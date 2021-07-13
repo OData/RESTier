@@ -8,11 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
-#if NET5_0_OR_GREATER
-using Microsoft.Restier.EntityFrameworkCore;
-#else
-using Microsoft.Restier.EntityFramework;
-#endif
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -35,7 +30,7 @@ namespace Microsoft.Restier.Breakdance
         /// An extension method that generates a Markdown table of all of the possible Restier methods for the given API in the first column, and a boolean
         /// indicating whether or not the method was found in the second column.
         /// </summary>
-        /// <param name="api">The <see cref="ApiBase"/> instance to process, typically inheriting from <see cref="EntityFrameworkApi{T}"/>.</param>
+        /// <param name="api">The <see cref="ApiBase"/> instance to process.</param>
         /// <returns>A string containing the Markdown table of results.</returns>
         public static string GenerateVisibilityMatrix(this ApiBase api)
         {

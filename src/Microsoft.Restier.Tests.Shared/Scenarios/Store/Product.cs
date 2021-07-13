@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Microsoft.Restier.Tests.Shared
 {
-    internal class Product
+    public class Product
     {
         public int Id { get; set; }
 

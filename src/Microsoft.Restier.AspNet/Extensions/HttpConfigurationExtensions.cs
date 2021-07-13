@@ -130,6 +130,7 @@ namespace System.Web.Http
         /// </example>
         public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> configureRoutesAction, HttpServer httpServer)
         {
+            Ensure.NotNull(config, nameof(config));
             Ensure.NotNull(configureRoutesAction, nameof(configureRoutesAction));
 
             var rrb = new RestierRouteBuilder();
@@ -147,17 +148,23 @@ namespace System.Web.Http
                         throw new ArgumentNullException(nameof(httpServer), OwinException);
                     }
 
-#pragma warning disable IDE0067 // Dispose objects before losing scope
+#pragma warning disable CA2000 // Dispose objects before losing scope
                     batchHandler = new RestierBatchHandler(httpServer)
                     {
                         ODataRouteName = route.Key
                     };
-#pragma warning restore IDE0067 // Dispose objects before losing scope
+#pragma warning restore CA2000 // Dispose objects before losing scope
                 }
 
                 var odataRoute = config.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder, routeName) =>
                 {
                     var rcb = containerBuilder as RestierContainerBuilder;
+                    if (rcb == null)
+                    {
+                        throw new Exception($"MapRestier expected a RestierContainerBuilder but got an {containerBuilder.GetType().Name} instead. " +
+                            $"This is usually because you did not call services.AddRestier() first. Please see the Restier Northwind Sample application for " +
+                            $"more details on how to properly register Restier.");
+                    }
                     rcb.routeBuilder = rrb;
                     rcb.RouteName = routeName;
 

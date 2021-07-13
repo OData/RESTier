@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework

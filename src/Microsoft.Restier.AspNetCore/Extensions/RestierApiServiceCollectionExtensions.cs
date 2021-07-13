@@ -3,12 +3,10 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using System;
     using Microsoft.AspNet.OData.Extensions;
-    using Microsoft.AspNet.OData.Interfaces;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OData;
     using Microsoft.Restier.Core;
+    using System;
 
     /// <summary>
     /// Contains extension methods of <see cref="IServiceCollection"/>.
@@ -50,16 +48,17 @@ namespace Microsoft.Extensions.DependencyInjection
         ///    );
         /// </code>
         /// </example>
-        public static IODataBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
+        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
 
-            var odataBuilder = services.AddOData();
+            services.AddOData();
 
             services.AddSingleton<IContainerBuilder>(s => new RestierContainerBuilder(configureApisAction));
 
-            return odataBuilder;
+            //RWM: Make sure that Restier works in any situation without needing additional knowledge.
+            return services.AddControllers(options => options.EnableEndpointRouting = false);
         }
     }
 }

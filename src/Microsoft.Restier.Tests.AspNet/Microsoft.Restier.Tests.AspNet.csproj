@@ -2,34 +2,35 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210617-211813" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.7" />
+    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210709-195532" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.8" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="7.9.0" />
   </ItemGroup>
 
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.20.1" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.22.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FallbackTests\Resources\" />
   </ItemGroup>
 
 </Project>

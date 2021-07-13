@@ -5,8 +5,17 @@ using System;
 using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
+#if NETCOREAPP3_1_OR_GREATER
+    using Microsoft.Restier.AspNetCore.Model;
+#else
 using Microsoft.Restier.AspNet.Model;
+#endif
+
+#if EF6
 using Microsoft.Restier.EntityFramework;
+#else
+    using Microsoft.Restier.EntityFrameworkCore;
+#endif
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {

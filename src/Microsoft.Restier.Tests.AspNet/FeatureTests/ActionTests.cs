@@ -1,25 +1,50 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+#if NETCOREAPP3_1_OR_GREATER
+    using CloudNimble.Breakdance.AspNetCore;
+#else
 using CloudNimble.Breakdance.WebApi;
+#endif
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NETCOREAPP3_1_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
 {
 
+    /// <summary>
+    /// A class for testing OData Actions.
+    /// </summary>
     [TestClass]
     public class ActionTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
+        /* JHC note: just leaving this here temporarily for reference
+        #if EF6
+                void addTestServices<TDbContext>(IServiceCollection services) where TDbContext : DbContext => services.AddEF6ProviderServices<TDbContext>();
+        #endif
+
+        #if EFCore
+                void addTestServices<TDbContext>(IServiceCollection services) where TDbContext : DbContext => services.AddEFCoreProviderServices<TDbContext>();
+        #endif
+        */
         //[Ignore]
         [TestMethod]
         public async Task ActionParameters_MissingParameter()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook");
+            //var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/CheckoutBook", serviceCollection: addTestServices<LibraryContext>);
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/CheckoutBook", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
@@ -31,8 +56,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task ActionParameters_WrongParameterName()
         {
-            var bookPayload = new
-            {
+            var bookPayload = new {
                 john = new Book
                 {
                     Id = Guid.NewGuid(),
@@ -40,7 +64,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 }
             };
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook", acceptHeader: WebApiConstants.DefaultAcceptHeader, payload: bookPayload);
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/CheckoutBook", acceptHeader: WebApiConstants.DefaultAcceptHeader, payload: bookPayload, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
@@ -51,8 +75,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task ActionParameters_HasParameter()
         {
-            var bookPayload = new
-            {
+            var bookPayload = new {
                 book = new Book
                 {
                     Id = Guid.NewGuid(),
@@ -60,7 +83,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 }
             };
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Post, resource: "/CheckoutBook", acceptHeader: WebApiConstants.DefaultAcceptHeader, payload: bookPayload);
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/CheckoutBook", acceptHeader: WebApiConstants.DefaultAcceptHeader, payload: bookPayload, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

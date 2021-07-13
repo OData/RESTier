@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RegressionTests\**\*.cs" LinkBase="RegressionTests" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
+    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
+  </ItemGroup>
+
+</Project>

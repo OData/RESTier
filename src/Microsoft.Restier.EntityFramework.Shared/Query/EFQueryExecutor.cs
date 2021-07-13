@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-#if !EF7
+#if !EFCore
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 #endif
@@ -9,16 +9,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-#if EF7
+#if EFCore
 using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.Restier.Core.Query;
 
-#if EF7
+#if EFCore
 using IAsyncQueryProvider = Microsoft.EntityFrameworkCore.Query.IAsyncQueryProvider;
 #endif
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework
@@ -60,7 +60,7 @@ namespace Microsoft.Restier.EntityFramework
             IQueryable<TElement> query,
             CancellationToken cancellationToken)
         {
-#if EF7
+#if EFCore
             if (query.Provider is IAsyncQueryProvider)
 #else
             if (query.Provider is IDbAsyncQueryProvider)
@@ -101,14 +101,14 @@ namespace Microsoft.Restier.EntityFramework
             Expression expression,
             CancellationToken cancellationToken)
         {
-#if EF7
+#if EFCore
             var provider = queryProvider as IAsyncQueryProvider;
 #else
             var provider = queryProvider as IDbAsyncQueryProvider;
 #endif
             if (provider != null)
             {
-#if EF7
+#if EFCore
                 var result = await provider.ExecuteAsync<Task<TResult>>(expression, cancellationToken).ConfigureAwait(false);
                 return new QueryResult(new TResult[] { result });
 #else
