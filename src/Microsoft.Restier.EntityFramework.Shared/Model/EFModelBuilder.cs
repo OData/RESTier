@@ -20,6 +20,7 @@ namespace Microsoft.Restier.EntityFramework
 #if EFCore
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Core;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Microsoft.Restier.EntityFrameworkCore
 #endif
@@ -81,10 +82,12 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
 
+#pragma warning disable EF1001 // Internal EF Core API usage.
             // @caldwell0414: This code goes through all of the Entity types in the model, and where not marked as "owned" builds a dictionary of name and primary-key type.
-            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned()).ToDictionary(
-                e => e.ClrType,
-                e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
+            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !(c as EntityType).IsImplicitlyCreatedJoinEntityType).ToDictionary(
+#pragma warning restore EF1001 // Internal EF Core API usage.
+                            e => e.ClrType,
+                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
 
             AddRange(context.ResourceTypeKeyPropertiesMap, keys);
 #endif

@@ -13,6 +13,7 @@ namespace Microsoft.Restier.AspNetCore.Formatter
 namespace Microsoft.Restier.AspNet.Formatter
 #endif
 {
+
     /// <summary>
     /// The serializer for enum result.
     /// </summary>
@@ -34,5 +35,7 @@ namespace Microsoft.Restier.AspNet.Formatter
 
             return result;
         }
+
     }
+
 }

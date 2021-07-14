@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.OData;
+using Microsoft.Restier.Core;
+using System;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Microsoft.AspNet.OData.Extensions;
-    using Microsoft.OData;
-    using Microsoft.Restier.Core;
-    using System;
 
     /// <summary>
     /// Contains extension methods of <see cref="IServiceCollection"/>.
@@ -55,10 +56,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddOData();
 
+            // @robertmclaws: A single ContainerBuilder is being injected here. However, ASP.NET Core OData works *very* differently.
+            //                The codepath that we're using here will not work for multiple APIs. We'll need a better solution.
             services.AddSingleton<IContainerBuilder>(s => new RestierContainerBuilder(configureApisAction));
 
             //RWM: Make sure that Restier works in any situation without needing additional knowledge.
             return services.AddControllers(options => options.EnableEndpointRouting = false);
         }
+
     }
+
 }

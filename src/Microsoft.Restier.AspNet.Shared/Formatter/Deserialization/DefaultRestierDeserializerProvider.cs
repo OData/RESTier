@@ -11,6 +11,7 @@ namespace Microsoft.Restier.AspNetCore.Formatter
 namespace Microsoft.Restier.AspNet.Formatter
 #endif
 {
+
     /// <summary>
     /// The default deserializer provider.
     /// </summary>
@@ -34,5 +35,7 @@ namespace Microsoft.Restier.AspNet.Formatter
 
             return base.GetEdmTypeDeserializer(edmType);
         }
+
     }
+
 }

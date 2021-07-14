@@ -44,6 +44,8 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(builder, nameof(builder));
             Ensure.NotNull(services, nameof(services));
 
+            if (builder.Apis.ContainsKey(typeof(TApi))) return builder;
+
             builder.Apis.Add(typeof(TApi), (serviceCollection) =>
             {
 

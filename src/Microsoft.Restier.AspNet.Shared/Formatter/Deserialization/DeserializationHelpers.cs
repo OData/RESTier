@@ -20,6 +20,7 @@ namespace Microsoft.Restier.AspNetCore.Formatter
 namespace Microsoft.Restier.AspNet.Formatter
 #endif
 {
+
     /// <summary>
     /// Get clr type from payload.
     /// </summary>
@@ -122,5 +123,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             // It means return type is IEnumerable<> or raw type is passed in value is single value
             return collectionResult;
         }
+
     }
+
 }

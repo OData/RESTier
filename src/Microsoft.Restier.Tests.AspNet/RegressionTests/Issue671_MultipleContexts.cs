@@ -2,7 +2,6 @@
     using System;
     using System.Web.Http;
     using Microsoft.AspNet.OData.Extensions;
-    using Microsoft.Restier.Core;
     using Microsoft.AspNet.OData.Query;
 #endif
 using System.Net;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
@@ -59,10 +59,11 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-#if !NETCOREAPP3_1_OR_GREATER
         [TestMethod]
         public async Task MultipleContexts_ShouldQueryFirstContext()
         {
+#if !NETCOREAPP3_1_OR_GREATER
+
             var config = new HttpConfiguration();
 
             config.SetDefaultQuerySettings(QueryDefaults);
@@ -88,6 +89,20 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
 
             var client = config.GetTestableHttpClient();
             var response = await client.ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books?$count=true");
+#else
+            AddRestierAction = builder =>
+            {
+                builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+                builder.AddRestierApi<MarvelApi>(services => services.AddEntityFrameworkServices<MarvelContext>());
+            };
+            MapRestierAction = routeBuilder =>
+            {
+                routeBuilder.MapApiRoute<LibraryApi>("Library", "Library", false);
+                routeBuilder.MapApiRoute<MarvelApi>("Marvel", "Marvel", false);
+            };
+            TestSetup();
+            var response = await ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books?$count=true");
+#endif
 
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
@@ -98,6 +113,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task MultipleContexts_ShouldQuerySecondContext()
         {
+#if !NETCOREAPP3_1_OR_GREATER
+
             var config = new HttpConfiguration();
 
             config.SetDefaultQuerySettings(QueryDefaults);
@@ -124,6 +141,21 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             var client = config.GetTestableHttpClient();
             var response = await client.ExecuteTestRequest(HttpMethod.Get, routePrefix: "Marvel", resource: "/Characters?$count=true");
 
+#else
+            AddRestierAction = builder =>
+            {
+                builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+                builder.AddRestierApi<MarvelApi>(services => services.AddEntityFrameworkServices<MarvelContext>());
+            };
+            MapRestierAction = routeBuilder =>
+            {
+                routeBuilder.MapApiRoute<LibraryApi>("Library", "Library", false);
+                routeBuilder.MapApiRoute<MarvelApi>("Marvel", "Marvel", false);
+            };
+            TestSetup();
+            var response = await ExecuteTestRequest(HttpMethod.Get, routePrefix: "Marvel", resource: "/Characters?$count=true");
+
+#endif
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
 
@@ -131,6 +163,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             content.Should().Contain("\"@odata.count\":1,");
         }
 
+#if !NETCOREAPP3_1_OR_GREATER
         private static readonly DefaultQuerySettings QueryDefaults = new DefaultQuerySettings
         {
             EnableCount = true,

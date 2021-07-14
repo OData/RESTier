@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.OData;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.AspNetCore
 {
