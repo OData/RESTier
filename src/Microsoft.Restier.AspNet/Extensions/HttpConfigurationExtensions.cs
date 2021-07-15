@@ -158,8 +158,7 @@ namespace System.Web.Http
 
                 var odataRoute = config.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder, routeName) =>
                 {
-                    var rcb = containerBuilder as RestierContainerBuilder;
-                    if (rcb == null)
+                    if (containerBuilder is not RestierContainerBuilder rcb)
                     {
                         throw new Exception($"MapRestier expected a RestierContainerBuilder but got an {containerBuilder.GetType().Name} instead. " +
                             $"This is usually because you did not call services.AddRestier() first. Please see the Restier Northwind Sample application for " +

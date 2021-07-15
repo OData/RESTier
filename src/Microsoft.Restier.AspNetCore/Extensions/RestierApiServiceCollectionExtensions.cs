@@ -10,13 +10,14 @@ namespace Microsoft.Extensions.DependencyInjection
 {
 
     /// <summary>
-    /// Contains extension methods of <see cref="IServiceCollection"/>.
-    /// This method is used to add odata publisher service into container.
+    /// Restier-specific extension methods for <see cref="IServiceCollection"/>.
     /// </summary>
+    /// <remarks
     public static partial class RestierApiServiceCollectionExtensions
     {
+
         /// <summary>
-        /// Adds the Restier and OData Services to the Service collection.
+        /// Adds the Restier and OData Services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
@@ -56,9 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddOData();
 
-            // @robertmclaws: A single ContainerBuilder is being injected here. However, ASP.NET Core OData works *very* differently.
-            //                The codepath that we're using here will not work for multiple APIs. We'll need a better solution.
-            services.AddSingleton<IContainerBuilder>(s => new RestierContainerBuilder(configureApisAction));
+            // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
+            services.AddSingleton(sp => configureApisAction);
 
             //RWM: Make sure that Restier works in any situation without needing additional knowledge.
             return services.AddControllers(options => options.EnableEndpointRouting = false);

@@ -139,13 +139,15 @@ namespace Microsoft.Restier.Tests.AspNet
 #else
             var metadata = await RestierTestHelpers.GetApiMetadataAsync<FallbackApi>(serviceCollection: addTestServices);
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/PreservedOrders", serviceCollection: addTestServices);
-#endif 
+#endif
+
             metadata.Should().NotBeNull();
             metadata.Descendants().Where(c => c.Name.LocalName == "EntitySet").Should().HaveCount(3);
 
-            TestContext.WriteLine(await response.Content.ReadAsStringAsync());
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
             response.IsSuccessStatusCode.Should().BeTrue();
-            (await response.Content.ReadAsStringAsync()).Should().Contain("\"Id\":234");
+            content.Should().Contain("\"Id\":234");
         }
 
     }

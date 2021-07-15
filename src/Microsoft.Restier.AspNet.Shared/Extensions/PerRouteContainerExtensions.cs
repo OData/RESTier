@@ -17,6 +17,7 @@ namespace Microsoft.AspNet.OData
     /// </remarks>
     internal static class PerRouteContainerExtensions
     {
+
         /// <summary>
         /// Create a root container for a given route name.
         /// </summary>
@@ -52,5 +53,7 @@ namespace Microsoft.AspNet.OData
 
             return rootContainer;
         }
+
     }
+
 }

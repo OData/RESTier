@@ -3,10 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Batch;
 using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNet.OData.Routing.Conventions;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
@@ -42,7 +46,9 @@ namespace Microsoft.Restier.AspNetCore
             Ensure.NotNull(configureRoutesAction, nameof(configureRoutesAction));
 
             var perRouteContainer = routeBuilder.ServiceProvider.GetRequiredService<IPerRouteContainer>();
-            perRouteContainer.BuilderFactory = () => routeBuilder.ServiceProvider.GetRequiredService<IContainerBuilder>();
+            var apiBuilderAction = routeBuilder.ServiceProvider.GetRequiredService<Action<RestierApiBuilder>>();
+
+            perRouteContainer.BuilderFactory = () => new RestierContainerBuilder(apiBuilderAction);
 
             var rrb = new RestierRouteBuilder();
             configureRoutesAction.Invoke(rrb);
@@ -62,11 +68,16 @@ namespace Microsoft.Restier.AspNetCore
 #pragma warning restore IDE0067 // Dispose objects before losing scope
                 }
 
-                var odataRoute = routeBuilder.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder) =>
+                var odataRoute = routeBuilder.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder, routeName) =>
                 {
-                    var rcb = containerBuilder as RestierContainerBuilder;
+                    if (containerBuilder is not RestierContainerBuilder rcb)
+                    {
+                        throw new Exception($"MapRestier expected a RestierContainerBuilder but got an {containerBuilder.GetType().Name} instead. " +
+                            $"This is usually because you did not call services.AddRestier() first. Please see the Restier Northwind Sample application for " +
+                            $"more details on how to properly register Restier.");
+                    }
                     rcb.routeBuilder = rrb;
-                    rcb.RouteName = route.Key;
+                    rcb.RouteName = routeName;
 
                     containerBuilder.AddService<IEnumerable<IODataRoutingConvention>>(OData.ServiceLifetime.Singleton, sp => routeBuilder.CreateRestierRoutingConventions(route.Key));
                     if (batchHandler != null)
@@ -101,5 +112,116 @@ namespace Microsoft.Restier.AspNetCore
             conventions.Insert(index + 1, new RestierRoutingConvention());
             return conventions;
         }
+
+        /// <summary>
+        /// Maps the specified OData route and the OData route attributes.
+        /// </summary>
+        /// <param name="builder">The <see cref="IRouteBuilder"/> to add the route to.</param>
+        /// <param name="routeName">The name of the route to map.</param>
+        /// <param name="routePrefix">The prefix to add to the OData route's path template.</param>
+        /// <param name="configureAction">The configuring action to add the services to the root container.</param>
+        /// <returns>The added <see cref="ODataRoute"/>.</returns>
+        public static ODataRoute MapODataServiceRoute(this IRouteBuilder builder, string routeName,
+            string routePrefix, Action<IContainerBuilder, string> configureAction)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (routeName == null)
+            {
+                throw new ArgumentNullException(nameof(routeName));
+            }
+
+            #region Stuff that's done on configuration.CreateODataRootCountainer
+
+            // Build and configure the root container.
+            var perRouteContainer = builder.ServiceProvider.GetRequiredService<IPerRouteContainer>();
+            if (perRouteContainer == null)
+            {
+                throw new InvalidOperationException("Could not find the PerRouteContainer.");
+            }
+
+            // Create an service provider for this route. Add the default services to the custom configuration actions.
+            var configureDefaultServicesMethod = typeof(ODataRouteBuilderExtensions).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).FirstOrDefault(c => c.Name == "ConfigureDefaultServices");
+            var internalServicesAction = (Action<IContainerBuilder>)configureDefaultServicesMethod.Invoke(builder, new object[] { builder, null });
+
+            var serviceProvider = (perRouteContainer as PerRouteContainer).CreateODataRouteContainer(routeName, internalServicesAction, configureAction);
+
+            #endregion
+
+            // Make sure the MetadataController is registered with the ApplicationPartManager.
+            var applicationPartManager = builder.ServiceProvider.GetRequiredService<ApplicationPartManager>();
+            applicationPartManager.ApplicationParts.Add(new AssemblyPart(typeof(MetadataController).Assembly));
+
+            // Resolve the path handler and set URI resolver to it.
+            var pathHandler = serviceProvider.GetRequiredService<IODataPathHandler>();
+
+            // If settings is not on local, use the global configuration settings.
+            var options = builder.ServiceProvider.GetRequiredService<ODataOptions>();
+            if (pathHandler != null && pathHandler.UrlKeyDelimiter == null)
+            {
+                pathHandler.UrlKeyDelimiter = options.UrlKeyDelimiter;
+            }
+
+            // Resolve some required services and create the route constraint.
+            var routeConstraint = new ODataPathRouteConstraint(routeName);
+
+            // Get constraint resolver.
+            var inlineConstraintResolver = builder.ServiceProvider.GetRequiredService<IInlineConstraintResolver>();
+            routePrefix = RemoveTrailingSlash(routePrefix);
+
+            var customRouter = serviceProvider.GetService<IRouter>();
+            // Resolve HTTP handler, create the OData route and register it.
+            var route = new ODataRoute(
+                customRouter ?? builder.DefaultHandler,
+                routeName,
+                routePrefix,
+                routeConstraint,
+                inlineConstraintResolver);
+
+            // If a batch handler is present, register the route with the batch path mapper. This will be used
+            // by the batching middleware to handle the batch request. Batching still requires the injection
+            // of the batching middleware via UseODataBatching().
+            var batchHandler = serviceProvider.GetService<ODataBatchHandler>();
+            if (batchHandler != null)
+            {
+                batchHandler.ODataRoute = route;
+                batchHandler.ODataRouteName = routeName;
+
+                var batchPath = String.IsNullOrEmpty(routePrefix)
+                    ? '/' + ODataRouteConstants.Batch
+                    : '/' + routePrefix + '/' + ODataRouteConstants.Batch;
+
+                var batchMapping = builder.ServiceProvider.GetRequiredService<ODataBatchPathMapping>();
+                batchMapping.AddRoute(routeName, batchPath);
+            }
+
+            builder.Routes.Add(route);
+            return route;
+        }
+
+        /// <summary>
+        /// Remote the trailing slash from a route prefix string.
+        /// </summary>
+        /// <param name="routePrefix">The route prefix string.</param>
+        /// <returns>The route prefix string without a trailing slash.</returns>
+        private static string RemoveTrailingSlash(string routePrefix)
+        {
+            if (!string.IsNullOrEmpty(routePrefix))
+            {
+                var prefixLastIndex = routePrefix.Length - 1;
+                if (routePrefix[prefixLastIndex] == '/')
+                {
+                    // Remove the last trailing slash if it has one.
+                    routePrefix = routePrefix[0..^1];
+                }
+            }
+
+            return routePrefix;
+        }
+
     }
+
 }
