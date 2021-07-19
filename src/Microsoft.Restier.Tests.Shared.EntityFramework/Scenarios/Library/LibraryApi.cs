@@ -6,15 +6,19 @@ using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
 #if NETCOREAPP3_1_OR_GREATER
-    using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Restier.AspNetCore.Abstractions;
+using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 #else
 using Microsoft.Restier.AspNet.Model;
+
 #endif
 
 #if EF6
 using Microsoft.Restier.EntityFramework;
 #else
-    using Microsoft.Restier.EntityFrameworkCore;
+using Microsoft.Restier.EntityFrameworkCore;
 #endif
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
@@ -151,9 +155,9 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        #endregion
+#endregion
 
-        #region Restier Interceptors
+#region Restier Interceptors
 
         /// <summary>
         /// 
@@ -179,7 +183,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             });
         }
 
-        #endregion
+#endregion
 
     }
 

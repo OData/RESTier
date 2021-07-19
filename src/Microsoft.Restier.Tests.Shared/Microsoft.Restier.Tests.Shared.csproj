@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210709-195532" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210718-235552" />
   </ItemGroup>
 
   <ItemGroup>

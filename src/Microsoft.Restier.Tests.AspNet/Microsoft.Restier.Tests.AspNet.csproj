@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.1.0-CI-20210709-195532" />
+    <Compile Remove="FallbackTests\Resources\**" />
+    <EmbeddedResource Remove="FallbackTests\Resources\**" />
+    <None Remove="FallbackTests\Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210718-235552" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.8" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
@@ -27,10 +33,6 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FallbackTests\Resources\" />
   </ItemGroup>
 
 </Project>

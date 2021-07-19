@@ -18,11 +18,14 @@ using System.Text;
 #if NETCOREAPP3_1_OR_GREATER
 using Microsoft.AspNetCore.TestHost;
 using CloudNimble.Breakdance.AspNetCore;
+using CloudNimble.Breakdance.AspNetCore.OData;
 using System.Text.Json;
 #else
 using Newtonsoft.Json;
 using System.Web.Http;
 using CloudNimble.Breakdance.WebApi;
+using CloudNimble.Breakdance.WebApi.OData;
+
 #endif
 
 

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
+using Microsoft.Restier.AspNetCore.Abstractions;
 using Microsoft.Restier.AspNetCore.Batch;
 using Microsoft.Restier.Core;
 
@@ -80,6 +81,7 @@ namespace Microsoft.Restier.AspNetCore
                     rcb.RouteName = routeName;
 
                     containerBuilder.AddService<IEnumerable<IODataRoutingConvention>>(OData.ServiceLifetime.Singleton, sp => routeBuilder.CreateRestierRoutingConventions(route.Key));
+                    containerBuilder.AddService<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>(OData.ServiceLifetime.Singleton);
                     if (batchHandler != null)
                     {
                         //RWM: DO NOT simplify this generic signature. It HAS to stay this way, otherwise the code breaks.

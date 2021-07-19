@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,11 +12,12 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Restier.Core;
-using Microsoft.AspNet.OData.Query;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
+using CloudNimble.Breakdance.AspNetCore.OData;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared.Common;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -23,6 +27,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 
 using CloudNimble.Breakdance.WebApi;
+using CloudNimble.Breakdance.WebApi.OData;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Microsoft.Restier.Tests.Shared.Common;
@@ -101,7 +106,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         }
 
         [TestMethod]
-        public async Task UpdateEmployee_ShouldReturn400()
+        public async Task Authorization_UpdateEmployee_ShouldReturn400()
         {
 #if NETCOREAPP3_1_OR_GREATER
             AddRestierAction = (apiBuilder) =>

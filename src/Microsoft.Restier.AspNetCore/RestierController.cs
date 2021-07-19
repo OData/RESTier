@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
+using Microsoft.Restier.AspNetCore.Abstractions;
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.AspNetCore.Operation;
 using Microsoft.Restier.AspNetCore.Query;
@@ -139,7 +141,7 @@ namespace Microsoft.Restier.AspNetCore
 
             CheckModelState();
             var path = GetPath();
-            if (!(path.NavigationSource is IEdmEntitySet entitySet))
+            if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
@@ -689,6 +691,14 @@ namespace Microsoft.Restier.AspNetCore
         {
             var container = HttpContext.Request.GetRequestContainer();
             api = container.GetRequiredService<ApiBase>();
+            // @robertmclaws: We need to get the User to other services. Do it the EXACT same way the HttpContextAccessor does.
+            var claimsPrincipalAccessor = container.GetService<IClaimsPrincipalAccessor>();
+            if (claimsPrincipalAccessor != null)
+            {
+                claimsPrincipalAccessor.ClaimsPrincipal = HttpContext.User;
+                // RWM: This could be genius if it works.
+                ClaimsPrincipal.ClaimsPrincipalSelector = () => HttpContext.Request.GetRequestContainer().GetService<IClaimsPrincipalAccessor>()?.ClaimsPrincipal;
+            }
             querySettings = container.GetRequiredService<ODataQuerySettings>();
             validationSettings = container.GetRequiredService<ODataValidationSettings>();
             operationExecutor = container.GetRequiredService<IOperationExecutor>();
