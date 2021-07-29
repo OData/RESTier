@@ -40,6 +40,11 @@ namespace Microsoft.Restier.Breakdance
         public Action<RestierRouteBuilder> MapRestierAction { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public Action<IApplicationBuilder> ApplicationBuilderAction { get; set; }    
+
+        /// <summary>
         /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/>.
         /// </summary>
         /// <remarks>
@@ -67,6 +72,7 @@ namespace Microsoft.Restier.Breakdance
             })
            .Configure(builder =>
             {
+                ApplicationBuilderAction?.Invoke(builder);
                 builder.UseAuthorization();
                 builder.UseDeveloperExceptionPage();
                 builder.UseMvc(routeBuilder =>

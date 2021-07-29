@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="..\Microsoft.Restier.Tests.Shared\Scenarios\Library\**\*.cs" LinkBase="LibraryApi" />
     <Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\*.cs" LinkBase="LibraryApi" />
+    <Compile Remove="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\Library\LibraryApi.cs" />
   </ItemGroup>
 
 </Project>

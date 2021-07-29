@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.OData.Edm;
@@ -24,7 +25,7 @@ namespace Microsoft.Restier.AspNet.Model
         #region Private Members
 
         private readonly Type targetApiType;
-        private readonly ICollection<OperationMethodInfo> operationInfos = new List<OperationMethodInfo>();
+        private readonly List<OperationMethodInfo> operationInfos = new();
 
         #endregion
 
@@ -87,20 +88,18 @@ namespace Microsoft.Restier.AspNet.Model
 
         private static EdmPathExpression BuildBoundOperationReturnTypePathExpression(IEdmTypeReference returnTypeReference, ParameterInfo bindingParameter, IEdmModel model)
         {
-            // Bound actions or functions that return an entity or a collection of entities
-            // MAY specify a value for the EntitySetPath attribute
-            // if determination of the entity set for the return type is contingent on the binding parameter.
-            // The value for the EntitySetPath attribute consists of a series of segments
-            // joined together with forward slashes.
-            // The first segment of the entity set path MUST be the name of the binding parameter.
-            // The remaining segments of the entity set path MUST represent navigation segments or type casts.
 
-            // Here, if the return type matches the binding parameter type, (and no bindingPath has already been set)
-            // assume they are from the same entity set
+            IEdmStructuredType parameterType;
+            IEdmEntityType returnType;
+
+            // @mikepizzo: If the return type matches the binding parameter type, (and no bindingPath has already been set)
+            // assume they are from the same entity set.
+
+
             if (returnTypeReference != null &&
-                returnTypeReference.Definition.AsElementType() is IEdmEntityType returnType &&
+                  (returnType = returnTypeReference.Definition.AsElementType() as IEdmEntityType) != null &&
                 bindingParameter != null &&
-                bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() is IEdmStructuredType parameterType &&
+                  (parameterType = bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() as IEdmStructuredType) != null &&
                 parameterType.IsOrInheritsFrom(returnType))
             {
                 return new EdmPathExpression(bindingParameter.Name);
@@ -140,59 +139,70 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void BuildOperations(EdmModel model, string modelNamespace)
         {
-            foreach (var operationMethodInfo in operationInfos)
+
+            foreach (var operationInfo in operationInfos)
             {
-                // With this method, if return type is nullable type,it will get underlying type
-                var returnType = TypeHelper.GetUnderlyingTypeOrSelf(operationMethodInfo.Method.ReturnType);
-                var returnTypeReference = returnType.GetReturnTypeReference(model);
-                var isBound = operationMethodInfo.IsBound;
-                var bindingParameter = operationMethodInfo.Method.GetParameters().FirstOrDefault();
-
-                if (bindingParameter == null && isBound)
-                {
-                    // Ignore the method which is marked as bounded but no parameters
-                    continue;
-                }
-
-                var namespaceName = GetNamespaceName(operationMethodInfo, modelNamespace);
-
                 EdmOperation operation = null;
                 EdmPathExpression path = null;
+
+                // With this method, if return type is nullable type,it will get underlying type
+                var returnType = TypeHelper.GetUnderlyingTypeOrSelf(operationInfo.Method.ReturnType);
+                var returnTypeReference = returnType.GetReturnTypeReference(model);
+                var namespaceName = GetNamespaceName(operationInfo, modelNamespace);
+
+                // @robertmclaws: We're setting isBound here, so we can negate it later if a BindingParameter is not found.
+                var isBound = operationInfo.OperationAttribute is BoundOperationAttribute;
+
                 if (isBound)
                 {
-                    path = string.IsNullOrEmpty(operationMethodInfo.EntitySet)
-                        ? BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter, model)
-                        : new EdmPathExpression(operationMethodInfo.EntitySet);
-                }
-
-                if (operationMethodInfo.HasSideEffects)
-                {
-                    operation = new EdmAction(namespaceName, operationMethodInfo.Name, returnTypeReference, isBound, path);
-                }
-                else
-                {
-                    operation = new EdmFunction(namespaceName, operationMethodInfo.Name, returnTypeReference, isBound, path, operationMethodInfo.IsComposable);
-                }
-
-                BuildOperationParameters(operation, operationMethodInfo.Method, model);
-                model.AddElement(operation);
-
-                if (!isBound)
-                {
-                    // entitySetReferenceExpression refer to an entity set containing entities returned
-                    // by this function/action import.
-                    var entitySetExpression = BuildEntitySetExpression(model, operationMethodInfo.EntitySet, returnTypeReference);
-                    var entityContainer = model.EnsureEntityContainer(targetApiType);
-                    if (operationMethodInfo.HasSideEffects)
+                    var bindingParameter = operationInfo.Method.GetParameters().FirstOrDefault();
+                    if (bindingParameter is not null)
                     {
-                        entityContainer.AddActionImport(operation.Name, (EdmAction)operation, entitySetExpression);
+                        path = !string.IsNullOrWhiteSpace(operationInfo.EntitySetPath)
+                            ? new EdmPathExpression(operationInfo.EntitySetPath)
+                            : BuildBoundOperationReturnTypePathExpression(returnTypeReference, bindingParameter, model);
                     }
                     else
                     {
-                        entityContainer.AddFunctionImport(operation.Name, (EdmFunction)operation, entitySetExpression);
+                        Trace.TraceWarning($"Restier: The operation '{operationInfo.Name}' was marked with [BoundOperation], but no parameters were " +
+                            $"specified to bind against. Restier will register this as an unbound operation instead. Please change the method to add a parameter," +
+                            $"or use [UnboundOperation] instead.");
+                        isBound = false;
                     }
                 }
+
+                switch (operationInfo.OperationType)
+                {
+                    case OperationType.Action:
+                        operation = new EdmAction(namespaceName, operationInfo.Name, returnTypeReference, isBound, path);
+                        break;
+                    case OperationType.Function:
+                        operation = new EdmFunction(namespaceName, operationInfo.Name, returnTypeReference, isBound, path, operationInfo.IsComposable);
+                        break;
+                }
+
+                BuildOperationParameters(operation, operationInfo.Method, model);
+                model.AddElement(operation);
+
+                //RWM: Bound Operations are done at this point. Unbound operations are referenced in the EntityContainer.
+                if (isBound) continue;
+
+                // entitySetReferenceExpression refer to an entity set containing entities returned by this function/action import.
+                var entitySetExpression = BuildEntitySetExpression(model, operationInfo.EntitySet, returnTypeReference);
+                var entityContainer = model.EnsureEntityContainer(targetApiType);
+
+                switch (operationInfo.OperationType)
+                {
+                    case OperationType.Action:
+                        entityContainer.AddActionImport(operation.Name, (EdmAction)operation, entitySetExpression);
+                        break;
+                    case OperationType.Function:
+                        entityContainer.AddFunctionImport(operation.Name, (EdmFunction)operation, entitySetExpression);
+                        break;
+                }
+
             }
+
         }
 
         private static string GetNamespaceName(OperationMethodInfo methodInfo, string modelNamespace)
@@ -216,24 +226,19 @@ namespace Microsoft.Restier.AspNet.Model
 
         private void ScanForOperations()
         {
-            var methods = targetApiType.GetMethods(
-                BindingFlags.NonPublic |
-                BindingFlags.Public |
-                BindingFlags.Static |
-                BindingFlags.Instance);
+            var methods = targetApiType
+                .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance)
+                // @robertmclaws: Let's limit what we return to exclude getters/setters and any methods on System.Object.
+                .Where(c => !c.IsSpecialName && c.DeclaringType != typeof(object));
 
-            foreach (var method in methods)
-            {
-                var operationAttribute = method.GetCustomAttributes<OperationAttribute>(true).FirstOrDefault();
-                if (operationAttribute != null)
+            operationInfos.AddRange(methods
+                .Select(c => new OperationMethodInfo
                 {
-                    operationInfos.Add(new OperationMethodInfo
-                    {
-                        Method = method,
-                        OperationAttribute = operationAttribute
-                    });
-                }
-            }
+                    Method = c,
+                    OperationAttribute = c.GetCustomAttribute<OperationAttribute>(true)
+                })
+                .Where(c => c.OperationAttribute is not null)
+                .ToList());
         }
 
         #endregion
@@ -248,13 +253,13 @@ namespace Microsoft.Restier.AspNet.Model
 
             public string Namespace => OperationAttribute.Namespace ?? Method.DeclaringType.Namespace;
 
-            public string EntitySet => OperationAttribute.EntitySet;
+            public string EntitySet => (OperationAttribute as UnboundOperationAttribute)?.EntitySet ?? null;
+
+            public string EntitySetPath => (OperationAttribute as BoundOperationAttribute)?.EntitySetPath ?? null;
 
             public bool IsComposable => OperationAttribute.IsComposable;
 
-            public bool IsBound => OperationAttribute.IsBound;
-
-            public bool HasSideEffects => OperationAttribute.OperationType == OperationType.Action;
+            public OperationType OperationType => OperationAttribute.OperationType;
         }
 
     }

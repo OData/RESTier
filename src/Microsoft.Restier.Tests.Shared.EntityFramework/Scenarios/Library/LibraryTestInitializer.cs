@@ -103,13 +103,22 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     {
                          Id = new Guid("19d68c75-1313-4369-b2bf-521f2b260a59"),
                          Isbn = "9476324472648",
-                         Title = "A Clockwork Orange"
+                         Title = "A Clockwork Orange",
+                         IsActive = true
                     },
                     new Book
                     {
                         Id = new Guid("c2081e58-21a5-4a15-b0bd-fff03ebadd30"),
                         Isbn = "7273389962644",
-                        Title = "Jungle Book, The"
+                        Title = "Jungle Book, The",
+                        IsActive = true
+                    },
+                    new Book
+                    {
+                        Id = new Guid("2A139A64-B7D9-4F9F-B7F4-E93C1678EB0F"),
+                        Isbn = "1122334455668",
+                        Title = "Sea of Rustoleum",
+                        IsActive = false
                     }
                 }
             });
@@ -128,7 +137,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     {
                         Id = new Guid("0697576b-d616-4057-9d28-ed359775129e"),
                         Isbn = "1315290642409",
-                        Title = "Color Purple, The"
+                        Title = "Color Purple, The",
+                        IsActive = true                        
                     }
                 }
             });
@@ -137,7 +147,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             {
                 Id = new Guid("2D760F15-974D-4556-8CDF-D610128B537E"),
                 Isbn = "1122334455667",
-                Title = "Sea of Rust"
+                Title = "Sea of Rust",
+                IsActive = true
             });
 
             libraryContext.SaveChanges();

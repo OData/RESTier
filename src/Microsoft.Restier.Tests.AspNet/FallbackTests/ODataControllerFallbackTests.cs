@@ -22,7 +22,6 @@ using Microsoft.Restier.Tests.AspNetCore.FallbackTests;
 namespace Microsoft.Restier.Tests.AspNetCore
 
 #else
-using CloudNimble.Breakdance.WebApi;
 using CloudNimble.Breakdance.WebApi.OData;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.AspNet.FallbackTests;

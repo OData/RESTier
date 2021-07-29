@@ -104,8 +104,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
             var response = await ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books?$count=true");
 #endif
 
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.IsSuccessStatusCode.Should().BeTrue();
             content.Should().Contain("\"@odata.count\":4,");
         }

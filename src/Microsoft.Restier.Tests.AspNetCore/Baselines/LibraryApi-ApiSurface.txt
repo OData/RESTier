@@ -7,7 +7,7 @@ CanDeleteBook                                      |   False
 OnInsertingBook                                    |   False
 OnUpdatingBook                                     |   False
 OnDeletingBook                                     |   False
-OnFilterBooks                                      |   False
+OnFilterBooks                                      |    True
 OnInsertedBook                                     |   False
 OnUpdatedBook                                      |   False
 OnDeletedBook                                      |   False

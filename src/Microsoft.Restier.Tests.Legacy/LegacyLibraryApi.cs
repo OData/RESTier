@@ -5,34 +5,23 @@ using System;
 using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
-#if NETCOREAPP3_1_OR_GREATER
-using Microsoft.Restier.AspNetCore.Model;
-using Microsoft.Extensions.DependencyInjection;
-using System.Globalization;
-#else
 using Microsoft.Restier.AspNet.Model;
-
-#endif
-
-#if EF6
 using Microsoft.Restier.EntityFramework;
-#else
-using Microsoft.Restier.EntityFrameworkCore;
-#endif
+using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 
-namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
+namespace Microsoft.Restier.Tests.Legacy
 {
 
     /// <summary>
     /// A testable API that implements an Entity Framework model and has secondary operations
     /// against a SQL 2017 LocalDB database.
     /// </summary>
-    public class LibraryApi : EntityFrameworkApi<LibraryContext>
+    public class LegacyLibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
         #region Constructors
 
-        public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        public LegacyLibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
@@ -40,7 +29,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 
         #region API Methods
 
-        [UnboundOperation(OperationType = OperationType.Action, EntitySet = "Books")]
+        [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
         {
             if (book == null)
@@ -52,7 +41,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return book;
         }
 
-        [BoundOperation(IsComposable = true)]
+        [Operation(IsBound = true, IsComposable = true)]
         public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
         {
             if (books == null)
@@ -67,7 +56,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return books;
         }
 
-        [UnboundOperation]
+        [Operation]
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.All)]
         public IQueryable<Book> FavoriteBooks()
         {
@@ -87,8 +76,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 {
                     Id = Guid.NewGuid(),
                     Title = "The Cat in the Hat Comes Back",
-                    Publisher = publisher,
-                    IsActive = true
+                    Publisher = publisher
                 },
                 new Book
                 {
@@ -104,7 +92,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return publisher.Books.AsQueryable();
         }
 
-        [UnboundOperation]
+        [Operation]
         public Book PublishBook(bool IsActive)
         {
             Console.WriteLine($"IsActive = {IsActive}");
@@ -115,7 +103,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        [UnboundOperation]
+        [Operation]
         public Book PublishBooks(int Count)
         {
             Console.WriteLine($"Count = {Count}");
@@ -126,7 +114,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             };
         }
 
-        [BoundOperation(OperationType = OperationType.Action)]
+        [Operation(IsBound = true, OperationType = OperationType.Action)]
         public Publisher PublishNewBook(Publisher publisher, Guid bookId)
         {
             var book = DbContext.Set<Book>().Find(bookId);
@@ -137,14 +125,14 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             return publisher;
         }
 
-        [BoundOperation(IsComposable = true, EntitySetPath = "publisher/Books")]
+        [Operation(IsBound = true, IsComposable = true, EntitySet = "publisher/Books")]
         public IQueryable<Book> PublishedBooks(Publisher publisher)
         {
             var test = publisher.Id;
             return FavoriteBooks();
         }
 
-        [UnboundOperation]
+        [Operation]
         public Book SubmitTransaction(Guid Id)
         {
             Console.WriteLine($"Id = {Id}");
@@ -158,11 +146,6 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         #endregion
 
         #region Restier Interceptors
-
-        /// <summary>
-        /// Limits the results of <see cref="Book" /> queries by a pre-determined set of criteria.
-        /// </summary>
-        protected internal IQueryable<Book> OnFilterBooks(IQueryable<Book> entitySet) => entitySet.Where(c => c.IsActive);
 
         /// <summary>
         /// 

@@ -6,12 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 
 #if NETCOREAPP3_1_OR_GREATER
-using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.Breakdance.AspNetCore.OData;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -27,23 +26,19 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     [TestClass]
     public class NavigationPropertyTests : RestierTestBase
 #if NETCOREAPP3_1_OR_GREATER
-        <StoreApi>
+        <LibraryApi>
 #endif
     {
-        void di(IServiceCollection services)
-        {
-            services.AddTestStoreApiServices();
-        }
 
         [TestMethod]
         public async Task NavigationProperties_ChildrenShouldFilter()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Customers(1)/FavoriteProducts", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')/Books", serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
-            var (Response, ErrorContent) = await response.DeserializeResponseAsync<ODataV4List<Product>>();
-            Response.Items.Should().HaveCount(3);
+            var (Response, ErrorContent) = await response.DeserializeResponseAsync<ODataV4List<Book>>();
+            Response.Items.Should().HaveCount(2);
         }
 
     }

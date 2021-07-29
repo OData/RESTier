@@ -25,17 +25,14 @@ namespace Microsoft.Restier.Tests.AspNet.FallbackTests
 
         static FallbackModel()
         {
-            var builder = new ODataConventionModelBuilder
-            {
-                Namespace = "Microsoft.Restier.Tests.AspNet"
-            };
+            var builder = new ODataConventionModelBuilder();
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Person>("People");
             Model = (EdmModel)builder.GetEdmModel();
         }
     }
 
-    internal class Person
+    public class Person
     {
         public int Id { get; set; }
 

@@ -35,6 +35,7 @@ using Microsoft.Restier.Tests.Shared.Common;
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
+
     [TestClass]
     public class AuthorizationTests : RestierTestBase
 #if NETCOREAPP3_1_OR_GREATER
@@ -67,7 +68,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
 #endif
         /// <summary>
-        /// Tests if the query pipeline is correctly returning 403 StatusCodes when <see cref="IQueryExpressionAuthorizer.Authorize()"/> returns <see cref="false"/>.
+        /// Tests if the query pipeline is correctly returning 403 StatusCodes when <see cref="IQueryExpressionAuthorizer.Authorize"/> returns <see langword="false"/>.
         /// </summary>
         [TestMethod]
         public async Task Authorization_FilterReturns403()

@@ -3,10 +3,12 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Restier.Core;
+using Microsoft.AspNetCore.Builder;
+using CloudNimble.Breakdance.AspNetCore;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore.OData;
@@ -27,35 +29,33 @@ namespace Microsoft.Restier.Tests.AspNet
         <ClaimsPrincipalApi>
     {
 
-        [TestMethod]
-        public async Task NetCoreApi_Accessor_IsNotNull()
+        public ClaimsPrincipalAccessorTests() : base()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<ClaimsPrincipalApi>(HttpMethod.Get, resource: "/AccessorIsNotNull()", serviceCollection: services => services.AddTestDefaultServices());
-            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+            ApplicationBuilderAction = app =>
+            {
+                app.UseThreadPrincipals();
+            };
+            AddRestierAction = builder =>
+            {
+                builder.AddRestierApi<ClaimsPrincipalApi>(services => services.AddTestDefaultServices());
+            };
+            MapRestierAction = routeBuilder =>
+            {
+                routeBuilder.MapApiRoute<ClaimsPrincipalApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            };
 
-            response.IsSuccessStatusCode.Should().BeTrue();
-            var (Response, ErrorContent) = await response.DeserializeResponseAsync<ODataV4PrimitiveResult<bool>>();
-            Response.Should().NotBeNull();
-            Response.Value.Should().BeTrue();
         }
 
-        [TestMethod]
-        public async Task NetCoreApi_AccessorClaimsPrincipal_IsNotNull()
-        {
-            var response = await RestierTestHelpers.ExecuteTestRequest<ClaimsPrincipalApi>(HttpMethod.Get, resource: "/AccessorClaimsPrincipalIsNotNull()", serviceCollection: services => services.AddTestDefaultServices());
-            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+        [TestInitialize]
+        public void ClaimsTestSetup() => TestSetup();
 
-            response.IsSuccessStatusCode.Should().BeTrue();
-            var (Response, ErrorContent) = await response.DeserializeResponseAsync<ODataV4PrimitiveResult<bool>>();
-            Response.Should().NotBeNull();
-            Response.Value.Should().BeTrue();
-        }
 
         [TestMethod]
         public async Task NetCoreApi_ClaimsPrincipalCurrent_IsNotNull()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<ClaimsPrincipalApi>(HttpMethod.Get, resource: "/ClaimsPrincipalCurrentIsNotNull()", serviceCollection: services => services.AddTestDefaultServices());
-            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
+            var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/ClaimsPrincipalCurrentIsNotNull()");
+            await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
             var (Response, ErrorContent) = await response.DeserializeResponseAsync<ODataV4PrimitiveResult<bool>>();
@@ -64,7 +64,6 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
 #endif
-
 
     }
 

@@ -1,6 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AssemblyName>Microsoft.Restier.AspNet</AssemblyName>
+    <RootNamespace>Microsoft.Restier.AspNet</RootNamespace>
+    <TargetFrameworks>net472</TargetFrameworks>
+    <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for integrating with ASP.NET Web API 2.2 to automatically handle incoming requests.</Summary>
     <Description>
       $(Summary)
@@ -9,8 +16,6 @@
       Microsoft.Restier.AspNet.RestierBatchHandler
     </Description>
     <PackageTags>$(PackageTags);webapi;batch</PackageTags>
-
-    <TargetFrameworks>net472</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

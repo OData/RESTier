@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for interacting with DbContexts from Entity Framework 6.1.3 and later.</Summary>
+    <TargetFrameworks>netcoreapp3.1;net5.0;netstandard2.1</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
+    <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for interacting with DbContexts from Entity Framework 5.0 and later.</Summary>
     <Description>
       $(Summary)
 
@@ -10,12 +17,6 @@
     </Description>
     <PackageTags>$(PackageTags)entityframework;entityframeworkcore</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;netstandard2.1</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
-    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
   </PropertyGroup>
 
   <ItemGroup>

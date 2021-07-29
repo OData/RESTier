@@ -67,13 +67,16 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthorization();
+            app.UseThreadPrincipals();
+
             app.UseMvc(builder =>
             {
                 builder.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
 
                 builder.MapRestier(builder =>
                 {
-                    builder.MapApiRoute<NorthwindApi>("ApiV1", "/v1", true);
+                    builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
                 });
             });
         }

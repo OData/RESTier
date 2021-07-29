@@ -1,6 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net472</TargetFrameworks>
+    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
+    <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for implementing Restier convention semantics and query interception.</Summary>
     <Description>
       $(Summary)
@@ -10,10 +16,8 @@
     </Description>
     <PackageTags>$(PackageTags)</PackageTags>
 
-    <TargetFrameworks>netstandard2.1;net472</TargetFrameworks>
-    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Microsoft.Restier.AspNet, $(StrongNamePublicKey)</_Parameter1>

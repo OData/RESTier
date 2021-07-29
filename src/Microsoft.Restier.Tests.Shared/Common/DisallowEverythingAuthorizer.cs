@@ -7,7 +7,7 @@ namespace Microsoft.Restier.Tests.Shared
 {
 
     /// <summary>
-    /// An <see cref="IQueryExpressionAuthorizer"/> implementation that always returns <see cref="false"/>.
+    /// An <see cref="IQueryExpressionAuthorizer"/> implementation that always returns <see langword="false"/>.
     /// </summary>
     public class DisallowEverythingAuthorizer : IQueryExpressionAuthorizer
     {
