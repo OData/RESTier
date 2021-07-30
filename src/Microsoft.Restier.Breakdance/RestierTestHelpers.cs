@@ -385,7 +385,7 @@ namespace Microsoft.Restier.Breakdance
 
             restierTests.MapRestierAction = (routeBuilder) =>
             {
-                routeBuilder.MapApiRoute<TApi>(routeName, routePrefix);
+                routeBuilder.MapApiRoute<TApi>(routeName, routePrefix, true);
             };
 
             // make sure the TestServer has been started

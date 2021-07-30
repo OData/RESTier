@@ -110,20 +110,6 @@ namespace Microsoft.Restier.Breakdance
         }
 
         /// <summary>
-        /// Retrieves an <see cref="HttpClient"/> instance from the <see cref="TestServer"/> and properly configures the <see cref="HttpClient.BaseAddress"/>.
-        /// </summary>
-        /// <param name="routePrefix">
-        /// The string to append to the <see cref="HttpClient.BaseAddress"/> for all requests. Defaults to <see cref="WebApiConstants.RoutePrefix"/>.
-        /// </param>
-        /// <returns>A properly configured <see cref="HttpClient"/>instance from the <see cref="TestServer"/>.</returns>
-        public HttpClient GetHttpClient(string routePrefix = WebApiConstants.RoutePrefix)
-        {
-            var client = TestServer.CreateClient();
-            client.BaseAddress = new Uri(WebApiConstants.Localhost + routePrefix);
-            return client;
-        }
-
-        /// <summary>
         /// Retrieves an <see cref="XDocument"/> containing the full result from calling "/$metadata" on the <typeparamref name="TApi"/>.
         /// </summary>
         /// <param name="routePrefix">

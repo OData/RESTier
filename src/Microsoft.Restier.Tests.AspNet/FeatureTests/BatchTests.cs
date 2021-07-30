@@ -1,22 +1,34 @@
-﻿#if false
-
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.Restier.Breakdance;
-using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
-using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simple.OData.Client;
+using System.Globalization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Tests.Shared;
+
+#if NETCOREAPP3_1_OR_GREATER
+
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
+
+using CloudNimble.Breakdance.WebApi;
+using System.Web.Http;
 
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
+
 {
 
     [TestClass]
     public class BatchTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
+
     {
 
         /// <summary>
@@ -26,13 +38,17 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BatchTests_AddMultipleEntries()
         {
-            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi, LibraryContext>().ConfigureAwait(false);
+#if NETCOREAPP3_1_OR_GREATER
+            var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
+#else
+            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
             httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
+#endif
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {
-                OnTrace = (x, y) => TestContext.WriteLine(string.Format(x, y)),
+                OnTrace = (x, y) => TestContext.WriteLine(string.Format(CultureInfo.InvariantCulture, x, y)),
                 // RWM: Need a batter way to capture the payload... this event fires before the payload is written to the stream.
                 //BeforeRequestAsync = async (x) => {
                 //    var ms = new MemoryStream();
@@ -77,7 +93,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 throw;
             }
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books?$expand=Publisher");
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$expand=Publisher", serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -93,13 +109,17 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BatchTests_SelectPlusFunctionResult()
         {
-            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi, LibraryContext>().ConfigureAwait(false);
+#if NETCOREAPP3_1_OR_GREATER
+            var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
+#else
+            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
             httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
+#endif
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {
-                OnTrace = (x, y) => TestContext.WriteLine(string.Format(x, y)),
+                OnTrace = (x, y) => TestContext.WriteLine(string.Format(CultureInfo.InvariantCulture, x, y)),
                 // RWM: Need a batter way to capture the payload... this event fires before the payload is written to the stream.
                 //BeforeRequestAsync = async (x) => {
                 //    var ms = new MemoryStream();
@@ -158,4 +178,3 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     }
 
 }
-#endif

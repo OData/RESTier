@@ -13,17 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210718-235552" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210730-030736" />
+    <PackageReference Include="Breakdance.Extensions.MSTest2" Version="3.0.0-CI-20210730-053037" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.8" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.OData.Edm" Version="7.9.0" />
-  </ItemGroup>
-
-
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.22.0" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.24.0" />
   </ItemGroup>
 
   <ItemGroup>

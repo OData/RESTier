@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210718-235552" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210730-030736" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.8, 8.0.0)" />
   </ItemGroup>
 
