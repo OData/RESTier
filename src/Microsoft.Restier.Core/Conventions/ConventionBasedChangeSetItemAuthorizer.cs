@@ -67,12 +67,14 @@ namespace Microsoft.Restier.Core
             }
 
             var parameters = method.GetParameters();
-            if (parameters.Length == 0)
+            if (parameters.Length > 0)
             {
-                result = (bool)method.Invoke(target, null);
+                Trace.WriteLine($"Restier Authorizer found '{methodName}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
+                return Task.FromResult(result);
             }
 
-            Trace.WriteLine($"Restier Authorizer found '{methodName}', but it has an incorrect number of arguments. The number of arguments should be 0.");
+            //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
+            result = (bool)method.Invoke(target, null);
             return Task.FromResult(result);
         }
 

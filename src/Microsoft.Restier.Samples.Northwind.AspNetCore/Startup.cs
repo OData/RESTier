@@ -14,11 +14,18 @@ using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 {
+
     /// <summary>
     /// Startup class. Configures the container and the application.
     /// </summary>
     public class Startup
     {
+
+        /// <summary>
+        /// The application configuration
+        /// </summary>
+        public IConfiguration Configuration { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
@@ -81,9 +88,6 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
             });
         }
 
-        /// <summary>
-        /// The application configuration
-        /// </summary>
-        public IConfiguration Configuration { get; }
     }
+
 }

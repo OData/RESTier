@@ -68,7 +68,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task FunctionImportNotInModelShouldReturnNotFound()
+        public async Task FunctionImport_NotInModel_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct2", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task FunctionImportNotInControllerShouldReturnNotImplemented()
+        public async Task FunctionImport_NotInController_ShouldReturnNotImplemented()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
@@ -86,7 +86,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task ActionImportNotInModelShouldReturnNotFound()
+        public async Task ActionImport_NotInModel_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct2", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
@@ -95,7 +95,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task ActionImportNotInControllerShouldReturnNotImplemented()
+        public async Task ActionImport_NotInController_ShouldReturnNotImplemented()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/RemoveWorstProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
@@ -106,7 +106,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task GetActionImportShouldReturnNotFound()
+        public async Task GetActionImport_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
@@ -115,13 +115,13 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task PostFunctionImportShouldReturnNotFound()
+        public async Task FunctionImport_Post_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/GetBestProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
         }
 
     }

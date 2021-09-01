@@ -136,5 +136,7 @@ namespace Microsoft.Restier.Core
             Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
             return Task.CompletedTask;
         }
+
     }
+
 }
