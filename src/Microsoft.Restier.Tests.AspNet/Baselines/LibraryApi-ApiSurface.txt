@@ -25,7 +25,7 @@ CanInsertPublisher                                 |   False
 CanUpdatePublisher                                 |   False
 CanDeletePublisher                                 |   False
 OnInsertingPublisher                               |   False
-OnUpdatingPublisher                                |   False
+OnUpdatingPublisher                                |    True
 OnDeletingPublisher                                |   False
 OnFilterPublishers                                 |   False
 OnInsertedPublisher                                |   False

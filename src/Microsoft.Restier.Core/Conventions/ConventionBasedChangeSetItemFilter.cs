@@ -126,10 +126,19 @@ namespace Microsoft.Restier.Core
             var methodParameters = expectedMethod.GetParameters();
             if (ParametersMatch(methodParameters, parameters))
             {
-                var result = expectedMethod.Invoke(target, parameters);
-                if (result is Task resultTask)
+                try
                 {
-                    return resultTask;
+                    var result = expectedMethod.Invoke(target, parameters);
+                    if (result is Task resultTask)
+                    {
+                        return resultTask;
+                    }
+                }
+#pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    Console.WriteLine($"Error happened. {ex.Message}");
                 }
             }
 

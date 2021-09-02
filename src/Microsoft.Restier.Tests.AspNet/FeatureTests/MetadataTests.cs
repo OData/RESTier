@@ -41,7 +41,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         {
             /* JHC Note:
              * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata after some changes
-             * 
              * */
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(LibraryApi).Name}-ApiMetadata.txt";
             File.Exists(fileName).Should().BeTrue();
@@ -60,7 +59,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         {
             /* JHC Note:
              * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiSurface after making some changes to the data model
-             * 
              * */
             var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt";
@@ -104,7 +102,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         {
             /* JHC Note:
              * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata after some changes
-             * 
              * */
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(StoreApi).Name}-ApiMetadata.txt";
             File.Exists(fileName).Should().BeTrue();

@@ -24,6 +24,7 @@
         </Key>
         <Property Name="Id" Type="Edm.String" Nullable="false" />
         <Property Name="Addr" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Address" />
+        <Property Name="LastUpdated" Type="Edm.DateTimeOffset" Nullable="false" />
         <NavigationProperty Name="Books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
       </EntityType>
       <EntityType Name="Employee">

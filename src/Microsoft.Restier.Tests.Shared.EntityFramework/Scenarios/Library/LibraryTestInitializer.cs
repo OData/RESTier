@@ -97,6 +97,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     Street = "123 Sesame St.",
                     Zip = "00010"
                 },
+                LastUpdated = DateTimeOffset.MinValue,
                 Books = new ObservableCollection<Book>
                 {
                     new Book
@@ -131,6 +132,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     Street = "234 Anystreet St.",
                     Zip = "10010"
                 },
+                LastUpdated = DateTimeOffset.MinValue,
                 Books = new ObservableCollection<Book>
                 {
                     new Book

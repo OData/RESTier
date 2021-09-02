@@ -11,6 +11,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System;
+using System.Threading;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
@@ -98,6 +100,32 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var (book2, ErrorContent2) = await bookCheckRequest.DeserializeResponseAsync<Book>();
             book2.Should().NotBeNull();
             book2.Title.Should().EndWith(" | Patch Test");
+        }
+
+        [TestMethod]
+        public async Task UpdatePublisher_ShouldCallInterceptor()
+        {
+            var publisherRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            publisherRequest.IsSuccessStatusCode.Should().BeTrue();
+            var (publisher, ErrorContent) = await publisherRequest.DeserializeResponseAsync<Publisher>();
+
+            publisher.Should().NotBeNull();
+            publisher.Should().NotBeNull();
+
+            publisher.Should().NotBeNull();
+            publisher.Books = null;
+            var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var result = await TestContext.LogAndReturnMessageContentAsync(publisherEditRequest);
+            
+            publisherEditRequest.IsSuccessStatusCode.Should().BeTrue();
+
+            var publisherRequest2 = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            publisherRequest2.IsSuccessStatusCode.Should().BeTrue();
+            var (publisher2, ErrorContent2) = await publisherRequest2.DeserializeResponseAsync<Publisher>();
+
+            publisher2.Should().NotBeNull();
+            publisher2.Should().NotBeNull();
+            publisher2.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, 5000);
         }
 
     }

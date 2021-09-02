@@ -162,15 +162,19 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         /// <summary>
         /// Limits the results of <see cref="Book" /> queries by a pre-determined set of criteria.
         /// </summary>
-        protected internal IQueryable<Book> OnFilterBooks(IQueryable<Book> entitySet) => entitySet.Where(c => c.IsActive);
+        internal protected IQueryable<Book> OnFilterBooks(IQueryable<Book> entitySet) => entitySet.Where(c => c.IsActive);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        protected internal bool CanUpdateEmployee() => false;
+        internal protected bool CanUpdateEmployee() => false;
 
-        protected internal void OnExecutingDiscontinueBooks(IQueryable<Book> books)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="books"></param>
+        internal protected void OnExecutingDiscontinueBooks(IQueryable<Book> books)
         {
             books.ToList().ForEach(c =>
             {
@@ -179,13 +183,22 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             });
         }
 
-        protected internal void OnExecutedDiscontinueBooks(IQueryable<Book> books)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="books"></param>
+        internal protected void OnExecutedDiscontinueBooks(IQueryable<Book> books)
         {
             books.ToList().ForEach(c =>
             {
                 Console.WriteLine($"Id = {c.Id}");
                 c.Title += " | Intercepted";
             });
+        }
+
+        internal protected void OnUpdatingPublisher(Publisher publisher)
+        {
+            publisher.LastUpdated = DateTimeOffset.Now;
         }
 
         #endregion
