@@ -110,9 +110,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var (publisher, ErrorContent) = await publisherRequest.DeserializeResponseAsync<Publisher>();
 
             publisher.Should().NotBeNull();
-            publisher.Should().NotBeNull();
 
-            publisher.Should().NotBeNull();
             publisher.Books = null;
             var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var result = await TestContext.LogAndReturnMessageContentAsync(publisherEditRequest);
@@ -123,7 +121,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             publisherRequest2.IsSuccessStatusCode.Should().BeTrue();
             var (publisher2, ErrorContent2) = await publisherRequest2.DeserializeResponseAsync<Publisher>();
 
-            publisher2.Should().NotBeNull();
             publisher2.Should().NotBeNull();
             publisher2.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, 5000);
         }

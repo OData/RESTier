@@ -84,10 +84,17 @@ namespace Microsoft.Restier.Core
             var methodParameters = expectedMethod.GetParameters();
             if (ParametersMatch(methodParameters, parameters))
             {
-                var result = expectedMethod.Invoke(target, parameters);
-                if (result is Task resultTask)
+                try
                 {
-                    return resultTask;
+                    var result = expectedMethod.Invoke(target, parameters);
+                    if (result is Task resultTask)
+                    {
+                        return resultTask;
+                    }
+                }
+                catch (TargetInvocationException ex)
+                {
+                    throw new ConventionInvocationException($"Authorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
                 }
             }
 

@@ -134,11 +134,9 @@ namespace Microsoft.Restier.Core
                         return resultTask;
                     }
                 }
-#pragma warning disable CA1031 // Do not catch general exception types
-                catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
+                catch (TargetInvocationException ex)
                 {
-                    Console.WriteLine($"Error happened. {ex.Message}");
+                    throw new ConventionInvocationException($"Authorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
                 }
             }
 

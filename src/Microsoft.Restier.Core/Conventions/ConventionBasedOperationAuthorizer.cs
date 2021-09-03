@@ -3,12 +3,14 @@
 
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Operation;
 
 namespace Microsoft.Restier.Core
 {
+
     /// <summary>
     /// A convention-based operation authorizer.
     /// </summary>
@@ -72,8 +74,15 @@ namespace Microsoft.Restier.Core
             }
 
             //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
-            result = (bool)method.Invoke(target, null);
-            return Task.FromResult(result);
+            try
+            {
+                result = (bool)method.Invoke(target, null);
+                return Task.FromResult(result);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw new ConventionInvocationException($"Authorizer {methodName} invocation failed. Check the inner exception for more details.", ex.InnerException);
+            }
         }
 
     }
