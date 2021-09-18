@@ -95,11 +95,6 @@
 
   <ItemGroup Condition=" $(IsTestProject) != 'true' and  $(IsSampleProject) != 'true'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <!-- RWM: The code quality on the unit tests right now is not awesome, so let's skip checking it for now. -->
-    <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="3.3.1">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-
 
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>$(AssemblyName.Replace("Microsoft.Restier.", "Microsoft.Restier.Tests.")), $(StrongNamePublicKey)</_Parameter1>
@@ -107,15 +102,14 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(IsTestProject) == 'true'  and  $(IsSampleProject) != 'true'">
-    <PackageReference Include="FluentAssertions" Version="5.10.3" PrivateAssets="All" />
+    <PackageReference Include="FluentAssertions" Version="6.1.0" PrivateAssets="All" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="0.11.4" PrivateAssets="All" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.5" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.5" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version ="3.3.1" PrivateAssets="All" />
     <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
   </ItemGroup>
 

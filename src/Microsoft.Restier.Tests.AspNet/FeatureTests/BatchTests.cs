@@ -9,6 +9,7 @@ using Simple.OData.Client;
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
+using System.Threading;
 
 #if NETCOREAPP3_1_OR_GREATER
 
@@ -93,6 +94,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 throw;
             }
 
+            Thread.Sleep(5000);
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$expand=Publisher", serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 

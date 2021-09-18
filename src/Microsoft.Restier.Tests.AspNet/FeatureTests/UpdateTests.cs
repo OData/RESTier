@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var (publisher2, ErrorContent2) = await publisherRequest2.DeserializeResponseAsync<Publisher>();
 
             publisher2.Should().NotBeNull();
-            publisher2.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, 5000);
+            publisher2.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 5));
         }
 
     }

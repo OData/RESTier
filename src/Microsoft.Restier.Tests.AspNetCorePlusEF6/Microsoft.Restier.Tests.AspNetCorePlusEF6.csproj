@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <DefineConstants>$(DefineConstants);EF6</DefineConstants>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -20,8 +20,8 @@
   <ItemGroup>
     <PackageReference Include="Breakdance.Extensions.MSTest2" Version="3.0.0-CI-20210730-053037" />
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.9.0" />
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.24.0" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.*" />
   </ItemGroup>
 
   <ItemGroup>
