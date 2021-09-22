@@ -17,6 +17,8 @@
     </Description>
     <PackageTags>$(PackageTags)entityframework;entityframeworkcore</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
+
   </PropertyGroup>
 
   <ItemGroup>
