@@ -21,6 +21,7 @@ namespace Microsoft.Restier.EntityFramework
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Core;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Microsoft.Restier.EntityFrameworkCore
 #endif
@@ -83,11 +84,20 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
 
 #pragma warning disable EF1001 // Internal EF Core API usage.
+
             // @caldwell0414: This code goes through all of the Entity types in the model, and where not marked as "owned" builds a dictionary of name and primary-key type.
-            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !(c as EntityType).IsImplicitlyCreatedJoinEntityType).ToDictionary(
-#pragma warning restore EF1001 // Internal EF Core API usage.
+#if EFCORE6_0
+
+            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !IsImplicitManyToManyJoinEntity(c)).ToDictionary(
                             e => e.ClrType,
-                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList()));
+                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType?.GetProperty(p.Name)).ToList()));
+#else
+            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !(c as EntityType).IsImplicitlyCreatedJoinEntityType).ToDictionary(
+                            e => e.ClrType,
+                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType?.GetProperty(p.Name)).ToList()));
+#endif
+
+#pragma warning restore EF1001 // Internal EF Core API usage.
 
             AddRange(context.ResourceTypeKeyPropertiesMap, keys);
 #endif
@@ -166,6 +176,18 @@ namespace Microsoft.Restier.EntityFrameworkCore
             return null;
 
         }
+
+#if EFCORE6_0
+
+        /// <summary>
+        /// A replacement for IsImplicitlyCreatedJoinEntityType, since on EF Core 6.0 Model.GetEntityTypes() returns RuntimeEntityTypes instead of EntityTypes.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool IsImplicitManyToManyJoinEntity(IEntityType entity) =>
+            entity.ClrType == typeof(Dictionary<string, object>) && entity.GetForeignKeys().Count() == 2 && entity.GetProperties().Count() == 2;
+
+#endif
 
         private static void AddRange<TKey, TValue>(
           IDictionary<TKey, TValue> source,

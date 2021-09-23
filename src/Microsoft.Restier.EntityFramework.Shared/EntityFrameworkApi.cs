@@ -4,9 +4,9 @@
 using System;
 using System.Linq;
 #if EFCore
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 #else
-    using System.Data.Entity;
+using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;

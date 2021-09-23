@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;netstandard2.1</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
     <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
     <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -18,8 +18,12 @@
     <PackageTags>$(PackageTags)entityframework;entityframeworkcore</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
-
   </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net6.0'">$(DefineConstants);EFCORE6_0</DefineConstants>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
