@@ -132,7 +132,7 @@ namespace Microsoft.Restier.AspNetCore
         {
             if (edmEntityObject == null)
             {
-                throw new ArgumentNullException(nameof(edmEntityObject));
+                throw new ODataException("A POST requires an object to be present in the request body.");
             }
 
             EnsureInitialized();
@@ -273,6 +273,11 @@ namespace Microsoft.Restier.AspNetCore
                 if (parameters == null)
                 {
                     return null;
+                }
+
+                if (!parameters.ContainsKey(p))
+                {
+                    throw new NullReferenceException($"The key {p} was not found in the parameters the ASP.NET Core ModelBinder retrieved from the POST body.");
                 }
 
                 return parameters[p];

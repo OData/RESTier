@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.OData;
+using Microsoft.Restier.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -14,9 +15,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
-using Microsoft.OData;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.AspNet
 {

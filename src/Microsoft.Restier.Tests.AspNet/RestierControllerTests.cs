@@ -121,7 +121,7 @@ namespace Microsoft.Restier.Tests.AspNet
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
-            response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
     }

@@ -9,6 +9,7 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.OData;
@@ -118,7 +119,18 @@ namespace Microsoft.Restier.AspNetCore
                 default:
                     code = HttpStatusCode.InternalServerError;
                     Trace.TraceError($"Exception: {exception.Message} \nStackTrace: {exception.StackTrace}");
-                    context.Result = new StatusCodeResult((int)code);
+                    if (context.HttpContext.Request.IsLocal())
+                    {
+                        var response500 = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
+                        context.Result = new ObjectResult(response500)
+                        {
+                            StatusCode = (int)code,
+                        };
+                    }
+                    else
+                    {
+                        context.Result = new StatusCodeResult((int)code);
+                    }
                     break;
             }
 
