@@ -84,7 +84,7 @@ namespace Microsoft.Restier.AspNet.Operation
                 restierOperationContext.OperationName,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
-            if (method == null)
+            if (method is null)
             {
                 throw new NotImplementedException(AspNetResources.OperationNotImplemented);
             }
@@ -97,7 +97,7 @@ namespace Microsoft.Restier.AspNet.Operation
             var parameters = new object[parameterArray.Length];
 
             var paraIndex = 0;
-            if (restierOperationContext.BindingParameterValue != null)
+            if (restierOperationContext.BindingParameterValue is not null)
             {
                 // Add binding parameter which is first parameter of method
                 parameters[0] = PrepareBindingParameter(parameterArray[0].ParameterType, restierOperationContext.BindingParameterValue);
@@ -151,10 +151,10 @@ namespace Microsoft.Restier.AspNet.Operation
             var enumerableType = bindingType.FindGenericType(typeof(IEnumerable<>));
 
             // This means binding to a single entity
-            if (enumerableType == null)
+            if (enumerableType is null)
             {
                 var entity = bindingParameterValue.SingleOrDefault();
-                if (entity == null)
+                if (entity is null)
                 {
                     throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
                 }
@@ -175,7 +175,7 @@ namespace Microsoft.Restier.AspNet.Operation
                 return arrayResult;
             }
 
-            if (bindingType.FindGenericType(typeof(ICollection<>)) != null)
+            if (bindingType.FindGenericType(typeof(ICollection<>)) is not null)
             {
                 var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric
                     .MakeGenericMethod(elementClrType);
@@ -215,13 +215,13 @@ namespace Microsoft.Restier.AspNet.Operation
             if (edmReturnType.IsCollection())
             {
                 var elementClrType = returnType.GetElementType() ?? returnType.GenericTypeArguments[0];
-                if (result == null)
+                if (result is null)
                 {
                     return ExpressionHelpers.CreateEmptyQueryable(elementClrType);
                 }
 
                 var enumerableType = result.GetType().FindGenericType(typeof(IEnumerable<>));
-                if (enumerableType != null)
+                if (enumerableType is not null)
                 {
                     return ((IEnumerable)result).AsQueryable();
                 }
@@ -242,7 +242,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
         private async Task InvokeAuthorizers(OperationContext context, CancellationToken cancellationToken)
         {
-            if (operationAuthorizer == null)
+            if (operationAuthorizer is null)
             {
                 return;
             }
@@ -255,7 +255,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
         private async Task PerformPreEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            if (operationFilter != null)
+            if (operationFilter is not null)
             {
                 await operationFilter.OnOperationExecutingAsync(context, cancellationToken).ConfigureAwait(false);
             }
@@ -263,7 +263,7 @@ namespace Microsoft.Restier.AspNet.Operation
 
         private async Task PerformPostEvent(OperationContext context, CancellationToken cancellationToken)
         {
-            if (operationFilter != null)
+            if (operationFilter is not null)
             {
                 await operationFilter.OnOperationExecutedAsync(context, cancellationToken).ConfigureAwait(false);
             }

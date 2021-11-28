@@ -43,18 +43,18 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             RawResult rawResult = graph as RawResult;
-            if (rawResult != null)
+            if (rawResult is not null)
             {
                 graph = rawResult.Result;
                 type = rawResult.Type;
             }
 
-            if (writeContext != null)
+            if (writeContext is not null)
             {
                 graph = RestierPrimitiveSerializer.ConvertToPayloadValue(graph, writeContext, payloadValueConverter);
             }
 
-            if (graph == null)
+            if (graph is null)
             {
                 // This is to make ODataRawValueSerializer happily serialize null value.
                 graph = string.Empty;
@@ -78,18 +78,18 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             RawResult rawResult = graph as RawResult;
-            if (rawResult != null)
+            if (rawResult is not null)
             {
                 graph = rawResult.Result;
                 type = rawResult.Type;
             }
 
-            if (writeContext != null)
+            if (writeContext is not null)
             {
                 graph = RestierPrimitiveSerializer.ConvertToPayloadValue(graph, writeContext, payloadValueConverter);
             }
 
-            if (graph == null)
+            if (graph is null)
             {
                 // This is to make ODataRawValueSerializer happily serialize null value.
                 graph = string.Empty;

@@ -39,7 +39,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             EnumResult enumResult = graph as EnumResult;
-            if (enumResult != null)
+            if (enumResult is not null)
             {
                 graph = enumResult.Result;
                 type = enumResult.Type;
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             EnumResult enumResult = graph as EnumResult;
-            if (enumResult != null)
+            if (enumResult is not null)
             {
                 graph = enumResult.Result;
                 type = enumResult.Type;

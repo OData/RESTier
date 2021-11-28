@@ -77,7 +77,7 @@ namespace Microsoft.Restier.AspNetCore
                     rcb.RouteName = routeName;
 
                     containerBuilder.AddService<IEnumerable<IODataRoutingConvention>>(OData.ServiceLifetime.Singleton, sp => routeBuilder.CreateRestierRoutingConventions(route.Key));
-                    if (batchHandler != null)
+                    if (batchHandler is not null)
                     {
                         //RWM: DO NOT simplify this generic signature. It HAS to stay this way, otherwise the code breaks.
                         containerBuilder.AddService<ODataBatchHandler>(OData.ServiceLifetime.Singleton, sp => batchHandler);
@@ -121,12 +121,12 @@ namespace Microsoft.Restier.AspNetCore
         public static ODataRoute MapODataServiceRoute(this IRouteBuilder builder, string routeName,
             string routePrefix, Action<IContainerBuilder, string> configureAction)
         {
-            if (builder == null)
+            if (builder is null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (routeName == null)
+            if (routeName is null)
             {
                 throw new ArgumentNullException(nameof(routeName));
             }
@@ -135,7 +135,7 @@ namespace Microsoft.Restier.AspNetCore
 
             // Build and configure the root container.
             var perRouteContainer = builder.ServiceProvider.GetRequiredService<IPerRouteContainer>();
-            if (perRouteContainer == null)
+            if (perRouteContainer is null)
             {
                 throw new InvalidOperationException("Could not find the PerRouteContainer.");
             }
@@ -157,7 +157,7 @@ namespace Microsoft.Restier.AspNetCore
 
             // If settings is not on local, use the global configuration settings.
             var options = builder.ServiceProvider.GetRequiredService<ODataOptions>();
-            if (pathHandler != null && pathHandler.UrlKeyDelimiter == null)
+            if (pathHandler is not null && pathHandler.UrlKeyDelimiter is null)
             {
                 pathHandler.UrlKeyDelimiter = options.UrlKeyDelimiter;
             }
@@ -182,7 +182,7 @@ namespace Microsoft.Restier.AspNetCore
             // by the batching middleware to handle the batch request. Batching still requires the injection
             // of the batching middleware via UseODataBatching().
             var batchHandler = serviceProvider.GetService<ODataBatchHandler>();
-            if (batchHandler != null)
+            if (batchHandler is not null)
             {
                 batchHandler.ODataRoute = route;
                 batchHandler.ODataRouteName = routeName;

@@ -28,7 +28,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             var result = base.ReadInline(item, edmType, readContext);
 
             var edmEnumObject = result as EdmEnumObject;
-            if (edmEnumObject != null)
+            if (edmEnumObject is not null)
             {
                 return edmEnumObject.Value;
             }

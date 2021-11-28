@@ -72,7 +72,7 @@ namespace Microsoft.Restier.Core.Query
 
             set
             {
-                if (exception != null)
+                if (exception is not null)
                 {
                     throw new InvalidOperationException(Resources.CannotSetResultsSourceIfThereIsAnyError);
                 }

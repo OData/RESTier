@@ -53,7 +53,7 @@ namespace Microsoft.Restier.AspNet
             {
                 var result = await handler.Invoke(actionExecutedContext, useVerboseErrors, cancellationToken).ConfigureAwait(false);
 
-                if (result != null)
+                if (result is not null)
                 {
                     actionExecutedContext.Response = result;
                     return;
@@ -108,7 +108,7 @@ namespace Microsoft.Restier.AspNet
                 exception = exception.InnerException.Demystify();
             }
 
-            if (exception == null)
+            if (exception is null)
             {
                 return Task.FromResult<HttpResponseMessage>(null);
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Restier.AspNet
             // exception must be handled in OnChangeSetCompleted
             // to avoid deadlock in Github Issue #82.
             var changeSetProperty = context.Request.GetChangeSet();
-            if (changeSetProperty != null)
+            if (changeSetProperty is not null)
             {
                 changeSetProperty.Exceptions.Add(exception);
                 changeSetProperty.OnChangeSetCompleted();

@@ -93,7 +93,7 @@ namespace System.Linq.Expressions
             var lambdaExpression = expression as LambdaExpression;
 
             Contract.Assert(expression.NodeType == ExpressionType.Lambda);
-            Contract.Assert(lambdaExpression != null);
+            Contract.Assert(lambdaExpression is not null);
             Contract.Assert(lambdaExpression.Body.NodeType == ExpressionType.Call);
 
             return (lambdaExpression.Body as MethodCallExpression).Method.GetGenericMethodDefinition();

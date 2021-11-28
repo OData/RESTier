@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(expression, nameof(expression));
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentException(Resources.ExpressionMustBeQueryable);
             }

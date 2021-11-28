@@ -69,7 +69,7 @@ namespace Microsoft.Restier.AspNetCore
 
             var path = GetPath();
             var lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment == null)
+            if (lastSegment is null)
             {
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
             }
@@ -93,7 +93,7 @@ namespace Microsoft.Restier.AspNetCore
             }
             else
             {
-                if (queryable == null)
+                if (queryable is null)
                 {
                     return NotFound(Resources.ResourceNotFound);
                 }
@@ -130,7 +130,7 @@ namespace Microsoft.Restier.AspNetCore
         /// <returns>The task object that contains the creation result.</returns>
         public async Task<IActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (edmEntityObject == null)
+            if (edmEntityObject is null)
             {
                 throw new ODataException("A POST requires an object to be present in the request body.");
             }
@@ -147,7 +147,7 @@ namespace Microsoft.Restier.AspNetCore
             // In case of type inheritance, the actual type will be different from entity type
             var expectedEntityType = path.EdmType;
             var actualEntityType = path.EdmType as IEdmStructuredType;
-            if (edmEntityObject.ActualEdmType != null)
+            if (edmEntityObject.ActualEdmType is not null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
                 actualEntityType = edmEntityObject.ActualEdmType;
@@ -165,7 +165,7 @@ namespace Microsoft.Restier.AspNetCore
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
 
             var changeSetProperty = HttpContext.GetChangeSet();
-            if (changeSetProperty == null)
+            if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(postItem);
@@ -215,7 +215,7 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             var propertiesInEtag = GetOriginalValues(entitySet);
-            if (propertiesInEtag == null)
+            if (propertiesInEtag is null)
             {
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
@@ -232,7 +232,7 @@ namespace Microsoft.Restier.AspNetCore
                 null);
 
             var changeSetProperty = HttpContext.GetChangeSet();
-            if (changeSetProperty == null)
+            if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(deleteItem);
@@ -262,7 +262,7 @@ namespace Microsoft.Restier.AspNetCore
             var path = GetPath();
 
             var lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment == null)
+            if (lastSegment is null)
             {
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
             }
@@ -270,7 +270,7 @@ namespace Microsoft.Restier.AspNetCore
             IQueryable result = null;
             object GetParaValueFunc(string p)
             {
-                if (parameters == null)
+                if (parameters is null)
                 {
                     return null;
                 }
@@ -293,7 +293,7 @@ namespace Microsoft.Restier.AspNetCore
             {
                 // Get queryable path builder to builder
                 var queryable = GetQuery(path);
-                if (queryable == null)
+                if (queryable is null)
                 {
                     return NotFound(Resources.ResourceNotFound);
                 }
@@ -307,7 +307,7 @@ namespace Microsoft.Restier.AspNetCore
                 }
             }
 
-            if (path.EdmType == null)
+            if (path.EdmType is null)
             {
                 // This is a void action, return 204 directly
                 return StatusCode((int)HttpStatusCode.NoContent);
@@ -349,13 +349,13 @@ namespace Microsoft.Restier.AspNetCore
             CheckModelState();
             var path = GetPath();
             var entitySet = path.NavigationSource as IEdmEntitySet;
-            if (entitySet == null)
+            if (entitySet is null)
             {
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
             var propertiesInEtag = GetOriginalValues(entitySet);
-            if (propertiesInEtag == null)
+            if (propertiesInEtag is null)
             {
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
             }
@@ -368,7 +368,7 @@ namespace Microsoft.Restier.AspNetCore
             // This will set any unspecified properties to their default value.
             var expectedEntityType = path.EdmType;
             var actualEntityType = path.EdmType as IEdmStructuredType;
-            if (edmEntityObject.ActualEdmType != null)
+            if (edmEntityObject.ActualEdmType is not null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
                 actualEntityType = edmEntityObject.ActualEdmType;
@@ -389,7 +389,7 @@ namespace Microsoft.Restier.AspNetCore
             };
 
             var changeSetProperty = HttpContext.GetChangeSet();
-            if (changeSetProperty == null)
+            if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Add(updateItem);
@@ -452,9 +452,9 @@ namespace Microsoft.Restier.AspNetCore
                 }
             }
 
-            if (singleResult != null)
+            if (singleResult is not null)
             {
-                if (singleResult.Result == null)
+                if (singleResult.Result is null)
                 {
                     // Per specification, If the property is single-valued and has the null value,
                     // the service responds with 204 No Content.
@@ -476,13 +476,13 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             var entityResult = query.SingleOrDefault();
-            if (entityResult == null)
+            if (entityResult is null)
             {
                 return NoContent();
             }
 
             // Check the ETag here
-            if (etag != null)
+            if (etag is not null)
             {
                 // request with If-Match header, if match, then should return whole content
                 // request with If-Match header, if not match, then should return 412
@@ -491,11 +491,11 @@ namespace Microsoft.Restier.AspNetCore
                 etag.EntityType = query.ElementType;
                 query = etag.ApplyTo(query);
                 entityResult = query.SingleOrDefault();
-                if (entityResult == null && !etag.IsIfNoneMatch)
+                if (entityResult is null && !etag.IsIfNoneMatch)
                 {
                     return StatusCode((int)HttpStatusCode.PreconditionFailed);
                 }
-                else if (entityResult == null)
+                else if (entityResult is null)
                 {
                     return StatusCode((int)HttpStatusCode.NotModified);
                 }
@@ -530,11 +530,11 @@ namespace Microsoft.Restier.AspNetCore
             var queryOptions = new ODataQueryOptions(queryContext, Request);
 
             // Get etag for query request
-            if (queryOptions.IfMatch != null)
+            if (queryOptions.IfMatch is not null)
             {
                 etag = queryOptions.IfMatch;
             }
-            else if (queryOptions.IfNoneMatch != null)
+            else if (queryOptions.IfNoneMatch is not null)
             {
                 etag = queryOptions.IfNoneMatch;
             }
@@ -547,7 +547,7 @@ namespace Microsoft.Restier.AspNetCore
                 return (queryable, etag);
             }
 
-            if (queryOptions.Count != null && !applyCount)
+            if (queryOptions.Count is not null && !applyCount)
             {
                 var queryExecutorOptions = api.GetApiService<RestierQueryExecutorOptions>();
                 queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
@@ -586,13 +586,13 @@ namespace Microsoft.Restier.AspNetCore
         private ODataPath GetPath()
         {
             var properties = HttpContext.ODataFeature();
-            if (properties == null)
+            if (properties is null)
             {
                 throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
             }
 
             var path = properties.Path;
-            if (path == null)
+            if (path is null)
             {
                 throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
             }

@@ -40,7 +40,7 @@ namespace Microsoft.Restier.EntityFramework
         {
             Ensure.NotNull(context, nameof(context));
 
-            if (context.ModelReference.EntitySet == null)
+            if (context.ModelReference.EntitySet is null)
             {
                 // EF provider can only source *ResourceSet*.
                 return null;
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.EntityFramework
 
             var dbSetProperty = frameworkApi.ContextType.GetProperties()
                 .FirstOrDefault(prop => prop.Name == context.ModelReference.EntitySet.Name);
-            if (dbSetProperty == null)
+            if (dbSetProperty is null)
             {
                 // EF provider can only source EntitySet from *DbSet property*.
                 return null;

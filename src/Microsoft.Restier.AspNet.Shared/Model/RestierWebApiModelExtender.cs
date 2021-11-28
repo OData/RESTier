@@ -53,7 +53,7 @@ namespace Microsoft.Restier.AspNet.Model
         private IQueryable GetEntitySetQuery(QueryExpressionContext context)
         {
             Ensure.NotNull(context, nameof(context));
-            if (context.ModelReference == null)
+            if (context.ModelReference is null)
             {
                 return null;
             }
@@ -70,13 +70,13 @@ namespace Microsoft.Restier.AspNet.Model
 
             var entitySetProperty = entitySetProperties
                 .SingleOrDefault(p => p.Name == entitySet.Name);
-            if (entitySetProperty != null)
+            if (entitySetProperty is not null)
             {
                 object target = null;
                 if (!entitySetProperty.GetMethod.IsStatic)
                 {
                     target = context.QueryContext.Api;
-                    if (target == null ||
+                    if (target is null ||
                         !targetApiType.IsInstanceOfType(target))
                     {
                         return null;
@@ -92,7 +92,7 @@ namespace Microsoft.Restier.AspNet.Model
         private IQueryable GetSingletonQuery(QueryExpressionContext context)
         {
             Ensure.NotNull(context, nameof(context));
-            if (context.ModelReference == null)
+            if (context.ModelReference is null)
             {
                 return null;
             }
@@ -109,13 +109,13 @@ namespace Microsoft.Restier.AspNet.Model
 
             var singletonProperty = singletonProperties
                 .SingleOrDefault(p => p.Name == singleton.Name);
-            if (singletonProperty != null)
+            if (singletonProperty is not null)
             {
                 object target = null;
                 if (!singletonProperty.GetMethod.IsStatic)
                 {
                     target = context.QueryContext.Api;
-                    if (target == null ||
+                    if (target is null ||
                         !targetApiType.IsInstanceOfType(target))
                     {
                         return null;
@@ -133,7 +133,7 @@ namespace Microsoft.Restier.AspNet.Model
         private void ScanForDeclaredPublicProperties()
         {
             var currentType = targetApiType;
-            while (currentType != null && currentType != typeof(ApiBase))
+            while (currentType is not null && currentType != typeof(ApiBase))
             {
                 var publicPropertiesDeclaredOnCurrentType = currentType.GetProperties(
                     BindingFlags.Public |
@@ -159,7 +159,7 @@ namespace Microsoft.Restier.AspNet.Model
             foreach (var property in publicProperties)
             {
                 var resourceAttribute = property.GetCustomAttributes<ResourceAttribute>(true).FirstOrDefault();
-                if (resourceAttribute == null)
+                if (resourceAttribute is null)
                 {
                     continue;
                 }
@@ -180,7 +180,7 @@ namespace Microsoft.Restier.AspNet.Model
                 }
 
                 var entityType = model.FindDeclaredType(propertyType.FullName) as IEdmEntityType;
-                if (entityType == null)
+                if (entityType is null)
                 {
                     // Skip property whose entity type has not been declared yet.
                     continue;
@@ -189,7 +189,7 @@ namespace Microsoft.Restier.AspNet.Model
                 var container = model.EnsureEntityContainer(targetApiType);
                 if (isEntitySet)
                 {
-                    if (container.FindEntitySet(property.Name) == null)
+                    if (container.FindEntitySet(property.Name) is null)
                     {
                         container.AddEntitySet(property.Name, entityType);
                     }
@@ -205,7 +205,7 @@ namespace Microsoft.Restier.AspNet.Model
                 }
                 else
                 {
-                    if (container.FindSingleton(property.Name) == null)
+                    if (container.FindSingleton(property.Name) is null)
                     {
                         container.AddSingleton(property.Name, entityType);
                     }
@@ -274,7 +274,7 @@ namespace Microsoft.Restier.AspNet.Model
                         }
                     }
 
-                    if (targetNavigationSource != null)
+                    if (targetNavigationSource is not null)
                     {
                         navigationSource.AddNavigationTarget(navigationProperty, targetNavigationSource);
                     }
@@ -306,7 +306,7 @@ namespace Microsoft.Restier.AspNet.Model
                 Ensure.NotNull(context, nameof(context));
 
                 var modelReturned = GetModelReturnedByInnerHandler(context);
-                if (modelReturned == null)
+                if (modelReturned is null)
                 {
                     // There is no model returned so return an empty model.
                     var emptyModel = new EdmModel();
@@ -315,7 +315,7 @@ namespace Microsoft.Restier.AspNet.Model
                 }
 
                 var edmModel = modelReturned as EdmModel;
-                if (edmModel == null)
+                if (edmModel is null)
                 {
                     // The model returned is not an EDM model.
                     return modelReturned;
@@ -330,7 +330,7 @@ namespace Microsoft.Restier.AspNet.Model
             private IEdmModel GetModelReturnedByInnerHandler(ModelContext context)
             {
                 var innerHandler = InnerModelBuilder;
-                if (innerHandler != null)
+                if (innerHandler is not null)
                 {
                     return innerHandler.GetModel(context);
                 }
@@ -358,7 +358,7 @@ namespace Microsoft.Restier.AspNet.Model
             /// <inheritdoc/>
             public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
             {
-                if (InnerModelMapper != null &&
+                if (InnerModelMapper is not null &&
                     InnerModelMapper.TryGetRelevantType(context, name, out relevantType))
                 {
                     return true;
@@ -366,21 +366,21 @@ namespace Microsoft.Restier.AspNet.Model
 
                 relevantType = null;
                 var entitySetProperty = ModelCache.entitySetProperties.SingleOrDefault(p => p.Name == name);
-                if (entitySetProperty != null)
+                if (entitySetProperty is not null)
                 {
                     relevantType = entitySetProperty.PropertyType.GetGenericArguments()[0];
                 }
 
-                if (relevantType == null)
+                if (relevantType is null)
                 {
                     var singletonProperty = ModelCache.singletonProperties.SingleOrDefault(p => p.Name == name);
-                    if (singletonProperty != null)
+                    if (singletonProperty is not null)
                     {
                         relevantType = singletonProperty.PropertyType;
                     }
                 }
 
-                return relevantType != null;
+                return relevantType is not null;
             }
 
             /// <inheritdoc/>
@@ -390,7 +390,7 @@ namespace Microsoft.Restier.AspNet.Model
                 string name,
                 out Type relevantType)
             {
-                if (InnerModelMapper != null &&
+                if (InnerModelMapper is not null &&
                     InnerModelMapper.TryGetRelevantType(context, namespaceName, name, out relevantType))
                 {
                     return true;
@@ -425,7 +425,7 @@ namespace Microsoft.Restier.AspNet.Model
                 Ensure.NotNull(context, nameof(context));
 
                 var result = CallInner(context);
-                if (result != null)
+                if (result is not null)
                 {
                     return result;
                 }
@@ -435,7 +435,7 @@ namespace Microsoft.Restier.AspNet.Model
                 {
                     // Only expand entity set query which returns IQueryable<T>.
                     var query = ModelCache.GetEntitySetQuery(context);
-                    if (query != null)
+                    if (query is not null)
                     {
                         return query.Expression;
                     }
@@ -473,7 +473,7 @@ namespace Microsoft.Restier.AspNet.Model
             public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
             {
                 var result = CallInner(context, embedded);
-                if (result != null)
+                if (result is not null)
                 {
                     // Call the provider's sourcer to find the source of the query.
                     return result;
@@ -482,7 +482,7 @@ namespace Microsoft.Restier.AspNet.Model
                 // This sourcer ONLY deals with queries that cannot be addressed by the provider
                 // such as a singleton query that cannot be sourced by the EF provider, etc.
                 var query = ModelCache.GetEntitySetQuery(context) ?? ModelCache.GetSingletonQuery(context);
-                if (query != null)
+                if (query is not null)
                 {
                     return Expression.Constant(query);
                 }
@@ -492,7 +492,7 @@ namespace Microsoft.Restier.AspNet.Model
 
             private Expression CallInner(QueryExpressionContext context, bool embedded)
             {
-                if (InnerHandler != null)
+                if (InnerHandler is not null)
                 {
                     return InnerHandler.ReplaceQueryableSource(context, embedded);
                 }

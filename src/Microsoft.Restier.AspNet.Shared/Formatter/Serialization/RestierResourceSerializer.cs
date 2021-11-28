@@ -41,7 +41,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             ComplexResult complexResult = graph as ComplexResult;
-            if (complexResult != null)
+            if (complexResult is not null)
             {
                 graph = complexResult.Result;
                 type = complexResult.Type;

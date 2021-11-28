@@ -59,12 +59,12 @@ namespace Microsoft.Restier.AspNet.Model
         public IEdmModel GetModel(ModelContext context)
         {
             EdmModel model = null;
-            if (InnerModelBuilder != null)
+            if (InnerModelBuilder is not null)
             {
                 model = InnerModelBuilder.GetModel(context) as EdmModel;
             }
 
-            if (model == null)
+            if (model is null)
             {
                 // We don't plan to extend an empty model with operations.
                 return null;
@@ -73,7 +73,7 @@ namespace Microsoft.Restier.AspNet.Model
             ScanForOperations();
 
             string existingNamespace = null;
-            if (model.DeclaredNamespaces != null)
+            if (model.DeclaredNamespaces is not null)
             {
                 existingNamespace = model.DeclaredNamespaces.FirstOrDefault();
             }
@@ -96,10 +96,10 @@ namespace Microsoft.Restier.AspNet.Model
             // assume they are from the same entity set.
 
 
-            if (returnTypeReference != null &&
-                  (returnType = returnTypeReference.Definition.AsElementType() as IEdmEntityType) != null &&
-                bindingParameter != null &&
-                  (parameterType = bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() as IEdmStructuredType) != null &&
+            if (returnTypeReference is not null &&
+                  (returnType = returnTypeReference.Definition.AsElementType() as IEdmEntityType) is not null &&
+                bindingParameter is not null &&
+                  (parameterType = bindingParameter.ParameterType.GetReturnTypeReference(model)?.Definition.AsElementType() as IEdmStructuredType) is not null &&
                 parameterType.IsOrInheritsFrom(returnType))
             {
                 return new EdmPathExpression(bindingParameter.Name);
@@ -110,16 +110,16 @@ namespace Microsoft.Restier.AspNet.Model
 
         private static IEdmExpression BuildEntitySetExpression(IEdmModel model, string entitySetName, IEdmTypeReference returnTypeReference)
         {
-            if (entitySetName == null && returnTypeReference != null)
+            if (entitySetName is null && returnTypeReference is not null)
             {
                 var entitySet = model.FindDeclaredEntitySetByTypeReference(returnTypeReference);
-                if (entitySet != null)
+                if (entitySet is not null)
                 {
                     entitySetName = entitySet.Name;
                 }
             }
 
-            if (entitySetName != null)
+            if (entitySetName is not null)
             {
                 return new EdmPathExpression(entitySetName);
             }
@@ -210,12 +210,12 @@ namespace Microsoft.Restier.AspNet.Model
             // customized the namespace logic, customized namespace is P0
             var namespaceName = methodInfo.OperationAttribute.Namespace;
 
-            if (namespaceName != null)
+            if (namespaceName is not null)
             {
                 return namespaceName;
             }
 
-            if (modelNamespace != null)
+            if (modelNamespace is not null)
             {
                 return modelNamespace;
             }

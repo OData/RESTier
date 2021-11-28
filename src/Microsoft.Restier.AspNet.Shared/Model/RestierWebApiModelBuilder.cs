@@ -30,13 +30,13 @@ namespace Microsoft.Restier.AspNet.Model
             // This means user build a model with customized model builder registered as inner most
             // Its element will be added to built model.
             IEdmModel innerModel = null;
-            if (InnerModelBuilder != null)
+            if (InnerModelBuilder is not null)
             {
                 innerModel = InnerModelBuilder.GetModel(context);
             }
 
             var entitySetTypeMap = context.ResourceSetTypeMap;
-            if (entitySetTypeMap == null || entitySetTypeMap.Count == 0)
+            if (entitySetTypeMap is null || entitySetTypeMap.Count == 0)
             {
                 return innerModel;
             }
@@ -67,7 +67,7 @@ namespace Microsoft.Restier.AspNet.Model
 
             entitySetTypeMap.Clear();
 
-            if (context.ResourceTypeKeyPropertiesMap != null)
+            if (context.ResourceTypeKeyPropertiesMap is not null)
             {
                 foreach (var pair in context.ResourceTypeKeyPropertiesMap)
                 {
@@ -89,7 +89,7 @@ namespace Microsoft.Restier.AspNet.Model
 
             // Add all Inner model content into existing model
             // When WebApi OData make conversion model builder accept an existing model, this can be removed.
-            if (innerModel != null)
+            if (innerModel is not null)
             {
                 foreach (var element in innerModel.SchemaElements)
                 {
@@ -106,11 +106,11 @@ namespace Microsoft.Restier.AspNet.Model
 
                 var entityContainer = (EdmEntityContainer)model.EntityContainer;
                 var innerEntityContainer = (EdmEntityContainer)innerModel.EntityContainer;
-                if (innerEntityContainer != null)
+                if (innerEntityContainer is not null)
                 {
                     foreach (var entityset in innerEntityContainer.EntitySets())
                     {
-                        if (entityContainer.FindEntitySet(entityset.Name) == null)
+                        if (entityContainer.FindEntitySet(entityset.Name) is null)
                         {
                             entityContainer.AddEntitySet(entityset.Name, entityset.EntityType());
                         }
@@ -118,7 +118,7 @@ namespace Microsoft.Restier.AspNet.Model
 
                     foreach (var singleton in innerEntityContainer.Singletons())
                     {
-                        if (entityContainer.FindEntitySet(singleton.Name) == null)
+                        if (entityContainer.FindEntitySet(singleton.Name) is null)
                         {
                             entityContainer.AddSingleton(singleton.Name, singleton.EntityType());
                         }
@@ -126,7 +126,7 @@ namespace Microsoft.Restier.AspNet.Model
 
                     foreach (var operation in innerEntityContainer.OperationImports())
                     {
-                        if (entityContainer.FindOperationImports(operation.Name) == null)
+                        if (entityContainer.FindOperationImports(operation.Name) is null)
                         {
                             if (operation.IsFunctionImport())
                             {

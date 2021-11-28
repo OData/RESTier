@@ -133,7 +133,7 @@ namespace Microsoft.Restier.Breakdance
                 innerBuilders.Add(builder.GetType().FullName);
                 builder = GetInnerBuilder(builder);
             }
-            while (builder != null);
+            while (builder is not null);
             return innerBuilders;
 
             //RWM: Only need this here, so make it a private function

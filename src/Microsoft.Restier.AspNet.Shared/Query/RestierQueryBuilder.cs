@@ -205,7 +205,7 @@ namespace Microsoft.Restier.AspNet.Query
             {
                 var equalsExpression =
                     CreateEqualsExpression(parameterExpression, keyValuePair.Key, keyValuePair.Value);
-                keyFilter = keyFilter == null ? equalsExpression : Expression.And(keyFilter, equalsExpression);
+                keyFilter = keyFilter is null ? equalsExpression : Expression.And(keyFilter, equalsExpression);
             }
 
             var whereExpression = Expression.Lambda(keyFilter, parameterExpression);

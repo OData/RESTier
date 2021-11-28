@@ -75,18 +75,18 @@ namespace Microsoft.Restier.Core
             var changeSetItemFilter = serviceProvider.GetService<IChangeSetItemFilter>();
             var submitExecutor = serviceProvider.GetService<ISubmitExecutor>();
 
-            if (queryExpressionSourcer == null)
+            if (queryExpressionSourcer is null)
             {
                 // Missing sourcer
                 throw new NotSupportedException(Resources.MissingQueryExpressionSourcer);
             }
 
-            if (changeSetInitializer == null)
+            if (changeSetInitializer is null)
             {
                 throw new NotSupportedException(Resources.MissingChangeSetInitializer);
             }
 
-            if (submitExecutor == null)
+            if (submitExecutor is null)
             {
                 throw new NotSupportedException(Resources.MissingSubmitExecutor);
             }

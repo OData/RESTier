@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [UnboundOperation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
         {
-            if (book == null)
+            if (book is null)
             {
                 throw new ArgumentNullException(nameof(book));
             }
@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [BoundOperation(IsComposable = true)]
         public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
         {
-            if (books == null)
+            if (books is null)
             {
                 throw new ArgumentNullException(nameof(books));
             }

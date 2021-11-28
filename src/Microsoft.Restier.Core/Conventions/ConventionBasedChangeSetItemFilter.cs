@@ -87,11 +87,11 @@ namespace Microsoft.Restier.Core
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
 
-            if (expectedMethod == null)
+            if (expectedMethod is null)
             {
                 var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
                 var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
-                if (actualMethod != null)
+                if (actualMethod is not null)
                 {
                     Trace.WriteLine($"Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                 }
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core
             if (!expectedMethod.IsStatic)
             {
                 target = context.Api;
-                if (target == null || !targetApiType.IsInstanceOfType(target))
+                if (target is null || !targetApiType.IsInstanceOfType(target))
                 {
                     Trace.WriteLine("The Restier API is of the incorrect type.");
                     return Task.CompletedTask;

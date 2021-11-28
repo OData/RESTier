@@ -31,10 +31,10 @@ namespace Microsoft.Restier.EntityFramework
         {
             Ensure.NotNull(context, nameof(context));
 
-            if (Inner != null)
+            if (Inner is not null)
             {
                 var innerFilteredExpression = Inner.Process(context);
-                if (innerFilteredExpression != null && innerFilteredExpression != context.VisitedNode)
+                if (innerFilteredExpression is not null && innerFilteredExpression != context.VisitedNode)
                 {
                     return innerFilteredExpression;
                 }
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.EntityFramework
             // TODO GitHubIssue#330: EF QueryExecutor will throw exception if check whether collections is null added.
             // Exception message likes "Cannot compare elements of type 'ICollection`1[[EntityType]]'.
             // Only primitive types, enumeration types and entity types are supported."
-            // EF does not support complex != null neither, and it requires complex not null.
+            // EF does not support complex is not null neither, and it requires complex not null.
             // EF model builder set complex type not null by default, but Web Api OData does not.
             if (context.VisitedNode.NodeType == ExpressionType.NotEqual)
             {
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.EntityFramework
                 var left = binaryExp.Left as MemberExpression;
                 var right = binaryExp.Right as ConstantExpression;
 
-                bool rightCheck = right != null && right.Value == null;
+                bool rightCheck = right is not null && right.Value is null;
 
                 // Check right first which is simple
                 if (!rightCheck)
@@ -60,9 +60,9 @@ namespace Microsoft.Restier.EntityFramework
                 }
 
                 bool leftCheck = false;
-                if (left != null)
+                if (left is not null)
                 {
-                    // If it is a collection, then replace coll != null with true
+                    // If it is a collection, then replace coll is not null with true
                     leftCheck = left.Type.IsGenericType
                         && left.Type.GetGenericTypeDefinition() == typeof(ICollection<>);
 
@@ -70,7 +70,7 @@ namespace Microsoft.Restier.EntityFramework
                     if (!leftCheck)
                     {
                         var modelRef = context.GetModelReferenceForNode(left);
-                        if (modelRef != null && modelRef.Type != null)
+                        if (modelRef is not null && modelRef.Type is not null)
                         {
                             leftCheck = modelRef.Type.TypeKind.Equals(EdmTypeKind.Complex);
                         }

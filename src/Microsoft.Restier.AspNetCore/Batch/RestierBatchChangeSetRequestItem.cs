@@ -65,9 +65,9 @@ namespace Microsoft.Restier.AspNetCore.Batch
                         .ContinueWith(
                             t =>
                             {
-                                if (t.Exception != null)
+                                if (t.Exception is not null)
                                 {
-                                    var taskEx = (t.Exception.InnerExceptions != null &&
+                                    var taskEx = (t.Exception.InnerExceptions is not null &&
                                                   t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;

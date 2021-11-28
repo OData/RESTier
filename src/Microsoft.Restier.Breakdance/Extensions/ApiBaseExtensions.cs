@@ -34,7 +34,7 @@ namespace Microsoft.Restier.Breakdance
         /// <returns>A string containing the Markdown table of results.</returns>
         public static string GenerateVisibilityMatrix(this ApiBase api)
         {
-            if (api == null)
+            if (api is null)
             {
                 throw new ArgumentNullException(nameof(api));
             }
@@ -111,7 +111,7 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="suffix">A string to append to the Api name when writing the text file.</param>
         public static void WriteCurrentVisibilityMatrix(this ApiBase api, string sourceDirectory = "", string suffix = "ApiSurface")
         {
-            if (api == null)
+            if (api is null)
             {
                 throw new ArgumentNullException(nameof(api));
             }
@@ -138,7 +138,7 @@ namespace Microsoft.Restier.Breakdance
             Type returnType = typeof(bool);
             var method = api.GetQualifiedMethod(methodName);
 
-            if (method != null && (method.IsFamily || method.IsFamilyOrAssembly) &&
+            if (method is not null && (method.IsFamily || method.IsFamilyOrAssembly) &&
                 method.ReturnType == returnType)
             {
                 return true;
@@ -158,7 +158,7 @@ namespace Microsoft.Restier.Breakdance
             //ConventionBasedChangeSetItemFilter.cs:116
             var method = api.GetQualifiedMethod(methodName);
 
-            if (method != null &&
+            if (method is not null &&
                 (method.ReturnType == typeof(void) ||
                 typeof(Task).IsAssignableFrom(method.ReturnType)))
             {
@@ -179,10 +179,10 @@ namespace Microsoft.Restier.Breakdance
             //ConventionBasedQueryExpressionProcessor.cs:110
             var method = api.GetQualifiedMethod(methodName);
 
-            if (method != null && (method.IsFamily || method.IsFamilyOrAssembly))
+            if (method is not null && (method.IsFamily || method.IsFamilyOrAssembly))
             {
                 var parameter = method.GetParameters().SingleOrDefault();
-                if (parameter != null &&
+                if (parameter is not null &&
                     parameter.ParameterType == method.ReturnType)
                 {
                     return true;

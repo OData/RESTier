@@ -55,7 +55,7 @@ namespace Microsoft.Restier.EntityFramework
             var dbContextType = frameworkApi.ContextType;
 
             var property = dbContextType.GetProperty(name);
-            if (property != null)
+            if (property is not null)
             {
                 var type = property.PropertyType;
 #if EFCore
@@ -63,13 +63,13 @@ namespace Microsoft.Restier.EntityFramework
 #else
                 var genericType = type.FindGenericType(typeof(IDbSet<>));
 #endif
-                if (genericType != null)
+                if (genericType is not null)
                 {
                     relevantType = genericType.GetGenericArguments()[0];
                 }
             }
 
-            return relevantType != null;
+            return relevantType is not null;
         }
 
         /// <summary>

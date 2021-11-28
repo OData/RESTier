@@ -66,9 +66,9 @@ namespace Microsoft.Restier.AspNet.Batch
                 var task = SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
                         .ContinueWith(t =>
                             {
-                                if (t.Exception != null)
+                                if (t.Exception is not null)
                                 {
-                                    var taskEx = (t.Exception.InnerExceptions != null &&
+                                    var taskEx = (t.Exception.InnerExceptions is not null &&
                                                   t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
@@ -141,7 +141,7 @@ namespace Microsoft.Restier.AspNet.Batch
         {
             foreach (var response in responses)
             {
-                if (response != null)
+                if (response is not null)
                 {
                     response.Dispose();
                 }

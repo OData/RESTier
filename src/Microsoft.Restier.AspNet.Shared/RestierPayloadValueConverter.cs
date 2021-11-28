@@ -24,7 +24,7 @@ namespace Microsoft.Restier.AspNet
         /// <returns>The converted payload value of the underlying type.</returns>
         public override object ConvertToPayloadValue(object value, IEdmTypeReference edmTypeReference)
         {
-            if (edmTypeReference != null)
+            if (edmTypeReference is not null)
             {
                 // System.DateTime is shared by *Edm.Date and Edm.DateTimeOffset.
                 if (value is DateTime)

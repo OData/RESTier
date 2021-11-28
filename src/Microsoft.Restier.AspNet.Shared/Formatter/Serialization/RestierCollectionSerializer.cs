@@ -40,7 +40,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
-            if (collectionResult != null)
+            if (collectionResult is not null)
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;
@@ -64,7 +64,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
-            if (collectionResult != null)
+            if (collectionResult is not null)
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;

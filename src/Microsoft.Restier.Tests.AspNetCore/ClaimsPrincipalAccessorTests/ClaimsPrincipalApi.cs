@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.ClaimsPrincipalAccessor
         [UnboundOperation]
         public bool ClaimsPrincipalCurrentIsNotNull()
         {
-            return ClaimsPrincipal.Current != null;
+            return ClaimsPrincipal.Current is not null;
         }
 
     }

@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Tests.Legacy
                 innerBuilders.Add(builder.GetType().FullName);
                 builder = GetInnerBuilder(builder);
             }
-            while (builder != null);
+            while (builder is not null);
             return innerBuilders;
         }
 

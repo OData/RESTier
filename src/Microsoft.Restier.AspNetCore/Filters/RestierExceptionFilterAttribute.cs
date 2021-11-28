@@ -90,7 +90,7 @@ namespace Microsoft.Restier.AspNetCore
                 exception = exception.InnerException.Demystify();
             }
 
-            if (exception == null)
+            if (exception is null)
             {
                 return Task.FromResult(false);
             }
@@ -138,7 +138,7 @@ namespace Microsoft.Restier.AspNetCore
             // exception must be handled in OnChangeSetCompleted
             // to avoid deadlock in Github Issue #82.
             var changeSetProperty = context.HttpContext.GetChangeSet();
-            if (changeSetProperty != null)
+            if (changeSetProperty is not null)
             {
                 changeSetProperty.Exceptions.Add(exception);
                 changeSetProperty.OnChangeSetCompleted();

@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Core
             var expectedMethodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethod.Execute);
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
 
-            if (expectedMethod == null)
+            if (expectedMethod is null)
             {
                 return Task.CompletedTask;
             }

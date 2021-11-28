@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet
         public static void Register(HttpConfiguration config)
         {
 
-            if (config == null)
+            if (config is null)
             {
                 throw new ArgumentNullException(nameof(config));
             }

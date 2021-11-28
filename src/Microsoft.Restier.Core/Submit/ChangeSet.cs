@@ -28,7 +28,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         public ChangeSet(IEnumerable<ChangeSetItem> entries)
         {
-            if (entries != null)
+            if (entries is not null)
             {
                 this.entries = new List<ChangeSetItem>(entries);
             }
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Core.Submit
         {
             get
             {
-                if (entries == null)
+                if (entries is null)
                 {
                     entries = new List<ChangeSetItem>();
                 }

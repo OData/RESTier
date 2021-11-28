@@ -56,10 +56,10 @@ namespace Microsoft.Restier.AspNetCore.Batch
                     changeSetRequestItem.SubmitChangeSet(ChangeSet)
                         .ContinueWith(t =>
                         {
-                            if (t.Exception != null)
+                            if (t.Exception is not null)
                             {
                                 var taskEx =
-                                    (t.Exception.InnerExceptions != null
+                                    (t.Exception.InnerExceptions is not null
                                      && t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;

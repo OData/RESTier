@@ -74,13 +74,13 @@ namespace Microsoft.Restier.AspNet.Formatter
         /// <returns>The converted collection.</returns>
         internal static object ConvertCollectionType(object collectionResult, Type expectedReturnType)
         {
-            if (collectionResult == null)
+            if (collectionResult is null)
             {
                 return null;
             }
 
             var genericType = expectedReturnType.FindGenericType(typeof(ICollection<>));
-            if (genericType != null || expectedReturnType.IsArray)
+            if (genericType is not null || expectedReturnType.IsArray)
             {
                 var elementClrType = expectedReturnType.GetElementType() ??
                                      expectedReturnType.GenericTypeArguments[0];
@@ -94,7 +94,7 @@ namespace Microsoft.Restier.AspNet.Formatter
                     var arrayResult = toArrayMethodInfo.Invoke(null, new object[] { castedResult });
                     return arrayResult;
                 }
-                else if (genericType != null)
+                else if (genericType is not null)
                 {
                     var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric
                         .MakeGenericMethod(elementClrType);
@@ -107,7 +107,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             // need some convert
             genericType = collectionResult.GetType().FindGenericType(typeof(IEnumerable<>));
             var returnGenericType = expectedReturnType.FindGenericType(typeof(IEnumerable<>));
-            if (genericType != null && returnGenericType != null)
+            if (genericType is not null && returnGenericType is not null)
             {
                 var actualElementType = genericType.GenericTypeArguments[0];
                 var expectElementType = returnGenericType.GenericTypeArguments[0];

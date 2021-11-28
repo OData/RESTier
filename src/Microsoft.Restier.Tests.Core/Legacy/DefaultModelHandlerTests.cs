@@ -148,7 +148,7 @@ namespace Microsoft.Restier.Tests.Core.Model
             public IEdmModel GetModel(ModelContext context)
             {
                 IEdmModel innerModel = null;
-                if (InnerHandler != null)
+                if (InnerHandler is not null)
                 {
                     innerModel = InnerHandler.GetModel(context);
                 }

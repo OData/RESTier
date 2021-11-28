@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 // RWM: Need a batter way to capture the payload... this event fires before the payload is written to the stream.
                 //BeforeRequestAsync = async (x) => {
                 //    var ms = new MemoryStream();
-                //    if (x.Content != null)
+                //    if (x.Content is not null)
                 //    {
                 //        await x.Content.CopyToAsync(ms).ConfigureAwait(false);
                 //        var streamContent = new StreamContent(ms);
@@ -125,7 +125,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 // RWM: Need a batter way to capture the payload... this event fires before the payload is written to the stream.
                 //BeforeRequestAsync = async (x) => {
                 //    var ms = new MemoryStream();
-                //    if (x.Content != null)
+                //    if (x.Content is not null)
                 //    {
                 //        await x.Content.CopyToAsync(ms).ConfigureAwait(false);
                 //        var streamContent = new StreamContent(ms);

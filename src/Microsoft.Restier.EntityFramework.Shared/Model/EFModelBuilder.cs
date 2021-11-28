@@ -80,7 +80,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
 
             // @caldwell0414: This code is looking for all of the DBSets on the context and generating a dictionary of DbSet Name and the Entity type.
             AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()
-                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
+                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) is not null)
                 .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
 
 #pragma warning disable EF1001 // Internal EF Core API usage.
@@ -119,7 +119,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
             // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(),
             // we won't crash if more than one is returned, and we can check for null
             // and inform the user specifically what happened.
-            if (efEntityContainer == null)
+            if (efEntityContainer is null)
             {
                 if (efEntityContainers.Count > 1)
                 {
@@ -167,7 +167,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 }
             }
 #endif
-            if (InnerModelBuilder != null)
+            if (InnerModelBuilder is not null)
             {
                 return InnerModelBuilder.GetModel(context);
             }

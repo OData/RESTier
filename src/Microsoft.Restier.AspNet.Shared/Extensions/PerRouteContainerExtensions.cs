@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.OData
         /// <returns>An instance of <see cref="IServiceProvider"/> to manage services for a route.</returns>
         internal static IServiceProvider CreateODataRouteContainer(this PerRouteContainer prc, string routeName, Action<IContainerBuilder> internalAction, Action<IContainerBuilder, string> developerAction)
         {
-            if (prc == null)
+            if (prc is null)
             {
                 throw new ArgumentNullException(nameof(prc));
             }
@@ -43,7 +43,7 @@ namespace Microsoft.AspNet.OData
             developerAction?.Invoke(builder, routeName);
 
             var rootContainer = builder.BuildContainer();
-            if (rootContainer == null)
+            if (rootContainer is null)
             {
                 throw new Exception("The container returned by BuildContainer was null. Please check the registered ContainerBuidler and try again.");
             }

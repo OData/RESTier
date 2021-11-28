@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Core
             var methodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
             var method = targetApiType.GetQualifiedMethod(methodName);
 
-            if (method == null)
+            if (method is null)
             {
                 return Task.FromResult(result);
             }

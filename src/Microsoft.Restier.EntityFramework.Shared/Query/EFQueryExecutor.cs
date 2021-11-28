@@ -106,7 +106,7 @@ namespace Microsoft.Restier.EntityFramework
 #else
             var provider = queryProvider as IDbAsyncQueryProvider;
 #endif
-            if (provider != null)
+            if (provider is not null)
             {
 #if EFCore
                 var result = await provider.ExecuteAsync<Task<TResult>>(expression, cancellationToken).ConfigureAwait(false);

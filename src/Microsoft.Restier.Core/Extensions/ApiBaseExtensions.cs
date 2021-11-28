@@ -367,7 +367,7 @@ namespace Microsoft.Restier.Core
         {
             MethodInfo sourceMethod;
             Expression[] expressions;
-            if (namespaceName == null)
+            if (namespaceName is null)
             {
                 sourceMethod = Source2Method;
                 expressions = new Expression[]
@@ -402,10 +402,10 @@ namespace Microsoft.Restier.Core
             Type elementType = null;
 
             var mapper = api.GetApiService<IModelMapper>();
-            if (mapper != null)
+            if (mapper is not null)
             {
                 var modelContext = new ModelContext(api);
-                if (namespaceName == null)
+                if (namespaceName is null)
                 {
                     mapper.TryGetRelevantType(modelContext, name, out elementType);
                 }
@@ -415,7 +415,7 @@ namespace Microsoft.Restier.Core
                 }
             }
 
-            if (elementType == null)
+            if (elementType is null)
             {
                 throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.ElementTypeNotFound, name));
             }
