@@ -186,7 +186,7 @@ namespace Microsoft.Restier.Tests.Core
 
             protected override void Dispose(bool disposing)
             {
-                this.Disposed = true;
+                Disposed = true;
                 base.Dispose(disposing);
             }
         }

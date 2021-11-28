@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Core
         IQueryProvider IQueryable.Provider => this;
 
         /// <inheritdoc />
-        public override string ToString() => this.Expression.ToString();
+        public override string ToString() => Expression.ToString();
 
         /// <inheritdoc />
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(

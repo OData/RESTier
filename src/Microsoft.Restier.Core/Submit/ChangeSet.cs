@@ -41,12 +41,12 @@ namespace Microsoft.Restier.Core.Submit
         {
             get
             {
-                if (this.entries == null)
+                if (entries == null)
                 {
-                    this.entries = new List<ChangeSetItem>();
+                    entries = new List<ChangeSetItem>();
                 }
 
-                return this.entries;
+                return entries;
             }
         }
     }

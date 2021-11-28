@@ -43,12 +43,12 @@ namespace Microsoft.Restier.AspNet.Formatter
             Ensure.NotNull(rootContainer, nameof(rootContainer));
             Ensure.NotNull(payloadValueConverter, nameof(payloadValueConverter));
 
-            this.resourceSetSerializer = new RestierResourceSetSerializer(this);
-            this.primitiveSerializer = new RestierPrimitiveSerializer(payloadValueConverter);
-            this.rawSerializer = new RestierRawSerializer(payloadValueConverter);
-            this.resourceSerializer = new RestierResourceSerializer(this);
-            this.collectionSerializer = new RestierCollectionSerializer(this);
-            this.enumSerializer = new RestierEnumSerializer(this);
+            resourceSetSerializer = new RestierResourceSetSerializer(this);
+            primitiveSerializer = new RestierPrimitiveSerializer(payloadValueConverter);
+            rawSerializer = new RestierRawSerializer(payloadValueConverter);
+            resourceSerializer = new RestierResourceSerializer(this);
+            collectionSerializer = new RestierCollectionSerializer(this);
+            enumSerializer = new RestierEnumSerializer(this);
         }
 
         /// <summary>
@@ -77,27 +77,27 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializer serializer = null;
             if (type == typeof(ResourceSetResult))
             {
-                serializer = this.resourceSetSerializer;
+                serializer = resourceSetSerializer;
             }
             else if (type == typeof(PrimitiveResult))
             {
-                serializer = this.primitiveSerializer;
+                serializer = primitiveSerializer;
             }
             else if (type == typeof(RawResult))
             {
-                serializer = this.rawSerializer;
+                serializer = rawSerializer;
             }
             else if (type == typeof(ComplexResult))
             {
-                serializer = this.resourceSerializer;
+                serializer = resourceSerializer;
             }
             else if (type == typeof(NonResourceCollectionResult))
             {
-                serializer = this.collectionSerializer;
+                serializer = collectionSerializer;
             }
             else if (type == typeof(EnumResult))
             {
-                serializer = this.enumSerializer;
+                serializer = enumSerializer;
             }
             else
             {
@@ -116,17 +116,17 @@ namespace Microsoft.Restier.AspNet.Formatter
         {
             if (edmType.IsComplex())
             {
-                return this.resourceSerializer;
+                return resourceSerializer;
             }
 
             if (edmType.IsPrimitive())
             {
-                return this.primitiveSerializer;
+                return primitiveSerializer;
             }
 
             if (edmType.IsEnum())
             {
-                return this.enumSerializer;
+                return enumSerializer;
             }
 
             if (edmType.IsCollection())
@@ -138,10 +138,10 @@ namespace Microsoft.Restier.AspNet.Formatter
                 }
                 else if (collectionType.ElementType().IsEntity() || collectionType.ElementType().IsComplex())
                 {
-                    return this.resourceSetSerializer;
+                    return resourceSetSerializer;
                 }
 
-                return this.collectionSerializer;
+                return collectionSerializer;
             }
 
             return base.GetEdmTypeSerializer(edmType);

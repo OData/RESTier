@@ -188,7 +188,6 @@ namespace Microsoft.Restier.AspNetCore
         /// <param name="edmEntityObject">The entity object to update.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
-#pragma warning disable CA1062 // Validate public arguments
         public async Task<IActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
             => await Update(edmEntityObject, true, cancellationToken).ConfigureAwait(false);
 
@@ -200,7 +199,6 @@ namespace Microsoft.Restier.AspNetCore
         /// <returns>The task object that contains the updated result.</returns>
         public async Task<IActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
             => await Update(edmEntityObject, false, cancellationToken).ConfigureAwait(false);
-#pragma warning restore CA1062 // Validate public arguments
 
         /// <summary>
         /// Handles a DELETE request to delete an entity.

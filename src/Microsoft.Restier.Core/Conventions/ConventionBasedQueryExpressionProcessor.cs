@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Core
 
             if (Inner != null)
             {
-                var innerProcessedExpression = this.Inner.Process(context);
+                var innerProcessedExpression = Inner.Process(context);
                 if (innerProcessedExpression != null && innerProcessedExpression != context.VisitedNode)
                 {
                     return innerProcessedExpression;

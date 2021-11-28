@@ -33,8 +33,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.WebApi" Version="3.0.0-CI-20210730-030736" Condition="'$(IsNetCore)' != 'true'" />
-    <PackageReference Include="Breakdance.AspNetCore" Version="3.0.0-CI-20210730-030736" Condition="'$(IsNetCore)' == 'true'" />
+    <PackageReference Include="Breakdance.WebApi" Version="3.0.0-CI-20211112-045849" Condition="'$(IsNetCore)' != 'true'" />
+    <PackageReference Include="Breakdance.AspNetCore" Version="3.0.0-CI-20211112-045849" Condition="'$(IsNetCore)' == 'true'" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="[7.*, 8.0.0)" Condition="'$(IsNetCore)' != 'true'" />
   </ItemGroup>
 
   <ItemGroup>

@@ -59,13 +59,10 @@ namespace Microsoft.Restier.AspNetCore
 
                 if (route.Value.AllowBatching)
                 {
-
-#pragma warning disable IDE0067 // Dispose objects before losing scope
                     batchHandler = new RestierBatchHandler()
                     {
                         ODataRouteName = route.Key
                     };
-#pragma warning restore IDE0067 // Dispose objects before losing scope
                 }
 
                 var odataRoute = routeBuilder.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder, routeName) =>
@@ -190,7 +187,7 @@ namespace Microsoft.Restier.AspNetCore
                 batchHandler.ODataRoute = route;
                 batchHandler.ODataRouteName = routeName;
 
-                var batchPath = String.IsNullOrEmpty(routePrefix)
+                var batchPath = string.IsNullOrEmpty(routePrefix)
                     ? '/' + ODataRouteConstants.Batch
                     : '/' + routePrefix + '/' + ODataRouteConstants.Batch;
 

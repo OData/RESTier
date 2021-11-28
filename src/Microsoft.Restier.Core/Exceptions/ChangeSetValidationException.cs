@@ -47,8 +47,8 @@ namespace Microsoft.Restier.Core
         /// </summary>
         public IEnumerable<ChangeSetItemValidationResult> ValidationResults
         {
-            get => this.errorValidationResults ?? Enumerable.Empty<ChangeSetItemValidationResult>();
-            set => this.errorValidationResults = value;
+            get => errorValidationResults ?? Enumerable.Empty<ChangeSetItemValidationResult>();
+            set => errorValidationResults = value;
         }
 
         /// <summary>

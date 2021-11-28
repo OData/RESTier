@@ -27,8 +27,8 @@ namespace Microsoft.Restier.AspNetCore.Batch
         {
             Ensure.NotNull(context, nameof(context));
 
-            var requestContainer = context.Request.CreateRequestContainer(this.ODataRouteName);
-            requestContainer.GetRequiredService<ODataMessageReaderSettings>().BaseUri = this.GetBaseUri(context.Request);
+            var requestContainer = context.Request.CreateRequestContainer(ODataRouteName);
+            requestContainer.GetRequiredService<ODataMessageReaderSettings>().BaseUri = GetBaseUri(context.Request);
 
             // TODO: JWS: needs to be a constructor dependency probably, but that's impossible now.
             var api = requestContainer.GetRequiredService<ApiBase>();
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
                         changeSetContext.Request.DeleteRequestContainer(false);
                     }
 
-                    requests.Add(this.CreateRestierBatchChangeSetRequestItem(api, changeSetContexts));
+                    requests.Add(CreateRestierBatchChangeSetRequestItem(api, changeSetContexts));
                 }
                 else if (batchReader.State == ODataBatchReaderState.Operation)
                 {

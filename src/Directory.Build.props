@@ -93,20 +93,20 @@
     <StandardTestTfms>netcoreapp3.1;net472</StandardTestTfms>
   </PropertyGroup>
 
-  <ItemGroup Condition=" $(IsTestProject) != 'true' and  $(IsSampleProject) != 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  <ItemGroup Condition=" $(IsTestProject) != 'true' and $(IsSampleProject) != 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
 
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>$(AssemblyName.Replace("Microsoft.Restier.", "Microsoft.Restier.Tests.")), $(StrongNamePublicKey)</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup Condition=" $(IsTestProject) == 'true'  and  $(IsSampleProject) != 'true'">
-    <PackageReference Include="FluentAssertions" Version="6.1.0" PrivateAssets="All" />
-    <PackageReference Include="FluentAssertions.Analyzers" Version="0.11.4" PrivateAssets="All" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+  <ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true'">
+    <PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.13.*" PrivateAssets="All" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.*" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
   </ItemGroup>
 
   <ItemGroup>

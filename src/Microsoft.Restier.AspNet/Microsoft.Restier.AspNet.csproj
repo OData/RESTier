@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="[*, 2.0.0)" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="[7.5.8, 8.0.0)" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="[7.*, 8.0.0)" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="[5.*, 6.0.0)" />
     <PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
     <PackageReference Include="Microsoft.OData.Edm" Version="[7.*, 8.0.0)" />

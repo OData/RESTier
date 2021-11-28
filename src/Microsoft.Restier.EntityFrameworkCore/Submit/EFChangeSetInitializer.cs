@@ -161,8 +161,8 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 //    This will set any unspecified properties to their default value.
                 var newInstance = Activator.CreateInstance(resourceType);
 
-                this.SetValues(newInstance, resourceType, item.ResourceKey);
-                this.SetValues(newInstance, resourceType, item.LocalValues);
+                SetValues(newInstance, resourceType, item.ResourceKey);
+                SetValues(newInstance, resourceType, item.LocalValues);
 
                 dbEntry.CurrentValues.SetValues(newInstance);
             }
@@ -195,10 +195,10 @@ namespace Microsoft.Restier.EntityFrameworkCore
                     if (value is IReadOnlyDictionary<string, object> dic)
                     {
                         value = propertyEntry.CurrentValue;
-                        this.SetValues(value, type, dic);
+                        SetValues(value, type, dic);
                     }
 
-                    propertyEntry.CurrentValue = this.ConvertToEfValue(type, value);
+                    propertyEntry.CurrentValue = ConvertToEfValue(type, value);
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                     continue;
                 }
 
-                value = this.ConvertToEfValue(propertyInfo.PropertyType, value);
+                value = ConvertToEfValue(propertyInfo.PropertyType, value);
                 if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
                     if (!(value is IReadOnlyDictionary<string, object> dic))
@@ -229,7 +229,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
 
                     // TODO GithubIssue #508
                     value = Activator.CreateInstance(propertyInfo.PropertyType);
-                    this.SetValues(value, propertyInfo.PropertyType, dic);
+                    SetValues(value, propertyInfo.PropertyType, dic);
                 }
 
                 propertyInfo.SetValue(instance, value);
@@ -247,7 +247,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
             {
                 resource = new TEntity();
 
-                this.SetValues(resource, resourceType, entry.LocalValues);
+                SetValues(resource, resourceType, entry.LocalValues);
                 set.Add(resource);
             }
             else if (entry.EntitySetOperation == RestierEntitySetOperation.Delete)
@@ -260,7 +260,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 resource = (await FindResource(context, entry, cancellationToken).ConfigureAwait(false)) as TEntity;
 
                 var dbEntry = dbContext.Entry(resource);
-                this.SetValues(dbEntry, entry, resourceType);
+                SetValues(dbEntry, entry, resourceType);
             }
             else
             {

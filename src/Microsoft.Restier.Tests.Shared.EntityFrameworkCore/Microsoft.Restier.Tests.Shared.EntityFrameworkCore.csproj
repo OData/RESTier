@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.*" Condition="'$(TargetFramework)' != 'net6.0'" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0-rc.1.*" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.*" Condition="'$(TargetFramework)' == 'net6.0'" />
 
   </ItemGroup>
 

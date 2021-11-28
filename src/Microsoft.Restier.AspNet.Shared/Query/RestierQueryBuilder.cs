@@ -54,7 +54,7 @@ namespace Microsoft.Restier.AspNet.Query
 
             // TODO: JWS: At best a hack to avoid a deadlock, because the only place to get the model is in a synchronous method or
             // constructor. See https://blog.stephencleary.com/2012/07/dont-block-on-async-code.html
-            this.edmModel = this.api.GetModel();
+            edmModel = this.api.GetModel();
 
             handlers[typeof(EntitySetSegment)] = HandleEntitySetPathSegment;
             handlers[typeof(SingletonSegment)] = HandleSingletonPathSegment;
@@ -301,7 +301,7 @@ namespace Microsoft.Restier.AspNet.Query
 
             if (edmType.TypeKind == EdmTypeKind.Entity)
             {   
-                currentType = edmType.GetClrType(this.edmModel);
+                currentType = edmType.GetClrType(edmModel);
                 queryable = ExpressionHelpers.OfType(queryable, currentType);
             }
         }

@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.*" Condition="'$(TargetFramework)' != 'net6.0'" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-rc.1.*" Condition="'$(TargetFramework)' == 'net6.0'" />
-    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210730-030736" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" />
   </ItemGroup>
 

@@ -6,7 +6,7 @@
     <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
     <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for interacting with DbContexts from Entity Framework 5.0 and later.</Summary>
     <Description>
@@ -35,8 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[5.0.1, 6.0.0)" Condition="'$(TargetFramework)' != 'net6.0'" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[6.0.0-rc.1.*, 7.0.0)" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[5.*, 6.0.0)" Condition="'$(TargetFramework)' != 'net6.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[6.*, 7.0.0)" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 7.0.0)" Condition="'$(TargetFramework)' == 'net6.0'" />
     <PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0]" />
   </ItemGroup>
 

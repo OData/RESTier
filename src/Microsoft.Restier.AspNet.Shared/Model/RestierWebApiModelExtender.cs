@@ -347,7 +347,7 @@ namespace Microsoft.Restier.AspNet.Model
             /// Initializes a new instance of the <see cref="ModelMapper"/> class.
             /// </summary>
             /// <param name="modelCache">The model cache.</param>
-            public ModelMapper(RestierWebApiModelExtender modelCache) => this.ModelCache = modelCache;
+            public ModelMapper(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
             /// <summary>
             /// Gets the model Cache.
@@ -410,7 +410,7 @@ namespace Microsoft.Restier.AspNet.Model
             /// Initializes a new instance of the <see cref="QueryExpressionExpander"/> class.
             /// </summary>
             /// <param name="modelCache">The model cache.</param>
-            public QueryExpressionExpander(RestierWebApiModelExtender modelCache) => this.ModelCache = modelCache;
+            public QueryExpressionExpander(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
             /// <summary>
             /// Gets or sets the inner handler.
@@ -447,7 +447,7 @@ namespace Microsoft.Restier.AspNet.Model
 
             private Expression CallInner(QueryExpressionContext context)
             {
-                return this.InnerHandler?.Expand(context);
+                return InnerHandler?.Expand(context);
             }
         }
 
@@ -460,7 +460,7 @@ namespace Microsoft.Restier.AspNet.Model
             /// Initializes a new instance of the <see cref="QueryExpressionSourcer"/> class.
             /// </summary>
             /// <param name="modelCache">The model cache.</param>
-            public QueryExpressionSourcer(RestierWebApiModelExtender modelCache) => this.ModelCache = modelCache;
+            public QueryExpressionSourcer(RestierWebApiModelExtender modelCache) => ModelCache = modelCache;
 
             /// <summary>
             /// Gets or sets the inner handler.

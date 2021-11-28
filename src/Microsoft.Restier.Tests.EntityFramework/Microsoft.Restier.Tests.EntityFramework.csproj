@@ -6,14 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.*" Condition="'$(TargetFramework)' != 'net6.0'" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" Condition="'$(TargetFramework)' == 'net6.0'" />
     <PackageReference Include="Microsoft.OData.Core" Version="7.*" />
     <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
 
-    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210730-030736" Condition="'$(IsNetCore)' != 'true'" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" Condition="'$(IsNetCore)' != 'true'" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
 
-    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20210730-030736" Condition="'$(IsNetCore)' == 'true'" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" Condition="'$(IsNetCore)' == 'true'" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" Condition="'$(IsNetCore)' == 'true'" />
   </ItemGroup>
 
