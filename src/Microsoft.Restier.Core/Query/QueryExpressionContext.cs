@@ -369,7 +369,15 @@ namespace Microsoft.Restier.Core.Query
 
             if (modelReference is not null)
             {
-                modelReference = new PropertyModelReference(modelReference, member.Member.Name);
+                IEdmProperty property = null;
+                var structuredType = QueryContext.Model.FindDeclaredType(memberExp.Type.FullName) as IEdmStructuredType;
+
+                if (structuredType != null)
+                {
+                    property = structuredType.FindProperty(member.Member.Name);
+                }
+
+                modelReference = new PropertyModelReference(modelReference, member.Member.Name, property);
             }
 
             return modelReference;

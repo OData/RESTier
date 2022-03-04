@@ -73,12 +73,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             odataBatch += async c =>
                 await c.For<Book>()
-                .Set(new { Id = Guid.NewGuid(), Isbn = "1111111111111", Title = "Batch Test #1", Publisher = publisher })
+                .Set(new { Id = Guid.NewGuid(), Isbn = "1111111111111", Title = "Batch Test #1", Publisher = publisher, IsActive = true })
                 .InsertEntryAsync();
 
             odataBatch += async c =>
                 await c.For<Book>()
-                .Set(new { Id = Guid.NewGuid(), Isbn = "2222222222222", Title = "Batch Test #2", Publisher = publisher })
+                .Set(new { Id = Guid.NewGuid(), Isbn = "2222222222222", Title = "Batch Test #2", Publisher = publisher, IsActive = true })
                 .InsertEntryAsync();
 
             //RWM: This way should also work.

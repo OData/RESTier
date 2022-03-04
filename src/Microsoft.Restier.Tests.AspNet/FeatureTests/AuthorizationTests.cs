@@ -130,7 +130,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var settings = new JsonSerializerOptions
             {
 #if NETCOREAPP3_1
+#pragma warning disable SYSLIB0020
                 IgnoreNullValues = true,
+#pragma warning restore SYSLIB0020
 #endif
 #if NET5_0_OR_GREATER
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,

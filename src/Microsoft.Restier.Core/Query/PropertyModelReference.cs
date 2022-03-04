@@ -29,7 +29,6 @@ namespace Microsoft.Restier.Core.Query
         internal PropertyModelReference(QueryModelReference source, string propertyName, IEdmProperty property) :
             this(source, propertyName)
         {
-            Ensure.NotNull(property, nameof(property));
             this.property = property;
         }
 

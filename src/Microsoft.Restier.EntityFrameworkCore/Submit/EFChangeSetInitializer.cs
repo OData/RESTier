@@ -170,35 +170,39 @@ namespace Microsoft.Restier.EntityFrameworkCore
             {
                 foreach (var propertyPair in item.LocalValues)
                 {
-                    var propertyEntry = dbEntry.Property(propertyPair.Key);
-                    var value = propertyPair.Value;
-                    if (value is null)
-                    {
-                        // If the property value is null, we set null in the item too.
-                        propertyEntry.CurrentValue = null;
-                        continue;
-                    }
+                    var propertyEntry = dbEntry.Members.FirstOrDefault(m => m.Metadata.Name == propertyPair.Key);
 
-                    Type type = null;
-                    if (propertyEntry.CurrentValue is not null)
+                    if (propertyEntry != null)
                     {
-                        type = propertyEntry.CurrentValue.GetType();
-                    }
-                    else
-                    {
-                        // If property does not have value now, will get property type from model
-                        var propertyInfo = dbEntry.Entity.GetType().GetProperty(propertyPair.Key);
-                        type = propertyInfo.PropertyType;
-                    }
+                        var value = propertyPair.Value;
+                        if (value is null)
+                        {
+                            // If the property value is null, we set null in the item too.
+                            propertyEntry.CurrentValue = null;
+                            continue;
+                        }
 
-                    // todo: complex property detection removed. Not sure whether IReadOnlyDictionary is enough.
-                    if (value is IReadOnlyDictionary<string, object> dic)
-                    {
-                        value = propertyEntry.CurrentValue;
-                        SetValues(value, type, dic);
-                    }
+                        Type type = null;
+                        if (propertyEntry.CurrentValue is not null)
+                        {
+                            type = propertyEntry.CurrentValue.GetType();
+                        }
+                        else
+                        {
+                            // If property does not have value now, will get property type from model
+                            var propertyInfo = dbEntry.Entity.GetType().GetProperty(propertyPair.Key);
+                            type = propertyInfo.PropertyType;
+                        }
 
-                    propertyEntry.CurrentValue = ConvertToEfValue(type, value);
+                        // todo: complex property detection removed. Not sure whether IReadOnlyDictionary is enough.
+                        if (value is IReadOnlyDictionary<string, object> dic)
+                        {
+                            value = propertyEntry.CurrentValue;
+                            SetValues(value, type, dic);
+                        }
+
+                        propertyEntry.CurrentValue = ConvertToEfValue(type, value);
+                    }
                 }
             }
         }
