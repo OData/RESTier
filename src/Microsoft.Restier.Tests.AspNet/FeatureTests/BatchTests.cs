@@ -13,8 +13,15 @@ using System.Threading;
 using System.Net.Mime;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Linq;
+
+#if EF6
+using System.Data.Entity;
+#endif
 
 #if NETCOREAPP3_1_OR_GREATER
+
+using CloudNimble.Breakdance.AspNetCore;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
@@ -46,9 +53,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
-            var httpClient = config.GetTestableHttpClient();
-            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
+            var httpClient = config.GetTestableHttpClient();      
 #endif
+            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {
@@ -120,9 +127,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
 #endif
-            httpClient.BaseAddress = new Uri("http://localhost/api/tests/");
+            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "$batch");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{httpClient.BaseAddress}/$batch");
             request.Content = new StringContent(mimeBatchRequest);
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("multipart/mixed;boundary=batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b");
 
@@ -205,9 +212,9 @@ OData-Version: 4.0
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
 #endif
-            httpClient.BaseAddress = new Uri("http://localhost/api/tests/");
+            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "$batch");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{httpClient.BaseAddress}/$batch");
             request.Content = new StringContent(jsonBatchRequest);
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("application/json;odata.stream=true");
 
@@ -270,8 +277,8 @@ OData-Version: 4.0
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
-            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 #endif
+            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {
@@ -330,6 +337,17 @@ OData-Version: 4.0
             book.Title.Should().Be("The Cat in the Hat");
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            var context = RestierTestHelpers.GetTestableInjectedService<LibraryApi, LibraryContext>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>()).GetAwaiter().GetResult();
+            var books = context.Books.Where(d => d.Title.StartsWith("Batch Test")).ToList();
+            foreach (var book in books)
+            {
+                context.Books.Remove(book);
+            }
+            context.SaveChanges();
+        }
 
     }
 

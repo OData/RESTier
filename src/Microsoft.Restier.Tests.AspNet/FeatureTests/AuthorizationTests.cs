@@ -172,11 +172,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             //employee.Universe = null;
 
             //RWM: APIs are read-only by default.
-#if NETCOREAPP3_1_OR_GREATER
-            var employeeEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Readers({employee.Id})", payload: employee, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-#else
             var employeeEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Readers({employee.Id})", payload: employee, acceptHeader: WebApiConstants.DefaultAcceptHeader, jsonSerializerSettings: settings, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-#endif
             var editResponseContent = await TestContext.LogAndReturnMessageContentAsync(employeeEditResponse);
 
             employeeEditResponse.IsSuccessStatusCode.Should().BeFalse();

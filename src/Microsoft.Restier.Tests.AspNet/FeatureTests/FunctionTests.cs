@@ -78,7 +78,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             results.Should().NotBeNull();
             results.Response.Should().NotBeNull();
             results.Response.Items.Should().NotBeNullOrEmpty();
-            results.Response.Items.Count.Should().Be(4);
+            results.Response.Items.Count.Should().BeGreaterThanOrEqualTo(4);
             results.Response.Items.All(c => c.Title.EndsWith(" | Intercepted | Discontinued | Intercepted", StringComparison.CurrentCulture)).Should().BeTrue();
         }
 

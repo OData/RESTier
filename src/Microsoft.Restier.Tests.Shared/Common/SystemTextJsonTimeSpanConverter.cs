@@ -50,7 +50,7 @@ namespace Microsoft.Restier.Tests.Shared.Common
         /// <param name="options"></param>
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString(XmlConvert.ToString(value), CultureInfo.InvariantCulture));
+            writer.WriteStringValue(XmlConvert.ToString(value));
         }
 
     }
