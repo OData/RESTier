@@ -96,7 +96,7 @@ namespace Microsoft.Restier.Core.Query
             get
             {
                 var entitySet = Element as IEdmEntitySet;
-                if (entitySet != null)
+                if (entitySet is not null)
                 {
                     return entitySet;
                 }
@@ -113,16 +113,16 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (namespaceName == null)
+                if (namespaceName is null)
                 {
                     var source = Element as IEdmNavigationSource;
-                    if (source != null)
+                    if (source is not null)
                     {
                         return source.Type;
                     }
 
                     var function = Element as IEdmFunctionImport;
-                    if (function != null)
+                    if (function is not null)
                     {
                         return function.Function.ReturnType.Definition;
                     }
@@ -130,7 +130,7 @@ namespace Microsoft.Restier.Core.Query
                 else
                 {
                     var function = Element as IEdmFunction;
-                    if (function != null)
+                    if (function is not null)
                     {
                         return function.ReturnType.Definition;
                     }
@@ -147,7 +147,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (namespaceName == null)
+                if (namespaceName is null)
                 {
                     return context.Model.EntityContainer.Elements
                         .SingleOrDefault(e => e.Name == name);

@@ -7,12 +7,13 @@ using Microsoft.AspNet.OData.Formatter.Deserialization;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
 #endif
 {
+
     /// <summary>
     /// The serializer for enum result.
     /// </summary>
@@ -27,12 +28,14 @@ namespace Microsoft.Restier.AspNet.Formatter
             var result = base.ReadInline(item, edmType, readContext);
 
             var edmEnumObject = result as EdmEnumObject;
-            if (edmEnumObject != null)
+            if (edmEnumObject is not null)
             {
                 return edmEnumObject.Value;
             }
 
             return result;
         }
+
     }
+
 }

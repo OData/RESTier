@@ -1,22 +1,45 @@
-﻿#if false
-
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.Restier.Breakdance;
-using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
-using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simple.OData.Client;
+using System.Globalization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Tests.Shared;
+using System.Threading;
+using System.Net.Mime;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Linq;
+
+#if EF6
+using System.Data.Entity;
+#endif
+
+#if NETCOREAPP3_1_OR_GREATER
+
+using CloudNimble.Breakdance.AspNetCore;
+
+namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
+#else
+
+using CloudNimble.Breakdance.WebApi;
+using System.Web.Http;
 
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
+#endif
+
 {
 
     [TestClass]
     public class BatchTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
+
     {
 
         /// <summary>
@@ -26,17 +49,21 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BatchTests_AddMultipleEntries()
         {
-            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi, LibraryContext>().ConfigureAwait(false);
-            var httpClient = config.GetTestableHttpClient();
+#if NETCOREAPP3_1_OR_GREATER
+            var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
+#else
+            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
+            var httpClient = config.GetTestableHttpClient();      
+#endif
             httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {
-                OnTrace = (x, y) => TestContext.WriteLine(string.Format(x, y)),
+                OnTrace = (x, y) => TestContext.WriteLine(string.Format(CultureInfo.InvariantCulture, x, y)),
                 // RWM: Need a batter way to capture the payload... this event fires before the payload is written to the stream.
                 //BeforeRequestAsync = async (x) => {
                 //    var ms = new MemoryStream();
-                //    if (x.Content != null)
+                //    if (x.Content is not null)
                 //    {
                 //        await x.Content.CopyToAsync(ms).ConfigureAwait(false);
                 //        var streamContent = new StreamContent(ms);
@@ -56,12 +83,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             odataBatch += async c =>
                 await c.For<Book>()
-                .Set(new { Id = Guid.NewGuid(), Isbn = "1111111111111", Title = "Batch Test #1", Publisher = publisher })
+                .Set(new { Id = Guid.NewGuid(), Isbn = "1111111111111", Title = "Batch Test #1", Publisher = publisher, IsActive = true })
                 .InsertEntryAsync();
 
             odataBatch += async c =>
                 await c.For<Book>()
-                .Set(new { Id = Guid.NewGuid(), Isbn = "2222222222222", Title = "Batch Test #2", Publisher = publisher })
+                .Set(new { Id = Guid.NewGuid(), Isbn = "2222222222222", Title = "Batch Test #2", Publisher = publisher, IsActive = true })
                 .InsertEntryAsync();
 
             //RWM: This way should also work.
@@ -77,7 +104,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 throw;
             }
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi, LibraryContext>(HttpMethod.Get, resource: "/Books?$expand=Publisher");
+            Thread.Sleep(5000);
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$expand=Publisher", serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -87,23 +115,182 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         }
 
         /// <summary>
+        /// Validates batch request and response payloads
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task BatchTests_MimePayloadTest()
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
+#else
+            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
+            var httpClient = config.GetTestableHttpClient();
+#endif
+            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{httpClient.BaseAddress}/$batch");
+            request.Content = new StringContent(mimeBatchRequest);
+            request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("multipart/mixed;boundary=batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b");
+
+            var response = httpClient.SendAsync(request).Result;
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Contain(batchResponse1);
+            content.Should().Contain(batchResponse2);
+        }
+
+        string mimeBatchRequest = 
+@"--batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b
+Content-Type: multipart/mixed;boundary=changeset_ee671721-3d96-462d-ac58-67530e4b530c
+
+--changeset_ee671721-3d96-462d-ac58-67530e4b530c
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 1
+
+POST http://localhost/api/tests/Books HTTP/1.1
+Content-ID: 1
+Prefer: return=representation
+OData-Version: 4.0
+Content-Type: application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8
+
+{""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",""Isbn"":""1111111111111"",""Title"":""Batch Test #1"",""IsActive"":true,""Publisher@odata.bind"":""http://localhost/api/tests/Publishers(%27Publisher1%27)""}
+--changeset_ee671721-3d96-462d-ac58-67530e4b530c
+Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 2
+
+POST http://localhost/api/tests/Books HTTP/1.1
+Content-ID: 2
+Prefer: return=representation
+OData-Version: 4.0
+Content-Type: application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8
+
+{""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",""Isbn"":""2222222222222"",""Title"":""Batch Test #2"",""IsActive"":true,""Publisher@odata.bind"":""http://localhost/api/tests/Publishers(%27Publisher1%27)""}
+--changeset_ee671721-3d96-462d-ac58-67530e4b530c--
+--batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b--
+";
+
+        string batchResponse1 =
+@"Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 1
+
+HTTP/1.1 201 Created
+Location: http://localhost/api/tests/Books(79874b37-ce46-4f4c-aa74-8e02ce4d8b67)
+Content-Type: application/json; odata.metadata=minimal; odata.streaming=true
+OData-Version: 4.0
+
+{""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",""Isbn"":""1111111111111"",""Title"":""Batch Test #1"",""IsActive"":true}
+";
+
+        string batchResponse2 = 
+@"Content-Type: application/http
+Content-Transfer-Encoding: binary
+Content-ID: 2
+
+HTTP/1.1 201 Created
+Location: http://localhost/api/tests/Books(c6b67ec7-badc-45c6-98c7-c76b570ce694)
+Content-Type: application/json; odata.metadata=minimal; odata.streaming=true
+OData-Version: 4.0
+
+{""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",""Isbn"":""2222222222222"",""Title"":""Batch Test #2"",""IsActive"":true}
+";
+
+        /// <summary>
+        /// Validates batch request and response payloads
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task BatchTests_JsonPayloadTest()
+        {
+#if NETCOREAPP3_1_OR_GREATER
+            var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
+#else
+            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
+            var httpClient = config.GetTestableHttpClient();
+#endif
+            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{httpClient.BaseAddress}/$batch");
+            request.Content = new StringContent(jsonBatchRequest);
+            request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("application/json");
+
+            var response = httpClient.SendAsync(request).Result;
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
+            response.IsSuccessStatusCode.Should().BeTrue();
+            content.Should().Be(jsonBatchResponse);
+        }
+
+        const string jsonBatchRequest = @"
+        {
+            ""requests"": [{
+                    ""id"": ""1"",
+                    ""method"": ""POST"",
+                    ""url"": ""http://localhost/api/tests/Books"",
+                    ""headers"": {
+                        ""OData-Version"": ""4.0"",
+                        ""Content-Type"": ""application/json;odata.metadata=minimal"",
+                        ""Accept"": ""application/json;odata.metadata=minimal""
+                    },
+                    ""body"": {
+                        ""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",
+                        ""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",
+                        ""Isbn"":""1111111111111"",
+                        ""Title"":""Batch Test #1"",
+                        ""IsActive"":true
+                    }
+                }, {
+                    ""id"": ""2"",
+                    ""method"": ""POST"",
+                    ""url"": ""http://localhost/api/tests/Books"",
+                    ""headers"": {
+                        ""OData-Version"": ""4.0"",
+                        ""Content-Type"": ""application/json;odata.metadata=minimal"",
+                        ""Accept"": ""application/json;odata.metadata=minimal""
+                    },
+                    ""body"": {
+                        ""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",
+                        ""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",
+                        ""Isbn"":""2222222222222"",
+                        ""Title"":""Batch Test #2"",
+                        ""IsActive"":true
+                    }
+                }
+            ]
+        }";
+
+#if NETCOREAPP
+        const string jsonBatchResponse = @"{""responses"":[{""id"":""1"",""status"":201,""headers"":{""location"":""http://localhost/api/tests/Books(79874b37-ce46-4f4c-aa74-8e02ce4d8b67)"",""content-type"":""application/json; odata.metadata=minimal; odata.streaming=true"",""odata-version"":""4.0""}, ""body"" :{""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",""Isbn"":""1111111111111"",""Title"":""Batch Test #1"",""IsActive"":true}},{""id"":""2"",""status"":201,""headers"":{""location"":""http://localhost/api/tests/Books(c6b67ec7-badc-45c6-98c7-c76b570ce694)"",""content-type"":""application/json; odata.metadata=minimal; odata.streaming=true"",""odata-version"":""4.0""}, ""body"" :{""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",""Isbn"":""2222222222222"",""Title"":""Batch Test #2"",""IsActive"":true}}]}";
+#else
+        const string jsonBatchResponse = @"{""responses"":[{""id"":""1"",""status"":201,""headers"":{""location"":""http://localhost/api/tests/Books(79874b37-ce46-4f4c-aa74-8e02ce4d8b67)"",""content-type"":""application/json; odata.metadata=minimal"",""odata-version"":""4.0""}, ""body"" :{""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",""Isbn"":""1111111111111"",""Title"":""Batch Test #1"",""IsActive"":true}},{""id"":""2"",""status"":201,""headers"":{""location"":""http://localhost/api/tests/Books(c6b67ec7-badc-45c6-98c7-c76b570ce694)"",""content-type"":""application/json; odata.metadata=minimal"",""odata-version"":""4.0""}, ""body"" :{""@odata.context"":""http://localhost/api/tests/$metadata#Books/$entity"",""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",""Isbn"":""2222222222222"",""Title"":""Batch Test #2"",""IsActive"":true}}]}";
+#endif
+
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         [TestMethod]
         public async Task BatchTests_SelectPlusFunctionResult()
         {
-            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi, LibraryContext>().ConfigureAwait(false);
+#if NETCOREAPP3_1_OR_GREATER
+            var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
+#else
+            var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
+#endif
             httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {
-                OnTrace = (x, y) => TestContext.WriteLine(string.Format(x, y)),
+                OnTrace = (x, y) => TestContext.WriteLine(string.Format(CultureInfo.InvariantCulture, x, y)),
                 // RWM: Need a batter way to capture the payload... this event fires before the payload is written to the stream.
                 //BeforeRequestAsync = async (x) => {
                 //    var ms = new MemoryStream();
-                //    if (x.Content != null)
+                //    if (x.Content is not null)
                 //    {
                 //        await x.Content.CopyToAsync(ms).ConfigureAwait(false);
                 //        var streamContent = new StreamContent(ms);
@@ -154,8 +341,18 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             book.Title.Should().Be("The Cat in the Hat");
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            var context = RestierTestHelpers.GetTestableInjectedService<LibraryApi, LibraryContext>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>()).GetAwaiter().GetResult();
+            var books = context.Books.Where(d => d.Title.StartsWith("Batch Test")).ToList();
+            foreach (var book in books)
+            {
+                context.Books.Remove(book);
+            }
+            context.SaveChanges();
+        }
 
     }
 
 }
-#endif

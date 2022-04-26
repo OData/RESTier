@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -75,13 +76,13 @@ namespace Microsoft.Restier.Core.Query
             // get element type
             Type elementType = null;
             var queryType = expression.Type.FindGenericType(typeof(IQueryable<>));
-            if (queryType != null)
+            if (queryType is not null)
             {
                 elementType = queryType.GetGenericArguments()[0];
             }
 
             // append count expression if requested
-            if (elementType != null && context.Request.ShouldReturnCount)
+            if (elementType is not null && context.Request.ShouldReturnCount)
             {
                 expression = ExpressionHelpers.Count(expression, elementType);
                 elementType = null; // now return type is single int
@@ -90,12 +91,12 @@ namespace Microsoft.Restier.Core.Query
             // execute query
             QueryResult result;
             var executor = context.GetApiService<IQueryExecutor>();
-            if (executor == null)
+            if (executor is null)
             {
                 throw new NotSupportedException(Resources.MissingQueryExecutor);
             }
 
-            if (elementType != null)
+            if (elementType is not null)
             {
                 var query = visitor.BaseQuery.Provider.CreateQuery(expression);
                 var method = typeof(IQueryExecutor)
@@ -124,7 +125,7 @@ namespace Microsoft.Restier.Core.Query
                 result = await task.ConfigureAwait(false);
             }
 
-            if (result != null)
+            if (result is not null)
             {
                 result.ResultsSource = visitor.EntitySet;
             }
@@ -150,7 +151,7 @@ namespace Microsoft.Restier.Core.Query
 
             // This will remove unneeded statement which includes $expand, $select,$top,$skip,$orderby
             methodCallExpression = methodCallExpression.RemoveUnneededStatement();
-            if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+            if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
             {
                 return;
             }
@@ -159,7 +160,7 @@ namespace Microsoft.Restier.Core.Query
             {
                 // Throw exception if key as last where statement, or remove $filter where statement
                 methodCallExpression = CheckWhereCondition(methodCallExpression);
-                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
                 {
                     return;
                 }
@@ -182,7 +183,7 @@ namespace Microsoft.Restier.Core.Query
 
             var subExpression = methodCallExpression.Arguments[0];
 
-            // Remove appended statement like Where(Param_0 => (Param_0.Prop != null)) if there is one
+            // Remove appended statement like Where(Param_0 => (Param_0.Prop is not null)) if there is one
             subExpression = subExpression.RemoveAppendWhereStatement();
 
             await ExecuteSubExpression(context, visitor, executor, subExpression, cancellationToken).ConfigureAwait(false);
@@ -198,7 +199,7 @@ namespace Microsoft.Restier.Core.Query
             // get element type
             Type elementType = null;
             var queryType = expression.Type.FindGenericType(typeof(IQueryable<>));
-            if (queryType != null)
+            if (queryType is not null)
             {
                 elementType = queryType.GetGenericArguments()[0];
             }
@@ -234,23 +235,23 @@ namespace Microsoft.Restier.Core.Query
             // This means a select for expand is appended, will remove it for resource existing check
             var lastWhere = methodCallExpression.Arguments[1] as UnaryExpression;
             var lambdaExpression = lastWhere.Operand as LambdaExpression;
-            if (lambdaExpression == null)
+            if (lambdaExpression is null)
             {
                 return null;
             }
 
             var binaryExpression = lambdaExpression.Body as BinaryExpression;
-            if (binaryExpression == null)
+            if (binaryExpression is null)
             {
                 return null;
             }
 
             // Key segment will have ConstantExpression but $filter will not have ConstantExpression
             var rightExpression = binaryExpression.Right as ConstantExpression;
-            if (rightExpression != null && rightExpression.Value != null)
+            if (rightExpression is not null && rightExpression.Value is not null)
             {
                 // This means where statement is key segment but not for $filter
-                Console.WriteLine("Restier: You may need to set 'HandleNullPropagationOption.False' in your app startup. See https://github.com/OData/RESTier/issues/669#issuecomment-656743185");
+                Console.WriteLine(Resources.HandleNullPropagation);
                 throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
@@ -288,7 +289,7 @@ namespace Microsoft.Restier.Core.Query
 
             public override Expression Visit(Expression node)
             {
-                if (node == null)
+                if (node is null)
                 {
                     return null;
                 }
@@ -338,7 +339,7 @@ namespace Microsoft.Restier.Core.Query
                         node = Source(node);
                     }
 
-                    if (BaseQuery == null)
+                    if (BaseQuery is null)
                     {
                         // The very first time control reaches here, the
                         // visited node represents the original starting
@@ -350,7 +351,7 @@ namespace Microsoft.Restier.Core.Query
                         }
 
                         BaseQuery = constant.Value as IQueryable;
-                        if (BaseQuery == null)
+                        if (BaseQuery is null)
                         {
                             throw new NotSupportedException(Resources.OriginalExpressionShouldBeQueryable);
                         }
@@ -362,7 +363,7 @@ namespace Microsoft.Restier.Core.Query
                 // TODO GitHubIssue#28 : Support transformation between API types and data source proxy types
                 context.PopVisitedNode();
 
-                if (context.VisitedNode != null)
+                if (context.VisitedNode is not null)
                 {
                     EntitySet = context.ModelReference?.EntitySet;
                 }
@@ -372,7 +373,7 @@ namespace Microsoft.Restier.Core.Query
 
             private void Inspect()
             {
-                if (authorizer != null && !authorizer.Authorize(context))
+                if (authorizer is not null && !authorizer.Authorize(context))
                 {
                     throw new SecurityException("The current user does not have permission to query from the requested resource.");
                 }
@@ -380,7 +381,7 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Expand(Expression visited)
             {
-                if (expander == null)
+                if (expander is null)
                 {
                     return visited;
                 }
@@ -388,7 +389,7 @@ namespace Microsoft.Restier.Core.Query
                 var expanded = expander.Expand(context);
                 var callback = context.AfterNestedVisitCallback;
                 context.AfterNestedVisitCallback = null;
-                if (expanded != null && expanded != visited)
+                if (expanded is not null && expanded != visited)
                 {
                     if (!visited.Type.IsAssignableFrom(expanded.Type))
                     {
@@ -398,7 +399,7 @@ namespace Microsoft.Restier.Core.Query
                     context.PushVisitedNode(null);
                     expanded = Visit(expanded);
                     context.PopVisitedNode();
-                    if (callback != null)
+                    if (callback is not null)
                     {
                         callback();
                     }
@@ -411,12 +412,12 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Process(Expression visited, Expression processed)
             {
-                if (processor != null)
+                if (processor is not null)
                 {
                     var filtered = processor.Process(context);
                     var callback = context.AfterNestedVisitCallback;
                     context.AfterNestedVisitCallback = null;
-                    if (filtered != null && filtered != visited)
+                    if (filtered is not null && filtered != visited)
                     {
                         if (!visited.Type.IsAssignableFrom(filtered.Type))
                         {
@@ -424,7 +425,7 @@ namespace Microsoft.Restier.Core.Query
                             // the type is changed from ICollection<> to IQueryable<>
                             var collectionType = visited.Type.FindGenericType(typeof(ICollection<>));
                             var queryableType = filtered.Type.FindGenericType(typeof(IQueryable<>));
-                            if (collectionType == null || queryableType == null)
+                            if (collectionType is null || queryableType is null)
                             {
                                 throw new InvalidOperationException(
                                     Resources.ProcessorCannotChangeExpressionType);
@@ -452,7 +453,7 @@ namespace Microsoft.Restier.Core.Query
                             processedExpressions.Remove(visited);
                         }
 
-                        if (callback != null)
+                        if (callback is not null)
                         {
                             callback();
                         }
@@ -464,8 +465,8 @@ namespace Microsoft.Restier.Core.Query
 
             private Expression Source(Expression node)
             {
-                node = sourcer.ReplaceQueryableSource(context, BaseQuery != null);
-                if (node == null)
+                node = sourcer.ReplaceQueryableSource(context, BaseQuery is not null);
+                if (node is null)
                 {
                     // Missing source expression
                     throw new NotSupportedException(Resources.SourceExpressionMissing);

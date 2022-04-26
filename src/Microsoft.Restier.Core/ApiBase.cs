@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using System;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Core
 {
@@ -75,18 +75,18 @@ namespace Microsoft.Restier.Core
             var changeSetItemFilter = serviceProvider.GetService<IChangeSetItemFilter>();
             var submitExecutor = serviceProvider.GetService<ISubmitExecutor>();
 
-            if (queryExpressionSourcer == null)
+            if (queryExpressionSourcer is null)
             {
                 // Missing sourcer
                 throw new NotSupportedException(Resources.MissingQueryExpressionSourcer);
             }
 
-            if (changeSetInitializer == null)
+            if (changeSetInitializer is null)
             {
                 throw new NotSupportedException(Resources.MissingChangeSetInitializer);
             }
 
-            if (submitExecutor == null)
+            if (submitExecutor is null)
             {
                 throw new NotSupportedException(Resources.MissingSubmitExecutor);
             }

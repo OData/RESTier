@@ -35,7 +35,7 @@ namespace Microsoft.Restier.Core
         IQueryProvider IQueryable.Provider => this;
 
         /// <inheritdoc />
-        public override string ToString() => this.Expression.ToString();
+        public override string ToString() => Expression.ToString();
 
         /// <inheritdoc />
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(
@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(expression, nameof(expression));
             var type = expression.Type.FindGenericType(typeof(IQueryable<>));
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentException(Resources.ExpressionMustBeQueryable);
             }

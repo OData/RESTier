@@ -26,7 +26,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>A Edm GeographyPoint</returns>
         public static GeographyPoint ToGeographyPoint(this DbGeography geography)
         {
-            if (geography == null)
+            if (geography is null)
             {
                 return null;
             }
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>A DbGeography</returns>
         public static DbGeography ToDbGeography(this GeographyPoint point)
         {
-            if (point == null)
+            if (point is null)
             {
                 return null;
             }
@@ -83,7 +83,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>A Edm GeographyLineString</returns>
         public static GeographyLineString ToGeographyLineString(this DbGeography geography)
         {
-            if (geography == null)
+            if (geography is null)
             {
                 return null;
             }
@@ -130,7 +130,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>A DbGeography</returns>
         public static DbGeography ToDbGeography(this GeographyLineString lineString)
         {
-            if (lineString == null)
+            if (lineString is null)
             {
                 return null;
             }
@@ -146,12 +146,12 @@ namespace Microsoft.Restier.EntityFramework
 
                 string pointStr = lat.ToString(DefaultCulture) + " " + lon.ToString(DefaultCulture);
 
-                if (alt != null)
+                if (alt is not null)
                 {
                     pointStr += " " + alt.Value;
                 }
 
-                if (m != null)
+                if (m is not null)
                 {
                     pointStr += " " + m.Value;
                 }

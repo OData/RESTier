@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Core.Submit
 
             set
             {
-                if (Result != null)
+                if (Result is not null)
                 {
                     throw new InvalidOperationException(
                         Resources.CannotSetChangeSetIfThereIsResult);

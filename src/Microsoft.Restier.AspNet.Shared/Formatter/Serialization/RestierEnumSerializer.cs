@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.OData;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
@@ -39,7 +39,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             EnumResult enumResult = graph as EnumResult;
-            if (enumResult != null)
+            if (enumResult is not null)
             {
                 graph = enumResult.Result;
                 type = enumResult.Type;
@@ -63,7 +63,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             EnumResult enumResult = graph as EnumResult;
-            if (enumResult != null)
+            if (enumResult is not null)
             {
                 graph = enumResult.Result;
                 type = enumResult.Type;

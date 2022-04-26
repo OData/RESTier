@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Query
 #else
 namespace Microsoft.Restier.AspNet.Query

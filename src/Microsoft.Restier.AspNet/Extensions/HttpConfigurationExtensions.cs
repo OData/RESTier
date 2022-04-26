@@ -104,7 +104,7 @@ namespace System.Web.Http
         public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> configureRoutesAction)
         {
             var httpServer = GlobalConfiguration.DefaultServer;
-            if (httpServer == null)
+            if (httpServer is null)
             {
                 throw new Exception(OwinException);
             }
@@ -130,6 +130,7 @@ namespace System.Web.Http
         /// </example>
         public static HttpConfiguration MapRestier(this HttpConfiguration config, Action<RestierRouteBuilder> configureRoutesAction, HttpServer httpServer)
         {
+            Ensure.NotNull(config, nameof(config));
             Ensure.NotNull(configureRoutesAction, nameof(configureRoutesAction));
 
             var rrb = new RestierRouteBuilder();
@@ -142,27 +143,32 @@ namespace System.Web.Http
 
                 if (route.Value.AllowBatching)
                 {
-                    if (httpServer == null)
+                    if (httpServer is null)
                     {
                         throw new ArgumentNullException(nameof(httpServer), OwinException);
                     }
 
-#pragma warning disable IDE0067 // Dispose objects before losing scope
+#pragma warning disable CA2000 // Dispose objects before losing scope
                     batchHandler = new RestierBatchHandler(httpServer)
                     {
                         ODataRouteName = route.Key
                     };
-#pragma warning restore IDE0067 // Dispose objects before losing scope
+#pragma warning restore CA2000 // Dispose objects before losing scope
                 }
 
                 var odataRoute = config.MapODataServiceRoute(route.Key, route.Value.RoutePrefix, (containerBuilder, routeName) =>
                 {
-                    var rcb = containerBuilder as RestierContainerBuilder;
+                    if (containerBuilder is not RestierContainerBuilder rcb)
+                    {
+                        throw new Exception($"MapRestier expected a RestierContainerBuilder but got an {containerBuilder.GetType().Name} instead. " +
+                            $"This is usually because you did not call services.AddRestier() first. Please see the Restier Northwind Sample application for " +
+                            $"more details on how to properly register Restier.");
+                    }
                     rcb.routeBuilder = rrb;
                     rcb.RouteName = routeName;
 
                     containerBuilder.AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton, sp => conventions);
-                    if (batchHandler != null)
+                    if (batchHandler is not null)
                     {
                         //RWM: DO NOT simplify this generic signature. It HAS to stay this way, otherwise the code breaks.
                         containerBuilder.AddService<ODataBatchHandler>(ServiceLifetime.Singleton, sp => batchHandler);
@@ -209,12 +215,12 @@ namespace System.Web.Http
         /// <returns>The added <see cref="ODataRoute"/>.</returns>
         private static ODataRoute MapODataServiceRoute(this HttpConfiguration configuration, string routeName, string routePrefix, Action<IContainerBuilder, string> configureAction)
         {
-            if (configuration == null)
+            if (configuration is null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            if (routeName == null)
+            if (routeName is null)
             {
                 throw new ArgumentNullException(nameof(routeName));
             }
@@ -226,7 +232,7 @@ namespace System.Web.Http
             var pathHandler = rootContainer.GetRequiredService<IODataPathHandler>();
 
             // if settings is not on local, use the global configuration settings.
-            if (pathHandler != null && pathHandler.UrlKeyDelimiter == null)
+            if (pathHandler is not null && pathHandler.UrlKeyDelimiter is null)
             {
                 var urlKeyDelimiter = configuration.GetUrlKeyDelimiter();
                 pathHandler.UrlKeyDelimiter = urlKeyDelimiter;
@@ -243,14 +249,14 @@ namespace System.Web.Http
             var routes = configuration.Routes;
             routePrefix = RemoveTrailingSlash(routePrefix);
             var messageHandler = rootContainer.GetService<HttpMessageHandler>();
-            if (messageHandler != null)
+            if (messageHandler is not null)
             {
                 route = new ODataRoute(routePrefix, routeConstraint, null, null, null, messageHandler);
             }
             else
             {
                 var batchHandler = rootContainer.GetService<ODataBatchHandler>();
-                if (batchHandler != null)
+                if (batchHandler is not null)
                 {
                     batchHandler.ODataRouteName = routeName;
                     var batchTemplate = string.IsNullOrEmpty(routePrefix) ? ODataRouteConstants.Batch : routePrefix + '/' + ODataRouteConstants.Batch;
@@ -280,7 +286,7 @@ namespace System.Web.Http
 
         internal static ODataUrlKeyDelimiter GetUrlKeyDelimiter(this HttpConfiguration configuration)
         {
-            if (configuration == null)
+            if (configuration is null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }

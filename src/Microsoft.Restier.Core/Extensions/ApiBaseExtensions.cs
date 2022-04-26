@@ -123,21 +123,17 @@ namespace Microsoft.Restier.Core
         #region Model
 
         /// <summary>
-        /// Asynchronously gets an API model using an API context.
+        /// Retrieves the <see cref="IEdmModel"/> used by this <see cref="ApiBase"/> instance.
         /// </summary>
-        /// <param name="api">An API.</param>
+        /// <param name="api">The <see cref="ApiBase"/> instance to extend.</param>
         /// <returns>
-        /// A task that represents the asynchronous operation whose result is the API model.
+        /// The <see cref="IEdmModel"/> used by this <see cref="ApiBase"/> instance.
         /// </returns>
         public static IEdmModel GetModel(this ApiBase api)
         {
             Ensure.NotNull(api, nameof(api));
 
             return api.GetApiService<IEdmModel>();
-            //var registrations = api.GetApiService<IEdmModel>();
-            //var entry = registrations.FirstOrDefault(c => c.Value.ApiType == api.GetType());
-            //return entry.Value.Model;
-
         }
 
         #endregion
@@ -371,7 +367,7 @@ namespace Microsoft.Restier.Core
         {
             MethodInfo sourceMethod;
             Expression[] expressions;
-            if (namespaceName == null)
+            if (namespaceName is null)
             {
                 sourceMethod = Source2Method;
                 expressions = new Expression[]
@@ -406,10 +402,10 @@ namespace Microsoft.Restier.Core
             Type elementType = null;
 
             var mapper = api.GetApiService<IModelMapper>();
-            if (mapper != null)
+            if (mapper is not null)
             {
                 var modelContext = new ModelContext(api);
-                if (namespaceName == null)
+                if (namespaceName is null)
                 {
                     mapper.TryGetRelevantType(modelContext, name, out elementType);
                 }
@@ -419,7 +415,7 @@ namespace Microsoft.Restier.Core
                 }
             }
 
-            if (elementType == null)
+            if (elementType is null)
             {
                 throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.ElementTypeNotFound, name));
             }

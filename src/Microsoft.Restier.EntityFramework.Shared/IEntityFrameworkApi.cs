@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-#if EF7
+#if EFCore
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
 using System.Text;
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework

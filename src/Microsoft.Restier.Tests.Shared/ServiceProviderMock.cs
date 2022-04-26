@@ -29,61 +29,61 @@ namespace Microsoft.Restier.Tests.Shared
 
             ServiceProvider.Setup(x => x.GetService(typeof(IQueryExpressionSourcer))).Returns(new Mock<IQueryExpressionSourcer>().Object);
 
-            this.QueryExpressionAuthorizer = new Mock<IQueryExpressionAuthorizer>();
+            QueryExpressionAuthorizer = new Mock<IQueryExpressionAuthorizer>();
 
             // authorize any query as default.
-            this.QueryExpressionAuthorizer.Setup(x => x.Authorize(It.IsAny<QueryExpressionContext>())).Returns(true);
+            QueryExpressionAuthorizer.Setup(x => x.Authorize(It.IsAny<QueryExpressionContext>())).Returns(true);
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IQueryExpressionAuthorizer))).Returns(this.QueryExpressionAuthorizer.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IQueryExpressionAuthorizer))).Returns(QueryExpressionAuthorizer.Object);
             ServiceProvider.Setup(x => x.GetService(typeof(IQueryExpressionExpander))).Returns(new Mock<IQueryExpressionExpander>().Object);
 
-            this.QueryExpressionProcessor = new Mock<IQueryExpressionProcessor>();
+            QueryExpressionProcessor = new Mock<IQueryExpressionProcessor>();
 
             // just pass on the visited node without filter as default.
-            this.QueryExpressionProcessor.Setup(x => x.Process(It.IsAny<QueryExpressionContext>())).Returns<QueryExpressionContext>(q => q.VisitedNode);
+            QueryExpressionProcessor.Setup(x => x.Process(It.IsAny<QueryExpressionContext>())).Returns<QueryExpressionContext>(q => q.VisitedNode);
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IQueryExpressionProcessor))).Returns(this.QueryExpressionProcessor.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IQueryExpressionProcessor))).Returns(QueryExpressionProcessor.Object);
 
-            this.QueryExecutor = new Mock<IQueryExecutor>();
+            QueryExecutor = new Mock<IQueryExecutor>();
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IQueryExecutor))).Returns(this.QueryExecutor.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IQueryExecutor))).Returns(QueryExecutor.Object);
 
-            this.ChangeSetInitializer = new Mock<IChangeSetInitializer>();
+            ChangeSetInitializer = new Mock<IChangeSetInitializer>();
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetInitializer))).Returns(this.ChangeSetInitializer.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetInitializer))).Returns(ChangeSetInitializer.Object);
 
-            this.ChangeSetItemAuthorizer = new Mock<IChangeSetItemAuthorizer>();
+            ChangeSetItemAuthorizer = new Mock<IChangeSetItemAuthorizer>();
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetItemAuthorizer))).Returns(this.ChangeSetItemAuthorizer.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetItemAuthorizer))).Returns(ChangeSetItemAuthorizer.Object);
 
-            this.ChangeSetItemValidator = new Mock<IChangeSetItemValidator>();
+            ChangeSetItemValidator = new Mock<IChangeSetItemValidator>();
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetItemValidator))).Returns(this.ChangeSetItemValidator.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetItemValidator))).Returns(ChangeSetItemValidator.Object);
 
-            this.ChangeSetItemFilter = new Mock<IChangeSetItemFilter>();
+            ChangeSetItemFilter = new Mock<IChangeSetItemFilter>();
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetItemFilter))).Returns(this.ChangeSetItemFilter.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IChangeSetItemFilter))).Returns(ChangeSetItemFilter.Object);
 
-            this.SubmitExecutor = new Mock<ISubmitExecutor>();
+            SubmitExecutor = new Mock<ISubmitExecutor>();
 
             var submitResult = new SubmitResult(new ChangeSet());
 
             // return the result from the context as default operation.
-            this.SubmitExecutor.Setup(x => x.ExecuteSubmitAsync(It.IsAny<SubmitContext>(), It.IsAny<CancellationToken>()))
+            SubmitExecutor.Setup(x => x.ExecuteSubmitAsync(It.IsAny<SubmitContext>(), It.IsAny<CancellationToken>()))
                 .Returns(() => Task.FromResult(submitResult));
 
-            ServiceProvider.Setup(x => x.GetService(typeof(ISubmitExecutor))).Returns(this.SubmitExecutor.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(ISubmitExecutor))).Returns(SubmitExecutor.Object);
 
-            this.ModelBuilder = new Mock<IModelBuilder>();
+            ModelBuilder = new Mock<IModelBuilder>();
 
             var edmModel = new Mock<IEdmModel>().Object;
 
             // return the edm model as default.
-            this.ModelBuilder.Setup(x => x.GetModel(It.IsAny<ModelContext>())).Returns(edmModel);
+            ModelBuilder.Setup(x => x.GetModel(It.IsAny<ModelContext>())).Returns(edmModel);
 
-            ServiceProvider.Setup(x => x.GetService(typeof(IModelBuilder))).Returns(this.ModelBuilder.Object);
-            this.ModelMapper = new Mock<IModelMapper>();
-            ServiceProvider.Setup(x => x.GetService(typeof(IModelMapper))).Returns(this.ModelMapper.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IModelBuilder))).Returns(ModelBuilder.Object);
+            ModelMapper = new Mock<IModelMapper>();
+            ServiceProvider.Setup(x => x.GetService(typeof(IModelMapper))).Returns(ModelMapper.Object);
 
             var propertyBag = new PropertyBag();
             ServiceProvider.Setup(x => x.GetService(typeof(PropertyBag))).Returns(propertyBag);

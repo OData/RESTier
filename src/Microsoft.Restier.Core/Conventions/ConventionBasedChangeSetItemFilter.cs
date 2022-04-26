@@ -87,11 +87,11 @@ namespace Microsoft.Restier.Core
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
 
-            if (expectedMethod == null)
+            if (expectedMethod is null)
             {
                 var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
                 var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
-                if (actualMethod != null)
+                if (actualMethod is not null)
                 {
                     Trace.WriteLine($"Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                 }
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core
             if (!expectedMethod.IsStatic)
             {
                 target = context.Api;
-                if (target == null || !targetApiType.IsInstanceOfType(target))
+                if (target is null || !targetApiType.IsInstanceOfType(target))
                 {
                     Trace.WriteLine("The Restier API is of the incorrect type.");
                     return Task.CompletedTask;
@@ -126,15 +126,24 @@ namespace Microsoft.Restier.Core
             var methodParameters = expectedMethod.GetParameters();
             if (ParametersMatch(methodParameters, parameters))
             {
-                var result = expectedMethod.Invoke(target, parameters);
-                if (result is Task resultTask)
+                try
                 {
-                    return resultTask;
+                    var result = expectedMethod.Invoke(target, parameters);
+                    if (result is Task resultTask)
+                    {
+                        return resultTask;
+                    }
+                }
+                catch (TargetInvocationException ex)
+                {
+                    throw new ConventionInvocationException($"Authorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
                 }
             }
 
             Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
             return Task.CompletedTask;
         }
+
     }
+
 }

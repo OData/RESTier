@@ -33,7 +33,7 @@ namespace Microsoft.Restier.EntityFramework
         /// <returns>The task object that represents this asynchronous operation.</returns>
         public async override Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.EntityFramework
                 var resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
                 // This means request resource is sub type of resource type
-                if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
+                if (entry.ActualResourceType is not null && resourceType != entry.ActualResourceType)
                 {
                     // Set type to derived type
                     resourceType = entry.ActualResourceType;
@@ -155,13 +155,13 @@ namespace Microsoft.Restier.EntityFramework
             var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken).ConfigureAwait(false);
 
             var resource = result.Results.SingleOrDefault();
-            if (resource == null)
+            if (resource is null)
             {
                 throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
             // This means no If-Match or If-None-Match header
-            if (item.OriginalValues == null || item.OriginalValues.Count == 0)
+            if (item.OriginalValues is null || item.OriginalValues.Count == 0)
             {
                 return resource;
             }
@@ -193,7 +193,7 @@ namespace Microsoft.Restier.EntityFramework
                 {
                     var propertyEntry = dbEntry.Property(propertyPair.Key);
                     var value = propertyPair.Value;
-                    if (value == null)
+                    if (value is null)
                     {
                         // If the property value is null, we set null in the item too.
                         propertyEntry.CurrentValue = null;
@@ -201,7 +201,7 @@ namespace Microsoft.Restier.EntityFramework
                     }
 
                     Type type = null;
-                    if (propertyEntry.CurrentValue != null)
+                    if (propertyEntry.CurrentValue is not null)
                     {
                         type = propertyEntry.CurrentValue.GetType();
                     }
@@ -234,7 +234,7 @@ namespace Microsoft.Restier.EntityFramework
             {
                 var value = propertyPair.Value;
                 var propertyInfo = type.GetProperty(propertyPair.Key);
-                if (value == null)
+                if (value is null)
                 {
                     // If the property value is null, we set null in the object too.
                     propertyInfo.SetValue(instance, null);
@@ -242,7 +242,7 @@ namespace Microsoft.Restier.EntityFramework
                 }
 
                 value = ConvertToEfValue(propertyInfo.PropertyType, value);
-                if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
+                if (value is not null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
                     if (!(value is IReadOnlyDictionary<string, object> dic))
                     {

@@ -2,16 +2,24 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
-using Microsoft.Restier.AspNet.Model;
-using Microsoft.Restier.EntityFramework;
+#if NETCOREAPP3_1_OR_GREATER
+    using Microsoft.Restier.AspNetCore.Model;
+#else
+    using Microsoft.Restier.AspNet.Model;
+#endif
+
+#if EF6
+    using Microsoft.Restier.EntityFramework;
+#endif
+#if EFCore
+    using Microsoft.Restier.EntityFrameworkCore;
+#endif
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Marvel
 {
 
     /// <summary>
     /// A testable API that implements an Entity Framework model and has secondary operations
-    /// against a SQL 2017 LocalDB database.
     /// </summary>
     public class MarvelApi : EntityFrameworkApi<MarvelContext>
     {

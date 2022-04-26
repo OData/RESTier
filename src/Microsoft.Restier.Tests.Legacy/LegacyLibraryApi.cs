@@ -7,20 +7,21 @@ using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.AspNet.Model;
 using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 
-namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
+namespace Microsoft.Restier.Tests.Legacy
 {
 
     /// <summary>
     /// A testable API that implements an Entity Framework model and has secondary operations
     /// against a SQL 2017 LocalDB database.
     /// </summary>
-    public class LibraryApi : EntityFrameworkApi<LibraryContext>
+    public class LegacyLibraryApi : EntityFrameworkApi<LibraryContext>
     {
 
         #region Constructors
 
-        public LibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        public LegacyLibraryApi(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
@@ -31,7 +32,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [Operation(OperationType = OperationType.Action, EntitySet = "Books")]
         public Book CheckoutBook(Book book)
         {
-            if (book == null)
+            if (book is null)
             {
                 throw new ArgumentNullException(nameof(book));
             }
@@ -43,7 +44,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         [Operation(IsBound = true, IsComposable = true)]
         public IQueryable<Book> DiscontinueBooks(IQueryable<Book> books)
         {
-            if (books == null)
+            if (books is null)
             {
                 throw new ArgumentNullException(nameof(books));
             }

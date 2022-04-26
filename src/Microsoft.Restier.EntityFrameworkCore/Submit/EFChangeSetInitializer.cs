@@ -35,7 +35,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
         /// <returns>The task object that represents this asynchronous operation.</returns>
         public async override Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 var resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
                 // This means request resource is sub type of resource type
-                if (entry.ActualResourceType != null && resourceType != entry.ActualResourceType)
+                if (entry.ActualResourceType is not null && resourceType != entry.ActualResourceType)
                 {
                     // Set type to derived type
                     resourceType = entry.ActualResourceType;
@@ -106,7 +106,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 return Convert.ToInt64(value, CultureInfo.InvariantCulture);
             }
 
-#if !EF7
+#if !EFCore
             // Todo: Restore geometry handling
             if (type == typeof(DbGeography))
             {
@@ -134,13 +134,13 @@ namespace Microsoft.Restier.EntityFrameworkCore
             var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken).ConfigureAwait(false);
 
             var resource = result.Results.SingleOrDefault();
-            if (resource == null)
+            if (resource is null)
             {
                 throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
             // This means no If-Match or If-None-Match header
-            if (item.OriginalValues == null || item.OriginalValues.Count == 0)
+            if (item.OriginalValues is null || item.OriginalValues.Count == 0)
             {
                 return resource;
             }
@@ -161,8 +161,8 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 //    This will set any unspecified properties to their default value.
                 var newInstance = Activator.CreateInstance(resourceType);
 
-                this.SetValues(newInstance, resourceType, item.ResourceKey);
-                this.SetValues(newInstance, resourceType, item.LocalValues);
+                SetValues(newInstance, resourceType, item.ResourceKey);
+                SetValues(newInstance, resourceType, item.LocalValues);
 
                 dbEntry.CurrentValues.SetValues(newInstance);
             }
@@ -170,35 +170,39 @@ namespace Microsoft.Restier.EntityFrameworkCore
             {
                 foreach (var propertyPair in item.LocalValues)
                 {
-                    var propertyEntry = dbEntry.Property(propertyPair.Key);
-                    var value = propertyPair.Value;
-                    if (value == null)
-                    {
-                        // If the property value is null, we set null in the item too.
-                        propertyEntry.CurrentValue = null;
-                        continue;
-                    }
+                    var propertyEntry = dbEntry.Members.FirstOrDefault(m => m.Metadata.Name == propertyPair.Key);
 
-                    Type type = null;
-                    if (propertyEntry.CurrentValue != null)
+                    if (propertyEntry != null)
                     {
-                        type = propertyEntry.CurrentValue.GetType();
-                    }
-                    else
-                    {
-                        // If property does not have value now, will get property type from model
-                        var propertyInfo = dbEntry.Entity.GetType().GetProperty(propertyPair.Key);
-                        type = propertyInfo.PropertyType;
-                    }
+                        var value = propertyPair.Value;
+                        if (value is null)
+                        {
+                            // If the property value is null, we set null in the item too.
+                            propertyEntry.CurrentValue = null;
+                            continue;
+                        }
 
-                    // todo: complex property detection removed. Not sure whether IReadOnlyDictionary is enough.
-                    if (value is IReadOnlyDictionary<string, object> dic)
-                    {
-                        value = propertyEntry.CurrentValue;
-                        this.SetValues(value, type, dic);
-                    }
+                        Type type = null;
+                        if (propertyEntry.CurrentValue is not null)
+                        {
+                            type = propertyEntry.CurrentValue.GetType();
+                        }
+                        else
+                        {
+                            // If property does not have value now, will get property type from model
+                            var propertyInfo = dbEntry.Entity.GetType().GetProperty(propertyPair.Key);
+                            type = propertyInfo.PropertyType;
+                        }
 
-                    propertyEntry.CurrentValue = this.ConvertToEfValue(type, value);
+                        // todo: complex property detection removed. Not sure whether IReadOnlyDictionary is enough.
+                        if (value is IReadOnlyDictionary<string, object> dic)
+                        {
+                            value = propertyEntry.CurrentValue;
+                            SetValues(value, type, dic);
+                        }
+
+                        propertyEntry.CurrentValue = ConvertToEfValue(type, value);
+                    }
                 }
             }
         }
@@ -209,15 +213,15 @@ namespace Microsoft.Restier.EntityFrameworkCore
             {
                 var value = propertyPair.Value;
                 var propertyInfo = type.GetProperty(propertyPair.Key);
-                if (value == null)
+                if (value is null)
                 {
                     // If the property value is null, we set null in the object too.
                     propertyInfo.SetValue(instance, null);
                     continue;
                 }
 
-                value = this.ConvertToEfValue(propertyInfo.PropertyType, value);
-                if (value != null && !propertyInfo.PropertyType.IsInstanceOfType(value))
+                value = ConvertToEfValue(propertyInfo.PropertyType, value);
+                if (value is not null && !propertyInfo.PropertyType.IsInstanceOfType(value))
                 {
                     if (!(value is IReadOnlyDictionary<string, object> dic))
                     {
@@ -229,7 +233,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
 
                     // TODO GithubIssue #508
                     value = Activator.CreateInstance(propertyInfo.PropertyType);
-                    this.SetValues(value, propertyInfo.PropertyType, dic);
+                    SetValues(value, propertyInfo.PropertyType, dic);
                 }
 
                 propertyInfo.SetValue(instance, value);
@@ -247,7 +251,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
             {
                 resource = new TEntity();
 
-                this.SetValues(resource, resourceType, entry.LocalValues);
+                SetValues(resource, resourceType, entry.LocalValues);
                 set.Add(resource);
             }
             else if (entry.EntitySetOperation == RestierEntitySetOperation.Delete)
@@ -260,7 +264,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 resource = (await FindResource(context, entry, cancellationToken).ConfigureAwait(false)) as TEntity;
 
                 var dbEntry = dbContext.Entry(resource);
-                this.SetValues(dbEntry, entry, resourceType);
+                SetValues(dbEntry, entry, resourceType);
             }
             else
             {

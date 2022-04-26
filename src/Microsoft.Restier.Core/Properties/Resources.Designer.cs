@@ -19,7 +19,7 @@ namespace Microsoft.Restier.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -192,6 +192,15 @@ namespace Microsoft.Restier.Core {
         internal static string ExpressionMustBeQueryable {
             get {
                 return ResourceManager.GetString("ExpressionMustBeQueryable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restier: You may need to set &apos;HandleNullPropagationOption.False&apos; in your app startup. See https://github.com/OData/RESTier/issues/669#issuecomment-656743185.
+        /// </summary>
+        internal static string HandleNullPropagation {
+            get {
+                return ResourceManager.GetString("HandleNullPropagation", resourceCulture);
             }
         }
         

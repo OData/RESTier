@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Samples.Northwind.AspNetCore;
 
@@ -38,6 +39,12 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet.Controllers
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
             Console.WriteLine("Inserting Category...");
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
+        }
+
+        [UnboundOperation]
+        public Category GetFirstCategory()
+        {
+            return DbContext.Categories.FirstOrDefault();
         }
 
 

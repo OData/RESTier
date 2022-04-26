@@ -54,7 +54,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
             var contentIdToLocationMapping = new Dictionary<string, string>();
             var responseTasks = new List<Task<Task<HttpContext>>>();
 
-            foreach (var context in this.Contexts)
+            foreach (var context in Contexts)
             {
                 // Since exceptions may occure before the request is sent to RestierController,
                 // we must catch the exceptions here and call OnChangeSetCompleted,
@@ -65,9 +65,9 @@ namespace Microsoft.Restier.AspNetCore.Batch
                         .ContinueWith(
                             t =>
                             {
-                                if (t.Exception != null)
+                                if (t.Exception is not null)
                                 {
-                                    var taskEx = (t.Exception.InnerExceptions != null &&
+                                    var taskEx = (t.Exception.InnerExceptions is not null &&
                                                   t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
@@ -82,7 +82,9 @@ namespace Microsoft.Restier.AspNetCore.Batch
 
                                 return tcs.Task;
                             },
-                            context.RequestAborted);
+                            context.RequestAborted,
+                            TaskContinuationOptions.None,
+                            TaskScheduler.Current);
 
                 responseTasks.Add(task);
             }
@@ -122,12 +124,12 @@ namespace Microsoft.Restier.AspNetCore.Batch
         internal async Task SubmitChangeSet(ChangeSet changeSet)
 #pragma warning restore CA1822 // Do not declare static members on generic types
         {
-            var submitResults = await this.api.SubmitAsync(changeSet).ConfigureAwait(false);
+            var submitResults = await api.SubmitAsync(changeSet).ConfigureAwait(false);
         }
 
         private void SetChangeSetProperty(RestierChangeSetProperty changeSetProperty)
         {
-            foreach (var context in this.Contexts)
+            foreach (var context in Contexts)
             {
                 context.SetChangeSet(changeSetProperty);
             }

@@ -9,11 +9,11 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.OData;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.AspNetCore
 {
@@ -90,7 +90,7 @@ namespace Microsoft.Restier.AspNetCore
                 exception = exception.InnerException.Demystify();
             }
 
-            if (exception == null)
+            if (exception is null)
             {
                 return Task.FromResult(false);
             }
@@ -118,7 +118,19 @@ namespace Microsoft.Restier.AspNetCore
                     break;
                 default:
                     code = HttpStatusCode.InternalServerError;
-                    context.Result = new StatusCodeResult((int)code);
+                    Trace.TraceError($"Exception: {exception.Message} \nStackTrace: {exception.StackTrace}");
+                    if (context.HttpContext.Request.IsLocal())
+                    {
+                        var response500 = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
+                        context.Result = new ObjectResult(response500)
+                        {
+                            StatusCode = (int)code,
+                        };
+                    }
+                    else
+                    {
+                        context.Result = new StatusCodeResult((int)code);
+                    }
                     break;
             }
 
@@ -126,7 +138,7 @@ namespace Microsoft.Restier.AspNetCore
             // exception must be handled in OnChangeSetCompleted
             // to avoid deadlock in Github Issue #82.
             var changeSetProperty = context.HttpContext.GetChangeSet();
-            if (changeSetProperty != null)
+            if (changeSetProperty is not null)
             {
                 changeSetProperty.Exceptions.Add(exception);
                 changeSetProperty.OnChangeSetCompleted();

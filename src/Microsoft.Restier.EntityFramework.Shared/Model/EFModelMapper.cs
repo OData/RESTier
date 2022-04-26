@@ -2,14 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-#if EF7
+#if EFCore
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
 using Microsoft.Restier.Core.Model;
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework
@@ -55,21 +55,21 @@ namespace Microsoft.Restier.EntityFramework
             var dbContextType = frameworkApi.ContextType;
 
             var property = dbContextType.GetProperty(name);
-            if (property != null)
+            if (property is not null)
             {
                 var type = property.PropertyType;
-#if EF7
+#if EFCore
                 var genericType = type.FindGenericType(typeof(DbSet<>));
 #else
                 var genericType = type.FindGenericType(typeof(IDbSet<>));
 #endif
-                if (genericType != null)
+                if (genericType is not null)
                 {
                     relevantType = genericType.GetGenericArguments()[0];
                 }
             }
 
-            return relevantType != null;
+            return relevantType is not null;
         }
 
         /// <summary>

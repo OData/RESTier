@@ -29,7 +29,6 @@ namespace Microsoft.Restier.Core.Query
         internal PropertyModelReference(QueryModelReference source, string propertyName, IEdmProperty property) :
             this(source, propertyName)
         {
-            Ensure.NotNull(property, nameof(property));
             this.property = property;
         }
 
@@ -63,7 +62,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (Source != null)
+                if (Source is not null)
                 {
                     return Source.EntitySet;
                 }
@@ -79,7 +78,7 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (Property != null)
+                if (Property is not null)
                 {
                     return Property.Type.Definition;
                 }
@@ -95,15 +94,15 @@ namespace Microsoft.Restier.Core.Query
         {
             get
             {
-                if (property != null)
+                if (property is not null)
                 {
                     return property;
                 }
 
-                if (Source != null)
+                if (Source is not null)
                 {
                     var structuredType = Source.Type as IEdmStructuredType;
-                    if (structuredType != null)
+                    if (structuredType is not null)
                     {
                         property = structuredType.FindProperty(propertyName);
                         return property;

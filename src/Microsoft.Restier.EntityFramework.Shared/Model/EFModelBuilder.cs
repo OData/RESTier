@@ -3,29 +3,32 @@
 
 using System;
 using System.Collections.Generic;
-#if !EF7
-using System.Data.Entity;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Infrastructure;
-#endif
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-#if EF7
-using Microsoft.EntityFrameworkCore;
-#endif
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 
-#if EF7
-namespace Microsoft.Restier.EntityFrameworkCore
-#else
+#if EF6
+using System.Data.Entity;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure;
+
 namespace Microsoft.Restier.EntityFramework
 #endif
+
+#if EFCore
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Core;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace Microsoft.Restier.EntityFrameworkCore
+#endif
+
 {
     /// <summary>
-    /// Represents a model producer that uses the
-    /// metadata workspace accessible from a DbContext.
+    /// Represents a model producer that uses the metadata workspace accessible from a <see cref="DbContext" />.
     /// </summary>
     internal class EFModelBuilder : IModelBuilder
     {
@@ -50,21 +53,56 @@ namespace Microsoft.Restier.EntityFramework
 
             if (context.Api is not IEntityFrameworkApi frameworkApi)
             {
-                //RWM: This isn't an EF context, don't build anything.
+                // @robertmclaws: This isn't an EF context, don't build anything.
                 return null;
+            }
+
+            if (frameworkApi.DbContext is null)
+            {
+                throw new NullReferenceException("The Restier API inherits from EntityFrameworkApi, but the API instance " +
+                    "is not populated with the correct DbContext. This could be because you tried to pass in " +
+                    "a subclassed DbContext, and the DI container can't match it up.");
             }
 
             var dbContext = frameworkApi.DbContext;
 
-#if EF7
-            AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()
-                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) != null)
-                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
-            AddRange(context.ResourceTypeKeyPropertiesMap, dbContext.Model.GetEntityTypes().ToDictionary(
-                e => e.ClrType,
-                e => ((ICollection<PropertyInfo>)e.FindPrimaryKey().Properties.Select(p => e.ClrType.GetProperty(p.Name)).ToList())));
-#else
+#if EFCore
 
+            // @robertmclaws: Validate that no Owned Types are mapped to DbSet<>. If there are, EFCore calls to GetModel will fail.
+            var ownedTypes = dbContext.Model.GetEntityTypes().Where(c => c.IsOwned()).ToList();
+            var dbSetMappedTypes = ownedTypes.Where(c => dbContext.IsDbSetMapped(c.ClrType)).ToList();
+
+            if (dbSetMappedTypes.Count > 0)
+            {
+                throw new EdmModelValidationException($"The '{dbContext.GetType().Name}' DbContext has 'Owned Types' (the EFCore equivalent of EF6's 'Complex Types') mapped to DbSets. " +
+                    $"You must remove the following DbSet mappings for EFCore to function properly with Restier: {string.Join(",", dbSetMappedTypes.Select(c => c.ShortName()))}");
+            }
+
+            // @caldwell0414: This code is looking for all of the DBSets on the context and generating a dictionary of DbSet Name and the Entity type.
+            AddRange(context.ResourceSetTypeMap, dbContext.GetType().GetProperties()
+                .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) is not null)
+                .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]));
+
+#pragma warning disable EF1001 // Internal EF Core API usage.
+
+            // @caldwell0414: This code goes through all of the Entity types in the model, and where not marked as "owned" builds a dictionary of name and primary-key type.
+#if EFCORE6_0
+
+            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !IsImplicitManyToManyJoinEntity(c)).ToDictionary(
+                            e => e.ClrType,
+                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType?.GetProperty(p.Name)).ToList()));
+#else
+            var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !(c as EntityType).IsImplicitlyCreatedJoinEntityType).ToDictionary(
+                            e => e.ClrType,
+                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType?.GetProperty(p.Name)).ToList()));
+#endif
+
+#pragma warning restore EF1001 // Internal EF Core API usage.
+
+            AddRange(context.ResourceTypeKeyPropertiesMap, keys);
+#endif
+
+#if EF6
 
             var efModel = (dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 
@@ -81,7 +119,7 @@ namespace Microsoft.Restier.EntityFramework
             // @robertmclaws: Now that we're doing a proper FirstOrDefault() instead of a Single(),
             // we won't crash if more than one is returned, and we can check for null
             // and inform the user specifically what happened.
-            if (efEntityContainer == null)
+            if (efEntityContainer is null)
             {
                 if (efEntityContainers.Count > 1)
                 {
@@ -129,7 +167,7 @@ namespace Microsoft.Restier.EntityFramework
                 }
             }
 #endif
-            if (InnerModelBuilder != null)
+            if (InnerModelBuilder is not null)
             {
                 return InnerModelBuilder.GetModel(context);
             }
@@ -138,6 +176,18 @@ namespace Microsoft.Restier.EntityFramework
             return null;
 
         }
+
+#if EFCORE6_0
+
+        /// <summary>
+        /// A replacement for IsImplicitlyCreatedJoinEntityType, since on EF Core 6.0 Model.GetEntityTypes() returns RuntimeEntityTypes instead of EntityTypes.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool IsImplicitManyToManyJoinEntity(IEntityType entity) =>
+            entity.ClrType == typeof(Dictionary<string, object>) && entity.GetForeignKeys().Count() == 2 && entity.GetProperties().Count() == 2;
+
+#endif
 
         private static void AddRange<TKey, TValue>(
           IDictionary<TKey, TValue> source,

@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Breakdance
         /// <returns>A <see cref="List{RestierConventionDefinition}"/> containing detailed information about the expected Restier conventions.</returns>
         public static List<RestierConventionDefinition> GenerateConventionDefinitions(this IEdmModel edmModel)
         {
-            if (edmModel == null)
+            if (edmModel is null)
             {
                 throw new ArgumentNullException(nameof(edmModel));
             }

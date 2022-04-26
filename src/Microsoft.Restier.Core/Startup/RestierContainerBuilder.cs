@@ -141,7 +141,7 @@ namespace Microsoft.Restier.Core
             if (apiBuilder.Apis.Any())
             {
                 //RWM: If we already have an API type, then skip this.
-                if (apiType == null)
+                if (apiType is null)
                 {
                     var apiRecord = apiBuilder.Apis.FirstOrDefault();
                     apiType = apiRecord.Key;
@@ -160,7 +160,7 @@ namespace Microsoft.Restier.Core
             }
 
             //RWM: It's entirely possible that this container was used some other way. 
-            if (apiType != null)
+            if (apiType is not null)
             {
                 Services.AddSingleton(sp =>
                 {

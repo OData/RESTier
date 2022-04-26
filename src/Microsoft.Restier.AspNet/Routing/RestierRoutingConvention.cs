@@ -124,7 +124,7 @@ namespace Microsoft.Restier.AspNet
             string controllerName = null;
 
             var firstSegment = odataPath.Segments.FirstOrDefault();
-            if (firstSegment != null)
+            if (firstSegment is not null)
             {
                 if (firstSegment is EntitySetSegment entitySetSegment)
                 {
@@ -139,12 +139,12 @@ namespace Microsoft.Restier.AspNet
                 }
             }
 
-            if (controllerName != null)
+            if (controllerName is not null)
             {
                 var services = request.GetConfiguration().Services;
 
                 var controllers = services.GetHttpControllerSelector().GetControllerMapping();
-                if (controllers.TryGetValue(controllerName, out var descriptor) && descriptor != null)
+                if (controllers.TryGetValue(controllerName, out var descriptor) && descriptor is not null)
                 {
                     // If there is a controller, check whether there is an action
                     if (HasSelectableAction(request, descriptor))
@@ -174,7 +174,7 @@ namespace Microsoft.Restier.AspNet
             try
             {
                 var action = actionSelector.SelectAction(context);
-                if (action != null)
+                if (action is not null)
                 {
                     return true;
                 }

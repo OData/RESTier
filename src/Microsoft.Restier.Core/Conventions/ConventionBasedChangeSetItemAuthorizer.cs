@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.Core
             var methodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
             var method = targetApiType.GetQualifiedMethod(methodName);
 
-            if (method == null)
+            if (method is null)
             {
                 return Task.FromResult(result);
             }
@@ -67,13 +68,22 @@ namespace Microsoft.Restier.Core
             }
 
             var parameters = method.GetParameters();
-            if (parameters.Length == 0)
+            if (parameters.Length > 0)
             {
-                result = (bool)method.Invoke(target, null);
+                Trace.WriteLine($"Restier Authorizer found '{methodName}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
+                return Task.FromResult(result);
             }
 
-            Trace.WriteLine($"Restier Authorizer found '{methodName}', but it has an incorrect number of arguments. The number of arguments should be 0.");
-            return Task.FromResult(result);
+            //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
+            try
+            {
+                result = (bool)method.Invoke(target, null);
+                return Task.FromResult(result);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw new ConventionInvocationException($"Authorizer {methodName} invocation failed. Check the inner exception for more details.", ex.InnerException);
+            }
         }
 
     }

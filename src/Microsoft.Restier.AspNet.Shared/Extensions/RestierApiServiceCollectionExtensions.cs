@@ -7,7 +7,7 @@ using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
 using Microsoft.Restier.AspNetCore.Model;
@@ -31,7 +31,8 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static partial class RestierApiServiceCollectionExtensions
     {
-#region Internal Members
+
+        #region Internal Members
 
         /// <summary>
         /// Adds any missing Restier default services to the <see cref="IServiceCollection"/>. Should be called last in the service registration process.
@@ -100,9 +101,9 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-#endregion
+        #endregion
 
-#region Private Members
+        #region Private Members
 
         /// <summary>
         /// Dummy class to detect double registration of Default restier services inside a container.
@@ -112,6 +113,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         }
 
-#endregion
+        #endregion
+
     }
+
 }

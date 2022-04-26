@@ -6,12 +6,21 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.EntityFramework;
+#if EF6
+    using Microsoft.Restier.EntityFramework;
+#endif
+#if EFCore
+    using Microsoft.Restier.EntityFrameworkCore;
+#endif
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Restier.Tests.Core
+#if NETCOREAPP3_1_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore
+#else
+namespace Microsoft.Restier.Tests.AspNet
+#endif
 {
 
     /// <summary>
@@ -19,6 +28,9 @@ namespace Microsoft.Restier.Tests.Core
     /// </summary>
     [TestClass]
     public class DependencyInjectionTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <LibraryApi>
+#endif
     {
 
         [TestMethod]
@@ -32,7 +44,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task DI_CompareCurrentVersion_ToRC2()
         {
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             result.Should().NotBeNullOrEmpty();
 
@@ -43,11 +55,14 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task DI_VerifyModelBuilderInnerHandlers_ToRC2()
         {
-            var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi, LibraryContext>();
+            var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             names.Should().NotBeNull();
 
             var result = string.Join(Environment.NewLine, names);
             result.Should().NotBeNullOrWhiteSpace();
+
+            //RWM: If we're in a .NET Core test, remove the Core crap.
+            result = result.Replace("Core", "");
 
             var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines/RC2-ModelBuilder-InnerHandlers.txt");
             baseline = baseline.Replace("Model.Restier", "Model.RestierWebApi").Replace("EFModelProducer", typeof(EFModelBuilder).Name);
@@ -58,7 +73,7 @@ namespace Microsoft.Restier.Tests.Core
         public async Task ContainerContents_WriteOutput(string projectPath)
         {
             //var projectPath = "..//..//..//";
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-LibraryApi-ServiceProvider.txt");
             Console.WriteLine(fullPath);
@@ -77,7 +92,7 @@ namespace Microsoft.Restier.Tests.Core
         {
             //var projectPath = "..//..//..//";
 
-            var result = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi, LibraryContext>();
+            var result = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
 
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-ModelBuilder-InnerHandlers.txt");
             Console.WriteLine(fullPath);

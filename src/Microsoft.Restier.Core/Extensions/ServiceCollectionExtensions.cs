@@ -127,19 +127,19 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<TImplement>();
             return services.AddContributorNoCheck<TService>((sp, next) =>
             {
-                if (factory != null)
+                if (factory is not null)
                 {
                     return factory(sp, next);
                 }
 
                 var instance = sp.GetService<TImplement>();
-                if (instance == null)
+                if (instance is null)
                 {
                     return instance;
                 }
 
                 var innerMember = FindInnerMemberAndInject(instance, next);
-                if (innerMember == null)
+                if (innerMember is null)
                 {
                     factory = (serviceProvider, _) => serviceProvider.GetRequiredService<TImplement>();
                     return instance;
@@ -251,8 +251,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var typeInfo = typeof(TImplement).GetTypeInfo();
             var nextProperty = typeInfo
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .FirstOrDefault(e => e.SetMethod != null && e.PropertyType == typeof(TService));
-            if (nextProperty != null)
+                .FirstOrDefault(e => e.SetMethod is not null && e.PropertyType == typeof(TService));
+            if (nextProperty is not null)
             {
                 nextProperty.SetValue(instance, next());
                 return nextProperty;
@@ -261,7 +261,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var nextField = typeInfo
                 .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .FirstOrDefault(e => e.FieldType == typeof(TService));
-            if (nextField != null)
+            if (nextField is not null)
             {
                 nextField.SetValue(instance, next());
                 return nextField;

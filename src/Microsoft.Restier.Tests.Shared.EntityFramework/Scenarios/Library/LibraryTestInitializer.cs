@@ -1,36 +1,42 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.OData.Edm;
 using System;
 using System.Collections.ObjectModel;
+#if EF6
 using System.Data.Entity;
-using Microsoft.OData.Edm;
+#endif
+#if EFCore
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
+#endif
+
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
 {
-
     /// <summary>
-    /// 
+    /// An initializer to populate data into the context.
     /// </summary>
-    public class LibraryContext : DbContext
+    public class LibraryTestInitializer
+#if EF6
+        : DropCreateDatabaseAlways<LibraryContext>
     {
-        public LibraryContext()
-            : base("LibraryContext") => Database.SetInitializer(new LibraryTestInitializer());
 
-        public IDbSet<Book> Books { get; set; }
-
-        public IDbSet<LibraryCard> LibraryCards { get; set; }
-
-        public IDbSet<Publisher> Publishers { get; set; }
-
-        public IDbSet<Employee> Readers { get; set; }
-    }
-
-    public class LibraryTestInitializer : DropCreateDatabaseAlways<LibraryContext>
-    {
-        protected override void Seed(LibraryContext context)
+        protected override void Seed(LibraryContext libraryContext)
         {
-            context.Readers.Add(new Employee
+
+#else
+        : IDatabaseInitializer
+
+    {
+
+        public void Seed(DbContext context)
+        {
+            var libraryContext = context as LibraryContext;
+#endif
+
+            libraryContext.Readers.Add(new Employee
             {
                 Addr = new Address { Street = "street1" },
                 FullName = "p1",
@@ -56,7 +62,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     TimeOfDayProperty = TimeOfDay.Now
                 }
             });
-            context.Readers.Add(new Employee
+            libraryContext.Readers.Add(new Employee
             {
                 Addr = new Address { Street = "street2" },
                 FullName = "p2",
@@ -83,7 +89,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                 }
             });
 
-            context.Publishers.Add(new Publisher
+            libraryContext.Publishers.Add(new Publisher
             {
                 Id = "Publisher1",
                 Addr = new Address
@@ -91,24 +97,34 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     Street = "123 Sesame St.",
                     Zip = "00010"
                 },
+                LastUpdated = DateTimeOffset.MinValue,
                 Books = new ObservableCollection<Book>
                 {
                     new Book
                     {
                          Id = new Guid("19d68c75-1313-4369-b2bf-521f2b260a59"),
                          Isbn = "9476324472648",
-                         Title = "A Clockwork Orange"
+                         Title = "A Clockwork Orange",
+                         IsActive = true
                     },
                     new Book
                     {
                         Id = new Guid("c2081e58-21a5-4a15-b0bd-fff03ebadd30"),
                         Isbn = "7273389962644",
-                        Title = "Jungle Book, The"
+                        Title = "Jungle Book, The",
+                        IsActive = true
+                    },
+                    new Book
+                    {
+                        Id = new Guid("2A139A64-B7D9-4F9F-B7F4-E93C1678EB0F"),
+                        Isbn = "1122334455668",
+                        Title = "Sea of Rustoleum",
+                        IsActive = false
                     }
                 }
             });
 
-            context.Publishers.Add(new Publisher
+            libraryContext.Publishers.Add(new Publisher
             {
                 Id = "Publisher2",
                 Addr = new Address
@@ -116,25 +132,31 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
                     Street = "234 Anystreet St.",
                     Zip = "10010"
                 },
+                LastUpdated = DateTimeOffset.MinValue,
                 Books = new ObservableCollection<Book>
                 {
                     new Book
                     {
                         Id = new Guid("0697576b-d616-4057-9d28-ed359775129e"),
                         Isbn = "1315290642409",
-                        Title = "Color Purple, The"
+                        Title = "Color Purple, The",
+                        IsActive = true                        
                     }
                 }
             });
 
-            context.Books.Add(new Book
+            libraryContext.Books.Add(new Book
             {
                 Id = new Guid("2D760F15-974D-4556-8CDF-D610128B537E"),
                 Isbn = "1122334455667",
-                Title = "Sea of Rust"
+                Title = "Sea of Rust",
+                IsActive = true
             });
 
-            context.SaveChanges();
+            libraryContext.SaveChanges();
+
         }
+
     }
+
 }

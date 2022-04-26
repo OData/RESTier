@@ -8,7 +8,7 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Tests.Shared
 {
-    internal class StoreModelProducer : IModelBuilder
+    public class StoreModelProducer : IModelBuilder
     {
         private readonly EdmModel model;
 

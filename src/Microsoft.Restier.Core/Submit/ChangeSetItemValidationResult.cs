@@ -55,7 +55,7 @@ namespace Microsoft.Restier.Core.Submit
         /// </returns>
         public override string ToString()
         {
-            return this.Message;
+            return Message;
         }
     }
 }

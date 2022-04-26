@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Tests.Core
         public async Task CanCallSubmitAsync()
         {
             var changeSet = new ChangeSet();
-            changeSet.Entries.Add(
+            changeSet.Entries.Enqueue(
                 new DataModificationItem(
                     "Tests",
                     typeof(Test),
@@ -186,7 +186,7 @@ namespace Microsoft.Restier.Tests.Core
 
             protected override void Dispose(bool disposing)
             {
-                this.Disposed = true;
+                Disposed = true;
                 base.Dispose(disposing);
             }
         }

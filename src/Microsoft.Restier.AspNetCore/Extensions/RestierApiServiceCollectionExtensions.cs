@@ -1,23 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.OData;
+using Microsoft.Restier.Core;
+using System;
+
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using System;
-    using Microsoft.AspNet.OData.Extensions;
-    using Microsoft.AspNet.OData.Interfaces;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.OData;
-    using Microsoft.Restier.Core;
 
     /// <summary>
-    /// Contains extension methods of <see cref="IServiceCollection"/>.
-    /// This method is used to add odata publisher service into container.
+    /// Restier-specific extension methods for <see cref="IServiceCollection"/>.
     /// </summary>
+    /// <remarks
     public static partial class RestierApiServiceCollectionExtensions
     {
+
         /// <summary>
-        /// Adds the Restier and OData Services to the Service collection.
+        /// Adds the Restier and OData Services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
@@ -50,16 +50,20 @@ namespace Microsoft.Extensions.DependencyInjection
         ///    );
         /// </code>
         /// </example>
-        public static IODataBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
+        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
 
-            var odataBuilder = services.AddOData();
+            services.AddOData();
 
-            services.AddSingleton<IContainerBuilder>(s => new RestierContainerBuilder(configureApisAction));
+            // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
+            services.AddSingleton(sp => configureApisAction);
 
-            return odataBuilder;
+            //RWM: Make sure that Restier works in any situation without needing additional knowledge.
+            return services.AddControllers(options => options.EnableEndpointRouting = false);
         }
+
     }
+
 }

@@ -6,7 +6,7 @@ using Microsoft.Restier.Core.Model;
 
 namespace Microsoft.Restier.Tests.Shared
 {
-    internal class StoreModelMapper : IModelMapper
+    public class StoreModelMapper : IModelMapper
     {
         public bool TryGetRelevantType(ModelContext context, string name, out Type relevantType)
         {

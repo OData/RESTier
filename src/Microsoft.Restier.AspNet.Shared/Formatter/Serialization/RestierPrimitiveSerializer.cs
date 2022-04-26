@@ -7,7 +7,7 @@ using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
@@ -49,7 +49,7 @@ namespace Microsoft.Restier.AspNet.Formatter
                 type = primitiveResult.Type;
             }
 
-            if (writeContext != null)
+            if (writeContext is not null)
             {
                 graph = ConvertToPayloadValue(graph, writeContext, payloadValueConverter);
             }
@@ -77,7 +77,7 @@ namespace Microsoft.Restier.AspNet.Formatter
                 type = primitiveResult.Type;
             }
 
-            if (writeContext != null)
+            if (writeContext is not null)
             {
                 graph = ConvertToPayloadValue(graph, writeContext, payloadValueConverter);
             }
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             // In EF, System.DateTime is used for SqlDate, SqlDateTime and SqlDateTime2.
             // All of them have no time zone information thus it is safe to clear the time
             // zone when converting the "graph" to a DateTimeOffset.
-            if (primitiveType != null && primitiveType.IsDateTimeOffset() && graph is DateTime)
+            if (primitiveType is not null && primitiveType.IsDateTimeOffset() && graph is DateTime)
             {
                 // If DateTime.Kind equals Local, offset should equal the offset of the system's local time zone
                 if (((DateTime)graph).Kind == DateTimeKind.Local)
@@ -132,11 +132,11 @@ namespace Microsoft.Restier.AspNet.Formatter
             Ensure.NotNull(writeContext, nameof(writeContext));
 
             IEdmTypeReference edmTypeReference = null;
-            if (writeContext.Path != null)
+            if (writeContext.Path is not null)
             {
                 // Try to get the EDM type of the value from the path.
                 var edmType = writeContext.Path.EdmType as IEdmPrimitiveType;
-                if (edmType != null)
+                if (edmType is not null)
                 {
                     // Just created to call the payload value converter.
                     edmTypeReference = new EdmPrimitiveTypeReference(edmType, true /*isNullable*/);

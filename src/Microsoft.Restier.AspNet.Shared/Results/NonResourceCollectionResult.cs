@@ -4,7 +4,7 @@
 using System.Linq;
 using Microsoft.OData.Edm;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore
 #else
 namespace Microsoft.Restier.AspNet

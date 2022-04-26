@@ -3,11 +3,13 @@
 
 namespace System
 {
+
     /// <summary>
     /// Ensures that values of parameters are not null.
     /// </summary>
     internal static partial class Ensure
     {
+
         /// <summary>
         /// Ensures that a value of a parameter is not null.
         /// </summary>
@@ -17,7 +19,7 @@ namespace System
         public static void NotNull<T>([ValidatedNotNull] T? value, string paramName)
             where T : struct
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(paramName);
             }
@@ -32,7 +34,7 @@ namespace System
         public static void NotNull<T>([ValidatedNotNull] T value, string paramName)
             where T : class
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(paramName);
             }
@@ -55,5 +57,7 @@ namespace System
         private sealed class ValidatedNotNullAttribute : Attribute
         {
         }
+
     }
+
 }

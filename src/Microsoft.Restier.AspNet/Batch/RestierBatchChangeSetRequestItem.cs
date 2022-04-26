@@ -63,14 +63,12 @@ namespace Microsoft.Restier.AspNet.Batch
                 // we must catch the exceptions here and call OnChangeSetCompleted,
                 // so as to avoid deadlock mentioned in Github Issue #82.
                 var tcs = new TaskCompletionSource<HttpResponseMessage>();
-                var task =
-                    SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
-                        .ContinueWith(
-                            t =>
+                var task = SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
+                        .ContinueWith(t =>
                             {
-                                if (t.Exception != null)
+                                if (t.Exception is not null)
                                 {
-                                    var taskEx = (t.Exception.InnerExceptions != null &&
+                                    var taskEx = (t.Exception.InnerExceptions is not null &&
                                                   t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
@@ -85,7 +83,9 @@ namespace Microsoft.Restier.AspNet.Batch
 
                                 return tcs.Task;
                             },
-                            cancellationToken);
+                            cancellationToken,
+                            TaskContinuationOptions.None,
+                            TaskScheduler.Current);
 
                 responseTasks.Add(task);
             }
@@ -141,7 +141,7 @@ namespace Microsoft.Restier.AspNet.Batch
         {
             foreach (var response in responses)
             {
-                if (response != null)
+                if (response is not null)
                 {
                     response.Dispose();
                 }

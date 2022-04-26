@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !NETCOREAPP3_1_OR_GREATER
+
+using System;
 using System.Web.Http;
 using FluentAssertions;
 using Microsoft.Restier.Tests.Shared;
@@ -15,7 +17,7 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     public class Issue657_BatchNotWorkingInOwin : RestierTestBase
     {
 
-        [Ignore]
+        //[Ignore]
         [TestMethod]
         public void MapRestier_ThrowsExceptionOnOwinSelfHost()
         {
@@ -36,3 +38,5 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
     }
 
 }
+
+#endif

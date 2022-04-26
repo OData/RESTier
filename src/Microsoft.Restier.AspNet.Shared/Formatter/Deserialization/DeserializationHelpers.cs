@@ -4,22 +4,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-#if !NETCOREAPP
+#if !NETCOREAPP3_1_OR_GREATER
 using System.Net.Http;
 #endif
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Formatter.Deserialization;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #endif
 using Microsoft.OData.Edm;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
 #endif
 {
+
     /// <summary>
     /// Get clr type from payload.
     /// </summary>
@@ -42,7 +43,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             Type expectedReturnType,
             IEdmTypeReference propertyType,
             IEdmModel model,
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
             HttpRequest request,
 #else
             HttpRequestMessage request,
@@ -73,13 +74,13 @@ namespace Microsoft.Restier.AspNet.Formatter
         /// <returns>The converted collection.</returns>
         internal static object ConvertCollectionType(object collectionResult, Type expectedReturnType)
         {
-            if (collectionResult == null)
+            if (collectionResult is null)
             {
                 return null;
             }
 
             var genericType = expectedReturnType.FindGenericType(typeof(ICollection<>));
-            if (genericType != null || expectedReturnType.IsArray)
+            if (genericType is not null || expectedReturnType.IsArray)
             {
                 var elementClrType = expectedReturnType.GetElementType() ??
                                      expectedReturnType.GenericTypeArguments[0];
@@ -93,7 +94,7 @@ namespace Microsoft.Restier.AspNet.Formatter
                     var arrayResult = toArrayMethodInfo.Invoke(null, new object[] { castedResult });
                     return arrayResult;
                 }
-                else if (genericType != null)
+                else if (genericType is not null)
                 {
                     var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric
                         .MakeGenericMethod(elementClrType);
@@ -106,7 +107,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             // need some convert
             genericType = collectionResult.GetType().FindGenericType(typeof(IEnumerable<>));
             var returnGenericType = expectedReturnType.FindGenericType(typeof(IEnumerable<>));
-            if (genericType != null && returnGenericType != null)
+            if (genericType is not null && returnGenericType is not null)
             {
                 var actualElementType = genericType.GenericTypeArguments[0];
                 var expectElementType = returnGenericType.GenericTypeArguments[0];
@@ -122,5 +123,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             // It means return type is IEnumerable<> or raw type is passed in value is single value
             return collectionResult;
         }
+
     }
+
 }

@@ -29,7 +29,7 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(api, nameof(api));
             // JWS: until we have removed all calls to GetApiService.
-            this.provider = api.ServiceProvider;
+            provider = api.ServiceProvider;
             Api = api;
         }
 

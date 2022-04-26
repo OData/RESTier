@@ -8,7 +8,7 @@ using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Tests.Shared
 {
-    internal class StoreChangeSetInitializer : DefaultChangeSetInitializer
+    public class StoreChangeSetInitializer : DefaultChangeSetInitializer
     {
         public override Task InitializeAsync(SubmitContext context, CancellationToken cancellationToken)
         {

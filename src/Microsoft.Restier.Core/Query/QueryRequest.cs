@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Core.Query
                     Resources.QueryableSourceCannotBeUsedAsQuery);
             }
 
-            this.Expression = query.Expression;
+            Expression = query.Expression;
         }
 
         /// <summary>
