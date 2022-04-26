@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" />
-    <PackageReference Include="Breakdance.Extensions.MSTest2" Version="3.0.0-CI-20210730-053037" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.*" />
+    <PackageReference Include="Breakdance.Extensions.MSTest2" Version="3.*" />
     <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" />
     <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.*" />
