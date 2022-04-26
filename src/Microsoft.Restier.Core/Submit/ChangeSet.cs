@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core.Submit
@@ -10,14 +12,14 @@ namespace Microsoft.Restier.Core.Submit
     /// </summary>
     public class ChangeSet
     {
-        private List<ChangeSetItem> entries;
+        private ConcurrentQueue<ChangeSetItem> entries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChangeSet" /> class.
         /// </summary>
         public ChangeSet()
-            : this(null)
         {
+            this.entries = new ConcurrentQueue<ChangeSetItem>();
         }
 
         /// <summary>
@@ -28,24 +30,21 @@ namespace Microsoft.Restier.Core.Submit
         /// </param>
         public ChangeSet(IEnumerable<ChangeSetItem> entries)
         {
-            if (entries is not null)
+            if (entries is null)
             {
-                this.entries = new List<ChangeSetItem>(entries);
+                throw new ArgumentNullException(nameof(entries));
             }
+
+            this.entries = new ConcurrentQueue<ChangeSetItem>(entries);
         }
 
         /// <summary>
         /// Gets the entries in this change set.
         /// </summary>
-        public IList<ChangeSetItem> Entries
+        public ConcurrentQueue<ChangeSetItem> Entries
         {
             get
             {
-                if (entries is null)
-                {
-                    entries = new List<ChangeSetItem>();
-                }
-
                 return entries;
             }
         }

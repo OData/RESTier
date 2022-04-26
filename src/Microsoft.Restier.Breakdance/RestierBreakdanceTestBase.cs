@@ -75,6 +75,7 @@ namespace Microsoft.Restier.Breakdance
                 ApplicationBuilderAction?.Invoke(builder);
                 builder.UseAuthorization();
                 builder.UseDeveloperExceptionPage();
+                builder.UseODataBatching();
                 builder.UseMvc(routeBuilder =>
                 {
                     routeBuilder
