@@ -239,13 +239,13 @@ namespace Microsoft.Restier.AspNet
             if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
-                changeSet.Entries.Add(postItem);
+                changeSet.Entries.Enqueue(postItem);
 
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(postItem);
+                changeSetProperty.ChangeSet.Entries.Enqueue(postItem);
 
                 await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
             }
@@ -305,13 +305,13 @@ namespace Microsoft.Restier.AspNet
             if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
-                changeSet.Entries.Add(deleteItem);
+                changeSet.Entries.Enqueue(deleteItem);
 
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(deleteItem);
+                changeSetProperty.ChangeSet.Entries.Enqueue(deleteItem);
 
                 await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
             }
@@ -455,14 +455,14 @@ namespace Microsoft.Restier.AspNet
             if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
-                changeSet.Entries.Add(updateItem);
+                changeSet.Entries.Enqueue(updateItem);
 
                 //RWM: Seems like we should be using the result here. For something else.
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Add(updateItem);
+                changeSetProperty.ChangeSet.Entries.Enqueue(updateItem);
 
                 await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
             }

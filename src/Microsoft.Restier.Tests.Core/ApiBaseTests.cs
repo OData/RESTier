@@ -52,7 +52,7 @@ namespace Microsoft.Restier.Tests.Core
         public async Task CanCallSubmitAsync()
         {
             var changeSet = new ChangeSet();
-            changeSet.Entries.Add(
+            changeSet.Entries.Enqueue(
                 new DataModificationItem(
                     "Tests",
                     typeof(Test),

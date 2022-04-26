@@ -90,8 +90,11 @@ namespace Microsoft.Restier.Core.Submit
 
             await PerformPersist(context, cancellationToken).ConfigureAwait(false);
 
+#if NET472
+            while(context.ChangeSet.Entries.TryDequeue(out _));
+#else
             context.ChangeSet.Entries.Clear();
-
+#endif
             await PerformPostEvent(context, currentChangeSetItems, cancellationToken).ConfigureAwait(false);
 
             return context.Result;
