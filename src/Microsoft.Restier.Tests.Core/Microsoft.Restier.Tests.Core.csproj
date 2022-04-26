@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.*" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
 

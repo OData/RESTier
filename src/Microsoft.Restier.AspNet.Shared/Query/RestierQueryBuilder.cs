@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 using AspNetResources = Microsoft.Restier.AspNetCore.Resources;
 #else
@@ -19,7 +19,7 @@ using AspNetResources = Microsoft.Restier.AspNet.Resources;
 using Microsoft.Restier.Core;
 using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Query
 #else
 namespace Microsoft.Restier.AspNet.Query
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.AspNet.Query
 
             // TODO: JWS: At best a hack to avoid a deadlock, because the only place to get the model is in a synchronous method or
             // constructor. See https://blog.stephencleary.com/2012/07/dont-block-on-async-code.html
-            this.edmModel = this.api.GetModel();
+            edmModel = this.api.GetModel();
 
             handlers[typeof(EntitySetSegment)] = HandleEntitySetPathSegment;
             handlers[typeof(SingletonSegment)] = HandleSingletonPathSegment;
@@ -205,7 +205,7 @@ namespace Microsoft.Restier.AspNet.Query
             {
                 var equalsExpression =
                     CreateEqualsExpression(parameterExpression, keyValuePair.Key, keyValuePair.Value);
-                keyFilter = keyFilter == null ? equalsExpression : Expression.And(keyFilter, equalsExpression);
+                keyFilter = keyFilter is null ? equalsExpression : Expression.And(keyFilter, equalsExpression);
             }
 
             var whereExpression = Expression.Lambda(keyFilter, parameterExpression);
@@ -301,7 +301,7 @@ namespace Microsoft.Restier.AspNet.Query
 
             if (edmType.TypeKind == EdmTypeKind.Entity)
             {   
-                currentType = edmType.GetClrType(this.edmModel);
+                currentType = edmType.GetClrType(edmModel);
                 queryable = ExpressionHelpers.OfType(queryable, currentType);
             }
         }

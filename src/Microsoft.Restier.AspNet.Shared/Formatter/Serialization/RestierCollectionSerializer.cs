@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.OData;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
@@ -40,7 +40,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
-            if (collectionResult != null)
+            if (collectionResult is not null)
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;
@@ -64,7 +64,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
-            if (collectionResult != null)
+            if (collectionResult is not null)
             {
                 graph = collectionResult.Query;
                 type = collectionResult.Type;

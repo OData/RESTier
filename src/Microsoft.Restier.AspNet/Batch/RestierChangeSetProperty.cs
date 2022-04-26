@@ -29,9 +29,9 @@ namespace Microsoft.Restier.AspNet.Batch
         public RestierChangeSetProperty(RestierBatchChangeSetRequestItem changeSetRequestItem)
         {
             this.changeSetRequestItem = changeSetRequestItem;
-            this.changeSetCompletedTaskSource = new TaskCompletionSource<bool>();
-            this.subRequestCount = this.changeSetRequestItem.Requests.Count();
-            this.Exceptions = new List<Exception>();
+            changeSetCompletedTaskSource = new TaskCompletionSource<bool>();
+            subRequestCount = this.changeSetRequestItem.Requests.Count();
+            Exceptions = new List<Exception>();
         }
 
         /// <summary>
@@ -50,35 +50,35 @@ namespace Microsoft.Restier.AspNet.Batch
         /// <returns>The task object that represents this callback execution.</returns>
         public Task OnChangeSetCompleted()
         {
-            if (Interlocked.Decrement(ref this.subRequestCount) == 0)
+            if (Interlocked.Decrement(ref subRequestCount) == 0)
             {
                 if (Exceptions.Count == 0)
                 {
-                    this.changeSetRequestItem.SubmitChangeSet(this.ChangeSet)
+                    changeSetRequestItem.SubmitChangeSet(ChangeSet)
                         .ContinueWith(t =>
                         {
-                            if (t.Exception != null)
+                            if (t.Exception is not null)
                             {
                                 var taskEx =
-                                    (t.Exception.InnerExceptions != null
+                                    (t.Exception.InnerExceptions is not null
                                      && t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
-                                this.changeSetCompletedTaskSource.SetException(taskEx.Demystify());
+                                changeSetCompletedTaskSource.SetException(taskEx.Demystify());
                             }
                             else
                             {
-                                this.changeSetCompletedTaskSource.SetResult(true);
+                                changeSetCompletedTaskSource.SetResult(true);
                             }
-                        });
+                        }, TaskScheduler.Current);
                 }
                 else
                 {
-                    this.changeSetCompletedTaskSource.SetException(Exceptions.Select(c => c.Demystify()));
+                    changeSetCompletedTaskSource.SetException(Exceptions.Select(c => c.Demystify()));
                 }
             }
 
-            return this.changeSetCompletedTaskSource.Task;
+            return changeSetCompletedTaskSource.Task;
         }
     }
 }

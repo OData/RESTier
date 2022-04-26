@@ -27,7 +27,7 @@ namespace Microsoft.Restier.Tests.Core
                 configureApis.AddRestierApi<TestableEmptyApi>(services =>
                 {
                     services.AddTestStoreApiServices()
-                    .AddScoped<MyPropertyBag>();
+                        .AddScoped<MyPropertyBag>();
                 });
             });
             
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.Tests.Core
         [TestMethod]
         public async Task PropertyBag_InstancesDoNotConflict()
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<TestableEmptyApi, DbContext>();
+            var api = await RestierTestHelpers.GetTestableApiInstance<TestableEmptyApi>(serviceCollection: (services) => services.AddTestDefaultServices());
 
             api.SetProperty("Test", 2);
             api.GetProperty<int>("Test").Should().Be(2);
@@ -67,8 +67,9 @@ namespace Microsoft.Restier.Tests.Core
             {
                 configureApis.AddRestierApi<TestableEmptyApi>(services =>
                 {
-                    services.AddTestStoreApiServices()
-                    .AddScoped<MyPropertyBag>();
+                    services
+                        .AddTestStoreApiServices()
+                        .AddScoped<MyPropertyBag>();
                 });
             });
 

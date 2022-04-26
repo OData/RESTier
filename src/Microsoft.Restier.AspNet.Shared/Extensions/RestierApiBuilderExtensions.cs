@@ -5,13 +5,14 @@ using System;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-#if NETCOREAPP
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Core.Query;
+
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 #else
 using Microsoft.Restier.AspNet.Model;
 #endif
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core
 {
@@ -20,7 +21,8 @@ namespace Microsoft.Restier.Core
     /// </summary>
     public static class RestierApiBuilderExtensions
     {
-#region Public Methods
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a Restier Api.
@@ -43,6 +45,8 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(builder, nameof(builder));
             Ensure.NotNull(services, nameof(services));
+
+            if (builder.Apis.ContainsKey(typeof(TApi))) return builder;
 
             builder.Apis.Add(typeof(TApi), (serviceCollection) =>
             {
@@ -78,5 +82,7 @@ namespace Microsoft.Restier.Core
         }
 
 #endregion
+
     }
+
 }

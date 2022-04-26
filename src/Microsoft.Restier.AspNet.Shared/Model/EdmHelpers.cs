@@ -7,7 +7,7 @@ using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.OData.Edm;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Model
 #else
 namespace Microsoft.Restier.AspNet.Model
@@ -27,7 +27,7 @@ namespace Microsoft.Restier.AspNet.Model
         /// <returns>The edm type reference for the clr type.</returns>
         public static EdmTypeReference GetPrimitiveTypeReference(this Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -57,7 +57,7 @@ namespace Microsoft.Restier.AspNet.Model
             Ensure.NotNull(edmModel, nameof(edmModel));
 
             var annotation = edmModel.GetAnnotationValue<ClrTypeAnnotation>(edmType);
-            if (annotation != null)
+            if (annotation is not null)
             {
                 return annotation.ClrType;
             }
@@ -76,7 +76,7 @@ namespace Microsoft.Restier.AspNet.Model
         /// <returns>The Edm type reference.</returns>
         public static IEdmTypeReference GetTypeReference(this Type type, IEdmModel model)
         {
-            if (type == null || model == null)
+            if (type is null || model is null)
             {
                 return null;
             }
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.AspNet.Model
         internal static EdmEntityContainer EnsureEntityContainer(this EdmModel model, Type apiType)
         {
             var container = (EdmEntityContainer)model.EntityContainer;
-            if (container == null)
+            if (container is null)
             {
                 container = new EdmEntityContainer(apiType.Namespace, DefaultEntityContainerName);
                 model.AddElement(container);

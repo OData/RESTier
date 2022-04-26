@@ -20,7 +20,13 @@ namespace Microsoft.Restier.Tests.Legacy
         [TestMethod]
         public async Task RestierRC2_VerifyContainerContents()
         {
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            /* JHC Note:
+             * This test is failing because we've made some change to the LibraryApi and LibraryContext.  We need to determine the best way
+             * to maintain this test.  We might need a LegacyLibraryApi and LegacyLibraryContext
+             * 
+             * */
+
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LegacyLibraryApi, LibraryContext>();
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             result.Should().NotBeNullOrEmpty();
 
@@ -31,7 +37,7 @@ namespace Microsoft.Restier.Tests.Legacy
         [TestMethod]
         public async Task RestierRC2_VerifyModelBuilderInnerHandlers()
         {
-            var modelBuilder = await RestierTestHelpers.GetTestableInjectedService<LibraryApi, LibraryContext, IModelBuilder>();
+            var modelBuilder = await RestierTestHelpers.GetTestableInjectedService<LegacyLibraryApi, LibraryContext, IModelBuilder>();
             modelBuilder.Should().NotBeNull();
 
             var children = GetModelBuilderChildren(modelBuilder);
@@ -48,10 +54,12 @@ namespace Microsoft.Restier.Tests.Legacy
 
         #region Manifest Generators
 
+        [DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        [DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task ContainerContents_WriteOutput(string projectPath)
         {
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi, LibraryContext>();
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LegacyLibraryApi, LibraryContext>();
             var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
             var fullPath = Path.Combine(projectPath, "..//Microsoft.Restier.Tests.AspNet//Baselines//RC2-LibraryApi-ServiceProvider.txt");
             Console.WriteLine(fullPath);
@@ -64,10 +72,12 @@ namespace Microsoft.Restier.Tests.Legacy
             Console.WriteLine($"File exists: {File.Exists(fullPath)}");
         }
 
+        //[DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        //[DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task IModelBuilder_LogChildren(string projectPath)
         {
-            var modelBuilder = await RestierTestHelpers.GetTestableInjectedService<LibraryApi, LibraryContext, IModelBuilder>();
+            var modelBuilder = await RestierTestHelpers.GetTestableInjectedService<LegacyLibraryApi, LibraryContext, IModelBuilder>();
             var result = GetModelBuilderChildren(modelBuilder);
 
             var fullPath = Path.Combine(projectPath, "..//Microsoft.Restier.Tests.AspNet//Baselines//RC2-ModelBuilder-InnerHandlers.txt");
@@ -112,7 +122,7 @@ namespace Microsoft.Restier.Tests.Legacy
                 innerBuilders.Add(builder.GetType().FullName);
                 builder = GetInnerBuilder(builder);
             }
-            while (builder != null);
+            while (builder is not null);
             return innerBuilders;
         }
 

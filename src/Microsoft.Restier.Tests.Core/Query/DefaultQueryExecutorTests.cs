@@ -1,21 +1,22 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+
 namespace Microsoft.Restier.Tests.Core.Query
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.Restier.Core;
-    using Microsoft.Restier.Core.Query;
-    using Microsoft.Restier.Tests.Shared;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
 
     /// <summary>
     /// Unit tests for the <see cref="DefaultQueryExecutor"/> class.
@@ -184,5 +185,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         {
             public string Name { get; set; }
         }
+
     }
+
 }

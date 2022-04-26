@@ -1,18 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+#if !NETCOREAPP3_1_OR_GREATER
 using System;
-using Microsoft.OData.Edm;
+using System.Xml;
 using Newtonsoft.Json;
 
 namespace Microsoft.Restier.Tests.Shared.Common
 {
-    public class JsonTimeOfDayConverter : JsonConverter
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class NewtonsoftTimeSpanConverter : JsonConverter
     {
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(TimeOfDay);
+            return objectType == typeof(TimeSpan);
         }
 
         public override bool CanRead => true;
@@ -20,9 +25,9 @@ namespace Microsoft.Restier.Tests.Shared.Common
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (objectType != typeof(TimeOfDay))
+            if (objectType != typeof(TimeSpan))
             {
-                throw new ArgumentException("Object passed in was not a TimeOfDay.", nameof(objectType));
+                throw new ArgumentException("Object passed in was not a TimeSpan.", nameof(objectType));
             }
 
             if (!(reader.Value is string spanString))
@@ -30,15 +35,20 @@ namespace Microsoft.Restier.Tests.Shared.Common
                 return null;
             }
 
-#pragma warning disable CA1305 // Specify IFormatProvider
-            return TimeOfDay.Parse(spanString);
-#pragma warning restore CA1305 // Specify IFormatProvider
+            if (spanString.Contains("-") && spanString.IndexOf("-", StringComparison.InvariantCultureIgnoreCase) != 0)
+            {
+                spanString = $"-{spanString.Replace("-", "")}";
+            }
+            return XmlConvert.ToTimeSpan(spanString);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var duration = (TimeOfDay)value;
-            writer.WriteValue(duration.ToString());
+            var duration = (TimeSpan)value;
+            writer.WriteValue(XmlConvert.ToString(duration));
         }
+
     }
+
 }
+#endif

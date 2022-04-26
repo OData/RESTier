@@ -31,7 +31,7 @@ namespace System
         /// </returns>
         public static Type FindGenericType(this Type type, Type definition)
         {
-            if (type == null)
+            if (type is null)
             {
                 return null;
             }
@@ -99,7 +99,7 @@ namespace System
             }
 
             var interfaceType = type.FindGenericType(typeof(IEnumerable<>));
-            if (interfaceType != null)
+            if (interfaceType is not null)
             {
                 elementType = interfaceType.GetGenericArguments()[0];
                 return true;

@@ -1,27 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Microsoft.OData.Core" Version="7.8.3" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.*" Condition="'$(TargetFramework)' != 'net6.0'" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Microsoft.OData.Core" Version="7.*" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" Condition="'$(IsNetCore)' != 'true'" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
+
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" Condition="'$(IsNetCore)' == 'true'" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" Condition="'$(IsNetCore)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
     <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
+    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" Condition="'$(IsNetCore)' != 'true'" />
+    <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" Condition="'$(IsNetCore)' == 'true'" />
   </ItemGroup>
 
 </Project>

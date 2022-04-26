@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.OData;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
@@ -41,7 +41,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataSerializerContext writeContext)
         {
             ComplexResult complexResult = graph as ComplexResult;
-            if (complexResult != null)
+            if (complexResult is not null)
             {
                 graph = complexResult.Result;
                 type = complexResult.Type;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -117,7 +118,7 @@ namespace Microsoft.Restier.Core.Query
         public QueryModelReference GetModelReferenceForNode(Expression node)
         {
             QueryModelReference modelReference = null;
-            if (node != null)
+            if (node is not null)
             {
                 modelReferences.TryGetValue(node, out modelReference);
             }
@@ -156,7 +157,7 @@ namespace Microsoft.Restier.Core.Query
             }
 
             Type resultElementType = null;
-            if (resultType != null)
+            if (resultType is not null)
             {
                 resultElementType = resultType.GenericTypeArguments[0];
             }
@@ -166,7 +167,7 @@ namespace Microsoft.Restier.Core.Query
             // or IEnumerable<SelectExpandBinder.SelectAll<Person>>
             // or IEnumerable<SelectExpandBinder.SelectSome<Person>>
             // or IEnumerable<SelectExpandBinder.SelectSomeAndInheritance<Person>>
-            if (sourceType != null && resultType != null)
+            if (sourceType is not null && resultType is not null)
             {
                 var resultGenericType = resultElementType;
                 if (resultGenericType.IsGenericType)
@@ -194,19 +195,19 @@ namespace Microsoft.Restier.Core.Query
 
             // Till here, it means the result is not part of previous result and entity set will be null
             // This mean result is a collection as resultType is IEnumerable<>
-            if (resultType != null)
+            if (resultType is not null)
             {
                 // Did not consider multiple namespaces have same entity type case or customized namespace
                 var edmElementType = model.FindDeclaredType(resultElementType.FullName);
 
                 // This means result is collection of Entity/Complex/Enum
                 IEdmTypeReference edmTypeReference = null;
-                if (edmElementType != null)
+                if (edmElementType is not null)
                 {
                     var edmType = edmElementType as IEdmType;
                     edmTypeReference = edmType.GetTypeReference();
 
-                    if (edmTypeReference != null)
+                    if (edmTypeReference is not null)
                     {
                         var collectionType = new EdmCollectionType(edmTypeReference);
                         return new QueryModelReference(null, collectionType);
@@ -223,11 +224,11 @@ namespace Microsoft.Restier.Core.Query
 
         private void UpdateModelReference()
         {
-            if (VisitedNode != null &&
+            if (VisitedNode is not null &&
                 !modelReferences.ContainsKey(VisitedNode))
             {
                 var modelReference = ComputeModelReference();
-                if (modelReference != null)
+                if (modelReference is not null)
                 {
                     modelReferences.Add(
                         VisitedNode, modelReference);
@@ -241,7 +242,7 @@ namespace Microsoft.Restier.Core.Query
 
             var methodCall = VisitedNode as MethodCallExpression;
 
-            if (methodCall != null)
+            if (methodCall is not null)
             {
                 var method = methodCall.Method;
                 if (method.DeclaringType == typeof(DataSourceStub) && method.Name != MethodNameOfDataSourceStubValue)
@@ -251,7 +252,7 @@ namespace Microsoft.Restier.Core.Query
                 else if (method.GetCustomAttributes<ExtensionAttribute>().Any())
                 {
                     var thisModelReference = GetModelReferenceForNode(methodCall.Arguments[0]);
-                    if (thisModelReference != null)
+                    if (thisModelReference is not null)
                     {
                         var model = QueryContext.Model;
                         modelReference = ComputeQueryModelReference(methodCall, thisModelReference, model);
@@ -285,7 +286,7 @@ namespace Microsoft.Restier.Core.Query
                 }
 
                 modelReference = GetModelReferenceForNode(node);
-                if (modelReference == null)
+                if (modelReference is null)
                 {
                     continue;
                 }
@@ -300,7 +301,7 @@ namespace Microsoft.Restier.Core.Query
                     // or IEnumerable<SelectExpandBinder.SelectAll<Person>>
                     // or IEnumerable<SelectExpandBinder.SelectSome<Person>>
                     // or IEnumerable<SelectExpandBinder.SelectSomeAndInheritance<Person>>
-                    if (sourceType == null || resultType == null)
+                    if (sourceType is null || resultType is null)
                     {
                         continue;
                     }
@@ -331,9 +332,9 @@ namespace Microsoft.Restier.Core.Query
             QueryModelReference modelReference = null;
             var memberExp = member.Expression;
 
-            if (memberExp == null)
+            if (memberExp is null)
             {
-                throw new Exception(string.Format(Resources.QueryMemberNotAccessible, member.ToString()));
+                throw new Exception(string.Format(CultureInfo.InvariantCulture, Resources.QueryMemberNotAccessible, member.ToString()));
             }
 
             if (memberExp.NodeType == ExpressionType.Parameter)
@@ -366,9 +367,17 @@ namespace Microsoft.Restier.Core.Query
                 }
             }
 
-            if (modelReference != null)
+            if (modelReference is not null)
             {
-                modelReference = new PropertyModelReference(modelReference, member.Member.Name);
+                IEdmProperty property = null;
+                var structuredType = QueryContext.Model.FindDeclaredType(memberExp.Type.FullName) as IEdmStructuredType;
+
+                if (structuredType != null)
+                {
+                    property = structuredType.FindProperty(member.Member.Name);
+                }
+
+                modelReference = new PropertyModelReference(modelReference, member.Member.Name, property);
             }
 
             return modelReference;
@@ -386,11 +395,11 @@ namespace Microsoft.Restier.Core.Query
             }
 
             name = methodCall.Arguments[argumentIndex++] as ConstantExpression;
-            if ((argumentIndex == 1 || namespaceName != null) && name != null)
+            if ((argumentIndex == 1 || namespaceName is not null) && name is not null)
             {
                 if (name.Value is string nameValue)
                 {
-                    if (namespaceName == null)
+                    if (namespaceName is null)
                     {
                         modelReference = new DataSourceStubModelReference(QueryContext, nameValue);
                     }
@@ -404,6 +413,6 @@ namespace Microsoft.Restier.Core.Query
             return modelReference;
         }
 
-        private IEnumerable<Expression> GetExpressionTrail() => visitedNodes.TakeWhile(node => node != null);
+        private IEnumerable<Expression> GetExpressionTrail() => visitedNodes.TakeWhile(node => node is not null);
     }
 }

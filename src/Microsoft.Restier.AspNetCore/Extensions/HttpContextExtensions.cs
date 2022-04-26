@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Restier.AspNetCore.Batch;
+
 namespace Microsoft.Restier.AspNetCore
 {
-    using System;
-    using System.ComponentModel;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Restier.AspNetCore.Batch;
 
     /// <summary>
     /// Offers a collection of extension methods to <see cref="HttpContext"/>.
@@ -14,6 +15,7 @@ namespace Microsoft.Restier.AspNetCore
     [EditorBrowsable(EditorBrowsableState.Never)]
     internal static class HttpContextExtensions
     {
+
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";
 
         /// <summary>
@@ -43,5 +45,7 @@ namespace Microsoft.Restier.AspNetCore
 
             return null;
         }
+
     }
+
 }

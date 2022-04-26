@@ -230,7 +230,7 @@ namespace Microsoft.Restier.Core.Submit
             var param = Expression.Parameter(type);
             Expression where = null;
 
-            if (ResourceKey != null)
+            if (ResourceKey is not null)
             {
                 foreach (var item in ResourceKey)
                 {
@@ -238,7 +238,7 @@ namespace Microsoft.Restier.Core.Submit
                 }
             }
 
-            if (where == null)
+            if (where is null)
             {
                 throw new InvalidOperationException(Resources.DataModificationRequiresResourceKey);
             }
@@ -262,7 +262,7 @@ namespace Microsoft.Restier.Core.Submit
             var param = Expression.Parameter(type);
             Expression where = null;
 
-            if (OriginalValues != null)
+            if (OriginalValues is not null)
             {
                 foreach (var item in OriginalValues)
                 {
@@ -282,7 +282,7 @@ namespace Microsoft.Restier.Core.Submit
             var queryable = ExpressionHelpers.Where(query, whereLambda, type);
 
             var matchedResource = queryable.SingleOrDefault();
-            if (matchedResource == null)
+            if (matchedResource is null)
             {
                 // If ETAG does not match, should return 412 Precondition Failed
                 var message = string.Format(CultureInfo.InvariantCulture, Resources.PreconditionCheckFailed, new object[] { EntitySetOperation, query.SingleOrDefault() });
@@ -310,7 +310,7 @@ namespace Microsoft.Restier.Core.Submit
             }
 
             // TODO GitHubIssue#31 : Check if LinqParameterContainer is necessary
-            // Expression value = itemValue != null
+            // Expression value = itemValue is not null
             //     ? LinqParameterContainer.Parameterize(itemValue.GetType(), itemValue)
             //     : Expression.Constant(value: null);
             Expression left = property;
@@ -322,7 +322,7 @@ namespace Microsoft.Restier.Core.Submit
             }
 
             var equal = Expression.Equal(left, right);
-            return where == null ? equal : Expression.AndAlso(where, equal);
+            return where is null ? equal : Expression.AndAlso(where, equal);
         }
     }
 

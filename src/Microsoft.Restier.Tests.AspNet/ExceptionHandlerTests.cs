@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Security;
@@ -11,11 +10,18 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#if NETCOREAPP3_1_OR_GREATER
+namespace Microsoft.Restier.Tests.AspNetCore
+#else
 namespace Microsoft.Restier.Tests.AspNet
+#endif
 {
 
     [TestClass]
     public class ExceptionHandlerTests : RestierTestBase
+#if NETCOREAPP3_1_OR_GREATER
+        <StoreApi>
+#endif
     {
 
         [TestMethod]
@@ -27,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNet
                     .AddTestStoreApiServices()
                     .AddChainedService<IQueryExpressionSourcer>((sp, next) => new FakeSourcer());
             }
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi, DbContext>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
@@ -43,6 +49,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         #endregion
+
 
     }
 }

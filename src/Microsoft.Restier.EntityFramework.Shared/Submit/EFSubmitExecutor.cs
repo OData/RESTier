@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-#if EF7
+#if EFCore
     using Microsoft.EntityFrameworkCore;
 #else
 using System;
@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Restier.Core.Submit;
 
-#if EF7
+#if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
 #else
 namespace Microsoft.Restier.EntityFramework

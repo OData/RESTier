@@ -13,14 +13,14 @@ using Microsoft.AspNet.OData.Formatter;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.Edm.Vocabularies.V1;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 #else
 using Microsoft.Restier.AspNet.Model;
 #endif
 using Microsoft.Restier.Core;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore
 #else
 namespace Microsoft.Restier.AspNet
@@ -52,7 +52,7 @@ namespace Microsoft.Restier.AspNet
         /// <param name="propertyValues">A dictionary of property values.</param>
         public static void ApplyTo(this ETag etag, IDictionary<string, object> propertyValues)
         {
-            if (etag != null)
+            if (etag is not null)
             {
                 var concurrencyProperties = (IDictionary<string, object>)EtagConcurrencyPropertiesProperty.GetValue(etag);
                 foreach (var item in concurrencyProperties)
@@ -79,7 +79,7 @@ namespace Microsoft.Restier.AspNet
             var annotations = model.FindVocabularyAnnotations<IEdmVocabularyAnnotation>(
                 entitySet, CoreVocabularyModel.ConcurrencyTerm);
             var annotation = annotations.FirstOrDefault();
-            if (annotation != null)
+            if (annotation is not null)
             {
                 needCurrencyCheck = true;
             }
@@ -104,7 +104,7 @@ namespace Microsoft.Restier.AspNet
             var propertyValues = new Dictionary<string, object>();
             foreach (var propertyName in entity.GetChangedPropertyNames())
             {
-                if (propertiesAttributes != null && propertiesAttributes.TryGetValue(propertyName, out var attributes))
+                if (propertiesAttributes is not null && propertiesAttributes.TryGetValue(propertyName, out var attributes))
                 {
                     if ((isCreation && (attributes & PropertyAttributes.IgnoreForCreation) != PropertyAttributes.None)
                       || (!isCreation && (attributes & PropertyAttributes.IgnoreForUpdate) != PropertyAttributes.None))
@@ -185,7 +185,7 @@ namespace Microsoft.Restier.AspNet
                 // Add property attributes to the dictionary
                 if (attributes != PropertyAttributes.None)
                 {
-                    if (propertiesAttributes == null)
+                    if (propertiesAttributes is null)
                     {
                         propertiesAttributes = new Dictionary<string, PropertyAttributes>();
                         TypePropertiesAttributes[edmType] = propertiesAttributes;

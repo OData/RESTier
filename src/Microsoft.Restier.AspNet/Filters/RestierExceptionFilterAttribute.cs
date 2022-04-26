@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.OData;
+using Microsoft.Restier.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -14,9 +15,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
-using Microsoft.OData;
-using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.AspNet
 {
@@ -55,7 +53,7 @@ namespace Microsoft.Restier.AspNet
             {
                 var result = await handler.Invoke(actionExecutedContext, useVerboseErrors, cancellationToken).ConfigureAwait(false);
 
-                if (result != null)
+                if (result is not null)
                 {
                     actionExecutedContext.Response = result;
                     return;
@@ -110,7 +108,7 @@ namespace Microsoft.Restier.AspNet
                 exception = exception.InnerException.Demystify();
             }
 
-            if (exception == null)
+            if (exception is null)
             {
                 return Task.FromResult<HttpResponseMessage>(null);
             }
@@ -139,7 +137,7 @@ namespace Microsoft.Restier.AspNet
             // exception must be handled in OnChangeSetCompleted
             // to avoid deadlock in Github Issue #82.
             var changeSetProperty = context.Request.GetChangeSet();
-            if (changeSetProperty != null)
+            if (changeSetProperty is not null)
             {
                 changeSetProperty.Exceptions.Add(exception);
                 changeSetProperty.OnChangeSetCompleted();

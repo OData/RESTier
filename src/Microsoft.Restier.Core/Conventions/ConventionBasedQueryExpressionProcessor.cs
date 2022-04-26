@@ -38,10 +38,10 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(context, nameof(context));
 
-            if (Inner != null)
+            if (Inner is not null)
             {
-                var innerProcessedExpression = this.Inner.Process(context);
-                if (innerProcessedExpression != null && innerProcessedExpression != context.VisitedNode)
+                var innerProcessedExpression = Inner.Process(context);
+                if (innerProcessedExpression is not null && innerProcessedExpression != context.VisitedNode)
                 {
                     return innerProcessedExpression;
                 }
@@ -67,7 +67,7 @@ namespace Microsoft.Restier.Core
                 return AppendOnFilterExpression(context, entitySet, entityType);
             }
 
-            if (context.ModelReference is PropertyModelReference propertyModelReference && propertyModelReference.Property != null)
+            if (context.ModelReference is PropertyModelReference propertyModelReference && propertyModelReference.Property is not null)
             {
                 // Could be a single navigation property or a collection navigation property
                 var propType = propertyModelReference.Property.Type;
@@ -83,14 +83,14 @@ namespace Microsoft.Restier.Core
                 }
 
                 // In case of type inheritance, get the base type
-                while (entityType.BaseType != null)
+                while (entityType.BaseType is not null)
                 {
                     entityType = (IEdmEntityType)entityType.BaseType;
                 }
 
                 // Get the model, query it for the entity set of a given type.
                 var entitySet = context.QueryContext.Model.EntityContainer.EntitySets().FirstOrDefault(c => c.EntityType() == entityType);
-                if (entitySet == null)
+                if (entitySet is null)
                 {
                     return null;
                 }
@@ -105,9 +105,9 @@ namespace Microsoft.Restier.Core
         {
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, RestierPipelineState.Submit, RestierEntitySetOperation.Filter);
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
-            if (expectedMethod == null || (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly))
+            if (expectedMethod is null || (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly))
             {
-                if (expectedMethod != null)
+                if (expectedMethod is not null)
                 {
                     Trace.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
                 }
@@ -115,7 +115,7 @@ namespace Microsoft.Restier.Core
                 {
                     var actualMethodName = expectedMethodName.Replace(entitySet.Name, entityType.Name);
                     var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
-                    if (actualMethod != null)
+                    if (actualMethod is not null)
                     {
                         Trace.WriteLine($"BREAKING: Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                     }
@@ -125,7 +125,7 @@ namespace Microsoft.Restier.Core
             }
 
             var parameter = expectedMethod.GetParameters().SingleOrDefault();
-            if (parameter == null || parameter.ParameterType != expectedMethod.ReturnType)
+            if (parameter is null || parameter.ParameterType != expectedMethod.ReturnType)
             {
                 return null;
             }
@@ -134,7 +134,7 @@ namespace Microsoft.Restier.Core
             if (!expectedMethod.IsStatic)
             {
                 apiBase = context.QueryContext.Api;
-                if (apiBase == null || !targetApiType.IsInstanceOfType(apiBase))
+                if (apiBase is null || !targetApiType.IsInstanceOfType(apiBase))
                 {
                     return null;
                 }
@@ -148,11 +148,11 @@ namespace Microsoft.Restier.Core
             var enumerableQueryParameter = (object)context.VisitedNode;
             Type elementType = null;
 
-            if (returnType == null)
+            if (returnType is null)
             {
                 // This means append for properties model reference
                 var collectionType = context.VisitedNode.Type.FindGenericType(typeof(ICollection<>));
-                if (collectionType == null)
+                if (collectionType is null)
                 {
                     return null;
                 }

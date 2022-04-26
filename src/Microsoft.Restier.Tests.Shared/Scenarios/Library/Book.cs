@@ -32,6 +32,11 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         /// </summary>
         public Publisher Publisher { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsActive { get; set; }
+
     }
 
 }

@@ -2,12 +2,12 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-#if EF7
+#if EFCore
     using Microsoft.Restier.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 #else
-using Microsoft.Restier.EntityFramework;
-using System.Data.Entity;
+    using Microsoft.Restier.EntityFramework;
+    using System.Data.Entity;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class RestierEntityFrameworkServiceCollectionExtensions
     {
-#if EF7
+#if EFCore
         /// <summary>
         /// This method is used to add entity framework providers service into container.
         /// </summary>
@@ -55,6 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return AddEFProviderServices(services);
         }
 
+        /* JHC: not sure why we had this overload, the simpler builder should work file
         /// <summary>
         /// This method is used to add entity framework providers service into container.
         /// </summary>
@@ -83,6 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return AddEFProviderServices(services);
         }
+        */
 #else
         /// <summary>
         /// This method is used to add entity framework providers service into container.

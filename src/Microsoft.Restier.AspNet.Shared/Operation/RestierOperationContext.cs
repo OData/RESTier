@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections;
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #else
 using System.Net.Http;
@@ -11,7 +11,7 @@ using System.Net.Http;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Operation
 #else
 namespace Microsoft.Restier.AspNet.Operation
@@ -54,7 +54,7 @@ namespace Microsoft.Restier.AspNet.Operation
         /// <summary>
         /// Gets or sets the Request.
         /// </summary>
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
         public HttpRequest Request { get; set; }
 #else
         public HttpRequestMessage Request { get; set; }

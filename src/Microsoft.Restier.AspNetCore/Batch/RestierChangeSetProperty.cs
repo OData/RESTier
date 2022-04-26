@@ -49,17 +49,17 @@ namespace Microsoft.Restier.AspNetCore.Batch
         /// <returns>The task object that represents this callback execution.</returns>
         public Task OnChangeSetCompleted()
         {
-            if (Interlocked.Decrement(ref this.subRequestCount) == 0)
+            if (Interlocked.Decrement(ref subRequestCount) == 0)
             {
                 if (Exceptions.Count == 0)
                 {
-                    changeSetRequestItem.SubmitChangeSet(this.ChangeSet)
+                    changeSetRequestItem.SubmitChangeSet(ChangeSet)
                         .ContinueWith(t =>
                         {
-                            if (t.Exception != null)
+                            if (t.Exception is not null)
                             {
                                 var taskEx =
-                                    (t.Exception.InnerExceptions != null
+                                    (t.Exception.InnerExceptions is not null
                                      && t.Exception.InnerExceptions.Count == 1)
                                         ? t.Exception.InnerExceptions.First()
                                         : t.Exception;
@@ -69,11 +69,12 @@ namespace Microsoft.Restier.AspNetCore.Batch
                             {
                                 changeSetCompletedTaskSource.SetResult(true);
                             }
-                        });
+                        },
+                        TaskScheduler.Current);
                 }
                 else
                 {
-                    changeSetCompletedTaskSource.SetException(this.Exceptions.Select(c => c.Demystify()));
+                    changeSetCompletedTaskSource.SetException(Exceptions.Select(c => c.Demystify()));
                 }
             }
 

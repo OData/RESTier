@@ -41,7 +41,7 @@ namespace Microsoft.Restier.AspNetCore
 
             ODataPath odataPath = routeContext.HttpContext.ODataFeature().Path;
 
-            if (odataPath == null)
+            if (odataPath is null)
             {
                 throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
             }

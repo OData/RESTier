@@ -8,7 +8,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-#if NETCOREAPP
+#if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Model
 #else
 namespace Microsoft.Restier.AspNet.Model
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.AspNet.Model
 
             var element = model.EntityContainer.Elements.Where(e => e.Name == name).FirstOrDefault();
 
-            if (element != null)
+            if (element is not null)
             {
                 IEdmType entityType = null;
                 if (element is EdmEntitySet entitySet)
@@ -59,10 +59,10 @@ namespace Microsoft.Restier.AspNet.Model
                     }
                 }
 
-                if (entityType != null)
+                if (entityType is not null)
                 {
                     var annotation = model.GetAnnotationValue<ClrTypeAnnotation>(entityType);
-                    if (annotation != null)
+                    if (annotation is not null)
                     {
                         relevantType = annotation.ClrType;
                         return true;

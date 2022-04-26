@@ -71,11 +71,11 @@ namespace Microsoft.Restier.Core.Submit
 
             await initializer.InitializeAsync(context, cancellationToken).ConfigureAwait(false);
 
-            if (context.Result != null)
+            if (context.Result is not null)
             {
                 return context.Result;
             }
-            else if (context.ChangeSet == null)
+            else if (context.ChangeSet is null)
             {
                 throw new InvalidOperationException(Resources.NoPendingChangedAndNoChangeSet);
             }
@@ -90,8 +90,11 @@ namespace Microsoft.Restier.Core.Submit
 
             await PerformPersist(context, cancellationToken).ConfigureAwait(false);
 
+#if NET472
+            while(context.ChangeSet.Entries.TryDequeue(out _));
+#else
             context.ChangeSet.Entries.Clear();
-
+#endif
             await PerformPostEvent(context, currentChangeSetItems, cancellationToken).ConfigureAwait(false);
 
             return context.Result;
@@ -153,7 +156,7 @@ namespace Microsoft.Restier.Core.Submit
 
         private async Task InvokeAuthorizers(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
-            if (authorizer == null)
+            if (authorizer is null)
             {
                 return;
             }
@@ -169,7 +172,7 @@ namespace Microsoft.Restier.Core.Submit
 
         private async Task InvokeValidators(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
-            if (validator == null)
+            if (validator is null)
             {
                 return;
             }
@@ -195,7 +198,7 @@ namespace Microsoft.Restier.Core.Submit
 
         private async Task PerformPreEvent(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
-            if (filter == null)
+            if (filter is null)
             {
                 return;
             }
@@ -207,7 +210,7 @@ namespace Microsoft.Restier.Core.Submit
                     item.ChangeSetItemProcessingStage = ChangeSetItemProcessingStage.PreEventing;
 
 
-                    if (filter != null)
+                    if (filter is not null)
                     {
                         await filter.OnChangeSetItemProcessingAsync(context, item, cancellationToken).ConfigureAwait(false);
                     }
@@ -235,7 +238,7 @@ namespace Microsoft.Restier.Core.Submit
 
         private async Task PerformPostEvent(SubmitContext context, IEnumerable<ChangeSetItem> changeSetItems, CancellationToken cancellationToken)
         {
-            if (filter == null)
+            if (filter is null)
             {
                 return;
             }

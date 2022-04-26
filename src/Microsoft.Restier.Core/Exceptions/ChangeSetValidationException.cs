@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.Submit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Restier.Core.Submit
+namespace Microsoft.Restier.Core
 {
     /// <summary>
     /// Represents an exception that indicates validation errors occurred on entities.
@@ -46,8 +47,8 @@ namespace Microsoft.Restier.Core.Submit
         /// </summary>
         public IEnumerable<ChangeSetItemValidationResult> ValidationResults
         {
-            get => this.errorValidationResults ?? Enumerable.Empty<ChangeSetItemValidationResult>();
-            set => this.errorValidationResults = value;
+            get => errorValidationResults ?? Enumerable.Empty<ChangeSetItemValidationResult>();
+            set => errorValidationResults = value;
         }
 
         /// <summary>

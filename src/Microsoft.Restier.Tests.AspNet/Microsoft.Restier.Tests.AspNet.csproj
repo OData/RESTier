@@ -2,32 +2,34 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
     <IsPackable>false</IsPackable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.7" />
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.8.3" />
+    <Compile Remove="FallbackTests\Resources\**" />
+    <EmbeddedResource Remove="FallbackTests\Resources\**" />
+    <None Remove="FallbackTests\Resources\**" />
   </ItemGroup>
 
-
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.20.1" />
+  <ItemGroup>
+    <PackageReference Include="Breakdance.Assemblies" Version="3.0.0-CI-20211112-045849" />
+    <PackageReference Include="Breakdance.Extensions.MSTest2" Version="3.0.0-CI-20210730-053037" />
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" />
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.*" />
+    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+    <PackageReference Include="Simple.OData.V4.Client" Version="5.*" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
+    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" />
     <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
   </ItemGroup>
 

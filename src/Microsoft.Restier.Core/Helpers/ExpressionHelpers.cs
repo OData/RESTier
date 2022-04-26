@@ -145,7 +145,7 @@ namespace System.Linq.Expressions
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
             var type = enumerableType.FindGenericType(typeof(IEnumerable<>));
-            if (type != null)
+            if (type is not null)
             {
                 return type.GetGenericArguments()[0];
             }
@@ -160,7 +160,7 @@ namespace System.Linq.Expressions
         /// <returns>A new MethodCallExpression.</returns>
         internal static MethodCallExpression RemoveUnneededStatement(this MethodCallExpression methodCallExpression)
         {
-            if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+            if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
             {
                 return methodCallExpression;
             }
@@ -169,7 +169,7 @@ namespace System.Linq.Expressions
             {
                 // Check where it is expand case or select, if yes, need to get rid of last select
                 methodCallExpression = RemoveSelectExpandStatement(methodCallExpression);
-                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
                 {
                     return methodCallExpression;
                 }
@@ -179,7 +179,7 @@ namespace System.Linq.Expressions
             {
                 // Check where it is top query option, and if yes, remove it.
                 methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
-                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
                 {
                     return methodCallExpression;
                 }
@@ -189,7 +189,7 @@ namespace System.Linq.Expressions
             {
                 // Check where it is skip query option, and if yes, remove it.
                 methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
-                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
                 {
                     return methodCallExpression;
                 }
@@ -199,7 +199,7 @@ namespace System.Linq.Expressions
             {
                 // Check where it is orderby query option, and if yes, remove it.
                 methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
-                if (methodCallExpression == null || methodCallExpression.Arguments.Count != 2)
+                if (methodCallExpression is null || methodCallExpression.Arguments.Count != 2)
                 {
                     return methodCallExpression;
                 }
@@ -229,7 +229,7 @@ namespace System.Linq.Expressions
 
             var returnType = lambdaExpression.ReturnType;
             var wrapperInterface = returnType.GetInterface(InterfaceNameISelectExpandWrapper);
-            if (wrapperInterface != null)
+            if (wrapperInterface is not null)
             {
                 methodCallExpression = methodCallExpression.Arguments[0] as MethodCallExpression;
             }
@@ -249,7 +249,7 @@ namespace System.Linq.Expressions
                 return expression;
             }
 
-            // This means there may be an appended statement Where(Param_0 => (Param_0.Prop != null))
+            // This means there may be an appended statement Where(Param_0 => (Param_0.Prop is not null))
             var appendedWhere = methodCallExpression.Arguments[1] as UnaryExpression;
             if (!(appendedWhere.Operand is LambdaExpression lambdaExpression))
             {
@@ -258,9 +258,9 @@ namespace System.Linq.Expressions
 
             if (lambdaExpression.Body is BinaryExpression binaryExpression && binaryExpression.NodeType == ExpressionType.NotEqual)
             {
-                if (binaryExpression.Right is ConstantExpression rightExpression && rightExpression.Value == null)
+                if (binaryExpression.Right is ConstantExpression rightExpression && rightExpression.Value is null)
                 {
-                    // remove statement like Where(Param_0 => (Param_0.Prop != null))
+                    // remove statement like Where(Param_0 => (Param_0.Prop is not null))
                     expression = methodCallExpression.Arguments[0];
                 }
             }
@@ -286,7 +286,7 @@ namespace System.Linq.Expressions
             // then type Namespace.Product will be returned.
             // Only generic type of expand clause will be retrieved to make the logic specified for $expand
             var typeInfo = elementType.GetTypeInfo();
-            if (typeInfo.IsGenericType && typeInfo.ReflectedType != null
+            if (typeInfo.IsGenericType && typeInfo.ReflectedType is not null
                 && typeInfo.ReflectedType.Name == ExpandClauseReflectedTypeName)
             {
                 elementType = typeInfo.GenericTypeArguments[0];
