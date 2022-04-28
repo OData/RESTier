@@ -100,9 +100,7 @@ namespace Microsoft.Restier.Tests.AspNet
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/RemoveWorstProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
-            // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
             response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
-
         }
 
         [TestMethod]
@@ -115,15 +113,15 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task FunctionImport_Post_ShouldReturnNotFound()
+        public async Task FunctionImport_Post_ShouldReturnMethodNotAllowed()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/GetBestProduct", serviceCollection: di);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
-            // TODO: standalone testing shows 501, but here is 500, will figure out detail reason
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+            response.Content.Headers.Allow.Should().NotBeNull();
+            response.Content.Headers.Allow.Should().Contain("GET");
         }
-
     }
 
 }

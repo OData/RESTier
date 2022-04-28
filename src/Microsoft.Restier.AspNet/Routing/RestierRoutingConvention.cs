@@ -86,14 +86,22 @@ namespace Microsoft.Restier.AspNet
                 return MethodNameOfGet;
             }
 
-            if (method == HttpMethod.Post && isAction)
-            {
-                return MethodNameOfPostAction;
-            }
-
             if (method == HttpMethod.Post)
             {
-                return MethodNameOfPost;
+                // verify that the request has non-null content
+                if (controllerContext.Request.Content == null)
+                {
+                    controllerContext.Request.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+                }
+
+                if (isAction)
+                {
+                    return MethodNameOfPostAction;
+                }
+                else
+                {
+                    return MethodNameOfPost;
+                }
             }
 
             if (method == HttpMethod.Delete)

@@ -100,9 +100,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task StoreApi_CompareCurrentApiMetadataToPriorRun()
         {
-            /* JHC Note:
-             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiMetadata after some changes
-             * */
             var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(StoreApi).Name}-ApiMetadata.txt";
             File.Exists(fileName).Should().BeTrue();
 

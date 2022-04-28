@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -96,7 +97,7 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             HttpStatusCode code;
-
+            SerializableError response;
             switch (true)
             {
                 case true when exception is StatusCodeException:
@@ -105,7 +106,7 @@ namespace Microsoft.Restier.AspNetCore
                     break;
                 case true when exception is ODataException:
                     code = HttpStatusCode.BadRequest;
-                    var response = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
+                    response = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
                     context.Result = new BadRequestObjectResult(response);
                     break;
                 case true when exception is SecurityException:
@@ -115,6 +116,12 @@ namespace Microsoft.Restier.AspNetCore
                 case true when exception is NotImplementedException:
                     code = HttpStatusCode.NotImplemented;
                     context.Result = new StatusCodeResult((int)code);
+                    break;
+                case true when exception is TargetInvocationException && exception.InnerException is ArgumentNullException:
+                    exception = exception.InnerException;
+                    code = HttpStatusCode.BadRequest;
+                    response = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
+                    context.Result= new BadRequestObjectResult(response);
                     break;
                 default:
                     code = HttpStatusCode.InternalServerError;

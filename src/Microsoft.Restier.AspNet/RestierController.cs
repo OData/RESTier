@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -210,6 +212,21 @@ namespace Microsoft.Restier.AspNet
 
             CheckModelState();
             var path = GetPath();
+            var lastSegment = path.Segments.Last();
+
+            // if the request is to a function or function import, return MethodNotAllowed
+            var operationSegment = lastSegment as OperationSegment;
+            if (operationSegment != null && operationSegment.Operations.FirstOrDefault().IsFunction())
+            {
+                return MethodNotAllowed();
+            }
+
+            var operationImportSegment = lastSegment as OperationImportSegment;
+            if (operationImportSegment != null && operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            {
+                return MethodNotAllowed();
+            }
+
             if (!(path.NavigationSource is IEdmEntitySet entitySet))
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
@@ -251,6 +268,15 @@ namespace Microsoft.Restier.AspNet
             }
 
             return CreateCreatedODataResult(postItem.Resource);
+        }
+
+        private IHttpActionResult MethodNotAllowed()
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.MethodNotAllowed) ;
+            response.Content = new StringContent(String.Empty);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            response.Content.Headers.Allow.Add("GET");
+            return ResponseMessage(response);
         }
 
         /// <summary>
@@ -344,7 +370,9 @@ namespace Microsoft.Restier.AspNet
                     return null;
                 }
 
-                return parameters[p];
+                object parameter;
+                parameters.TryGetValue(p, out parameter);
+                return parameter;
             }
 
             if (lastSegment is OperationImportSegment segment)

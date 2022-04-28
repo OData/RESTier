@@ -7,6 +7,7 @@
         </Key>
         <Property Name="Id" Type="Edm.Int32" Nullable="false" />
         <Property Name="Name" Type="Edm.String" />
+        <Property Name="IsActive" Type="Edm.Boolean" Nullable="false" />
         <Property Name="Addr" Type="Microsoft.Restier.Tests.AspNet.Address" Nullable="false" />
         <Property Name="Addr2" Type="Microsoft.Restier.Tests.AspNet.Address" />
         <Property Name="Addr3" Type="Microsoft.Restier.Tests.AspNet.Address" />
@@ -16,6 +17,7 @@
           <PropertyRef Name="Id" />
         </Key>
         <Property Name="Id" Type="Edm.Int16" Nullable="false" />
+        <NavigationProperty Name="FavoriteProducts" Type="Collection(Microsoft.Restier.Tests.AspNet.Product)" />
       </EntityType>
       <EntityType Name="Store">
         <Key>
@@ -34,7 +36,9 @@
       </Action>
       <EntityContainer Name="Container">
         <EntitySet Name="Products" EntityType="Microsoft.Restier.Tests.AspNet.Product" />
-        <EntitySet Name="Customers" EntityType="Microsoft.Restier.Tests.AspNet.Customer" />
+        <EntitySet Name="Customers" EntityType="Microsoft.Restier.Tests.AspNet.Customer">
+          <NavigationPropertyBinding Path="FavoriteProducts" Target="Products" />
+        </EntitySet>
         <EntitySet Name="Stores" EntityType="Microsoft.Restier.Tests.AspNet.Store" />
         <FunctionImport Name="GetBestProduct" Function="Microsoft.Restier.Tests.AspNet.GetBestProduct" EntitySet="Products" IncludeInServiceDocument="true" />
         <ActionImport Name="RemoveWorstProduct" Action="Microsoft.Restier.Tests.AspNet.RemoveWorstProduct" EntitySet="Products" />
