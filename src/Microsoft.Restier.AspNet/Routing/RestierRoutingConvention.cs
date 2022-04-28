@@ -88,6 +88,12 @@ namespace Microsoft.Restier.AspNet
 
             if (method == HttpMethod.Post)
             {
+                // verify that the request has non-null content
+                if (controllerContext.Request.Content == null)
+                {
+                    controllerContext.Request.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
+                }
+
                 if (isAction)
                 {
                     return MethodNameOfPostAction;
