@@ -2,7 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 #if NETCOREAPP3_1_OR_GREATER
-    using CloudNimble.Breakdance.AspNetCore;
+using CloudNimble.Breakdance.AspNetCore;
+using Microsoft.AspNetCore.Http;
 #else
 using CloudNimble.Breakdance.WebApi;
 #endif
@@ -12,6 +13,7 @@ using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Net;
 
 #if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -43,14 +45,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task ActionParameters_MissingParameter()
         {
-            //var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/CheckoutBook", serviceCollection: addTestServices<LibraryContext>);
             var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/CheckoutBook", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
-
-            content.Should().Contain("NullReferenceException");
-            //content.Should().Contain("ArgumentNullException");
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            content.Should().Contain("ArgumentNullException");
         }
 
         [TestMethod]

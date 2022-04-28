@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -130,15 +131,31 @@ namespace Microsoft.Restier.AspNetCore
         /// <returns>The task object that contains the creation result.</returns>
         public async Task<IActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (edmEntityObject is null)
+            var path = GetPath();
+            var lastSegment = path.Segments.Last();
+
+            // if the request is to a function or function import, return MethodNotAllowed
+            var operationSegment = lastSegment as OperationSegment;
+            if (operationSegment != null && operationSegment.Operations.FirstOrDefault().IsFunction())
             {
-                throw new ODataException("A POST requires an object to be present in the request body.");
+                return MethodNotAllowed();
+            }
+
+            var operationImportSegment = lastSegment as OperationImportSegment;
+            if (operationImportSegment != null && operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            {
+                return MethodNotAllowed();
             }
 
             EnsureInitialized();
 
             CheckModelState();
-            var path = GetPath();
+
+            if (edmEntityObject is null)
+            {
+                throw new ODataException("A POST requires an object to be present in the request body.");
+            }
+
             if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
@@ -180,6 +197,17 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             return CreateCreatedODataResult(postItem.Resource);
+        }
+
+        private IActionResult MethodNotAllowed()
+        {
+            //var response = new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
+            //response.Content = new StringContent(String.Empty);
+            //response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            //response.Content.Headers.Allow.Add("GET");
+            this.HttpContext.Response.Headers.Add("Allow", "GET");
+            var response = new StatusCodeResult(405);
+            return response;
         }
 
         /// <summary>
@@ -275,12 +303,9 @@ namespace Microsoft.Restier.AspNetCore
                     return null;
                 }
 
-                if (!parameters.ContainsKey(p))
-                {
-                    throw new NullReferenceException($"The key {p} was not found in the parameters the ASP.NET Core ModelBinder retrieved from the POST body.");
-                }
-
-                return parameters[p];
+                object parameter;
+                parameters.TryGetValue(p, out parameter);
+                return parameter;
             }
 
             if (lastSegment is OperationImportSegment segment)

@@ -50,6 +50,12 @@ namespace Microsoft.Restier.AspNetCore
 
             var actionCollectionProvider = services.GetRequiredService<IActionDescriptorCollectionProvider>();
 
+            IEnumerable<ControllerActionDescriptor> actions;
+            if (TryFindMatchingODataActions(routeContext, out actions))
+            {
+                return actions;
+            }
+
             var restierControllerActionDescriptors = actionCollectionProvider
                 .ActionDescriptors.Items.OfType<ControllerActionDescriptor>()
                 .Where(c => string.Equals(c.ControllerName, RestierControllerName, StringComparison.OrdinalIgnoreCase));
@@ -69,14 +75,16 @@ namespace Microsoft.Restier.AspNetCore
                 return restierControllerActionDescriptors.Where(x => string.Equals(MethodNameOfGet, x.ActionName, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (string.Equals(method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) && isAction)
-            {
-                return restierControllerActionDescriptors.Where(x => string.Equals(MethodNameOfPostAction, x.ActionName, StringComparison.OrdinalIgnoreCase));
-            }
-
             if (string.Equals(method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase))
             {
-                return restierControllerActionDescriptors.Where(x => string.Equals(MethodNameOfPost, x.ActionName, StringComparison.OrdinalIgnoreCase));
+                if (isAction)
+                {
+                    return restierControllerActionDescriptors.Where(x => string.Equals(MethodNameOfPostAction, x.ActionName, StringComparison.OrdinalIgnoreCase));
+                }
+                else
+                {
+                    return restierControllerActionDescriptors.Where(x => string.Equals(MethodNameOfPost, x.ActionName, StringComparison.OrdinalIgnoreCase));
+                }
             }
 
             if (string.Equals(method, HttpMethod.Delete.Method, StringComparison.OrdinalIgnoreCase))
@@ -95,6 +103,29 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             return null;
+        }
+
+        private bool TryFindMatchingODataActions(RouteContext context, out IEnumerable<ControllerActionDescriptor> actions)
+        {
+            IEnumerable<IODataRoutingConvention> routingConventions = context.HttpContext.Request.GetRoutingConventions();
+            if (routingConventions != null)
+            {
+                foreach (IODataRoutingConvention convention in routingConventions)
+                {
+                    if (convention != this)
+                    {
+                        IEnumerable<ControllerActionDescriptor> actionDescriptor = convention.SelectAction(context);
+                        if (actionDescriptor != null && actionDescriptor.Any())
+                        {
+                            actions = actionDescriptor;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            actions = null;
+            return false;
         }
 
         private static bool IsMetadataPath(ODataPath odataPath)

@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -127,6 +128,10 @@ namespace Microsoft.Restier.AspNet
                     break;
                 case true when exception is NotImplementedException:
                     code = HttpStatusCode.NotImplemented;
+                    break;
+                case true when exception is TargetInvocationException && exception.InnerException is ArgumentNullException:
+                    exception = exception.InnerException;
+                    code = HttpStatusCode.BadRequest;
                     break;
                 default:
                     code = HttpStatusCode.InternalServerError;
