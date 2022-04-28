@@ -37,7 +37,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         /// <summary>
         /// Tests if the query pipeline is correctly returning 200 StatusCodes when legitimate queries to a resource simply return no results.
         /// </summary>
-        //[Ignore]
+        [Ignore("Filter Segments not supported in WebAPI OData")]
         [TestMethod]
         public async Task BoundFunctions_CanHaveFilterPathSegment()
         {

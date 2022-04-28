@@ -33,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             ApplicationBuilderAction = app =>
             {
-                app.UseThreadPrincipals();
+                app.UseClaimsPrincipals();
             };
             AddRestierAction = builder =>
             {
@@ -53,7 +53,6 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task NetCoreApi_ClaimsPrincipalCurrent_IsNotNull()
         {
-
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/ClaimsPrincipalCurrentIsNotNull()");
             await TestContext.LogAndReturnMessageContentAsync(response);
 

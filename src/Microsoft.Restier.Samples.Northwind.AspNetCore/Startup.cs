@@ -75,7 +75,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
             }
 
             app.UseAuthorization();
-            app.UseThreadPrincipals();
+            app.UseClaimsPrincipals();
 
             app.UseMvc(builder =>
             {

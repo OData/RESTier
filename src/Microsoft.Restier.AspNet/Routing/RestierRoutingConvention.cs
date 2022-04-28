@@ -86,14 +86,16 @@ namespace Microsoft.Restier.AspNet
                 return MethodNameOfGet;
             }
 
-            if (method == HttpMethod.Post && isAction)
-            {
-                return MethodNameOfPostAction;
-            }
-
             if (method == HttpMethod.Post)
             {
-                return MethodNameOfPost;
+                if (isAction)
+                {
+                    return MethodNameOfPostAction;
+                }
+                else
+                {
+                    return MethodNameOfPost;
+                }
             }
 
             if (method == HttpMethod.Delete)
