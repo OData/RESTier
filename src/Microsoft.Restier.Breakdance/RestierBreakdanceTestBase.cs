@@ -1,13 +1,8 @@
 ﻿#if NETCOREAPP3_1_OR_GREATER
 
-using System;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.Breakdance.AspNetCore.OData;
+using Flurl;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +13,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
+using System;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -75,7 +76,8 @@ namespace Microsoft.Restier.Breakdance
                 ApplicationBuilderAction?.Invoke(builder);
                 builder.UseAuthorization();
                 builder.UseDeveloperExceptionPage();
-                builder.UseODataBatching();
+
+                builder.UseRestierBatching();
                 builder.UseMvc(routeBuilder =>
                 {
                     routeBuilder
@@ -120,7 +122,7 @@ namespace Microsoft.Restier.Breakdance
         public async Task<XDocument> GetApiMetadataAsync(string routePrefix = WebApiConstants.RoutePrefix)
         {
             var client = GetHttpClient(routePrefix);
-            var response = await client.GetAsync(new Uri($"{WebApiConstants.Localhost}{routePrefix}/$metadata")).ConfigureAwait(false);
+            var response = await client.GetAsync("$metadata").ConfigureAwait(false);
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
