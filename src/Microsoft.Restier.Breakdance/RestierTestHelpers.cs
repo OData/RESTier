@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Flurl;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection;
@@ -264,12 +265,16 @@ namespace Microsoft.Restier.Breakdance
 #if NETCOREAPP3_1_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
+            client.BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, routePrefix));
             return await Task.FromResult(client).ConfigureAwait(false);
 #else
             // JHC TODO: change this so that GetTestableHttpClient() is no longer async and refactor the net472 code as well
             using var config = await GetTestableRestierConfiguration<TApi>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             using var server = new HttpServer(config);
-            return new HttpClient(server);
+            return new HttpClient(server)
+            {
+                BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, routePrefix))
+            };
 #endif
 
         }

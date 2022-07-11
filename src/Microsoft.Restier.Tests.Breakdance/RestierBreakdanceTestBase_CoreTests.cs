@@ -18,7 +18,7 @@ namespace Microsoft.Restier.Tests.Breakdance
     public class RestierBreakdanceTestBase_CoreTests
     {
 
-#region Private Members
+        #region Private Members
 
         private Action<RestierApiBuilder> addRestierAction = (apiBuilder) =>
         {
@@ -56,7 +56,7 @@ namespace Microsoft.Restier.Tests.Breakdance
             routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix);
         };
 
-#endregion
+        #endregion
 
         [TestMethod]
         public void TestSetup_ServerAndServicesAreAvailable()

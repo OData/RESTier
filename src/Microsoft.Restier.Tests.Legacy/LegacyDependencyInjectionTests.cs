@@ -54,8 +54,8 @@ namespace Microsoft.Restier.Tests.Legacy
 
         #region Manifest Generators
 
-        [DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
-        [DataTestMethod]
+        //[DataRow("..//..//..//..//Microsoft.Restier.Tests.Legacy//")]
+        //[DataTestMethod]
         [BreakdanceManifestGenerator]
         public async Task ContainerContents_WriteOutput(string projectPath)
         {

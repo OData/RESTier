@@ -76,6 +76,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 
             app.UseAuthorization();
             app.UseClaimsPrincipals();
+            app.UseRestierBatching();
 
             app.UseMvc(builder =>
             {

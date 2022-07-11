@@ -14,6 +14,7 @@ using System.Net.Mime;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Linq;
+using Flurl;
 
 #if EF6
 using System.Data.Entity;
@@ -126,10 +127,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
+            //RWM: This version of GetTestableHttpClient does not set the BaseAddress. We have to do it manually.
+            httpClient.BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, WebApiConstants.RoutePrefix));
 #endif
-            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{httpClient.BaseAddress}/$batch");
+            var request = new HttpRequestMessage(HttpMethod.Post, "$batch");
             request.Content = new StringContent(mimeBatchRequest);
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("multipart/mixed;boundary=batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b");
 
@@ -211,10 +213,11 @@ OData-Version: 4.0
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
+            //RWM: This version of GetTestableHttpClient does not set the BaseAddress. We have to do it manually.
+            httpClient.BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, WebApiConstants.RoutePrefix));
 #endif
-            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{httpClient.BaseAddress}/$batch");
+            var request = new HttpRequestMessage(HttpMethod.Post, "$batch");
             request.Content = new StringContent(jsonBatchRequest);
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("application/json");
 
@@ -281,8 +284,9 @@ OData-Version: 4.0
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
             var httpClient = config.GetTestableHttpClient();
+            //RWM: This version of GetTestableHttpClient does not set the BaseAddress. We have to do it manually.
+            httpClient.BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, WebApiConstants.RoutePrefix));
 #endif
-            httpClient.BaseAddress = new Uri($"{WebApiConstants.Localhost}{WebApiConstants.RoutePrefix}");
 
             var odataSettings = new ODataClientSettings(httpClient, new Uri("", UriKind.Relative))
             {

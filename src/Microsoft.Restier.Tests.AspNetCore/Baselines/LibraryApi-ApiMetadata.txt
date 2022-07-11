@@ -45,7 +45,7 @@
         <Property Name="BooleanProperty" Type="Edm.Boolean" Nullable="false" />
         <Property Name="ByteProperty" Type="Edm.Byte" Nullable="false" />
         <Property Name="DateTimeOffsetProperty" Type="Edm.DateTimeOffset" Nullable="false" />
-        <Property Name="DecimalProperty" Type="Edm.Decimal" Nullable="false" />
+        <Property Name="DecimalProperty" Type="Edm.Decimal" Nullable="false" Scale="Variable" />
         <Property Name="DoubleProperty" Type="Edm.Double" Nullable="false" />
         <Property Name="DurationProperty" Type="Edm.Duration" Nullable="false" />
         <Property Name="GuidProperty" Type="Edm.Guid" Nullable="false" />
