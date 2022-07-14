@@ -38,14 +38,8 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            EnumResult enumResult = graph as EnumResult;
-            if (enumResult is not null)
-            {
-                graph = enumResult.Result;
-                type = enumResult.Type;
-            }
-
-            base.WriteObject(graph, type, messageWriter, writeContext);
+            var result = UnpackResult(graph, type);
+            base.WriteObject(result.Graph, result.Type, messageWriter, writeContext);
         }
 
         /// <summary>
@@ -62,14 +56,21 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            EnumResult enumResult = graph as EnumResult;
-            if (enumResult is not null)
-            {
-                graph = enumResult.Result;
-                type = enumResult.Type;
-            }
-
-            return base.WriteObjectAsync(graph, type, messageWriter, writeContext);
+            var result = UnpackResult(graph, type);
+            return base.WriteObjectAsync(result.Graph, result.Type, messageWriter, writeContext);
         }
+
+        /// <summary>
+        /// Returns a tuple containing the correct object and type from the <see cref="EnumResult"/>.
+        /// </summary>
+        /// <param name="result">The object passed into the Serializer.</param>
+        /// <param name="type">The type passed into the Serializer.</param>
+        /// <returns>A tuple containing the correct object and type from the <see cref="EnumResult"/>.</returns>
+        internal static (object Graph, Type Type) UnpackResult(object result, Type type)
+        {
+            return result is EnumResult enumResult ? (enumResult.Result, enumResult.Type) : (result, type);
+        }
+
     }
+
 }
