@@ -39,14 +39,8 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
-            if (collectionResult is not null)
-            {
-                graph = collectionResult.Query;
-                type = collectionResult.Type;
-            }
-
-            base.WriteObject(graph, type, messageWriter, writeContext);
+            var result = UnpackResult(graph, type);
+            base.WriteObject(result.Graph, result.Type, messageWriter, writeContext);
         }
 
         /// <summary>
@@ -63,14 +57,21 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            NonResourceCollectionResult collectionResult = graph as NonResourceCollectionResult;
-            if (collectionResult is not null)
-            {
-                graph = collectionResult.Query;
-                type = collectionResult.Type;
-            }
-
-            return base.WriteObjectAsync(graph, type, messageWriter, writeContext);
+            var result = UnpackResult(graph, type);
+            return base.WriteObjectAsync(result.Graph, result.Type, messageWriter, writeContext);
         }
+
+        /// <summary>
+        /// Returns a tuple containing the correct object and type from the <see cref="NonResourceCollectionResult"/>.
+        /// </summary>
+        /// <param name="result">The object passed into the Serializer.</param>
+        /// <param name="type">The type passed into the Serializer.</param>
+        /// <returns>A tuple containing the correct object and type from the <see cref="NonResourceCollectionResult"/>.</returns>
+        internal static (object Graph, Type Type) UnpackResult(object result, Type type)
+        {
+            return result is NonResourceCollectionResult collectionResult ? (collectionResult.Query, collectionResult.Type) : (result, type);
+        }
+
     }
+
 }

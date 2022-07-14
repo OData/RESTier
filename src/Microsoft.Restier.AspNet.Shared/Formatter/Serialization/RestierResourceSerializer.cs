@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.OData;
+using System;
+using System.Threading.Tasks;
 
 #if NETCOREAPP3_1_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
@@ -40,14 +40,8 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            ComplexResult complexResult = graph as ComplexResult;
-            if (complexResult is not null)
-            {
-                graph = complexResult.Result;
-                type = complexResult.Type;
-            }
-
-            base.WriteObject(graph, type, messageWriter, writeContext);
+            var result = UnpackResult(graph, type);
+            base.WriteObject(result.Graph, result.Type, messageWriter, writeContext);
         }
 
         /// <summary>
@@ -64,7 +58,21 @@ namespace Microsoft.Restier.AspNet.Formatter
             ODataMessageWriter messageWriter,
             ODataSerializerContext writeContext)
         {
-            return base.WriteObjectAsync(graph, type, messageWriter, writeContext);
+            var result = UnpackResult(graph, type);
+            return base.WriteObjectAsync(result.Graph, result.Type, messageWriter, writeContext);
         }
+
+        /// <summary>
+        /// Returns a tuple containing the correct object and type from the <see cref="ComplexResult"/>.
+        /// </summary>
+        /// <param name="result">The object passed into the Serializer.</param>
+        /// <param name="type">The type passed into the Serializer.</param>
+        /// <returns>A tuple containing the correct object and type from the <see cref="ComplexResult"/>.</returns>
+        internal static (object Graph, Type Type) UnpackResult(object result, Type type)
+        {
+            return result is ComplexResult complexResult ? (complexResult.Result, complexResult.Type) : (result, type);
+        }
+
     }
+
 }
