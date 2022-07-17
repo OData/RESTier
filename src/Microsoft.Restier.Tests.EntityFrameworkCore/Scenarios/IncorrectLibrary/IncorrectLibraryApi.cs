@@ -1,8 +1,7 @@
 ﻿using Microsoft.Restier.EntityFrameworkCore;
-using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using System;
 
-namespace Microsoft.Restier.Tests.EntityFrameworkCore.EFModelBuilderScenario
+namespace Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.IncorrectLibrary
 {
     /// <summary>
     /// 

@@ -59,7 +59,7 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         #region Constructors
 
         ///
-        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
+        public LibraryContext(DbContextOptions options) : base(options)
         {
         }
 

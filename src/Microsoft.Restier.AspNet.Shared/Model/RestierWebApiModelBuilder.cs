@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.OData.Builder;
@@ -71,10 +72,19 @@ namespace Microsoft.Restier.AspNet.Model
             {
                 foreach (var pair in context.ResourceTypeKeyPropertiesMap)
                 {
-                    if (!(builder.GetTypeConfigurationOrNull(pair.Key) is EntityTypeConfiguration edmTypeConfiguration))
+                    if (builder.GetTypeConfigurationOrNull(pair.Key) is not EntityTypeConfiguration edmTypeConfiguration)
                     {
                         continue;
                     }
+
+#if NETCOREAPP3_1_OR_GREATER
+                    if (pair.Value is null)
+                    {
+                        throw new InvalidOperationException($"The entity '{pair.Key}' does not have a key specified. Entities tagged with the [Keyless] attribute " +
+                            $"(or otherwise do not have a key specified) are not supported in either OData or Restier. Please map the object as a ComplexType and " +
+                            $"implement as an [UnboundOperation] on your API instead.");
+                    }
+#endif
 
                     foreach (var property in pair.Value)
                     {
@@ -93,7 +103,7 @@ namespace Microsoft.Restier.AspNet.Model
             {
                 foreach (var element in innerModel.SchemaElements)
                 {
-                    if (!(element is EdmEntityContainer))
+                    if (element is not EdmEntityContainer)
                     {
                         model.AddElement(element);
                     }
