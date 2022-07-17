@@ -21,7 +21,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants Condition="'$(TargetFramework)' == 'net6.0'">$(DefineConstants);EFCORE6_0</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net6.0'">$(DefineConstants);EFCORE6_0;EFCORE6_0_OR_GREATER</DefineConstants>
+	<DefineConstants Condition="'$(TargetFramework)' == 'net7.0'">$(DefineConstants);EFCORE7_0;EFCORE6_0_OR_GREATER;EFCORE7_0_OR_GREATER</DefineConstants>
   </PropertyGroup>
 
 

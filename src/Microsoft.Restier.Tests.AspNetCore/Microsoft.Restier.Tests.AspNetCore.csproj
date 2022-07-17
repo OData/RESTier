@@ -1,40 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);EFCore</DefineConstants>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FallbackTests\**\*.cs" LinkBase="FallbackTests" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RegressionTests\**\*.cs" LinkBase="RegressionTests" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
-    <Compile Remove="..\Microsoft.Restier.Tests.AspNet\FallbackTests\PeopleController.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
-    <Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\FallbackTests\**\*.cs" LinkBase="FallbackTests" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RegressionTests\**\*.cs" LinkBase="RegressionTests" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
+		<Compile Remove="..\Microsoft.Restier.Tests.AspNet\FallbackTests\PeopleController.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Breakdance.Extensions.MSTest2" Version="4.0.0" />
-    <PackageReference Include="coverlet.collector" Version="1.3.0" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.*" NoWarn="NU1608" />
-    <PackageReference Include="System.Text.Json" Version="6.*" NoWarn="NU1605,NU1608" Condition=" '$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net5.0' " />
-    <PackageReference Include="System.Text.Json" Version="4.6" NoWarn="NU1605,NU1608" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="4.0.0" />
+		<PackageReference Include="coverlet.collector" Version="1.3.0" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Simple.OData.V4.Client" Version="5.*" NoWarn="NU1608" />
+		<PackageReference Include="System.Text.Json" Version="6.*" NoWarn="NU1605,NU1608" Condition=" '$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net5.0' " />
+		<PackageReference Include="System.Text.Json" Version="4.6" NoWarn="NU1605,NU1608" Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
-  </ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
+	</ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.EntityFrameworkCore;
-using Microsoft.Restier.Tests.EntityFrameworkCore.EFModelBuilderScenario;
+using Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.IncorrectLibrary;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
