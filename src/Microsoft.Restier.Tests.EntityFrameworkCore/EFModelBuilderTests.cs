@@ -41,7 +41,10 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore
         /// <summary>
         /// Tests that APIs that try to map Views to DbSets throws an InvalidOperationException, per https://docs.microsoft.com/en-us/odata/webapi/abstract-entity-types.
         /// </summary>
-        /// <remarks>This is not supported because the EFModelBuilder requires that a primary key is defined for each type in the model.</remarks>
+        /// <remarks>
+        /// This is not supported because the EFModelBuilder requires that a primary key is defined for each type in the model.
+        /// The issue that created the need for this test is here: https://github.com/OData/RESTier/issues/692
+        /// </remarks>
         [TestMethod]
         public void EFModelBuilder_Should_HandleViews()
         {
