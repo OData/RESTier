@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
-    <IsPackable>false</IsPackable>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
+		<IsPackable>false</IsPackable>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="FallbackTests\Resources\**" />
-    <EmbeddedResource Remove="FallbackTests\Resources\**" />
-    <None Remove="FallbackTests\Resources\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="FallbackTests\Resources\**" />
+		<EmbeddedResource Remove="FallbackTests\Resources\**" />
+		<None Remove="FallbackTests\Resources\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="4.0.0" />
-    <PackageReference Include="Breakdance.Extensions.MSTest2" Version="4.0.0" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" />
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.*" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
-    <PackageReference Include="Simple.OData.V4.Client" Version="5.*" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Breakdance.Assemblies" Version="4.*" />
+		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="4.*" />
+		<PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" />
+		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Simple.OData.V4.Client" Version="5.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
-  </ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="CloudNimble.Breakdance.Assemblies.BreakdanceTestAssembly" />
+	</ItemGroup>
 
 </Project>

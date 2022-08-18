@@ -86,7 +86,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
 #pragma warning disable EF1001 // Internal EF Core API usage.
 
             // @caldwell0414: This code goes through all of the Entity types in the model, and where not marked as "owned" builds a dictionary of name and primary-key type.
-#if EFCORE6_0
+#if EFCORE6_0_OR_GREATER
 
             var keys = dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !IsImplicitManyToManyJoinEntity(c)).ToDictionary(
                             e => e.ClrType,
@@ -177,7 +177,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
 
         }
 
-#if EFCORE6_0
+#if EFCORE6_0_OR_GREATER
 
         /// <summary>
         /// A replacement for IsImplicitlyCreatedJoinEntityType, since on EF Core 6.0 Model.GetEntityTypes() returns RuntimeEntityTypes instead of EntityTypes.

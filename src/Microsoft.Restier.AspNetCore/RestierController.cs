@@ -703,7 +703,7 @@ namespace Microsoft.Restier.AspNetCore
                             CultureInfo.InvariantCulture,
                             "{{ Error: {0}, Exception {1} }}",
                             item.Value.Errors[0].ErrorMessage,
-                            item.Value.Errors[0].Exception.Message)).ToList();
+                            item.Value.Errors[0].Exception?.Message)).ToList();
 
                 throw new ODataException(
                     string.Format(

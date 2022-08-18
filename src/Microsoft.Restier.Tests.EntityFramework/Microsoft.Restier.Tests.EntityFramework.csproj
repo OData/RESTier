@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net472;netcoreapp3.1;net6.0;net7.0;</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 7.0.0)" Condition="'$(TargetFramework)' == 'net6.0'" />
-    <PackageReference Include="Microsoft.OData.Core" Version="7.*" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 7.0.0)" Condition="'$(TargetFramework)' == 'net6.0'" />
+		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
 
-    <PackageReference Include="Breakdance.Assemblies" Version="4.0.0" Condition="'$(IsNetCore)' != 'true'" />
-    <PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
+		<PackageReference Include="Breakdance.Assemblies" Version="4.*" Condition="'$(IsNetCore)' != 'true'" />
+		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
 
-    <PackageReference Include="Breakdance.Assemblies" Version="4.0.0" Condition="'$(IsNetCore)' == 'true'" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" Condition="'$(IsNetCore)' == 'true'" />
-  </ItemGroup>
+		<PackageReference Include="Breakdance.Assemblies" Version="4.*" Condition="'$(IsNetCore)' == 'true'" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" Condition="'$(IsNetCore)' == 'true'" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" Condition="'$(IsNetCore)' != 'true'" />
-    <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" Condition="'$(IsNetCore)' == 'true'" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" Condition="'$(IsNetCore)' != 'true'" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" Condition="'$(IsNetCore)' == 'true'" />
+	</ItemGroup>
 
 </Project>

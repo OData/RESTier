@@ -1,49 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net472;netstandard2.1;net5.0;net6.0</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);EF6</DefineConstants>
-    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
-    <DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net472;netstandard2.1;net6.0;net7.0;</TargetFrameworks>
+		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
+		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
+		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for interacting with DbContexts from Entity Framework 6.4 and later.</Summary>
-    <Description>
-      $(Summary)
+	<PropertyGroup>
+		<Summary>Restier is a framework for building convention-based, secure, queryable APIs with ASP.NET. This package contains runtime components for interacting with DbContexts from Entity Framework 6.4 and later.</Summary>
+		<Description>
+			$(Summary)
 
-      Commonly used types:
-      Microsoft.Restier.EntityFramework.EntityFrameworkApi
-    </Description>
-    <PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
-  </PropertyGroup>
+			Commonly used types:
+			Microsoft.Restier.EntityFramework.EntityFrameworkApi
+		</Description>
+		<PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="[6.4.0, 7.0.0)" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
-    <PackageReference Include="Microsoft.OData.Edm" Version="[7.*, 8.0.0)" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
-  </ItemGroup>
-   
-  <Import Project="..\Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems" Label="Shared" />
-  
+	<ItemGroup>
+		<PackageReference Include="EntityFramework" Version="[6.4.0, 7.0.0)" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Microsoft.OData.Core" Version="[7.12.*, 8.0.0)" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="[7.12.*, 8.0.0)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+	</ItemGroup>
+
+	<Import Project="..\Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems" Label="Shared" />
+
 </Project>

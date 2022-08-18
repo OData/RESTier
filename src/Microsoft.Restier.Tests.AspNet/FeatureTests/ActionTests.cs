@@ -50,7 +50,11 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+#if !NET7_0_OR_GREATER
             content.Should().Contain("ArgumentNullException");
+#else
+            content.Should().Contain("Model state is not valid");
+#endif
         }
 
         [TestMethod]
