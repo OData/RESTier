@@ -38,23 +38,23 @@ namespace Microsoft.AspNetCore.Builder
         public static IApplicationBuilder UseRestierBatching(this IApplicationBuilder app)
         {
 
-#if NET6_0_OR_GREATER
+//#if NET6_0_OR_GREATER
 
-            // RWM: The 7.x version of AspNetCore.OData has a sync bug. Silently do the best thing we can do for now.
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Path.ToString().Contains(ODataRouteConstants.Batch))
-                {
-                    var syncIoFeature = context.Features.Get<IHttpBodyControlFeature>();
-                    if (syncIoFeature != null)
-                    {
-                        syncIoFeature.AllowSynchronousIO = true;
-                    }
-                }
+//            // RWM: The 7.x version of AspNetCore.OData has a sync bug. Silently do the best thing we can do for now.
+//            app.Use(async (context, next) =>
+//            {
+//                if (context.Request.Path.ToString().Contains(ODataRouteConstants.Batch))
+//                {
+//                    var syncIoFeature = context.Features.Get<IHttpBodyControlFeature>();
+//                    if (syncIoFeature != null)
+//                    {
+//                        syncIoFeature.AllowSynchronousIO = true;
+//                    }
+//                }
 
-                await next();
-            });
-#endif
+//                await next();
+//            });
+//#endif
             app.UseODataBatching();
             return app;
         }

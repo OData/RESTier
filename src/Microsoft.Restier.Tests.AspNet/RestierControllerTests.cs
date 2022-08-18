@@ -62,8 +62,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/Products", payload: payload,
                 acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
@@ -71,8 +70,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FunctionImport_NotInModel_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct2", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
@@ -80,8 +78,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FunctionImport_NotInController_ShouldReturnNotImplemented()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
         }
 
@@ -89,8 +86,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task ActionImport_NotInModel_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct2", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
@@ -98,17 +94,21 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task ActionImport_NotInController_ShouldReturnNotImplemented()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/RemoveWorstProduct", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+
+#if !NET7_0_OR_GREATER
             response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
+#else
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            content.Should().Contain("Model state is not valid");
+#endif
         }
 
         [TestMethod]
         public async Task GetActionImport_ShouldReturnNotFound()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
@@ -116,8 +116,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task FunctionImport_Post_ShouldReturnMethodNotAllowed()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/GetBestProduct", serviceCollection: di);
-            var content = await response.Content.ReadAsStringAsync();
-            TestContext.WriteLine(content);
+            var content = TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
             response.Content.Headers.Allow.Should().NotBeNull();
             response.Content.Headers.Allow.Should().Contain("GET");

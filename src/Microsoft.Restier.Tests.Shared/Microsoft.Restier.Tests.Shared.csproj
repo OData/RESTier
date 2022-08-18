@@ -1,43 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
-    <StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net472;netcoreapp3.1;net6.0;net7.0;</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Moq" Version="4.*" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Moq" Version="4.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Breakdance.Assemblies" Version="4.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Breakdance.Assemblies" Version="4.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.EntityFrameworkCore, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Microsoft.Restier.Tests.Core, $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.EntityFrameworkCore, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.Core, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
-    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+	</ItemGroup>
 
 </Project>
