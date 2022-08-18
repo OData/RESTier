@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Ben.TypeDictionary" Version="[0.*, 2.0.0)" />
+		<PackageReference Include="Ben.Demystifier" Version="[0.*, 2.0.0)" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.5.*, 8.0.0)" />
 		<PackageReference Include="Microsoft.OData.Core" Version="[7.12.*, 8.0.0)" />
 	</ItemGroup>
