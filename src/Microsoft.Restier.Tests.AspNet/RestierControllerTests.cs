@@ -99,6 +99,9 @@ namespace Microsoft.Restier.Tests.AspNet
 #if !NET7_0_OR_GREATER
             response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
 #else
+            // RWM: ASP.NET Core 7.0 Breaking change: 
+            // https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/7.0/mvc-empty-body-model-binding
+            // TODO: RWM or JHC: Fix the RestierController to return the right result on .NET 7.
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             content.Should().Contain("Model state is not valid");
 #endif

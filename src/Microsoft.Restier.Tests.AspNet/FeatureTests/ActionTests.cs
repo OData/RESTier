@@ -53,6 +53,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #if !NET7_0_OR_GREATER
             content.Should().Contain("ArgumentNullException");
 #else
+            // RWM: ASP.NET Core 7.0 Breaking change: 
+            // https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/7.0/mvc-empty-body-model-binding
+            // TODO: RWM or JHC: Fix the RestierController to return the right result on .NET 7.
             content.Should().Contain("Model state is not valid");
 #endif
         }
