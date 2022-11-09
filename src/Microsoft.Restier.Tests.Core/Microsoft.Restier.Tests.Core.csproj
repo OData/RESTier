@@ -6,8 +6,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="4.*" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="5.*-*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.*" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
 	</ItemGroup>
 

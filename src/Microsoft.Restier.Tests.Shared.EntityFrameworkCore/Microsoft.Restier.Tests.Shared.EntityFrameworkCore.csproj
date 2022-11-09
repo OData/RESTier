@@ -15,7 +15,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.*" Condition="'$(TargetFramework)' == 'netcoreapp3.1'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.*" Condition="'$(TargetFramework)' == 'net6.0'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.*-*" Condition="'$(TargetFramework)' == 'net7.0'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.*" Condition="'$(TargetFramework)' == 'net7.0'" />
 	</ItemGroup>
 
 	<ItemGroup>

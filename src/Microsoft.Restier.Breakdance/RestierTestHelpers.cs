@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CloudNimble.EasyAF.Http.OData;
 using Flurl;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
@@ -15,17 +16,15 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 
-using System.Text;
 #if NETCOREAPP3_1_OR_GREATER
-using Microsoft.AspNetCore.TestHost;
-using CloudNimble.Breakdance.AspNetCore;
-using CloudNimble.Breakdance.AspNetCore.OData;
 using System.Text.Json;
+using CloudNimble.Breakdance.AspNetCore;
+using Microsoft.AspNetCore.TestHost;
+
 #else
-using Newtonsoft.Json;
 using System.Web.Http;
 using CloudNimble.Breakdance.WebApi;
-using CloudNimble.Breakdance.WebApi.OData;
+using Newtonsoft.Json;
 
 #endif
 

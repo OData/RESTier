@@ -12,16 +12,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CloudNimble.EasyAF.Http.OData;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
-using CloudNimble.Breakdance.AspNetCore.OData;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 
 using CloudNimble.Breakdance.WebApi;
-using CloudNimble.Breakdance.WebApi.OData;
 
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif

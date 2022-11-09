@@ -1,7 +1,7 @@
 ﻿#if NETCOREAPP3_1_OR_GREATER
 
 using CloudNimble.Breakdance.AspNetCore;
-using CloudNimble.Breakdance.AspNetCore.OData;
+using CloudNimble.EasyAF.Http.OData;
 using Flurl;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
