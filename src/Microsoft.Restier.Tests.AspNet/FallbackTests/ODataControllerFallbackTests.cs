@@ -11,10 +11,10 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CloudNimble.EasyAF.Http.OData;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
-using CloudNimble.Breakdance.AspNetCore.OData;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.AspNetCore.FallbackTests;
@@ -22,7 +22,6 @@ using Microsoft.Restier.Tests.AspNetCore.FallbackTests;
 namespace Microsoft.Restier.Tests.AspNetCore
 
 #else
-using CloudNimble.Breakdance.WebApi.OData;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.AspNet.FallbackTests;
 

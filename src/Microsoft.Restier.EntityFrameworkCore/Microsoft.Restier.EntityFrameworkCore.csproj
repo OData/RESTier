@@ -25,7 +25,6 @@
 		<DefineConstants Condition="'$(TargetFramework)' == 'net7.0'">$(DefineConstants);EFCORE7_0;EFCORE6_0_OR_GREATER;EFCORE7_0_OR_GREATER</DefineConstants>
 	</PropertyGroup>
 
-
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
@@ -35,13 +34,13 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 
-	<ItemGroup >
-		<PackageReference Include="Microsoft.OData.Core" Version="[7.12.*, 8.0.0]" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.OData.Core" Version="[7.12.*, 8.0.0)" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.*-*, 8.0.0)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[7.*-*, 8.0.0)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.*, 8.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[7.*, 8.0.0)" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">

@@ -14,15 +14,14 @@ using System.Net;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Linq;
+using CloudNimble.EasyAF.Http.OData;
 
 #if NETCOREAPP3_1_OR_GREATER
-using CloudNimble.Breakdance.AspNetCore.OData;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 
 using CloudNimble.Breakdance.WebApi;
-using CloudNimble.Breakdance.WebApi.OData;
 
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif

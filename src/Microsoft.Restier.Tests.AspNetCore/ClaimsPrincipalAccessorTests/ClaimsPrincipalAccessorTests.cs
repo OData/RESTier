@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using CloudNimble.Breakdance.AspNetCore;
 
 #if NETCOREAPP3_1_OR_GREATER
-using CloudNimble.Breakdance.AspNetCore.OData;
+using CloudNimble.EasyAF.Http.OData;
 
 using Microsoft.Restier.Tests.AspNetCore.ClaimsPrincipalAccessor;
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CloudNimble.EasyAF.Http.OData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
@@ -15,7 +16,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
-using CloudNimble.Breakdance.AspNetCore.OData;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared.Common;
@@ -27,7 +27,6 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 
 using CloudNimble.Breakdance.WebApi;
-using CloudNimble.Breakdance.WebApi.OData;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Microsoft.Restier.Tests.Shared.Common;
