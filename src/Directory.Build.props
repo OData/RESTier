@@ -1,120 +1,122 @@
 <Project>
-  <!-- Folder layout -->
-  <PropertyGroup>
-    <IsBenchmarkProject Condition="$(MSBuildProjectName.EndsWith('.Performance'))">true</IsBenchmarkProject>
-    <IsTestProject Condition="$(MSBuildProjectName.ToLower().Contains('.tests.'))">true</IsTestProject>
-    <IsTestAssetProject Condition="$(RepoRelativeProjectDir.ToLower().Contains('testassets'))">true</IsTestAssetProject>
-    <IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
-	<IsTemplateProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.'))">true</IsTemplateProject>
-	<IsTemplatePackageProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.package'))">true</IsTemplatePackageProject>
-	<IsNetCore Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0' ">true</IsNetCore>
-    <IsPrimaryProject Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true' ">true</IsPrimaryProject>
+	<!-- Folder layout -->
+	<PropertyGroup>
+		<IsBenchmarkProject Condition="$(MSBuildProjectName.EndsWith('.Performance'))">true</IsBenchmarkProject>
+		<IsTestProject Condition="$(MSBuildProjectName.ToLower().Contains('.tests.'))">true</IsTestProject>
+		<IsTestAssetProject Condition="$(RepoRelativeProjectDir.ToLower().Contains('testassets'))">true</IsTestAssetProject>
+		<IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
+		<IsTemplateProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.'))">true</IsTemplateProject>
+		<IsTemplatePackageProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.package'))">true</IsTemplatePackageProject>
+		<IsNetCore Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0' ">true</IsNetCore>
+		<IsPrimaryProject Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true' ">true</IsPrimaryProject>
 
-    <IncludeSource>false</IncludeSource>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSource>false</IncludeSource>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
-    <StrongNamePublicKey>PublicKey=0024000004800000940000000602000000240000525341310004000001000100f1fcc0061e7ed7476808f86fdecd6a9585915f329fc6312d08331c971da86230330e42ed8ffbd528c523fa023d92c3db1123b5d044b3aad9e04fd3877ffca8e4ba836a740ec3074f0fcbef770ff14d2fa1b5a8403ab16f398ac14998bd011c35505b6bc555326037a7ab7dcca118000a19a5475377358e9dea38df76452b01c9</StrongNamePublicKey>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
+		<StrongNamePublicKey>PublicKey=0024000004800000940000000602000000240000525341310004000001000100f1fcc0061e7ed7476808f86fdecd6a9585915f329fc6312d08331c971da86230330e42ed8ffbd528c523fa023d92c3db1123b5d044b3aad9e04fd3877ffca8e4ba836a740ec3074f0fcbef770ff14d2fa1b5a8403ab16f398ac14998bd011c35505b6bc555326037a7ab7dcca118000a19a5475377358e9dea38df76452b01c9</StrongNamePublicKey>
 
-    <LangVersion>preview</LangVersion>
-  </PropertyGroup>
+		<LangVersion>preview</LangVersion>
+		<Configurations>Debug;Release;NoWebApps</Configurations>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
-  </PropertyGroup>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants>TRACE;RELEASE</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <Product>Microsoft Restier</Product>
-    <Authors>Microsoft</Authors>
-    <Company>Microsoft Corporation</Company>
-    <RpmPackageVendor>.NET Foundation</RpmPackageVendor>
-    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/OData/RESTier/master/License.txt</PackageLicenseUrl>
-    <!-- The SPDX name for the source license. See https://spdx.org/licenses/. -->
-    <PackageLicenseType>MIT</PackageLicenseType>
-    <!--
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Product>Microsoft Restier</Product>
+		<Authors>Microsoft</Authors>
+		<Company>Microsoft Corporation</Company>
+		<RpmPackageVendor>.NET Foundation</RpmPackageVendor>
+		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/OData/RESTier/master/License.txt</PackageLicenseUrl>
+		<!-- The SPDX name for the source license. See https://spdx.org/licenses/. -->
+		<PackageLicenseType>MIT</PackageLicenseType>
+		<!--
       Suppress a warning about upcoming deprecation of PackageLicenseUrl. When embedding licenses are supported,
       replace PackageLicenseUrl with PackageLicenseExpression.
     -->
-    <NoWarn>$(NoWarn);NU5125</NoWarn>
-    <!-- Suppress warnings about using SemVer 2.0. -->
-    <NoWarn>$(NoWarn);NU5105</NoWarn>
+		<NoWarn>$(NoWarn);NU5125</NoWarn>
+		<!-- Suppress warnings about using SemVer 2.0. -->
+		<NoWarn>$(NoWarn);NU5105</NoWarn>
 
-    <!-- Contact email address for NuGet packages and Linux installers. -->
-    <MaintainerEmail>odata@nimbleapps.cloud</MaintainerEmail>
+		<!-- Contact email address for NuGet packages and Linux installers. -->
+		<MaintainerEmail>odata@nimbleapps.cloud</MaintainerEmail>
 
-    <PackageIcon>dotnet-logo.png</PackageIcon>
-    <PackageProjectUrl>https://restier.readthedocs.io/en/latest/</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageTags>odata;wcf data services;</PackageTags>
-    <Serviceable>true</Serviceable>
+		<PackageIcon>dotnet-logo.png</PackageIcon>
+		<PackageProjectUrl>https://restier.readthedocs.io/en/latest/</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageTags>odata;wcf data services;</PackageTags>
+		<Serviceable>true</Serviceable>
 
-    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
-    <RepositoryUrl>https://github.com/OData/RESTier.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-  </PropertyGroup>
+		<RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+		<RepositoryUrl>https://github.com/OData/RESTier.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
 
-  <!-- Compilation options -->
-  <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-	<ImplicitUsings>disable</ImplicitUsings>
-	<Nullable>disable</Nullable>
+	<!-- Compilation options -->
+	<PropertyGroup>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>disable</Nullable>
 
-    <!-- Instructs the compiler to use SHA256 instead of SHA1 when adding file hashes to PDBs. -->
-    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+		<!-- Instructs the compiler to use SHA256 instead of SHA1 when adding file hashes to PDBs. -->
+		<ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
 
-    <!-- Fixes a common error in targets implementing a NoBuild mode. -->
-    <BuildProjectReferences Condition=" '$(NoBuild)' == 'true' ">false</BuildProjectReferences>
+		<!-- Fixes a common error in targets implementing a NoBuild mode. -->
+		<BuildProjectReferences Condition=" '$(NoBuild)' == 'true' ">false</BuildProjectReferences>
 
-    <!-- Suppress warnings about uninstantiated classes. -->
-    <NoWarn>$(NoWarn);CA1812;CS1570</NoWarn>
-  </PropertyGroup>
+		<!-- Suppress warnings about uninstantiated classes. -->
+		<NoWarn>$(NoWarn);CA1812;CS1570</NoWarn>
+	</PropertyGroup>
 
-  <PropertyGroup Condition=" $(IsTestProject) == 'true' ">
-    <NoWarn>$(NoWarn);CA1001;CA1031;CA1062;CA1301;CA1303;AC1307;CA1707;CA1716;CA1801;CA1806;CA1819;CA1822;CA1825;CA2000;CA2007;CA2227;CA2234</NoWarn>
-  </PropertyGroup>
+	<PropertyGroup Condition=" $(IsTestProject) == 'true' ">
+		<NoWarn>$(NoWarn);CA1001;CA1031;CA1062;CA1301;CA1303;AC1307;CA1707;CA1716;CA1801;CA1806;CA1819;CA1822;CA1825;CA2000;CA2007;CA2227;CA2234</NoWarn>
+	</PropertyGroup>
 
-  <PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
-    <NoWarn>$(NoWarn);CA1001;CA1707;CA1716;CA1801;CA1822</NoWarn>
-  </PropertyGroup>
+	<PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
+		<NoWarn>$(NoWarn);CA1001;CA1707;CA1716;CA1801;CA1822</NoWarn>
+	</PropertyGroup>
 
-  <PropertyGroup Condition=" '$(IsPrimaryProject)' == 'true' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition=" '$(IsPrimaryProject)' == 'true' ">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)</DocumentationFile>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <StandardTestTfms>netcoreapp3.1;net472</StandardTestTfms>
-  </PropertyGroup>
+	<PropertyGroup>
+		<StandardTestTfms>netcoreapp3.1;net472</StandardTestTfms>
+	</PropertyGroup>
 
-  <ItemGroup Condition=" $(IsTestProject) != 'true' and $(IsSampleProject) != 'true'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
+	<ItemGroup Condition=" $(IsTestProject) != 'true' and $(IsSampleProject) != 'true'">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
 
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>$(AssemblyName.Replace("Microsoft.Restier.", "Microsoft.Restier.Tests.")), $(StrongNamePublicKey)</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>$(AssemblyName.Replace("Microsoft.Restier.", "Microsoft.Restier.Tests.")), $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
-  <ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true'">
-    <PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
-    <PackageReference Include="FluentAssertions.Analyzers" Version="0.17.*" PrivateAssets="All" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.*" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.*" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-  </ItemGroup>
+	<ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true'">
+		<PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
+		<PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
+		<PackageReference Include="MSTest.TestAdapter" Version="2.*" />
+		<PackageReference Include="MSTest.TestFramework" Version="2.*" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)dotnet-logo.png" Pack="true" PackagePath="\" Condition="'$(IsTestProject)' != 'true'" />
+	</ItemGroup>
 
 </Project>

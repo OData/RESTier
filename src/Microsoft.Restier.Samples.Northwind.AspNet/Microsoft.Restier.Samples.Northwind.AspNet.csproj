@@ -1,210 +1,222 @@
 ﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<ProductVersion>
-		</ProductVersion>
-		<SchemaVersion>2.0</SchemaVersion>
-		<ProjectGuid>{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}</ProjectGuid>
-		<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
-		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
-		<RootNamespace>Microsoft.Restier.Samples.Northwind.AspNet</RootNamespace>
-		<AssemblyName>Microsoft.Restier.Samples.Northwind.AspNet</AssemblyName>
-		<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-		<UseIISExpress>true</UseIISExpress>
-		<Use64BitIISExpress />
-		<IISExpressSSLPort />
-		<IISExpressAnonymousAuthentication />
-		<IISExpressWindowsAuthentication />
-		<IISExpressUseClassicPipelineMode />
-		<UseGlobalApplicationHostFile />
-		<NuGetPackageImportStamp>
-		</NuGetPackageImportStamp>
-		<RuntimeIdentifier>win</RuntimeIdentifier>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
-		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
-		<PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform" Version="3.6.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
-		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.*" />
-	</ItemGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<OutputPath>bin\</OutputPath>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>pdbonly</DebugType>
-		<Optimize>true</Optimize>
-		<OutputPath>bin\</OutputPath>
-		<DefineConstants>TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<ItemGroup>
-		<Reference Include="Microsoft.CSharp" />
-		<Reference Include="System.Net.Http" />
-		<Reference Include="System.Runtime.Serialization" />
-		<Reference Include="System.Security" />
-		<Reference Include="System.Web.DynamicData" />
-		<Reference Include="System.Web.Entity" />
-		<Reference Include="System.Web.ApplicationServices" />
-		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<Reference Include="System" />
-		<Reference Include="System.Data" />
-		<Reference Include="System.Core" />
-		<Reference Include="System.Data.DataSetExtensions" />
-		<Reference Include="System.Web.Extensions" />
-		<Reference Include="System.Xml.Linq" />
-		<Reference Include="System.Drawing" />
-		<Reference Include="System.Web" />
-		<Reference Include="System.Xml" />
-		<Reference Include="System.Configuration" />
-		<Reference Include="System.Web.Services" />
-		<Reference Include="System.EnterpriseServices" />
-	</ItemGroup>
-	<ItemGroup>
-		<Content Include="App_Data\Northwind.mdf" />
-		<Content Include="App_Data\Northwind_log.ldf">
-			<DependentUpon>Northwind.mdf</DependentUpon>
-		</Content>
-		<Content Include="Data\Northwind.Context.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>Northwind.Context.cs</LastGenOutput>
-			<DependentUpon>Northwind.edmx</DependentUpon>
-		</Content>
-		<Content Include="Data\Northwind.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<DependentUpon>Northwind.edmx</DependentUpon>
-			<LastGenOutput>Northwind.cs</LastGenOutput>
-		</Content>
-		<Content Include="Global.asax" />
-		<Content Include="Web.config" />
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="App_Start\WebApiConfig.cs" />
-		<Compile Include="Controllers\NorthwindApi.cs" />
-		<Compile Include="Data\Category.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Customer.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\CustomerDemographic.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Employee.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Northwind.Context.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Northwind.Context.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Northwind.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Northwind.Designer.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Northwind.edmx</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Order.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Order_Detail.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Product.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Region.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Shipper.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Supplier.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Territory.cs">
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Global.asax.cs">
-			<DependentUpon>Global.asax</DependentUpon>
-		</Compile>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-	</ItemGroup>
-	<ItemGroup>
-		<EntityDeploy Include="Data\Northwind.edmx">
-			<Generator>EntityModelCodeGenerator</Generator>
-			<LastGenOutput>Northwind.Designer.cs</LastGenOutput>
-		</EntityDeploy>
-		<Content Include="Data\Northwind.edmx.diagram">
-			<DependentUpon>Northwind.edmx</DependentUpon>
-		</Content>
-		<None Include="Web.Debug.config">
-			<DependentUpon>Web.config</DependentUpon>
-		</None>
-		<None Include="Web.Release.config">
-			<DependentUpon>Web.config</DependentUpon>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj">
-			<Project>{8ecf4e97-1816-44ad-ad63-6acf287ed520}</Project>
-			<Name>Microsoft.Restier.AspNet</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
-			<Project>{300b769a-3513-49d0-a035-7db965c8d2a4}</Project>
-			<Name>Microsoft.Restier.Core</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
-			<Project>{0E373B2A-2ED2-4566-A275-6BE81CFFE00B}</Project>
-			<Name>Microsoft.Restier.EntityFramework</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup />
-	<ItemGroup>
-		<Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-	</ItemGroup>
-	<PropertyGroup>
-		<VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-	</PropertyGroup>
-	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-	<Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-	<Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-	<ProjectExtensions>
-		<VisualStudio>
-			<FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-				<WebProjectProperties>
-					<UseIIS>True</UseIIS>
-					<AutoAssignPort>True</AutoAssignPort>
-					<DevelopmentServerPort>60605</DevelopmentServerPort>
-					<DevelopmentServerVPath>/</DevelopmentServerVPath>
-					<IISUrl>http://localhost:60605/</IISUrl>
-					<NTLMAuthentication>False</NTLMAuthentication>
-					<UseCustomServer>False</UseCustomServer>
-					<CustomServerUrl>
-					</CustomServerUrl>
-					<SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-				</WebProjectProperties>
-			</FlavorProperties>
-		</VisualStudio>
-	</ProjectExtensions>
-	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Restier.Samples.Northwind.AspNet</RootNamespace>
+    <AssemblyName>Microsoft.Restier.Samples.Northwind.AspNet</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
+    <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform" Version="3.6.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
+    <PackageReference Include="Microsoft.OData.Core" Version="7.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\Northwind.mdf" />
+    <Content Include="App_Data\Northwind_log.ldf">
+      <DependentUpon>Northwind.mdf</DependentUpon>
+    </Content>
+    <Content Include="Data\Northwind.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Northwind.Context.cs</LastGenOutput>
+      <DependentUpon>Northwind.edmx</DependentUpon>
+    </Content>
+    <Content Include="Data\Northwind.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Northwind.edmx</DependentUpon>
+      <LastGenOutput>Northwind.cs</LastGenOutput>
+    </Content>
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\NorthwindApi.cs" />
+    <Compile Include="Data\Category.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Customer.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CustomerDemographic.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Employee.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Northwind.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Northwind.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Northwind.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Northwind.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Northwind.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Order.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Order_Detail.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Product.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Region.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Shipper.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Supplier.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Territory.cs">
+      <DependentUpon>Northwind.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="Data\Northwind.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Northwind.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Data\Northwind.edmx.diagram">
+      <DependentUpon>Northwind.edmx</DependentUpon>
+    </Content>
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj">
+      <Project>{8ecf4e97-1816-44ad-ad63-6acf287ed520}</Project>
+      <Name>Microsoft.Restier.AspNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
+      <Project>{300b769a-3513-49d0-a035-7db965c8d2a4}</Project>
+      <Name>Microsoft.Restier.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
+      <Project>{0E373B2A-2ED2-4566-A275-6BE81CFFE00B}</Project>
+      <Name>Microsoft.Restier.EntityFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NoWebApps|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>;NU5125;NU5105;CA1812;CS1570;CA1001;CA1707;CA1716;CA1801;CA1822</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>11.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>60605</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:60605/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
