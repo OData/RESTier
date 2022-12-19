@@ -56,13 +56,10 @@ namespace Microsoft.Restier.AspNetCore
         {
             if (context.Exception is ChangeSetValidationException validationException)
             {
-                var result = new
-                {
-                    error = new
-                    {
+                var result = new {
+                    error = new {
                         code = string.Empty,
-                        innererror = new
-                        {
+                        innererror = new {
                             message = validationException.Message,
                             type = validationException.GetType().FullName,
                         },
