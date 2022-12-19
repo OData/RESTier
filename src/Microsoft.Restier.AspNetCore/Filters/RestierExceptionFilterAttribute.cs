@@ -1,6 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.OData;
+using Microsoft.Restier.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,12 +15,6 @@ using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.OData;
-using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.AspNetCore
 {
@@ -80,9 +80,13 @@ namespace Microsoft.Restier.AspNetCore
             return Task.FromResult(false);
         }
 
-        private static Task<bool> HandleCommonException(
-            ExceptionContext context,
-            CancellationToken cancellationToken)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private static Task<bool> HandleCommonException(ExceptionContext context, CancellationToken cancellationToken)
         {
             var exception = context.Exception.Demystify();
             if (exception is AggregateException)
@@ -97,49 +101,30 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             HttpStatusCode code;
-            SerializableError response;
             switch (true)
             {
-                case true when exception is StatusCodeException:
-                    code = (exception as StatusCodeException).StatusCode;
-                    context.Result = new StatusCodeResult((int)code);
+                case true when exception is StatusCodeException statusCodeException:
+                    code = statusCodeException.StatusCode;
                     break;
                 case true when exception is ODataException:
                     code = HttpStatusCode.BadRequest;
-                    response = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
-                    context.Result = new BadRequestObjectResult(response);
                     break;
                 case true when exception is SecurityException:
                     code = HttpStatusCode.Forbidden;
-                    context.Result = new ForbidResult();
                     break;
                 case true when exception is NotImplementedException:
                     code = HttpStatusCode.NotImplemented;
-                    context.Result = new StatusCodeResult((int)code);
                     break;
                 case true when exception is TargetInvocationException && exception.InnerException is ArgumentNullException:
                     exception = exception.InnerException;
                     code = HttpStatusCode.BadRequest;
-                    response = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
-                    context.Result= new BadRequestObjectResult(response);
                     break;
                 default:
                     code = HttpStatusCode.InternalServerError;
-                    Trace.TraceError($"Exception: {exception.Message} \nStackTrace: {exception.StackTrace}");
-                    if (context.HttpContext.Request.IsLocal())
-                    {
-                        var response500 = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
-                        context.Result = new ObjectResult(response500)
-                        {
-                            StatusCode = (int)code,
-                        };
-                    }
-                    else
-                    {
-                        context.Result = new StatusCodeResult((int)code);
-                    }
                     break;
             }
+
+            Trace.TraceError($"Exception: {exception.Message} \nStackTrace: {exception.StackTrace}");
 
             // When exception occured in a ChangeSet request,
             // exception must be handled in OnChangeSetCompleted
@@ -153,6 +138,20 @@ namespace Microsoft.Restier.AspNetCore
 
             if (code != HttpStatusCode.Unused)
             {
+                var response = EnableQueryAttribute.CreateErrorResponse(exception.Message, exception);
+
+                //RWM: Don't leak stack traces if we're not local.
+                if (!context.HttpContext.Request.IsLocal())
+                {
+                    response.Remove("StackTrace");
+                }
+
+                // RWM: BadRequestObjectResult extends ObjectResult with a specified code. So just use ObjectResult every time.
+                context.Result = new ObjectResult(response)
+                {
+                    StatusCode = (int)code,
+                };
+
                 return Task.FromResult(true);
             }
 

@@ -3,11 +3,12 @@
 
 using System;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace Microsoft.Restier.Core
 {
     /// <summary>
-    /// This exception is used for 404 Not found response.
+    /// Use this exception when you want to return a specific status code
     /// </summary>
     [Serializable]
     public class StatusCodeException : Exception
@@ -78,7 +79,7 @@ namespace Microsoft.Restier.Core
         /// </summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>
-        protected StatusCodeException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+        protected StatusCodeException(SerializationInfo serializationInfo, StreamingContext streamingContext)
         {
             throw new NotImplementedException();
         }
