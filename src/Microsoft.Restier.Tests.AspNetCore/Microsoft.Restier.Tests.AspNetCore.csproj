@@ -6,22 +6,11 @@
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\FallbackTests\**\*.cs" LinkBase="FallbackTests" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RegressionTests\**\*.cs" LinkBase="RegressionTests" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
-		<Compile Remove="..\Microsoft.Restier.Tests.AspNet\FallbackTests\PeopleController.cs" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
-		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="5.*-*" />
-		<PackageReference Include="coverlet.collector" Version="1.*" />
+		<PackageReference Include="EasyAF.Http" Version="*-*" />
+		<PackageReference Include="coverlet.collector" Version="*" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
 	</ItemGroup>
 
@@ -43,6 +32,19 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
 		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\Extensions\**\*.cs" LinkBase="Extensions" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\FallbackTests\**\*.cs" LinkBase="FallbackTests" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\FeatureTests\**\*.cs" LinkBase="FeatureTests" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RegressionTests\**\*.cs" LinkBase="RegressionTests" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\Model\**\*.cs" LinkBase="Model" />
+		<Compile Remove="..\Microsoft.Restier.Tests.AspNet\FallbackTests\PeopleController.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\DependencyInjectionTests.cs" Link="DependencyInjectionTests.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\ExceptionHandlerTests.cs" Link="ExceptionHandlerTests.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierControllerTests.cs" Link="RestierControllerTests.cs" />
+		<Compile Include="..\Microsoft.Restier.Tests.AspNet\RestierQueryBuilderTests.cs" Link="RestierQueryBuilderTests.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

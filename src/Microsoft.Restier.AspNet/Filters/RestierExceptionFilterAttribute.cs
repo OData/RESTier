@@ -117,8 +117,8 @@ namespace Microsoft.Restier.AspNet
             HttpStatusCode code;
             switch (true)
             {
-                case true when exception is StatusCodeException:
-                    code = (exception as StatusCodeException).StatusCode;
+                case true when exception is StatusCodeException statusCodeException:
+                    code = statusCodeException.StatusCode;
                     break;
                 case true when exception is ODataException:
                     code = HttpStatusCode.BadRequest;
@@ -152,7 +152,7 @@ namespace Microsoft.Restier.AspNet
             {
                 if (useVerboseErrors)
                 {
-                    return Task.FromResult(context.Request.CreateErrorResponse(code, exception));
+                    return Task.FromResult(context.Request.CreateErrorResponse(code, exception.Message, exception));
                 }
 
                 return Task.FromResult(context.Request.CreateErrorResponse(code, exception.Message));
