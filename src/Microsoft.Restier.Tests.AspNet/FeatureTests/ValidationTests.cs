@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
 using CloudNimble.EasyAF.Http.OData;
+using Newtonsoft.Json;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
@@ -35,8 +36,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task Validation_StringLengthExceeded()
         {
-            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.MinimalAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             bookRequest.IsSuccessStatusCode.Should().BeTrue();
+
             var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
 
             bookList.Should().NotBeNull();

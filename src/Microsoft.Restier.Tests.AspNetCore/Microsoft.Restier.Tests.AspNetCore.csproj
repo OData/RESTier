@@ -21,12 +21,12 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="System.Text.Json" Version="6.*" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="5.*" NoWarn="NU1608" />
+		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" NoWarn="NU1608" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
 		<PackageReference Include="System.Text.Json" Version="6.*" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="5.*" NoWarn="NU1608" />
+		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" NoWarn="NU1608" />
 	</ItemGroup>
 
 	<ItemGroup>
