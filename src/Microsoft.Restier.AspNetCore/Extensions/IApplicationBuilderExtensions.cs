@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Restier.AspNetCore.Batch;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Threading;
@@ -56,6 +57,8 @@ namespace Microsoft.AspNetCore.Builder
 //            });
 //#endif
             app.UseODataBatching();
+            // RWM: This call fixes issues where the batch processor irresponsibly disposes of the HttpContext before it should.
+            app.UseMiddleware<ODataBatchHttpContextFixerMiddleware>();
             return app;
         }
 

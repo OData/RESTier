@@ -57,6 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
 
+            services.AddHttpContextAccessor();
             services.AddOData();
 
             // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
@@ -105,6 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
 
+            services.AddHttpContextAccessor();
             services.AddOData();
 
             // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
