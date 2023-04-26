@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AssemblyName>Microsoft.Restier.Breakdance</AssemblyName>
 		<RootNamespace>Microsoft.Restier.Breakdance</RootNamespace>
-		<TargetFrameworks>net472;netcoreapp3.1;net6.0;net7.0;</TargetFrameworks>
+		<TargetFrameworks>net472;net6.0;net7.0;</TargetFrameworks>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
 

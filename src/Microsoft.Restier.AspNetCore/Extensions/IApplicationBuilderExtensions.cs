@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Routing;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Restier.AspNetCore.Batch;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
-using System.Threading;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -20,7 +17,6 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        [SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "<Pending>")]
         public static IApplicationBuilder UseClaimsPrincipals(this IApplicationBuilder app)
         {
             app.Use(async (context, next) =>
@@ -35,7 +31,7 @@ namespace Microsoft.AspNetCore.Builder
         /// Register the app for Restier OData Batching.
         /// </summary>
         /// <param name="app">The <see cref="IApplicationBuilder"/> instance to enhance.</param>
-        /// <returns>The flient <see cref="IApplicationBuilder"/> instance.</returns>
+        /// <returns>The fluent <see cref="IApplicationBuilder"/> instance.</returns>
         public static IApplicationBuilder UseRestierBatching(this IApplicationBuilder app)
         {
 

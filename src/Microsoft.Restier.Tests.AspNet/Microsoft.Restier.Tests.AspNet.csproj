@@ -18,11 +18,13 @@
 		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="5.*-*" />
 		<PackageReference Include="EasyAF.Http" Version="*-*" />
 		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="*-*" />
-		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
+		<PackageReference Include="Microsoft.AspNet.OData" Version="7.5.15" />
+		<!--<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />-->
 		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.*" />
-		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.13.0" />
+		<!--<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />-->
 		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" />
 		<PackageReference Include="System.Text.Json" Version="7.*" />
 	</ItemGroup>

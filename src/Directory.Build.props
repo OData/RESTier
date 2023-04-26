@@ -94,7 +94,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <StandardTestTfms>netcoreapp3.1;net472</StandardTestTfms>
+    <StandardTestTfms>net472</StandardTestTfms>
   </PropertyGroup>
 
   <ItemGroup Condition=" $(IsTestProject) != 'true' and $(IsSampleProject) != 'true'">
