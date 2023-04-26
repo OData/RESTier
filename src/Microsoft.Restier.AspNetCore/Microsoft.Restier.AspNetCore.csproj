@@ -21,8 +21,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Ben.Demystifier" Version="[0.*, 2.0.0)" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.5.15" />
-		<PackageReference Include="Microsoft.OData.Core" Version="7.13.0" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="[7.*, 7.6.0)" />
+		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 7.14.0)" />
 		<!--<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" />
 		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />-->
 	</ItemGroup>

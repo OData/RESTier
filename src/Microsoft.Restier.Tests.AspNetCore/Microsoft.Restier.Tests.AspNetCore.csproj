@@ -11,7 +11,7 @@
 		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="5.*-*" />
 		<PackageReference Include="EasyAF.Http" Version="*-*" />
 		<PackageReference Include="coverlet.collector" Version="*" />
-		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.13.*" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">

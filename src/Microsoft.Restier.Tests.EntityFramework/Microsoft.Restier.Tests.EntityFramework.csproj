@@ -6,12 +6,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
-		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Microsoft.OData.Core" Version="7.13.*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.13.*" />
 		<PackageReference Include="Breakdance.Assemblies" Version="5.*-*" />
 		
-		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" Condition="'$(IsNetCore)' == 'true'" />
+		<PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" Condition="'$(IsNetCore)' != 'true'" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.5.*" Condition="'$(IsNetCore)' == 'true'" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
