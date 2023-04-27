@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.OData.Extensions;
-using Microsoft.Restier.AspNetCore.Batch;
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.Restier.AspNetCore.Middleware;
 using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Builder
@@ -19,10 +18,10 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseClaimsPrincipals(this IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
+            app.Use((context, next) =>
             {
                 ClaimsPrincipal.ClaimsPrincipalSelector = () => context.User;
-                await next();
+                return next(context);
             });
             return app;
         }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Microsoft.Restier.AspNetCore.Batch
+namespace Microsoft.Restier.AspNetCore.Middleware
 {
 
     /// <summary>
