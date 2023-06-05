@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		dotnet-logo.png = dotnet-logo.png
 		global.json = global.json
+		..\NuGet.Config = ..\NuGet.Config
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -75,14 +76,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.EntityFrameworkCore", "Microsoft.Restier.Tests.EntityFrameworkCore\Microsoft.Restier.Tests.EntityFrameworkCore.csproj", "{2DB7E862-69AE-43E2-9EC4-C1491E8BA28F}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{0e373b2a-2ed2-4566-a275-6be81cffe00b}*SharedItemsImports = 5
-		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{802c856e-1709-45b3-844b-f9c7996e6e52}*SharedItemsImports = 5
-		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{83ad7aa8-9ed8-4b9f-966a-73ce9cae51c6}*SharedItemsImports = 13
-		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{8ecf4e97-1816-44ad-ad63-6acf287ed520}*SharedItemsImports = 5
-		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{8f4e985b-f5c9-4a03-a1a4-4cb8494b8188}*SharedItemsImports = 13
-		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{99059346-006c-4f99-9c9b-52dbb8493e80}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -199,5 +192,13 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{0e373b2a-2ed2-4566-a275-6be81cffe00b}*SharedItemsImports = 5
+		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{802c856e-1709-45b3-844b-f9c7996e6e52}*SharedItemsImports = 5
+		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{83ad7aa8-9ed8-4b9f-966a-73ce9cae51c6}*SharedItemsImports = 13
+		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{8ecf4e97-1816-44ad-ad63-6acf287ed520}*SharedItemsImports = 5
+		Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems*{8f4e985b-f5c9-4a03-a1a4-4cb8494b8188}*SharedItemsImports = 13
+		Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems*{99059346-006c-4f99-9c9b-52dbb8493e80}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
