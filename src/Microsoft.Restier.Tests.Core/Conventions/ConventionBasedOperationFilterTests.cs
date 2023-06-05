@@ -18,6 +18,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedOperationFilter"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedOperationFilterTests
     {
         private readonly IServiceProvider serviceProvider;
@@ -91,6 +92,26 @@ namespace Microsoft.Restier.Tests.Core
         }
 
         /// <summary>
+        /// Check that OnOperationExecutingAsync invokes the OnExecutingTest method according to convention.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [TestMethod]
+        public async Task OnOperationExecutingAsyncInvokesAsyncConventionMethod()
+        {
+            var api = new ExecuteApi(serviceProvider);
+            var testClass = new ConventionBasedOperationFilter(typeof(ExecuteApi));
+            var context = new OperationContext(
+                api,
+                s => new object(),
+                "Test",
+                true,
+                null);
+            var cancellationToken = CancellationToken.None;
+            await testClass.OnOperationExecutingAsync(context, cancellationToken);
+            api.InvocationCount.Should().Be(1);
+        }
+
+        /// <summary>
         /// Checks that OnOperationExecutingAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -132,6 +153,26 @@ namespace Microsoft.Restier.Tests.Core
         {
             var api = new ExecuteApi(serviceProvider);
             var testClass = new ConventionBasedOperationFilter(typeof(ExecuteApi));
+            var context = new OperationContext(
+                api,
+                s => new object(),
+                "Test",
+                true,
+                null);
+            var cancellationToken = CancellationToken.None;
+            await testClass.OnOperationExecutedAsync(context, cancellationToken);
+            api.InvocationCount.Should().Be(1);
+        }
+
+        /// <summary>
+        /// Check that OnOperationExecutedAsync invokes the OnExecutedTestAsync method according to convention.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [TestMethod]
+        public async Task OnOperationExecutedAsyncInvokesAsyncConventionMethod()
+        {
+            var api = new ExecuteAsyncApi(serviceProvider);
+            var testClass = new ConventionBasedOperationFilter(typeof(ExecuteAsyncApi));
             var context = new OperationContext(
                 api,
                 s => new object(),
@@ -268,6 +309,28 @@ namespace Microsoft.Restier.Tests.Core
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             {
                 InvocationCount++;
+            }
+        }
+
+        private class ExecuteAsyncApi : ApiBase
+        {
+            public ExecuteAsyncApi(IServiceProvider serviceProvider)
+                : base(serviceProvider)
+            {
+            }
+
+            public int InvocationCount { get; private set; }
+
+            protected async Task OnExecutingTestAsync()
+            {
+                InvocationCount++;
+                await Task.CompletedTask;
+            }
+
+            protected async Task OnExecutedTestAsync()
+            {
+                InvocationCount++;
+                await Task.CompletedTask;
             }
         }
 

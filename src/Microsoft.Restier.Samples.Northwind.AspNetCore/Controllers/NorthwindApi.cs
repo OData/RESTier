@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Samples.Northwind.AspNetCore;
@@ -44,6 +45,8 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet.Controllers
         [UnboundOperation]
         public Category GetFirstCategory()
         {
+            var claimsPrincipal = ClaimsPrincipal.Current;
+            Console.WriteLine($"ClaimsPrincipal Logged In: {claimsPrincipal.Identity.IsAuthenticated}");
             return DbContext.Categories.FirstOrDefault();
         }
 

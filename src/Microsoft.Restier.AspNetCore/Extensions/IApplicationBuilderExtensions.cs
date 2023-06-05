@@ -18,11 +18,12 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseClaimsPrincipals(this IApplicationBuilder app)
         {
-            app.Use((context, next) =>
-            {
-                ClaimsPrincipal.ClaimsPrincipalSelector = () => context.User;
-                return next(context);
-            });
+            //app.Use((context, next) =>
+            //{
+            //    ClaimsPrincipal.ClaimsPrincipalSelector = () => context.User;
+            //    return next(context);
+            //});
+            app.UseMiddleware<RestierClaimsPrincipalMiddleware>();
             return app;
         }
 
@@ -51,6 +52,7 @@ namespace Microsoft.AspNetCore.Builder
 //                await next();
 //            });
 //#endif
+
             app.UseODataBatching();
             // RWM: This call fixes issues where the batch processor irresponsibly disposes of the HttpContext before it should.
             app.UseMiddleware<ODataBatchHttpContextFixerMiddleware>();

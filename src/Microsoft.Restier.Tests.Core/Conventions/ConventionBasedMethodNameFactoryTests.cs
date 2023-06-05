@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedMethodNameFactory"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedMethodNameFactoryTests
     {
         private readonly IServiceProvider serviceProvider;

@@ -19,6 +19,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedQueryExpressionProcessorTests
     {
         private readonly IServiceProvider serviceProvider;

@@ -32,57 +32,59 @@ namespace Microsoft.Restier.Core
         {
             Ensure.NotNull(context, nameof(context));
             Ensure.NotNull(item, nameof(item));
-            var result = true;
 
-            var returnType = typeof(bool);
             var dataModification = (DataModificationItem)item;
-            var methodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
-            var method = targetApiType.GetQualifiedMethod(methodName);
+            var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
+            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName) ?? targetApiType.GetQualifiedMethod($"{expectedMethodName}Async");
 
-            if (method is null)
+            if (expectedMethod is null)
             {
-                return Task.FromResult(result);
+                return Task.FromResult(true);
             }
 
-            if (!method.IsFamily && !method.IsFamilyOrAssembly)
+            if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
             {
-                Trace.WriteLine($"Restier Authorizer found '{methodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
-                return Task.FromResult(result);
+                Trace.WriteLine($"Restier Authorizer found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                return Task.FromResult(true);
             }
 
-            if (method.ReturnType != returnType)
+            if (expectedMethod.ReturnType != typeof(bool) && !typeof(Task<bool>).IsAssignableFrom(expectedMethod.ReturnType))
             {
-                Trace.WriteLine($"Restier Authorizer found '{methodName}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
-                return Task.FromResult(result);
+                Trace.WriteLine($"Restier Authorizer found '{expectedMethod}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
+                return Task.FromResult(true);
             }
 
             object target = null;
-            if (!method.IsStatic)
+            if (!expectedMethod.IsStatic)
             {
                 target = context.Api;
                 if (!targetApiType.IsInstanceOfType(target))
                 {
                     Trace.WriteLine("The Restier API is of the incorrect type.");
-                    return Task.FromResult(result);
+                    return Task.FromResult(true);
                 }
             }
 
-            var parameters = method.GetParameters();
+            var parameters = expectedMethod.GetParameters();
             if (parameters.Length > 0)
             {
-                Trace.WriteLine($"Restier Authorizer found '{methodName}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
-                return Task.FromResult(result);
+                Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
+                return Task.FromResult(true);
             }
 
             //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
             try
             {
-                result = (bool)method.Invoke(target, null);
-                return Task.FromResult(result);
+                var result = expectedMethod.Invoke(target, null);
+                if (result is Task<bool> resultTask)
+                {
+                    return resultTask;
+                }
+                return Task.FromResult((bool)result);
             }
             catch (TargetInvocationException ex)
             {
-                throw new ConventionInvocationException($"Authorizer {methodName} invocation failed. Check the inner exception for more details.", ex.InnerException);
+                throw new ConventionInvocationException($"Authorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
             }
         }
 

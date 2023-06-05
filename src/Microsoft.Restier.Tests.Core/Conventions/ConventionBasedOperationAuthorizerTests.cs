@@ -18,6 +18,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedOperationAuthorizer"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedOperationAuthorizerTests
     {
         private readonly IServiceProvider serviceProvider;

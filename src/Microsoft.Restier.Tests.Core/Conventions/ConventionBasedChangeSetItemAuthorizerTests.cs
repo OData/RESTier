@@ -19,6 +19,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedChangeSetItemAuthorizer"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedChangeSetItemAuthorizerTests
     {
         private readonly IServiceProvider serviceProvider;
@@ -89,6 +90,22 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedChangeSetItemAuthorizer(typeof(NoPermissionApi));
             var result = await testClass.AuthorizeAsync(context, dataModificationItem, cancellationToken);
             result.Should().BeFalse("AuthorizeAsync should invoke CanInsertObject.");
+            api.InvocationCount.Should().Be(1);
+        }
+
+        /// <summary>
+        /// Check that AuthorizeAsync invokes the CanInsertObject method according to convention.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [TestMethod]
+        public async Task AuthorizeAsyncInvokesAsyncConventionMethod()
+        {
+            var api = new AsyncApi(serviceProvider);
+            var context = new SubmitContext(api, new ChangeSet());
+            var cancellationToken = CancellationToken.None;
+            var testClass = new ConventionBasedChangeSetItemAuthorizer(typeof(AsyncApi));
+            var result = await testClass.AuthorizeAsync(context, dataModificationItem, cancellationToken);
+            result.Should().BeTrue("AuthorizeAsync should invoke CanInsertObject.");
             api.InvocationCount.Should().Be(1);
         }
 
@@ -196,6 +213,22 @@ namespace Microsoft.Restier.Tests.Core
             public EmptyApi(IServiceProvider serviceProvider)
                 : base(serviceProvider)
             {
+            }
+        }
+
+        private class AsyncApi : ApiBase
+        {
+            public AsyncApi(IServiceProvider serviceProvider)
+                : base(serviceProvider)
+            {
+            }
+
+            public int InvocationCount { get; private set; }
+
+            protected internal async Task<bool> CanInsertObjectAsync()
+            {
+                InvocationCount++;
+                return await Task.FromResult(true);
             }
         }
 
