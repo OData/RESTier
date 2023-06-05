@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedChangeSetItemValidator"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedChangeSetItemValidatorTests
     {
         private readonly IServiceProvider serviceProvider;

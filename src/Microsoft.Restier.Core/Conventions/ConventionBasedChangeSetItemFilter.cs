@@ -85,7 +85,7 @@ namespace Microsoft.Restier.Core
         {
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);
-            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
+            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName) ?? targetApiType.GetQualifiedMethod($"{expectedMethodName}Async");
 
             if (expectedMethod is null)
             {
@@ -133,14 +133,15 @@ namespace Microsoft.Restier.Core
                     {
                         return resultTask;
                     }
+                    return Task.CompletedTask;
                 }
                 catch (TargetInvocationException ex)
                 {
-                    throw new ConventionInvocationException($"Authorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
+                    throw new ConventionInvocationException($"Restier Filter {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
                 }
             }
 
-            Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
+            Trace.WriteLine($"Restier Filter found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
             return Task.CompletedTask;
         }
 

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Microsoft.Restier.AspNetCore.Batch
+namespace Microsoft.Restier.AspNetCore.Middleware
 {
 
     /// <summary>
@@ -10,7 +11,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
     /// <remarks>
     /// Solution adapted from https://stackoverflow.com/questions/71338662/ihttpcontextaccessor-httpcontext-is-null-after-execution-falls-out-of-the-useoda
     /// </remarks>
-    public class ODataBatchHttpContextFixerMiddleware
+    public class RestierClaimsPrincipalMiddleware
     {
 
         #region Private Members
@@ -25,7 +26,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
         /// The default constructor for the middleware.
         /// </summary>
         /// <param name="requestDelegate"></param>
-        public ODataBatchHttpContextFixerMiddleware(RequestDelegate requestDelegate)
+        public RestierClaimsPrincipalMiddleware(RequestDelegate requestDelegate)
         {
             this.requestDelegate = requestDelegate;
         }
@@ -43,6 +44,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
         public async Task InvokeAsync(HttpContext httpContext, IHttpContextAccessor contextAccessor)
         {
             contextAccessor.HttpContext ??= httpContext;
+            ClaimsPrincipal.ClaimsPrincipalSelector = () => contextAccessor.HttpContext.User;
             await requestDelegate(httpContext);
         }
 

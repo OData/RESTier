@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Core
         {
             var parameters = context.ParameterValues?.ToArray() ?? Array.Empty<object>();
             var expectedMethodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, pipelineState, RestierOperationMethod.Execute);
-            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName);
+            var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName) ?? targetApiType.GetQualifiedMethod($"{expectedMethodName}Async");
 
             if (expectedMethod is null)
             {
@@ -91,6 +91,7 @@ namespace Microsoft.Restier.Core
                     {
                         return resultTask;
                     }
+                    return Task.CompletedTask;
                 }
                 catch (TargetInvocationException ex)
                 {
