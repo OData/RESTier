@@ -13,6 +13,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CloudNimble.EasyAF.NewtonsoftJson.Compatibility;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
@@ -152,7 +153,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 },
                 NullValueHandling = NullValueHandling.Ignore,
                 DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
-            };
+                ContractResolver = new SystemTextJsonContractResolver(),
+        };
             var employeeResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
 #endif
 
