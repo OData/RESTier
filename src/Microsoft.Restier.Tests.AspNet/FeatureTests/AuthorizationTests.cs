@@ -13,7 +13,6 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CloudNimble.EasyAF.NewtonsoftJson.Compatibility;
 
 #if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
@@ -27,6 +26,7 @@ using System.Text.Json.Serialization;
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 
+using CloudNimble.EasyAF.NewtonsoftJson.Compatibility;
 using CloudNimble.Breakdance.WebApi;
 using Newtonsoft.Json;
 using System.Collections.Generic;

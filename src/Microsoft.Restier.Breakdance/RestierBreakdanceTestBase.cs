@@ -3,11 +3,13 @@
 using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.EasyAF.Http.OData;
 using Flurl;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
@@ -48,11 +50,12 @@ namespace Microsoft.Restier.Breakdance
         /// <summary>
         /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/>.
         /// </summary>
+        /// <param name="useEndpoints">Whether to use endpoint routing or not.</param>
         /// <remarks>
         /// To properly configure these tests, please set your <see cref="AddRestierAction"/> and <see cref="MapRestierAction"/> actions before
         /// calling <see cref="AspNetCoreBreakdanceTestBase.AssemblySetup"/> or <see cref="AspNetCoreBreakdanceTestBase.TestSetup"/>.
         /// </remarks>
-        public RestierBreakdanceTestBase()
+        public RestierBreakdanceTestBase(bool useEndpoints = false)
         {
             TestHostBuilder.ConfigureServices(services =>
             {
@@ -63,31 +66,65 @@ namespace Microsoft.Restier.Breakdance
                                 return Task.CompletedTask;
                             };
                         });
-                services
-                    .AddRestier(apiBuilder =>
-                    {
-                        AddRestierAction?.Invoke(apiBuilder);
-                    })
-                    .AddApplicationPart(typeof(TApi).Assembly)
-                    .AddApplicationPart(typeof(RestierController).Assembly);
+                if (useEndpoints)
+                {
+                    services
+                       .AddAuthorization()
+                       .AddEndpointRestier(apiBuilder =>
+                       {
+                           AddRestierAction?.Invoke(apiBuilder);
+                       });
+                }
+                else
+                {
+                    services
+                        .AddRestier(apiBuilder =>
+                        {
+                            AddRestierAction?.Invoke(apiBuilder);
+                        })
+                        .AddApplicationPart(typeof(TApi).Assembly)
+                        .AddApplicationPart(typeof(RestierController).Assembly);
+                }
             })
            .Configure(builder =>
             {
-                ApplicationBuilderAction?.Invoke(builder);
-                builder.UseAuthorization();
-                builder.UseDeveloperExceptionPage();
-
-                builder.UseRestierBatching();
-                builder.UseMvc(routeBuilder =>
+                if (useEndpoints)
                 {
-                    routeBuilder
-                        .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)
+                    ApplicationBuilderAction?.Invoke(builder);
+                    builder.UseRestierBatching();
+                    builder.UseRouting();
+                    builder.UseAuthorization();
+                    builder.UseDeveloperExceptionPage();
+                    builder.UseEndpoints(endpoints =>
+                    {
+                        var applicationPartManager = endpoints.ServiceProvider.GetRequiredService<ApplicationPartManager>();
+                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(typeof(TApi).Assembly));
+                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(typeof(RestierController).Assembly));
+                        endpoints.Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)               
                         .MapRestier(restierRouteBuilder =>
                         {
                             MapRestierAction?.Invoke(restierRouteBuilder);
-                        })
-                        .MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                });
+                        });
+                    });
+                }
+                else
+                {
+                    ApplicationBuilderAction?.Invoke(builder);
+                    builder.UseAuthorization();
+                    builder.UseDeveloperExceptionPage();
+
+                    builder.UseRestierBatching();
+                    builder.UseMvc(routeBuilder =>
+                    {
+                        routeBuilder
+                            .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)
+                            .MapRestier(restierRouteBuilder =>
+                            {
+                                MapRestierAction?.Invoke(restierRouteBuilder);
+                            })
+                            .MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                    });
+                }
             });
         }
 
