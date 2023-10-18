@@ -3,7 +3,7 @@
 
 [Releases](https://github.com/OData/RESTier/releases)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;Documentation&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[OData v4.01 Documentation](https://www.odata.org/documentation/)
 
-[![Build Status][devops-build-img]][devops-build] [![Release Status][devops-release-img]][devops-release] [![Nightly Feed][nightly-feed-img]][nightly-feed] <br />
+[![Build Status][devops-build-img]][devops-build] [![Release Status][devops-release-img]][devops-release] <br />
 [![Code of Conduct][code-of-conduct-img]][code-of-conduct] [![Twitter][twitter-img]][twitter-intent]
 
 </div>
@@ -34,22 +34,27 @@ to push the format as an industry standard.
 Work on the current version of the protocol (V4) began in April 2012, and was ratified by OASIS as an industry standard in Feb 2014.
 
 ## Getting Started
-Now that the project has restarted, we have a new location for our [Continuous Integration builds][nightly-feed]. We've simplified the NuGet
-packages as well, so now you can just reference `Microsoft.Restier.AspNet` or `Microsoft.Restier.AspNetCore` (coming soon) packages, and we'll take care of
-the rest. 
+1. Create an ASP.NET Classic or ASP.NET Core web project.
+2. Add the corresponding Restier package for the flavor of ASP.NET you're targeting: `Microsoft.Restier.AspNet` or `Microsoft.Restier.AspNetCore`.
+3. Add thhe corresponding Restier package for the flavor of Entity Framework you are targering: `Microsoft.Restier.EntityFramework` or `Microsoft.Restier.EntityFrameworkCore`
+4. Review the [ASP.NET Classic](https://github.com/OData/RESTier/tree/main/src/Microsoft.Restier.Samples.Northwind.AspNet) or [ASP.NET Core](https://github.com/OData/RESTier/tree/main/src/Microsoft.Restier.Samples.Northwind.AspNetCore) samples to help you get started.
 
 ## Use Cases
 Coming Soon!
 
 ## Supported Platforms
-Restier 1.0 currently ships with support for Classic ASP.NET 5.2.7 and later. Support for .NET 5 and later is coming in the second half of 2021.
+Restier 1.0 currently supports the following platforms:
+- Classic ASP.NET 5.2.7 and later
+- ASP.NET Core 6.0, 7.0, and 8.0 RC2 (Binaries targeting deprecated versions of .NET are still available on NuGet.org)
+- Entity Framework 6.4 and later
+- Entity Framework Core 6.0 and later
 
 ## Restier Components
-The Classic ASP.NET flavor of Restier is made up of the following components:
-- **Microsoft.Restier.AspNet:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
+Restier is made up of the following components:
+- **Microsoft.Restier.AspNet & Microsoft.Restier.AspNetCore:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
 - **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
-- **Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
-- **Microsoft.Restier.Breakdance:** Unit test Restier services and components in-memory without spnning up a separate IIS instance.
+- **Microsoft.Restier.EntityFramework & Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
+- **Microsoft.Restier.Breakdance:** Unit test Restier services and components in-memory without spnning up a separate IIS instance, as well as verify the availability of your custom convention-based interceptors.
 
 ## Ecosystem
 Restier is used in solutions from:
@@ -58,8 +63,6 @@ Restier is used in solutions from:
 - [Florida Agency for Health Care Administration](https://ahca.myflorida.com)
 - [Miller's Ale House](https://millersalehouse.com)
 
-There is also a growing set of tools to support Restier-based development
-- [Breakdance.Restier](https://github.com/cloudnimble/breakdance): Convention-based name troubleshooting and integration test support.
 ## Community
 After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws and Mike Pizzo.
 
@@ -86,8 +89,8 @@ have made various contributions to the codebase:
 | Eric Erhardt  | Robert McLaws    |
 | Vincent He    | Jan-Willem Spuij |
 | Dong Liu      | Chris Woodruff   |
-| Layla Liu     |                  |
-| Fan Ouyang    |                  |
+| Layla Liu     | James Caldwell   |
+| Fan Ouyang    | Angel Garay      |
 | Mike Pizzo    |                  |
 | Congyong S    |                  |
 | Mark Stafford |                  |
@@ -101,7 +104,6 @@ Link References
 
 [devops-build]:https://dev.azure.com/dotnet/OData/_build?definitionId=89
 [devops-release]:https://dev.azure.com/dotnet/odata/_release?view=all&definitionId=2
-[nightly-feed]:https://www.myget.org/F/restier-nightly/api/v3/index.json
 [twitter-intent]:https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2FOData%2FRESTier&via=robertmclaws&text=Check%20out%20Restier%21%20It%27s%20the%20simple%2C%20queryable%20framework%20for%20building%20data-driven%20APIs%20in%20.NET%21&hashtags=odata
 [code-of-conduct]:https://opensource.microsoft.com/codeofconduct/
 
