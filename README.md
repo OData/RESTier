@@ -84,14 +84,14 @@ have made various contributions to the codebase:
 
 | Microsoft     | External         |
 |---------------|------------------|
-| Lewis Cheng   | Cengiz Ilerler   |
-| Challenh      | Kemal M          |
-| Eric Erhardt  | Robert McLaws    |
-| Vincent He    | Jan-Willem Spuij |
-| Dong Liu      | Chris Woodruff   |
-| Layla Liu     | James Caldwell   |
-| Fan Ouyang    | Angel Garay      |
-| Mike Pizzo    |                  |
+| Lewis Cheng   | James Caldwell   |
+| Challen H     | Angel Garay      |
+| Eric Erhardt  | Cengiz Ilerler   |
+| Vincent He    | Kemal M          |
+| Dong Liu      | Mateusz Malicki  |
+| Layla Liu     | Robert McLaws    |
+| Fan Ouyang    | Jan-Willem Spuij |
+| Mike Pizzo    | Chris Woodruff   |
 | Congyong S    |                  |
 | Mark Stafford |                  |
 | Ray Yao       |                  |
