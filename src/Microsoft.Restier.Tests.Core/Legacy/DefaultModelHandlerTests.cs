@@ -23,7 +23,12 @@ namespace Microsoft.Restier.Tests.Core.Model
 {
 
     [TestClass]
-    public class DefaultModelHandlerTests : RestierTestBase
+    public class DefaultModelHandlerTests
+#if NET6_0_OR_GREATER
+        : RestierTestBase<TestableEmptyApi>
+#else
+        : RestierTestBase
+#endif
     {
 
         void addTestServices(IServiceCollection services)

@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using CloudNimble.EasyAF.Core;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.Breakdance
 {
@@ -20,7 +23,10 @@ namespace Microsoft.Restier.Breakdance
 
         #region Constants
 
-        const string separator = "------------------------------------------------------------";
+        const string separator              = "---------------------------------------------------|--------";
+        const string markdownSeparator      = "---------------------------------------------------|----------:";
+        const string formatString           = "{0,-50} | {1,7}";
+        const string markdownFormatString   = "{0,-50} | {1,10}";
 
         #endregion
 
@@ -31,13 +37,11 @@ namespace Microsoft.Restier.Breakdance
         /// indicating whether or not the method was found in the second column.
         /// </summary>
         /// <param name="api">The <see cref="ApiBase"/> instance to process.</param>
+        /// <param name="markdown"></param>
         /// <returns>A string containing the Markdown table of results.</returns>
-        public static string GenerateVisibilityMatrix(this ApiBase api)
+        public static string GenerateVisibilityMatrix(this ApiBase api, bool markdown = false)
         {
-            if (api is null)
-            {
-                throw new ArgumentNullException(nameof(api));
-            }
+            Ensure.ArgumentNotNull(api, nameof(api));
 
             var sb = new StringBuilder();
             var model = (EdmModel)api.GetModel();
@@ -84,18 +88,26 @@ namespace Microsoft.Restier.Breakdance
                 methodMatrix[definition.Key] = value;
             }
 
-            sb.AppendLine(separator);
-            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0,-50} | {1,7}", "Function Name", "Found?"));
-            sb.AppendLine(separator);
+            if (!markdown)
+            {
+                sb.AppendLine(separator);
+            }
+
+            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, markdown ? markdownFormatString : formatString, "Function Name", "Found?"));
+            sb.AppendLine(markdown ? markdownSeparator : separator);
             foreach (var result in entitySetMatrix)
             {
-                sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0,-50} | {1,7}", result.Key.Name, result.Value));
+                sb.AppendLine(FormatRow(result, markdown));
             }
             foreach (var result in methodMatrix)
             {
-                sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0,-50} | {1,7}", result.Key.Name, result.Value));
+                sb.AppendLine(FormatRow(result, markdown));
             }
-            sb.AppendLine(separator);
+
+            if (!markdown)
+            {
+                sb.AppendLine(separator);
+            }
 
             return sb.ToString();
         }
@@ -109,21 +121,42 @@ namespace Microsoft.Restier.Breakdance
         /// so you can check it into source control, use "..//..//".
         /// </param>
         /// <param name="suffix">A string to append to the Api name when writing the text file.</param>
-        public static void WriteCurrentVisibilityMatrix(this ApiBase api, string sourceDirectory = "", string suffix = "ApiSurface")
+        /// <param name="markdown"></param>
+        public static void WriteCurrentVisibilityMatrix(this ApiBase api, string sourceDirectory = "", string suffix = "ApiSurface", bool markdown = false)
         {
             if (api is null)
             {
                 throw new ArgumentNullException(nameof(api));
             }
 
-            var filePath = $"{sourceDirectory}{api.GetType().Name}-{suffix}.txt";
-            var report = api.GenerateVisibilityMatrix();
-            System.IO.File.WriteAllText(filePath, report);
+            var filePath = Path.Combine(sourceDirectory, $"{api.GetType().Name}-{suffix}.{(markdown ? "md" : "txt")}");
+            var report = api.GenerateVisibilityMatrix(markdown);
+            File.WriteAllText(filePath, report);
         }
 
         #endregion
 
         #region Private Members
+
+        private static string FormatRow(KeyValuePair<RestierConventionEntitySetDefinition, bool> result, bool markdown = false)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture, 
+                markdown ? markdownFormatString : formatString,
+                markdown && result.Value ? $"**{result.Key.Name}**" : result.Key.Name,
+                markdown && result.Value ? $"**{result.Value}**" : result.Value
+            );
+        }
+
+        private static string FormatRow(KeyValuePair<RestierConventionMethodDefinition, bool> result, bool markdown = false)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture, 
+                markdown ? markdownFormatString : formatString,
+                markdown && result.Value ? $"**{result.Key.Name}**" : result.Key.Name,
+                markdown && result.Value ? $"**{result.Value}**" : result.Value
+            );
+        }
 
         /// <summary>
         /// This method recreates parts of the code in <see cref="ConventionBasedChangeSetItemAuthorizer" /> to determine if

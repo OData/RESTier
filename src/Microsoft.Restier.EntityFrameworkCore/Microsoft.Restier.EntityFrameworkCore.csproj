@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0;net6.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</TargetFrameworks>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
@@ -23,6 +23,7 @@
 	<PropertyGroup>
 		<DefineConstants Condition="'$(TargetFramework)' == 'net6.0'">$(DefineConstants);EFCORE6_0;EFCORE6_0_OR_GREATER</DefineConstants>
 		<DefineConstants Condition="'$(TargetFramework)' == 'net7.0'">$(DefineConstants);EFCORE7_0;EFCORE6_0_OR_GREATER;EFCORE7_0_OR_GREATER</DefineConstants>
+		<DefineConstants Condition="'$(TargetFramework)' == 'net8.0'">$(DefineConstants);EFCORE7_0;EFCORE6_0_OR_GREATER;EFCORE7_0_OR_GREATER;EFCORE8_0_OR_GREATER</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,22 +36,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 7.14.0)" />
+		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[8.*-*, 9.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[8.*-*, 9.0.0)" />
+	</ItemGroup>
+
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.*, 8.0.0)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[7.*, 8.0.0)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.*, 9.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[7.*, 9.0.0)" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[6.*, 8.0.0)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 8.0.0)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[6.*, 9.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 9.0.0)" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'netstandard2.1'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[5.*, 8.0.0)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 8.0.0)" />
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[5.*, 9.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 9.0.0)" />
 	</ItemGroup>
 
 	<ItemGroup>

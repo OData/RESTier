@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AssemblyName>Microsoft.Restier.Breakdance</AssemblyName>
 		<RootNamespace>Microsoft.Restier.Breakdance</RootNamespace>
-		<TargetFrameworks>net472;net6.0;net7.0;</TargetFrameworks>
+		<TargetFrameworks>net472;net6.0;net7.0;net8.0;</TargetFrameworks>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
 
@@ -31,9 +31,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.WebApi" Version="[5.0.0, 6.0.0)" Condition="'$(IsNetCore)' != 'true'" />
-		<PackageReference Include="Breakdance.AspNetCore" Version="[5.0.0, 6.0.0)" Condition="'$(IsNetCore)' == 'true'" />
-		<PackageReference Include="Microsoft.AspNet.OData" Version="[7.*, 7.6.0)" Condition="'$(IsNetCore)' != 'true'" />
+		<PackageReference Include="Breakdance.WebApi" Version="[5.0.0, 7.0.0)" Condition="'$(IsNetCore)' != 'true'" />
+		<PackageReference Include="Breakdance.AspNetCore" Version="[5.0.0, 7.0.0)" Condition="'$(IsNetCore)' == 'true'" />
+		<PackageReference Include="Microsoft.AspNet.OData" Version="[7.*, 8.0.0)" Condition="'$(IsNetCore)' != 'true'" />
 	</ItemGroup>
 
 	<ItemGroup>

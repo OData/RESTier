@@ -15,7 +15,12 @@ namespace Microsoft.Restier.Tests.Core
 {
 
     [TestClass]
-    public class PropertyBagTests : RestierTestBase
+    public class PropertyBagTests
+#if NET6_0_OR_GREATER
+        : RestierTestBase<TestableEmptyApi>
+#else
+        : RestierTestBase
+#endif
     {
         [TestMethod]
         public void PropertyBag_ManipulatesPropertiesCorrectly()

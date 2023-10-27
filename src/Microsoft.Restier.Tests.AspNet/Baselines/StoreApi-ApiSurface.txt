@@ -1,40 +1,76 @@
-------------------------------------------------------------
+---------------------------------------------------|--------
 Function Name                                      |  Found?
-------------------------------------------------------------
+---------------------------------------------------|--------
 CanInsertCustomer                                  |   False
+CanInsertCustomerAsync                             |   False
 CanUpdateCustomer                                  |   False
+CanUpdateCustomerAsync                             |   False
 CanDeleteCustomer                                  |   False
+CanDeleteCustomerAsync                             |   False
 OnInsertingCustomer                                |   False
+OnInsertingCustomerAsync                           |   False
 OnUpdatingCustomer                                 |   False
+OnUpdatingCustomerAsync                            |   False
 OnDeletingCustomer                                 |   False
+OnDeletingCustomerAsync                            |   False
 OnFilterCustomers                                  |   False
+OnFilterCustomersAsync                             |   False
 OnInsertedCustomer                                 |   False
+OnInsertedCustomerAsync                            |   False
 OnUpdatedCustomer                                  |   False
+OnUpdatedCustomerAsync                             |   False
 OnDeletedCustomer                                  |   False
+OnDeletedCustomerAsync                             |   False
 CanInsertProduct                                   |   False
+CanInsertProductAsync                              |   False
 CanUpdateProduct                                   |   False
+CanUpdateProductAsync                              |   False
 CanDeleteProduct                                   |   False
+CanDeleteProductAsync                              |   False
 OnInsertingProduct                                 |   False
+OnInsertingProductAsync                            |   False
 OnUpdatingProduct                                  |   False
+OnUpdatingProductAsync                             |   False
 OnDeletingProduct                                  |   False
+OnDeletingProductAsync                             |   False
 OnFilterProducts                                   |   False
+OnFilterProductsAsync                              |   False
 OnInsertedProduct                                  |   False
+OnInsertedProductAsync                             |   False
 OnUpdatedProduct                                   |   False
+OnUpdatedProductAsync                              |   False
 OnDeletedProduct                                   |   False
+OnDeletedProductAsync                              |   False
 CanInsertStore                                     |   False
+CanInsertStoreAsync                                |   False
 CanUpdateStore                                     |   False
+CanUpdateStoreAsync                                |   False
 CanDeleteStore                                     |   False
+CanDeleteStoreAsync                                |   False
 OnInsertingStore                                   |   False
+OnInsertingStoreAsync                              |   False
 OnUpdatingStore                                    |   False
+OnUpdatingStoreAsync                               |   False
 OnDeletingStore                                    |   False
+OnDeletingStoreAsync                               |   False
 OnFilterStores                                     |   False
+OnFilterStoresAsync                                |   False
 OnInsertedStore                                    |   False
+OnInsertedStoreAsync                               |   False
 OnUpdatedStore                                     |   False
+OnUpdatedStoreAsync                                |   False
 OnDeletedStore                                     |   False
+OnDeletedStoreAsync                                |   False
 CanExecuteGetBestProduct                           |   False
+CanExecuteGetBestProductAsync                      |   False
 OnExecutingGetBestProduct                          |   False
+OnExecutingGetBestProductAsync                     |   False
 OnExecutedGetBestProduct                           |   False
+OnExecutedGetBestProductAsync                      |   False
 CanExecuteRemoveWorstProduct                       |   False
+CanExecuteRemoveWorstProductAsync                  |   False
 OnExecutingRemoveWorstProduct                      |   False
+OnExecutingRemoveWorstProductAsync                 |   False
 OnExecutedRemoveWorstProduct                       |   False
-------------------------------------------------------------
+OnExecutedRemoveWorstProductAsync                  |   False
+---------------------------------------------------|--------

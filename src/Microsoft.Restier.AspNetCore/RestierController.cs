@@ -16,6 +16,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Results;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
@@ -205,7 +206,8 @@ namespace Microsoft.Restier.AspNetCore
             //response.Content = new StringContent(String.Empty);
             //response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             //response.Content.Headers.Allow.Add("GET");
-            this.HttpContext.Response.Headers.Add("Allow", "GET");
+
+            HttpContext.Response.Headers.Append("Allow", "GET");
             var response = new StatusCodeResult(405);
             return response;
         }

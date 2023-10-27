@@ -199,7 +199,7 @@ namespace Microsoft.Restier.Tests.Core
             var context = new SubmitContext(api, new ChangeSet());
             var cancellationToken = CancellationToken.None;
             await testClass.OnChangeSetItemProcessingAsync(context, dataModificationItem, cancellationToken);
-            testTraceListener.Messages.Should().Contain("Restier Filter expected'OnInsertingObject' but found 'OnInsertingTest'");
+            testTraceListener.Messages.Should().Contain("Restier ConventionBasedChangeSetItemFilter expected'OnInsertingObject' but found 'OnInsertingTest'");
             api.InvocationCount.Should().Be(0);
         }
 

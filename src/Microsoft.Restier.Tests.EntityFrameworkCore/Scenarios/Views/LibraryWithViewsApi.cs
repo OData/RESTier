@@ -1,4 +1,7 @@
-﻿#if NET6_0_OR_GREATER
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+#if NET6_0_OR_GREATER
 
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;

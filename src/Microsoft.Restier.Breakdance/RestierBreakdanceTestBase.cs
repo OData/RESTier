@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1_OR_GREATER
+﻿#if NET6_0_OR_GREATER
 
 using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.EasyAF.Http.OData;

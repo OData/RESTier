@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Core
             {
                 if (expectedMethod is not null)
                 {
-                    Trace.WriteLine($"Restier Filter found '{expectedMethodName}' but it is unaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                    Trace.WriteLine($"Restier Filter found '{expectedMethodName}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
                 }
                 else
                 {
