@@ -15,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
+using System.IO;
+
 
 #if NETCOREAPP3_1_OR_GREATER
 using System.Text.Json;
@@ -340,9 +342,9 @@ namespace Microsoft.Restier.Breakdance
         public static async Task WriteCurrentApiMetadata<TApi>(string sourceDirectory = "", string suffix = "ApiMetadata", Action<IServiceCollection> serviceCollection = default)
             where TApi : ApiBase
         {
-            var filePath = $"{sourceDirectory}{typeof(TApi).Name}-{suffix}.txt";
+            var filePath = Path.Combine(sourceDirectory, $"{typeof(TApi).Name}-{suffix}.txt");
             var result = await GetApiMetadataAsync<TApi>(serviceCollection: serviceCollection).ConfigureAwait(false);
-            System.IO.File.WriteAllText(filePath, result.ToString());
+            File.WriteAllText(filePath, result.ToString());
         }
 
         #endregion
