@@ -49,17 +49,17 @@ namespace Microsoft.Restier.Core
 
             if (context.ModelReference is DataSourceStubModelReference dataSourceStubReference)
             {
-                if (!(dataSourceStubReference.Element is IEdmEntitySet entitySet))
+                if (dataSourceStubReference.Element is not IEdmEntitySet entitySet)
                 {
                     return null;
                 }
 
-                if (!(entitySet.Type is IEdmCollectionType collectionType))
+                if (entitySet.Type is not IEdmCollectionType collectionType)
                 {
                     return null;
                 }
 
-                if (!(collectionType.ElementType.Definition is IEdmEntityType entityType))
+                if (collectionType.ElementType.Definition is not IEdmEntityType entityType)
                 {
                     return null;
                 }
@@ -77,7 +77,7 @@ namespace Microsoft.Restier.Core
                     propType = collectionType.ElementType;
                 }
 
-                if (!(propType.Definition is IEdmEntityType entityType))
+                if (propType.Definition is not IEdmEntityType entityType)
                 {
                     return null;
                 }
@@ -146,8 +146,7 @@ namespace Microsoft.Restier.Core
             // For collection property of derived type, will be like "Param_0.Prop.AsQueryable().Where(...).OfType()"
             var returnType = context.VisitedNode.Type.FindGenericType(typeof(IQueryable<>));
             var enumerableQueryParameter = (object)context.VisitedNode;
-            Type elementType = null;
-
+            Type elementType;
             if (returnType is null)
             {
                 // This means append for properties model reference
@@ -169,7 +168,7 @@ namespace Microsoft.Restier.Core
 
             var queryType = typeof(EnumerableQuery<>).MakeGenericType(elementType);
             var query = Activator.CreateInstance(queryType, enumerableQueryParameter);
-            if (!(expectedMethod.Invoke(apiBase, new object[] { query }) is IQueryable result))
+            if (expectedMethod.Invoke(apiBase, new object[] { query }) is not IQueryable result)
             {
                 return null;
             }

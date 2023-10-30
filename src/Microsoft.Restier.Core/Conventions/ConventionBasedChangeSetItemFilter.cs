@@ -92,8 +92,7 @@ namespace Microsoft.Restier.Core
             if (expectedMethod is null)
             {
                 var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
-                var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
-                if (actualMethod is not null)
+                if (targetApiType.GetQualifiedMethod(actualMethodName) is not null)
                 {
                     Trace.WriteLine($"Restier ConventionBasedChangeSetItemFilter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                 }

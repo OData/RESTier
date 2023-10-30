@@ -34,7 +34,6 @@ namespace Microsoft.Restier.Core
             Ensure.NotNull(context, nameof(context));
             var result = true;
 
-            var returnType = typeof(bool);
             var expectedMethodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Authorization, RestierOperationMethod.Execute);
 
             //RWM: This prefers the Sync name over the Async name, because in V1 Sync has been the only option for a decade. In v2, we'll probably just make everything Async without Sync calls.
@@ -51,7 +50,7 @@ namespace Microsoft.Restier.Core
                 return Task.FromResult(result);
             }
 
-            if (expectedMethod.ReturnType != returnType)
+            if (expectedMethod.ReturnType != typeof(bool))
             {
                 Trace.WriteLine($"Restier ConventionBasedOperationAuthorizer found '{expectedMethodName}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
                 return Task.FromResult(result);
