@@ -68,7 +68,7 @@ namespace Microsoft.Restier.AspNet.Operation
         {
             Ensure.NotNull(context, nameof(context));
 
-            if (!(context is RestierOperationContext restierOperationContext))
+            if (context is not RestierOperationContext restierOperationContext)
             {
                 throw new NotImplementedException(string.Format(CultureInfo.InvariantCulture, AspNetResources.NoSupportedOperationContext, context.GetType()));
             }
@@ -109,13 +109,13 @@ namespace Microsoft.Restier.AspNet.Operation
                 var parameter = parameterArray[paraIndex];
                 var currentParameterValue = restierOperationContext.GetParameterValueFunc(parameter.Name);
 
-                object convertedValue = null;
+                object convertedValue;
                 if (restierOperationContext.IsFunction)
                 {
                     var parameterTypeRef = parameter.ParameterType.GetTypeReference(model);
 
                     // Change to right CLR class for collection/Enum/Complex/Entity
-                    // JWS: As long as OData requires the ServiceProvder, we have to provide it. DI abuse smell.
+                    // JWS: As long as OData requires the ServiceProvider, we have to provide it. DI abuse smell.
                     convertedValue = DeserializationHelpers.ConvertValue(
                         currentParameterValue,
                         parameter.Name,
@@ -136,12 +136,13 @@ namespace Microsoft.Restier.AspNet.Operation
 
             restierOperationContext.ParameterValues = parameters;
 
-            // Invoke preprocessing on the operation execution
+            // RWM: Invoke pre-operation processing.
             await PerformPreEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
 
+            // RWM: Invoke the operation.
             var result = await InvokeOperation(restierOperationContext.Api, method, parameters, model).ConfigureAwait(false);
 
-            // Invoke preprocessing on the operation execution
+            // Invoke post-operation processing.
             await PerformPostEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
             return result;
         }
@@ -153,13 +154,8 @@ namespace Microsoft.Restier.AspNet.Operation
             // This means binding to a single entity
             if (enumerableType is null)
             {
-                var entity = bindingParameterValue.SingleOrDefault();
-                if (entity is null)
-                {
-                    throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
-                }
-
-                return entity;
+                return bindingParameterValue.SingleOrDefault() ??
+                    throw new StatusCodeException(HttpStatusCode.NotFound, AspNetResources.ResourceNotFound);
             }
 
             // This means function is bound to an entity set.
@@ -171,16 +167,14 @@ namespace Microsoft.Restier.AspNet.Operation
             {
                 var toArrayMethodInfo = ExpressionHelperMethods.EnumerableToArrayGeneric
                     .MakeGenericMethod(elementClrType);
-                var arrayResult = toArrayMethodInfo.Invoke(null, new object[] { bindingParameterValue });
-                return arrayResult;
+                return toArrayMethodInfo.Invoke(null, new object[] { bindingParameterValue });
             }
 
             if (bindingType.FindGenericType(typeof(ICollection<>)) is not null)
             {
                 var toListMethodInfo = ExpressionHelperMethods.EnumerableToListGeneric
                     .MakeGenericMethod(elementClrType);
-                var listResult = toListMethodInfo.Invoke(null, new object[] { bindingParameterValue });
-                return listResult;
+                return toListMethodInfo.Invoke(null, new object[] { bindingParameterValue });
             }
 
             return bindingParameterValue;
@@ -199,16 +193,14 @@ namespace Microsoft.Restier.AspNet.Operation
             if (result is Task task)
             {
                 await task.ConfigureAwait(false);
-                if (returnType.GenericTypeArguments.Any())
-                {
-                    returnType = returnType.GenericTypeArguments.First();
-                    var resultProperty = typeof(Task<>).MakeGenericType(returnType).GetProperty("Result");
-                    result = resultProperty.GetValue(task);
-                }
-                else
+
+                if (!returnType.GenericTypeArguments.Any())
                 {
                     return null;
                 }
+
+                returnType = returnType.GenericTypeArguments.First();
+                result = typeof(Task<>).MakeGenericType(returnType).GetProperty("Result").GetValue(task);
             }
 
             var edmReturnType = returnType.GetReturnTypeReference(model);
@@ -220,8 +212,7 @@ namespace Microsoft.Restier.AspNet.Operation
                     return ExpressionHelpers.CreateEmptyQueryable(elementClrType);
                 }
 
-                var enumerableType = result.GetType().FindGenericType(typeof(IEnumerable<>));
-                if (enumerableType is not null)
+                if (result.GetType().FindGenericType(typeof(IEnumerable<>)) is not null)
                 {
                     return ((IEnumerable)result).AsQueryable();
                 }
@@ -235,9 +226,8 @@ namespace Microsoft.Restier.AspNet.Operation
             var objectQueryable = new[] { result }.AsQueryable();
             var castMethodInfo = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(returnType);
             var castedResult = castMethodInfo.Invoke(null, new object[] { objectQueryable });
-            var typedQueryable = ExpressionHelperMethods.QueryableAsQueryable.Invoke(null, new object[] { castedResult }) as IQueryable;
 
-            return typedQueryable;
+            return ExpressionHelperMethods.QueryableAsQueryable.Invoke(null, new object[] { castedResult }) as IQueryable;
         }
 
         private async Task InvokeAuthorizers(OperationContext context, CancellationToken cancellationToken)

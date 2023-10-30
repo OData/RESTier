@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -70,11 +71,8 @@ namespace Microsoft.Restier.AspNetCore
             EnsureInitialized();
 
             var path = GetPath();
-            var lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment is null)
-            {
+            var lastSegment = path.Segments.LastOrDefault() ?? 
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
-            }
 
             IQueryable result = null;
 
@@ -100,13 +98,12 @@ namespace Microsoft.Restier.AspNetCore
                     return NotFound(Resources.ResourceNotFound);
                 }
 
-                if (lastSegment is OperationSegment)
+                if (lastSegment is OperationSegment segment)
                 {
                     result = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
 
-                    var boundSeg = (OperationSegment)lastSegment;
-                    var operation = boundSeg.Operations.FirstOrDefault();
-                    Func<string, object> getParaValueFunc = p => boundSeg.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                    var operation = segment.Operations.FirstOrDefault();
+                    Func<string, object> getParaValueFunc = p => segment.Parameters.FirstOrDefault(c => c.Name == p).Value;
                     result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken).ConfigureAwait(false);
 
                     var applied = ApplyQueryOptions(result, path, true);
@@ -136,31 +133,30 @@ namespace Microsoft.Restier.AspNetCore
             var lastSegment = path.Segments.Last();
 
             // if the request is to a function or function import, return MethodNotAllowed
-            var operationSegment = lastSegment as OperationSegment;
-            if (operationSegment != null && operationSegment.Operations.FirstOrDefault().IsFunction())
+            if (lastSegment is OperationSegment operationSegment && 
+                operationSegment.Operations.FirstOrDefault().IsFunction())
             {
                 return MethodNotAllowed();
             }
 
-            var operationImportSegment = lastSegment as OperationImportSegment;
-            if (operationImportSegment != null && operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            if (lastSegment is OperationImportSegment operationImportSegment && 
+                operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
             {
                 return MethodNotAllowed();
-            }
-
-            EnsureInitialized();
-
-            CheckModelState();
-
-            if (edmEntityObject is null)
-            {
-                throw new ODataException("A POST requires an object to be present in the request body.");
             }
 
             if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
+
+            if (edmEntityObject is null)
+            {
+                throw new ODataException("A POST requires an object to be present in the request body.");
+            }
+
+            EnsureInitialized();
+            CheckModelState();
 
             // In case of type inheritance, the actual type will be different from entity type
             var expectedEntityType = path.EdmType;
@@ -188,6 +184,7 @@ namespace Microsoft.Restier.AspNetCore
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Enqueue(postItem);
 
+                // TODO: RWM: Feels like we should be doing something with this.
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -208,8 +205,7 @@ namespace Microsoft.Restier.AspNetCore
             //response.Content.Headers.Allow.Add("GET");
 
             HttpContext.Response.Headers.Append("Allow", "GET");
-            var response = new StatusCodeResult(405);
-            return response;
+            return new StatusCodeResult(405);
         }
 
         /// <summary>
@@ -239,16 +235,13 @@ namespace Microsoft.Restier.AspNetCore
         {
             EnsureInitialized();
             var path = GetPath();
-            if (!(path.NavigationSource is IEdmEntitySet entitySet))
+            if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = GetOriginalValues(entitySet);
-            if (propertiesInEtag is null)
-            {
+            var propertiesInEtag = GetOriginalValues(entitySet) ??
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
-            }
 
             var model = api.GetModel();
 
@@ -267,6 +260,7 @@ namespace Microsoft.Restier.AspNetCore
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Enqueue(deleteItem);
 
+                //RWM: Seems like we should be using the result here for something else.
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -291,11 +285,8 @@ namespace Microsoft.Restier.AspNetCore
             CheckModelState();
             var path = GetPath();
 
-            var lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment is null)
-            {
+            var lastSegment = path.Segments.LastOrDefault() ??
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
-            }
 
             IQueryable result = null;
             object GetParaValueFunc(string p)
@@ -305,15 +296,13 @@ namespace Microsoft.Restier.AspNetCore
                     return null;
                 }
 
-                object parameter;
-                parameters.TryGetValue(p, out parameter);
+                parameters.TryGetValue(p, out var parameter);
                 return parameter;
             }
 
             if (lastSegment is OperationImportSegment segment)
             {
-                var unboundSegment = segment;
-                var operation = unboundSegment.OperationImports.FirstOrDefault();
+                var operation = segment.OperationImports.FirstOrDefault();
                 result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, null, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -325,9 +314,8 @@ namespace Microsoft.Restier.AspNetCore
                     return NotFound(Resources.ResourceNotFound);
                 }
 
-                if (lastSegment is OperationSegment)
+                if (lastSegment is OperationSegment operationSegment)
                 {
-                    var operationSegment = lastSegment as OperationSegment;
                     var operation = operationSegment.Operations.FirstOrDefault();
                     var queryResult = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
                     result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, queryResult, cancellationToken).ConfigureAwait(false);
@@ -337,6 +325,7 @@ namespace Microsoft.Restier.AspNetCore
             if (path.EdmType is null)
             {
                 // This is a void action, return 204 directly
+                Trace.TraceWarning($"The operation '{path}' did not return a type. Sending a 204 status code instead.");
                 return StatusCode((int)HttpStatusCode.NoContent);
             }
 
@@ -348,23 +337,16 @@ namespace Microsoft.Restier.AspNetCore
             Ensure.NotNull(edmType, nameof(edmType));
 
             var isNullable = false;
-            switch (edmType.TypeKind)
+            return edmType.TypeKind switch
             {
-                case EdmTypeKind.Collection:
-                    return new EdmCollectionTypeReference(edmType as IEdmCollectionType);
-                case EdmTypeKind.Complex:
-                    return new EdmComplexTypeReference(edmType as IEdmComplexType, isNullable);
-                case EdmTypeKind.Entity:
-                    return new EdmEntityTypeReference(edmType as IEdmEntityType, isNullable);
-                case EdmTypeKind.EntityReference:
-                    return new EdmEntityReferenceTypeReference(edmType as IEdmEntityReferenceType, isNullable);
-                case EdmTypeKind.Enum:
-                    return new EdmEnumTypeReference(edmType as IEdmEnumType, isNullable);
-                case EdmTypeKind.Primitive:
-                    return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
-                default:
-                    throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString()));
-            }
+                EdmTypeKind.Collection      => new EdmCollectionTypeReference(edmType as IEdmCollectionType),
+                EdmTypeKind.Complex         => new EdmComplexTypeReference(edmType as IEdmComplexType, isNullable),
+                EdmTypeKind.Entity          => new EdmEntityTypeReference(edmType as IEdmEntityType, isNullable),
+                EdmTypeKind.EntityReference => new EdmEntityReferenceTypeReference(edmType as IEdmEntityReferenceType, isNullable),
+                EdmTypeKind.Enum            => new EdmEnumTypeReference(edmType as IEdmEnumType, isNullable),
+                EdmTypeKind.Primitive       => new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable),
+                _ => throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString())),
+            };
         }
 
         private async Task<IActionResult> Update(
@@ -612,19 +594,11 @@ namespace Microsoft.Restier.AspNetCore
 
         private ODataPath GetPath()
         {
-            var properties = HttpContext.ODataFeature();
-            if (properties is null)
-            {
+            var properties = HttpContext.ODataFeature() ??
                 throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
-            }
 
-            var path = properties.Path;
-            if (path is null)
-            {
+            return properties.Path ?? 
                 throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
-            }
-
-            return path;
         }
 
         private Task<IQueryable> ExecuteOperationAsync(
@@ -643,8 +617,7 @@ namespace Microsoft.Restier.AspNetCore
             {
                 Request = Request,
             };
-            var result = operationExecutor.ExecuteOperationAsync(context, cancellationToken);
-            return result;
+            return operationExecutor.ExecuteOperationAsync(context, cancellationToken);
         }
 
         private IReadOnlyDictionary<string, object> GetOriginalValues(IEdmEntitySet entitySet)
@@ -673,8 +646,7 @@ namespace Microsoft.Restier.AspNetCore
 
             // return 428(Precondition Required) if entity requires concurrency check.
             var model = api.GetModel();
-            var needEtag = model.IsConcurrencyCheckEnabled(entitySet);
-            if (needEtag)
+            if (model.IsConcurrencyCheckEnabled(entitySet))
             {
                 return null;
             }
