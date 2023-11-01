@@ -3,7 +3,6 @@
 
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Restier.AspNetCore.Middleware;
-using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -21,11 +20,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseClaimsPrincipals(this IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
-            {
-                ClaimsPrincipal.ClaimsPrincipalSelector = () => context.User;
-                await next();
-            });
+            app.UseMiddleware<RestierClaimsPrincipalMiddleware>();
             return app;
         }
 
