@@ -121,24 +121,14 @@ namespace Microsoft.Restier.AspNetCore
         public static ODataRoute MapODataServiceRoute(this IRouteBuilder builder, string routeName,
             string routePrefix, Action<IContainerBuilder, string> configureAction)
         {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (routeName is null)
-            {
-                throw new ArgumentNullException(nameof(routeName));
-            }
+            Ensure.NotNullOrWhiteSpace(routeName, nameof(routeName));
+            Ensure.NotNull(builder, nameof(builder));
 
             #region Stuff that's done on configuration.CreateODataRootCountainer
 
             // Build and configure the root container.
-            var perRouteContainer = builder.ServiceProvider.GetRequiredService<IPerRouteContainer>();
-            if (perRouteContainer is null)
-            {
+            var perRouteContainer = builder.ServiceProvider.GetRequiredService<IPerRouteContainer>() ?? 
                 throw new InvalidOperationException("Could not find the PerRouteContainer.");
-            }
 
             // Create an service provider for this route. Add the default services to the custom configuration actions.
             var configureDefaultServicesMethod = typeof(ODataRouteBuilderExtensions).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).FirstOrDefault(c => c.Name == "ConfigureDefaultServices");
