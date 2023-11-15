@@ -2,7 +2,6 @@
 
 using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.EasyAF.Http.OData;
-using Flurl;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
