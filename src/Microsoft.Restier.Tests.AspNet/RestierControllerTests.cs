@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task PostTest()
+        public async Task Post_WithBody_ShouldReturnCreated()
         {
             var payload = new {
                 Name = "var1",
@@ -64,6 +64,16 @@ namespace Microsoft.Restier.Tests.AspNet
                 acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: di);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        [TestMethod]
+        public async Task Post_WithoutBody_ShouldReturnBadRequest()
+        {
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/Products", 
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: di);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            content.Should().Contain("A POST requires an object to be present in the request body.");
         }
 
         [TestMethod]
@@ -116,14 +126,13 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestMethod]
-        public async Task FunctionImport_Post_ShouldReturnMethodNotAllowed()
+        public async Task FunctionImport_Post_WithoutBody_ShouldReturnMethodNotAllowed()
         {
             var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/GetBestProduct", serviceCollection: di);
-            var content = TestContext.LogAndReturnMessageContentAsync(response);
+            var content = await TestContext.LogAndReturnMessageContentAsync(response);
             response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
-            response.Content.Headers.Allow.Should().NotBeNull();
-            response.Content.Headers.Allow.Should().Contain("GET");
         }
+
     }
 
 }

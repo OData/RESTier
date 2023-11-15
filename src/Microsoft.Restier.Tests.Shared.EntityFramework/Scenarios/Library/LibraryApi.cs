@@ -196,6 +196,19 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
             });
         }
 
+        /// <summary>
+        /// Ensures that incoming Books get assigned an ID.
+        /// </summary>
+        /// <param name="book"></param>
+        internal protected void OnInsertingBook(Book book)
+        {
+            book.Id = Guid.NewGuid();
+        }
+
+        /// <summary>
+        /// Ensures that publishers that are being updated get the correct Audit flag set.
+        /// </summary>
+        /// <param name="publisher"></param>
         internal protected void OnUpdatingPublisher(Publisher publisher)
         {
             publisher.LastUpdated = DateTimeOffset.Now;

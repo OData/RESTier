@@ -22,7 +22,12 @@ namespace Microsoft.Restier.Tests.Core
 {
 
     [TestClass]
-    public partial class ApiBaseTests : RestierTestBase
+    public partial class ApiBaseTests
+#if NET6_0_OR_GREATER
+        : RestierTestBase<TestableEmptyApi>
+#else
+        : RestierTestBase
+#endif
     {
 
         void di(IServiceCollection services)

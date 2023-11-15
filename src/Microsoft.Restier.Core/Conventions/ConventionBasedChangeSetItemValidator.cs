@@ -41,11 +41,9 @@ namespace Microsoft.Restier.Core
                 {
                     validationContext.MemberName = property.Name;
 
-                    var validationAttributes = property.Attributes.OfType<ValidationAttribute>();
-                    foreach (var validationAttribute in validationAttributes)
+                    foreach (var validationAttribute in property.Attributes.OfType<ValidationAttribute>())
                     {
-                        var value = property.GetValue(resource);
-                        var validationResult = validationAttribute.GetValidationResult(value, validationContext);
+                        var validationResult = validationAttribute.GetValidationResult(property.GetValue(resource), validationContext);
                         if (validationResult != ValidationResult.Success)
                         {
                             validationResults.Add(new ChangeSetItemValidationResult()

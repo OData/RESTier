@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0;</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0;</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
@@ -10,8 +10,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="5.*-*" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.5.*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="6.*-*" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.*-*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.*-*" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
@@ -22,10 +27,6 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.*" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
 	</ItemGroup>
 
 	<ItemGroup>

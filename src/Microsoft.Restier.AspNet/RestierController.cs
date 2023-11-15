@@ -18,6 +18,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNet.OData.Results;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
@@ -111,27 +112,10 @@ namespace Microsoft.Restier.AspNet
             var provider = controllerContext.Request.GetRequestContainer();
 #pragma warning restore CA1062 // Validate arguments of public methods
 
-
-            if (api is null)
-            {
-                //var registrations = provider.GetService(typeof(RestierApiRouteDictionary)) as RestierApiRouteDictionary;
-                //var apiType = registrations[(((controllerContext.RouteData as HttpRouteData).Route as ODataRoute).RouteConstraint as ODataPathRouteConstraint).RouteName].ApiType;
-                //api = provider.GetService(apiType) as ApiBase;
-                api = provider.GetService(typeof(ApiBase)) as ApiBase;
-            }
-            if (querySettings is null)
-            {
-                querySettings = provider.GetService(typeof(ODataQuerySettings)) as ODataQuerySettings;
-            }
-            if (validationSettings is null)
-            {
-                validationSettings = provider.GetService(typeof(ODataValidationSettings)) as ODataValidationSettings;
-            }
-            if (operationExecutor is null)
-            {
-                operationExecutor = provider.GetService(typeof(IOperationExecutor)) as IOperationExecutor;
-            }
-
+            api ??= provider.GetService<ApiBase>();
+            querySettings ??= provider.GetService<ODataQuerySettings>();
+            validationSettings ??= provider.GetService<ODataValidationSettings>();
+            operationExecutor ??= provider.GetService<IOperationExecutor>();
         }
 
         /// <summary>
@@ -142,11 +126,8 @@ namespace Microsoft.Restier.AspNet
         public async Task<HttpResponseMessage> Get(CancellationToken cancellationToken)
         {
             var path = GetPath();
-            var lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment is null)
-            {
+            var lastSegment = path.Segments.LastOrDefault() ??
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
-            }
 
             IQueryable result = null;
 
@@ -172,13 +153,12 @@ namespace Microsoft.Restier.AspNet
                     throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound, Resources.ResourceNotFound));
                 }
 
-                if (lastSegment is OperationSegment)
+                if (lastSegment is OperationSegment segment)
                 {
                     result = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
 
-                    var boundSeg = (OperationSegment)lastSegment;
-                    var operation = boundSeg.Operations.FirstOrDefault();
-                    Func<string, object> getParaValueFunc = p => boundSeg.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                    var operation = segment.Operations.FirstOrDefault();
+                    Func<string, object> getParaValueFunc = p => segment.Parameters.FirstOrDefault(c => c.Name == p).Value;
                     result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken).ConfigureAwait(false);
 
                     var applied = ApplyQueryOptions(result, path, true);
@@ -205,29 +185,24 @@ namespace Microsoft.Restier.AspNet
         /// <returns>The task object that contains the creation result.</returns>
         public async Task<IHttpActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
-            if (edmEntityObject is null)
-            {
-                throw new ArgumentNullException(nameof(edmEntityObject));
-            }
-
             CheckModelState();
             var path = GetPath();
             var lastSegment = path.Segments.Last();
 
             // if the request is to a function or function import, return MethodNotAllowed
-            var operationSegment = lastSegment as OperationSegment;
-            if (operationSegment != null && operationSegment.Operations.FirstOrDefault().IsFunction())
+            if (lastSegment is OperationSegment operationSegment && 
+                operationSegment.Operations.FirstOrDefault().IsFunction())
             {
                 return MethodNotAllowed();
             }
 
-            var operationImportSegment = lastSegment as OperationImportSegment;
-            if (operationImportSegment != null && operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            if (lastSegment is OperationImportSegment operationImportSegment && 
+                operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
             {
                 return MethodNotAllowed();
             }
 
-            if (!(path.NavigationSource is IEdmEntitySet entitySet))
+            if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
@@ -252,6 +227,12 @@ namespace Microsoft.Restier.AspNet
                 null,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
 
+            //RWM: On ASP.NET, the edmEntityObject will not be null. The only way to check if the POST had a body is to look at the LocalValues.
+            if (postItem.LocalValues.Count == 0)
+            {
+                throw new ODataException("A POST requires an object to be present in the request body.");
+            }
+
             var changeSetProperty = Request.GetChangeSet();
             if (changeSetProperty is null)
             {
@@ -272,8 +253,10 @@ namespace Microsoft.Restier.AspNet
 
         private IHttpActionResult MethodNotAllowed()
         {
-            var response = new HttpResponseMessage(HttpStatusCode.MethodNotAllowed) ;
-            response.Content = new StringContent(String.Empty);
+            var response = new HttpResponseMessage(HttpStatusCode.MethodNotAllowed)
+            {
+                Content = new StringContent(string.Empty)
+            };
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             response.Content.Headers.Allow.Add("GET");
             return ResponseMessage(response);
@@ -286,7 +269,8 @@ namespace Microsoft.Restier.AspNet
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
 #pragma warning disable CA1062 // Validate public arguments
-        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, true, cancellationToken).ConfigureAwait(false);
+        public async Task<IHttpActionResult> Put(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) 
+            => await Update(edmEntityObject, true, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// Handles a PATCH request to partially update an entity.
@@ -294,7 +278,8 @@ namespace Microsoft.Restier.AspNet
         /// <param name="edmEntityObject">The entity object to update.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that contains the updated result.</returns>
-        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) => await Update(edmEntityObject, false, cancellationToken).ConfigureAwait(false);
+        public async Task<IHttpActionResult> Patch(EdmEntityObject edmEntityObject, CancellationToken cancellationToken) 
+            => await Update(edmEntityObject, false, cancellationToken).ConfigureAwait(false);
 #pragma warning restore CA1062 // Validate public arguments
 
         /// <summary>
@@ -305,16 +290,13 @@ namespace Microsoft.Restier.AspNet
         public async Task<IHttpActionResult> Delete(CancellationToken cancellationToken)
         {
             var path = GetPath();
-            if (!(path.NavigationSource is IEdmEntitySet entitySet))
+            if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = GetOriginalValues(entitySet);
-            if (propertiesInEtag is null)
-            {
+            var propertiesInEtag = GetOriginalValues(entitySet) ?? 
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
-            }
 
             var model = api.GetModel();
 
@@ -356,11 +338,8 @@ namespace Microsoft.Restier.AspNet
             CheckModelState();
             var path = GetPath();
 
-            var lastSegment = path.Segments.LastOrDefault();
-            if (lastSegment is null)
-            {
+            var lastSegment = path.Segments.LastOrDefault() ??
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
-            }
 
             IQueryable result = null;
             object GetParaValueFunc(string p)
@@ -370,15 +349,13 @@ namespace Microsoft.Restier.AspNet
                     return null;
                 }
 
-                object parameter;
-                parameters.TryGetValue(p, out parameter);
+                parameters.TryGetValue(p, out var parameter);
                 return parameter;
             }
 
             if (lastSegment is OperationImportSegment segment)
             {
-                var unboundSegment = segment;
-                var operation = unboundSegment.OperationImports.FirstOrDefault();
+                var operation = segment.OperationImports.FirstOrDefault();
                 result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, null, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -390,9 +367,8 @@ namespace Microsoft.Restier.AspNet
                     throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.NotFound, Resources.ResourceNotFound));
                 }
 
-                if (lastSegment is OperationSegment)
+                if (lastSegment is OperationSegment operationSegment)
                 {
-                    var operationSegment = lastSegment as OperationSegment;
                     var operation = operationSegment.Operations.FirstOrDefault();
                     var queryResult = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
                     result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, queryResult, cancellationToken).ConfigureAwait(false);
@@ -413,23 +389,16 @@ namespace Microsoft.Restier.AspNet
             Ensure.NotNull(edmType, nameof(edmType));
 
             var isNullable = false;
-            switch (edmType.TypeKind)
+            return edmType.TypeKind switch
             {
-                case EdmTypeKind.Collection:
-                    return new EdmCollectionTypeReference(edmType as IEdmCollectionType);
-                case EdmTypeKind.Complex:
-                    return new EdmComplexTypeReference(edmType as IEdmComplexType, isNullable);
-                case EdmTypeKind.Entity:
-                    return new EdmEntityTypeReference(edmType as IEdmEntityType, isNullable);
-                case EdmTypeKind.EntityReference:
-                    return new EdmEntityReferenceTypeReference(edmType as IEdmEntityReferenceType, isNullable);
-                case EdmTypeKind.Enum:
-                    return new EdmEnumTypeReference(edmType as IEdmEnumType, isNullable);
-                case EdmTypeKind.Primitive:
-                    return new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable);
-                default:
-                    throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString()));
-            }
+                EdmTypeKind.Collection      => new EdmCollectionTypeReference(edmType as IEdmCollectionType),
+                EdmTypeKind.Complex         => new EdmComplexTypeReference(edmType as IEdmComplexType, isNullable),
+                EdmTypeKind.Entity          => new EdmEntityTypeReference(edmType as IEdmEntityType, isNullable),
+                EdmTypeKind.EntityReference => new EdmEntityReferenceTypeReference(edmType as IEdmEntityReferenceType, isNullable),
+                EdmTypeKind.Enum            => new EdmEnumTypeReference(edmType as IEdmEnumType, isNullable),
+                EdmTypeKind.Primitive       => new EdmPrimitiveTypeReference(edmType as IEdmPrimitiveType, isNullable),
+                _ => throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.EdmTypeNotSupported, edmType.ToTraceString())),
+            };
         }
 
         private async Task<IHttpActionResult> Update(
@@ -439,17 +408,13 @@ namespace Microsoft.Restier.AspNet
         {
             CheckModelState();
             var path = GetPath();
-            var entitySet = path.NavigationSource as IEdmEntitySet;
-            if (entitySet is null)
+            if (path.NavigationSource is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
 
-            var propertiesInEtag = GetOriginalValues(entitySet);
-            if (propertiesInEtag is null)
-            {
+            var propertiesInEtag = GetOriginalValues(entitySet) ??
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
-            }
 
             // In case of type inheritance, the actual type will be different from entity type
             // This is only needed for put case, and does not need for patch case
@@ -485,7 +450,7 @@ namespace Microsoft.Restier.AspNet
                 var changeSet = new ChangeSet();
                 changeSet.Entries.Enqueue(updateItem);
 
-                //RWM: Seems like we should be using the result here. For something else.
+                //RWM: Seems like we should be using the result here for something else.
                 var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -691,25 +656,16 @@ namespace Microsoft.Restier.AspNet
             };
 
             var queryResult = await api.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
-            var result = queryResult.Results.AsQueryable();
-            return result;
+            return queryResult.Results.AsQueryable();
         }
 
         private ODataPath GetPath()
         {
-            var properties = Request.ODataProperties();
-            if (properties is null)
-            {
+            var properties = Request.ODataProperties() ??
                 throw new InvalidOperationException(Resources.InvalidODataInfoInRequest);
-            }
 
-            var path = properties.Path;
-            if (path is null)
-            {
+            return properties.Path ?? 
                 throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
-            }
-
-            return path;
         }
 
         private Task<IQueryable> ExecuteOperationAsync(
@@ -758,8 +714,7 @@ namespace Microsoft.Restier.AspNet
 
             // return 428(Precondition Required) if entity requires concurrency check.
             var model = api.GetModel();
-            var needEtag = model.IsConcurrencyCheckEnabled(entitySet);
-            if (needEtag)
+            if (model.IsConcurrencyCheckEnabled(entitySet))
             {
                 return null;
             }

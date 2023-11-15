@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System.IO;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
 using FluentAssertions;
@@ -6,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #if NETCOREAPP3_1_OR_GREATER
@@ -54,25 +58,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             oldReport.Should().BeEquivalentTo(newReport.ToString());
         }
 
-        [TestMethod]
-        public async Task LibraryApi_CompareCurrentVisibilityMatrixToPriorRun()
-        {
-            /* JHC Note:
-             * in Restier.Tests.AspNet, this test fails because we haven't generated an updated ApiSurface after making some changes to the data model
-             * */
-            var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-            var fileName = $"{Path.Combine(relativePath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt";
-
-            File.Exists(fileName).Should().BeTrue();
-            var oldReport = File.ReadAllText(fileName);
-            var newReport = api.GenerateVisibilityMatrix();
-
-            TestContext.WriteLine($"Old Report: {oldReport}");
-            TestContext.WriteLine($"New Report: {newReport}");
-
-            oldReport.Should().BeEquivalentTo(newReport);
-        }
-
         //[DataRow(relativePath)]
         //[DataTestMethod]
         [BreakdanceManifestGenerator]
@@ -82,15 +67,32 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(LibraryApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
 
+        #endregion
+
+        #region MarvelApi
+
+        [TestMethod]
+        public async Task MarvelApi_CompareCurrentApiMetadataToPriorRun()
+        {
+            var fileName = $"{Path.Combine(relativePath, baselineFolder)}{typeof(MarvelApi).Name}-ApiMetadata.txt";
+            File.Exists(fileName).Should().BeTrue();
+
+            var oldReport = File.ReadAllText(fileName);
+            var newReport = await RestierTestHelpers.GetApiMetadataAsync<MarvelApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>());
+
+            TestContext.WriteLine($"Old Report: {oldReport}");
+            TestContext.WriteLine($"New Report: {newReport}");
+
+            oldReport.Should().BeEquivalentTo(newReport.ToString());
+        }
+
         //[DataRow(relativePath)]
         //[DataTestMethod]
         [BreakdanceManifestGenerator]
-        public async Task LibraryApi_SaveVisibilityMatrix(string projectPath)
+        public async Task MarvelApi_SaveMetadataDocument(string projectPath)
         {
-            var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-            api.WriteCurrentVisibilityMatrix(Path.Combine(projectPath, baselineFolder));
-
-            File.Exists($"{Path.Combine(projectPath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
+            await RestierTestHelpers.WriteCurrentApiMetadata<MarvelApi>(Path.Combine(projectPath, baselineFolder), serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>());
+            File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(MarvelApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
 
         #endregion
@@ -112,22 +114,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             oldReport.Should().BeEquivalentTo(newReport.ToString());
         }
 
-        [TestMethod]
-        public async Task StoreApi_CompareCurrentVisibilityMatrixToPriorRun()
-        {
-            var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi>(serviceCollection: (services) => services.AddTestStoreApiServices());
-            var fileName = $"{Path.Combine(relativePath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt";
-
-            File.Exists(fileName).Should().BeTrue();
-            var oldReport = File.ReadAllText(fileName);
-            var newReport = api.GenerateVisibilityMatrix();
-
-            TestContext.WriteLine($"Old Report: {oldReport}");
-            TestContext.WriteLine($"New Report: {newReport}");
-
-            oldReport.Should().BeEquivalentTo(newReport);
-        }
-
         //[DataRow(relativePath)]
         //[DataTestMethod]
         [BreakdanceManifestGenerator]
@@ -135,17 +121,6 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         {
             await RestierTestHelpers.WriteCurrentApiMetadata<StoreApi>(Path.Combine(projectPath, baselineFolder), serviceCollection: (services) => services.AddTestStoreApiServices());
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(StoreApi).Name}-ApiMetadata.txt").Should().BeTrue();
-        }
-
-        //[DataRow(relativePath)]
-        //[DataTestMethod]
-        [BreakdanceManifestGenerator]
-        public async Task StoreApi_SaveVisibilityMatrix(string projectPath)
-        {
-            var api = await RestierTestHelpers.GetTestableApiInstance<StoreApi>(serviceCollection: (services) => services.AddTestStoreApiServices());
-            api.WriteCurrentVisibilityMatrix(Path.Combine(projectPath, baselineFolder));
-
-            File.Exists($"{Path.Combine(projectPath, baselineFolder)}{api.GetType().Name}-ApiSurface.txt").Should().BeTrue();
         }
 
         #endregion

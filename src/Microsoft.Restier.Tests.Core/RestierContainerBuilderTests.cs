@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
@@ -13,7 +16,12 @@ namespace Microsoft.Restier.Tests.Core
     /// Tests methods of the Core ServiceCOllectionExtensions.
     /// </summary>
     [TestClass]
-    public class RestierContainerBuilderTests : RestierTestBase
+    public class RestierContainerBuilderTests
+#if NET6_0_OR_GREATER
+        : RestierTestBase<TestableEmptyApi>
+#else
+        : RestierTestBase
+#endif
     {
 
         [TestMethod]
