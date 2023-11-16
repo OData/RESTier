@@ -26,6 +26,7 @@ using System.Text.Json.Serialization;
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 
+using CloudNimble.EasyAF.NewtonsoftJson.Compatibility;
 using CloudNimble.Breakdance.WebApi;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -147,7 +148,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 },
                 NullValueHandling = NullValueHandling.Ignore,
                 DateFormatString = "yyyy-MM-ddTHH:mm:ssZ",
-            };
+                ContractResolver = new SystemTextJsonContractResolver(),
+        };
             var employeeResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Readers?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
 #endif
 

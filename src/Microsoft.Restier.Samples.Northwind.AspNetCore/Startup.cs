@@ -41,7 +41,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRestier((builder) =>
+            services.AddEndpointRestier((builder) =>
             {
                 // This delegate is executed after OData is added to the container.
                 // Add you replacement services here.
@@ -74,15 +74,17 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRestierBatching();
+            app.UseRouting();
+
             app.UseAuthorization();
             app.UseClaimsPrincipals();
-            app.UseRestierBatching();
 
-            app.UseMvc(builder =>
+            app.UseEndpoints(endpoints =>
             {
-                builder.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
+                endpoints.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
 
-                builder.MapRestier(builder =>
+                endpoints.MapRestier(builder =>
                 {
                     builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
                 });
