@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNet.OData.Extensions;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Restier.AspNetCore.Middleware;
-using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -18,11 +20,6 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseClaimsPrincipals(this IApplicationBuilder app)
         {
-            //app.Use((context, next) =>
-            //{
-            //    ClaimsPrincipal.ClaimsPrincipalSelector = () => context.User;
-            //    return next(context);
-            //});
             app.UseMiddleware<RestierClaimsPrincipalMiddleware>();
             return app;
         }
@@ -52,7 +49,6 @@ namespace Microsoft.AspNetCore.Builder
 //                await next();
 //            });
 //#endif
-
             app.UseODataBatching();
             // RWM: This call fixes issues where the batch processor irresponsibly disposes of the HttpContext before it should.
             app.UseMiddleware<ODataBatchHttpContextFixerMiddleware>();

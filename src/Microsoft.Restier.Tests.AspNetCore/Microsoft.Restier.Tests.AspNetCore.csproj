@@ -1,32 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0;</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0;</TargetFrameworks>
 		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="5.*-*" />
-		<PackageReference Include="EasyAF.Http" Version="*-*" />
+		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="6.*-*" />
 		<PackageReference Include="coverlet.collector" Version="*" />
-		<PackageReference Include="Microsoft.OData.Edm" Version="7.13.*" />
+		<PackageReference Include="EasyAF.Http" Version="*-*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" NoWarn="NU1608" />
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="System.Text.Json" Version="8.*-*" NoWarn="NU1608" />
+	</ItemGroup>
+	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
 		<PackageReference Include="System.Text.Json" Version="7.*" NoWarn="NU1608" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" NoWarn="NU1608" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="System.Text.Json" Version="6.*" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" NoWarn="NU1608" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-		<PackageReference Include="System.Text.Json" Version="6.*" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" NoWarn="NU1608" />
 	</ItemGroup>
 
 	<ItemGroup>

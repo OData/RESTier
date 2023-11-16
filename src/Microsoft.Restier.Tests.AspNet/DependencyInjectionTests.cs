@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using CloudNimble.Breakdance.Assemblies;
@@ -45,7 +48,7 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task DI_CompareCurrentVersion_ToRC2()
         {
             var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-            var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
+            var result = provider.GetContainerContentsLog();
             result.Should().NotBeNullOrEmpty();
 
             var baseline = File.ReadAllText("..//..//..//..//Microsoft.Restier.Tests.AspNet//Baselines//RC2-LibraryApi-ServiceProvider.txt");
@@ -74,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             //var projectPath = "..//..//..//";
             var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
-            var result = DependencyInjectionTestHelpers.GetContainerContentsLog(provider);
+            var result = provider.GetContainerContentsLog();
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-LibraryApi-ServiceProvider.txt");
             Console.WriteLine(fullPath);
 

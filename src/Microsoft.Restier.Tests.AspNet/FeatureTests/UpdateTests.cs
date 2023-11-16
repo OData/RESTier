@@ -67,11 +67,20 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var book = bookList.Items.First();
 
             book.Should().NotBeNull();
-
+            
+            var originalBookTitle = book.Title;
             book.Title += " Test";
 
             var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
             bookEditRequest.IsSuccessStatusCode.Should().BeTrue();
+
+            var bookCheckRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/Books({book.Id})", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            bookCheckRequest.IsSuccessStatusCode.Should().BeTrue();
+            var (book2, ErrorContent2) = await bookCheckRequest.DeserializeResponseAsync<Book>();
+            book2.Should().NotBeNull();
+            book2.Title.Should().Be($"{originalBookTitle} Test");
+
+            await Cleanup(book.Id, originalBookTitle);
         }
 
         [TestMethod]
@@ -87,8 +96,10 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             book.Should().NotBeNull();
 
+            var originalBookTitle = book.Title;
+
             var payload = new {
-                Title = book.Title + " | Patch Test"
+                Title = $"{book.Title} | Patch Test"
             };
 
             var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(new HttpMethod("PATCH"), resource: $"/Books({book.Id})", payload: payload, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
@@ -98,7 +109,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             bookCheckRequest.IsSuccessStatusCode.Should().BeTrue();
             var (book2, ErrorContent2) = await bookCheckRequest.DeserializeResponseAsync<Book>();
             book2.Should().NotBeNull();
-            book2.Title.Should().EndWith(" | Patch Test");
+            book2.Title.Should().Be($"{originalBookTitle} | Patch Test");
+
+            await Cleanup(book.Id, originalBookTitle);
         }
 
         [TestMethod]
@@ -109,6 +122,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var (publisher, ErrorContent) = await publisherRequest.DeserializeResponseAsync<Publisher>();
 
             publisher.Should().NotBeNull();
+            publisher.LastUpdated.Should().NotBeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 5));
 
             publisher.Books = null;
             var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
@@ -122,6 +136,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             publisher2.Should().NotBeNull();
             publisher2.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 5));
+        }
+
+        public async Task Cleanup(Guid bookId, string title)
+        {
+            var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var book = api.DbContext.Books.First(c => c.Id == bookId);
+            book.Title = title;
+            await api.DbContext.SaveChangesAsync();
         }
 
     }

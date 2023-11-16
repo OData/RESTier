@@ -4,6 +4,8 @@
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Restier.Core;
 using System;
 using System.Linq;
@@ -55,6 +57,55 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
         {
+            //RWM: Make sure that Restier works in any situation without needing additional knowledge.
+            return AddRestier(services, options => options.EnableEndpointRouting = false, configureApisAction);
+        }
+
+        /// <summary>
+        /// Adds the Restier and OData Services to the specified <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
+        /// <param name="mvcOptions">
+        /// An <see cref="Action{MvcOptions}" /> that allows you to configure additional ASP.NET options, such as adding <see cref="AuthorizeFilter "/> implementations.</param>
+        /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
+        /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
+        /// <example>
+        /// <code>
+        /// services.AddRestier(
+        ///     options =>
+        ///     {
+        ///         // @robertmclaws: Until we have endpoint routing support, please don't forget this line... it is normally set by default on other overloads of this method.
+        ///         options.EnableEndpointRouting = false;
+        ///         options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
+        ///     },
+        ///     builder =>
+        ///     {
+        ///         builder.AddRestierApi<SomeApi>(routeServices =>
+        ///             routeServices
+        ///                 .AddEF6ProviderServices<SomeDbContext>()
+        ///                 .AddChainedService<IModelBuilder, SomeDbContextModelBuilder>()
+        ///                 .AddSingleton(new ODataValidationSettings
+        ///                 {
+        ///                     MaxAnyAllExpressionDepth = 3,
+        ///                     MaxExpansionDepth = 3,
+        ///                 });
+        ///         );
+        ///  
+        ///         builder.AddRestierApi<AnotherApi>(routeServices =>
+        ///             routeServices
+        ///                 .AddEF6ProviderServices<AnotherDbContext>()
+        ///                 .AddChainedService<IModelBuilder, AnotherDbContextModelBuilder>()
+        ///                 .AddSingleton(new ODataValidationSettings
+        ///                 {
+        ///                     MaxAnyAllExpressionDepth = 3,
+        ///                     MaxExpansionDepth = 3,
+        ///                 })
+        ///         );
+        ///    );
+        /// </code>
+        /// </example>
+        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<MvcOptions> mvcOptions, Action<RestierApiBuilder> configureApisAction)
+        {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
 
@@ -65,7 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(sp => configureApisAction);
 
             //RWM: Make sure that Restier works in any situation without needing additional knowledge.
-            return services.AddControllers(options => options.EnableEndpointRouting = false);
+            return services.AddControllers(mvcOptions);
         }
 
         /// <summary>
@@ -128,10 +179,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
         /// <example>
         /// <code>
-        /// config.UseRestier(builder =>
+        /// services.AddRestier(builder =>
         ///     builder
-        ///         .AddRestierApi<SomeApi>(services =>
-        ///             services
+        ///         .AddRestierApi<SomeApi>(routeServices =>
+        ///             routeServices
         ///                 .AddEF6ProviderServices<SomeDbContext>()
         ///                 .AddChainedService<IModelBuilder, SomeDbContextModelBuilder>()
         ///                 .AddSingleton(new ODataValidationSettings
@@ -141,8 +192,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///                 })
         ///         )
         ///  
-        ///         .AddRestierApi<AnotherApi>(services =>
-        ///             services
+        ///         .AddRestierApi<AnotherApi>(routeServices =>
+        ///             routeServices
         ///                 .AddEF6ProviderServices<AnotherDbContext>()
         ///                 .AddChainedService<IModelBuilder, AnotherDbContextModelBuilder>()
         ///                 .AddSingleton(new ODataValidationSettings
@@ -166,7 +217,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(sp => configureApisAction);
 
             //RWM: Make sure that Restier works in any situation without needing additional knowledge.
-            return services.AddControllers(options => {
+            return services.AddControllers(options => 
+            {
                 options.EnableEndpointRouting = false;
 
                 // Read formatters
@@ -188,8 +240,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     outputFormatter.BaseAddressFactory = outputBaseAddressFactory;
                     options.OutputFormatters.Insert(0, outputFormatter);
                 }
-
-
             });
         }
 

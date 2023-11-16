@@ -38,12 +38,12 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class AuthorizationTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 
         #region Constructors
 
@@ -74,7 +74,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task Authorization_FilterReturns403()
         {
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             AddRestierAction = (apiBuilder) =>
             {
                 apiBuilder.AddRestierApi<LibraryApi>(restierServices =>
@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task Authorization_UpdateEmployee_ShouldReturn400()
         {
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             AddRestierAction = (apiBuilder) =>
             {
                 apiBuilder.AddRestierApi<LibraryApi>(restierServices =>
@@ -129,12 +129,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             AuthTestSetup();
             var settings = new JsonSerializerOptions
             {
-#if NETCOREAPP3_1
-#pragma warning disable SYSLIB0020
-                IgnoreNullValues = true,
-#pragma warning restore SYSLIB0020
-#endif
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 #endif
             };

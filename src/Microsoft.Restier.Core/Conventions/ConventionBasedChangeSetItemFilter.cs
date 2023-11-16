@@ -85,15 +85,16 @@ namespace Microsoft.Restier.Core
         {
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, pipelineState);
+
+            //RWM: This prefers the Sync name over the Async name, because in V1 Sync has been the only option for a decade. In v2, we'll probably just make everything Async without Sync calls.
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName) ?? targetApiType.GetQualifiedMethod($"{expectedMethodName}Async");
 
             if (expectedMethod is null)
             {
                 var actualMethodName = expectedMethodName.Replace(dataModification.ExpectedResourceType.Name, dataModification.ResourceSetName);
-                var actualMethod = targetApiType.GetQualifiedMethod(actualMethodName);
-                if (actualMethod is not null)
+                if (targetApiType.GetQualifiedMethod(actualMethodName) is not null)
                 {
-                    Trace.WriteLine($"Restier Filter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
+                    Trace.WriteLine($"Restier ConventionBasedChangeSetItemFilter expected'{expectedMethodName}' but found '{actualMethodName}'. Your method will not be called until you correct the method name.");
                 }
 
                 return Task.CompletedTask;
@@ -101,13 +102,13 @@ namespace Microsoft.Restier.Core
 
             if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
             {
-                Trace.WriteLine($"Restier Filter found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                Trace.WriteLine($"Restier ConventionBasedChangeSetItemFilter found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
                 return Task.CompletedTask;
             }
 
             if (expectedMethod.ReturnType != typeof(void) && !typeof(Task).IsAssignableFrom(expectedMethod.ReturnType))
             {
-                Trace.WriteLine($"Restier Filter found '{expectedMethod}' but it does not return void or a Task. Your method will not be called until you correct the return type.");
+                Trace.WriteLine($"Restier ConventionBasedChangeSetItemFilter found '{expectedMethod}' but it does not return void or a Task. Your method will not be called until you correct the return type.");
                 return Task.CompletedTask;
             }
 
@@ -124,25 +125,27 @@ namespace Microsoft.Restier.Core
 
             var parameters = GetParameters(item);
             var methodParameters = expectedMethod.GetParameters();
-            if (ParametersMatch(methodParameters, parameters))
+            
+            if (!ParametersMatch(methodParameters, parameters))
             {
-                try
-                {
-                    var result = expectedMethod.Invoke(target, parameters);
-                    if (result is Task resultTask)
-                    {
-                        return resultTask;
-                    }
-                    return Task.CompletedTask;
-                }
-                catch (TargetInvocationException ex)
-                {
-                    throw new ConventionInvocationException($"Restier Filter {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
-                }
+                Trace.WriteLine($"Restier ConventionBasedChangeSetItemFilter found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
+                return Task.CompletedTask;
             }
-
-            Trace.WriteLine($"Restier Filter found '{expectedMethod}', but it has an incorrect number of arguments or the types don't match. The number of arguments should be 1.");
-            return Task.CompletedTask;
+            
+            //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
+            try
+            {
+                var result = expectedMethod.Invoke(target, parameters);
+                if (result is Task resultTask)
+                {
+                    return resultTask;
+                }
+                return Task.CompletedTask;
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw new ConventionInvocationException($"ConventionBasedChangeSetItemFilter {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
+            }
         }
 
     }

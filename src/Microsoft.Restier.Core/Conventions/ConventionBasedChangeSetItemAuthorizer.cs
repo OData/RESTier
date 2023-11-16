@@ -35,6 +35,8 @@ namespace Microsoft.Restier.Core
 
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
+            
+            //RWM: This prefers the Sync name over the Async name, because in V1 Sync has been the only option for a decade. In v2, we'll probably just make everything Async without Sync calls.
             var expectedMethod = targetApiType.GetQualifiedMethod(expectedMethodName) ?? targetApiType.GetQualifiedMethod($"{expectedMethodName}Async");
 
             if (expectedMethod is null)
@@ -44,13 +46,13 @@ namespace Microsoft.Restier.Core
 
             if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
             {
-                Trace.WriteLine($"Restier Authorizer found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
+                Trace.WriteLine($"Restier ConventionBasedChangeSetItemAuthorizer found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
                 return Task.FromResult(true);
             }
 
             if (expectedMethod.ReturnType != typeof(bool) && !typeof(Task<bool>).IsAssignableFrom(expectedMethod.ReturnType))
             {
-                Trace.WriteLine($"Restier Authorizer found '{expectedMethod}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
+                Trace.WriteLine($"Restier ConventionBasedChangeSetItemAuthorizer found '{expectedMethod}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
                 return Task.FromResult(true);
             }
 
@@ -68,7 +70,7 @@ namespace Microsoft.Restier.Core
             var parameters = expectedMethod.GetParameters();
             if (parameters.Length > 0)
             {
-                Trace.WriteLine($"Restier Authorizer found '{expectedMethod}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
+                Trace.WriteLine($"Restier ConventionBasedChangeSetItemAuthorizer found '{expectedMethod}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
                 return Task.FromResult(true);
             }
 
@@ -84,7 +86,7 @@ namespace Microsoft.Restier.Core
             }
             catch (TargetInvocationException ex)
             {
-                throw new ConventionInvocationException($"Authorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
+                throw new ConventionInvocationException($"ConventionBasedChangeSetItemAuthorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
             }
         }
 

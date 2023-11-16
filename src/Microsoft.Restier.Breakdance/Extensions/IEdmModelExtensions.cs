@@ -43,6 +43,7 @@ namespace Microsoft.Restier.Breakdance
                         if (!string.IsNullOrWhiteSpace(functionName))
                         {
                             entries.Add(new RestierConventionEntitySetDefinition(functionName, pipelineState, entitySet.Name, operation));
+                            entries.Add(new RestierConventionEntitySetDefinition($"{functionName}Async", pipelineState, entitySet.Name, operation));
                         }
                     }
                 }
@@ -59,6 +60,7 @@ namespace Microsoft.Restier.Breakdance
                         if (!string.IsNullOrWhiteSpace(functionName))
                         {
                             entries.Add(new RestierConventionMethodDefinition(functionName, pipelineState, function.Name, operation));
+                            entries.Add(new RestierConventionMethodDefinition($"{functionName}Async", pipelineState, function.Name, operation));
                         }
                     }
                 }

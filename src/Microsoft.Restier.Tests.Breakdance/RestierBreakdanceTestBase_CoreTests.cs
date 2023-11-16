@@ -1,84 +1,52 @@
-#if NETCOREAPP3_1_OR_GREATER
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System.Threading.Tasks;
+#if NET6_0_OR_GREATER
+
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Restier.Core;
-using System;
-using Microsoft.AspNet.OData.Query;
-using CloudNimble.Breakdance.AspNetCore;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Tests.Breakdance
 {
 
     [TestClass]
-    public class RestierBreakdanceTestBase_CoreTests
+    public class RestierBreakdanceTestBase_CoreTests : TestHarnessBase
     {
 
-        #region Private Members
-
-        private Action<RestierApiBuilder> addRestierAction = (apiBuilder) =>
-        {
-            apiBuilder.AddRestierApi<LibraryApi>(restierServices =>
-            {
-                restierServices
-                    .AddEFCoreProviderServices<LibraryContext>()
-                    .AddSingleton(new ODataValidationSettings
-                    {
-                        MaxTop = 5,
-                        MaxAnyAllExpressionDepth = 3,
-                        MaxExpansionDepth = 3,
-                    });
-
-#if EFCore
-                using var tempServices = restierServices.BuildServiceProvider();
-
-                var scopeFactory = tempServices.GetService<IServiceScopeFactory>();
-                using var scope = scopeFactory.CreateScope();
-                var dbContext = scope.ServiceProvider.GetService<LibraryContext>();
-
-                // EnsureCreated() returns false if the database already exists
-                if (dbContext.Database.EnsureCreated())
-                {
-                    var initializer = new LibraryTestInitializer();
-                    initializer.Seed(dbContext);
-                }
-#endif
-
-            });
-        };
-
-        private Action<RestierRouteBuilder> mapRestierAction = (routeBuilder) =>
-        {
-            routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix);
-        };
-
-        #endregion
-
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void TestSetup_ServerAndServicesAreAvailable()
         {
-            var testBase = GetTestBaseInstance();
+            var testBase = GetTestBaseInstance<LibraryApi>();
             testBase.TestServer.Should().NotBeNull();
             testBase.TestServer.Services.Should().NotBeNull();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void TestSetup_ScopeFactoryIsPresent()
         {
-            var testBase = GetTestBaseInstance();
+            var testBase = GetTestBaseInstance<LibraryApi>();
 
             var factory = testBase.TestServer.Services.GetRequiredService<IServiceScopeFactory>();
             factory.Should().NotBeNull();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task HttpClient_ShouldReturnRootContent()
         {
-            var testBase = GetTestBaseInstance();
+            var testBase = GetTestBaseInstance<LibraryApi>();
 
             var client = testBase.GetHttpClient();
             var result = await client.GetAsync("");
@@ -87,42 +55,41 @@ namespace Microsoft.Restier.Tests.Breakdance
             resultContent.Should().ContainAll("$metadata", "Books", "LibraryCards", "Publishers", "Readers");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task GetApiMetadataAsync_ReturnsXDocument()
         {
-            var testBase = GetTestBaseInstance();
+            var testBase = GetTestBaseInstance<LibraryApi>();
 
             var metadata = await testBase.GetApiMetadataAsync();
             metadata.Should().NotBeNull();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void GetScopedRequestContainer_ReturnsInstance()
         {
-            var testBase = GetTestBaseInstance();
+            var testBase = GetTestBaseInstance<LibraryApi>();
 
             var container = testBase.GetScopedRequestContainer();
             container.Should().NotBeNull();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [TestMethod]
         public void GetApiInstance_ReturnsInstanceFromRequestScope()
         {
-            var testBase = GetTestBaseInstance();
+            var testBase = GetTestBaseInstance<LibraryApi>();
 
             var api = testBase.GetApiInstance();
             api.Should().NotBeNull();
-        }
-
-        private RestierBreakdanceTestBase<LibraryApi> GetTestBaseInstance()
-        {
-            var testBase = new RestierBreakdanceTestBase<LibraryApi>
-            {
-                AddRestierAction = addRestierAction,
-                MapRestierAction = mapRestierAction
-            };
-            testBase.TestSetup();
-            return testBase;
         }
 
     }
