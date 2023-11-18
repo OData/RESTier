@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
@@ -58,56 +59,50 @@ namespace Microsoft.Restier.Breakdance
             TestHostBuilder.ConfigureServices(services =>
             {
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                        .AddCookie(options => {
+                        .AddCookie(options =>
+                        {
                             options.Events.OnRedirectToAccessDenied = context => {
                                 context.Response.StatusCode = 403;
                                 return Task.CompletedTask;
                             };
                         });
-                if (useEndpoints)
-                {
-                    services
-                       .AddAuthorization()
-                       .AddEndpointRestier(apiBuilder =>
-                       {
-                           AddRestierAction?.Invoke(apiBuilder);
-                       });
-                }
-                else
-                {
-                    services
-                        .AddRestier(apiBuilder =>
-                        {
-                            AddRestierAction?.Invoke(apiBuilder);
-                        })
-                        .AddApplicationPart(typeof(TApi).Assembly)
-                        .AddApplicationPart(typeof(RestierController).Assembly);
-                }
+
+                services
+                    .AddRestier(apiBuilder =>
+                    {
+                        AddRestierAction?.Invoke(apiBuilder);
+                    },
+                    useEndpoints)
+
+                    .AddApplicationPart(typeof(TApi).Assembly)
+                    .AddApplicationPart(typeof(RestierController).Assembly);
             })
+
            .Configure(builder =>
             {
+                ApplicationBuilderAction?.Invoke(builder);
+
+
                 if (useEndpoints)
                 {
-                    ApplicationBuilderAction?.Invoke(builder);
                     builder.UseRestierBatching();
+
                     builder.UseRouting();
                     builder.UseAuthorization();
+
                     builder.UseDeveloperExceptionPage();
                     builder.UseEndpoints(endpoints =>
                     {
-                        var applicationPartManager = endpoints.ServiceProvider.GetRequiredService<ApplicationPartManager>();
-                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(typeof(TApi).Assembly));
-                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(typeof(RestierController).Assembly));
-                        endpoints.Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)               
-                        .MapRestier(restierRouteBuilder =>
-                        {
-                            MapRestierAction?.Invoke(restierRouteBuilder);
-                        });
+                        endpoints
+                            .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)               
+                            .MapRestier(restierRouteBuilder =>
+                            {
+                                MapRestierAction?.Invoke(restierRouteBuilder);
+                            });
                     });
                 }
                 else
                 {
-                    ApplicationBuilderAction?.Invoke(builder);
                     builder.UseAuthorization();
                     builder.UseDeveloperExceptionPage();
 

@@ -1,19 +1,27 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using Microsoft.AspNetCore.Routing;
 using System;
 
 namespace Microsoft.Restier.AspNetCore
 {
-    internal static class ODataEndpointPattern
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static class ODataEndpointRoutingPattern
     {
+
         /// <summary>
         /// Wildcard route template for the OData Endpoint route pattern.
         /// </summary>
-        public static readonly string ODataEndpointPath = "ODataEndpointPath_";
+        public static readonly string ODataEndpointRoutingPath = "ODataEndpointPath_";
 
         /// <summary>
         /// Wildcard route template for the OData path route variable.
         /// </summary>
-        public static readonly string ODataEndpointTemplate = "{{**" + ODataEndpointPath + "{0}}}";
+        public static readonly string ODataEndpointRoutingTemplate = "{{**" + ODataEndpointRoutingPath + "{0}}}";
 
         /// <summary>
         /// Create an OData Endpoint route pattern.
@@ -22,13 +30,13 @@ namespace Microsoft.Restier.AspNetCore
         /// <param name="routeName">The route name. It can not be null and verify upper layer.</param>
         /// <param name="routePrefix">The route prefix. It could be null or empty</param>
         /// <returns>The OData route endpoint pattern.</returns>
-        public static string CreateODataEndpointPattern(string routeName, string routePrefix)
+        public static string CreateODataEndpointRoutingPattern(string routeName, string routePrefix)
         {
             Ensure.NotNull(routeName, nameof(routeName));
 
             return string.IsNullOrEmpty(routePrefix) ?
-                string.Format(ODataEndpointTemplate, routeName) :
-                routePrefix + "/" + string.Format(ODataEndpointTemplate, routeName);
+                string.Format(ODataEndpointRoutingTemplate, routeName) :
+                routePrefix + "/" + string.Format(ODataEndpointRoutingTemplate, routeName);
         }
 
         /// <summary>
@@ -44,11 +52,11 @@ namespace Microsoft.Restier.AspNetCore
             object odataPathValue = null;
             foreach (var item in values)
             {
-                string keyString = item.Key;
+                var keyString = item.Key;
 
-                if (keyString.StartsWith(ODataEndpointPath))
+                if (keyString.StartsWith(ODataEndpointRoutingPath))
                 {
-                    routeName = keyString.Substring(ODataEndpointPath.Length);
+                    routeName = keyString.Substring(ODataEndpointRoutingPath.Length);
                     odataPathValue = item.Value;
                     break;
                 }
@@ -56,5 +64,7 @@ namespace Microsoft.Restier.AspNetCore
 
             return (routeName, odataPathValue);
         }
+
     }
+
 }

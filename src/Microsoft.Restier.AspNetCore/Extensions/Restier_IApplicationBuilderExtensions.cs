@@ -10,7 +10,7 @@ namespace Microsoft.AspNetCore.Builder
     /// <summary>
     /// 
     /// </summary>
-    public static class IApplicationBuilderExtensions
+    public static class Restier_IApplicationBuilderExtensions
     {
 
         /// <summary>

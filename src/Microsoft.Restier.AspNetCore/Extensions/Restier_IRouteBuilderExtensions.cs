@@ -23,7 +23,7 @@ namespace Microsoft.Restier.AspNetCore
     /// <summary>
     /// Extension methods for the <see cref="IRouteBuilder"/> interface.
     /// </summary>
-    public static class RestierRouteBuilderExtensions
+    public static class Restier_IRouteBuilderExtensions
     {
         /// <summary>
         /// Instructs WebApi to map one or more of the registered Restier APIs to the specified Routes, each with it's own isolated Dependency Injection container.
@@ -132,7 +132,7 @@ namespace Microsoft.Restier.AspNetCore
 
             // Create an service provider for this route. Add the default services to the custom configuration actions.
             var configureDefaultServicesMethod = typeof(ODataRouteBuilderExtensions).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).FirstOrDefault(c => c.Name == "ConfigureDefaultServices");
-            var internalServicesAction = (Action<IContainerBuilder>)configureDefaultServicesMethod.Invoke(builder, new object[] { builder, null });
+            var internalServicesAction = (Action<IContainerBuilder>)configureDefaultServicesMethod.Invoke(builder, [builder, null]);
 
             var serviceProvider = (perRouteContainer as PerRouteContainer).CreateODataRouteContainer(routeName, internalServicesAction, configureAction);
 

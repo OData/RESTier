@@ -17,6 +17,7 @@ using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
 
 namespace Microsoft.Restier.AspNetCore
 {
+
     /// <summary>
     /// The default routing convention implementation.
     /// </summary>
@@ -39,19 +40,14 @@ namespace Microsoft.Restier.AspNetCore
         {
             Ensure.NotNull(routeContext, nameof(routeContext));
 
-            ODataPath odataPath = routeContext.HttpContext.ODataFeature().Path;
-
-            if (odataPath is null)
-            {
+            var odataPath = routeContext.HttpContext.ODataFeature().Path ?? 
                 throw new InvalidOperationException(Resources.InvalidEmptyPathInRequest);
-            }
 
             var services = routeContext.HttpContext.RequestServices;
 
             var actionCollectionProvider = services.GetRequiredService<IActionDescriptorCollectionProvider>();
 
-            IEnumerable<ControllerActionDescriptor> actions;
-            if (TryFindMatchingODataActions(routeContext, out actions))
+            if (TryFindMatchingODataActions(routeContext, out var actions))
             {
                 return actions;
             }
@@ -107,15 +103,15 @@ namespace Microsoft.Restier.AspNetCore
 
         private bool TryFindMatchingODataActions(RouteContext context, out IEnumerable<ControllerActionDescriptor> actions)
         {
-            IEnumerable<IODataRoutingConvention> routingConventions = context.HttpContext.Request.GetRoutingConventions();
-            if (routingConventions != null)
+            var routingConventions = context.HttpContext.Request.GetRoutingConventions();
+            if (routingConventions is not null)
             {
-                foreach (IODataRoutingConvention convention in routingConventions)
+                foreach (var convention in routingConventions)
                 {
                     if (convention != this)
                     {
-                        IEnumerable<ControllerActionDescriptor> actionDescriptor = convention.SelectAction(context);
-                        if (actionDescriptor != null && actionDescriptor.Any())
+                        var actionDescriptor = convention.SelectAction(context);
+                        if (actionDescriptor?.Any() == true)
                         {
                             actions = actionDescriptor;
                             return true;
@@ -137,7 +133,7 @@ namespace Microsoft.Restier.AspNetCore
         {
             if (lastSegment is OperationSegment operationSeg)
             {
-                if (operationSeg.Operations.FirstOrDefault() is IEdmAction action)
+                if (operationSeg.Operations.FirstOrDefault() is IEdmAction)
                 {
                     return true;
                 }
@@ -145,7 +141,7 @@ namespace Microsoft.Restier.AspNetCore
 
             if (lastSegment is OperationImportSegment operationImportSeg)
             {
-                if (operationImportSeg.OperationImports.FirstOrDefault() is IEdmActionImport actionImport)
+                if (operationImportSeg.OperationImports.FirstOrDefault() is IEdmActionImport)
                 {
                     return true;
                 }
@@ -153,5 +149,7 @@ namespace Microsoft.Restier.AspNetCore
 
             return false;
         }
+
     }
+
 }

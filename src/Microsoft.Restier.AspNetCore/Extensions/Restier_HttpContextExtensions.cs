@@ -13,7 +13,7 @@ namespace Microsoft.Restier.AspNetCore
     /// Offers a collection of extension methods to <see cref="HttpContext"/>.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    internal static class HttpContextExtensions
+    internal static class Restier_HttpContextExtensions
     {
 
         private const string ChangeSetKey = "Microsoft.Restier.Submit.ChangeSet";

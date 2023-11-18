@@ -1,30 +1,31 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Batch;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Routing;
-using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Routing.Conventions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData;
-using System.Reflection;
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.AspNetCore.Batch;
+using Microsoft.Restier.Core;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNet.OData.Routing.Conventions;
+using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.Restier.AspNetCore
 {
     /// <summary>
     /// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add Restier routes.
     /// </summary>
-    public static class RestierEndpointBuilderExtensions
+    public static class Restier_IEndpointRouteBuilderExtensions
     {
+
         /// <summary>
         /// Instructs WebApi to map one or more of the registered Restier APIs to the specified Routes, each with it's own isolated Dependency Injection container.
         /// </summary>
@@ -96,7 +97,7 @@ namespace Microsoft.Restier.AspNetCore
         /// <param name="routePrefix">The prefix to add to the OData route's path template.</param>
         /// <param name="configureAction">The configuring action to add the services to the root container.</param>
         /// <returns>The added <see cref="ODataRoute"/>.</returns>
-        public static IEndpointRouteBuilder MapODataServiceRoute(this IEndpointRouteBuilder builder, 
+        internal static IEndpointRouteBuilder MapODataServiceRoute(this IEndpointRouteBuilder builder, 
             string routeName,
             string routePrefix,
             Action<IContainerBuilder, string> configureAction)
@@ -107,15 +108,12 @@ namespace Microsoft.Restier.AspNetCore
             #region Stuff that's done on configuration.CreateODataRootCountainer
 
             // Build and configure the root container.
-            var perRouteContainer = builder.ServiceProvider.GetRequiredService<IPerRouteContainer>();
-            if (perRouteContainer is null)
-            {
+            var perRouteContainer = builder.ServiceProvider.GetRequiredService<IPerRouteContainer>() ?? 
                 throw new InvalidOperationException("Could not find the PerRouteContainer.");
-            }
 
             // Create an service provider for this route. Add the default services to the custom configuration actions.
             var configureDefaultServicesMethod = typeof(ODataEndpointRouteBuilderExtensions).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).FirstOrDefault(c => c.Name == "ConfigureDefaultServices");
-            var internalServicesAction = (Action<IContainerBuilder>)configureDefaultServicesMethod.Invoke(builder, new object[] { builder, null });
+            var internalServicesAction = (Action<IContainerBuilder>)configureDefaultServicesMethod.Invoke(builder, [builder, null]);
 
             var serviceProvider = (perRouteContainer as PerRouteContainer).CreateODataRouteContainer(routeName, internalServicesAction, configureAction);
 
@@ -136,23 +134,23 @@ namespace Microsoft.Restier.AspNetCore
             }
 
             // Resolve HTTP handler, create the OData route and register it.
-            routePrefix = RestierRouteBuilderExtensions.RemoveTrailingSlash(routePrefix);
+            routePrefix = Restier_IRouteBuilderExtensions.RemoveTrailingSlash(routePrefix);
 
             // If a batch handler is present, register the route with the batch path mapper. This will be used
             // by the batching middleware to handle the batch request. Batching still requires the injection
             // of the batching middleware via UseODataBatching().
-            ODataBatchHandler batchHandler = serviceProvider.GetService<ODataBatchHandler>();
+            var batchHandler = serviceProvider.GetService<ODataBatchHandler>();
 
             if (batchHandler != null)
             {
                 // TODO: for the $batch, need refactor/test it for more.
                 batchHandler.ODataRouteName = routeName;
 
-                string batchPath = string.IsNullOrEmpty(routePrefix)
+                var batchPath = string.IsNullOrEmpty(routePrefix)
                     ? '/' + ODataRouteConstants.Batch
                     : '/' + routePrefix + '/' + ODataRouteConstants.Batch;
 
-                ODataBatchPathMapping batchMapping = builder.ServiceProvider.GetRequiredService<ODataBatchPathMapping>();
+                var batchMapping = builder.ServiceProvider.GetRequiredService<ODataBatchPathMapping>();
 
                 // we need reflection to set this internal property.
                 var property = batchMapping.GetType().GetProperty("IsEndpointRouting", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -162,7 +160,7 @@ namespace Microsoft.Restier.AspNetCore
 
             
             builder.MapDynamicControllerRoute<ODataEndpointRouteValueTransformer>(
-                ODataEndpointPattern.CreateODataEndpointPattern(routeName, routePrefix));
+                ODataEndpointRoutingPattern.CreateODataEndpointRoutingPattern(routeName, routePrefix));
 
             perRouteContainer.AddRoute(routeName, routePrefix);
 
