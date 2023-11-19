@@ -9,27 +9,39 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Restier.Core;
 using Microsoft.AspNetCore.Builder;
 using CloudNimble.Breakdance.AspNetCore;
-
-#if NETCOREAPP3_1_OR_GREATER
 using CloudNimble.EasyAF.Http.OData;
-
 using Microsoft.Restier.Tests.AspNetCore.ClaimsPrincipalAccessor;
 
 namespace Microsoft.Restier.Tests.AspNetCore
-#else
-using CloudNimble.Breakdance.WebApi.OData;
-
-namespace Microsoft.Restier.Tests.AspNet
-#endif
 {
 
     [TestClass]
-    public class ClaimsPrincipalAccessorTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
-        <ClaimsPrincipalApi>
+    [TestCategory("Endpoint Routing")]
+    public class ClaimsPrincipalAccessorTests_EndpointRouting : ClaimsPrincipalAccessorTests
+    {
+        public ClaimsPrincipalAccessorTests_EndpointRouting() : base(true)
+        {
+        }
+
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class ClaimsPrincipalAccessorTests_LegacyRouting : ClaimsPrincipalAccessorTests
+    {
+        public ClaimsPrincipalAccessorTests_LegacyRouting() : base(false)
+        {
+        }
+
+    }
+
+    #region Abstract Test Class (Actual Tests)
+
+    [TestClass]
+    public abstract class ClaimsPrincipalAccessorTests : RestierTestBase<ClaimsPrincipalApi>
     {
 
-        public ClaimsPrincipalAccessorTests() : base()
+        public ClaimsPrincipalAccessorTests(bool useEndpointRouting) : base(useEndpointRouting)
         {
             ApplicationBuilderAction = app =>
             {
@@ -43,12 +55,10 @@ namespace Microsoft.Restier.Tests.AspNet
             {
                 routeBuilder.MapApiRoute<ClaimsPrincipalApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
             };
-
         }
 
         [TestInitialize]
         public void ClaimsTestSetup() => TestSetup();
-
 
         [TestMethod]
         public async Task NetCoreApi_ClaimsPrincipalCurrent_IsNotNull()
@@ -62,8 +72,8 @@ namespace Microsoft.Restier.Tests.AspNet
             Response.Value.Should().BeTrue();
         }
 
-#endif
-
     }
+
+    #endregion
 
 }
