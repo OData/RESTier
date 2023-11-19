@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class InsertTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {

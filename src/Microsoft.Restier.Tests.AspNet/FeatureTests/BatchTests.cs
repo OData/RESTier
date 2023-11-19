@@ -23,7 +23,7 @@ using Flurl;
 using System.Data.Entity;
 #endif
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 
 using CloudNimble.Breakdance.AspNetCore;
 
@@ -40,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class BatchTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
 
@@ -53,7 +53,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BatchTests_AddMultipleEntries()
         {
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
@@ -125,7 +125,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BatchTests_MimePayloadTest()
         {
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
@@ -211,7 +211,7 @@ OData-Version: 4.0
         [TestMethod]
         public async Task BatchTests_JsonPayloadTest()
         {
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);
@@ -282,7 +282,7 @@ OData-Version: 4.0
         [TestMethod]
         public async Task BatchTests_SelectPlusFunctionResult()
         {
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var httpClient = await RestierTestHelpers.GetTestableHttpClient<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 #else
             var config = await RestierTestHelpers.GetTestableRestierConfiguration<LibraryApi>(serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>()).ConfigureAwait(false);

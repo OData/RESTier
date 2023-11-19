@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
     using CloudNimble.Breakdance.AspNetCore;
 #else
     using CloudNimble.Breakdance.WebApi;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore
 #else
 namespace Microsoft.Restier.Tests.AspNet
@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Tests.AspNet
 
     [TestClass]
     public class RestierControllerTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <StoreApi>
 #endif
     {

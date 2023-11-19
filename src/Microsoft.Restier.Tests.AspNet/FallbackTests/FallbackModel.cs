@@ -5,7 +5,7 @@ using Microsoft.AspNet.OData.Builder;
 using Microsoft.OData.Edm;
 using System.Collections.Generic;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 
 namespace Microsoft.Restier.Tests.AspNetCore.FallbackTests
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Model
 #else
 namespace Microsoft.Restier.AspNet.Model

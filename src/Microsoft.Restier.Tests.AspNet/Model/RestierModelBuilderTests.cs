@@ -12,7 +12,7 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.Model
 #else
 namespace Microsoft.Restier.Tests.AspNet.Model
@@ -21,7 +21,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     [TestClass]
     public class RestierModelBuilderTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {

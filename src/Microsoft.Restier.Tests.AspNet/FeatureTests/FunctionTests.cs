@@ -14,7 +14,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using CloudNimble.EasyAF.Http.OData;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
@@ -28,7 +28,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class FunctionTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {

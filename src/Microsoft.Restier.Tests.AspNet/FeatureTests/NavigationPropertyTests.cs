@@ -16,7 +16,7 @@ using System.Text.Json;
 using System.Linq;
 using CloudNimble.EasyAF.Http.OData;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
@@ -29,7 +29,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
     [TestClass]
     public class NavigationPropertyTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {

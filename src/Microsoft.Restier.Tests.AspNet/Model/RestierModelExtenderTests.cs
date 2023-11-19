@@ -9,7 +9,7 @@ using FluentAssertions;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
     using Microsoft.Restier.AspNetCore.Model;
 #else
     using Microsoft.Restier.AspNet.Model;
@@ -20,7 +20,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.Model
 #else
 namespace Microsoft.Restier.Tests.AspNet.Model
@@ -29,7 +29,7 @@ namespace Microsoft.Restier.Tests.AspNet.Model
 
     [TestClass]
     public class RestierModelExtenderTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <TestableEmptyApi>
 #endif
     {

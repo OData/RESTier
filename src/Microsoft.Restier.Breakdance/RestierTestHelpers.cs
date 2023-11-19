@@ -18,7 +18,7 @@ using Microsoft.Restier.Core.Model;
 using System.IO;
 
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Text.Json;
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNetCore.TestHost;
@@ -86,7 +86,7 @@ namespace Microsoft.Restier.Breakdance
         public static async Task<HttpResponseMessage> ExecuteTestRequest<TApi>(HttpMethod httpMethod, string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName,
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, Action<IServiceCollection> serviceCollection = default, string acceptHeader = ODataConstants.MinimalAcceptHeader,
             DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null,
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             JsonSerializerOptions jsonSerializerSettings = null)
 #else
             JsonSerializerSettings jsonSerializerSettings = null)
@@ -94,7 +94,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings);
@@ -200,7 +200,7 @@ namespace Microsoft.Restier.Breakdance
              where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
             return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
 #else
@@ -216,7 +216,7 @@ namespace Microsoft.Restier.Breakdance
 
         #region GetTestableRestierConfiguration
 
-#if !(NETCOREAPP3_1_OR_GREATER)
+#if !(NET6_0_OR_GREATER)
 
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
@@ -263,7 +263,7 @@ namespace Microsoft.Restier.Breakdance
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
             var client = server.CreateClient();
             client.BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, routePrefix));
@@ -353,7 +353,7 @@ namespace Microsoft.Restier.Breakdance
 
         #region Private Methods
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>

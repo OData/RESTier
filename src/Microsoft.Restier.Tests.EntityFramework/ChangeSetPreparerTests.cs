@@ -19,7 +19,7 @@ namespace Microsoft.Restier.EntityFramework.Tests
 
     [TestClass]
     public class ChangeSetPreparerTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {

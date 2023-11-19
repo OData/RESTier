@@ -8,7 +8,7 @@ using Microsoft.AspNet.OData.Builder;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Model;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Model
 #else
 namespace Microsoft.Restier.AspNet.Model
@@ -77,7 +77,7 @@ namespace Microsoft.Restier.AspNet.Model
                         continue;
                     }
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
                     if (pair.Value is null)
                     {
                         throw new InvalidOperationException($"The entity '{pair.Key}' does not have a key specified. Entities tagged with the [Keyless] attribute " +

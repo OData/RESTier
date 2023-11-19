@@ -12,11 +12,11 @@ namespace Microsoft.Restier.Tests.Shared
     /// 
     /// </summary>
     public class RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <TApi>: RestierBreakdanceTestBase<TApi> where TApi : ApiBase
 #endif
     {
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         public RestierTestBase(bool useEndpoints = false) : base(useEndpoints)
         {
             

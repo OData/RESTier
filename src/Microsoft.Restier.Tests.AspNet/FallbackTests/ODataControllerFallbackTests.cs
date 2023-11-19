@@ -13,7 +13,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CloudNimble.EasyAF.Http.OData;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.Core;
@@ -31,13 +31,15 @@ namespace Microsoft.Restier.Tests.AspNet
 {
 
     [TestClass]
-    public class ODataControllerFallbackTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+    public
+        
+        
+        class ODataControllerFallbackTests : RestierTestBase
+#if NET6_0_OR_GREATER
         <FallbackApi>
 #endif
     {
-
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 
         public ODataControllerFallbackTests()
         {
@@ -81,7 +83,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should fallback to PeopleController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/People");
 #else
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
@@ -99,7 +101,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should fallback to PeopleController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/People(1)/Orders");
 #else
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
@@ -118,7 +120,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should be routed to RestierController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Orders");
 #else
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/Orders", serviceCollection: addTestServices);
@@ -133,7 +135,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should be routed to RestierController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var metadata = await GetApiMetadataAsync();
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/PreservedOrders");
 #else
