@@ -52,6 +52,9 @@ namespace Microsoft.Extensions.DependencyInjection
         ///                 })
         ///         );
         ///    );
+        ///    
+        ///    // @robertmclaws: Since AddRestier calls .AddAuthorization(), you can use the line below if you want every request to be authenticated.
+        ///    services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         /// </code>
         /// </example>
         public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction, bool useEndpointRouting = false)
@@ -66,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
         /// <param name="mvcOptions">
-        /// An <see cref="Action{MvcOptions}" /> that allows you to configure additional ASP.NET options, such as adding <see cref="AuthorizeFilter "/> implementations.</param>
+        /// An <see cref="Action{MvcOptions}" /> that allows you to configure additional ASP.NET options, such as adding <see cref="AuthorizeFilter"/> implementations.</param>
         /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
         /// <example>
@@ -141,7 +144,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
         /// <example>
         /// <code>
-        /// services.AddRestier(builder =>
+        /// services.AddRestier("https://someotherwebsite.com/someapp", builder =>
         ///     builder
         ///         .AddRestierApi<SomeApi>(routeServices =>
         ///             routeServices
@@ -165,6 +168,9 @@ namespace Microsoft.Extensions.DependencyInjection
         ///                 })
         ///         );
         ///    );
+        ///    
+        ///    // @robertmclaws: Since AddRestier calls .AddAuthorization(), you can use the line below if you want every request to be authenticated.
+        ///    services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         /// </code>
         /// </example>
         public static IMvcBuilder AddRestier(this IServiceCollection services, Uri alternateBaseUri, Action<RestierApiBuilder> configureApisAction, bool useEndpointRouting = false)
