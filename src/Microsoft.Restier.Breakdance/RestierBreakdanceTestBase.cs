@@ -142,7 +142,7 @@ namespace Microsoft.Restier.Breakdance
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, string acceptHeader = ODataConstants.MinimalAcceptHeader,
             object payload = null, JsonSerializerOptions jsonSerializerOptions = null)
         {
-            var client = GetHttpClient();
+            var client = GetHttpClient(routePrefix);
             using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerOptions);
             //var metadata = await GetApiMetadataAsync().ConfigureAwait(false);
             return await client.SendAsync(message).ConfigureAwait(false);
@@ -174,7 +174,7 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <see cref="IServiceProvider"/> for. Defaults to <see cref="WebApiConstants.RouteName"/>.
         /// </param>
-        /// <param name="useEndpointRouting"></param>
+        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>A scoped <see cref="IServiceProvider"/> containing all of the services available to the specified route.</returns>
         public IServiceProvider GetScopedRequestContainer(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false)
         {
@@ -200,7 +200,7 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <typeparamref name="TApi"/> for.
         /// </param>
-        /// <param name="useEndpointRouting"></param>
+        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>An <typeparamref name="TApi"/> instance from the scoped <see cref="IServiceProvider"/> for the specified route.</returns>
         public TApi GetApiInstance(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetScopedRequestContainer(routeName, useEndpointRouting).GetService<TApi>();
 
@@ -210,7 +210,7 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <see cref="IEdmModel"/> for.
         /// </param>
-        /// <param name="useEndpointRouting"></param>
+        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>The <see cref="IEdmModel"/> instance from <typeparamref name="TApi"/> for the specified route.</returns>
         public IEdmModel GetModel(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetApiInstance(routeName, useEndpointRouting).GetModel();
 
