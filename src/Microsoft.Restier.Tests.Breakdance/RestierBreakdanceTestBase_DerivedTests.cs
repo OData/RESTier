@@ -3,30 +3,47 @@
 
 #if NET6_0_OR_GREATER
 
-using System.Threading.Tasks;
+using CloudNimble.Breakdance.AspNetCore;
 using FluentAssertions;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Restier.Core;
 using System;
-using Microsoft.AspNet.OData.Query;
-using CloudNimble.Breakdance.AspNetCore;
-using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.Tests.Breakdance
 {
 
     [TestClass]
-    public class RestierBreakdanceTestBase_DerivedTests : RestierBreakdanceTestBase<LibraryApi>
+    [TestCategory("Endpoint Routing")]
+    public class RestierBreakdanceTestBase_DerivedTests_EndpointRouting : RestierBreakdanceTestBase_DerivedTests
+    {
+        public RestierBreakdanceTestBase_DerivedTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class RestierBreakdanceTestBase_DerivedTests_LegacyRouting : RestierBreakdanceTestBase_DerivedTests
+    {
+        public RestierBreakdanceTestBase_DerivedTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    [TestClass]
+    public abstract class RestierBreakdanceTestBase_DerivedTests : RestierBreakdanceTestBase<LibraryApi>
     {
 
         #region Constructors
 
-        public RestierBreakdanceTestBase_DerivedTests()
+        public RestierBreakdanceTestBase_DerivedTests(bool useEndpointRouting) : base(useEndpointRouting)
         {
-
             AddRestierAction = (apiBuilder) =>
             {
                 apiBuilder.AddRestierApi<LibraryApi>(restierServices =>
@@ -104,14 +121,14 @@ namespace Microsoft.Restier.Tests.Breakdance
         [TestMethod]
         public void GetScopedRequestContainer_ReturnsInstance()
         {
-            var container = GetScopedRequestContainer();
+            var container = GetScopedRequestContainer(useEndpointRouting: UseEndpointRouting);
             container.Should().NotBeNull();
         }
 
         [TestMethod]
         public void GetApiInstance_ReturnsInstanceFromRequestScope()
         {
-            var api = GetApiInstance();
+            var api = GetApiInstance(useEndpointRouting: UseEndpointRouting);
             api.Should().NotBeNull();
         }
 
