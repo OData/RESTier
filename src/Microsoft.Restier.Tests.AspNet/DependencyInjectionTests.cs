@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 #if EF6
-    using Microsoft.Restier.EntityFramework;
+using Microsoft.Restier.EntityFramework;
 #endif
 #if EFCore
     using Microsoft.Restier.EntityFrameworkCore;
@@ -26,15 +26,58 @@ namespace Microsoft.Restier.Tests.AspNet
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    //[TestClass]
+    //[TestCategory("Endpoint Routing")]
+    //public class DependencyInjectionTests_EndpointRouting : DependencyInjectionTests
+    //{
+    //    public DependencyInjectionTests_EndpointRouting() : base(true)
+    //    {
+    //    }
+    //}
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class DependencyInjectionTests_LegacyRouting : DependencyInjectionTests
+    {
+        public DependencyInjectionTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
     /// <summary>
-    /// Tests methods of the Core ServiceCollectionExtensions.
+    /// Tests Restier's DI construction to ensure consistency between platforms and releases.
+    /// </summary>
+    [TestClass]
+    public abstract class DependencyInjectionTests : RestierTestBase<LibraryApi>
+    {
+
+        public DependencyInjectionTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+            //AddRestierAction = builder =>
+            //{
+            //    builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+            //};
+            //MapRestierAction = routeBuilder =>
+            //{
+            //    routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            //};
+        }
+
+        //[TestInitialize]
+        //public void ClaimsTestSetup() => TestSetup();
+
+#else
+
+    /// <summary>
+    /// Tests Restier's DI construction to ensure consistency between platforms and releases.
     /// </summary>
     [TestClass]
     public class DependencyInjectionTests : RestierTestBase
-#if NET6_0_OR_GREATER
-        <LibraryApi>
-#endif
     {
+
+#endif
 
         [TestMethod]
         public void RestierContainerBuilder_Registered_ShouldHaveServices()
@@ -47,7 +90,8 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task DI_CompareCurrentVersion_ToRC2()
         {
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             var result = provider.GetContainerContentsLog();
             result.Should().NotBeNullOrEmpty();
 
@@ -58,7 +102,8 @@ namespace Microsoft.Restier.Tests.AspNet
         [TestMethod]
         public async Task DI_VerifyModelBuilderInnerHandlers_ToRC2()
         {
-            var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var names = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             names.Should().NotBeNull();
 
             var result = string.Join(Environment.NewLine, names);
@@ -76,7 +121,8 @@ namespace Microsoft.Restier.Tests.AspNet
         public async Task ContainerContents_WriteOutput(string projectPath)
         {
             //var projectPath = "..//..//..//";
-            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             var result = provider.GetContainerContentsLog();
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-LibraryApi-ServiceProvider.txt");
             Console.WriteLine(fullPath);
@@ -95,7 +141,8 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             //var projectPath = "..//..//..//";
 
-            var result = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var result = await RestierTestHelpers.GetModelBuilderHierarchy<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
 
             var fullPath = Path.Combine(projectPath, "Baselines//RC6-ModelBuilder-InnerHandlers.txt");
             Console.WriteLine(fullPath);

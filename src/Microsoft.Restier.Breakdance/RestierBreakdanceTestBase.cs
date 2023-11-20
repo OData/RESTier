@@ -44,18 +44,24 @@ namespace Microsoft.Restier.Breakdance
         /// <summary>
         /// 
         /// </summary>
-        public Action<IApplicationBuilder> ApplicationBuilderAction { get; set; }    
+        public Action<IApplicationBuilder> ApplicationBuilderAction { get; set; }
+
+        /// <summary>
+        /// Helps people that decide to use RestierTestHelpers specify which 
+        /// </summary>
+        public bool UseEndpointRouting { get; }
 
         /// <summary>
         /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/>.
         /// </summary>
-        /// <param name="useEndpoints">Whether to use endpoint routing or not.</param>
+        /// <param name="useEndpointRouting">Whether to use endpoint routing or not.</param>
         /// <remarks>
         /// To properly configure these tests, please set your <see cref="AddRestierAction"/> and <see cref="MapRestierAction"/> actions before
         /// calling <see cref="AspNetCoreBreakdanceTestBase.AssemblySetup"/> or <see cref="AspNetCoreBreakdanceTestBase.TestSetup"/>.
         /// </remarks>
-        public RestierBreakdanceTestBase(bool useEndpoints = false)
+        public RestierBreakdanceTestBase(bool useEndpointRouting = false)
         {
+            UseEndpointRouting = useEndpointRouting;
             TestHostBuilder.ConfigureServices(services =>
             {
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -72,7 +78,7 @@ namespace Microsoft.Restier.Breakdance
                     {
                         AddRestierAction?.Invoke(apiBuilder);
                     },
-                    useEndpoints)
+                    useEndpointRouting)
 
                     .AddApplicationPart(typeof(TApi).Assembly)
                     .AddApplicationPart(typeof(RestierController).Assembly);
@@ -83,7 +89,7 @@ namespace Microsoft.Restier.Breakdance
                 ApplicationBuilderAction?.Invoke(builder);
 
 
-                if (useEndpoints)
+                if (useEndpointRouting)
                 {
                     builder.UseRestierBatching();
 
@@ -168,13 +174,20 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <see cref="IServiceProvider"/> for. Defaults to <see cref="WebApiConstants.RouteName"/>.
         /// </param>
+        /// <param name="useEndpointRouting"></param>
         /// <returns>A scoped <see cref="IServiceProvider"/> containing all of the services available to the specified route.</returns>
-        public IServiceProvider GetScopedRequestContainer(string routeName = WebApiConstants.RouteName)
+        public IServiceProvider GetScopedRequestContainer(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false)
         {
             var context = new DefaultHttpContext
             {
                 RequestServices = TestServer.Services
             };
+
+            if (useEndpointRouting)
+            {
+                routeName = Restier_IEndpointRouteBuilderExtensions.GetCleanRouteName(routeName);
+            }
+            
             context.ODataFeature().RouteName = routeName;
             context.Request.CreateRequestContainer(routeName);
 
@@ -187,8 +200,9 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <typeparamref name="TApi"/> for.
         /// </param>
+        /// <param name="useEndpointRouting"></param>
         /// <returns>An <typeparamref name="TApi"/> instance from the scoped <see cref="IServiceProvider"/> for the specified route.</returns>
-        public TApi GetApiInstance(string routeName = WebApiConstants.RouteName) => GetScopedRequestContainer(routeName).GetService<TApi>();
+        public TApi GetApiInstance(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetScopedRequestContainer(routeName, useEndpointRouting).GetService<TApi>();
 
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance from <typeparamref name="TApi"/> for the specified route.
@@ -196,8 +210,9 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <see cref="IEdmModel"/> for.
         /// </param>
+        /// <param name="useEndpointRouting"></param>
         /// <returns>The <see cref="IEdmModel"/> instance from <typeparamref name="TApi"/> for the specified route.</returns>
-        public IEdmModel GetModel(string routeName = WebApiConstants.RouteName) => GetApiInstance(routeName).GetModel();
+        public IEdmModel GetModel(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetApiInstance(routeName, useEndpointRouting).GetModel();
 
     }
 }

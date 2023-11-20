@@ -27,21 +27,33 @@ using Microsoft.Restier.Tests.AspNet.FallbackTests;
 
 namespace Microsoft.Restier.Tests.AspNet
 #endif
-
 {
 
-    [TestClass]
-    public
-        
-        
-        class ODataControllerFallbackTests : RestierTestBase
-#if NET6_0_OR_GREATER
-        <FallbackApi>
-#endif
-    {
 #if NET6_0_OR_GREATER
 
-        public ODataControllerFallbackTests()
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class ODataControllerFallbackTests_EndpointRouting : ODataControllerFallbackTests
+    {
+        public ODataControllerFallbackTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class ODataControllerFallbackTests_LegacyRouting : ODataControllerFallbackTests
+    {
+        public ODataControllerFallbackTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    [TestClass]
+    public abstract class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
+    {
+
+        public ODataControllerFallbackTests(bool useEndpointRouting) : base(useEndpointRouting)
         {
             AddRestierAction = (restier) => restier.AddRestierApi<FallbackApi>(restierServices =>
             {
@@ -61,10 +73,13 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestInitialize]
-        public override void TestSetup()
-        {
-            base.TestSetup();
-        }
+        public override void TestSetup() => base.TestSetup();
+
+#else
+
+    [TestClass]
+    public class ODataControllerFallbackTests : RestierTestBase
+    {
 
 #endif
 

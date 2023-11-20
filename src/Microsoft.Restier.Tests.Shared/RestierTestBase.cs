@@ -17,10 +17,15 @@ namespace Microsoft.Restier.Tests.Shared
 #endif
     {
 #if NET6_0_OR_GREATER
-        public RestierTestBase(bool useEndpoints = false) : base(useEndpoints)
+        public RestierTestBase(bool useEndpointRouting = false) : base(useEndpointRouting)
         {
             
         }
+#else
+
+        ///<summary>Exists to provide compatibility for our ASP.NET Classic tests. Do not use.</summary>
+        public bool UseEndpointRouting => false;
+
 #endif
 
         /// <summary>

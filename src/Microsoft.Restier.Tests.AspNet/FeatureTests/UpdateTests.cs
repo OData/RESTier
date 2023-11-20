@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using CloudNimble.EasyAF.Http.OData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
@@ -12,8 +13,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System;
-using System.Threading;
-using CloudNimble.EasyAF.Http.OData;
 
 #if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
@@ -27,17 +26,65 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class UpdateTests_EndpointRouting : UpdateTests
+    {
+        public UpdateTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class UpdateTests_LegacyRouting : UpdateTests
+    {
+        public UpdateTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [TestClass]
+    public abstract class UpdateTests : RestierTestBase<LibraryApi>
+    {
+
+        public UpdateTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+            //AddRestierAction = builder =>
+            //{
+            //    builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+            //};
+            //MapRestierAction = routeBuilder =>
+            //{
+            //    routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            //};
+        }
+
+        //[TestInitialize]
+        //public void ClaimsTestSetup() => TestSetup();
+
+#else
+
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class UpdateTests : RestierTestBase
-#if NET6_0_OR_GREATER
-        <LibraryApi>
-#endif
     {
+
+#endif
 
         [TestMethod]
         public async Task UpdateBookWithPublisher_ShouldReturn400()
         {
-            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$expand=Publisher&$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$expand=Publisher&$top=1",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookRequest.IsSuccessStatusCode.Should().BeTrue();
             var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
 
@@ -50,7 +97,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             book.Title += " Test";
 
-            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book,
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookEditRequest.IsSuccessStatusCode.Should().BeFalse();
             bookEditRequest.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
@@ -58,7 +107,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task UpdateBook()
         {
-            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookRequest.IsSuccessStatusCode.Should().BeTrue();
             var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
 
@@ -67,14 +118,18 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var book = bookList.Items.First();
 
             book.Should().NotBeNull();
-            
+
             var originalBookTitle = book.Title;
             book.Title += " Test";
 
-            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book,
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookEditRequest.IsSuccessStatusCode.Should().BeTrue();
 
-            var bookCheckRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/Books({book.Id})", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookCheckRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/Books({book.Id})",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookCheckRequest.IsSuccessStatusCode.Should().BeTrue();
             var (book2, ErrorContent2) = await bookCheckRequest.DeserializeResponseAsync<Book>();
             book2.Should().NotBeNull();
@@ -86,7 +141,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task PatchBook()
         {
-            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookRequest.IsSuccessStatusCode.Should().BeTrue();
             var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
 
@@ -102,10 +159,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
                 Title = $"{book.Title} | Patch Test"
             };
 
-            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(new HttpMethod("PATCH"), resource: $"/Books({book.Id})", payload: payload, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(new HttpMethod("PATCH"), resource: $"/Books({book.Id})", payload: payload,
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookEditRequest.IsSuccessStatusCode.Should().BeTrue();
 
-            var bookCheckRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/Books({book.Id})", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookCheckRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/Books({book.Id})",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookCheckRequest.IsSuccessStatusCode.Should().BeTrue();
             var (book2, ErrorContent2) = await bookCheckRequest.DeserializeResponseAsync<Book>();
             book2.Should().NotBeNull();
@@ -114,10 +175,16 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             await Cleanup(book.Id, originalBookTitle);
         }
 
+        /// <summary>
+        /// TODO: @robertmclaws: This test needs to be able to run in parallel between the Legacy and Endpoint Routing tests.
+        /// </summary>
+        /// <returns></returns>
         [TestMethod]
         public async Task UpdatePublisher_ShouldCallInterceptor()
         {
-            var publisherRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var publisherRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             publisherRequest.IsSuccessStatusCode.Should().BeTrue();
             var (publisher, ErrorContent) = await publisherRequest.DeserializeResponseAsync<Publisher>();
 
@@ -125,12 +192,16 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             publisher.LastUpdated.Should().NotBeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 5));
 
             publisher.Books = null;
-            var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher,
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             var result = await TestContext.LogAndReturnMessageContentAsync(publisherEditRequest);
-            
+
             publisherEditRequest.IsSuccessStatusCode.Should().BeTrue();
 
-            var publisherRequest2 = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')", acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var publisherRequest2 = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             publisherRequest2.IsSuccessStatusCode.Should().BeTrue();
             var (publisher2, ErrorContent2) = await publisherRequest2.DeserializeResponseAsync<Publisher>();
 

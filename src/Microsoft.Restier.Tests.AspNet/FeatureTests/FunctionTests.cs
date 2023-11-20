@@ -4,6 +4,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,12 +27,41 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class FunctionTests_EndpointRouting : FunctionTests
+    {
+        public FunctionTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class FunctionTests_LegacyRouting : FunctionTests
+    {
+        public FunctionTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    [TestClass]
+    public abstract class FunctionTests : RestierTestBase<LibraryApi>
+    {
+
+        public FunctionTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+        }
+
+#else
+
     [TestClass]
     public class FunctionTests : RestierTestBase
-#if NET6_0_OR_GREATER
-        <LibraryApi>
-#endif
     {
+
+#endif
 
         /// <summary>
         /// Tests if the query pipeline is correctly returning 200 StatusCodes when legitimate queries to a resource simply return no results.
@@ -47,7 +77,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
              * site:    Microsoft.OData.UriParser.PathSegmentHandler.Handle
              * 
              * */
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books/$filter(endswith(Title,'The'))/DiscontinueBooks()", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books/$filter(endswith(Title,'The'))/DiscontinueBooks()", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -67,7 +98,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BoundFunctions_Returns200()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books/DiscontinueBooks()", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books/DiscontinueBooks()", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -91,7 +123,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             var payload = new { bookId = new Guid("2D760F15-974D-4556-8CDF-D610128B537E") };
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/Publishers('Publisher1')/PublishNewBook()", payload: payload, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Post, resource: "/Publishers('Publisher1')/PublishNewBook()", payload: payload, 
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -106,7 +139,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task BoundFunctions_WithExpand()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')/PublishedBooks()?$expand=Publisher", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')/PublishedBooks()?$expand=Publisher", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -116,7 +150,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task FunctionWithFilter()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/FavoriteBooks()?$filter=contains(Title,'Cat')", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/FavoriteBooks()?$filter=contains(Title,'Cat')", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -127,7 +162,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task FunctionWithExpand()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/FavoriteBooks()?$expand=Publisher", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/FavoriteBooks()?$expand=Publisher", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -137,7 +173,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task FunctionParameters_BooleanParameter()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBook(IsActive=true)", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBook(IsActive=true)", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -147,7 +184,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [TestMethod]
         public async Task FunctionParameters_IntParameter()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBooks(Count=5)", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/PublishBooks(Count=5)", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -158,7 +196,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         public async Task FunctionParameters_GuidParameter()
         {
             var testGuid = Guid.NewGuid();
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/SubmitTransaction(Id={testGuid})", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: $"/SubmitTransaction(Id={testGuid})", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

@@ -76,7 +76,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
 
 #endregion
 
-#region Test Setup / Teardown
+        #region Test Setup / Teardown
 
         /// <summary>
         /// Calls the base class to configure the test host and sets up test data.
@@ -96,7 +96,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
             TestTearDown();
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// 
@@ -116,7 +116,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
 
     }
 
-#region ComplexTypesApi
+    #region ComplexTypesApi
 
     public class ComplexTypesApi : MarvelApi
     {
@@ -140,7 +140,9 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
 
     }
 
-#endregion
+    #endregion
+
+    #region ComplexTypesModelBuilder
 
     /// <summary>
     /// Builds the EdmModel for the Restier API.
@@ -164,6 +166,8 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests
         }
 
     }
+
+    #endregion
 
 }
 

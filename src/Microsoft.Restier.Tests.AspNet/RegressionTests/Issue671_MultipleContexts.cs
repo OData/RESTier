@@ -42,7 +42,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task SingleContext_LibraryApiWorks()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/LibraryCards", serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/LibraryCards", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -55,7 +56,8 @@ namespace Microsoft.Restier.Tests.AspNet.RegressionTests
         [TestMethod]
         public async Task SingleContext_MarvelApiWorks()
         {
-            var response = await RestierTestHelpers.ExecuteTestRequest<MarvelApi>(HttpMethod.Get, resource: "/Characters", serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>());
+            var response = await RestierTestHelpers.ExecuteTestRequest<MarvelApi>(HttpMethod.Get, resource: "/Characters", 
+                serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>(), useEndpointRouting: UseEndpointRouting);
             var content = await response.Content.ReadAsStringAsync();
             TestContext.WriteLine(content);
             response.IsSuccessStatusCode.Should().BeTrue();

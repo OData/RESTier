@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Restier.Breakdance;
 using CloudNimble.EasyAF.Http.OData;
-using Newtonsoft.Json;
 
 #if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
@@ -25,18 +24,66 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class ValidationTests_EndpointRouting : ValidationTests
+    {
+        public ValidationTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class ValidationTests_LegacyRouting : ValidationTests
+    {
+        public ValidationTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [TestClass]
+    public abstract class ValidationTests : RestierTestBase<LibraryApi>
+    {
+
+        public ValidationTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+            //AddRestierAction = builder =>
+            //{
+            //    builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+            //};
+            //MapRestierAction = routeBuilder =>
+            //{
+            //    routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            //};
+        }
+
+        //[TestInitialize]
+        //public void ClaimsTestSetup() => TestSetup();
+
+#else
+
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class ValidationTests : RestierTestBase
-#if NET6_0_OR_GREATER
-        <LibraryApi>
-#endif
     {
+
+#endif
 
         //[Ignore]
         [TestMethod]
         public async Task Validation_StringLengthExceeded()
         {
-            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", acceptHeader: ODataConstants.MinimalAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Books?$top=1", 
+                acceptHeader: ODataConstants.MinimalAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             bookRequest.IsSuccessStatusCode.Should().BeTrue();
 
             var (bookList, ErrorContent) = await bookRequest.DeserializeResponseAsync<ODataV4List<Book>>();
@@ -49,7 +96,9 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 
             book.Isbn = "This is a really really long string.";
 
-            var bookEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book, acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var bookEditResponse = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Books({book.Id})", payload: book,
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(bookEditResponse);
 
             bookEditResponse.IsSuccessStatusCode.Should().BeFalse();

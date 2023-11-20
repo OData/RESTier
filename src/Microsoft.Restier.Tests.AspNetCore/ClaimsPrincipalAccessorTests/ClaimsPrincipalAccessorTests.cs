@@ -22,7 +22,6 @@ namespace Microsoft.Restier.Tests.AspNetCore
         public ClaimsPrincipalAccessorTests_EndpointRouting() : base(true)
         {
         }
-
     }
 
     [TestClass]
@@ -32,7 +31,6 @@ namespace Microsoft.Restier.Tests.AspNetCore
         public ClaimsPrincipalAccessorTests_LegacyRouting() : base(false)
         {
         }
-
     }
 
     #region Abstract Test Class (Actual Tests)
