@@ -1,7 +1,6 @@
-using System;
-using System.Linq;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
+using System;
+using System.Linq;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 {
@@ -41,13 +42,12 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddEndpointRestier((builder) =>
+            services.AddRestier((builder) =>
             {
                 // This delegate is executed after OData is added to the container.
-                // Add you replacement services here.
+                // Add your replacement services here.
                 builder.AddRestierApi<NorthwindApi>(routeServices =>
                 {
-
                     routeServices
                         .AddEFCoreProviderServices<NorthwindContext>((services, options) => options.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
                         .AddSingleton(new ODataValidationSettings
@@ -58,8 +58,10 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                         });
 
                 });
-            });
-            services.AddControllers(options => options.EnableEndpointRouting = false);
+            }, true);
+
+            //RWM: Since AddRestier calls .AddAuthorization(), you can uncomment the line below if you want every request to be authenticated.
+            //services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         }
 
         /// <summary>
@@ -83,7 +85,6 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
-
                 endpoints.MapRestier(builder =>
                 {
                     builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);

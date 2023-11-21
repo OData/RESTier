@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Http
     /// <summary>
     /// Extensions for <see cref="HttpRequest"/>.
     /// </summary>
-    public static class RestierHttpRequestExtensions
+    public static class Restier_HttpRequestExtensions
     {
 
         /// <summary>

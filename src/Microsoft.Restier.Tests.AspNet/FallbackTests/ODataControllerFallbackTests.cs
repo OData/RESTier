@@ -13,7 +13,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CloudNimble.EasyAF.Http.OData;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.Core;
@@ -27,19 +27,33 @@ using Microsoft.Restier.Tests.AspNet.FallbackTests;
 
 namespace Microsoft.Restier.Tests.AspNet
 #endif
-
 {
 
+#if NET6_0_OR_GREATER
+
     [TestClass]
-    public class ODataControllerFallbackTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
-        <FallbackApi>
-#endif
+    [TestCategory("Endpoint Routing")]
+    public class ODataControllerFallbackTests_EndpointRouting : ODataControllerFallbackTests
+    {
+        public ODataControllerFallbackTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class ODataControllerFallbackTests_LegacyRouting : ODataControllerFallbackTests
+    {
+        public ODataControllerFallbackTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    [TestClass]
+    public abstract class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
     {
 
-#if NETCOREAPP3_1_OR_GREATER
-
-        public ODataControllerFallbackTests()
+        public ODataControllerFallbackTests(bool useEndpointRouting) : base(useEndpointRouting)
         {
             AddRestierAction = (restier) => restier.AddRestierApi<FallbackApi>(restierServices =>
             {
@@ -59,10 +73,13 @@ namespace Microsoft.Restier.Tests.AspNet
         }
 
         [TestInitialize]
-        public override void TestSetup()
-        {
-            base.TestSetup();
-        }
+        public override void TestSetup() => base.TestSetup();
+
+#else
+
+    [TestClass]
+    public class ODataControllerFallbackTests : RestierTestBase
+    {
 
 #endif
 
@@ -81,7 +98,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should fallback to PeopleController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/People");
 #else
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People", serviceCollection: addTestServices);
@@ -99,7 +116,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should fallback to PeopleController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/People(1)/Orders");
 #else
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/People(1)/Orders", serviceCollection: addTestServices);
@@ -118,7 +135,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should be routed to RestierController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Orders");
 #else
             var response = await RestierTestHelpers.ExecuteTestRequest<FallbackApi>(HttpMethod.Get, resource: "/Orders", serviceCollection: addTestServices);
@@ -133,7 +150,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             // Should be routed to RestierController.
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             var metadata = await GetApiMetadataAsync();
             var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/PreservedOrders");
 #else

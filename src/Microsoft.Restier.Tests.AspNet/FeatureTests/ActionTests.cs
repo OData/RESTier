@@ -4,7 +4,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNetCore.Http;
 #else
@@ -18,7 +18,7 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
@@ -30,7 +30,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
     /// </summary>
     [TestClass]
     public class ActionTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <LibraryApi>
 #endif
     {

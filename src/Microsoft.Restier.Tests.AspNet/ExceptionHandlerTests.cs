@@ -17,19 +17,65 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore
 #else
 namespace Microsoft.Restier.Tests.AspNet
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class ExceptionHandlerTests_EndpointRouting : ExceptionHandlerTests
+    {
+        public ExceptionHandlerTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class ExceptionHandlerTests_LegacyRouting : ExceptionHandlerTests
+    {
+        public ExceptionHandlerTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [TestClass]
+    public abstract class ExceptionHandlerTests : RestierTestBase<StoreApi>
+    {
+
+        public ExceptionHandlerTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+            //AddRestierAction = builder =>
+            //{
+            //    builder.AddRestierApi<StoreApi>(services => services.AddEntityFrameworkServices<StoreContext>());
+            //};
+            //MapRestierAction = routeBuilder =>
+            //{
+            //    routeBuilder.MapApiRoute<StoreApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            //};
+        }
+
+        //[TestInitialize]
+        //public void ClaimsTestSetup() => TestSetup();
+
+#else
+
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class ExceptionHandlerTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
-        <StoreApi>
-#endif
     {
+
+#endif
 
         private const string conflictMessage = "Record could not be saved.";
         private const string innerExceptionMessage = "More details about what happened.";
@@ -46,7 +92,7 @@ namespace Microsoft.Restier.Tests.AspNet
                     .AddChainedService<IQueryExpressionSourcer>((sp, next) => new ODataExceptionSourcer());
             }
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di, useEndpointRouting: UseEndpointRouting);
             var content = await TestContext.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeFalse();
@@ -69,7 +115,7 @@ namespace Microsoft.Restier.Tests.AspNet
                     .AddChainedService<IQueryExpressionSourcer>((sp, next) => new SecurityExceptionSourcer());
             }
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di, useEndpointRouting: UseEndpointRouting);
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
@@ -90,7 +136,7 @@ namespace Microsoft.Restier.Tests.AspNet
                     .AddChainedService<IQueryExpressionSourcer>((sp, next) => new NullReferenceExceptionSourcer());
             }
 
-            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di);
+            var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products", serviceCollection: di, useEndpointRouting: UseEndpointRouting);
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
@@ -170,7 +216,7 @@ namespace Microsoft.Restier.Tests.AspNet
         {
             public Expression ReplaceQueryableSource(QueryExpressionContext context, bool embedded)
             {
-                throw new StatusCodeException(HttpStatusCode.Conflict, conflictMessage, 
+                throw new StatusCodeException(HttpStatusCode.Conflict, conflictMessage,
                     new Exception(innerExceptionMessage));
             }
         }

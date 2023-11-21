@@ -18,7 +18,8 @@ using Microsoft.Restier.Core.Model;
 using System.IO;
 
 
-#if NETCOREAPP3_1_OR_GREATER
+
+#if NET6_0_OR_GREATER
 using System.Text.Json;
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNetCore.TestHost;
@@ -81,21 +82,22 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="timeZoneInfo">A <see cref="TimeZoneInfo"/> instenace specifying what time zone should be used to translate time payloads into. Defaults to <see cref="TimeZoneInfo.Utc"/>.</param>
         /// <param name="payload">When the <paramref name="httpMethod"/> is <see cref="HttpMethod.Post"/> or <see cref="HttpMethod.Put"/>, this object is serialized to JSON and inserted into the <see cref="HttpRequestMessage.Content"/>.</param>
         /// <param name="jsonSerializerSettings">A JsonSerializerSettings or JsonSerializerOptions instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones.</param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns>An <see cref="HttpResponseMessage"/> that contains the managed response for the request for inspection.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
         public static async Task<HttpResponseMessage> ExecuteTestRequest<TApi>(HttpMethod httpMethod, string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName,
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, Action<IServiceCollection> serviceCollection = default, string acceptHeader = ODataConstants.MinimalAcceptHeader,
             DefaultQuerySettings defaultQuerySettings = null, TimeZoneInfo timeZoneInfo = null, object payload = null,
-#if NETCOREAPP3_1_OR_GREATER
-            JsonSerializerOptions jsonSerializerSettings = null)
+#if NET6_0_OR_GREATER
+            JsonSerializerOptions jsonSerializerSettings = null, bool useEndpointRouting = false)
 #else
-            JsonSerializerSettings jsonSerializerSettings = null)
+            JsonSerializerSettings jsonSerializerSettings = null, bool useEndpointRouting = false)
 #endif
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1_OR_GREATER
-            var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
+#if NET6_0_OR_GREATER
+            var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection, useEndpointRouting);
             var client = server.CreateClient();
             using var message = HttpClientHelpers.GetTestableHttpRequestMessage(httpMethod, host, routePrefix, resource, acceptHeader, payload, jsonSerializerSettings);
             return await client.SendAsync(message).ConfigureAwait(false);
@@ -107,7 +109,7 @@ namespace Microsoft.Restier.Breakdance
 #endif
         }
 
-#endregion
+        #endregion
 
         #region GetModelBuilderHierarchy
 
@@ -116,14 +118,15 @@ namespace Microsoft.Restier.Breakdance
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
-        /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
+        /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns></returns>
         public static async Task<List<string>> GetModelBuilderHierarchy<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
         {
-            var modelBuilder = await GetTestableInjectedService<TApi, IModelBuilder>(routeName, routePrefix, serviceCollection).ConfigureAwait(false);
+            var modelBuilder = await GetTestableInjectedService<TApi, IModelBuilder>(routeName, routePrefix, serviceCollection, useEndpointRouting).ConfigureAwait(false);
 
             var innerBuilders = new List<string>
             {
@@ -157,11 +160,12 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns></returns>
         public static async Task<TApi> GetTestableApiInstance<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
-            => await GetTestableInjectedService<TApi, ApiBase>(routeName, routePrefix, serviceCollection).ConfigureAwait(false) as TApi;
+            => await GetTestableInjectedService<TApi, ApiBase>(routeName, routePrefix, serviceCollection, useEndpointRouting).ConfigureAwait(false) as TApi;
 
         #endregion
 
@@ -173,14 +177,15 @@ namespace Microsoft.Restier.Breakdance
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <typeparam name="TService">The type whose instance should be retrieved from the DI container.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
-        /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
+        /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns></returns>
         public static async Task<TService> GetTestableInjectedService<TApi, TService>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
             where TService : class 
-            => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
+            => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection, useEndpointRouting).ConfigureAwait(false)).GetService<TService>();
 
         #endregion
 
@@ -193,16 +198,17 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
         public static async Task<IServiceProvider> GetTestableInjectionContainer<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
              where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1_OR_GREATER
-            using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
-            return await Task.FromResult(testBase.GetScopedRequestContainer()).ConfigureAwait(false);
+#if NET6_0_OR_GREATER
+            using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection, useEndpointRouting);
+            return await Task.FromResult(testBase.GetScopedRequestContainer(routeName, useEndpointRouting)).ConfigureAwait(false);
 #else
             using var config = await GetTestableRestierConfiguration<TApi>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
             var request = HttpClientHelpers.GetTestableHttpRequestMessage(HttpMethod.Get, WebApiConstants.Localhost, routePrefix);
@@ -212,11 +218,11 @@ namespace Microsoft.Restier.Breakdance
 
         }
 
-#endregion
+        #endregion
 
         #region GetTestableRestierConfiguration
 
-#if !(NETCOREAPP3_1_OR_GREATER)
+#if !(NET6_0_OR_GREATER)
 
         /// <summary>
         /// Retrieves an <see cref="HttpConfiguration"> instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.</see>
@@ -257,14 +263,15 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns>A properly configured <see cref="HttpClient"/> that can make reqests to the in-memory Restier context.</returns>
         public static async Task<HttpClient> GetTestableHttpClient<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
         {
 
-#if NETCOREAPP3_1_OR_GREATER
-            var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection);
+#if NET6_0_OR_GREATER
+            var server = GetTestableRestierServer<TApi>(routeName, routePrefix, serviceCollection, useEndpointRouting);
             var client = server.CreateClient();
             client.BaseAddress = new Uri(Url.Combine(WebApiConstants.Localhost, routePrefix));
             return await Task.FromResult(client).ConfigureAwait(false);
@@ -289,14 +296,15 @@ namespace Microsoft.Restier.Breakdance
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
-        /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
+        /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns>An <see cref="IEdmModel"/> instance containing the model used to configure both OData and Restier processing.</returns>
         public static async Task<IEdmModel> GetTestableModelAsync<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
         {
-            var api = await GetTestableApiInstance<TApi>(routeName, routePrefix, serviceCollection: serviceCollection).ConfigureAwait(false);
+            var api = await GetTestableApiInstance<TApi>(routeName, routePrefix, serviceCollection: serviceCollection, useEndpointRouting).ConfigureAwait(false);
             return api.GetModel();
         }
 
@@ -310,14 +318,16 @@ namespace Microsoft.Restier.Breakdance
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
         /// <param name="host"></param>
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
-        /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
+        /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns>An <see cref="XDocument"/> containing the results of the metadata request.</returns>
         public static async Task<XDocument> GetApiMetadataAsync<TApi>(string host = WebApiConstants.Localhost, string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
         {
-            var response = await ExecuteTestRequest<TApi>(HttpMethod.Get, host, routeName, routePrefix, "/$metadata", acceptHeader: "application/xml", serviceCollection: serviceCollection).ConfigureAwait(false);
+            var response = await ExecuteTestRequest<TApi>(HttpMethod.Get, host, routeName, routePrefix, "/$metadata", acceptHeader: "application/xml", serviceCollection: serviceCollection,
+                useEndpointRouting: useEndpointRouting).ConfigureAwait(false);
             var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
@@ -338,12 +348,14 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="sourceDirectory"></param>
         /// <param name="suffix"></param>
         /// <param name="serviceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns></returns>
-        public static async Task WriteCurrentApiMetadata<TApi>(string sourceDirectory = "", string suffix = "ApiMetadata", Action<IServiceCollection> serviceCollection = default)
+        public static async Task WriteCurrentApiMetadata<TApi>(string sourceDirectory = "", string suffix = "ApiMetadata", Action<IServiceCollection> serviceCollection = default, 
+            bool useEndpointRouting = false)
             where TApi : ApiBase
         {
             var filePath = Path.Combine(sourceDirectory, $"{typeof(TApi).Name}-{suffix}.txt");
-            var result = await GetApiMetadataAsync<TApi>(serviceCollection: serviceCollection).ConfigureAwait(false);
+            var result = await GetApiMetadataAsync<TApi>(serviceCollection: serviceCollection, useEndpointRouting: useEndpointRouting).ConfigureAwait(false);
             File.WriteAllText(filePath, result.ToString());
         }
 
@@ -353,26 +365,35 @@ namespace Microsoft.Restier.Breakdance
 
         #region Private Methods
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
+        /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
+        /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
+        /// <param name="apiServiceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns>A new <see cref="TestServer" /> instance.</returns>
-        public static TestServer GetTestableRestierServer<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default)
+        public static TestServer GetTestableRestierServer<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
+            Action<IServiceCollection> apiServiceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
-            => GetTestBaseInstance<TApi>(routeName, routePrefix, apiServiceCollection).TestServer;
+            => GetTestBaseInstance<TApi>(routeName, routePrefix, apiServiceCollection, useEndpointRouting).TestServer;
 
         /// <summary>
         /// Gets a new <see cref="TestServer" />, configured for Restier and using the provided <see cref="Action{IServiceCollection}"/> to add additional services.
         /// </summary>
         /// <typeparam name="TApi">The class inheriting from <see cref="ApiBase"/> that implements the Restier API to test.</typeparam>
+        /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
+        /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
+        /// <param name="apiServiceCollection"></param>
+        /// <param name="useEndpointRouting">On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic.</param>
         /// <returns>A new <see cref="TestServer" /> instance.</returns>
         public static RestierBreakdanceTestBase<TApi> GetTestBaseInstance<TApi>(string routeName = WebApiConstants.RouteName, 
-            string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default)
+            string routePrefix = WebApiConstants.RoutePrefix, Action<IServiceCollection> apiServiceCollection = default, bool useEndpointRouting = false)
             where TApi : ApiBase
         {
-            using var restierTests = new RestierBreakdanceTestBase<TApi>();
+            using var restierTests = new RestierBreakdanceTestBase<TApi>(useEndpointRouting);
 
             restierTests.AddRestierAction = (apiBuilder) =>
             {

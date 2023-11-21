@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 #else
 using Microsoft.Restier.AspNet.Model;
@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Core
             builder.Apis.Add(typeof(TApi), (serviceCollection) =>
             {
 
-                //RWM: Add the API as the specifc API type first, then if an ApiBase instance is requested from the container,
+                //RWM: Add the API as the specific API type first, then if an ApiBase instance is requested from the container,
                 //     get the existing instance.
                 serviceCollection
                     .AddScoped(typeof(TApi), typeof(TApi))

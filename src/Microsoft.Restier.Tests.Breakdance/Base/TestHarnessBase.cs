@@ -14,7 +14,6 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-
 namespace Microsoft.Restier.Tests.Breakdance
 {
 
@@ -32,7 +31,7 @@ namespace Microsoft.Restier.Tests.Breakdance
         #region Public Members
 
         /// <summary>
-        /// 
+        /// TODO: @robertmclaws: This needs to be modified for the new Endpoint Routing support.
         /// </summary>
         public Action<RestierApiBuilder> LibraryAddRestierAction = (apiBuilder) =>
         {

@@ -1,35 +1,82 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Restier.Breakdance;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Validation;
+using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using System.Threading.Tasks;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.Model
 #else
 namespace Microsoft.Restier.Tests.AspNet.Model
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class RestierModelBuilderTests_EndpointRouting : RestierModelBuilderTests
+    {
+        public RestierModelBuilderTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class RestierModelBuilderTests_LegacyRouting : RestierModelBuilderTests
+    {
+        public RestierModelBuilderTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [TestClass]
+    public abstract class RestierModelBuilderTests : RestierTestBase<LibraryApi>
+    {
+
+        public RestierModelBuilderTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+            //AddRestierAction = builder =>
+            //{
+            //    builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+            //};
+            //MapRestierAction = routeBuilder =>
+            //{
+            //    routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            //};
+        }
+
+        //[TestInitialize]
+        //public void ClaimsTestSetup() => TestSetup();
+
+#else
+
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class RestierModelBuilderTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
-        <LibraryApi>
-#endif
     {
+
+#endif
 
         [TestMethod]
         public async Task ComplexTypeShouldWork()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), 
+                useEndpointRouting: UseEndpointRouting);
             model.Should().NotBeNull();
             var result = model.Validate(out var errors);
             errors.Should().BeEmpty();
@@ -43,7 +90,8 @@ namespace Microsoft.Restier.Tests.AspNet.Model
         [TestMethod]
         public async Task PrimitiveTypesShouldWork()
         {
-            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), 
+                useEndpointRouting: UseEndpointRouting);
 
             model.Validate(out var errors).Should().BeTrue();
             errors.Should().BeEmpty();

@@ -4,17 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-#if !NETCOREAPP3_1_OR_GREATER
+#if !NET6_0_OR_GREATER
 using System.Net.Http;
 #endif
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNet.OData.Formatter.Deserialization;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #endif
 using Microsoft.OData.Edm;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Formatter
 #else
 namespace Microsoft.Restier.AspNet.Formatter
@@ -43,7 +43,7 @@ namespace Microsoft.Restier.AspNet.Formatter
             Type expectedReturnType,
             IEdmTypeReference propertyType,
             IEdmModel model,
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
             HttpRequest request,
 #else
             HttpRequestMessage request,

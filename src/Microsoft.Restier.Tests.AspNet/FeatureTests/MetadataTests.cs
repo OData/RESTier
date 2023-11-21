@@ -12,19 +12,65 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
 #else
 namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
 
+#if NET6_0_OR_GREATER
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class MetadataTests_EndpointRouting : MetadataTests
+    {
+        public MetadataTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class MetadataTests_LegacyRouting : MetadataTests
+    {
+        public MetadataTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [TestClass]
+    public abstract class MetadataTests : RestierTestBase<LibraryApi>
+    {
+
+        public MetadataTests(bool useEndpointRouting) : base(useEndpointRouting)
+        {
+            //AddRestierAction = builder =>
+            //{
+            //    builder.AddRestierApi<LibraryApi>(services => services.AddEntityFrameworkServices<LibraryContext>());
+            //};
+            //MapRestierAction = routeBuilder =>
+            //{
+            //    routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix, false);
+            //};
+        }
+
+        //[TestInitialize]
+        //public void ClaimsTestSetup() => TestSetup();
+
+#else
+
+    /// <summary>
+    /// 
+    /// </summary>
     [TestClass]
     public class MetadataTests : RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
-        <LibraryApi>
-#endif
     {
+
+#endif
 
         #region Private Members
 
@@ -50,7 +96,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists(fileName).Should().BeTrue();
 
             var oldReport = File.ReadAllText(fileName);
-            var newReport = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            var newReport = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
 
             TestContext.WriteLine($"Old Report: {oldReport}");
             TestContext.WriteLine($"New Report: {newReport}");
@@ -63,7 +110,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task LibraryApi_SaveMetadataDocument(string projectPath)
         {
-            await RestierTestHelpers.WriteCurrentApiMetadata<LibraryApi>(Path.Combine(projectPath, baselineFolder), serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>());
+            await RestierTestHelpers.WriteCurrentApiMetadata<LibraryApi>(Path.Combine(projectPath, baselineFolder),
+                serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(), useEndpointRouting: UseEndpointRouting);
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(LibraryApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
 
@@ -78,7 +126,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists(fileName).Should().BeTrue();
 
             var oldReport = File.ReadAllText(fileName);
-            var newReport = await RestierTestHelpers.GetApiMetadataAsync<MarvelApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>());
+            var newReport = await RestierTestHelpers.GetApiMetadataAsync<MarvelApi>(serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>(),
+                useEndpointRouting: UseEndpointRouting);
 
             TestContext.WriteLine($"Old Report: {oldReport}");
             TestContext.WriteLine($"New Report: {newReport}");
@@ -91,7 +140,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task MarvelApi_SaveMetadataDocument(string projectPath)
         {
-            await RestierTestHelpers.WriteCurrentApiMetadata<MarvelApi>(Path.Combine(projectPath, baselineFolder), serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>());
+            await RestierTestHelpers.WriteCurrentApiMetadata<MarvelApi>(Path.Combine(projectPath, baselineFolder),
+                serviceCollection: (services) => services.AddEntityFrameworkServices<MarvelContext>(), useEndpointRouting: UseEndpointRouting);
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(MarvelApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
 
@@ -106,7 +156,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             File.Exists(fileName).Should().BeTrue();
 
             var oldReport = File.ReadAllText(fileName);
-            var newReport = await RestierTestHelpers.GetApiMetadataAsync<StoreApi>(serviceCollection: (services) => services.AddTestStoreApiServices());
+            var newReport = await RestierTestHelpers.GetApiMetadataAsync<StoreApi>(serviceCollection: (services) => services.AddTestStoreApiServices(),
+                useEndpointRouting: UseEndpointRouting);
 
             TestContext.WriteLine($"Old Report: {oldReport}");
             TestContext.WriteLine($"New Report: {newReport}");
@@ -119,7 +170,8 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         [BreakdanceManifestGenerator]
         public async Task StoreApi_SaveMetadataDocument(string projectPath)
         {
-            await RestierTestHelpers.WriteCurrentApiMetadata<StoreApi>(Path.Combine(projectPath, baselineFolder), serviceCollection: (services) => services.AddTestStoreApiServices());
+            await RestierTestHelpers.WriteCurrentApiMetadata<StoreApi>(Path.Combine(projectPath, baselineFolder), serviceCollection: (services) => services.AddTestStoreApiServices(),
+                useEndpointRouting: UseEndpointRouting);
             File.Exists($"{Path.Combine(projectPath, baselineFolder)}{typeof(StoreApi).Name}-ApiMetadata.txt").Should().BeTrue();
         }
 

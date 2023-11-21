@@ -7,7 +7,7 @@ using Microsoft.AspNet.OData.Formatter.Serialization;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
 using Microsoft.Restier.AspNetCore.Model;
@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// A set of <see cref="IServiceCollection"/> extension methods to help register required Restier services for a given Route.
     /// </summary>
-    public static partial class RestierApiServiceCollectionExtensions
+    public static partial class Restier_IServiceCollectionExtensions
     {
 
         #region Internal Members

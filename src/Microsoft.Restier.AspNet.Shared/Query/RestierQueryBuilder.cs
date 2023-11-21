@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using Microsoft.Restier.AspNetCore.Model;
 using AspNetResources = Microsoft.Restier.AspNetCore.Resources;
 #else
@@ -19,7 +19,7 @@ using AspNetResources = Microsoft.Restier.AspNet.Resources;
 using Microsoft.Restier.Core;
 using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Query
 #else
 namespace Microsoft.Restier.AspNet.Query

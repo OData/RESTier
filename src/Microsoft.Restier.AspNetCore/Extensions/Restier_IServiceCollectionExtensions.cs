@@ -5,7 +5,6 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Formatter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Restier.Core;
 using System;
 using System.Linq;
@@ -17,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// Restier-specific extension methods for <see cref="IServiceCollection"/>.
     /// </summary>
     /// <remarks
-    public static partial class RestierApiServiceCollectionExtensions
+    public static partial class Restier_IServiceCollectionExtensions
     {
 
         /// <summary>
@@ -25,6 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
+        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
         /// <example>
         /// <code>
@@ -52,32 +52,29 @@ namespace Microsoft.Extensions.DependencyInjection
         ///                 })
         ///         );
         ///    );
+        ///    
+        ///    // @robertmclaws: Since AddRestier calls .AddAuthorization(), you can use the line below if you want every request to be authenticated.
+        ///    services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         /// </code>
         /// </example>
-
-        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
+        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction, bool useEndpointRouting = false)
         {
             //RWM: Make sure that Restier works in any situation without needing additional knowledge.
-            return AddRestier(services, options => options.EnableEndpointRouting = false, configureApisAction);
+            return AddRestier(services, configureApisAction, options => options.EnableEndpointRouting = useEndpointRouting, useEndpointRouting);
         }
 
         /// <summary>
         /// Adds the Restier and OData Services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="mvcOptions">
-        /// An <see cref="Action{MvcOptions}" /> that allows you to configure additional ASP.NET options, such as adding <see cref="AuthorizeFilter "/> implementations.</param>
         /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
+        /// <param name="mvcOptions">
+        /// An <see cref="Action{MvcOptions}" /> that allows you to configure additional ASP.NET options, such as adding <see cref="AuthorizeFilter"/> implementations.</param>
+        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
         /// <example>
         /// <code>
         /// services.AddRestier(
-        ///     options =>
-        ///     {
-        ///         // @robertmclaws: Until we have endpoint routing support, please don't forget this line... it is normally set by default on other overloads of this method.
-        ///         options.EnableEndpointRouting = false;
-        ///         options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
-        ///     },
         ///     builder =>
         ///     {
         ///         builder.AddRestierApi<SomeApi>(routeServices =>
@@ -101,10 +98,21 @@ namespace Microsoft.Extensions.DependencyInjection
         ///                     MaxExpansionDepth = 3,
         ///                 })
         ///         );
-        ///    );
+        ///    },
+        ///    options =>
+        ///    {
+        ///        // @robertmclaws: Until we have endpoint routing support, please don't forget this line... it is normally set by default on other overloads of this method.
+        ///        options.EnableEndpointRouting = false;
+        ///         
+        ///        // @robertmclaws: This is one way to make requests require authentication, but is not recommended since it will only work for MVC routes.
+        ///        options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
+        ///    });
+        ///    
+        ///    // @robertmclaws: Since AddRestier calls .AddAuthorization(), you can use the line below if you want every request to be authenticated.
+        ///    services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         /// </code>
         /// </example>
-        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<MvcOptions> mvcOptions, Action<RestierApiBuilder> configureApisAction)
+        public static IMvcBuilder AddRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction, Action<MvcOptions> mvcOptions, bool useEndpointRouting = false)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
@@ -115,60 +123,16 @@ namespace Microsoft.Extensions.DependencyInjection
             // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
             services.AddSingleton(sp => configureApisAction);
 
-            //RWM: Make sure that Restier works in any situation without needing additional knowledge.
+            if (useEndpointRouting)
+            {
+                // @robertmclaws: This is SUPER expensive, so don't do it unless we need it.
+                //      https://github.com/dotnet/aspnetcore/blob/release/8.0/src/Http/Routing/src/DependencyInjection/RoutingServiceCollectionExtensions.cs
+                services.AddRouting();
+            }
+
+            // @robertmclaws: Make sure that Restier works in any situation without needing additional knowledge.
+            //                This is the equivalent of services.AddMvcCore().AddApiExplorer().AddAuthorization().AddCors().AddDataAnnotations().AddFormatterMappings();
             return services.AddControllers(mvcOptions);
-        }
-
-        /// <summary>
-        /// Adds the Restier and OData Services to the specified <see cref="IServiceCollection"/>.
-        /// This will setup the container for future endpoint routing as opposed to legacy routing.
-        /// This method will call AddRouting internally, but will not add support for any other MVC
-        /// components, like controllers, views or pages.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
-        /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
-        /// <example>
-        /// <code>
-        /// services.AddEndpointRestier(builder =>
-        ///     builder
-        ///         .AddRestierApi<SomeApi>(routeServices =>
-        ///             routeServices
-        ///                 .AddEF6ProviderServices<SomeDbContext>()
-        ///                 .AddChainedService<IModelBuilder, SomeDbContextModelBuilder>()
-        ///                 .AddSingleton(new ODataValidationSettings
-        ///                 {
-        ///                     MaxAnyAllExpressionDepth = 3,
-        ///                     MaxExpansionDepth = 3,
-        ///                 })
-        ///         )
-        ///  
-        ///         .AddRestierApi<AnotherApi>(routeServices =>
-        ///             routeServices
-        ///                 .AddEF6ProviderServices<AnotherDbContext>()
-        ///                 .AddChainedService<IModelBuilder, AnotherDbContextModelBuilder>()
-        ///                 .AddSingleton(new ODataValidationSettings
-        ///                 {
-        ///                     MaxAnyAllExpressionDepth = 3,
-        ///                     MaxExpansionDepth = 3,
-        ///                 })
-        ///         );
-        ///    );
-        /// </code>
-        /// </example>
-        public static IServiceCollection AddEndpointRestier(this IServiceCollection services, Action<RestierApiBuilder> configureApisAction)
-        {
-            Ensure.NotNull(services, nameof(services));
-            Ensure.NotNull(configureApisAction, nameof(configureApisAction));
-
-            services.AddHttpContextAccessor();
-            services.AddOData();
-
-            // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
-            services.AddSingleton(sp => configureApisAction);
-
-            //RWM: Make sure that Restier works in any situation without needing additional knowledge.
-            return services.AddRouting();
         }
 
         /// Adds the Restier and OData Services to the specified <see cref="IServiceCollection"/>.
@@ -176,10 +140,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="alternateBaseUri">In reverse-proxy situations, provides for an alternate base URI that can be specified in the odata.context fields.</param>
         /// <param name="configureApisAction">An <see cref="Action{RestierApiBuilder}" /> that allows you to add APIs to the <see cref="RestierApiBuilder"/>.</param>
+        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>An <see cref="IODataBuilder"/> that can be used to further configure the OData services.</returns>
         /// <example>
         /// <code>
-        /// services.AddRestier(builder =>
+        /// services.AddRestier("https://someotherwebsite.com/someapp", builder =>
         ///     builder
         ///         .AddRestierApi<SomeApi>(routeServices =>
         ///             routeServices
@@ -203,9 +168,12 @@ namespace Microsoft.Extensions.DependencyInjection
         ///                 })
         ///         );
         ///    );
+        ///    
+        ///    // @robertmclaws: Since AddRestier calls .AddAuthorization(), you can use the line below if you want every request to be authenticated.
+        ///    services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         /// </code>
         /// </example>
-        public static IMvcBuilder AddRestier(this IServiceCollection services, Uri alternateBaseUri, Action<RestierApiBuilder> configureApisAction)
+        public static IMvcBuilder AddRestier(this IServiceCollection services, Uri alternateBaseUri, Action<RestierApiBuilder> configureApisAction, bool useEndpointRouting = false)
         {
             Ensure.NotNull(services, nameof(services));
             Ensure.NotNull(configureApisAction, nameof(configureApisAction));
@@ -216,10 +184,17 @@ namespace Microsoft.Extensions.DependencyInjection
             // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
             services.AddSingleton(sp => configureApisAction);
 
+            if (useEndpointRouting)
+            {
+                // @robertmclaws: This is SUPER expensive, so don't do it unless we need it.
+                //      https://github.com/dotnet/aspnetcore/blob/release/8.0/src/Http/Routing/src/DependencyInjection/RoutingServiceCollectionExtensions.cs
+                services.AddRouting();
+            }
+
             //RWM: Make sure that Restier works in any situation without needing additional knowledge.
             return services.AddControllers(options => 
             {
-                options.EnableEndpointRouting = false;
+                options.EnableEndpointRouting = useEndpointRouting;
 
                 // Read formatters
                 Uri inputBaseAddressFactory(HttpRequest request) =>

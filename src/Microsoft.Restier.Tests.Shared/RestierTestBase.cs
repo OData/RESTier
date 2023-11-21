@@ -12,15 +12,20 @@ namespace Microsoft.Restier.Tests.Shared
     /// 
     /// </summary>
     public class RestierTestBase
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
         <TApi>: RestierBreakdanceTestBase<TApi> where TApi : ApiBase
 #endif
     {
-#if NETCOREAPP3_1_OR_GREATER
-        public RestierTestBase(bool useEndpoints = false) : base(useEndpoints)
+#if NET6_0_OR_GREATER
+        public RestierTestBase(bool useEndpointRouting = false) : base(useEndpointRouting)
         {
             
         }
+#else
+
+        ///<summary>Exists to provide compatibility for our ASP.NET Classic tests. Do not use.</summary>
+        public bool UseEndpointRouting => false;
+
 #endif
 
         /// <summary>

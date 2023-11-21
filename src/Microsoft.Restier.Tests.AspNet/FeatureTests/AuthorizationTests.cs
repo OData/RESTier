@@ -14,7 +14,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.Restier.Core;
@@ -36,35 +36,54 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
 #endif
 {
 
-    [TestClass]
-    public class AuthorizationTests : RestierTestBase
 #if NET6_0_OR_GREATER
-        <LibraryApi>
-#endif
+
+    [TestClass]
+    [TestCategory("Endpoint Routing")]
+    public class AuthorizationTests_EndpointRouting : AuthorizationTests
+    {
+        public AuthorizationTests_EndpointRouting() : base(true)
+        {
+        }
+    }
+
+    [TestClass]
+    [TestCategory("Legacy Routing")]
+    public class AuthorizationTests_LegacyRouting : AuthorizationTests
+    {
+        public AuthorizationTests_LegacyRouting() : base(false)
+        {
+        }
+    }
+
+    [TestClass]
+    public abstract class AuthorizationTests : RestierTestBase<LibraryApi>
     {
 
-#if NET6_0_OR_GREATER
-
-        #region Constructors
-
-        public AuthorizationTests()
+        public AuthorizationTests(bool useEndpointRouting) : base(useEndpointRouting)
         {
-
             MapRestierAction = (routeBuilder) =>
             {
                 routeBuilder.MapApiRoute<LibraryApi>(WebApiConstants.RouteName, WebApiConstants.RoutePrefix);
             };
         }
 
-        #endregion
-
         /// <summary>
-        /// 
+        /// Builds the Test containers and gets everything ready for testing.
         /// </summary>
+        /// <remarks>
+        /// @robertmclaws: We call this method manually (vs decorating the method with [TestSetup] because each test has a different configuration for the API.
+        /// </remarks>
         public void AuthTestSetup()
         {
             TestSetup();
         }
+
+#else
+
+    [TestClass]
+    public class AuthorizationTests : RestierTestBase
+    {
 
 #endif
         /// <summary>
@@ -130,7 +149,7 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var settings = new JsonSerializerOptions
             {
 #if NET6_0_OR_GREATER
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 #endif
             };
             settings.Converters.Add(new SystemTextJsonTimeSpanConverter());

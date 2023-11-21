@@ -14,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.OData.Edm;
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 using Microsoft.Restier.AspNetCore.Formatter;
 using Microsoft.Restier.AspNetCore.Model;
 using AspNetResources = Microsoft.Restier.AspNetCore.Resources;
@@ -26,7 +26,7 @@ using AspNetResources = Microsoft.Restier.AspNet.Resources;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 
-#if NETCOREAPP3_1_OR_GREATER
+#if NET6_0_OR_GREATER
 namespace Microsoft.Restier.AspNetCore.Operation
 #else
 namespace Microsoft.Restier.AspNet.Operation

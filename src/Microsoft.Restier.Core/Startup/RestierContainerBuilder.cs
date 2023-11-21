@@ -62,7 +62,7 @@ namespace Microsoft.Restier.Core
         public RestierContainerBuilder(Action<RestierApiBuilder> configureApis = null)
         {
             this.configureApis = configureApis;
-            Services = new ServiceCollection();
+            Services = new();
             apiBuilder = new();
             routeBuilder = new();
         }
@@ -156,7 +156,7 @@ namespace Microsoft.Restier.Core
             //RWM: Warn the user they need to specify Routes if they registered more than one API.
             if (apiBuilder.Apis.Count != routeBuilder.Routes.Count)
             {
-                Trace.TraceWarning($"Restier detected at API mismatch. There are {routeBuilder.Routes.Count} routest registered but {apiBuilder.Apis.Count} Apis registered. Please double-check your configuration.");
+                Trace.TraceWarning($"Restier detected at API mismatch. There are {routeBuilder.Routes.Count} routes registered but {apiBuilder.Apis.Count} Apis registered. Please double-check your configuration.");
             }
 
             //RWM: It's entirely possible that this container was used some other way. 
