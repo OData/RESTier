@@ -45,7 +45,7 @@ Coming Soon!
 ## Supported Platforms
 Restier 1.0 currently supports the following platforms:
 - Classic ASP.NET 5.2.7 and later
-- ASP.NET Core 6.0, 7.0, and 8.0 RC2 (Binaries targeting deprecated versions of .NET are still available on NuGet.org)
+- ASP.NET Core 6.0, 7.0, and 8.0 (Binaries targeting deprecated versions of .NET are still available on NuGet.org)
 - Entity Framework 6.4 and later
 - Entity Framework Core 6.0 and later
 
