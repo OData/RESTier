@@ -19,36 +19,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNet, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.EntityFrameworkCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.Shared, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Ben.TypeDictionary" Version="[0.*, 2.0.0)" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
@@ -91,6 +61,39 @@
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 			<CustomToolNamespace>Microsoft.Restier.Core</CustomToolNamespace>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.AspNet, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.AspNetCore.Swagger, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.EntityFrameworkCore, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Microsoft.Restier.Tests.Shared, $(StrongNamePublicKey)</_Parameter1>
+		</AssemblyAttribute>
 	</ItemGroup>
 
 </Project>
