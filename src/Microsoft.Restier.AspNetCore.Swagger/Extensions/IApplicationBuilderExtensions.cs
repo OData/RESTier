@@ -32,7 +32,6 @@ namespace Microsoft.AspNetCore.Builder
                     { 
                         c.SwaggerEndpoint($"/swagger/{route.Key}/swagger.json", route.Value.RouteName);
                     }
-                    //c.DocumentTitle
                 });
             }
             return app;

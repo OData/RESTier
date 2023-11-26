@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
@@ -45,12 +46,13 @@ namespace Microsoft.Restier.AspNetCore.Swagger
         /// <returns></returns>
         public OpenApiDocument GetSwagger(string documentName, string host = null, string basePath = null)
         {
-            var model = perRouteContainer
-                .GetODataRootContainer(documentName)
-                .GetRequiredService<IEdmModel>();
+            var services = perRouteContainer.GetODataRootContainer(documentName);
+            var model = services.GetRequiredService<IEdmModel>();
+            var odataValidationSettings = services.GetRequiredService<ODataValidationSettings>();
+            var defaultQuerySettings = services.GetRequiredService<DefaultQuerySettings>();
 
-            // @robertmclaws: If the user registered a custom OpenApiConvertSettings, use it.
-            var settings = new OpenApiConvertSettings();
+            // @robertmclaws: Start off by setting defaults, but allow the user to override it.
+            var settings = new OpenApiConvertSettings { TopExample = odataValidationSettings?.MaxTop ?? defaultQuerySettings?.MaxTop ?? 5 };
             openApiSettings?.Invoke(settings);
 
             // @robertmclaws: The host defaults internally to localhost; isn't set automatically.

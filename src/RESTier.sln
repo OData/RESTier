@@ -76,6 +76,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Ent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.AspNetCore.Swagger", "Microsoft.Restier.AspNetCore.Swagger\Microsoft.Restier.AspNetCore.Swagger.csproj", "{5E2A4379-EB39-4AED-9FBA-E216DD2B982F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Tests.AspNetCore.Swagger", "Microsoft.restier.Tests.AspNetCore.Swagger\Microsoft.Restier.Tests.AspNetCore.Swagger.csproj", "{DE19D3BE-7D76-4081-84EF-152E56B10535}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -162,6 +164,10 @@ Global
 		{5E2A4379-EB39-4AED-9FBA-E216DD2B982F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E2A4379-EB39-4AED-9FBA-E216DD2B982F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E2A4379-EB39-4AED-9FBA-E216DD2B982F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +201,7 @@ Global
 		{42646361-1D62-4AB7-9735-009EB2DD0F38} = {2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F}
 		{2DB7E862-69AE-43E2-9EC4-C1491E8BA28F} = {2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F}
 		{5E2A4379-EB39-4AED-9FBA-E216DD2B982F} = {9D3D8728-C31B-4D5E-B471-79A9DBBA0E58}
+		{DE19D3BE-7D76-4081-84EF-152E56B10535} = {2BF9B9A4-E4EA-447D-9BAF-AF1A6840A24F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}
