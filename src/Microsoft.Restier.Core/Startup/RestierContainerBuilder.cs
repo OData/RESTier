@@ -117,7 +117,6 @@ namespace Microsoft.Restier.Core
 
             Type apiType = null;
 
-
             if (routeBuilder.Routes.Any())
             {
                 if (routeBuilder.Routes.ContainsKey(RouteName))
@@ -207,5 +206,6 @@ namespace Microsoft.Restier.Core
         }
 
         #endregion
+
     }
 }
