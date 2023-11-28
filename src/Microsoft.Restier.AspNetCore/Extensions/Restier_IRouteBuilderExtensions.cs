@@ -47,10 +47,10 @@ namespace Microsoft.Restier.AspNetCore
 
             var perRouteContainer = routeBuilder.ServiceProvider.GetRequiredService<IPerRouteContainer>();
             var apiBuilderAction = routeBuilder.ServiceProvider.GetRequiredService<Action<RestierApiBuilder>>();
+            var rrb = routeBuilder.ServiceProvider.GetRequiredService<RestierRouteBuilder>();
 
             perRouteContainer.BuilderFactory = () => new RestierContainerBuilder(apiBuilderAction);
 
-            var rrb = new RestierRouteBuilder();
             configureRoutesAction.Invoke(rrb);
 
             foreach (var route in rrb.Routes)

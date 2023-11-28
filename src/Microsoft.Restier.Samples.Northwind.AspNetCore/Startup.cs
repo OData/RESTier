@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
@@ -60,6 +63,8 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 });
             }, true);
 
+            services.AddRestierSwagger();
+
             //RWM: Since AddRestier calls .AddAuthorization(), you can uncomment the line below if you want every request to be authenticated.
             //services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         }
@@ -90,6 +95,8 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                     builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
                 });
             });
+
+            app.UseRestierSwagger(true);
         }
 
     }

@@ -43,9 +43,9 @@ Work on the current version of the protocol (V4) began in April 2012, and was ra
 Coming Soon!
 
 ## Supported Platforms
-Restier 1.0 currently supports the following platforms:
+Restier 1.1 currently supports the following platforms:
 - Classic ASP.NET 5.2.7 and later
-- ASP.NET Core 6.0, 7.0, and 8.0 RC2 (Binaries targeting deprecated versions of .NET are still available on NuGet.org)
+- ASP.NET Core 6.0, 7.0, and 8.0 (Binaries targeting deprecated versions of .NET are still available on NuGet.org)
 - Entity Framework 6.4 and later
 - Entity Framework Core 6.0 and later
 
@@ -54,21 +54,20 @@ Restier is made up of the following components:
 - **Microsoft.Restier.AspNet & Microsoft.Restier.AspNetCore:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
 - **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
 - **Microsoft.Restier.EntityFramework & Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
-- **Microsoft.Restier.Breakdance:** Unit test Restier services and components in-memory without spnning up a separate IIS instance, as well as verify the availability of your custom convention-based interceptors.
+- **Microsoft.Restier.Breakdance:** Unit test Restier services and components in-memory without spinning up a separate IIS instance, as well as verify the availability of your custom convention-based interceptors.
+- **Microsoft.Restier.AspNetCore.Swagger:** Automatically generates Swagger documentation for your ASP.NET Core Restier service.
 
 ## Ecosystem
 Restier is used in solutions from:
 - [BurnRate.io](https://burnrate.io)
-- [CloudNimble, Inc.](https://nimbleapps.cloud)
+- [CloudNimble](https://nimbleapps.cloud)
 - [Florida Agency for Health Care Administration](https://ahca.myflorida.com)
+- [Microsoft](https://graph.microsoft.com)
 - [Miller's Ale House](https://millersalehouse.com)
+- [NoCore](https://nocore.nl)
 
 ## Community
 After a couple years in statis, Restier is in active development once again. The project is lead by Robert McLaws and Mike Pizzo.
-
-### Weekly Standups
-The core development team meets twice a month on Microsoft Teams to discuss pressing items and work through the issues list. A history of
-those meetings can be found in the Wiki.
 
 ### Contributing
 If you'd like to help out with the project, our Contributor's Handbook is also located in the Wiki.
@@ -79,7 +78,7 @@ Security issues and bugs should be reported privately, via email, to the Microso
 
 ## Contributors
 
-Special thanks to everyone involved in making RESTier the best API development platform for .NET. The following people
+Special thanks to everyone involved in making Restier the best API development platform for .NET. The following people
 have made various contributions to the codebase:
 
 | Microsoft     | External         |
@@ -90,9 +89,9 @@ have made various contributions to the codebase:
 | Vincent He    | Kemal M          |
 | Dong Liu      | Mateusz Malicki  |
 | Layla Liu     | Robert McLaws    |
-| Fan Ouyang    | Jan-Willem Spuij |
-| Mike Pizzo    | Chris Woodruff   |
-| Congyong S    |                  |
+| Fan Ouyang    | Micah Rairdon    |
+| Mike Pizzo    | Jan-Willem Spuij |
+| Congyong S    | Chris Woodruff   |
 | Mark Stafford |                  |
 | Ray Yao       |                  |
 

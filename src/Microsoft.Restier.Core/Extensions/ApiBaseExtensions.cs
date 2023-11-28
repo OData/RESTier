@@ -16,6 +16,7 @@ using Microsoft.Restier.Core.Query;
 
 namespace Microsoft.Restier.Core
 {
+
     /// <summary>
     /// Represents the API engine and provides a set of static
     /// (Shared in Visual Basic) methods for interacting with objects
@@ -439,5 +440,7 @@ namespace Microsoft.Restier.Core
         }
 
         #endregion
+
     }
+
 }

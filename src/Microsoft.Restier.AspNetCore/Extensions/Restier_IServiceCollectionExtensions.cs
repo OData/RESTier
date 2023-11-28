@@ -122,6 +122,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // @robertmclaws: We're going to store this in the core DI container so we can grab it later and configure the APIs.
             services.AddSingleton(sp => configureApisAction);
+            services.AddSingleton<RestierRouteBuilder>();
 
             if (useEndpointRouting)
             {
