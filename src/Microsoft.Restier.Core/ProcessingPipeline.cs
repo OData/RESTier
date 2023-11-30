@@ -43,7 +43,7 @@ namespace Microsoft.Restier.Core
         #region Constructors
 
         /// <summary>
-        /// You 
+        /// 
         /// </summary>
         /// <param name="provider"></param>
         public ProcessingPipeline(IKeyedServiceProvider provider)
@@ -64,7 +64,7 @@ namespace Microsoft.Restier.Core
         /// <remarks>
         /// @robertmclaws: Type parameters can't be used in attributes, so <see cref="FromKeyedServicesAttribute"/> can't be used here.
         /// </remarks>
-        internal async Task ProcessQuery(CancellationToken cancellationToken)
+        internal async Task ProcessQueryAsync(CancellationToken cancellationToken)
         {
             foreach (var handler in QueryHandlers)
             {
@@ -81,7 +81,7 @@ namespace Microsoft.Restier.Core
         /// <remarks>
         /// @robertmclaws: Type parameters can't be used in attributes, so <see cref="FromKeyedServicesAttribute"/> can't be used here.
         /// </remarks>
-        internal async Task ProcessOperation(CancellationToken cancellationToken)
+        internal async Task ProcessOperationAsync(CancellationToken cancellationToken)
         {
             foreach (var handler in OperationHandlers)
             {
@@ -91,14 +91,14 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Processeses CRUD persistence requests.
+        /// Processes CRUD persistence requests.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <remarks>
         /// @robertmclaws: Type parameters can't be used in attributes, so <see cref="FromKeyedServicesAttribute"/> can't be used here.
         /// </remarks>
-        internal async Task ProcessSubmission(CancellationToken cancellationToken)
+        internal async Task ProcessSubmissionAsync(CancellationToken cancellationToken)
         {
             foreach (var handler in SubmissionHandlers)
             {

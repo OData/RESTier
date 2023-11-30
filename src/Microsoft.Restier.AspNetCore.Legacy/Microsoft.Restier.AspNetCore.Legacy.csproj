@@ -53,9 +53,6 @@
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
 		</AssemblyAttribute>
-	</ItemGroup>
-
-	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>Microsoft.Restier.Breakdance, $(StrongNamePublicKey)</_Parameter1>
 		</AssemblyAttribute>
