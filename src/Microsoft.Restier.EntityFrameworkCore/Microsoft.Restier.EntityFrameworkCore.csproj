@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net8.0;net7.0;net6.0;</TargetFrameworks>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
@@ -28,7 +28,7 @@
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
+			<_Parameter1>Microsoft.Restier.Tests.AspNetCore.Legacy, $(StrongNamePublicKey)</_Parameter1>
 		</AssemblyAttribute>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 			<_Parameter1>Microsoft.Restier.Tests.EntityFrameworkCore, $(StrongNamePublicKey)</_Parameter1>
@@ -55,13 +55,8 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 9.0.0)" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="[5.*, 9.0.0)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 9.0.0)" />
-	</ItemGroup>
-
 	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Core.Legacy\Microsoft.Restier.Core.Legacy.csproj" />
 	</ItemGroup>
 
 	<Import Project="..\Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems" Label="Shared" />

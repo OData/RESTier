@@ -8,8 +8,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
-		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNetCore.Legacy\Microsoft.Restier.AspNetCore.Legacy.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Core.Legacy\Microsoft.Restier.Core.Legacy.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

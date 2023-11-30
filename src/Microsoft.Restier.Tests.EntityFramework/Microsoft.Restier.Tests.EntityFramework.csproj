@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net472;net6.0;net7.0;</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;.net8.0</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
@@ -9,8 +9,7 @@
 		<PackageReference Include="Breakdance.Assemblies" Version="6.*-*" />
 		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
-		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" Condition="'$(IsNetCore)' == 'true'" />
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" />
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -34,8 +33,7 @@
 		<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
 		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
 		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
-		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" Condition="'$(IsNetCore)' != 'true'" />
-		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" Condition="'$(IsNetCore)' == 'true'" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNetCore.Legacy\Microsoft.Restier.AspNetCore.Legacy.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -16,21 +16,9 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using System.IO;
-
-
-
-#if NET6_0_OR_GREATER
 using System.Text.Json;
 using CloudNimble.Breakdance.AspNetCore;
 using Microsoft.AspNetCore.TestHost;
-
-#else
-using System.Web.Http;
-using CloudNimble.Breakdance.WebApi;
-using Newtonsoft.Json;
-
-#endif
-
 
 namespace Microsoft.Restier.Breakdance
 {
