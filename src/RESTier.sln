@@ -70,6 +70,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Restier.Tests.Asp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Legacy", "Legacy", "{B5CE3119-82B4-48E9-B439-ED027552569C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Restier.Core", "Microsoft.Restier.Core\Microsoft.Restier.Core.csproj", "{12A54A12-4F2B-495E-9C10-3DE0A2CBC1BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,10 @@ Global
 		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE19D3BE-7D76-4081-84EF-152E56B10535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12A54A12-4F2B-495E-9C10-3DE0A2CBC1BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12A54A12-4F2B-495E-9C10-3DE0A2CBC1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12A54A12-4F2B-495E-9C10-3DE0A2CBC1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12A54A12-4F2B-495E-9C10-3DE0A2CBC1BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,6 +180,7 @@ Global
 		{5E2A4379-EB39-4AED-9FBA-E216DD2B982F} = {B5CE3119-82B4-48E9-B439-ED027552569C}
 		{DE19D3BE-7D76-4081-84EF-152E56B10535} = {B5CE3119-82B4-48E9-B439-ED027552569C}
 		{B5CE3119-82B4-48E9-B439-ED027552569C} = {76B4E51F-233E-4DD3-AABF-A6F47788040D}
+		{12A54A12-4F2B-495E-9C10-3DE0A2CBC1BA} = {D8A3183C-1E9C-4D6C-AC72-4EF938EC9895}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A37189C-A5E1-4871-AF65-8EBF2DA60FE3}
