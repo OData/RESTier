@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// 
     /// </summary>
-    public static class Restier_OData_IServiceCollectionExtensions
+    public static class Restier_GraphQL_IServiceCollectionExtensions
     {
 
         ///<summary>

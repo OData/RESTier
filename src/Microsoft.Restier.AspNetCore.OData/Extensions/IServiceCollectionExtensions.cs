@@ -19,9 +19,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <remarks>
         /// If Restier is API format-gnostic, then registering *everything* will need to happen in the API format library (here).
         /// </remarks>
-        public static IServiceCollection AddRestier(this IServiceCollection services)
+        public static IServiceCollection AddRestier<TApi>(this IServiceCollection services) where TApi: class
         {
-            services.AddScoped<ProcessingPipeline<string>>();
+            services.AddScoped<TApi>();
+            services.AddScoped<ProcessingPipeline<TApi>>();
+            //services.AddOData(); @robertmclaws: right now you can't add OData services without adding MVC controllers.
             return services;
         }
     }

@@ -11,10 +11,10 @@
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNetCore.OData</_Parameter1>
+			<_Parameter1>Microsoft.Restier.AspNetCore.OData, $(StrongNamePublicKey)</_Parameter1>
 		</AssemblyAttribute>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNetCore.GraphQL</_Parameter1>
+			<_Parameter1>Microsoft.Restier.AspNetCore.GraphQL, $(StrongNamePublicKey)</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 

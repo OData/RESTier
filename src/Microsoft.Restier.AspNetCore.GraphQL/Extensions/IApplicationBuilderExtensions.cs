@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// 
     /// </summary>
-    public static class Restier_OData_IApplicationBuilderExtensions
+    public static class Restier_GraphQL_IApplicationBuilderExtensions
     {
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IApplicationBuilder UseRestier<TApi>(this IApplicationBuilder app)
         {
-            app.UseMiddleware<RestierODataMiddleware<TApi>>();
+            app.UseMiddleware<RestierGraphQLMiddleware<TApi>>();
             return app;
         }
 

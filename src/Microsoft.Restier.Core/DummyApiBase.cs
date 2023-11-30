@@ -5,12 +5,10 @@ namespace Microsoft.Restier.Core
 {
 
     /// <summary>
-    /// 
+    /// This class may not be necessary. We still need to figure out how APIs are actually gonna be created.
     /// </summary>
-    public interface IOperationPipelineHandler
+    public class DummyApiBase
     {
-
-
     }
 
 }

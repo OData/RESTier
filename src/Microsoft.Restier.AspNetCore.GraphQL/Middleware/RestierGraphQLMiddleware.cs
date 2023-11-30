@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Restier.Core;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Restier.AspNetCore.OData.Middleware
@@ -12,7 +11,7 @@ namespace Microsoft.Restier.AspNetCore.OData.Middleware
     /// <summary>
     /// 
     /// </summary>
-    public class RestierMiddleware
+    public class RestierGraphQLMiddleware<TApi>
     {
 
         #region Private Members
@@ -27,7 +26,7 @@ namespace Microsoft.Restier.AspNetCore.OData.Middleware
         /// The default constructor for the middleware.
         /// </summary>
         /// <param name="requestDelegate"></param>
-        public RestierMiddleware(RequestDelegate requestDelegate)
+        public RestierGraphQLMiddleware(RequestDelegate requestDelegate)
         {
             this.requestDelegate = requestDelegate;
         }
@@ -41,17 +40,30 @@ namespace Microsoft.Restier.AspNetCore.OData.Middleware
         /// </summary>
         /// <param name="httpContext"></param>
         /// <param name="pipeline"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task InvokeAsync(HttpContext httpContext, ProcessingPipeline<string> pipeline, 
-            CancellationToken cancellationToken)
+        public async Task InvokeAsync(HttpContext httpContext, ProcessingPipeline<TApi> pipeline)
         {
+            switch (httpContext.Request.Method)
+            {
+                case "GET":
+                    await pipeline.ProcessQueryAsync(httpContext.ToQueryContext(), httpContext.RequestAborted);
+                    break;
+                case "POST":
+                case "PUT":
+                case "PATCH":
+                case "DELETE":
+                    // @robertmclaws: Leverage OData features to determine if this is a batch, an attached operation, or an entity set request.
+                    //pipeline.ProcessOperationAsync(httpContext.ToOperationContext(), httpContext.RequestAborted);
+                    //pipeline.ProcessSubmissionAsync(httpContext.ToSubmissionContext(), httpContext.RequestAborted);
+                    break;
+                default:
+                    break;
+            }
             // @robertmclaws: Steps:
             //  - Get the URL
             //  - Map to an entity set or function
             //  - Generate the parameters for the pipeline
             //  - Process the pipeline.
-            await pipeline.ProcessQueryAsync(cancellationToken);
             await requestDelegate(httpContext);
         }
 
