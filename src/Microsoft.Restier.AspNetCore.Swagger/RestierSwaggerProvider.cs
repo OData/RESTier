@@ -56,11 +56,10 @@ namespace Microsoft.Restier.AspNetCore.Swagger
             openApiSettings?.Invoke(settings);
 
             // @robertmclaws: The host defaults internally to localhost; isn't set automatically.
-            var requestHost = httpContextAccessor.HttpContext.Request.Host.Value;
-            if (!settings.ServiceRoot.ToString().StartsWith(requestHost))
-            {
-                settings.ServiceRoot = new Uri($"{httpContextAccessor.HttpContext.Request.Scheme}://{requestHost}");
-            }
+            var request = httpContextAccessor.HttpContext?.Request ?? throw new InvalidOperationException("The HttpContext is not available");
+            var routePrefix = perRouteContainer.GetRoutePrefix(documentName);
+            var path = string.IsNullOrEmpty(routePrefix) ? "" : $"{routePrefix}/";
+            settings.ServiceRoot = new Uri($"{request.Scheme}://{request.Host}/{path}");
 
             return model.ConvertToOpenApi(settings);
         }
