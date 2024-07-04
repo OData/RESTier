@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
             };
             SetChangeSetProperty(changeSetProperty);
 
-            var contentIdToLocationMapping = new Dictionary<string, string>();
+            var contentIdToLocationMapping = new ConcurrentDictionary<string, string>();
             var responseTasks = new List<Task<Task<HttpContext>>>();
 
             foreach (var context in Contexts)
