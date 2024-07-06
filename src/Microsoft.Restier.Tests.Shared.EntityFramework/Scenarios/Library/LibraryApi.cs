@@ -202,7 +202,10 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library
         /// <param name="book"></param>
         internal protected void OnInsertingBook(Book book)
         {
-            book.Id = Guid.NewGuid();
+            if (book.Id == Guid.Empty)
+            {
+                book.Id = Guid.NewGuid();
+            }
         }
 
         /// <summary>

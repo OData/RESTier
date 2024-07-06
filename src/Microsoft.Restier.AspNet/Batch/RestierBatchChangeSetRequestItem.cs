@@ -60,9 +60,9 @@ namespace Microsoft.Restier.AspNet.Batch
 
             foreach (var request in Requests)
             {
-                // Since exceptions may occure before the request is sent to RestierController,
+                // Since exceptions may occurs before the request is sent to RestierController,
                 // we must catch the exceptions here and call OnChangeSetCompleted,
-                // so as to avoid deadlock mentioned in Github Issue #82.
+                // so as to avoid deadlock mentioned in GitHub Issue #82.
                 var tcs = new TaskCompletionSource<HttpResponseMessage>();
                 var task = SendMessageAsync(invoker, request, cancellationToken, contentIdToLocationMapping)
                         .ContinueWith(t =>

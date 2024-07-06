@@ -92,6 +92,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 endpoints.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
                 endpoints.MapRestier(builder =>
                 {
+                    //builder.MapApiRoute<NorthwindApi>("ApiV1", "test", true);
                     builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
                 });
             });
