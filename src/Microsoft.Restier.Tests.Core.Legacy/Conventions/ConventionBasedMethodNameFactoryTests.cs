@@ -65,7 +65,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that calling GetEntitySetMethodName with a null IEdmEntitySet returns an empty string.
         /// </summary>
         [TestMethod]
-        public static void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperationWithNullEntitySet()
+        public void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperationWithNullEntitySet()
         {
             var result = ConventionBasedMethodNameFactory.GetEntitySetMethodName(
                 default(IEdmEntitySet),
@@ -103,7 +103,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that calling GetEntitySetMethodName with a null DataModificationItem returns an empty string.
         /// </summary>
         [TestMethod]
-        public static void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineStateWithNullItem()
+        public void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineStateWithNullItem()
         {
             var result = ConventionBasedMethodNameFactory.GetEntitySetMethodName(
                 default(DataModificationItem),
@@ -139,7 +139,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that calling GetFunctionMethodName with a null IEdmOperationImport returns an empty string.
         /// </summary>
         [TestMethod]
-        public static void CanCallGetFunctionMethodNameWithIEdmOperationImportAndRestierPipelineStateAndRestierOperationMethodWithNullOperationImport()
+        public void CanCallGetFunctionMethodNameWithIEdmOperationImportAndRestierPipelineStateAndRestierOperationMethodWithNullOperationImport()
         {
             var result = ConventionBasedMethodNameFactory.GetFunctionMethodName(
                 default(IEdmOperationImport),
@@ -152,7 +152,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that calling GetFunctionMethodName with a null OperationContext returns an empty string.
         /// </summary>
         [TestMethod]
-        public static void CannotCallGetFunctionMethodNameWithOperationContextAndRestierPipelineStateAndRestierOperationMethodWithNullOperationImport()
+        public void CannotCallGetFunctionMethodNameWithOperationContextAndRestierPipelineStateAndRestierOperationMethodWithNullOperationImport()
         {
             var result = ConventionBasedMethodNameFactory.GetFunctionMethodName(
                 default(OperationContext),
