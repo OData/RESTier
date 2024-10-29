@@ -95,7 +95,10 @@ namespace Microsoft.Restier.AspNet.Batch
             // - the ChangeSet is submitted
             // - the responses are created and
             // - the controller actions have returned
-            await Task.WhenAll(responseTasks).ConfigureAwait(false);
+            foreach (var responseTask in responseTasks)
+            {
+                await responseTask.ConfigureAwait(false);
+            }
 
             var responses = new List<HttpResponseMessage>();
             try
