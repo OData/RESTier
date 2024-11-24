@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net472;netstandard2.1;net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net48;netstandard2.1;net8.0;net9.0;</TargetFrameworks>
 		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
@@ -18,24 +18,11 @@
 		<PackageTags>$(PackageTags)entityframework;entityframework6</PackageTags>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
+
 
 	<ItemGroup>
-		<PackageReference Include="EntityFramework" Version="[6.4.0, 7.0.0)" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="EntityFramework" Version="[6.5.*, 7.0.0)" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.*" />
 		<!--<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 7.14.0)" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="[7.*, 7.14.0)" />-->
 		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
@@ -47,5 +34,12 @@
 	</ItemGroup>
 
 	<Import Project="..\Microsoft.Restier.EntityFramework.Shared\Microsoft.Restier.EntityFramework.Shared.projitems" Label="Shared" />
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)" />
+	</ItemGroup>
 
 </Project>

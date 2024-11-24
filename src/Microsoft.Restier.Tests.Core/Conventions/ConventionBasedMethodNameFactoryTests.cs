@@ -40,7 +40,9 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
         [DataTestMethod]
+#pragma warning disable MSTEST0018 // DynamicData should be valid
         [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
+#pragma warning restore MSTEST0018 // DynamicData should be valid
         public static void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperation(
             RestierPipelineState pipelineState,
             RestierEntitySetOperation entitySetOperation,
@@ -81,7 +83,9 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
         [DataTestMethod]
+#pragma warning disable MSTEST0018 // DynamicData should be valid
         [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
+#pragma warning restore MSTEST0018 // DynamicData should be valid
         public static void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineState(
             RestierPipelineState pipelineState,
             RestierEntitySetOperation entitySetOperation,
@@ -112,7 +116,7 @@ namespace Microsoft.Restier.Tests.Core
         }
 
         /// <summary>
-        /// Tests all posibilities for GetFunctionMethodName.
+        /// Tests all possibilities for GetFunctionMethodName.
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="expected">The expected result.</param>
@@ -162,7 +166,7 @@ namespace Microsoft.Restier.Tests.Core
         }
 
         /// <summary>
-        /// Tests all posibilities for GetFunctionMethodName.
+        /// Tests all possibilities for GetFunctionMethodName.
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="expected">The expected result.</param>

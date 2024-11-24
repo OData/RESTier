@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net472;netstandard2.1;net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net48;netstandard2.1;net8.0;net9.0;</TargetFrameworks>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
@@ -24,27 +24,23 @@
 		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="[7.*, 8.0.0)" />
 		<PackageReference Include="Newtonsoft.Json" Version="[13.0.1, 15.0.0)" />
-		<PackageReference Include="System.ComponentModel.Annotations" Version="[5.*, 9.0.0)" />
+		<PackageReference Include="System.ComponentModel.Annotations" Version="[5.*, 10.0.0)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[9.*, 10.0.0)" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[8.*-*, 9.0.0)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[8.*, 10.0.0)" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[7.*, 9.0.0)" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 9.0.0)" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'net472'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.*, 9.0.0)" />
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'net48'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[8.*, 10.0.0)" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' == 'net472' " />
+		<Reference Include="System.Net.Http" Condition=" '$(TargetFramework)' == 'net48' " />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -64,36 +60,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNet, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.AspNetCore.Swagger, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.EntityFrameworkCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>Microsoft.Restier.Tests.Shared, $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
+		<InternalsVisibleTo Include="Microsoft.Restier.AspNet, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.AspNetCore, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.AspNetCore.Swagger, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.EntityFramework, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.EntityFrameworkCore, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)" />
+		<InternalsVisibleTo Include="Microsoft.Restier.Tests.Shared, $(StrongNamePublicKey)" />
 	</ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
 		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
 		<IsPackable>false</IsPackable>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -14,19 +14,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="6.*-*" />
-		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="6.*-*" />
-		<PackageReference Include="EasyAF.Http" Version="*-*" />
-		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="*-*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="7.*" />
+		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="7.*" />
+		<PackageReference Include="EasyAF.Http" Version="3.*" />
+		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="3.*" />
 		<!--<PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" />-->
 		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
-		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.9" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.*" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.*" />
+		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" NoWarn="NU1605" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.*" />
 		<!--<PackageReference Include="Microsoft.OData.Edm" Version="7.13.*" />-->
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="6.*" />
-		<PackageReference Include="System.Text.Json" Version="8.*" />
+		<PackageReference Include="Simple.OData.V4.Client" Version="6.*-*" />
+		<PackageReference Include="System.Text.Json" Version="9.*" />
 	</ItemGroup>
 
 	<ItemGroup>

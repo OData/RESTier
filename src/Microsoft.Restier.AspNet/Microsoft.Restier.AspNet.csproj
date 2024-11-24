@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AssemblyName>Microsoft.Restier.AspNet</AssemblyName>
 		<RootNamespace>Microsoft.Restier.AspNet</RootNamespace>
-		<TargetFrameworks>net472</TargetFrameworks>
+		<TargetFrameworks>net48</TargetFrameworks>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
 

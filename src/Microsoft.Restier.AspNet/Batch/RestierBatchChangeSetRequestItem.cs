@@ -95,7 +95,9 @@ namespace Microsoft.Restier.AspNet.Batch
             // - the ChangeSet is submitted
             // - the responses are created and
             // - the controller actions have returned
-            await Task.WhenAll(responseTasks).ConfigureAwait(false);
+
+            // RWM: Process these in series for now, but I want this to be much smarter.
+            responseTasks.ForEach(async request => await request.ConfigureAwait(false));
 
             var responses = new List<HttpResponseMessage>();
             try
@@ -122,7 +124,7 @@ namespace Microsoft.Restier.AspNet.Batch
                 throw;
             }
 
-            return new ChangeSetResponseItem(responses);
+            return await Task.FromResult(new ChangeSetResponseItem(responses));
         }
 
         /// <summary>
@@ -130,22 +132,16 @@ namespace Microsoft.Restier.AspNet.Batch
         /// </summary>
         /// <param name="changeSet">The change set to submit.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-#pragma warning disable CA1822 // Do not declare static members on generic types
         internal async Task SubmitChangeSet(ChangeSet changeSet)
-#pragma warning restore CA1822 // Do not declare static members on generic types
-
         {
-            var submitResults = await api.SubmitAsync(changeSet).ConfigureAwait(false);
+            _ = await api.SubmitAsync(changeSet).ConfigureAwait(false);
         }
 
         private static void DisposeResponses(IEnumerable<HttpResponseMessage> responses)
         {
             foreach (var response in responses)
             {
-                if (response is not null)
-                {
-                    response.Dispose();
-                }
+                response?.Dispose();
             }
         }
 

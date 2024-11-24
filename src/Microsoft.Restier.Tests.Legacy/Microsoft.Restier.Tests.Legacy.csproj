@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
 		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
 		<IsPackable>false</IsPackable>
+		<NoWarn>$(NoWarn);NU1902;NU1903;</NoWarn>
 	</PropertyGroup>
 
 	<!-- RWM: NEVER EVER MESS WITH THESE REFERENCES. THIS LIBRARY GUARANTEE'S THE PROPER DI ORDER AGAINST OLD BUILDS. -->
@@ -15,7 +16,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.13" />
 		<PackageReference Include="Microsoft.Restier.AspNet" Version="1.0.0-rc2.20191212.1" />
 		<PackageReference Include="Microsoft.Restier.EntityFramework" Version="1.0.0-rc2.20191212.1" />
-		<PackageReference Include="coverlet.collector" Version="1.*" />
+		<!--<PackageReference Include="coverlet.collector" Version="1.*" />-->
 	</ItemGroup>
 
 	<ItemGroup>

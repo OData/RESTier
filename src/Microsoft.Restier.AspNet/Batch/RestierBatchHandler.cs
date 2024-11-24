@@ -16,11 +16,13 @@ using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.AspNet.Batch
 {
+
     /// <summary>
     /// Default implementation of <see cref="ODataBatchHandler"/> in RESTier.
     /// </summary>
     public class RestierBatchHandler : DefaultODataBatchHandler
     {
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierBatchHandler" /> class.
         /// </summary>
@@ -36,8 +38,10 @@ namespace Microsoft.Restier.AspNet.Batch
         /// <param name="request">The HTTP request that contains the batch requests.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object that represents this asynchronous operation.</returns>
-        public override async Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async override Task<IList<ODataBatchRequestItem>> ParseBatchRequestsAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            // TODO: RWM: I want to get a LOT smarter about batch processing and separate dependent requests from independent requests.
+            //            That way independent requests can be processed in parallel.
             Ensure.NotNull(request, nameof(request));
 
             var requestContainer = request.CreateRequestContainer(ODataRouteName);
@@ -88,4 +92,5 @@ namespace Microsoft.Restier.AspNet.Batch
         protected virtual RestierBatchChangeSetRequestItem CreateRestierBatchChangeSetRequestItem(ApiBase api, IList<HttpRequestMessage> changeSetRequests) => 
             new RestierBatchChangeSetRequestItem(api, changeSetRequests);
     }
+
 }

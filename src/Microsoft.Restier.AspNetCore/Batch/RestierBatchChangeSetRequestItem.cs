@@ -42,7 +42,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
         /// </summary>
         /// <param name="handler">The handler for processing a message.</param>
         /// <returns>The task object that contains the batch response.</returns>
-        public override async Task<ODataBatchResponseItem> SendRequestAsync(RequestDelegate handler)
+        public async override Task<ODataBatchResponseItem> SendRequestAsync(RequestDelegate handler)
         {
             Ensure.NotNull(handler, nameof(handler));
 
@@ -94,7 +94,9 @@ namespace Microsoft.Restier.AspNetCore.Batch
             // - the ChangeSet is submitted
             // - the responses are created and
             // - the controller actions have returned
-            await Task.WhenAll(responseTasks).ConfigureAwait(false);
+
+            // RWM: Process these in series for now, but I want this to be much smarter.
+            responseTasks.ForEach(async request => await request.ConfigureAwait(false));
 
             var returnContexts = new List<HttpContext>();
 
@@ -113,7 +115,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
                 }
             }
 
-            return new ChangeSetResponseItem(returnContexts);
+            return await Task.FromResult(new ChangeSetResponseItem(returnContexts));
         }
 
         /// <summary>
