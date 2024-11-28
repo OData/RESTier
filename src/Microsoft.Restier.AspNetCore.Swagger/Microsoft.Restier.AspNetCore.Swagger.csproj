@@ -4,7 +4,6 @@
 		<TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>

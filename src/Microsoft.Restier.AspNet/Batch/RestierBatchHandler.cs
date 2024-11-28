@@ -49,10 +49,7 @@ namespace Microsoft.Restier.AspNet.Batch
 
             // TODO: JWS: needs to be a constructor dependency probably, but that's impossible now.
             var api = requestContainer.GetRequiredService<ApiBase>();
-
-#pragma warning disable CA1062 // Validate public arguments
             var reader = await request.Content.GetODataMessageReaderAsync(requestContainer, cancellationToken).ConfigureAwait(false);
-#pragma warning restore CA1062 // Validate public arguments
             request.RegisterForDispose(reader);
 
             var requests = new List<ODataBatchRequestItem>();
