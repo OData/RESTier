@@ -9,6 +9,12 @@
     "pages": [
       "index",
       {
+        "group": "Getting Started",
+        "pages": [
+          "index"
+        ]
+      },
+      {
         "group": "API Reference",
         "icon": "code",
         "pages": [
