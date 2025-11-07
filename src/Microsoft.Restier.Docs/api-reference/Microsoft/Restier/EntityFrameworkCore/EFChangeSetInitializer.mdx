@@ -1,0 +1,83 @@
+---
+title: EFChangeSetInitializer
+description: "To prepare changed entries for the given [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet)."
+icon: file-brackets-curly
+keywords: ['EFChangeSetInitializer', 'Microsoft.Restier.EntityFrameworkCore.EFChangeSetInitializer', 'Microsoft.Restier.EntityFrameworkCore', 'class', 'Microsoft.Restier.Core.Submit.DefaultChangeSetInitializer']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.EntityFrameworkCore.dll
+
+**Namespace:** Microsoft.Restier.EntityFrameworkCore
+
+**Inheritance:** Microsoft.Restier.Core.Submit.DefaultChangeSetInitializer
+
+## Syntax
+
+```csharp
+Microsoft.Restier.EntityFrameworkCore.EFChangeSetInitializer
+```
+
+## Summary
+
+To prepare changed entries for the given [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet).
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public EFChangeSetInitializer()
+```
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ConvertToEfValue <DocsBadge text="Virtual" variant="warning" />
+
+Convert a Edm type value to Resource Framework supported value type.
+
+#### Syntax
+
+```csharp
+public virtual object ConvertToEfValue(System.Type type, object value)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The type of the property defined in CLR class. |
+| `value` | `object` | The value from OData deserializer and in type of Edm. |
+
+#### Returns
+
+Type: `object`
+The converted value object.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  InitializeAsync <DocsBadge text="Override" variant="info" />
+
+Asynchronously prepare the [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet).
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task InitializeAsync(Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context class used for preparation. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+The task object that represents this asynchronous operation.
+

@@ -1,0 +1,36 @@
+---
+title: OperationType
+description: "Defines the type of OData Operations that can be registered. The type of operation determines how the service             responds over HTTP."
+icon: list-ol
+tag: "ENUM"
+keywords: ['OperationType', 'Microsoft.Restier.AspNetCore.Model.OperationType', 'Microsoft.Restier.AspNetCore.Model', 'class', 'System.Enum']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNetCore.dll
+
+**Namespace:** Microsoft.Restier.AspNetCore.Model
+
+**Inheritance:** System.Enum
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNetCore.Model.OperationType
+```
+
+## Summary
+
+Defines the type of OData Operations that can be registered. The type of operation determines how the service
+            responds over HTTP.
+
+## Values
+
+| Name | Value | Description |
+|------|-------|-------------|
+| `Function` | 0 | Functions usually retrieve data from the system, and respond to requests made over HTTP GET. |
+| `Action` | 1 | Actions usually submit data to the system, and respond to requests made over HTTP POST. |
+

@@ -1,0 +1,71 @@
+---
+title: IQueryExpressionExpander
+description: "Represents a service that expands a query expression."
+icon: plug
+keywords: ['IQueryExpressionExpander', 'Microsoft.Restier.Core.Query.IQueryExpressionExpander', 'Microsoft.Restier.Core.Query', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Query
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Query.IQueryExpressionExpander
+```
+
+## Summary
+
+Represents a service that expands a query expression.
+
+## Remarks
+
+
+
+
+            Query expression expansion converts an expression that represents
+            normalized API data into an expression using more primitive nodes.
+            
+
+
+
+
+            Expansion is the second step that occurs when processing a query
+            expression after its children have been visited, so it occurs during
+            upward traversal of the query expression and after inspection. Since
+            expansion fundamentally alters the query expression, the resulting
+            expression is recursively processed to ensure that all appropriate
+            normalization, inspection, expansion, filtering and sourcing occurs.
+            
+
+
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Expand <DocsBadge text="Abstract" variant="warning" />
+
+Expands an expression.
+
+#### Syntax
+
+```csharp
+System.Linq.Expressions.Expression Expand(Microsoft.Restier.Core.Query.QueryExpressionContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Query.QueryExpressionContext` | The query expression context. |
+
+#### Returns
+
+Type: `System.Linq.Expressions.Expression`
+An expanded expression of the same type as the visited node, or
+            if expansion did not apply, the visited node or `null`.
+

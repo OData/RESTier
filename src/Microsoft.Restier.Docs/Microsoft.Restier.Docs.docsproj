@@ -1,0 +1,29 @@
+﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.10">
+
+	<PropertyGroup>
+		<DocumentationType>Mintlify</DocumentationType>
+		<GenerateDocumentation>true</GenerateDocumentation>
+		<NamespaceMode>Folder</NamespaceMode>
+		<ShowDocumentationStats>true</ShowDocumentationStats>
+
+		<ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+		<ShowPlaceholders>false</ShowPlaceholders>
+
+		<MintlifyTemplate>
+			<Name>RESTier</Name>
+			<Theme>maple</Theme>
+			<Colors>
+				<Primary>#419AC5</Primary>
+				<Light>#419AC5</Light>
+				<Dark>#3CD0E2</Dark>
+			</Colors>
+            <Navigation Mode="Unified">
+			</Navigation>
+		</MintlifyTemplate>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="index.mdx" />
+	</ItemGroup>
+
+</Project>

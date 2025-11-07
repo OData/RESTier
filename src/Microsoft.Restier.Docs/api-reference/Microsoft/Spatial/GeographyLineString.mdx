@@ -1,0 +1,54 @@
+---
+title: GeographyLineString
+description: "Extension methods for GeographyLineString from Microsoft.Spatial"
+icon: file-brackets-curly
+keywords: ['GeographyLineString', 'Microsoft.Spatial.GeographyLineString', 'Microsoft.Spatial', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Spatial.dll
+
+**Namespace:** Microsoft.Spatial
+
+## Syntax
+
+```csharp
+Microsoft.Spatial.GeographyLineString
+```
+
+## Summary
+
+This type is defined in Microsoft.Spatial.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.spatial.geographylinestring) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToDbGeography <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.EntityFramework.GeographyConverter`</Note>
+
+Convert a Edm GeographyLineString to DbGeography
+
+#### Syntax
+
+```csharp
+public static System.Data.Entity.Spatial.DbGeography ToDbGeography(Microsoft.Spatial.GeographyLineString lineString)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lineString` | `Microsoft.Spatial.GeographyLineString` | The Edm GeographyLineString to be converted |
+
+#### Returns
+
+Type: `System.Data.Entity.Spatial.DbGeography`
+A DbGeography
+

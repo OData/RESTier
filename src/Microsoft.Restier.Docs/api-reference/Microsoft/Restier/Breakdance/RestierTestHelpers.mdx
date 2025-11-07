@@ -1,0 +1,320 @@
+---
+title: RestierTestHelpers
+description: "A set of methods that make it easier to pull out Restier runtime components for unit testing."
+icon: bolt
+tag: "STATIC"
+keywords: ['RestierTestHelpers', 'Microsoft.Restier.Breakdance.RestierTestHelpers', 'Microsoft.Restier.Breakdance', 'class', 'System.Object']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Breakdance.dll
+
+**Namespace:** Microsoft.Restier.Breakdance
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Breakdance.RestierTestHelpers
+```
+
+## Summary
+
+A set of methods that make it easier to pull out Restier runtime components for unit testing.
+
+## Remarks
+
+See RestierTestHelperTests.cs for more examples of how to use these methods.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ExecuteTestRequest
+
+Configures the Restier pipeline in-memory and executes a test request against a given service, returning an [HttpResponseMessage](https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage) for inspection.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage> ExecuteTestRequest<TApi>(System.Net.Http.HttpMethod httpMethod, string host = "http://localhost/", string routeName = "api/tests", string routePrefix = "api/tests/", string resource = null, System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, string acceptHeader = "application/json;odata.metadata=minimal", Microsoft.AspNet.OData.Query.DefaultQuerySettings defaultQuerySettings = null, System.TimeZoneInfo timeZoneInfo = null, object payload = null, Newtonsoft.Json.JsonSerializerSettings jsonSerializerSettings = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `httpMethod` | `System.Net.Http.HttpMethod` | The [HttpMethod](https://learn.microsoft.com/dotnet/api/system.net.http.httpmethod) to use for the request. |
+| `host` | `string` | The protocol and host to connect to in order to run the tests. Must end with a forward-slash. Defaults to "http://localhost/", and should not normally be changed. NOTE: This should
+            NOT be the same as any of your actual running environments, and does not require a port assignment in order to function. |
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appended in between the Host and the Resource when constructing a URL. NOTE: DO NOT set this to the same URL as your deployment environments. 
+            The prefix is irrelevant, is only for internal testing, and should ONLY be changed if you are testing more than one API in a test method (which is not recommended). |
+| `resource` | `string` | The specific resource on the endpoint that will be called. Must start with a forward-slash. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `acceptHeader` | `string` | The "Accept" header that should be added to the request. Defaults to "application/json;odata.metadata=full". |
+| `defaultQuerySettings` | `Microsoft.AspNet.OData.Query.DefaultQuerySettings` | A [DefaultQuerySettings](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.query.defaultquerysettings) instabce that defines how OData operations should work. Defaults to everything enabled with a [MaxTop](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.query.defaultquerysettings.maxtop) of 10. |
+| `timeZoneInfo` | `System.TimeZoneInfo` | A [TimeZoneInfo](https://learn.microsoft.com/dotnet/api/system.timezoneinfo) instenace specifying what time zone should be used to translate time payloads into. Defaults to [Utc](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.utc). |
+| `payload` | `object` | When the *httpMethod* is [Post](https://learn.microsoft.com/dotnet/api/system.net.http.httpmethod.post) or [Put](https://learn.microsoft.com/dotnet/api/system.net.http.httpmethod.put), this object is serialized to JSON and inserted into the [Content](https://learn.microsoft.com/dotnet/api/system.net.http.httprequestmessage.content). |
+| `jsonSerializerSettings` | `Newtonsoft.Json.JsonSerializerSettings` | A JsonSerializerSettings or JsonSerializerOptions instance defining how the payload should be serialized into the request body. Defaults to using Zulu time and will include all properties in the payload, even null ones. |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>`
+An [HttpResponseMessage](https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage) that contains the managed response for the request for inspection.
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiMetadataAsync
+
+Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<System.Xml.Linq.XDocument> GetApiMetadataAsync<TApi>(string host = "http://localhost/", string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `host` | `string` | - |
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appended in between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Xml.Linq.XDocument>`
+An [XDocument](https://learn.microsoft.com/dotnet/api/system.xml.linq.xdocument) containing the results of the metadata request.
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetModelBuilderHierarchy
+
+Gets a list of fully-qualified builder instances that are registered down the ModelBuilder chain. The order is really important, so this is a great way to troubleshoot.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<System.Collections.Generic.List<string>> GetModelBuilderHierarchy<TApi>(string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appended in between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Collections.Generic.List<string>>`
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableApiInstance
+
+Retrieves the instance of the Restier API (inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) from the Dependency Injection container.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<TApi> GetTestableApiInstance<TApi>(string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appendedin between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<TApi>`
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableHttpClient
+
+Returns a properly configured [HttpClient](https://learn.microsoft.com/dotnet/api/system.net.http.httpclient) that can make reqests to the in-memory Restier context.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<System.Net.Http.HttpClient> GetTestableHttpClient<TApi>(string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appendedin between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Net.Http.HttpClient>`
+A properly configured [HttpClient](https://learn.microsoft.com/dotnet/api/system.net.http.httpclient) that can make reqests to the in-memory Restier context.
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableInjectedService
+
+Retrieves class instance of type *TService* from the Dependency Injection container.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<TService> GetTestableInjectedService<TApi, TService>(string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase where TService : class
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appended in between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<TService>`
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+- `TService` - The type whose instance should be retrieved from the DI container.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableInjectionContainer
+
+Retrieves the Dependency Injection container that was created as a part of the request pipeline.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<System.IServiceProvider> GetTestableInjectionContainer<TApi>(string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appendedin between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.IServiceProvider>`
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableModelAsync
+
+Retrieves the [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<Microsoft.OData.Edm.IEdmModel> GetTestableModelAsync<TApi>(string routeName = "api/tests", string routePrefix = "api/tests/", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appended in between the Host and the Resource when constructing a URL. |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.OData.Edm.IEdmModel>`
+An [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) instance containing the model used to configure both OData and Restier processing.
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableRestierConfiguration
+
+Retrieves an [HttpConfiguration](/api-reference/System/Web/Http/HttpConfiguration) instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.&lt;/see&gt;
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<System.Web.Http.HttpConfiguration> GetTestableRestierConfiguration<TApi>(string routeName = "api/tests", string routePrefix = "api/tests/", Microsoft.AspNet.OData.Query.DefaultQuerySettings defaultQuerySettings = null, System.TimeZoneInfo timeZoneInfo = null, System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeName` | `string` | The name that will be assigned to the route in the route configuration dictionary. |
+| `routePrefix` | `string` | The string that will be appendedin between the Host and the Resource when constructing a URL. |
+| `defaultQuerySettings` | `Microsoft.AspNet.OData.Query.DefaultQuerySettings` | A [DefaultQuerySettings](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.query.defaultquerysettings) instabce that defines how OData operations should work. Defaults to everything enabled with a [MaxTop](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.query.defaultquerysettings.maxtop) of 10. |
+| `timeZoneInfo` | `System.TimeZoneInfo` | A [TimeZoneInfo](https://learn.microsoft.com/dotnet/api/system.timezoneinfo) instenace specifying what time zone should be used to translate time payloads into. Defaults to [Utc](https://learn.microsoft.com/dotnet/api/system.timezoneinfo.utc). |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Web.Http.HttpConfiguration>`
+An [HttpConfiguration](/api-reference/System/Web/Http/HttpConfiguration) instance
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteCurrentApiMetadata
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task WriteCurrentApiMetadata<TApi>(string sourceDirectory = "", string suffix = "ApiMetadata", System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> serviceCollection = null, bool useEndpointRouting = false) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sourceDirectory` | `string` | - |
+| `suffix` | `string` | - |
+| `serviceCollection` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | - |
+| `useEndpointRouting` | `bool` | On ASP.NET Core, determines whether or not to use EndpointRouting for the request. Not used on ASP.NET Classic. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+
+#### Type Parameters
+
+- `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
+

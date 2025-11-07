@@ -1,0 +1,50 @@
+---
+title: ISubmitExecutor
+description: "Represents a service that executes a submission."
+icon: plug
+keywords: ['ISubmitExecutor', 'Microsoft.Restier.Core.Submit.ISubmitExecutor', 'Microsoft.Restier.Core.Submit', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.ISubmitExecutor
+```
+
+## Summary
+
+Represents a service that executes a submission.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ExecuteSubmitAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously executes a submission and produces a submit result.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task<Microsoft.Restier.Core.Submit.SubmitResult> ExecuteSubmitAsync(Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Submit.SubmitResult>`
+A task that represents the asynchronous
+            operation whose result is a submit result.
+

@@ -1,0 +1,214 @@
+---
+title: ConventionBasedQueryExpressionProcessor
+description: "A convention-based query expression processor which will apply OnFilter logic into query expression."
+icon: file-brackets-curly
+sidebarTitle: ConventionBasedQueryExpressionProcessor
+keywords: ['ConventionBasedQueryExpressionProcessor', 'Microsoft.Restier.Core.ConventionBasedQueryExpressionProcessor', 'Microsoft.Restier.Core', 'class', 'System.Object', 'Microsoft.Restier.Core.Query.IQueryExpressionProcessor']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.ConventionBasedQueryExpressionProcessor
+```
+
+## Summary
+
+A convention-based query expression processor which will apply OnFilter logic into query expression.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [ConventionBasedQueryExpressionProcessor](/api-reference/Microsoft/Restier/Core/ConventionBasedQueryExpressionProcessor) class.
+
+#### Syntax
+
+```csharp
+public ConventionBasedQueryExpressionProcessor(System.Type targetApiType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `targetApiType` | `System.Type` | The target type to check for filter functions. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Inner
+
+Gets a reference to an inner query expression processor in case they are chained.
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.Core.Query.IQueryExpressionProcessor Inner { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.Query.IQueryExpressionProcessor`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Process
+
+#### Syntax
+
+```csharp
+public System.Linq.Expressions.Expression Process(Microsoft.Restier.Core.Query.QueryExpressionContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Query.QueryExpressionContext` | - |
+
+#### Returns
+
+Type: `System.Linq.Expressions.Expression`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+## Related APIs
+
+- Microsoft.Restier.Core.Query.IQueryExpressionProcessor
+

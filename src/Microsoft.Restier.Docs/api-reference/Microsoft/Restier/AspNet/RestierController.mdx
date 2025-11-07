@@ -1,0 +1,201 @@
+---
+title: RestierController
+description: "The all-in-one controller class to handle API requests."
+icon: file-brackets-curly
+keywords: ['RestierController', 'Microsoft.Restier.AspNet.RestierController', 'Microsoft.Restier.AspNet', 'class', 'Microsoft.AspNet.OData.ODataController']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet
+
+**Inheritance:** Microsoft.AspNet.OData.ODataController
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.RestierController
+```
+
+## Summary
+
+The all-in-one controller class to handle API requests.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [RestierController](/api-reference/Microsoft/Restier/AspNet/RestierController) class.
+
+#### Syntax
+
+```csharp
+public RestierController()
+```
+
+#### Remarks
+
+Please note that this controller needs a few dependencies
+            to work correctly. The second constructor with arguments specifies those
+            dependencies. When using the constructor without arguments, a DI container
+            is requested from the HttpRequestMessage and the dependencies are
+            resolved at run time. 
+            It is better to use a DI framework and register RestierController yourself
+            to allow the DI container to explicitly resolve dependencies at the start
+            of your application.
+            It is possible that the default constructor will be removed in the future.
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [RestierController](/api-reference/Microsoft/Restier/AspNet/RestierController) class.
+
+#### Syntax
+
+```csharp
+public RestierController(Microsoft.AspNet.OData.Query.ODataQuerySettings querySettings, Microsoft.AspNet.OData.Query.ODataValidationSettings validationSettings, Microsoft.Restier.Core.Operation.IOperationExecutor operationExecutor)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `querySettings` | `Microsoft.AspNet.OData.Query.ODataQuerySettings` | OData Query settings for queries. |
+| `validationSettings` | `Microsoft.AspNet.OData.Query.ODataValidationSettings` | OData validation settings for validation. |
+| `operationExecutor` | `Microsoft.Restier.Core.Operation.IOperationExecutor` | An Operation Executer to execute operations. |
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Delete
+
+Handles a DELETE request to delete an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult> Delete(System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult>`
+The task object that contains the deletion result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Get
+
+Handles a GET request to query entities.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage> Get(System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>`
+The task object that contains the response message.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Patch
+
+Handles a PATCH request to partially update an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult> Patch(Microsoft.AspNet.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmEntityObject` | `Microsoft.AspNet.OData.EdmEntityObject` | The entity object to update. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult>`
+The task object that contains the updated result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Post
+
+Handles a POST request to create an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult> Post(Microsoft.AspNet.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmEntityObject` | `Microsoft.AspNet.OData.EdmEntityObject` | The entity object to create. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult>`
+The task object that contains the creation result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  PostAction
+
+Handles a POST request to an action.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage> PostAction(Microsoft.AspNet.OData.ODataActionParameters parameters, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `parameters` | `Microsoft.AspNet.OData.ODataActionParameters` | Parameters from action request content. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage>`
+The task object that contains the action result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Put
+
+Handles a PUT request to fully update an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult> Put(Microsoft.AspNet.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmEntityObject` | `Microsoft.AspNet.OData.EdmEntityObject` | The entity object to update. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Web.Http.IHttpActionResult>`
+The task object that contains the updated result.
+

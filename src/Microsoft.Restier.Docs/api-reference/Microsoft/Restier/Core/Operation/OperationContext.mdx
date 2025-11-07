@@ -1,0 +1,332 @@
+---
+title: OperationContext
+description: "Represents context under which a operation is executed.             One instance created for one execution of one operation."
+icon: file-brackets-curly
+keywords: ['OperationContext', 'Microsoft.Restier.Core.Operation.OperationContext', 'Microsoft.Restier.Core.Operation', 'class', 'Microsoft.Restier.Core.InvocationContext']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Operation
+
+**Inheritance:** Microsoft.Restier.Core.InvocationContext
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Operation.OperationContext
+```
+
+## Summary
+
+Represents context under which a operation is executed.
+            One instance created for one execution of one operation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [OperationContext](/api-reference/Microsoft/Restier/Core/Operation/OperationContext) class.
+
+#### Syntax
+
+```csharp
+public OperationContext(Microsoft.Restier.Core.ApiBase api, System.Func<string, object> getParameterValueFunc, string operationName, bool isFunction, System.Collections.IEnumerable bindingParameterValue)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+| `getParameterValueFunc` | `System.Func<string, object>` | The function that used to retrieve the parameter value name. |
+| `operationName` | `string` | The operation name. |
+| `isFunction` | `bool` | A flag indicates this is a function call or action call. |
+| `bindingParameterValue` | `System.Collections.IEnumerable` | A queryable for binding parameter value and if it is function/action import, the value will be null. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Initializes a new instance of the [InvocationContext](/api-reference/Microsoft/Restier/Core/InvocationContext) class.
+
+#### Syntax
+
+```csharp
+public InvocationContext(Microsoft.Restier.Core.ApiBase api)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Api <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Gets the [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) descendant for this invocation.
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.Core.ApiBase Api { get; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.ApiBase`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  BindingParameterValue
+
+Gets the queryable for binding parameter value,
+            and if it is function/action import, the value will be null.
+
+#### Syntax
+
+```csharp
+public System.Collections.IEnumerable BindingParameterValue { get; }
+```
+
+#### Property Value
+
+Type: `System.Collections.IEnumerable`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetParameterValueFunc
+
+Gets the function that used to retrieve the parameter value name.
+
+#### Syntax
+
+```csharp
+public System.Func<string, object> GetParameterValueFunc { get; }
+```
+
+#### Property Value
+
+Type: `System.Func<string, object>`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsFunction
+
+Gets a value indicating whether it is a function call or action call.
+
+#### Syntax
+
+```csharp
+public bool IsFunction { get; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OperationName
+
+Gets the operation name.
+
+#### Syntax
+
+```csharp
+public string OperationName { get; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ParameterValues
+
+Gets or sets the parameters value array used by method,
+            It is only set after parameters are prepared.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.ICollection<object> ParameterValues { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.ICollection<object>`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiService <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Gets an API service.
+
+#### Syntax
+
+```csharp
+public T GetApiService<T>() where T : class
+```
+
+#### Returns
+
+Type: `T`
+The API service instance.
+
+#### Type Parameters
+
+- `T` - The API service type.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiService <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Gets an API service.
+
+#### Syntax
+
+```csharp
+public object GetApiService(System.Type type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The API service type. |
+
+#### Returns
+
+Type: `object`
+The API service instance.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

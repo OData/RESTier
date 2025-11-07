@@ -1,0 +1,527 @@
+---
+title: DataModificationItem
+description: "Represents a data modification item in a change set."
+icon: code-branch
+keywords: ['DataModificationItem', 'Microsoft.Restier.Core.Submit.DataModificationItem<T>', 'Microsoft.Restier.Core.Submit', 'class', 'Microsoft.Restier.Core.Submit.DataModificationItem']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+**Inheritance:** Microsoft.Restier.Core.Submit.DataModificationItem
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.DataModificationItem<T>
+```
+
+## Summary
+
+Represents a data modification item in a change set.
+
+## Type Parameters
+
+- `T` - The resource type.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DataModificationItem`1](https://learn.microsoft.com/dotnet/api/microsoft.restier.core.submit.datamodificationitem-1) class.
+
+#### Syntax
+
+```csharp
+public DataModificationItem(string resourceSetName, System.Type expectedResourceType, System.Type actualResourceType, Microsoft.Restier.Core.RestierEntitySetOperation action, System.Collections.Generic.IReadOnlyDictionary<string, object> resourceKey, System.Collections.Generic.IReadOnlyDictionary<string, object> originalValues, System.Collections.Generic.IReadOnlyDictionary<string, object> localValues)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `resourceSetName` | `string` | The name of the resource set in question. |
+| `expectedResourceType` | `System.Type` | The type of the expected resource type in question. |
+| `actualResourceType` | `System.Type` | The type of the actual resource type in question. |
+| `action` | `Microsoft.Restier.Core.RestierEntitySetOperation` | The RestierEntitySetOperations for the request. |
+| `resourceKey` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | The key of the resource being modified. |
+| `originalValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | Any original values of the resource that are known. |
+| `localValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | The local values of the entity. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Initializes a new instance of the [DataModificationItem](/api-reference/Microsoft/Restier/Core/Submit/DataModificationItem) class.
+
+#### Syntax
+
+```csharp
+public DataModificationItem(string resourceSetName, System.Type expectedResourceType, System.Type actualResourceType, Microsoft.Restier.Core.RestierEntitySetOperation action, System.Collections.Generic.IReadOnlyDictionary<string, object> resourceKey, System.Collections.Generic.IReadOnlyDictionary<string, object> originalValues, System.Collections.Generic.IReadOnlyDictionary<string, object> localValues)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `resourceSetName` | `string` | The name of the resource set in question. |
+| `expectedResourceType` | `System.Type` | The type of the expected resource type in question. |
+| `actualResourceType` | `System.Type` | The type of the actual resource type in question. |
+| `action` | `Microsoft.Restier.Core.RestierEntitySetOperation` | The RestierEntitySetOperations for the request. |
+| `resourceKey` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | The key of the resource being modified. |
+| `originalValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | Any original values of the resource that are known. |
+| `localValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | The local values of the resource. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
+
+#### Syntax
+
+```csharp
+internal ChangeSetItem(Microsoft.Restier.Core.Submit.ChangeSetItemType type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `Microsoft.Restier.Core.Submit.ChangeSetItemType` | - |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ActualResourceType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the name of the actual resource type in question.
+            In type inheritance case, this is different from expectedResourceType
+
+#### Syntax
+
+```csharp
+public System.Type ActualResourceType { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Type`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ChangeSetItemProcessingStage <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
+
+Gets or sets the dynamic state of this change set item.
+
+#### Syntax
+
+```csharp
+internal Microsoft.Restier.Core.Submit.ChangeSetItemProcessingStage ChangeSetItemProcessingStage { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.Submit.ChangeSetItemProcessingStage`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  EntitySetOperation <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets or sets the action to be taken.
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.Core.RestierEntitySetOperation EntitySetOperation { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.RestierEntitySetOperation`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ExpectedResourceType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the name of the expected resource type in question.
+
+#### Syntax
+
+```csharp
+public System.Type ExpectedResourceType { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Type`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsFullReplaceUpdateRequest <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets or sets a value indicating whether the resource should be fully replaced by the modification.
+
+#### Syntax
+
+```csharp
+public bool IsFullReplaceUpdateRequest { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+#### Remarks
+
+If true, all properties will be updated, even if the property isn't in LocalValues.
+            If false, only properties identified in LocalValues will be updated on the resource.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  LocalValues <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the local values for properties that have changed.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.IReadOnlyDictionary<string, object> LocalValues { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
+
+#### Remarks
+
+For entities pending deletion, this property is `null`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OriginalValues <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the original values for properties that have changed.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.IReadOnlyDictionary<string, object> OriginalValues { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
+
+#### Remarks
+
+For new entities, this property is `null`.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Resource
+
+Gets or sets the resource object in question.
+
+#### Syntax
+
+```csharp
+public T Resource { get; set; }
+```
+
+#### Property Value
+
+Type: `T`
+
+#### Remarks
+
+Initially this will be `null`, however after the change
+            set has been prepared it will represent the pending resource.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Resource <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets or sets the resource object in question.
+
+#### Syntax
+
+```csharp
+public object Resource { get; set; }
+```
+
+#### Property Value
+
+Type: `object`
+
+#### Remarks
+
+Initially this will be `null`, however after the change
+            set has been prepared it will represent the pending resource.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ResourceKey <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the key of the resource being modified.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.IReadOnlyDictionary<string, object> ResourceKey { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ResourceSetName <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the name of the resource set in question.
+
+#### Syntax
+
+```csharp
+public string ResourceSetName { get; private set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ServerValues <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Gets the current server values for properties that have changed.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.IReadOnlyDictionary<string, object> ServerValues { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
+
+#### Remarks
+
+For new entities, this property is `null`. For updated
+            entities, it is `null` until the change set is prepared.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Type <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
+
+Gets the type of this change set item.
+
+#### Syntax
+
+```csharp
+internal Microsoft.Restier.Core.Submit.ChangeSetItemType Type { get; private set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.Submit.ChangeSetItemType`
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ApplyTo <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Applies the current DataModificationItem's KeyValues and OriginalValues to the
+            specified query and returns the new query.
+
+#### Syntax
+
+```csharp
+public System.Linq.IQueryable ApplyTo(System.Linq.IQueryable query)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `query` | `System.Linq.IQueryable` | The IQueryable to apply the property values to. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable`
+The new IQueryable with the property values applied to it in a Where condition.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  HasChanged <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
+
+Indicates whether this change set item is in a changed state.
+
+#### Syntax
+
+```csharp
+public bool HasChanged()
+```
+
+#### Returns
+
+Type: `bool`
+Whether this change set item is in a changed state.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ValidateEtag <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
+
+Validate the e-tag via applies the current DataModificationItem's OriginalValues to the
+            specified query and returns result.
+
+#### Syntax
+
+```csharp
+public object ValidateEtag(System.Linq.IQueryable query)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `query` | `System.Linq.IQueryable` | The IQueryable to apply the property values to. |
+
+#### Returns
+
+Type: `object`
+The object is e-tag checked passed.
+

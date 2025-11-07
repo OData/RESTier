@@ -1,0 +1,250 @@
+---
+title: RestierContainerBuilder
+description: "The default Dependency Injection container builder for Restier."
+icon: file-brackets-curly
+keywords: ['RestierContainerBuilder', 'Microsoft.Restier.Core.RestierContainerBuilder', 'Microsoft.Restier.Core', 'class', 'System.Object', 'Microsoft.OData.IContainerBuilder']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.RestierContainerBuilder
+```
+
+## Summary
+
+The default Dependency Injection container builder for Restier.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [RestierContainerBuilder](/api-reference/Microsoft/Restier/Core/RestierContainerBuilder) class.
+
+#### Syntax
+
+```csharp
+public RestierContainerBuilder(System.Action<Microsoft.Restier.Core.RestierApiBuilder> configureApis = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `configureApis` | `System.Action<Microsoft.Restier.Core.RestierApiBuilder>` | Action to configure the [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) registrations that are available to the Container. |
+
+#### Remarks
+
+The API registrations are re-created every time because new Containers are spun up per-route. It make make more sense to create a static 
+            instance to do this, so the Dictionary is only created once.
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddService
+
+Adds a service of *serviceType* with an *implementationType*.
+
+#### Syntax
+
+```csharp
+public Microsoft.OData.IContainerBuilder AddService(Microsoft.OData.ServiceLifetime lifetime, System.Type serviceType, System.Type implementationType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lifetime` | `Microsoft.OData.ServiceLifetime` | The lifetime of the service to register. |
+| `serviceType` | `System.Type` | The type of the service to register. |
+| `implementationType` | `System.Type` | The implementation type of the service. |
+
+#### Returns
+
+Type: `Microsoft.OData.IContainerBuilder`
+The [IContainerBuilder](https://learn.microsoft.com/dotnet/api/microsoft.odata.icontainerbuilder) instance itself.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddService
+
+Adds a service of *serviceType* with an *implementationFactory*.
+
+#### Syntax
+
+```csharp
+public Microsoft.OData.IContainerBuilder AddService(Microsoft.OData.ServiceLifetime lifetime, System.Type serviceType, System.Func<System.IServiceProvider, object> implementationFactory)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lifetime` | `Microsoft.OData.ServiceLifetime` | The lifetime of the service to register. |
+| `serviceType` | `System.Type` | The type of the service to register. |
+| `implementationFactory` | `System.Func<System.IServiceProvider, object>` | The factory that creates the service. |
+
+#### Returns
+
+Type: `Microsoft.OData.IContainerBuilder`
+The [IContainerBuilder](https://learn.microsoft.com/dotnet/api/microsoft.odata.icontainerbuilder) instance itself.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  BuildContainer <DocsBadge text="Virtual" variant="warning" />
+
+Builds a container which implements [IServiceProvider](/api-reference/System/IServiceProvider) and contains all the services registered for a specific route.
+
+#### Syntax
+
+```csharp
+public virtual System.IServiceProvider BuildContainer()
+```
+
+#### Returns
+
+Type: `System.IServiceProvider`
+The [IServiceProvider](/api-reference/System/IServiceProvider)dependency injection container&lt;/see&gt; for the registered services.
+
+#### Remarks
+
+RWM: For unit test scenarios, this container may be built without any APIs opr Routes. If you are experiencing unexpected behavior, 
+            turn on Tracing so you can see the warning messages Restier might be generating.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+## Related APIs
+
+- Microsoft.OData.IContainerBuilder
+

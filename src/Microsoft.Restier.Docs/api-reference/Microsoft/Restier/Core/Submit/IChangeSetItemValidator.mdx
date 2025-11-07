@@ -1,0 +1,51 @@
+---
+title: IChangeSetItemValidator
+description: "Represents a change set entry validator."
+icon: plug
+keywords: ['IChangeSetItemValidator', 'Microsoft.Restier.Core.Submit.IChangeSetItemValidator', 'Microsoft.Restier.Core.Submit', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.IChangeSetItemValidator
+```
+
+## Summary
+
+Represents a change set entry validator.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ValidateChangeSetItemAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously validates a change set item.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task ValidateChangeSetItemAsync(Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Collections.ObjectModel.Collection<Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult> validationResults, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context. |
+| `item` | `Microsoft.Restier.Core.Submit.ChangeSetItem` | The change set item to validate. |
+| `validationResults` | `System.Collections.ObjectModel.Collection<Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult>` | A set of validation results. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task that represents the asynchronous operation.
+

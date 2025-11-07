@@ -1,0 +1,122 @@
+---
+title: DataSourceStub
+description: "Represents method stubs that identify API data source."
+icon: bolt
+tag: "STATIC"
+keywords: ['DataSourceStub', 'Microsoft.Restier.Core.DataSourceStub', 'Microsoft.Restier.Core', 'class', 'System.Object']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.DataSourceStub
+```
+
+## Summary
+
+Represents method stubs that identify API data source.
+
+## Remarks
+
+The methods in this class are stubs that identify API data source
+            inside a query expression. This is a generic way to reference a
+            data source in API. Later in the query pipeline the sourcer from
+            the data provider will replace the stub with the actual data source.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetPropertyValue
+
+Identifies the value of an extended property of an object.
+
+#### Syntax
+
+```csharp
+public static TResult GetPropertyValue<TResult>(object source, string propertyName)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | `object` | A source object. |
+| `propertyName` | `string` | The name of a property. |
+
+#### Returns
+
+Type: `TResult`
+A representation of the value of the
+            extended property of the object.
+
+#### Type Parameters
+
+- `TResult` - The type of the result.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetQueryableSource
+
+Identifies an entity set, singleton or queryable data
+            resulting from a call to a composable function import.
+
+#### Syntax
+
+```csharp
+public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(string name, params object[] arguments)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | `string` | The name of an entity set, singleton or composable function import. |
+| `arguments` | `object[]` | If *name* is a composable function import,
+            the arguments to be passed to the composable function import. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable<TElement>`
+A representation of the entity set, singleton or queryable
+            data resulting from a call to the composable function import.
+
+#### Type Parameters
+
+- `TElement` - The type of the elements in the queryable data.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetQueryableSource
+
+Identifies queryable data resulting
+            from a call to a composable function.
+
+#### Syntax
+
+```csharp
+public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(string namespaceName, string name, params object[] arguments)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `namespaceName` | `string` | The name of a namespace containing the composable function. |
+| `name` | `string` | The name of a composable function. |
+| `arguments` | `object[]` | The arguments to be passed to the composable function. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable<TElement>`
+A representation of the queryable data resulting
+            from a call to the composable function.
+
+#### Type Parameters
+
+- `TElement` - The type of the elements in the queryable data.
+

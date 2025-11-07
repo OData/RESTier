@@ -1,0 +1,51 @@
+---
+title: IServiceProvider
+description: "Extension methods for IServiceProvider from mscorlib"
+icon: file-brackets-curly
+keywords: ['IServiceProvider', 'System.IServiceProvider', 'System', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** mscorlib.dll
+
+**Namespace:** System
+
+## Syntax
+
+```csharp
+System.IServiceProvider
+```
+
+## Summary
+
+This type is defined in mscorlib.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableApiInstance <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `System.IServiceProviderExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static T GetTestableApiInstance<T>(System.IServiceProvider serviceProvider) where T : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `serviceProvider` | `System.IServiceProvider` | - |
+
+#### Returns
+
+Type: `T`
+
+#### Type Parameters
+
+- `T` - 
+

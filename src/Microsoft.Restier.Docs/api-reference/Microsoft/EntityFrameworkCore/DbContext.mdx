@@ -1,0 +1,54 @@
+---
+title: DbContext
+description: "Extension methods for DbContext from Microsoft.EntityFrameworkCore"
+icon: file-brackets-curly
+keywords: ['DbContext', 'Microsoft.EntityFrameworkCore.DbContext', 'Microsoft.EntityFrameworkCore', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.EntityFrameworkCore.dll
+
+**Namespace:** Microsoft.EntityFrameworkCore
+
+## Syntax
+
+```csharp
+Microsoft.EntityFrameworkCore.DbContext
+```
+
+## Summary
+
+This type is defined in Microsoft.EntityFrameworkCore.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.entityframeworkcore.dbcontext) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsDbSetMapped <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.EntityFrameworkCore.EFCoreDbContextExtensions`</Note>
+
+Does the specified entity type have a DbSet mapping in the model
+
+#### Syntax
+
+```csharp
+public static bool IsDbSetMapped(Microsoft.EntityFrameworkCore.DbContext context, System.Type type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.EntityFrameworkCore.DbContext` | - |
+| `type` | `System.Type` | - |
+
+#### Returns
+
+Type: `bool`
+

@@ -1,0 +1,95 @@
+---
+title: HttpConfiguration
+description: "Extension methods for HttpConfiguration from System.Web.Http"
+icon: file-brackets-curly
+keywords: ['HttpConfiguration', 'System.Web.Http.HttpConfiguration', 'System.Web.Http', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** System.Web.Http.dll
+
+**Namespace:** System.Web.Http
+
+## Syntax
+
+```csharp
+System.Web.Http.HttpConfiguration
+```
+
+## Summary
+
+This type is defined in System.Web.Http.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/system.web.http.httpconfiguration) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MapRestier <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `System.Web.Http.HttpConfigurationExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static System.Web.Http.HttpConfiguration MapRestier(System.Web.Http.HttpConfiguration config, System.Action<Microsoft.Restier.Core.RestierRouteBuilder> configureRoutesAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `System.Web.Http.HttpConfiguration` | - |
+| `configureRoutesAction` | `System.Action<Microsoft.Restier.Core.RestierRouteBuilder>` | - |
+
+#### Returns
+
+Type: `System.Web.Http.HttpConfiguration`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MapRestier <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `System.Web.Http.HttpConfigurationExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static System.Web.Http.HttpConfiguration MapRestier(System.Web.Http.HttpConfiguration config, System.Action<Microsoft.Restier.Core.RestierRouteBuilder> configureRoutesAction, System.Web.Http.HttpServer httpServer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `System.Web.Http.HttpConfiguration` | - |
+| `configureRoutesAction` | `System.Action<Microsoft.Restier.Core.RestierRouteBuilder>` | - |
+| `httpServer` | `System.Web.Http.HttpServer` | - |
+
+#### Returns
+
+Type: `System.Web.Http.HttpConfiguration`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseRestier <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `System.Web.Http.HttpConfigurationExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static System.Web.Http.HttpConfiguration UseRestier(System.Web.Http.HttpConfiguration config, System.Action<Microsoft.Restier.Core.RestierApiBuilder> configureApisAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config` | `System.Web.Http.HttpConfiguration` | - |
+| `configureApisAction` | `System.Action<Microsoft.Restier.Core.RestierApiBuilder>` | - |
+
+#### Returns
+
+Type: `System.Web.Http.HttpConfiguration`
+

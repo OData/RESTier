@@ -1,0 +1,57 @@
+---
+title: HttpRequest
+description: "Extension methods for HttpRequest from Microsoft.AspNetCore.Http.Abstractions"
+icon: file-brackets-curly
+keywords: ['HttpRequest', 'Microsoft.AspNetCore.Http.HttpRequest', 'Microsoft.AspNetCore.Http', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.AspNetCore.Http.Abstractions.dll
+
+**Namespace:** Microsoft.AspNetCore.Http
+
+## Syntax
+
+```csharp
+Microsoft.AspNetCore.Http.HttpRequest
+```
+
+## Summary
+
+This type is defined in Microsoft.AspNetCore.Http.Abstractions.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.httprequest) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsLocal <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.AspNetCore.Http.Restier_HttpRequestExtensions`</Note>
+
+Determines whether or not the request is being made on the same machine as the server itself.
+
+#### Syntax
+
+```csharp
+public static bool IsLocal(Microsoft.AspNetCore.Http.HttpRequest req)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `req` | `Microsoft.AspNetCore.Http.HttpRequest` | - |
+
+#### Returns
+
+Type: `bool`
+
+#### Remarks
+
+Taken from: https://www.strathweb.com/2016/04/request-islocal-in-asp-net-core.
+

@@ -1,0 +1,71 @@
+---
+title: RestierBatchChangeSetRequestItem
+description: "Represents an API [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet) request."
+icon: file-brackets-curly
+sidebarTitle: RestierBatchChangeSetRequestItem
+keywords: ['RestierBatchChangeSetRequestItem', 'Microsoft.Restier.AspNet.Batch.RestierBatchChangeSetRequestItem', 'Microsoft.Restier.AspNet.Batch', 'class', 'Microsoft.AspNet.OData.Batch.ChangeSetRequestItem']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet.Batch
+
+**Inheritance:** Microsoft.AspNet.OData.Batch.ChangeSetRequestItem
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.Batch.RestierBatchChangeSetRequestItem
+```
+
+## Summary
+
+Represents an API [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet) request.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [RestierBatchChangeSetRequestItem](/api-reference/Microsoft/Restier/AspNet/Batch/RestierBatchChangeSetRequestItem) class.
+
+#### Syntax
+
+```csharp
+public RestierBatchChangeSetRequestItem(Microsoft.Restier.Core.ApiBase api, System.Collections.Generic.IEnumerable<System.Net.Http.HttpRequestMessage> requests)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+| `requests` | `System.Collections.Generic.IEnumerable<System.Net.Http.HttpRequestMessage>` | The request messages. |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SendRequestAsync <DocsBadge text="Override" variant="info" />
+
+Asynchronously sends the request.
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task<Microsoft.AspNet.OData.Batch.ODataBatchResponseItem> SendRequestAsync(System.Net.Http.HttpMessageInvoker invoker, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `invoker` | `System.Net.Http.HttpMessageInvoker` | The invoker. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNet.OData.Batch.ODataBatchResponseItem>`
+The task object that contains the batch response.
+

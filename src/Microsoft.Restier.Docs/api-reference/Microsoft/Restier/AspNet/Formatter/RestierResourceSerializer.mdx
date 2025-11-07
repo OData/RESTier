@@ -1,0 +1,91 @@
+---
+title: RestierResourceSerializer
+description: "The serializer for resource result, and now for complex only,             for entity type, WebApi OData resource serializer will be used."
+icon: file-brackets-curly
+keywords: ['RestierResourceSerializer', 'Microsoft.Restier.AspNet.Formatter.RestierResourceSerializer', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Serialization.ODataResourceSerializer']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet.Formatter
+
+**Inheritance:** Microsoft.AspNet.OData.Formatter.Serialization.ODataResourceSerializer
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.Formatter.RestierResourceSerializer
+```
+
+## Summary
+
+The serializer for resource result, and now for complex only,
+            for entity type, WebApi OData resource serializer will be used.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [RestierResourceSerializer](/api-reference/Microsoft/Restier/AspNet/Formatter/RestierResourceSerializer) class.
+
+#### Syntax
+
+```csharp
+public RestierResourceSerializer(Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerProvider provider)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `provider` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerProvider` | The serializer provider. |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteObject <DocsBadge text="Override" variant="info" />
+
+Writes the complex result to the response message.
+
+#### Syntax
+
+```csharp
+public override void WriteObject(object graph, System.Type type, Microsoft.OData.ODataMessageWriter messageWriter, Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `graph` | `object` | The complex result to write. |
+| `type` | `System.Type` | The type of the complex. |
+| `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
+| `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteObjectAsync <DocsBadge text="Override" variant="info" />
+
+Writes the complex result to the response message asynchronously.
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task WriteObjectAsync(object graph, System.Type type, Microsoft.OData.ODataMessageWriter messageWriter, Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `graph` | `object` | The complex result to write. |
+| `type` | `System.Type` | The type of the complex. |
+| `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
+| `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous operation.
+

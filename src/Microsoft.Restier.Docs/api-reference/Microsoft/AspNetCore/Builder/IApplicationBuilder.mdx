@@ -1,0 +1,95 @@
+---
+title: IApplicationBuilder
+description: "Extension methods for IApplicationBuilder from Microsoft.AspNetCore.Http.Abstractions"
+icon: file-brackets-curly
+keywords: ['IApplicationBuilder', 'Microsoft.AspNetCore.Builder.IApplicationBuilder', 'Microsoft.AspNetCore.Builder', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.AspNetCore.Http.Abstractions.dll
+
+**Namespace:** Microsoft.AspNetCore.Builder
+
+## Syntax
+
+```csharp
+Microsoft.AspNetCore.Builder.IApplicationBuilder
+```
+
+## Summary
+
+This type is defined in Microsoft.AspNetCore.Http.Abstractions.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.iapplicationbuilder) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseClaimsPrincipals <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.AspNetCore.Builder.Restier_IApplicationBuilderExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static Microsoft.AspNetCore.Builder.IApplicationBuilder UseClaimsPrincipals(Microsoft.AspNetCore.Builder.IApplicationBuilder app)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app` | `Microsoft.AspNetCore.Builder.IApplicationBuilder` | - |
+
+#### Returns
+
+Type: `Microsoft.AspNetCore.Builder.IApplicationBuilder`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseRestierBatching <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.AspNetCore.Builder.Restier_IApplicationBuilderExtensions`</Note>
+
+Register the app for Restier OData Batching.
+
+#### Syntax
+
+```csharp
+public static Microsoft.AspNetCore.Builder.IApplicationBuilder UseRestierBatching(Microsoft.AspNetCore.Builder.IApplicationBuilder app)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app` | `Microsoft.AspNetCore.Builder.IApplicationBuilder` | The [IApplicationBuilder](/api-reference/Microsoft/AspNetCore/Builder/IApplicationBuilder) instance to enhance. |
+
+#### Returns
+
+Type: `Microsoft.AspNetCore.Builder.IApplicationBuilder`
+The fluent [IApplicationBuilder](/api-reference/Microsoft/AspNetCore/Builder/IApplicationBuilder) instance.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  UseRestierSwagger <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.AspNetCore.Builder.Restier_AspNetCore_Swagger_IApplicationBuilderExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static Microsoft.AspNetCore.Builder.IApplicationBuilder UseRestierSwagger(Microsoft.AspNetCore.Builder.IApplicationBuilder app, bool addUI = true)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `app` | `Microsoft.AspNetCore.Builder.IApplicationBuilder` | - |
+| `addUI` | `bool` | - |
+
+#### Returns
+
+Type: `Microsoft.AspNetCore.Builder.IApplicationBuilder`
+

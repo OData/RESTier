@@ -1,0 +1,410 @@
+{
+  "colors": {
+    "dark": "#3CD0E2",
+    "light": "#419AC5",
+    "primary": "#419AC5"
+  },
+  "name": "RESTier",
+  "navigation": {
+    "pages": [
+      "index",
+      {
+        "group": "API Reference",
+        "icon": "code",
+        "pages": [
+          {
+            "group": "Microsoft",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "AspNetCore",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Builder",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/Builder/index",
+                      "api-reference/Microsoft/AspNetCore/Builder/IApplicationBuilder"
+                    ]
+                  },
+                  {
+                    "group": "Http",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/Http/index",
+                      "api-reference/Microsoft/AspNetCore/Http/HttpRequest"
+                    ]
+                  },
+                  {
+                    "group": "Routing",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/Routing/index",
+                      "api-reference/Microsoft/AspNetCore/Routing/IEndpointRouteBuilder",
+                      "api-reference/Microsoft/AspNetCore/Routing/IRouteBuilder",
+                      "api-reference/Microsoft/AspNetCore/Routing/RouteValueDictionary"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "EntityFrameworkCore",
+                "icon": "folder-tree",
+                "pages": [
+                  "api-reference/Microsoft/EntityFrameworkCore/index",
+                  "api-reference/Microsoft/EntityFrameworkCore/DbContext"
+                ]
+              },
+              {
+                "group": "Extensions",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "DependencyInjection",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Extensions/DependencyInjection/index",
+                      "api-reference/Microsoft/Extensions/DependencyInjection/IServiceCollection"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "OData",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Edm",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/OData/Edm/index",
+                      "api-reference/Microsoft/OData/Edm/IEdmModel",
+                      "api-reference/Microsoft/OData/Edm/IEdmType"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Restier",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "AspNet",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/AspNet/index",
+                      "api-reference/Microsoft/Restier/AspNet/RestierController",
+                      "api-reference/Microsoft/Restier/AspNet/RestierPayloadValueConverter",
+                      {
+                        "group": "Batch",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNet/Batch/index",
+                          "api-reference/Microsoft/Restier/AspNet/Batch/RestierBatchChangeSetRequestItem",
+                          "api-reference/Microsoft/Restier/AspNet/Batch/RestierBatchHandler"
+                        ]
+                      },
+                      {
+                        "group": "Formatter",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/index",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierDeserializerProvider",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierSerializerProvider",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/RestierCollectionSerializer",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/RestierEnumSerializer",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/RestierPrimitiveSerializer",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/RestierRawSerializer",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/RestierResourceSerializer",
+                          "api-reference/Microsoft/Restier/AspNet/Formatter/RestierResourceSetSerializer"
+                        ]
+                      },
+                      {
+                        "group": "Model",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNet/Model/index",
+                          "api-reference/Microsoft/Restier/AspNet/Model/BoundOperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNet/Model/OperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNet/Model/OperationType",
+                          "api-reference/Microsoft/Restier/AspNet/Model/ResourceAttribute",
+                          "api-reference/Microsoft/Restier/AspNet/Model/RestierWebApiModelMapper",
+                          "api-reference/Microsoft/Restier/AspNet/Model/UnboundOperationAttribute"
+                        ]
+                      },
+                      {
+                        "group": "Operation",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNet/Operation/index",
+                          "api-reference/Microsoft/Restier/AspNet/Operation/RestierOperationContext",
+                          "api-reference/Microsoft/Restier/AspNet/Operation/RestierOperationExecutor"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "AspNetCore",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/AspNetCore/index",
+                      "api-reference/Microsoft/Restier/AspNetCore/RestierController",
+                      "api-reference/Microsoft/Restier/AspNetCore/RestierPayloadValueConverter",
+                      {
+                        "group": "Batch",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Batch/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Batch/RestierBatchChangeSetRequestItem",
+                          "api-reference/Microsoft/Restier/AspNetCore/Batch/RestierBatchHandler"
+                        ]
+                      },
+                      {
+                        "group": "Formatter",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/DefaultRestierDeserializerProvider",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/DefaultRestierSerializerProvider",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierCollectionSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierEnumSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierPrimitiveSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierRawSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierResourceSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierResourceSetSerializer"
+                        ]
+                      },
+                      {
+                        "group": "Middleware",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Middleware/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Middleware/ODataBatchHttpContextFixerMiddleware",
+                          "api-reference/Microsoft/Restier/AspNetCore/Middleware/RestierClaimsPrincipalMiddleware"
+                        ]
+                      },
+                      {
+                        "group": "Model",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/BoundOperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationType",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/ResourceAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/RestierWebApiModelMapper",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/UnboundOperationAttribute"
+                        ]
+                      },
+                      {
+                        "group": "Operation",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Operation/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Operation/RestierOperationContext",
+                          "api-reference/Microsoft/Restier/AspNetCore/Operation/RestierOperationExecutor"
+                        ]
+                      },
+                      {
+                        "group": "Swagger",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Swagger/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Swagger/RestierSwaggerProvider"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Breakdance",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/Breakdance/index",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierConventionDefinition",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierConventionEntitySetDefinition",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierConventionMethodDefinition",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierTestHelpers"
+                    ]
+                  },
+                  {
+                    "group": "Core",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/Core/index",
+                      "api-reference/Microsoft/Restier/Core/ApiBase",
+                      "api-reference/Microsoft/Restier/Core/ChangeSetValidationException",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemAuthorizer",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemFilter",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemValidator",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedMethodNameFactory",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedOperationAuthorizer",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedOperationFilter",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedQueryExpressionProcessor",
+                      "api-reference/Microsoft/Restier/Core/ConventionInvocationException",
+                      "api-reference/Microsoft/Restier/Core/DataSourceStub",
+                      "api-reference/Microsoft/Restier/Core/EdmModelValidationException",
+                      "api-reference/Microsoft/Restier/Core/InvocationContext",
+                      "api-reference/Microsoft/Restier/Core/RestierApiBuilder",
+                      "api-reference/Microsoft/Restier/Core/RestierContainerBuilder",
+                      "api-reference/Microsoft/Restier/Core/RestierEntitySetOperation",
+                      "api-reference/Microsoft/Restier/Core/RestierOperationMethod",
+                      "api-reference/Microsoft/Restier/Core/RestierPipelineState",
+                      "api-reference/Microsoft/Restier/Core/RestierRouteBuilder",
+                      "api-reference/Microsoft/Restier/Core/StatusCodeException",
+                      {
+                        "group": "Authorization",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Authorization/index",
+                          "api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry",
+                          "api-reference/Microsoft/Restier/Core/Authorization/AuthorizationFactory"
+                        ]
+                      },
+                      {
+                        "group": "Model",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Model/index",
+                          "api-reference/Microsoft/Restier/Core/Model/IModelBuilder",
+                          "api-reference/Microsoft/Restier/Core/Model/IModelMapper",
+                          "api-reference/Microsoft/Restier/Core/Model/ModelContext"
+                        ]
+                      },
+                      {
+                        "group": "Operation",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Operation/index",
+                          "api-reference/Microsoft/Restier/Core/Operation/IOperationAuthorizer",
+                          "api-reference/Microsoft/Restier/Core/Operation/IOperationExecutor",
+                          "api-reference/Microsoft/Restier/Core/Operation/IOperationFilter",
+                          "api-reference/Microsoft/Restier/Core/Operation/OperationContext"
+                        ]
+                      },
+                      {
+                        "group": "Query",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Query/index",
+                          "api-reference/Microsoft/Restier/Core/Query/DataSourceStubModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExecutor",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionAuthorizer",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionExpander",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionProcessor",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionSourcer",
+                          "api-reference/Microsoft/Restier/Core/Query/ParameterModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/PropertyModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryContext",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryExpressionContext",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryRequest",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryResult"
+                        ]
+                      },
+                      {
+                        "group": "Submit",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Submit/index",
+                          "api-reference/Microsoft/Restier/Core/Submit/ChangeSet",
+                          "api-reference/Microsoft/Restier/Core/Submit/ChangeSetItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/ChangeSetItemValidationResult",
+                          "api-reference/Microsoft/Restier/Core/Submit/DataModificationItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/DataModificationItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/DefaultChangeSetInitializer",
+                          "api-reference/Microsoft/Restier/Core/Submit/DefaultSubmitExecutor",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetInitializer",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemAuthorizer",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemFilter",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemValidator",
+                          "api-reference/Microsoft/Restier/Core/Submit/ISubmitExecutor",
+                          "api-reference/Microsoft/Restier/Core/Submit/SubmitContext",
+                          "api-reference/Microsoft/Restier/Core/Submit/SubmitResult"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "EntityFramework",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/EntityFramework/index",
+                      "api-reference/Microsoft/Restier/EntityFramework/EFChangeSetInitializer",
+                      "api-reference/Microsoft/Restier/EntityFramework/EntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFramework/IEntityFrameworkApi"
+                    ]
+                  },
+                  {
+                    "group": "EntityFrameworkCore",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/index",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/EFChangeSetInitializer",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/EntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/IEntityFrameworkApi"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Spatial",
+                "icon": "folder-tree",
+                "pages": [
+                  "api-reference/Microsoft/Spatial/index",
+                  "api-reference/Microsoft/Spatial/GeographyLineString",
+                  "api-reference/Microsoft/Spatial/GeographyPoint"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "System",
+            "icon": "folder-tree",
+            "pages": [
+              "api-reference/System/index",
+              "api-reference/System/IServiceProvider",
+              "api-reference/System/Type",
+              {
+                "group": "Data",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Entity",
+                    "icon": "folder-tree",
+                    "pages": [
+                      {
+                        "group": "Spatial",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/System/Data/Entity/Spatial/index",
+                          "api-reference/System/Data/Entity/Spatial/DbGeography"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Web",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Http",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/System/Web/Http/index",
+                      "api-reference/System/Web/Http/HttpConfiguration"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple"
+}

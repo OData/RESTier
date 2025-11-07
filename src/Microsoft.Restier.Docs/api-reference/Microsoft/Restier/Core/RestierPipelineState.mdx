@@ -1,0 +1,38 @@
+---
+title: RestierPipelineState
+description: "Represents the different parts of the Restier request execution pipeline."
+icon: list-ol
+tag: "ENUM"
+keywords: ['RestierPipelineState', 'Microsoft.Restier.Core.RestierPipelineState', 'Microsoft.Restier.Core', 'class', 'System.Enum']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Enum
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.RestierPipelineState
+```
+
+## Summary
+
+Represents the different parts of the Restier request execution pipeline.
+
+## Values
+
+| Name | Value | Description |
+|------|-------|-------------|
+| `Authorization` | 1 | Represents the first step of the pipeline, when Restier checks to see if the call is allowed. |
+| `Validation` | 2 | Represents the second step of the pipeline, where the payload is validated. |
+| `PreSubmit` | 3 | Represents the third step of the pipeline, where the developer can change the payload before it is submitted. |
+| `Submit` | 4 | Represents the fourth step of the pipeline, where the action is executed against the Entity Framework DbContext. |
+| `PostSubmit` | 5 | Represents the fifth step of the pipeline, where you can spin off other work after the action has completed successfully. |
+

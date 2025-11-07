@@ -1,0 +1,96 @@
+---
+title: EntityFrameworkApi
+description: "Represents an API over a DbContext."
+icon: code-branch
+keywords: ['EntityFrameworkApi', 'Microsoft.Restier.EntityFrameworkCore.EntityFrameworkApi<T>', 'Microsoft.Restier.EntityFrameworkCore', 'class', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.EntityFrameworkCore.IEntityFrameworkApi']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.EntityFrameworkCore.dll
+
+**Namespace:** Microsoft.Restier.EntityFrameworkCore
+
+**Inheritance:** Microsoft.Restier.Core.ApiBase
+
+## Syntax
+
+```csharp
+Microsoft.Restier.EntityFrameworkCore.EntityFrameworkApi<T>
+```
+
+## Summary
+
+Represents an API over a DbContext.
+
+## Remarks
+
+
+
+
+            This class tries to instantiate *T* with the best matched constructor
+            base on services configured. Descendants could override by registering *T*
+            as a scoped service. But in this case, proxy creation must be disabled in the constructors of
+            *T* under Entity Framework 6.
+            
+
+
+
+## Type Parameters
+
+- `T` - The DbContext type.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [EntityFrameworkApi`1](https://learn.microsoft.com/dotnet/api/microsoft.restier.entityframeworkcore.entityframeworkapi-1) class.
+
+#### Syntax
+
+```csharp
+public EntityFrameworkApi(System.IServiceProvider serviceProvider)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `serviceProvider` | `System.IServiceProvider` | An [IServiceProvider](/api-reference/System/IServiceProvider) containing all services of this [EntityFrameworkApi`1](https://learn.microsoft.com/dotnet/api/microsoft.restier.entityframeworkcore.entityframeworkapi-1). |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ContextType
+
+Gets the Context Type.
+
+#### Syntax
+
+```csharp
+public System.Type ContextType { get; }
+```
+
+#### Property Value
+
+Type: `System.Type`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DbContext
+
+Gets the underlying DbContext for this API.
+
+#### Syntax
+
+```csharp
+public T DbContext { get; }
+```
+
+#### Property Value
+
+Type: `T`
+
+## Related APIs
+
+- Microsoft.Restier.EntityFrameworkCore.IEntityFrameworkApi
+

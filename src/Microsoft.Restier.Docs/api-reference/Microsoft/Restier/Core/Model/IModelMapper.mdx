@@ -1,0 +1,132 @@
+---
+title: IModelMapper
+description: "Represents a service that maps between             the model space and the object space."
+icon: plug
+keywords: ['IModelMapper', 'Microsoft.Restier.Core.Model.IModelMapper', 'Microsoft.Restier.Core.Model', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Model
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Model.IModelMapper
+```
+
+## Summary
+
+Represents a service that maps between
+            the model space and the object space.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  TryGetRelevantType <DocsBadge text="Abstract" variant="warning" />
+
+Tries to get the relevant type of an entity
+            set, singleton, or composable function import.
+
+#### Syntax
+
+```csharp
+bool TryGetRelevantType(Microsoft.Restier.Core.Model.ModelContext context, string name, out System.Type relevantType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Model.ModelContext` | The context for model mapper. |
+| `name` | `string` | The name of an entity set, singleton or composable function import. |
+| `relevantType` | `System.Type` | When this method returns, provides the
+            relevant type of the queryable source. |
+
+#### Returns
+
+Type: `bool`
+`true` if the relevant type was
+            provided; otherwise, `false`.
+
+#### Remarks
+
+
+
+
+            For entity sets, the relevant type is its element entity type.
+            
+
+
+
+
+            For singletons, the relevant type is the singleton entity type.
+            
+
+
+
+
+            For composable function imports, the relevant type is the return
+            type if it is a primitive, complex or entity type, or the element
+            type of the return type if it is a collection type.
+            
+
+
+
+
+            This method can return true and assign `null` as the relevant
+            type when it is overriding a previously registered service and
+            specifically opting to not support the specified queryable source.
+            
+
+
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  TryGetRelevantType <DocsBadge text="Abstract" variant="warning" />
+
+Tries to get the relevant type of a composable function.
+
+#### Syntax
+
+```csharp
+bool TryGetRelevantType(Microsoft.Restier.Core.Model.ModelContext context, string namespaceName, string name, out System.Type relevantType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Model.ModelContext` | The context for model mapper. |
+| `namespaceName` | `string` | The name of a namespace containing a composable function. |
+| `name` | `string` | The name of composable function. |
+| `relevantType` | `System.Type` | When this method returns, provides the
+            relevant type of the composable function. |
+
+#### Returns
+
+Type: `bool`
+`true` if the relevant type was
+            provided; otherwise, `false`.
+
+#### Remarks
+
+
+
+
+            For composable functions, the relevant type is the return
+            type if it is a primitive, complex or entity type, or the
+            element type of the return type if it is a collection type.
+            
+
+
+
+
+            This method can return true and assign `null` as the relevant
+            type when it is overriding a previously registered service and
+            specifically opting to not support the specified composable function.
+            
+
+
+

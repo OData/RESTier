@@ -1,0 +1,49 @@
+---
+title: IModelBuilder
+description: "The service for model generation."
+icon: plug
+keywords: ['IModelBuilder', 'Microsoft.Restier.Core.Model.IModelBuilder', 'Microsoft.Restier.Core.Model', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Model
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Model.IModelBuilder
+```
+
+## Summary
+
+The service for model generation.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetModel <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously gets an API model for an API.
+
+#### Syntax
+
+```csharp
+Microsoft.OData.Edm.IEdmModel GetModel(Microsoft.Restier.Core.Model.ModelContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Model.ModelContext` | The context for processing |
+
+#### Returns
+
+Type: `Microsoft.OData.Edm.IEdmModel`
+A task that represents the asynchronous
+            operation whose result is the API model.
+

@@ -1,0 +1,655 @@
+---
+title: ApiBase
+description: "Extension methods for ApiBase from Microsoft.Restier.Core"
+icon: file-brackets-curly
+keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.ApiBase
+```
+
+## Summary
+
+This type is defined in Microsoft.Restier.Core.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.restier.core.apibase) for more information about the rest of the API.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ServiceProvider
+
+Gets the [IServiceProvider](/api-reference/System/IServiceProvider) which contains all services.
+
+#### Syntax
+
+```csharp
+public System.IServiceProvider ServiceProvider { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.IServiceProvider`
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Dispose
+
+Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+
+#### Syntax
+
+```csharp
+public void Dispose()
+```
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GenerateVisibilityMatrix <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Breakdance.ApiBaseExtensions`</Note>
+
+An extension method that generates a Markdown table of all of the possible Restier methods for the given API in the first column, and a boolean
+            indicating whether or not the method was found in the second column.
+
+#### Syntax
+
+```csharp
+public static string GenerateVisibilityMatrix(Microsoft.Restier.Core.ApiBase api, bool markdown = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to process. |
+| `markdown` | `bool` | - |
+
+#### Returns
+
+Type: `string`
+A string containing the Markdown table of results.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiService <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a service instance.
+
+#### Syntax
+
+```csharp
+public static T GetApiService<T>(Microsoft.Restier.Core.ApiBase api) where T : class
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+
+#### Returns
+
+Type: `T`
+The service instance.
+
+#### Type Parameters
+
+- `T` - The service type.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiServices <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.IEnumerable<T> GetApiServices<T>(Microsoft.Restier.Core.ApiBase api) where T : class
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | - |
+
+#### Returns
+
+Type: `System.Collections.Generic.IEnumerable<T>`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetModel <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Retrieves the [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
+
+#### Syntax
+
+```csharp
+public static Microsoft.OData.Edm.IEdmModel GetModel(Microsoft.Restier.Core.ApiBase api)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to extend. |
+
+#### Returns
+
+Type: `Microsoft.OData.Edm.IEdmModel`
+The [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetProperty <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a property.
+
+#### Syntax
+
+```csharp
+public static T GetProperty<T>(Microsoft.Restier.Core.ApiBase api, string name)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of a property. |
+
+#### Returns
+
+Type: `T`
+The value of the property.
+
+#### Type Parameters
+
+- `T` - The type of the property.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetProperty <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a property.
+
+#### Syntax
+
+```csharp
+public static object GetProperty(Microsoft.Restier.Core.ApiBase api, string name)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of a property. |
+
+#### Returns
+
+Type: `object`
+The value of the property.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetQueryableSource <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a queryable source of data using an API context.
+
+#### Syntax
+
+```csharp
+public static System.Linq.IQueryable GetQueryableSource(Microsoft.Restier.Core.ApiBase api, string name, params object[] arguments)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of an entity set, singleton or composable function import. |
+| `arguments` | `object[]` | If *name* is a composable function import,
+            the arguments to be passed to the composable function import. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable`
+A queryable source.
+
+#### Remarks
+
+
+
+
+            If the name identifies a singleton or a composable function import
+            whose result is a singleton, the resulting queryable source will
+            be configured such that it represents exactly zero or one result.
+            
+
+
+
+
+            Note that the resulting queryable source cannot be synchronously
+            enumerated as the API engine only operates asynchronously.
+            
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetQueryableSource <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a queryable source of data using an API context.
+
+#### Syntax
+
+```csharp
+public static System.Linq.IQueryable GetQueryableSource(Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, params object[] arguments)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `namespaceName` | `string` | The name of a namespace containing a composable function. |
+| `name` | `string` | The name of a composable function. |
+| `arguments` | `object[]` | The arguments to be passed to the composable function. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable`
+A queryable source.
+
+#### Remarks
+
+
+
+
+            If the name identifies a composable function whose result is a
+            singleton, the resulting queryable source will be configured such
+            that it represents exactly zero or one result.
+            
+
+
+
+
+            Note that the resulting queryable source cannot be synchronously
+            enumerated, as the API engine only operates asynchronously.
+            
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetQueryableSource <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a queryable source of data using an API context.
+
+#### Syntax
+
+```csharp
+public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(Microsoft.Restier.Core.ApiBase api, string name, params object[] arguments)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of an entity set, singleton or composable function import. |
+| `arguments` | `object[]` | If *name* is a composable function import,
+            the arguments to be passed to the composable function import. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable<TElement>`
+A queryable source.
+
+#### Type Parameters
+
+- `TElement` - The type of the elements in the queryable source.
+
+#### Remarks
+
+
+
+
+            If the name identifies a singleton or a composable function import
+            whose result is a singleton, the resulting queryable source will
+            be configured such that it represents exactly zero or one result.
+            
+
+
+
+
+            Note that the resulting queryable source cannot be synchronously
+            enumerated, as the API engine only operates asynchronously.
+            
+
+
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetQueryableSource <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Gets a queryable source of data using an API context.
+
+#### Syntax
+
+```csharp
+public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(Microsoft.Restier.Core.ApiBase api, string namespaceName, string name, params object[] arguments)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `namespaceName` | `string` | The name of a namespace containing a composable function. |
+| `name` | `string` | The name of a composable function. |
+| `arguments` | `object[]` | The arguments to be passed to the composable function. |
+
+#### Returns
+
+Type: `System.Linq.IQueryable<TElement>`
+A queryable source.
+
+#### Type Parameters
+
+- `TElement` - The type of the elements in the queryable source.
+
+#### Remarks
+
+
+
+
+            If the name identifies a composable function whose result is a
+            singleton, the resulting queryable source will be configured such
+            that it represents exactly zero or one result.
+            
+
+
+
+
+            Note that the resulting queryable source cannot be synchronously
+            enumerated, as the API engine only operates asynchronously.
+            
+
+
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  HasProperty <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Indicates if this object has a property.
+
+#### Syntax
+
+```csharp
+public static bool HasProperty(Microsoft.Restier.Core.ApiBase api, string name)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of a property. |
+
+#### Returns
+
+Type: `bool`
+`true` if this object has the property; otherwise, `false`.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  QueryAsync <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Asynchronously queries for data using an API context.
+
+#### Syntax
+
+```csharp
+public static System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult> QueryAsync(Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Query.QueryRequest request, System.Threading.CancellationToken cancellationToken = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `request` | `Microsoft.Restier.Core.Query.QueryRequest` | A query request. |
+| `cancellationToken` | `System.Threading.CancellationToken` | An optional cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult>`
+A task that represents the asynchronous
+            operation whose result is a query result.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  RemoveProperty <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Removes a property.
+
+#### Syntax
+
+```csharp
+public static void RemoveProperty(Microsoft.Restier.Core.ApiBase api, string name)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of a property. |
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SetProperty <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
+
+Sets a property.
+
+#### Syntax
+
+```csharp
+public static void SetProperty(Microsoft.Restier.Core.ApiBase api, string name, object value)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
+| `name` | `string` | The name of a property. |
+| `value` | `object` | A value for the property. |
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  SubmitAsync
+
+Asynchronously submits changes made using an API context.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.Restier.Core.Submit.SubmitResult> SubmitAsync(Microsoft.Restier.Core.Submit.ChangeSet changeSet = null, System.Threading.CancellationToken cancellationToken = null)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `changeSet` | `Microsoft.Restier.Core.Submit.ChangeSet` | A change set, or `null` to submit existing pending changes. |
+| `cancellationToken` | `System.Threading.CancellationToken` | An optional cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Submit.SubmitResult>`
+A task that represents the asynchronous operation whose result is a submit result.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteCurrentVisibilityMatrix <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Breakdance.ApiBaseExtensions`</Note>
+
+An extension method that generates the Visibility Matrix for the current Api and writes it to a text file.
+
+#### Syntax
+
+```csharp
+public static void WriteCurrentVisibilityMatrix(Microsoft.Restier.Core.ApiBase api, string sourceDirectory = "", string suffix = "ApiSurface", bool markdown = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to build the Visibility Matrix for. |
+| `sourceDirectory` | `string` | A string containing the relative or absolute path to use as the root. The default is "". If you want to be able to have it as part of the project,
+            so you can check it into source control, use "..//..//". |
+| `suffix` | `string` | A string to append to the Api name when writing the text file. |
+| `markdown` | `bool` | - |
+

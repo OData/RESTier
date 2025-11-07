@@ -1,0 +1,58 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Docs/">
+    <Project Path="Microsoft.Restier.Docs/Microsoft.Restier.Docs.docsproj" Type="C#" />
+  </Folder>
+  <Folder Name="/Product/" />
+  <Folder Name="/Product/Core/">
+    <Project Path="Microsoft.Restier.Core/Microsoft.Restier.Core.csproj" />
+  </Folder>
+  <Folder Name="/Product/DataProviders/">
+    <Project Path="Microsoft.Restier.EntityFramework.Shared/Microsoft.Restier.EntityFramework.Shared.shproj" />
+    <Project Path="Microsoft.Restier.EntityFramework/Microsoft.Restier.EntityFramework.csproj" />
+    <Project Path="Microsoft.Restier.EntityFrameworkCore/Microsoft.Restier.EntityFrameworkCore.csproj" />
+  </Folder>
+  <Folder Name="/Product/Testing/">
+    <Project Path="Microsoft.Restier.Breakdance/Microsoft.Restier.Breakdance.csproj" />
+  </Folder>
+  <Folder Name="/Product/Web/">
+    <Project Path="Microsoft.Restier.AspNet.Shared/Microsoft.Restier.AspNet.Shared.shproj" />
+    <Project Path="Microsoft.Restier.AspNet/Microsoft.Restier.AspNet.csproj" />
+    <Project Path="Microsoft.Restier.AspNetCore.Swagger/Microsoft.Restier.AspNetCore.Swagger.csproj" />
+    <Project Path="Microsoft.Restier.AspNetCore/Microsoft.Restier.AspNetCore.csproj" />
+  </Folder>
+  <Folder Name="/Samples/">
+    <Project Path="Microsoft.Restier.Samples.Northwind.AspNet/Microsoft.Restier.Samples.Northwind.AspNet.csproj" Id="3eab0aed-2be2-4120-b26e-3401b86c4dc2" />
+    <Project Path="Microsoft.Restier.Samples.Northwind.AspNetCore/Microsoft.Restier.Samples.Northwind.AspNetCore.csproj" />
+    <Project Path="Microsoft.Restier.Samples.Postgres.AspNetCore/Microsoft.Restier.Samples.Postgres.AspNetCore.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../README.md" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="dotnet-logo.png" />
+    <File Path="global.json" />
+  </Folder>
+  <Folder Name="/Templates/" />
+  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/Main/">
+    <Project Path="Microsoft.Restier.Tests.AspNet/Microsoft.Restier.Tests.AspNet.csproj" />
+    <Project Path="Microsoft.restier.Tests.AspNetCore.Swagger/Microsoft.Restier.Tests.AspNetCore.Swagger.csproj" />
+    <Project Path="Microsoft.Restier.Tests.AspNetCore/Microsoft.Restier.Tests.AspNetCore.csproj" />
+    <Project Path="Microsoft.Restier.Tests.AspNetCorePlusEF6/Microsoft.Restier.Tests.AspNetCorePlusEF6.csproj" />
+    <Project Path="Microsoft.Restier.Tests.Breakdance/Microsoft.Restier.Tests.Breakdance.csproj" />
+    <Project Path="Microsoft.Restier.Tests.Core/Microsoft.Restier.Tests.Core.csproj" />
+    <Project Path="Microsoft.Restier.Tests.EntityFramework/Microsoft.Restier.Tests.EntityFramework.csproj" />
+    <Project Path="Microsoft.Restier.Tests.EntityFrameworkCore/Microsoft.Restier.Tests.EntityFrameworkCore.csproj" />
+    <Project Path="Microsoft.Restier.Tests.Legacy/Microsoft.Restier.Tests.Legacy.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Shared/">
+    <Project Path="Microsoft.Restier.Tests.Shared.EntityFramework/Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+    <Project Path="Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
+    <Project Path="Microsoft.Restier.Tests.Shared/Microsoft.Restier.Tests.Shared.csproj" />
+  </Folder>
+</Solution>

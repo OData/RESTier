@@ -103,7 +103,6 @@
 
 	<ItemGroup Condition=" $(IsTestProject) != 'true' AND $(IsSampleProject) != 'true'">
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.*" PrivateAssets="All" />
-
 		<InternalsVisibleTo Include="$(AssemblyName.Replace('Microsoft.Restier.', 'Microsoft.Restier.Tests.')), $(StrongNamePublicKey)" />
 	</ItemGroup>
 

@@ -1,0 +1,86 @@
+---
+title: ChangeSetValidationException
+description: "Represents an exception that indicates validation errors occurred on entities."
+icon: file-brackets-curly
+keywords: ['ChangeSetValidationException', 'Microsoft.Restier.Core.ChangeSetValidationException', 'Microsoft.Restier.Core', 'class', 'System.Exception']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Exception
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.ChangeSetValidationException
+```
+
+## Summary
+
+Represents an exception that indicates validation errors occurred on entities.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public ChangeSetValidationException()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [ChangeSetValidationException](/api-reference/Microsoft/Restier/Core/ChangeSetValidationException) class.
+
+#### Syntax
+
+```csharp
+public ChangeSetValidationException(string message)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | `string` | Message of the exception. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [ChangeSetValidationException](/api-reference/Microsoft/Restier/Core/ChangeSetValidationException) class.
+
+#### Syntax
+
+```csharp
+public ChangeSetValidationException(string message, System.Exception innerException)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | `string` | Message of the exception. |
+| `innerException` | `System.Exception` | Inner exception. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ValidationResults
+
+Gets or sets the failed validation results.
+
+#### Syntax
+
+```csharp
+public System.Collections.Generic.IEnumerable<Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult> ValidationResults { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.Generic.IEnumerable<Microsoft.Restier.Core.Submit.ChangeSetItemValidationResult>`
+

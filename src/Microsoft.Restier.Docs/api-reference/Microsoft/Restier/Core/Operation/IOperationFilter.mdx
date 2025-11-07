@@ -1,0 +1,71 @@
+---
+title: IOperationFilter
+description: "Represents a operation processor."
+icon: plug
+keywords: ['IOperationFilter', 'Microsoft.Restier.Core.Operation.IOperationFilter', 'Microsoft.Restier.Core.Operation', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Operation
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Operation.IOperationFilter
+```
+
+## Summary
+
+Represents a operation processor.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OnOperationExecutedAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously applies logic after an operation is executed.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task OnOperationExecutedAsync(Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Operation.OperationContext` | The submit context. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task that represents the asynchronous operation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OnOperationExecutingAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously applies logic before a operation is executed.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task OnOperationExecutingAsync(Microsoft.Restier.Core.Operation.OperationContext context, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Operation.OperationContext` | The operation context. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task that represents the asynchronous operation.
+

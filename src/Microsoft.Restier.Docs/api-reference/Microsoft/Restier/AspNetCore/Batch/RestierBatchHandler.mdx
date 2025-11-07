@@ -1,0 +1,60 @@
+---
+title: RestierBatchHandler
+description: "Default implementation of [ODataBatchHandler](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.batch.odatabatchhandler) in RESTier."
+icon: file-brackets-curly
+keywords: ['RestierBatchHandler', 'Microsoft.Restier.AspNetCore.Batch.RestierBatchHandler', 'Microsoft.Restier.AspNetCore.Batch', 'class', 'Microsoft.AspNet.OData.Batch.DefaultODataBatchHandler']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNetCore.dll
+
+**Namespace:** Microsoft.Restier.AspNetCore.Batch
+
+**Inheritance:** Microsoft.AspNet.OData.Batch.DefaultODataBatchHandler
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNetCore.Batch.RestierBatchHandler
+```
+
+## Summary
+
+Default implementation of [ODataBatchHandler](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.batch.odatabatchhandler) in RESTier.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+#### Syntax
+
+```csharp
+public RestierBatchHandler()
+```
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ParseBatchRequestsAsync <DocsBadge text="Override" variant="info" />
+
+Asynchronously parses the batch requests.
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task<System.Collections.Generic.IList<Microsoft.AspNet.OData.Batch.ODataBatchRequestItem>> ParseBatchRequestsAsync(Microsoft.AspNetCore.Http.HttpContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.AspNetCore.Http.HttpContext` | The HTTP context that contains the batch requests. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<System.Collections.Generic.IList<Microsoft.AspNet.OData.Batch.ODataBatchRequestItem>>`
+The task object that represents this asynchronous operation.
+

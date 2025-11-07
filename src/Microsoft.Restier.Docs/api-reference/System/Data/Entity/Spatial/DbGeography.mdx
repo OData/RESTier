@@ -1,0 +1,73 @@
+---
+title: DbGeography
+description: "Extension methods for DbGeography from EntityFramework"
+icon: file-brackets-curly
+keywords: ['DbGeography', 'System.Data.Entity.Spatial.DbGeography', 'System.Data.Entity.Spatial', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** EntityFramework.dll
+
+**Namespace:** System.Data.Entity.Spatial
+
+## Syntax
+
+```csharp
+System.Data.Entity.Spatial.DbGeography
+```
+
+## Summary
+
+This type is defined in EntityFramework.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToGeographyLineString <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.EntityFramework.GeographyConverter`</Note>
+
+Convert a DbGeography to Edm GeographyPoint
+
+#### Syntax
+
+```csharp
+public static Microsoft.Spatial.GeographyLineString ToGeographyLineString(System.Data.Entity.Spatial.DbGeography geography)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `geography` | `System.Data.Entity.Spatial.DbGeography` | The DbGeography to be converted |
+
+#### Returns
+
+Type: `Microsoft.Spatial.GeographyLineString`
+A Edm GeographyLineString
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToGeographyPoint <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.EntityFramework.GeographyConverter`</Note>
+
+Convert a DbGeography to Edm GeographyPoint
+
+#### Syntax
+
+```csharp
+public static Microsoft.Spatial.GeographyPoint ToGeographyPoint(System.Data.Entity.Spatial.DbGeography geography)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `geography` | `System.Data.Entity.Spatial.DbGeography` | The DbGeography to be converted |
+
+#### Returns
+
+Type: `Microsoft.Spatial.GeographyPoint`
+A Edm GeographyPoint
+

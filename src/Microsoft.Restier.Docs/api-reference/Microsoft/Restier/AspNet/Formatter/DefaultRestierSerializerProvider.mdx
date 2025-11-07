@@ -1,0 +1,108 @@
+---
+title: DefaultRestierSerializerProvider
+description: "The default serializer provider."
+icon: file-brackets-curly
+sidebarTitle: DefaultRestierSerializerProvider
+keywords: ['DefaultRestierSerializerProvider', 'Microsoft.Restier.AspNet.Formatter.DefaultRestierSerializerProvider', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Serialization.DefaultODataSerializerProvider']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet.Formatter
+
+**Inheritance:** Microsoft.AspNet.OData.Formatter.Serialization.DefaultODataSerializerProvider
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.Formatter.DefaultRestierSerializerProvider
+```
+
+## Summary
+
+The default serializer provider.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DefaultRestierSerializerProvider](/api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierSerializerProvider) class.
+
+#### Syntax
+
+```csharp
+public DefaultRestierSerializerProvider(System.IServiceProvider rootContainer, Microsoft.OData.ODataPayloadValueConverter payloadValueConverter)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rootContainer` | `System.IServiceProvider` | The container to get the service. |
+| `payloadValueConverter` | `Microsoft.OData.ODataPayloadValueConverter` | The OData payload value converter to use. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Initializes a new instance of the [DefaultRestierSerializerProvider](/api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierSerializerProvider) class.
+
+#### Syntax
+
+```csharp
+public DefaultRestierSerializerProvider(System.IServiceProvider rootContainer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rootContainer` | `System.IServiceProvider` | The container to get the service. |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetEdmTypeSerializer <DocsBadge text="Override" variant="info" />
+
+Gets the serializer for the given EDM type reference.
+
+#### Syntax
+
+```csharp
+public override Microsoft.AspNet.OData.Formatter.Serialization.ODataEdmTypeSerializer GetEdmTypeSerializer(Microsoft.OData.Edm.IEdmTypeReference edmType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmType` | `Microsoft.OData.Edm.IEdmTypeReference` | The EDM type reference involved in the serializer. |
+
+#### Returns
+
+Type: `Microsoft.AspNet.OData.Formatter.Serialization.ODataEdmTypeSerializer`
+The serializer instance.
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetODataPayloadSerializer <DocsBadge text="Override" variant="info" />
+
+Gets the serializer for the given result type.
+
+#### Syntax
+
+```csharp
+public override Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializer GetODataPayloadSerializer(System.Type type, System.Net.Http.HttpRequestMessage request)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The type of result to serialize. |
+| `request` | `System.Net.Http.HttpRequestMessage` | The HTTP request. |
+
+#### Returns
+
+Type: `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializer`
+The serializer instance.
+

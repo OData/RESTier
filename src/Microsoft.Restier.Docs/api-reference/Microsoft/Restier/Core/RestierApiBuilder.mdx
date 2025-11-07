@@ -1,0 +1,225 @@
+---
+title: RestierApiBuilder
+description: "Extension methods for RestierApiBuilder from Microsoft.Restier.Core"
+icon: file-brackets-curly
+keywords: ['RestierApiBuilder', 'Microsoft.Restier.Core.RestierApiBuilder', 'Microsoft.Restier.Core', 'error']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.RestierApiBuilder
+```
+
+## Summary
+
+This type is defined in Microsoft.Restier.Core.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.restier.core.restierapibuilder) for more information about the rest of the API.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+
+Creates a new [RestierApiBuilder](/api-reference/Microsoft/Restier/Core/RestierApiBuilder) instance.
+
+#### Syntax
+
+```csharp
+public RestierApiBuilder()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddRestierApi <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.RestierApiBuilderExtensions`</Note>
+
+Adds a Restier Api.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Restier.Core.RestierApiBuilder AddRestierApi<TApi>(Microsoft.Restier.Core.RestierApiBuilder builder) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `Microsoft.Restier.Core.RestierApiBuilder` | The restier api builder. |
+
+#### Returns
+
+Type: `Microsoft.Restier.Core.RestierApiBuilder`
+The [RestierApiBuilder](/api-reference/Microsoft/Restier/Core/RestierApiBuilder) instance to allow for fluent method chaining.
+
+#### Type Parameters
+
+- `TApi` - The type of the Api.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  AddRestierApi <DocsBadge text="Extension" variant="success" />
+
+<Note>Extension method from `Microsoft.Restier.Core.RestierApiBuilderExtensions`</Note>
+
+Adds a restier Api and allows for service registration on the route container.
+
+#### Syntax
+
+```csharp
+public static Microsoft.Restier.Core.RestierApiBuilder AddRestierApi<TApi>(Microsoft.Restier.Core.RestierApiBuilder builder, System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection> services) where TApi : Microsoft.Restier.Core.ApiBase
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `Microsoft.Restier.Core.RestierApiBuilder` | The restier api builder. |
+| `services` | `System.Action<Microsoft.Extensions.DependencyInjection.IServiceCollection>` | The action to configure the services. |
+
+#### Returns
+
+Type: `Microsoft.Restier.Core.RestierApiBuilder`
+
+#### Type Parameters
+
+- `TApi` - The type of the Api.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

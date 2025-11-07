@@ -1,0 +1,56 @@
+---
+title: IChangeSetInitializer
+description: "Represents a service that can initialize a change set."
+icon: plug
+keywords: ['IChangeSetInitializer', 'Microsoft.Restier.Core.Submit.IChangeSetInitializer', 'Microsoft.Restier.Core.Submit', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.IChangeSetInitializer
+```
+
+## Summary
+
+Represents a service that can initialize a change set.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  InitializeAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously initialize a change set for submission.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task InitializeAsync(Microsoft.Restier.Core.Submit.SubmitContext context, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task that represents the asynchronous operation.
+
+#### Remarks
+
+Preparing a change set involves creating new entity objects for
+            new data, loading entities that are pending update or delete from
+            to get current server values, and using a data provider mechanism
+            to locally apply the supplied changes to the loaded entities.
+

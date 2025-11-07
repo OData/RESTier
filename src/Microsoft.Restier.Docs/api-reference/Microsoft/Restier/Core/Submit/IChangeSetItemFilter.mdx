@@ -1,0 +1,73 @@
+---
+title: IChangeSetItemFilter
+description: "Represents a change set item filter to have logic before and after change set item processed."
+icon: plug
+keywords: ['IChangeSetItemFilter', 'Microsoft.Restier.Core.Submit.IChangeSetItemFilter', 'Microsoft.Restier.Core.Submit', 'interface']
+---
+
+import { DocsBadge } from '/snippets/DocsBadge.jsx';
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.IChangeSetItemFilter
+```
+
+## Summary
+
+Represents a change set item filter to have logic before and after change set item processed.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OnChangeSetItemProcessedAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously applies logic after a change set item is processed.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task OnChangeSetItemProcessedAsync(Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context. |
+| `item` | `Microsoft.Restier.Core.Submit.ChangeSetItem` | A change set item. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task that represents the asynchronous operation.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OnChangeSetItemProcessingAsync <DocsBadge text="Abstract" variant="warning" />
+
+Asynchronously applies logic before a change set item is processed.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task OnChangeSetItemProcessingAsync(Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context. |
+| `item` | `Microsoft.Restier.Core.Submit.ChangeSetItem` | A change set item. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task that represents the asynchronous operation.
+
