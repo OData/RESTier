@@ -4,7 +4,7 @@
     "light": "#419AC5",
     "primary": "#419AC5"
   },
-  "name": "RESTier",
+  "name": "Restier",
   "navigation": {
     "pages": [
       {
@@ -23,15 +23,18 @@
         "pages": [
           "guides/index",
           {
-            "group": "Clients",
+            "group": "Server",
+            "icon": "server",
             "pages": [
-              "guides/clients/dot-net",
-              "guides/clients/dot-net-standard",
-              "guides/clients/typescript"
+              "guides/server/model-building",
+              "guides/server/method-authorization",
+              "guides/server/filters",
+              "guides/server/interceptors"
             ]
           },
           {
             "group": "Extending Restier",
+            "icon": "puzzle",
             "pages": [
               "guides/extending-restier/additional-operations",
               "guides/extending-restier/in-memory-provider",
@@ -39,12 +42,12 @@
             ]
           },
           {
-            "group": "Server",
+            "group": "Clients",
+            "icon": "laptop-code",
             "pages": [
-              "guides/server/filters",
-              "guides/server/interceptors",
-              "guides/server/method-authorization",
-              "guides/server/model-building"
+              "guides/clients/dot-net",
+              "guides/clients/dot-net-standard",
+              "guides/clients/typescript"
             ]
           }
         ]

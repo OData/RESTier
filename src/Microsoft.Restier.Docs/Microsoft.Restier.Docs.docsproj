@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.10">
+﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.11">
 
     <PropertyGroup>
         <DocumentationType>Mintlify</DocumentationType>
@@ -26,15 +26,22 @@
                         </Group>
                         <Group Name="Guides" Icon="dog-leashed">
                             <Pages>guides/index</Pages>
-                            <Group Name="Server" Icon="/images/icons/mintlify.svg">
-                                <Pages>guides/server/model-building;guides/server/method-authorization;guides/server/filters;guides/server/interceptors;
+                            <Group Name="Server" Icon="server">
+                                <Pages>
+                                    guides/server/model-building;
+                                    guides/server/method-authorization;
+                                    guides/server/filters;
+                                    guides/server/interceptors;
                                 </Pages>
                             </Group>
-                            <Group Name="Extending Restier" Icon="/images/icons/mintlify.svg">
-                                <Pages>guides/extending-restier/additional-operations;guides/extending-restier/in-memory-provider;guides/extending-restier/temporal-types;
+                            <Group Name="Extending Restier" Icon="puzzle">
+                                <Pages>
+                                    guides/extending-restier/additional-operations;
+                                    guides/extending-restier/in-memory-provider;
+                                    guides/extending-restier/temporal-types;
                                 </Pages>
                             </Group>
-                            <Group Name="Clients" Icon="/images/icons/mintlify.svg">
+                            <Group Name="Clients" Icon="laptop-code">
                                 <Pages>
                                     guides/clients/dot-net;
                                     guides/clients/dot-net-standard;
