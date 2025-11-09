@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Mintlify__SearchMintlify"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

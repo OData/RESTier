@@ -1,0 +1,81 @@
+/* Global styles for EasyAF site */
+
+/* Make content area full width across entire site */
+#content-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+li button div {
+    display: flex;
+    gap: 6px;
+}
+
+[data-title="Mintlify"][data-group-tag="PARTNER"] img {
+    background-color: transparent !important;
+    filter: invert(31%) sepia(67%) saturate(3604%) hue-rotate(146deg) brightness(90%) contrast(91%);
+}
+
+[data-title="Mintlify"][data-group-tag="PARTNER"] svg:not(.transition-transform) {
+    background-color: #0C8C5E !important;
+}
+
+/* Remove container constraints for landing pages */
+.container, .max-w-7xl, .mx-auto {
+    max-width: 100% !important;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0A1628;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3CD0E2, #419AC5);
+    border-radius: 6px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #419AC5, #3CD0E2);
+    }
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* For custom mode pages - hide default Mintlify elements */
+.custom-mode nav,
+.custom-mode aside,
+.custom-mode .breadcrumb {
+    display: none !important;
+}
+
+.custom-mode main {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+.custom-mode article {
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+/* Hide default prose styling on custom pages */
+.custom-mode .prose > h1:first-child,
+.custom-mode .prose > p:first-child {
+    display: none;
+}
+
+code, kbd, pre, samp {
+    font-family: "Cascadia Code",var(--font-jetbrains-mono),ui-monospace,SFMono-Regular,Menlo,Monaco,"Liberation Mono","Courier New",monospace;
+    font-feature-settings: normal;
+    font-variation-settings: normal;
+    font-size: 1em;
+    line-height: 1.5em;
+}

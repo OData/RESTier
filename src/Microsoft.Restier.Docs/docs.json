@@ -7,11 +7,79 @@
   "name": "RESTier",
   "navigation": {
     "pages": [
-      "index",
       {
         "group": "Getting Started",
+        "icon": "stars",
         "pages": [
-          "index"
+          "index",
+          "why-restier",
+          "quickstart",
+          "contribution-guidelines"
+        ]
+      },
+      {
+        "group": "Guides",
+        "icon": "dog-leashed",
+        "pages": [
+          "guides/index",
+          {
+            "group": "Clients",
+            "pages": [
+              "guides/clients/dot-net",
+              "guides/clients/dot-net-standard",
+              "guides/clients/typescript"
+            ]
+          },
+          {
+            "group": "Extending Restier",
+            "pages": [
+              "guides/extending-restier/additional-operations",
+              "guides/extending-restier/in-memory-provider",
+              "guides/extending-restier/temporal-types"
+            ]
+          },
+          {
+            "group": "Server",
+            "pages": [
+              "guides/server/filters",
+              "guides/server/interceptors",
+              "guides/server/method-authorization",
+              "guides/server/model-building"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Providers",
+        "icon": "books",
+        "pages": [
+          "providers/index",
+          {
+            "group": "EF 6",
+            "icon": "/images/icons/mintlify.svg",
+            "pages": [
+              "providers/mintlify/index",
+              "providers/mintlify/navigation",
+              "providers/mintlify/dotnet-library"
+            ]
+          },
+          {
+            "group": "EF Core",
+            "icon": "/images/icons/mintlify.svg",
+            "pages": [
+              "providers/mintlify/index",
+              "providers/mintlify/navigation",
+              "providers/mintlify/dotnet-library"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Learnings",
+        "icon": "chalkboard-user",
+        "pages": [
+          "learnings/bridge-assemblies",
+          "learnings/sdk-packaging"
         ]
       },
       {
