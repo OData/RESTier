@@ -15,6 +15,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="SubmitContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class SubmitContextTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

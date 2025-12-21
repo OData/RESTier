@@ -19,6 +19,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DefaultChangeSetInitializer"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultChangeSetInitializerTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

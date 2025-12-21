@@ -19,6 +19,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="QueryContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class QueryContextTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

@@ -25,7 +25,8 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.*" />
 		<!--<PackageReference Include="Microsoft.OData.Edm" Version="7.13.*" />-->
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
-        <PackageReference Update="MSTest" NoWarn="NU1608" />
+        <!--<PackageReference Update="MSTest" Version="3.*" NoWarn="NU1608" />
+		<PackageReference Include="MSTest.TestFramework" Version="4.*" />-->
         <PackageReference Include="Simple.OData.V4.Client" Version="6.*-*" />
 		<PackageReference Include="System.Text.Json" Version="9.*" />
 	</ItemGroup>

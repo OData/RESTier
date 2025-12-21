@@ -16,6 +16,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="InvocationContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class InvocationContextTests
     {
         private InvocationContext testClass;

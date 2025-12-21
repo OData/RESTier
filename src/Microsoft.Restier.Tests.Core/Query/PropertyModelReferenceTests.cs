@@ -14,6 +14,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="PropertyModelReference"/> tests.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class PropertyModelReferenceTests
     {
         /// <summary>

@@ -40,10 +40,8 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
         [TestMethod]
-#pragma warning disable MSTEST0018 // DynamicData should be valid
-        [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
-#pragma warning restore MSTEST0018 // DynamicData should be valid
-        public static void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperation(
+        [DynamicData(nameof(GetMethodNameData))]
+        public void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperation(
             RestierPipelineState pipelineState,
             RestierEntitySetOperation entitySetOperation,
             string expected)
@@ -83,10 +81,8 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
         [TestMethod]
-#pragma warning disable MSTEST0018 // DynamicData should be valid
-        [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
-#pragma warning restore MSTEST0018 // DynamicData should be valid
-        public static void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineState(
+        [DynamicData(nameof(GetMethodNameData))]
+        public void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineState(
             RestierPipelineState pipelineState,
             RestierEntitySetOperation entitySetOperation,
             string expected)
@@ -126,7 +122,7 @@ namespace Microsoft.Restier.Tests.Core
         [DataRow(RestierPipelineState.PreSubmit, "OnExecutingCalculate")]
         [DataRow(RestierPipelineState.Submit, "")]
         [DataRow(RestierPipelineState.Validation, "")]
-        public static void CanCallGetFunctionMethodNameWithIEdmOperationImportAndRestierPipelineStateAndRestierOperationMethod(
+        public void CanCallGetFunctionMethodNameWithIEdmOperationImportAndRestierPipelineStateAndRestierOperationMethod(
             RestierPipelineState pipelineState,
             string expected)
         {
@@ -191,7 +187,7 @@ namespace Microsoft.Restier.Tests.Core
             result.Should().Be(expected);
         }
 
-        private IEnumerable<object[]> GetMethodNameData()
+        private static IEnumerable<object[]> GetMethodNameData()
         {
             yield return new object[] { RestierPipelineState.Authorization, RestierEntitySetOperation.Delete, "CanDeleteTest" };
             yield return new object[] { RestierPipelineState.PostSubmit, RestierEntitySetOperation.Delete, "OnDeletedTest" };

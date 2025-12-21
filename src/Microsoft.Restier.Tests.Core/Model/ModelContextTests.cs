@@ -18,6 +18,7 @@ namespace Microsoft.Restier.Tests.Core.Model
     /// Unit tests for the <see cref="ModelContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ModelContextTests
     {
         private ModelContext testClass;

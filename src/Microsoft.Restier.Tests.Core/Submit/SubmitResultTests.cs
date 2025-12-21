@@ -13,6 +13,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for <see cref="SubmitResult"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class SubmitResultTests
     {
         private SubmitResult testClass;

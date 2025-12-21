@@ -18,6 +18,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
     /// Unit tests for the <see cref="OperationContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class OperationContextTests
     {
         private OperationContext testClass;

@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="Moq" Version="4.*" />
 		<PackageReference Include="Breakdance.Assemblies" Version="8.*" />
-	</ItemGroup>
+    </ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)" />

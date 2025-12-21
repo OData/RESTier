@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "mcp__Mintlify__SearchMintlify",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

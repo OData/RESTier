@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
@@ -82,9 +82,9 @@ namespace Microsoft.Restier.Breakdance
 
                     .AddApplicationPart(typeof(TApi).Assembly)
                     .AddApplicationPart(typeof(RestierController).Assembly);
-            })
+            });
 
-           .Configure(builder =>
+            TestHostBuilder.Configure(builder =>
             {
                 ApplicationBuilderAction?.Invoke(builder);
 
@@ -100,7 +100,7 @@ namespace Microsoft.Restier.Breakdance
                     builder.UseEndpoints(endpoints =>
                     {
                         endpoints
-                            .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)               
+                            .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)
                             .MapRestier(restierRouteBuilder =>
                             {
                                 MapRestierAction?.Invoke(restierRouteBuilder);

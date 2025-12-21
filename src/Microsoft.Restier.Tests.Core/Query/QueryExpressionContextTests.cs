@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Query expression context tests.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class QueryExpressionContextTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

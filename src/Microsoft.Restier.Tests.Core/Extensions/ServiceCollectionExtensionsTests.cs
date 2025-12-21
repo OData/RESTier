@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit test for the <see cref="Core.ServiceCollectionExtensions"/> static class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ServiceCollectionExtensionsTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

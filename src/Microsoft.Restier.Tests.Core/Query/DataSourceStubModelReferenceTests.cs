@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="DataSourceStubModelReference"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DataSourceStubModelReferenceTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

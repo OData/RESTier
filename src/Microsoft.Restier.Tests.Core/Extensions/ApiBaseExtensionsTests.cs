@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ApiBase"/> extension methods.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ApiBaseExtensionsTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;
