@@ -6,8 +6,6 @@ sidebarTitle: DefaultRestierSerializerProvider
 keywords: ['DefaultRestierSerializerProvider', 'Microsoft.Restier.AspNet.Formatter.DefaultRestierSerializerProvider', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Serialization.DefaultODataSerializerProvider']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.AspNet.dll
@@ -28,7 +26,7 @@ The default serializer provider.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [DefaultRestierSerializerProvider](/api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierSerializerProvider) class.
 
@@ -45,7 +43,7 @@ public DefaultRestierSerializerProvider(System.IServiceProvider rootContainer, M
 | `rootContainer` | `System.IServiceProvider` | The container to get the service. |
 | `payloadValueConverter` | `Microsoft.OData.ODataPayloadValueConverter` | The OData payload value converter to use. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [DefaultRestierSerializerProvider](/api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierSerializerProvider) class.
 
@@ -63,7 +61,7 @@ public DefaultRestierSerializerProvider(System.IServiceProvider rootContainer)
 
 ## Methods
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetEdmTypeSerializer <DocsBadge text="Override" variant="info" />
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetEdmTypeSerializer <Badge color="blue">Override</Badge>
 
 Gets the serializer for the given EDM type reference.
 
@@ -84,7 +82,7 @@ public override Microsoft.AspNet.OData.Formatter.Serialization.ODataEdmTypeSeria
 Type: `Microsoft.AspNet.OData.Formatter.Serialization.ODataEdmTypeSerializer`
 The serializer instance.
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetODataPayloadSerializer <DocsBadge text="Override" variant="info" />
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetODataPayloadSerializer <Badge color="blue">Override</Badge>
 
 Gets the serializer for the given result type.
 

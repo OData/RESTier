@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['ModelContext', 'Microsoft.Restier.Core.Model.ModelContext', 'Microsoft.Restier.Core.Model', 'class', 'Microsoft.Restier.Core.InvocationContext']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.Core.dll
@@ -27,7 +25,7 @@ Represents context under which a model is requested.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [ModelContext](/api-reference/Microsoft/Restier/Core/Model/ModelContext) class.
 
@@ -43,7 +41,7 @@ public ModelContext(Microsoft.Restier.Core.ApiBase api)
 |------|------|-------------|
 | `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
 
@@ -61,7 +59,7 @@ public InvocationContext(Microsoft.Restier.Core.ApiBase api)
 |------|------|-------------|
 | `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -73,7 +71,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Api <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Api <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
 
@@ -89,7 +87,7 @@ public Microsoft.Restier.Core.ApiBase Api { get; }
 
 Type: `Microsoft.Restier.Core.ApiBase`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ResourceSetTypeMap
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResourceSetTypeMap
 
 Gets resource set and resource type map dictionary, it will be used by publisher for model build.
 
@@ -103,7 +101,7 @@ public System.Collections.Generic.IDictionary<string, System.Type> ResourceSetTy
 
 Type: `System.Collections.Generic.IDictionary<string, System.Type>`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ResourceTypeKeyPropertiesMap
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResourceTypeKeyPropertiesMap
 
 Gets resource type and its key properties map dictionary, and used by publisher for model build.
             This is useful when key properties does not have key attribute
@@ -122,7 +120,7 @@ Type: `System.Collections.Generic.IDictionary<System.Type, System.Collections.Ge
 
 ## Methods
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -142,7 +140,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -163,7 +161,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiService <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiService <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
 
@@ -184,7 +182,7 @@ The API service instance.
 
 - `T` - The API service type.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiService <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiService <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
 
@@ -207,7 +205,7 @@ public object GetApiService(System.Type type)
 Type: `object`
 The API service instance.
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -221,7 +219,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -235,7 +233,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -249,7 +247,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -270,7 +268,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 

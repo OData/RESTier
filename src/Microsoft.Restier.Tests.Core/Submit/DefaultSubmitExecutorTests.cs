@@ -19,6 +19,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DefaultSubmitExecutor"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultSubmitExecutorTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

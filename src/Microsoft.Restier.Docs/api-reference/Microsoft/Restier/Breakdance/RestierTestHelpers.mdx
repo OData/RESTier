@@ -6,8 +6,6 @@ tag: "STATIC"
 keywords: ['RestierTestHelpers', 'Microsoft.Restier.Breakdance.RestierTestHelpers', 'Microsoft.Restier.Breakdance', 'class', 'System.Object']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.Breakdance.dll
@@ -32,7 +30,7 @@ See RestierTestHelperTests.cs for more examples of how to use these methods.
 
 ## Methods
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ExecuteTestRequest
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ExecuteTestRequest
 
 Configures the Restier pipeline in-memory and executes a test request against a given service, returning an [HttpResponseMessage](https://learn.microsoft.com/dotnet/api/system.net.http.httpresponsemessage) for inspection.
 
@@ -70,7 +68,7 @@ An [HttpResponseMessage](https://learn.microsoft.com/dotnet/api/system.net.http.
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetApiMetadataAsync
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiMetadataAsync
 
 Executes a test request against the configured API endpoint and retrieves the content from the /$metadata endpoint.
 
@@ -99,7 +97,7 @@ An [XDocument](https://learn.microsoft.com/dotnet/api/system.xml.linq.xdocument)
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetModelBuilderHierarchy
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetModelBuilderHierarchy
 
 Gets a list of fully-qualified builder instances that are registered down the ModelBuilder chain. The order is really important, so this is a great way to troubleshoot.
 
@@ -126,7 +124,7 @@ Type: `System.Threading.Tasks.Task<System.Collections.Generic.List<string>>`
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableApiInstance
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTestableApiInstance
 
 Retrieves the instance of the Restier API (inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) from the Dependency Injection container.
 
@@ -153,7 +151,7 @@ Type: `System.Threading.Tasks.Task<TApi>`
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableHttpClient
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTestableHttpClient
 
 Returns a properly configured [HttpClient](https://learn.microsoft.com/dotnet/api/system.net.http.httpclient) that can make reqests to the in-memory Restier context.
 
@@ -181,7 +179,7 @@ A properly configured [HttpClient](https://learn.microsoft.com/dotnet/api/system
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableInjectedService
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTestableInjectedService
 
 Retrieves class instance of type *TService* from the Dependency Injection container.
 
@@ -209,7 +207,7 @@ Type: `System.Threading.Tasks.Task<TService>`
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 - `TService` - The type whose instance should be retrieved from the DI container.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableInjectionContainer
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTestableInjectionContainer
 
 Retrieves the Dependency Injection container that was created as a part of the request pipeline.
 
@@ -236,7 +234,7 @@ Type: `System.Threading.Tasks.Task<System.IServiceProvider>`
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableModelAsync
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTestableModelAsync
 
 Retrieves the [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) instance for a given API, whether it used a custom ModelBuilder or the RestierModelBuilder.
 
@@ -264,7 +262,7 @@ An [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) instance containing
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetTestableRestierConfiguration
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetTestableRestierConfiguration
 
 Retrieves an [HttpConfiguration](/api-reference/System/Web/Http/HttpConfiguration) instance that has been configured to execute a given Restier API, along with settings suitable for easy troubleshooting.&lt;/see&gt;
 
@@ -293,7 +291,7 @@ An [HttpConfiguration](/api-reference/System/Web/Http/HttpConfiguration) instanc
 
 - `TApi` - The class inheriting from [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) that implements the Restier API to test.
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteCurrentApiMetadata
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteCurrentApiMetadata
 
 #### Syntax
 

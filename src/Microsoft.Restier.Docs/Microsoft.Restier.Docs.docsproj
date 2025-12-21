@@ -1,4 +1,4 @@
-﻿<Project Sdk="DotNetDocs.Sdk/1.1.0-preview.11">
+﻿<Project Sdk="DotNetDocs.Sdk/1.2.0">
 
     <PropertyGroup>
         <DocumentationType>Mintlify</DocumentationType>
@@ -70,7 +70,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="style.css" />
+      <Folder Include="snippets\" />
     </ItemGroup>
 
 </Project>

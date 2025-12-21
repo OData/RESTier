@@ -5,8 +5,6 @@ icon: code-branch
 keywords: ['DataModificationItem', 'Microsoft.Restier.Core.Submit.DataModificationItem<T>', 'Microsoft.Restier.Core.Submit', 'class', 'Microsoft.Restier.Core.Submit.DataModificationItem']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.Core.dll
@@ -31,7 +29,7 @@ Represents a data modification item in a change set.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [DataModificationItem`1](https://learn.microsoft.com/dotnet/api/microsoft.restier.core.submit.datamodificationitem-1) class.
 
@@ -53,7 +51,7 @@ public DataModificationItem(string resourceSetName, System.Type expectedResource
 | `originalValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | Any original values of the resource that are known. |
 | `localValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | The local values of the entity. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -77,7 +75,7 @@ public DataModificationItem(string resourceSetName, System.Type expectedResource
 | `originalValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | Any original values of the resource that are known. |
 | `localValues` | `System.Collections.Generic.IReadOnlyDictionary<string, object>` | The local values of the resource. |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
 
@@ -93,7 +91,7 @@ internal ChangeSetItem(Microsoft.Restier.Core.Submit.ChangeSetItemType type)
 |------|------|-------------|
 | `type` | `Microsoft.Restier.Core.Submit.ChangeSetItemType` | - |
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -105,7 +103,7 @@ public Object()
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ActualResourceType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ActualResourceType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -122,7 +120,7 @@ public System.Type ActualResourceType { get; private set; }
 
 Type: `System.Type`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ChangeSetItemProcessingStage <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ChangeSetItemProcessingStage <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
 
@@ -138,7 +136,7 @@ internal Microsoft.Restier.Core.Submit.ChangeSetItemProcessingStage ChangeSetIte
 
 Type: `Microsoft.Restier.Core.Submit.ChangeSetItemProcessingStage`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  EntitySetOperation <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> EntitySetOperation <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -154,7 +152,7 @@ public Microsoft.Restier.Core.RestierEntitySetOperation EntitySetOperation { get
 
 Type: `Microsoft.Restier.Core.RestierEntitySetOperation`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ExpectedResourceType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ExpectedResourceType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -170,7 +168,7 @@ public System.Type ExpectedResourceType { get; private set; }
 
 Type: `System.Type`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsFullReplaceUpdateRequest <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsFullReplaceUpdateRequest <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -191,7 +189,7 @@ Type: `bool`
 If true, all properties will be updated, even if the property isn't in LocalValues.
             If false, only properties identified in LocalValues will be updated on the resource.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  LocalValues <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> LocalValues <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -211,7 +209,7 @@ Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
 
 For entities pending deletion, this property is `null`.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OriginalValues <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OriginalValues <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -231,7 +229,7 @@ Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
 
 For new entities, this property is `null`.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Resource
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Resource
 
 Gets or sets the resource object in question.
 
@@ -250,7 +248,7 @@ Type: `T`
 Initially this will be `null`, however after the change
             set has been prepared it will represent the pending resource.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Resource <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Resource <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -271,7 +269,7 @@ Type: `object`
 Initially this will be `null`, however after the change
             set has been prepared it will represent the pending resource.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ResourceKey <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResourceKey <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -287,7 +285,7 @@ public System.Collections.Generic.IReadOnlyDictionary<string, object> ResourceKe
 
 Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ResourceSetName <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResourceSetName <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -303,7 +301,7 @@ public string ResourceSetName { get; private set; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ServerValues <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ServerValues <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -324,7 +322,7 @@ Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
 For new entities, this property is `null`. For updated
             entities, it is `null` until the change set is prepared.
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Type <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
 
@@ -342,7 +340,7 @@ Type: `Microsoft.Restier.Core.Submit.ChangeSetItemType`
 
 ## Methods
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ApplyTo <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ApplyTo <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
@@ -366,7 +364,7 @@ public System.Linq.IQueryable ApplyTo(System.Linq.IQueryable query)
 Type: `System.Linq.IQueryable`
 The new IQueryable with the property values applied to it in a Where condition.
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -386,7 +384,7 @@ public virtual bool Equals(object obj)
 
 Type: `bool`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Equals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -407,7 +405,7 @@ public static bool Equals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetHashCode <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -421,7 +419,7 @@ public virtual int GetHashCode()
 
 Type: `int`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  GetType <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -435,7 +433,7 @@ public System.Type GetType()
 
 Type: `System.Type`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  HasChanged <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> HasChanged <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.ChangeSetItem`</Note>
 
@@ -452,7 +450,7 @@ public bool HasChanged()
 Type: `bool`
 Whether this change set item is in a changed state.
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  MemberwiseClone <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -466,7 +464,7 @@ protected internal object MemberwiseClone()
 
 Type: `object`
 
-### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ReferenceEquals <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -487,7 +485,7 @@ public static bool ReferenceEquals(object objA, object objB)
 
 Type: `bool`
 
-### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ToString <DocsBadge text="Inherited" variant="neutral" /> <DocsBadge text="Virtual" variant="warning" />
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
 
 <Note>Inherited from `object`</Note>
 
@@ -501,7 +499,7 @@ public virtual string ToString()
 
 Type: `string?`
 
-### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ValidateEtag <DocsBadge text="Inherited" variant="neutral" />
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ValidateEtag <Badge color="gray">Inherited</Badge>
 
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 

@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// Cannot construct the <see cref="OperationContext"/> with an invalid OperationName.
         /// </summary>
         /// <param name="value">OperationName.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]

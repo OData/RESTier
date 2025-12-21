@@ -7,7 +7,7 @@
 		<IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
 		<IsTemplateProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.'))">true</IsTemplateProject>
 		<IsTemplatePackageProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.package'))">true</IsTemplatePackageProject>
-		<IsNetCore Condition=" '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'net8.0' ">true</IsNetCore>
+		<IsNetCore Condition=" '$(TargetFramework)' == 'net10.0' OR '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'net8.0' ">true</IsNetCore>
 		<IsPrimaryProject Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true' ">true</IsPrimaryProject>
 		<IncludeReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\readme.md')">true</IncludeReadmeFile>
 
@@ -110,7 +110,15 @@
 		<PackageReference Include="coverlet.collector" Version="6.*" />
 		<PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
 		<PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
-		<PackageReference Include="MSTest" Version="3.*" />
+		<PackageReference Include="MSTest" Version="4.*" />
+
+        <!-- Enable parallel test execution in MSTest 4 and later. -->
+        <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.Parallelize">
+            <_Parameter1>Workers = 0</_Parameter1>
+            <_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
+            <_Parameter2>Scope = Microsoft.VisualStudio.TestTools.UnitTesting.ExecutionScope.MethodLevel</_Parameter2>
+            <_Parameter2_IsLiteral>true</_Parameter2_IsLiteral>
+        </AssemblyAttribute>
 	</ItemGroup>
 
 	<ItemGroup>

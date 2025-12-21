@@ -6,8 +6,6 @@ tag: "ABSTRACT"
 keywords: ['OperationAttribute', 'Microsoft.Restier.AspNetCore.Model.OperationAttribute', 'Microsoft.Restier.AspNetCore.Model', 'class', 'System.Attribute']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.AspNetCore.dll
@@ -34,7 +32,7 @@ This was turned into an Abstract class in favor or more specific functionality. 
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  IsComposable
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsComposable
 
 Gets or sets a value indicating whether the function is composable.
             Defaults to [`false`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
@@ -49,7 +47,7 @@ public bool IsComposable { get; set; }
 
 Type: `bool`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  Namespace
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Namespace
 
 Gets or sets the namespace of the operation. 
             The default value will be same as the namespace of entity type.
@@ -64,7 +62,7 @@ public string Namespace { get; set; }
 
 Type: `string`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  OperationType
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OperationType
 
 Gets or sets a value indicating what type of Operation is being registered. [OperationType.Function](/api-reference/Microsoft/Restier/AspNetCore/Model/OperationType#function)Functions&lt;/see&gt; respond to HTTP GET requests,
             while [OperationType.Action](/api-reference/Microsoft/Restier/AspNetCore/Model/OperationType#action)Actions&lt;/see&gt; respond to HTTP POST requests. Defaults to [OperationType.Function](/api-reference/Microsoft/Restier/AspNetCore/Model/OperationType#function).

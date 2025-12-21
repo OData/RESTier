@@ -14,10 +14,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="7.*" />
-		<PackageReference Include="Breakdance.Extensions.MSTest2" Version="7.*" />
-		<PackageReference Include="EasyAF.Http" Version="3.*" />
-		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="3.*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="8.*" />
+        <PackageReference Include="Breakdance.Extensions.MSTest2" Version="8.*" NoWarn="NU1608" />
+		<PackageReference Include="EasyAF.Http" Version="4.*" />
+		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="4.*" />
 		<!--<PackageReference Include="Microsoft.AspNet.OData" Version="7.5.*" />-->
 		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
 		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.*" />
@@ -25,7 +25,8 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.*" />
 		<!--<PackageReference Include="Microsoft.OData.Edm" Version="7.13.*" />-->
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
-		<PackageReference Include="Simple.OData.V4.Client" Version="6.*-*" />
+        <PackageReference Update="MSTest" NoWarn="NU1608" />
+        <PackageReference Include="Simple.OData.V4.Client" Version="6.*-*" />
 		<PackageReference Include="System.Text.Json" Version="9.*" />
 	</ItemGroup>
 

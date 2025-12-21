@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
+        [TestMethod]
 #pragma warning disable MSTEST0018 // DynamicData should be valid
         [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
 #pragma warning restore MSTEST0018 // DynamicData should be valid
@@ -82,7 +82,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
+        [TestMethod]
 #pragma warning disable MSTEST0018 // DynamicData should be valid
         [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
 #pragma warning restore MSTEST0018 // DynamicData should be valid
@@ -120,7 +120,7 @@ namespace Microsoft.Restier.Tests.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(RestierPipelineState.Authorization, "CanExecuteCalculate")]
         [DataRow(RestierPipelineState.PostSubmit, "OnExecutedCalculate")]
         [DataRow(RestierPipelineState.PreSubmit, "OnExecutingCalculate")]
@@ -170,7 +170,7 @@ namespace Microsoft.Restier.Tests.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(RestierPipelineState.Authorization, "CanExecuteCalculate")]
         [DataRow(RestierPipelineState.PostSubmit, "OnExecutedCalculate")]
         [DataRow(RestierPipelineState.PreSubmit, "OnExecutingCalculate")]

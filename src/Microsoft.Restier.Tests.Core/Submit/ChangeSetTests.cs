@@ -16,6 +16,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="ChangeSet"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ChangeSetTests
     {
         private ChangeSet testClass;

@@ -5,8 +5,6 @@ icon: plug
 keywords: ['IEntityFrameworkApi', 'Microsoft.Restier.EntityFrameworkCore.IEntityFrameworkApi', 'Microsoft.Restier.EntityFrameworkCore', 'interface']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.EntityFrameworkCore.dll
@@ -26,7 +24,7 @@ Interface for Entity Framework Api instances.
 
 ## Properties
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  ContextType <DocsBadge text="Abstract" variant="warning" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ContextType <Badge color="orange">Abstract</Badge>
 
 Gets the Context Type.
 
@@ -40,7 +38,7 @@ System.Type ContextType { get; }
 
 Type: `System.Type`
 
-### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  DbContext <DocsBadge text="Abstract" variant="warning" />
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> DbContext <Badge color="orange">Abstract</Badge>
 
 Gets the underlying DbContext for this API.
 

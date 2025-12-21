@@ -5,8 +5,6 @@ icon: file-brackets-curly
 keywords: ['RestierEnumSerializer', 'Microsoft.Restier.AspNet.Formatter.RestierEnumSerializer', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Serialization.ODataEnumSerializer']
 ---
 
-import { DocsBadge } from '/snippets/DocsBadge.jsx';
-
 ## Definition
 
 **Assembly:** Microsoft.Restier.AspNet.dll
@@ -27,7 +25,7 @@ The serializer for enum result.
 
 ## Constructors
 
-### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  .ctor
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 
 Initializes a new instance of the [RestierEnumSerializer](/api-reference/Microsoft/Restier/AspNet/Formatter/RestierEnumSerializer) class.
 
@@ -45,7 +43,7 @@ public RestierEnumSerializer(Microsoft.AspNet.OData.Formatter.Serialization.ODat
 
 ## Methods
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteObject <DocsBadge text="Override" variant="info" />
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteObject <Badge color="blue">Override</Badge>
 
 Writes the enum result to the response message.
 
@@ -64,7 +62,7 @@ public override void WriteObject(object graph, System.Type type, Microsoft.OData
 | `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
 | `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
 
-### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} style={{ paddingRight: '8px' }} />  WriteObjectAsync <DocsBadge text="Override" variant="info" />
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteObjectAsync <Badge color="blue">Override</Badge>
 
 Writes the enum result to the response message.
 

@@ -1,13 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net48;net8.0;net9.0;</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0;net9.0;net10.0;</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="7.*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="8.*" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.*" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
@@ -18,8 +22,8 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.*" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net482' OR '$(TargetFramework)' == 'netstandard2.1'">
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.*" />
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'netstandard2.1'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.*" />
 	</ItemGroup>
 
 	<ItemGroup>

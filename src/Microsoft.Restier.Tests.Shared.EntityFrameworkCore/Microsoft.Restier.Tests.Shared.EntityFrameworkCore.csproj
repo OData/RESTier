@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net9.0;</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
 		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 	</PropertyGroup>
@@ -13,6 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.*" Condition="'$(TargetFramework)' == 'net10.0'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.*" Condition="'$(TargetFramework)' == 'net9.0'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.*" Condition="'$(TargetFramework)' == 'net8.0'" />
 	</ItemGroup>

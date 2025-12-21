@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net48;net8.0;net9.0;</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0;net9.0;net10.0;</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="7.*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="8.*" />
 		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
 		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
 		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" Condition="'$(IsNetCore)' != 'true'" />
@@ -15,6 +15,10 @@
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.*" />
 	</ItemGroup>
 	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*" />
+	</ItemGroup>
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.*" />
 	</ItemGroup>
@@ -23,7 +27,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.*" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'netstandard2.1'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.*" />
 	</ItemGroup>
 
