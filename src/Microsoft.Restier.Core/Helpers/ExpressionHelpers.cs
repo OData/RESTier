@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Restier.Core;
 
 namespace System.Linq.Expressions
 {

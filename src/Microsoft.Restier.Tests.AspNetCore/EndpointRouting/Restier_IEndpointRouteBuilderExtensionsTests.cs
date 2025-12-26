@@ -1,8 +1,6 @@
 ﻿using CloudNimble.Breakdance.AspNetCore;
 using FluentAssertions;
 using Microsoft.Restier.AspNetCore;
-using Microsoft.Restier.Tests.Shared;
-using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.EndpointRouting

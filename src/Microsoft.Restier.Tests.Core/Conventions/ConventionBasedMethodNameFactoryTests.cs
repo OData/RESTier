@@ -46,18 +46,16 @@ namespace Microsoft.Restier.Tests.Core
             RestierEntitySetOperation entitySetOperation,
             string expected)
         {
-            var entitySetMock = new Mock<IEdmEntitySet>();
-            var entityCollectionTypeMock = new Mock<IEdmCollectionType>();
-            var entityTypeReferenceMock = new Mock<IEdmEntityTypeReference>();
-            var entityTypeMock = new Mock<IEdmEntityType>();
+            // Use real OData EDM objects instead of mocks to ensure extension methods work correctly
+            var model = new EdmModel();
+            var entityType = new EdmEntityType("TestNamespace", "Test");
+            entityType.AddKeys(entityType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32));
+            model.AddElement(entityType);
+            var container = new EdmEntityContainer("TestNamespace", "TestContainer");
+            model.AddElement(container);
+            var entitySet = container.AddEntitySet("Tests", entityType);
 
-            entityTypeMock.Setup(x => x.Name).Returns("Test");
-            entityTypeReferenceMock.Setup(x => x.Definition).Returns(entityTypeMock.Object);
-            entityCollectionTypeMock.Setup(x => x.ElementType).Returns(entityTypeReferenceMock.Object);
-            entitySetMock.Setup(x => x.Name).Returns("Tests");
-            entitySetMock.Setup(x => x.Type).Returns(entityCollectionTypeMock.Object);
-
-            var result = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySetMock.Object, pipelineState, entitySetOperation);
+            var result = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, pipelineState, entitySetOperation);
             result.Should().Be(expected);
         }
 

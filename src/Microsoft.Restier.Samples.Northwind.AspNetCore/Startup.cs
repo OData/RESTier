@@ -3,7 +3,6 @@
 
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Query;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

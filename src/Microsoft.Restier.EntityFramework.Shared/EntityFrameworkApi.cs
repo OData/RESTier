@@ -2,13 +2,11 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
 #if EFCore
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 
 #if EFCore

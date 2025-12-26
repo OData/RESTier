@@ -10,7 +10,6 @@ namespace Microsoft.Restier.Tests.Core
     using Microsoft.Restier.Core.Query;
     using Microsoft.Restier.Tests.Shared;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
 
     /// <summary>
     /// Unit tests for the <see cref="InvocationContext"/> class.

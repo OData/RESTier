@@ -69,10 +69,11 @@
 		<InternalsVisibleTo Include="Microsoft.Restier.AspNetCore.Swagger, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.EntityFramework, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.EntityFrameworkCore, $(StrongNamePublicKey)" />
-		<InternalsVisibleTo Include="Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNet, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)" />
-		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)" />
+        <InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)" />
+        <InternalsVisibleTo Include="Microsoft.Restier.Tests.Core.NET48, $(StrongNamePublicKey)" />
+        <InternalsVisibleTo Include="Microsoft.Restier.Tests.EntityFramework, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.Tests.Shared, $(StrongNamePublicKey)" />
 	</ItemGroup>
 

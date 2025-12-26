@@ -5,7 +5,6 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Submit;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Restier.Core
@@ -156,8 +155,9 @@ namespace Microsoft.Restier.Core
         /// <returns>A string representing the right EntityName reference for a given Operation.</returns>
         internal static string GetEntityReferenceNameInternal(RestierEntitySetOperation operation, IEdmEntitySet entitySet)
         {
+            if (entitySet is null) return string.Empty;
             //RWM: You filter a set, but you Insert/Update/Delete individual items.
-            return GetEntityReferenceNameInternal(operation, entitySet.Name, entitySet.EntityType().Name);
+            return GetEntityReferenceNameInternal(operation, entitySet.Name, entitySet.EntityType()?.Name);
         }
 
         /// <summary>

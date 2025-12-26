@@ -50,6 +50,11 @@
     <Project Path="Microsoft.Restier.Tests.EntityFrameworkCore/Microsoft.Restier.Tests.EntityFrameworkCore.csproj" />
     <Project Path="Microsoft.Restier.Tests.Legacy/Microsoft.Restier.Tests.Legacy.csproj" />
   </Folder>
+  <Folder Name="/Tests/NET48/">
+    <Project Path="Microsoft.Restier.Tests.Breakdance/Microsoft.Restier.Tests.Breakdance.NET48.csproj" />
+    <Project Path="Microsoft.Restier.Tests.Core/Microsoft.Restier.Tests.Core.NET48.csproj" />
+    <Project Path="Microsoft.Restier.Tests.EntityFramework/Microsoft.Restier.Tests.EntityFramework.NET48.csproj" />
+  </Folder>
   <Folder Name="/Tests/Shared/">
     <Project Path="Microsoft.Restier.Tests.Shared.EntityFramework/Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
     <Project Path="Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />

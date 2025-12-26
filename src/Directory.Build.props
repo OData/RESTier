@@ -7,7 +7,7 @@
 		<IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
 		<IsTemplateProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.'))">true</IsTemplateProject>
 		<IsTemplatePackageProject Condition="$(MSBuildProjectName.ToLower().Contains('.templates.package'))">true</IsTemplatePackageProject>
-		<IsNetCore Condition=" '$(TargetFramework)' == 'net10.0' OR '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'net8.0' ">true</IsNetCore>
+		<IsNetCore Condition="'$(TargetFramework)' != '' AND !$([System.String]::new('$(TargetFramework)').StartsWith('net4'))">true</IsNetCore>
 		<IsPrimaryProject Condition=" '$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true' ">true</IsPrimaryProject>
 		<IncludeReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\readme.md')">true</IncludeReadmeFile>
 
@@ -83,15 +83,17 @@
 
 	</PropertyGroup>
 
+	<!-- Base settings for all test projects -->
 	<PropertyGroup Condition=" $(IsTestProject) == 'true' ">
 		<NoWarn>$(NoWarn);CA1001;CA1031;CA1062;CA1301;CA1303;AC1307;CA1707;CA1716;CA1801;CA1806;CA1819;CA1822;CA1825;CA2000;CA2007;CA2227;CA2234</NoWarn>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-        <EnableMSTestRunner Condition="'$(IsNetCore)' == 'true'">true</EnableMSTestRunner>
-        <TestingPlatformDotnetTestSupport Condition="'$(IsNetCore)' == 'true'">true</TestingPlatformDotnetTestSupport>
-        <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
-        <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --ignore-exit-code 8</TestingPlatformCommandLineArguments>
-
-        <IsPackable>false</IsPackable>
+	<!-- Use VSTest for all test projects to support both net48 and modern .NET in the same test run.
+		 MSTest 4.x with EnableMSTestRunner=true would enable Microsoft.Testing.Platform,
+		 but that conflicts with net48 projects which cannot use MTP. -->
+	<PropertyGroup Condition=" $(IsTestProject) == 'true' ">
+		<EnableMSTestRunner>false</EnableMSTestRunner>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" $(IsSampleProject) == 'true' ">
@@ -117,8 +119,7 @@
 		<PackageReference Include="coverlet.collector" Version="6.*" />
 		<PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
 		<PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
-		<PackageReference Include="MSTest" Version="4.*" Condition="'$(IsNetCore)' == 'true'" />
-        <PackageReference Include="MSTest" Version="3.*" Condition="'$(IsNetCore)' != 'true'" />
+		<PackageReference Include="MSTest" Version="4.*" />
 
         <!-- Enable parallel test execution in MSTest 4 and later. -->
         <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.Parallelize">

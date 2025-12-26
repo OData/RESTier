@@ -1,0 +1,32 @@
+<Project>
+	<PropertyGroup>
+		<BaseIntermediateOutputPath>obj\net48\</BaseIntermediateOutputPath>
+		<DefaultItemExcludes>$(DefaultItemExcludes);obj\Debug\**;obj\Release\**</DefaultItemExcludes>
+	</PropertyGroup>
+	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<AssemblyName>Microsoft.Restier.Tests.EntityFramework</AssemblyName>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Breakdance.Assemblies" Version="8.*" />
+		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
+		<PackageReference Include="Microsoft.OData.Edm" Version="7.*" />
+		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.*" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
+	</ItemGroup>
+
+	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+</Project>

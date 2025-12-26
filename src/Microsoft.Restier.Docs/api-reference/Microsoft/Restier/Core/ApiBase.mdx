@@ -1,8 +1,9 @@
 ---
 title: ApiBase
-description: "Extension methods for ApiBase from Microsoft.Restier.Core"
-icon: file-brackets-curly
-keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core', 'error']
+description: "Represents a base class for an API."
+icon: shapes
+tag: "ABSTRACT"
+keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core', 'class', 'System.Object', 'System.IDisposable']
 ---
 
 ## Definition
@@ -10,6 +11,8 @@ keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core'
 **Assembly:** Microsoft.Restier.Core.dll
 
 **Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Object
 
 ## Syntax
 
@@ -19,11 +22,19 @@ Microsoft.Restier.Core.ApiBase
 
 ## Summary
 
-This type is defined in Microsoft.Restier.Core.
+Represents a base class for an API.
 
 ## Remarks
 
-See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.restier.core.apibase) for more information about the rest of the API.
+
+
+
+            An API configuration is intended to be long-lived, and can be statically cached according to an API type specified when the
+            configuration is created. Additionally, the API model produced as a result of a particular configuration is cached under the same
+            API type to avoid re-computing it on each invocation.
+            
+
+
 
 ## Constructors
 
@@ -41,7 +52,7 @@ public Object()
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ServiceProvider
 
-Gets the [IServiceProvider](/api-reference/System/IServiceProvider) which contains all services.
+Gets the [IServiceProvider](https://learn.microsoft.com/dotnet/api/system.iserviceprovider) which contains all services.
 
 #### Syntax
 
@@ -105,31 +116,6 @@ public static bool Equals(object objA, object objB)
 #### Returns
 
 Type: `bool`
-
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GenerateVisibilityMatrix <Badge color="green">Extension</Badge>
-
-<Note>Extension method from `Microsoft.Restier.Breakdance.ApiBaseExtensions`</Note>
-
-An extension method that generates a Markdown table of all of the possible Restier methods for the given API in the first column, and a boolean
-            indicating whether or not the method was found in the second column.
-
-#### Syntax
-
-```csharp
-public static string GenerateVisibilityMatrix(Microsoft.Restier.Core.ApiBase api, bool markdown = false)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to process. |
-| `markdown` | `bool` | - |
-
-#### Returns
-
-Type: `string`
-A string containing the Markdown table of results.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiService <Badge color="green">Extension</Badge>
 
@@ -196,7 +182,7 @@ Type: `int`
 
 <Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
 
-Retrieves the [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
+Retrieves the [IEdmModel](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmmodel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
 
 #### Syntax
 
@@ -213,7 +199,7 @@ public static Microsoft.OData.Edm.IEdmModel GetModel(Microsoft.Restier.Core.ApiB
 #### Returns
 
 Type: `Microsoft.OData.Edm.IEdmModel`
-The [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
+The [IEdmModel](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmmodel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetProperty <Badge color="green">Extension</Badge>
 
@@ -629,25 +615,7 @@ public virtual string ToString()
 
 Type: `string?`
 
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteCurrentVisibilityMatrix <Badge color="green">Extension</Badge>
+## Related APIs
 
-<Note>Extension method from `Microsoft.Restier.Breakdance.ApiBaseExtensions`</Note>
-
-An extension method that generates the Visibility Matrix for the current Api and writes it to a text file.
-
-#### Syntax
-
-```csharp
-public static void WriteCurrentVisibilityMatrix(Microsoft.Restier.Core.ApiBase api, string sourceDirectory = "", string suffix = "ApiSurface", bool markdown = false)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to build the Visibility Matrix for. |
-| `sourceDirectory` | `string` | A string containing the relative or absolute path to use as the root. The default is "". If you want to be able to have it as part of the project,
-            so you can check it into source control, use "..//..//". |
-| `suffix` | `string` | A string to append to the Api name when writing the text file. |
-| `markdown` | `bool` | - |
+- System.IDisposable
 

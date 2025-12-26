@@ -3,15 +3,13 @@
 
 using System;
 #if EFCore
-    using Microsoft.Restier.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 #else
-    using Microsoft.Restier.EntityFramework;
-    using System.Data.Entity;
+using Microsoft.Restier.EntityFramework;
+using System.Data.Entity;
 #endif
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;

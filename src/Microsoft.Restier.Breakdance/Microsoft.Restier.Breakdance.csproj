@@ -46,7 +46,7 @@
 	<ItemGroup Condition="'$(IsNetCore)' == 'true'">
 		<PackageReference Include="Breakdance.AspNetCore" Version="[8.*, 9.0.0)"/>
 		<PackageReference Include="EasyAF.Http.SystemTextJson" Version="[4.*, 5.0.0)" />
-		
+
 		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
 	</ItemGroup>
 

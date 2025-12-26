@@ -49,13 +49,13 @@ namespace Microsoft.Restier.Tests.Core.Query
         }
 
         /// <summary>
-        /// Cannot get the source.
+        /// Cannot construct with null source.
         /// </summary>
         [TestMethod]
-        public void CannotGetSource()
+        public void CannotConstructWithNullSource()
         {
-            var instance = new PropertyModelReference(default(QueryModelReference), "Name", new Mock<IEdmProperty>().Object);
-            instance.Source.Should().BeNull();
+            var action = () => new PropertyModelReference(default(QueryModelReference), "Name", new Mock<IEdmProperty>().Object);
+            action.Should().Throw<System.ArgumentNullException>().WithParameterName("source");
         }
 
         /// <summary>
@@ -72,13 +72,14 @@ namespace Microsoft.Restier.Tests.Core.Query
         }
 
         /// <summary>
-        /// Cannot get the entitySet.
+        /// Cannot get the entitySet when source has no EntitySet.
         /// </summary>
         [TestMethod]
         public void CannotGetEntitySet()
         {
-            var instance = new PropertyModelReference(default(QueryModelReference), "Name", new Mock<IEdmProperty>().Object);
-            instance.Source.Should().BeNull();
+            var queryModelReference = new QueryModelReference();
+            var instance = new PropertyModelReference(queryModelReference, "Name", new Mock<IEdmProperty>().Object);
+            instance.EntitySet.Should().BeNull();
         }
 
         /// <summary>

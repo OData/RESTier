@@ -82,6 +82,7 @@ namespace Microsoft.Restier.Tests.Shared
             ModelBuilder.Setup(x => x.GetModel(It.IsAny<ModelContext>())).Returns(edmModel);
 
             ServiceProvider.Setup(x => x.GetService(typeof(IModelBuilder))).Returns(ModelBuilder.Object);
+            ServiceProvider.Setup(x => x.GetService(typeof(IEdmModel))).Returns(edmModel);
             ModelMapper = new Mock<IModelMapper>();
             ServiceProvider.Setup(x => x.GetService(typeof(IModelMapper))).Returns(ModelMapper.Object);
 

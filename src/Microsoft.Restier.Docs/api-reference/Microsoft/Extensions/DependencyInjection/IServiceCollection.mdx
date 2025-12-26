@@ -106,7 +106,7 @@ Current [IServiceCollection](/api-reference/Microsoft/Extensions/DependencyInjec
 
             If want to cutoff previous registration, not define a property with type of TService or do not use it.
             The contributor added will get an instance of *TImplement* from the container, i.e.
-            [IServiceProvider](/api-reference/System/IServiceProvider), every time it's get called.
+            [IServiceProvider](https://learn.microsoft.com/dotnet/api/system.iserviceprovider), every time it's get called.
             This method will try to register *TImplement* as a service with
             [Transient](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.servicelifetime.transient) life time, if it's not yet registered. To override, you can
             register *TImplement* before or after calling this method.
@@ -186,97 +186,6 @@ Current [IServiceCollection](/api-reference/Microsoft/Extensions/DependencyInjec
 #### Type Parameters
 
 - `TDbContext` - The DbContext type.
-
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddRestier <Badge color="green">Extension</Badge>
-
-<Note>Extension method from `Microsoft.Extensions.DependencyInjection.Restier_IServiceCollectionExtensions`</Note>
-
-#### Syntax
-
-```csharp
-public static Microsoft.Extensions.DependencyInjection.IMvcBuilder AddRestier(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Microsoft.Restier.Core.RestierApiBuilder> configureApisAction, bool useEndpointRouting = false)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | - |
-| `configureApisAction` | `System.Action<Microsoft.Restier.Core.RestierApiBuilder>` | - |
-| `useEndpointRouting` | `bool` | - |
-
-#### Returns
-
-Type: `Microsoft.Extensions.DependencyInjection.IMvcBuilder`
-
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddRestier <Badge color="green">Extension</Badge>
-
-<Note>Extension method from `Microsoft.Extensions.DependencyInjection.Restier_IServiceCollectionExtensions`</Note>
-
-#### Syntax
-
-```csharp
-public static Microsoft.Extensions.DependencyInjection.IMvcBuilder AddRestier(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Microsoft.Restier.Core.RestierApiBuilder> configureApisAction, System.Action<Microsoft.AspNetCore.Mvc.MvcOptions> mvcOptions, bool useEndpointRouting = false)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | - |
-| `configureApisAction` | `System.Action<Microsoft.Restier.Core.RestierApiBuilder>` | - |
-| `mvcOptions` | `System.Action<Microsoft.AspNetCore.Mvc.MvcOptions>` | - |
-| `useEndpointRouting` | `bool` | - |
-
-#### Returns
-
-Type: `Microsoft.Extensions.DependencyInjection.IMvcBuilder`
-
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddRestier <Badge color="green">Extension</Badge>
-
-<Note>Extension method from `Microsoft.Extensions.DependencyInjection.Restier_IServiceCollectionExtensions`</Note>
-
-#### Syntax
-
-```csharp
-public static Microsoft.Extensions.DependencyInjection.IMvcBuilder AddRestier(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Uri alternateBaseUri, System.Action<Microsoft.Restier.Core.RestierApiBuilder> configureApisAction, bool useEndpointRouting = false)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | - |
-| `alternateBaseUri` | `System.Uri` | - |
-| `configureApisAction` | `System.Action<Microsoft.Restier.Core.RestierApiBuilder>` | - |
-| `useEndpointRouting` | `bool` | - |
-
-#### Returns
-
-Type: `Microsoft.Extensions.DependencyInjection.IMvcBuilder`
-
-### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AddRestierSwagger <Badge color="green">Extension</Badge>
-
-<Note>Extension method from `Microsoft.Extensions.DependencyInjection.Restier_AspNetCore_Swagger_IServiceCollectionExtensions`</Note>
-
-Adds the required services to use Swagger with Restier.
-
-#### Syntax
-
-```csharp
-public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddRestierSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Microsoft.OpenApi.OData.OpenApiConvertSettings> openApiSettings = null)
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `services` | `Microsoft.Extensions.DependencyInjection.IServiceCollection` | The [IServiceCollection](/api-reference/Microsoft/Extensions/DependencyInjection/IServiceCollection) to register Swagger services with. |
-| `openApiSettings` | `System.Action<Microsoft.OpenApi.OData.OpenApiConvertSettings>` | An [Action`1](https://learn.microsoft.com/dotnet/api/system.action-1) that allows you to configure the core Swagger output. |
-
-#### Returns
-
-Type: `Microsoft.Extensions.DependencyInjection.IServiceCollection`
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> HasService <Badge color="green">Extension</Badge>
 

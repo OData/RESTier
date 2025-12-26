@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 #if NET6_0_OR_GREATER

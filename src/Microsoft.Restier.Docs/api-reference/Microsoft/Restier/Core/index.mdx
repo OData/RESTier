@@ -3,7 +3,7 @@ title: Overview
 description: "Summary of the Microsoft.Restier.Core Namespace"
 icon: folder-tree
 mode: wide
-keywords: ['Microsoft.Restier.Core', 'namespace', 'RestierApiBuilder', 'ApiBase', 'ConventionBasedChangeSetItemAuthorizer', 'ConventionBasedChangeSetItemFilter', 'ConventionBasedChangeSetItemValidator', 'ConventionBasedMethodNameFactory', 'ConventionBasedOperationAuthorizer', 'ConventionBasedOperationFilter', 'ConventionBasedQueryExpressionProcessor', 'DataSourceStub']
+keywords: ['Microsoft.Restier.Core', 'namespace', 'ApiBase', 'ConventionBasedChangeSetItemAuthorizer', 'ConventionBasedChangeSetItemFilter', 'ConventionBasedChangeSetItemValidator', 'ConventionBasedMethodNameFactory', 'ConventionBasedOperationAuthorizer', 'ConventionBasedOperationFilter', 'ConventionBasedQueryExpressionProcessor', 'DataSourceStub', 'RestierEntitySetOperation']
 ---
 
 ## Types
@@ -12,6 +12,7 @@ keywords: ['Microsoft.Restier.Core', 'namespace', 'RestierApiBuilder', 'ApiBase'
 
 | Name | Summary |
 | ---- | ------- |
+| [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) | Represents a base class for an API. |
 | [ConventionBasedChangeSetItemAuthorizer](/api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemAuthorizer) | A convention-based change set item authorizer. |
 | [ConventionBasedChangeSetItemFilter](/api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemFilter) | A convention-based change set item processor which calls logic like OnInserting and OnInserted. |
 | [ConventionBasedChangeSetItemValidator](/api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemValidator) | A convention-based change set item validator. |
@@ -28,6 +29,7 @@ keywords: ['Microsoft.Restier.Core', 'namespace', 'RestierApiBuilder', 'ApiBase'
 | [EdmModelValidationException](/api-reference/Microsoft/Restier/Core/EdmModelValidationException) | Represents an exception that indicates validation errors occurred on entities. |
 | [StatusCodeException](/api-reference/Microsoft/Restier/Core/StatusCodeException) | Use this exception when you want to return a specific status code |
 | [InvocationContext](/api-reference/Microsoft/Restier/Core/InvocationContext) | Represents context under which an request is processed.              The request could be a query, a submit, an operation execution or a model retrieve.              It has subclass for each kinds of request. |
+| [RestierApiBuilder](/api-reference/Microsoft/Restier/Core/RestierApiBuilder) | A fluent configuration helper that registers [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instances and tracks the additional Dependency Injection services those APIs need. |
 | [RestierContainerBuilder](/api-reference/Microsoft/Restier/Core/RestierContainerBuilder) | The default Dependency Injection container builder for Restier. |
 | [RestierRouteBuilder](/api-reference/Microsoft/Restier/Core/RestierRouteBuilder) | A fluent configuration helper that maps [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instances to ASP.NET OData routes. |
 

@@ -13,9 +13,7 @@ using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared;
 using System.Threading;
-using System.Net.Mime;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Linq;
 using Flurl;
 
@@ -79,20 +77,15 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             };
 
             var odataBatch = new ODataBatch(odataSettings);
-            var odataClient = new ODataClient(odataSettings);
-
-            var publisher = await odataClient.For<Publisher>()
-                .Key("Publisher1")
-                .FindEntryAsync();
 
             odataBatch += async c =>
                 await c.For<Book>()
-                .Set(new { Id = Guid.NewGuid(), Isbn = "1111111111111", Title = "Batch Test #1", Publisher = publisher, IsActive = true })
+                .Set(new { Id = Guid.NewGuid(), Isbn = "1111111111111", Title = "Batch Test #1", IsActive = true })
                 .InsertEntryAsync();
 
             odataBatch += async c =>
                 await c.For<Book>()
-                .Set(new { Id = Guid.NewGuid(), Isbn = "2222222222222", Title = "Batch Test #2", Publisher = publisher, IsActive = true })
+                .Set(new { Id = Guid.NewGuid(), Isbn = "2222222222222", Title = "Batch Test #2", IsActive = true })
                 .InsertEntryAsync();
 
             //RWM: This way should also work.
@@ -161,7 +154,7 @@ Prefer: return=representation
 OData-Version: 4.0
 Content-Type: application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8
 
-{""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",""Isbn"":""1111111111111"",""Title"":""Batch Test #1"",""IsActive"":true,""Publisher@odata.bind"":""http://localhost/api/tests/Publishers(%27Publisher1%27)""}
+{""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""79874b37-ce46-4f4c-aa74-8e02ce4d8b67"",""Isbn"":""1111111111111"",""Title"":""Batch Test #1"",""IsActive"":true}
 --changeset_ee671721-3d96-462d-ac58-67530e4b530c
 Content-Type: application/http
 Content-Transfer-Encoding: binary
@@ -173,7 +166,7 @@ Prefer: return=representation
 OData-Version: 4.0
 Content-Type: application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8
 
-{""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",""Isbn"":""2222222222222"",""Title"":""Batch Test #2"",""IsActive"":true,""Publisher@odata.bind"":""http://localhost/api/tests/Publishers(%27Publisher1%27)""}
+{""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""c6b67ec7-badc-45c6-98c7-c76b570ce694"",""Isbn"":""2222222222222"",""Title"":""Batch Test #2"",""IsActive"":true}
 --changeset_ee671721-3d96-462d-ac58-67530e4b530c--
 --batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b--
 ";

@@ -10,7 +10,6 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Restier.Tests.Core.Model
 {
