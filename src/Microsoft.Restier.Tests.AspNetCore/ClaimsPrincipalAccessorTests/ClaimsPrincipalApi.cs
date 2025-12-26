@@ -6,7 +6,6 @@
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.Core;
 using System;
-using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
 namespace Microsoft.Restier.Tests.AspNetCore.ClaimsPrincipalAccessor

@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core
 {

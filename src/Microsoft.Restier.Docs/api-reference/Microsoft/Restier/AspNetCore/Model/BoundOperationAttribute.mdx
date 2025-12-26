@@ -1,0 +1,128 @@
+---
+title: BoundOperationAttribute
+icon: file-brackets-curly
+keywords: ['BoundOperationAttribute', 'Microsoft.Restier.AspNetCore.Model.BoundOperationAttribute', 'Microsoft.Restier.AspNetCore.Model', 'class', 'Microsoft.Restier.AspNetCore.Model.OperationAttribute']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNetCore.dll
+
+**Namespace:** Microsoft.Restier.AspNetCore.Model
+
+**Inheritance:** Microsoft.Restier.AspNetCore.Model.OperationAttribute
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNetCore.Model.BoundOperationAttribute
+```
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public BoundOperationAttribute()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.AspNetCore.Model.OperationAttribute`</Note>
+
+#### Syntax
+
+```csharp
+protected OperationAttribute()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> EntitySetPath
+
+Gets or sets the path from the BindingParameter do the entity or entities being returned.
+
+#### Syntax
+
+```csharp
+public string EntitySetPath { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+#### Remarks
+
+
+
+
+            Bound Actions or Functions that return an entity or a collection of entities are typically returning data related to the Entity
+            the operation is bound to. In these situations, it may be difficult for OData to return the corerct metadata, or for Restier to 
+            execute the proper Interceptors to filter the results.
+            
+
+
+
+
+            EntitySetPath solves this problem by specifying the navigation segments to type casts required to traverse the entity structure.
+            It consists of a series of segments joined together with forward slashes.
+             - The first segment of the entity set path MUST be the name of the binding parameter.
+             - The remaining segments of the entity set path MUST represent navigation segments or type casts.
+            
+
+
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> IsComposable <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.AspNetCore.Model.OperationAttribute`</Note>
+
+Gets or sets a value indicating whether the function is composable.
+            Defaults to [`false`](https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool).
+
+#### Syntax
+
+```csharp
+public bool IsComposable { get; set; }
+```
+
+#### Property Value
+
+Type: `bool`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Namespace <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.AspNetCore.Model.OperationAttribute`</Note>
+
+Gets or sets the namespace of the operation. 
+            The default value will be same as the namespace of entity type.
+
+#### Syntax
+
+```csharp
+public string Namespace { get; set; }
+```
+
+#### Property Value
+
+Type: `string`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> OperationType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.AspNetCore.Model.OperationAttribute`</Note>
+
+Gets or sets a value indicating what type of Operation is being registered. [OperationType.Function](/api-reference/Microsoft/Restier/AspNetCore/Model/OperationType#function)Functions&lt;/see&gt; respond to HTTP GET requests,
+            while [OperationType.Action](/api-reference/Microsoft/Restier/AspNetCore/Model/OperationType#action)Actions&lt;/see&gt; respond to HTTP POST requests. Defaults to [OperationType.Function](/api-reference/Microsoft/Restier/AspNetCore/Model/OperationType#function).
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.AspNetCore.Model.OperationType OperationType { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.AspNetCore.Model.OperationType`
+

@@ -1,0 +1,6 @@
+@Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress = http://localhost:5244
+
+GET {{Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AssemblyName>Microsoft.Restier.Breakdance</AssemblyName>
 		<RootNamespace>Microsoft.Restier.Breakdance</RootNamespace>
-		<TargetFrameworks>net48;net8.0;net9.0;</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0;net9.0;net10.0;</TargetFrameworks>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
 
@@ -31,22 +31,22 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="EasyAF.Core" Version="[3.*, 4.0.0)" />
-		<PackageReference Include="EasyAF.Http" Version="[3.*, 4.0.0)" />
+		<PackageReference Include="EasyAF.Core" Version="[4.*, 5.0.0)" />
+		<PackageReference Include="EasyAF.Http" Version="[4.*, 5.0.0)" />
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(IsNetCore)' != 'true'">
-		<PackageReference Include="Breakdance.WebApi" Version="[7.*, 8.0.0)" />
-		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="[3.*, 4.0.0)" />
+		<PackageReference Include="Breakdance.WebApi" Version="[8.*, 9.0.0)" />
+		<PackageReference Include="EasyAF.Http.NewtonsoftJson" Version="[4.*, 5.0.0)" />
 		<PackageReference Include="Microsoft.AspNet.OData" Version="[7.*, 8.0.0)" />
 		
 		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(IsNetCore)' == 'true'">
-		<PackageReference Include="Breakdance.AspNetCore" Version="[7.*, 8.0.0)"/>
-		<PackageReference Include="EasyAF.Http.SystemTextJson" Version="[3.*, 4.0.0)" />
-		
+		<PackageReference Include="Breakdance.AspNetCore" Version="[8.*, 9.0.0)"/>
+		<PackageReference Include="EasyAF.Http.SystemTextJson" Version="[4.*, 5.0.0)" />
+
 		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
 	</ItemGroup>
 

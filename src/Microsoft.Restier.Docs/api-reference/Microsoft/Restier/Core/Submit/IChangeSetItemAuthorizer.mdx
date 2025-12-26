@@ -1,0 +1,48 @@
+---
+title: IChangeSetItemAuthorizer
+description: "Represents a change set item authorizer."
+icon: plug
+keywords: ['IChangeSetItemAuthorizer', 'Microsoft.Restier.Core.Submit.IChangeSetItemAuthorizer', 'Microsoft.Restier.Core.Submit', 'interface']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.IChangeSetItemAuthorizer
+```
+
+## Summary
+
+Represents a change set item authorizer.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> AuthorizeAsync <Badge color="orange">Abstract</Badge>
+
+Asynchronously authorizes the ChangeSetItem.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task<bool> AuthorizeAsync(Microsoft.Restier.Core.Submit.SubmitContext context, Microsoft.Restier.Core.Submit.ChangeSetItem item, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Submit.SubmitContext` | The submit context. |
+| `item` | `Microsoft.Restier.Core.Submit.ChangeSetItem` | A change set item to be authorized. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<bool>`
+A task that represents the asynchronous operation.
+

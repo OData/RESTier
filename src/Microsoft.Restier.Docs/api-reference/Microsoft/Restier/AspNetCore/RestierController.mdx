@@ -1,0 +1,169 @@
+---
+title: RestierController
+description: "The all-in-one controller class to handle API requests."
+icon: file-brackets-curly
+keywords: ['RestierController', 'Microsoft.Restier.AspNetCore.RestierController', 'Microsoft.Restier.AspNetCore', 'class', 'Microsoft.AspNet.OData.ODataController']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNetCore.dll
+
+**Namespace:** Microsoft.Restier.AspNetCore
+
+**Inheritance:** Microsoft.AspNet.OData.ODataController
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNetCore.RestierController
+```
+
+## Summary
+
+The all-in-one controller class to handle API requests.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [RestierController](/api-reference/Microsoft/Restier/AspNetCore/RestierController) class.
+
+#### Syntax
+
+```csharp
+public RestierController()
+```
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Delete
+
+Handles a DELETE request to delete an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult> Delete(System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult>`
+The task object that contains the deletion result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Get
+
+Handles a GET request to query entities.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult> Get(System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult>`
+The task object that contains the response message.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Patch
+
+Handles a PATCH request to partially update an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult> Patch(Microsoft.AspNet.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmEntityObject` | `Microsoft.AspNet.OData.EdmEntityObject` | The entity object to update. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult>`
+The task object that contains the updated result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Post
+
+Handles a POST request to create an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult> Post(Microsoft.AspNet.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmEntityObject` | `Microsoft.AspNet.OData.EdmEntityObject` | The entity object to create. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult>`
+The task object that contains the creation result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> PostAction
+
+Handles a POST request to an action.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult> PostAction(Microsoft.AspNet.OData.ODataActionParameters parameters, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `parameters` | `Microsoft.AspNet.OData.ODataActionParameters` | Parameters from action request content. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult>`
+The task object that contains the action result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Put
+
+Handles a PUT request to fully update an entity.
+
+#### Syntax
+
+```csharp
+public System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult> Put(Microsoft.AspNet.OData.EdmEntityObject edmEntityObject, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmEntityObject` | `Microsoft.AspNet.OData.EdmEntityObject` | The entity object to update. |
+| `cancellationToken` | `System.Threading.CancellationToken` | The cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult>`
+The task object that contains the updated result.
+

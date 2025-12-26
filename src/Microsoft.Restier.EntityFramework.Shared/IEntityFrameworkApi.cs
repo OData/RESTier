@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 #if EFCore
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
-using System.Text;
 
 #if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore

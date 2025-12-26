@@ -1,0 +1,88 @@
+---
+title: RestierEnumSerializer
+description: "The serializer for enum result."
+icon: file-brackets-curly
+keywords: ['RestierEnumSerializer', 'Microsoft.Restier.AspNet.Formatter.RestierEnumSerializer', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Serialization.ODataEnumSerializer']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet.Formatter
+
+**Inheritance:** Microsoft.AspNet.OData.Formatter.Serialization.ODataEnumSerializer
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.Formatter.RestierEnumSerializer
+```
+
+## Summary
+
+The serializer for enum result.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [RestierEnumSerializer](/api-reference/Microsoft/Restier/AspNet/Formatter/RestierEnumSerializer) class.
+
+#### Syntax
+
+```csharp
+public RestierEnumSerializer(Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerProvider provider)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `provider` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerProvider` | The serializer provider. |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteObject <Badge color="blue">Override</Badge>
+
+Writes the enum result to the response message.
+
+#### Syntax
+
+```csharp
+public override void WriteObject(object graph, System.Type type, Microsoft.OData.ODataMessageWriter messageWriter, Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `graph` | `object` | The enum result to write. |
+| `type` | `System.Type` | The type of the enum. |
+| `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
+| `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteObjectAsync <Badge color="blue">Override</Badge>
+
+Writes the enum result to the response message.
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task WriteObjectAsync(object graph, System.Type type, Microsoft.OData.ODataMessageWriter messageWriter, Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `graph` | `object` | The enum result to write. |
+| `type` | `System.Type` | The type of the enum. |
+| `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
+| `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous operation.
+

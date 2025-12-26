@@ -1,0 +1,52 @@
+---
+title: RouteValueDictionary
+description: "Extension methods for RouteValueDictionary from Microsoft.AspNetCore.Http.Abstractions"
+icon: file-brackets-curly
+keywords: ['RouteValueDictionary', 'Microsoft.AspNetCore.Routing.RouteValueDictionary', 'Microsoft.AspNetCore.Routing', 'error']
+---
+
+## Definition
+
+**Assembly:** Microsoft.AspNetCore.Http.Abstractions.dll
+
+**Namespace:** Microsoft.AspNetCore.Routing
+
+## Syntax
+
+```csharp
+Microsoft.AspNetCore.Routing.RouteValueDictionary
+```
+
+## Summary
+
+This type is defined in Microsoft.AspNetCore.Http.Abstractions.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.routing.routevaluedictionary) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetODataRouteInfo <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.AspNetCore.Routing.Restier_RouteValueDictionaryExtensions`</Note>
+
+Get the OData route name and path value.
+
+#### Syntax
+
+```csharp
+public static (string, object) GetODataRouteInfo(Microsoft.AspNetCore.Routing.RouteValueDictionary values)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `values` | `Microsoft.AspNetCore.Routing.RouteValueDictionary` | The dictionary contains route value. |
+
+#### Returns
+
+Type: `(string, object)`
+A tuple contains the route name and path value.
+

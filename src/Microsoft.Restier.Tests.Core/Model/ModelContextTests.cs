@@ -10,7 +10,6 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Restier.Tests.Core.Model
 {
@@ -18,6 +17,7 @@ namespace Microsoft.Restier.Tests.Core.Model
     /// Unit tests for the <see cref="ModelContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ModelContextTests
     {
         private ModelContext testClass;

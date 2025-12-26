@@ -1,0 +1,286 @@
+---
+title: SubmitContext
+description: "Represents context under which a submit flow operates."
+icon: file-brackets-curly
+keywords: ['SubmitContext', 'Microsoft.Restier.Core.Submit.SubmitContext', 'Microsoft.Restier.Core.Submit', 'class', 'Microsoft.Restier.Core.InvocationContext']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Submit
+
+**Inheritance:** Microsoft.Restier.Core.InvocationContext
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Submit.SubmitContext
+```
+
+## Summary
+
+Represents context under which a submit flow operates.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [SubmitContext](/api-reference/Microsoft/Restier/Core/Submit/SubmitContext) class.
+
+#### Syntax
+
+```csharp
+public SubmitContext(Microsoft.Restier.Core.ApiBase api, Microsoft.Restier.Core.Submit.ChangeSet changeSet)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+| `changeSet` | `Microsoft.Restier.Core.Submit.ChangeSet` | A change set. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Initializes a new instance of the [InvocationContext](/api-reference/Microsoft/Restier/Core/InvocationContext) class.
+
+#### Syntax
+
+```csharp
+public InvocationContext(Microsoft.Restier.Core.ApiBase api)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Api <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Gets the [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) descendant for this invocation.
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.Core.ApiBase Api { get; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.ApiBase`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ChangeSet
+
+Gets or sets the change set.
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.Core.Submit.ChangeSet ChangeSet { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.Submit.ChangeSet`
+
+#### Remarks
+
+The change set cannot be set if there is already a result.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Result
+
+Gets or sets the submit result.
+
+#### Syntax
+
+```csharp
+public Microsoft.Restier.Core.Submit.SubmitResult Result { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.Restier.Core.Submit.SubmitResult`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiService <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Gets an API service.
+
+#### Syntax
+
+```csharp
+public T GetApiService<T>() where T : class
+```
+
+#### Returns
+
+Type: `T`
+The API service instance.
+
+#### Type Parameters
+
+- `T` - The API service type.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiService <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `Microsoft.Restier.Core.InvocationContext`</Note>
+
+Gets an API service.
+
+#### Syntax
+
+```csharp
+public object GetApiService(System.Type type)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type` | `System.Type` | The API service type. |
+
+#### Returns
+
+Type: `object`
+The API service instance.
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

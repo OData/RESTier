@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="DefaultQueryHandler"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultQueryHandlerTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

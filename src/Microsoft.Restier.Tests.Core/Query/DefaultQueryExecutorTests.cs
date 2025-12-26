@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="DefaultQueryExecutor"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultQueryExecutorTests
     {
         private readonly DefaultQueryExecutor testClass;

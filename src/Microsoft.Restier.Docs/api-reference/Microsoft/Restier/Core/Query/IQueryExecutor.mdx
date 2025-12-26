@@ -1,0 +1,88 @@
+---
+title: IQueryExecutor
+description: "Represents a service that executes a query."
+icon: plug
+keywords: ['IQueryExecutor', 'Microsoft.Restier.Core.Query.IQueryExecutor', 'Microsoft.Restier.Core.Query', 'interface']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Query
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Query.IQueryExecutor
+```
+
+## Summary
+
+Represents a service that executes a query.
+
+## Remarks
+
+Data provider implemented IQueryExecutor should only handle queries against the specific
+            provider, and delegates all other queries to inner IQueryExecutor.
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ExecuteExpressionAsync <Badge color="orange">Abstract</Badge>
+
+Asynchronously executes a singleton
+            query and produces a query result.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult> ExecuteExpressionAsync<TResult>(Microsoft.Restier.Core.Query.QueryContext context, System.Linq.IQueryProvider queryProvider, System.Linq.Expressions.Expression expression, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Query.QueryContext` | The query context. |
+| `queryProvider` | `System.Linq.IQueryProvider` | A query provider to execute the expression. |
+| `expression` | `System.Linq.Expressions.Expression` | An expression to be composed on the base query. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult>`
+A task that represents the asynchronous
+            operation whose result is a query result.
+
+#### Type Parameters
+
+- `TResult` - The type of the singleton query result.
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ExecuteQueryAsync <Badge color="orange">Abstract</Badge>
+
+Asynchronously executes a query and produces a query result.
+
+#### Syntax
+
+```csharp
+System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult> ExecuteQueryAsync<TElement>(Microsoft.Restier.Core.Query.QueryContext context, System.Linq.IQueryable<TElement> query, System.Threading.CancellationToken cancellationToken)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Query.QueryContext` | The query context. |
+| `query` | `System.Linq.IQueryable<TElement>` | A composed query. |
+| `cancellationToken` | `System.Threading.CancellationToken` | A cancellation token. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult>`
+A task that represents the asynchronous
+            operation whose result is a query result.
+
+#### Type Parameters
+
+- `TElement` - The type of the elements in the query.
+

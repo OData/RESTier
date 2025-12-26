@@ -1,0 +1,76 @@
+---
+title: IRouteBuilder
+description: "Extension methods for IRouteBuilder from Microsoft.AspNetCore.Routing"
+icon: file-brackets-curly
+keywords: ['IRouteBuilder', 'Microsoft.AspNetCore.Routing.IRouteBuilder', 'Microsoft.AspNetCore.Routing', 'error']
+---
+
+## Definition
+
+**Assembly:** Microsoft.AspNetCore.Routing.dll
+
+**Namespace:** Microsoft.AspNetCore.Routing
+
+## Syntax
+
+```csharp
+Microsoft.AspNetCore.Routing.IRouteBuilder
+```
+
+## Summary
+
+This type is defined in Microsoft.AspNetCore.Routing.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.routing.iroutebuilder) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MapODataServiceRoute <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Restier.AspNetCore.Restier_IRouteBuilderExtensions`</Note>
+
+Maps the specified OData route and the OData route attributes.
+
+#### Syntax
+
+```csharp
+public static Microsoft.AspNet.OData.Routing.ODataRoute MapODataServiceRoute(Microsoft.AspNetCore.Routing.IRouteBuilder builder, string routeName, string routePrefix, System.Action<Microsoft.OData.IContainerBuilder, string> configureAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `builder` | `Microsoft.AspNetCore.Routing.IRouteBuilder` | The [IRouteBuilder](/api-reference/Microsoft/AspNetCore/Routing/IRouteBuilder) to add the route to. |
+| `routeName` | `string` | The name of the route to map. |
+| `routePrefix` | `string` | The prefix to add to the OData route's path template. |
+| `configureAction` | `System.Action<Microsoft.OData.IContainerBuilder, string>` | The configuring action to add the services to the root container. |
+
+#### Returns
+
+Type: `Microsoft.AspNet.OData.Routing.ODataRoute`
+The added [ODataRoute](https://learn.microsoft.com/dotnet/api/microsoft.aspnet.odata.routing.odataroute).
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MapRestier <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Restier.AspNetCore.Restier_IRouteBuilderExtensions`</Note>
+
+#### Syntax
+
+```csharp
+public static Microsoft.AspNetCore.Routing.IRouteBuilder MapRestier(Microsoft.AspNetCore.Routing.IRouteBuilder routeBuilder, System.Action<Microsoft.Restier.Core.RestierRouteBuilder> configureRoutesAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `routeBuilder` | `Microsoft.AspNetCore.Routing.IRouteBuilder` | - |
+| `configureRoutesAction` | `System.Action<Microsoft.Restier.Core.RestierRouteBuilder>` | - |
+
+#### Returns
+
+Type: `Microsoft.AspNetCore.Routing.IRouteBuilder`
+

@@ -1,0 +1,68 @@
+---
+title: RestierBatchChangeSetRequestItem
+description: "Represents an API [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet) request."
+icon: file-brackets-curly
+sidebarTitle: RestierBatchChangeSetRequestItem
+keywords: ['RestierBatchChangeSetRequestItem', 'Microsoft.Restier.AspNetCore.Batch.RestierBatchChangeSetRequestItem', 'Microsoft.Restier.AspNetCore.Batch', 'class', 'Microsoft.AspNet.OData.Batch.ChangeSetRequestItem']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNetCore.dll
+
+**Namespace:** Microsoft.Restier.AspNetCore.Batch
+
+**Inheritance:** Microsoft.AspNet.OData.Batch.ChangeSetRequestItem
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNetCore.Batch.RestierBatchChangeSetRequestItem
+```
+
+## Summary
+
+Represents an API [ChangeSet](/api-reference/Microsoft/Restier/Core/Submit/ChangeSet) request.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [RestierBatchChangeSetRequestItem](/api-reference/Microsoft/Restier/AspNetCore/Batch/RestierBatchChangeSetRequestItem) class.
+
+#### Syntax
+
+```csharp
+public RestierBatchChangeSetRequestItem(Microsoft.Restier.Core.ApiBase api, System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Http.HttpContext> contexts)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+| `contexts` | `System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Http.HttpContext>` | The request messages. |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> SendRequestAsync <Badge color="blue">Override</Badge>
+
+Asynchronously sends the request.
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task<Microsoft.AspNet.OData.Batch.ODataBatchResponseItem> SendRequestAsync(Microsoft.AspNetCore.Http.RequestDelegate handler)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handler` | `Microsoft.AspNetCore.Http.RequestDelegate` | The handler for processing a message. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task<Microsoft.AspNet.OData.Batch.ODataBatchResponseItem>`
+The task object that contains the batch response.
+

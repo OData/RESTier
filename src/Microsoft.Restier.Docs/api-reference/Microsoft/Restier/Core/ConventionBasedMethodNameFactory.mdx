@@ -1,0 +1,120 @@
+---
+title: ConventionBasedMethodNameFactory
+description: "A set of string factory methods than generate Restier names for various possible operations."
+icon: bolt
+sidebarTitle: ConventionBasedMethodNameFactory
+tag: "STATIC"
+keywords: ['ConventionBasedMethodNameFactory', 'Microsoft.Restier.Core.ConventionBasedMethodNameFactory', 'Microsoft.Restier.Core', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.ConventionBasedMethodNameFactory
+```
+
+## Summary
+
+A set of string factory methods than generate Restier names for various possible operations.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetEntitySetMethodName
+
+Generates the complete MethodName for a given [IEdmOperationImport](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmoperationimport), [RestierPipelineState](/api-reference/Microsoft/Restier/Core/RestierPipelineState), and [RestierEntitySetOperation](/api-reference/Microsoft/Restier/Core/RestierEntitySetOperation).
+
+#### Syntax
+
+```csharp
+public static string GetEntitySetMethodName(Microsoft.OData.Edm.IEdmEntitySet entitySet, Microsoft.Restier.Core.RestierPipelineState restierPipelineState, Microsoft.Restier.Core.RestierEntitySetOperation operation)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entitySet` | `Microsoft.OData.Edm.IEdmEntitySet` | The [IEdmEntitySet](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmentityset) that contains the details for the EntitySet and the Entities it holds. |
+| `restierPipelineState` | `Microsoft.Restier.Core.RestierPipelineState` | The part of the Restier pipeline currently executing. |
+| `operation` | `Microsoft.Restier.Core.RestierEntitySetOperation` | The [RestierEntitySetOperation](/api-reference/Microsoft/Restier/Core/RestierEntitySetOperation) currently being executed. |
+
+#### Returns
+
+Type: `string`
+A string representing the fully-realized MethodName.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetEntitySetMethodName
+
+Generates the complete MethodName for a given [IEdmOperationImport](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmoperationimport), [RestierPipelineState](/api-reference/Microsoft/Restier/Core/RestierPipelineState), and [RestierEntitySetOperation](/api-reference/Microsoft/Restier/Core/RestierEntitySetOperation).
+
+#### Syntax
+
+```csharp
+public static string GetEntitySetMethodName(Microsoft.Restier.Core.Submit.DataModificationItem item, Microsoft.Restier.Core.RestierPipelineState restierPipelineState)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `item` | `Microsoft.Restier.Core.Submit.DataModificationItem` | The [DataModificationItem](/api-reference/Microsoft/Restier/Core/Submit/DataModificationItem) that contains the details for the EntitySet and the Entities it holds. |
+| `restierPipelineState` | `Microsoft.Restier.Core.RestierPipelineState` | The part of the Restier pipeline currently executing. |
+
+#### Returns
+
+Type: `string`
+A string representing the fully-realized MethodName.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFunctionMethodName
+
+Generates the complete MethodName for a given [IEdmOperationImport](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmoperationimport), [RestierPipelineState](/api-reference/Microsoft/Restier/Core/RestierPipelineState), and [RestierEntitySetOperation](/api-reference/Microsoft/Restier/Core/RestierEntitySetOperation).
+
+#### Syntax
+
+```csharp
+public static string GetFunctionMethodName(Microsoft.OData.Edm.IEdmOperationImport operationImport, Microsoft.Restier.Core.RestierPipelineState restierPipelineState, Microsoft.Restier.Core.RestierOperationMethod restierOperation)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `operationImport` | `Microsoft.OData.Edm.IEdmOperationImport` | The [IEdmOperationImport](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmoperationimport) to generate a name for. |
+| `restierPipelineState` | `Microsoft.Restier.Core.RestierPipelineState` | The part of the Restier pipeline currently executing. |
+| `restierOperation` | `Microsoft.Restier.Core.RestierOperationMethod` | The [RestierOperationMethod](/api-reference/Microsoft/Restier/Core/RestierOperationMethod) currently being executed. |
+
+#### Returns
+
+Type: `string`
+A string representing the fully-realized MethodName.
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetFunctionMethodName
+
+Generates the complete MethodName for a given [OperationContext](/api-reference/Microsoft/Restier/Core/Operation/OperationContext), [RestierPipelineState](/api-reference/Microsoft/Restier/Core/RestierPipelineState), and [RestierEntitySetOperation](/api-reference/Microsoft/Restier/Core/RestierEntitySetOperation).
+
+#### Syntax
+
+```csharp
+public static string GetFunctionMethodName(Microsoft.Restier.Core.Operation.OperationContext operationImport, Microsoft.Restier.Core.RestierPipelineState restierPipelineState, Microsoft.Restier.Core.RestierOperationMethod restierOperation)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `operationImport` | `Microsoft.Restier.Core.Operation.OperationContext` | The [OperationContext](/api-reference/Microsoft/Restier/Core/Operation/OperationContext) to generate a name for. |
+| `restierPipelineState` | `Microsoft.Restier.Core.RestierPipelineState` | The part of the Restier pipeline currently executing. |
+| `restierOperation` | `Microsoft.Restier.Core.RestierOperationMethod` | The [RestierOperationMethod](/api-reference/Microsoft/Restier/Core/RestierOperationMethod) currently being executed. |
+
+#### Returns
+
+Type: `string`
+A string representing the fully-realized MethodName.
+

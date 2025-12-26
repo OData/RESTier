@@ -1,0 +1,88 @@
+---
+title: RestierResourceSetSerializer
+description: "The serializer for resource set result."
+icon: file-brackets-curly
+keywords: ['RestierResourceSetSerializer', 'Microsoft.Restier.AspNet.Formatter.RestierResourceSetSerializer', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Serialization.ODataResourceSetSerializer']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet.Formatter
+
+**Inheritance:** Microsoft.AspNet.OData.Formatter.Serialization.ODataResourceSetSerializer
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.Formatter.RestierResourceSetSerializer
+```
+
+## Summary
+
+The serializer for resource set result.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [RestierResourceSetSerializer](/api-reference/Microsoft/Restier/AspNet/Formatter/RestierResourceSetSerializer) class.
+
+#### Syntax
+
+```csharp
+public RestierResourceSetSerializer(Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerProvider provider)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `provider` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerProvider` | The serializer provider. |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteObject <Badge color="blue">Override</Badge>
+
+Writes the entity collection results to the response message.
+
+#### Syntax
+
+```csharp
+public override void WriteObject(object graph, System.Type type, Microsoft.OData.ODataMessageWriter messageWriter, Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `graph` | `object` | The entity collection results. |
+| `type` | `System.Type` | The type of the entities. |
+| `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
+| `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteObjectAsync <Badge color="blue">Override</Badge>
+
+Writes the entity collection results to the response message asynchronously.
+
+#### Syntax
+
+```csharp
+public override System.Threading.Tasks.Task WriteObjectAsync(object graph, System.Type type, Microsoft.OData.ODataMessageWriter messageWriter, Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext writeContext)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `graph` | `object` | The entity collection results. |
+| `type` | `System.Type` | The type of the entities. |
+| `messageWriter` | `Microsoft.OData.ODataMessageWriter` | The message writer. |
+| `writeContext` | `Microsoft.AspNet.OData.Formatter.Serialization.ODataSerializerContext` | The writing context. |
+
+#### Returns
+
+Type: `System.Threading.Tasks.Task`
+A task representing the asynchronous operation.
+

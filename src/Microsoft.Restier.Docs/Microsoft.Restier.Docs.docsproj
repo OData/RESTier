@@ -1,0 +1,76 @@
+﻿<Project Sdk="DotNetDocs.Sdk/1.2.0">
+
+    <PropertyGroup>
+        <DocumentationType>Mintlify</DocumentationType>
+        <GenerateDocumentation>true</GenerateDocumentation>
+        <NamespaceMode>Folder</NamespaceMode>
+        <ShowDocumentationStats>true</ShowDocumentationStats>
+        <ExcludePatterns>*.Samples.*</ExcludePatterns>
+
+        <ConceptualDocsEnabled>false</ConceptualDocsEnabled>
+        <ShowPlaceholders>false</ShowPlaceholders>
+
+        <MintlifyTemplate>
+            <Name>Restier</Name>
+            <Theme>maple</Theme>
+            <Colors>
+                <Primary>#419AC5</Primary>
+                <Light>#419AC5</Light>
+                <Dark>#3CD0E2</Dark>
+            </Colors>
+            <Navigation Mode="Unified">
+                <Pages>
+                    <Groups>
+                        <Group Name="Getting Started" Icon="stars">
+                            <Pages>index;why-restier;quickstart</Pages>
+                        </Group>
+                        <Group Name="Guides" Icon="dog-leashed">
+                            <Pages>guides/index</Pages>
+                            <Group Name="Server" Icon="server">
+                                <Pages>
+                                    guides/server/model-building;
+                                    guides/server/method-authorization;
+                                    guides/server/filters;
+                                    guides/server/interceptors;
+                                </Pages>
+                            </Group>
+                            <Group Name="Extending Restier" Icon="puzzle">
+                                <Pages>
+                                    guides/extending-restier/additional-operations;
+                                    guides/extending-restier/in-memory-provider;
+                                    guides/extending-restier/temporal-types;
+                                </Pages>
+                            </Group>
+                            <Group Name="Clients" Icon="laptop-code">
+                                <Pages>
+                                    guides/clients/dot-net;
+                                    guides/clients/dot-net-standard;
+                                    guides/clients/typescript;
+                                </Pages>
+                            </Group>
+                        </Group>
+                        <Group Name="Providers" Icon="books">
+                            <Pages>providers/index</Pages>
+                            <Groups>
+                                <Group Name="EF 6" Icon="/images/icons/mintlify.svg">
+                                    <Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
+                                </Group>
+                                <Group Name="EF Core" Icon="/images/icons/mintlify.svg">
+                                    <Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
+                                </Group>
+                            </Groups>
+                        </Group>
+                        <Group Name="Learnings" Icon="chalkboard-user">
+                            <Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
+                        </Group>
+                    </Groups>
+                </Pages>
+            </Navigation>
+        </MintlifyTemplate>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="snippets\" />
+    </ItemGroup>
+
+</Project>

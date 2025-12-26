@@ -10,7 +10,6 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Restier.Tests.Core.Submit
 {
@@ -19,6 +18,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DefaultChangeSetInitializer"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultChangeSetInitializerTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;

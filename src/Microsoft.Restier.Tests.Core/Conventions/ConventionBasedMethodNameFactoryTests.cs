@@ -39,27 +39,23 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
-#pragma warning disable MSTEST0018 // DynamicData should be valid
-        [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
-#pragma warning restore MSTEST0018 // DynamicData should be valid
-        public static void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperation(
+        [TestMethod]
+        [DynamicData(nameof(GetMethodNameData))]
+        public void CanCallGetEntitySetMethodNameWithEntitySetAndRestierPipelineStateAndOperation(
             RestierPipelineState pipelineState,
             RestierEntitySetOperation entitySetOperation,
             string expected)
         {
-            var entitySetMock = new Mock<IEdmEntitySet>();
-            var entityCollectionTypeMock = new Mock<IEdmCollectionType>();
-            var entityTypeReferenceMock = new Mock<IEdmEntityTypeReference>();
-            var entityTypeMock = new Mock<IEdmEntityType>();
+            // Use real OData EDM objects instead of mocks to ensure extension methods work correctly
+            var model = new EdmModel();
+            var entityType = new EdmEntityType("TestNamespace", "Test");
+            entityType.AddKeys(entityType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32));
+            model.AddElement(entityType);
+            var container = new EdmEntityContainer("TestNamespace", "TestContainer");
+            model.AddElement(container);
+            var entitySet = container.AddEntitySet("Tests", entityType);
 
-            entityTypeMock.Setup(x => x.Name).Returns("Test");
-            entityTypeReferenceMock.Setup(x => x.Definition).Returns(entityTypeMock.Object);
-            entityCollectionTypeMock.Setup(x => x.ElementType).Returns(entityTypeReferenceMock.Object);
-            entitySetMock.Setup(x => x.Name).Returns("Tests");
-            entitySetMock.Setup(x => x.Type).Returns(entityCollectionTypeMock.Object);
-
-            var result = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySetMock.Object, pipelineState, entitySetOperation);
+            var result = ConventionBasedMethodNameFactory.GetEntitySetMethodName(entitySet, pipelineState, entitySetOperation);
             result.Should().Be(expected);
         }
 
@@ -82,11 +78,9 @@ namespace Microsoft.Restier.Tests.Core
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="entitySetOperation">The entity set operation.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
-#pragma warning disable MSTEST0018 // DynamicData should be valid
-        [DynamicData(nameof(GetMethodNameData), DynamicDataSourceType.Method)]
-#pragma warning restore MSTEST0018 // DynamicData should be valid
-        public static void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineState(
+        [TestMethod]
+        [DynamicData(nameof(GetMethodNameData))]
+        public void CanCallGetEntitySetMethodNameWithItemAndRestierPipelineState(
             RestierPipelineState pipelineState,
             RestierEntitySetOperation entitySetOperation,
             string expected)
@@ -120,13 +114,13 @@ namespace Microsoft.Restier.Tests.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(RestierPipelineState.Authorization, "CanExecuteCalculate")]
         [DataRow(RestierPipelineState.PostSubmit, "OnExecutedCalculate")]
         [DataRow(RestierPipelineState.PreSubmit, "OnExecutingCalculate")]
         [DataRow(RestierPipelineState.Submit, "")]
         [DataRow(RestierPipelineState.Validation, "")]
-        public static void CanCallGetFunctionMethodNameWithIEdmOperationImportAndRestierPipelineStateAndRestierOperationMethod(
+        public void CanCallGetFunctionMethodNameWithIEdmOperationImportAndRestierPipelineStateAndRestierOperationMethod(
             RestierPipelineState pipelineState,
             string expected)
         {
@@ -170,7 +164,7 @@ namespace Microsoft.Restier.Tests.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
         /// <param name="expected">The expected result.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(RestierPipelineState.Authorization, "CanExecuteCalculate")]
         [DataRow(RestierPipelineState.PostSubmit, "OnExecutedCalculate")]
         [DataRow(RestierPipelineState.PreSubmit, "OnExecutingCalculate")]
@@ -191,7 +185,7 @@ namespace Microsoft.Restier.Tests.Core
             result.Should().Be(expected);
         }
 
-        private IEnumerable<object[]> GetMethodNameData()
+        private static IEnumerable<object[]> GetMethodNameData()
         {
             yield return new object[] { RestierPipelineState.Authorization, RestierEntitySetOperation.Delete, "CanDeleteTest" };
             yield return new object[] { RestierPipelineState.PostSubmit, RestierEntitySetOperation.Delete, "OnDeletedTest" };

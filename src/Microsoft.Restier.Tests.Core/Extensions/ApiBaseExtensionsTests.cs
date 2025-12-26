@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ApiBase"/> extension methods.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ApiBaseExtensionsTests
     {
         private readonly ServiceProviderMock serviceProviderFixture;
@@ -84,7 +85,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Tests invalid property names for the HasProperty method.
         /// </summary>
         /// <param name="value">The invalid values.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -122,7 +123,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetProperty with an invalid property name.
         /// </summary>
         /// <param name="value">The property name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -160,7 +161,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetProperty with an invalid property name.
         /// </summary>
         /// <param name="value">The property name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -198,7 +199,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call SetProperty with an invalid property name.
         /// </summary>
         /// <param name="value">The property name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -237,7 +238,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call RemoveProperty with an invalid property name.
         /// </summary>
         /// <param name="value">The property name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -303,7 +304,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -355,7 +356,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource with an invalid namespace name.
         /// </summary>
         /// <param name="value">The namespace name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -378,7 +379,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -445,7 +446,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource`1[TElement]. with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -514,7 +515,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource`1[TElement]. with an invalid namespace name.
         /// </summary>
         /// <param name="value">The namespace name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]
@@ -535,7 +536,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource`1[TElement] with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]

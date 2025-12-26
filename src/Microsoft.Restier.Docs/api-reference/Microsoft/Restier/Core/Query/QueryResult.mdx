@@ -1,0 +1,246 @@
+---
+title: QueryResult
+description: "Represents a query result."
+icon: file-brackets-curly
+keywords: ['QueryResult', 'Microsoft.Restier.Core.Query.QueryResult', 'Microsoft.Restier.Core.Query', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Query
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Query.QueryResult
+```
+
+## Summary
+
+Represents a query result.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [QueryResult](/api-reference/Microsoft/Restier/Core/Query/QueryResult) class with an Exception.
+
+#### Syntax
+
+```csharp
+public QueryResult(System.Exception exception)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `exception` | `System.Exception` | An Exception. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [QueryResult](/api-reference/Microsoft/Restier/Core/Query/QueryResult) class with in-memory results.
+
+#### Syntax
+
+```csharp
+public QueryResult(System.Collections.IEnumerable results)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `results` | `System.Collections.IEnumerable` | In-memory results. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Exception
+
+Gets or sets an Exception to be returned.
+
+#### Syntax
+
+```csharp
+public System.Exception Exception { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Exception`
+
+#### Remarks
+
+Setting this value will override any existing Exception or results.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Results
+
+Gets or sets the in-memory results.
+
+#### Syntax
+
+```csharp
+public System.Collections.IEnumerable Results { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Collections.IEnumerable`
+
+#### Remarks
+
+Setting this value will override any existing Exception or results.
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResultsSource
+
+Gets or sets the entity set from which the results were sourced.
+
+#### Syntax
+
+```csharp
+public Microsoft.OData.Edm.IEdmEntitySet ResultsSource { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.OData.Edm.IEdmEntitySet`
+
+#### Remarks
+
+This property will be `null` if the results are not instances
+            of a particular entity type that has an associated entity set.
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

@@ -1,0 +1,54 @@
+---
+title: AuthorizationFactory
+description: "Maintains a Dictionary of [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry)AuthorizationEntries&lt;/see&gt; for ea..."
+icon: bolt
+tag: "STATIC"
+keywords: ['AuthorizationFactory', 'Microsoft.Restier.Core.Authorization.AuthorizationFactory', 'Microsoft.Restier.Core.Authorization', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Authorization
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Authorization.AuthorizationFactory
+```
+
+## Summary
+
+Maintains a Dictionary of [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry)AuthorizationEntries&lt;/see&gt; for eacy access by Restier's Authorization framework.
+
+## Methods
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ForType
+
+#### Syntax
+
+```csharp
+public static Microsoft.Restier.Core.Authorization.AuthorizationEntry ForType<T>() where T : class
+```
+
+#### Returns
+
+Type: `Microsoft.Restier.Core.Authorization.AuthorizationEntry`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> RegisterEntries
+
+#### Syntax
+
+```csharp
+public static void RegisterEntries(System.Collections.Generic.List<Microsoft.Restier.Core.Authorization.AuthorizationEntry> entries)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entries` | `System.Collections.Generic.List<Microsoft.Restier.Core.Authorization.AuthorizationEntry>` | - |
+

@@ -1,0 +1,64 @@
+---
+title: DefaultRestierDeserializerProvider
+description: "The default deserializer provider."
+icon: file-brackets-curly
+sidebarTitle: DefaultRestierDeserializerProvider
+keywords: ['DefaultRestierDeserializerProvider', 'Microsoft.Restier.AspNet.Formatter.DefaultRestierDeserializerProvider', 'Microsoft.Restier.AspNet.Formatter', 'class', 'Microsoft.AspNet.OData.Formatter.Deserialization.DefaultODataDeserializerProvider']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet.Formatter
+
+**Inheritance:** Microsoft.AspNet.OData.Formatter.Deserialization.DefaultODataDeserializerProvider
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.Formatter.DefaultRestierDeserializerProvider
+```
+
+## Summary
+
+The default deserializer provider.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [DefaultRestierDeserializerProvider](/api-reference/Microsoft/Restier/AspNet/Formatter/DefaultRestierDeserializerProvider) class.
+
+#### Syntax
+
+```csharp
+public DefaultRestierDeserializerProvider(System.IServiceProvider rootContainer)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rootContainer` | `System.IServiceProvider` | The container to get the service |
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetEdmTypeDeserializer <Badge color="blue">Override</Badge>
+
+#### Syntax
+
+```csharp
+public override Microsoft.AspNet.OData.Formatter.Deserialization.ODataEdmTypeDeserializer GetEdmTypeDeserializer(Microsoft.OData.Edm.IEdmTypeReference edmType)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmType` | `Microsoft.OData.Edm.IEdmTypeReference` | - |
+
+#### Returns
+
+Type: `Microsoft.AspNet.OData.Formatter.Deserialization.ODataEdmTypeDeserializer`
+

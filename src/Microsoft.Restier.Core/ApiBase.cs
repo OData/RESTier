@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using System;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 

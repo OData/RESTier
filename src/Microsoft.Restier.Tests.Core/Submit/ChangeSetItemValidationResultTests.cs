@@ -14,6 +14,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="ChangeSetItemValidationResult"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ChangeSetItemValidationResultTests
     {
         private ChangeSetItemValidationResult testClass;

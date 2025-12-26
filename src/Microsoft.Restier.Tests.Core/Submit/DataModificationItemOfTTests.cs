@@ -15,6 +15,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DataModificationItem{T}"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DataModificationItemOfTTests
     {
         private DataModificationItem<Test> testClass;

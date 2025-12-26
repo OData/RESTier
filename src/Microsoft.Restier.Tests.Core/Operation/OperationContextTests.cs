@@ -18,6 +18,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
     /// Unit tests for the <see cref="OperationContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class OperationContextTests
     {
         private OperationContext testClass;
@@ -109,7 +110,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// Cannot construct the <see cref="OperationContext"/> with an invalid OperationName.
         /// </summary>
         /// <param name="value">OperationName.</param>
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("   ")]

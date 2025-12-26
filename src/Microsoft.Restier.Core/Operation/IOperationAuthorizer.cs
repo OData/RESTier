@@ -3,7 +3,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core.Operation
 {

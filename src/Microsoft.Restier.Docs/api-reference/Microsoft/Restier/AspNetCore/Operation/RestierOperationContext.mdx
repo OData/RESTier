@@ -1,0 +1,64 @@
+---
+title: RestierOperationContext
+description: "Represents context under which a operation is executed within ASP.NET (Core).             One instance created for one execution of one operation."
+icon: file-brackets-curly
+keywords: ['RestierOperationContext', 'Microsoft.Restier.AspNetCore.Operation.RestierOperationContext', 'Microsoft.Restier.AspNetCore.Operation', 'class', 'Microsoft.Restier.Core.Operation.OperationContext']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNetCore.dll
+
+**Namespace:** Microsoft.Restier.AspNetCore.Operation
+
+**Inheritance:** Microsoft.Restier.Core.Operation.OperationContext
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNetCore.Operation.RestierOperationContext
+```
+
+## Summary
+
+Represents context under which a operation is executed within ASP.NET (Core).
+            One instance created for one execution of one operation.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the [RestierOperationContext](/api-reference/Microsoft/Restier/AspNetCore/Operation/RestierOperationContext) class.
+
+#### Syntax
+
+```csharp
+public RestierOperationContext(Microsoft.Restier.Core.ApiBase api, System.Func<string, object> getParameterValueFunc, string operationName, bool isFunction, System.Collections.IEnumerable bindingParameterValue)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | An Api. |
+| `getParameterValueFunc` | `System.Func<string, object>` | The function that used to retrieve the parameter value name. |
+| `operationName` | `string` | The operation name. |
+| `isFunction` | `bool` | A flag indicates this is a function call or action call. |
+| `bindingParameterValue` | `System.Collections.IEnumerable` | A queryable for binding parameter value and if it is function/action import, the value will be null. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Request
+
+Gets or sets the Request.
+
+#### Syntax
+
+```csharp
+public Microsoft.AspNetCore.Http.HttpRequest Request { get; set; }
+```
+
+#### Property Value
+
+Type: `Microsoft.AspNetCore.Http.HttpRequest`
+

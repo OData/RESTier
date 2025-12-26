@@ -1,0 +1,59 @@
+---
+title: RestierPayloadValueConverter
+description: "The default payload value converter in RESTier."
+icon: file-brackets-curly
+keywords: ['RestierPayloadValueConverter', 'Microsoft.Restier.AspNet.RestierPayloadValueConverter', 'Microsoft.Restier.AspNet', 'class', 'Microsoft.OData.ODataPayloadValueConverter']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.AspNet.dll
+
+**Namespace:** Microsoft.Restier.AspNet
+
+**Inheritance:** Microsoft.OData.ODataPayloadValueConverter
+
+## Syntax
+
+```csharp
+Microsoft.Restier.AspNet.RestierPayloadValueConverter
+```
+
+## Summary
+
+The default payload value converter in RESTier.
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+#### Syntax
+
+```csharp
+public RestierPayloadValueConverter()
+```
+
+## Methods
+
+### <Icon icon="code-merge" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ConvertToPayloadValue <Badge color="blue">Override</Badge>
+
+Converts the given primitive value defined in a type definition from the payload object.
+
+#### Syntax
+
+```csharp
+public override object ConvertToPayloadValue(object value, Microsoft.OData.Edm.IEdmTypeReference edmTypeReference)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | `object` | The given CLR value. |
+| `edmTypeReference` | `Microsoft.OData.Edm.IEdmTypeReference` | The expected type reference from model. |
+
+#### Returns
+
+Type: `object`
+The converted payload value of the underlying type.
+

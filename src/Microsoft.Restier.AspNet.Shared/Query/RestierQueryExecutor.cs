@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 
 #if NET6_0_OR_GREATER

@@ -1,30 +1,17 @@
-﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<ProductVersion>
-		</ProductVersion>
-		<SchemaVersion>2.0</SchemaVersion>
-		<ProjectGuid>{3EAB0AED-2BE2-4120-B26E-3401B86C4DC2}</ProjectGuid>
-		<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+		<TargetFramework>net48</TargetFramework>
 		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<RootNamespace>Microsoft.Restier.Samples.Northwind.AspNet</RootNamespace>
 		<AssemblyName>Microsoft.Restier.Samples.Northwind.AspNet</AssemblyName>
-		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-		<UseIISExpress>true</UseIISExpress>
-		<Use64BitIISExpress />
-		<IISExpressSSLPort />
-		<IISExpressAnonymousAuthentication />
-		<IISExpressWindowsAuthentication />
-		<IISExpressUseClassicPipelineMode />
-		<UseGlobalApplicationHostFile />
-		<NuGetPackageImportStamp>
-		</NuGetPackageImportStamp>
-		<RuntimeIdentifier>win</RuntimeIdentifier>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<IsPackable>false</IsPackable>
 	</PropertyGroup>
+
 	<ItemGroup>
+		<PackageReference Include="EntityFramework" Version="6.5.*" />
 		<PackageReference Include="Microsoft.AspNet.OData" Version="7.*" />
 		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.*" />
 		<PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform" Version="3.6.0" />
@@ -32,51 +19,45 @@
 		<PackageReference Include="Microsoft.OData.Core" Version="7.*" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.*" />
 	</ItemGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
-		<OutputPath>bin\</OutputPath>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>pdbonly</DebugType>
-		<Optimize>true</Optimize>
-		<OutputPath>bin\</OutputPath>
-		<DefineConstants>TRACE</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
+
 	<ItemGroup>
-		<Reference Include="Microsoft.CSharp" />
-		<Reference Include="System.Net.Http" />
-		<Reference Include="System.Runtime.Serialization" />
-		<Reference Include="System.Security" />
-		<Reference Include="System.Web.DynamicData" />
-		<Reference Include="System.Web.Entity" />
-		<Reference Include="System.Web.ApplicationServices" />
-		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<Reference Include="System" />
-		<Reference Include="System.Data" />
-		<Reference Include="System.Core" />
-		<Reference Include="System.Data.DataSetExtensions" />
-		<Reference Include="System.Web.Extensions" />
-		<Reference Include="System.Xml.Linq" />
-		<Reference Include="System.Drawing" />
-		<Reference Include="System.Web" />
-		<Reference Include="System.Xml" />
-		<Reference Include="System.Configuration" />
-		<Reference Include="System.Web.Services" />
-		<Reference Include="System.EnterpriseServices" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
 	</ItemGroup>
+
 	<ItemGroup>
-		<Content Include="App_Data\Northwind.mdf" />
-		<Content Include="App_Data\Northwind_log.ldf">
-			<DependentUpon>Northwind.mdf</DependentUpon>
-		</Content>
+		<Reference Include="System.Web" />
+		<Reference Include="System.Web.Extensions" />
+	</ItemGroup>
+
+	<!-- EDMX and T4 Template Configuration -->
+	<ItemGroup>
+		<EntityDeploy Include="Data\Northwind.edmx">
+			<Generator>EntityModelCodeGenerator</Generator>
+			<LastGenOutput>Northwind.Designer.cs</LastGenOutput>
+		</EntityDeploy>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Data\Northwind.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Northwind.edmx</DependentUpon>
+		</Compile>
+		<Compile Update="Data\Northwind.Context.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Northwind.Context.tt</DependentUpon>
+		</Compile>
+		<Compile Update="Data\Northwind.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Northwind.tt</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="Data\Northwind.Context.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>Northwind.Context.cs</LastGenOutput>
@@ -84,15 +65,42 @@
 		</Content>
 		<Content Include="Data\Northwind.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
-			<DependentUpon>Northwind.edmx</DependentUpon>
 			<LastGenOutput>Northwind.cs</LastGenOutput>
+			<DependentUpon>Northwind.edmx</DependentUpon>
 		</Content>
+		<None Include="Data\Northwind.edmx.diagram">
+			<DependentUpon>Northwind.edmx</DependentUpon>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="App_Data\**\*" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="Global.asax" />
 		<Content Include="Web.config" />
+		<None Include="Web.Debug.config">
+			<DependentUpon>Web.config</DependentUpon>
+		</None>
+		<None Include="Web.Release.config">
+			<DependentUpon>Web.config</DependentUpon>
+		</None>
 	</ItemGroup>
+
+	<!-- Exclude generated entity files from globbing (they're included via DependentUpon) -->
 	<ItemGroup>
-		<Compile Include="App_Start\WebApiConfig.cs" />
-		<Compile Include="Controllers\NorthwindApi.cs" />
+		<Compile Remove="Data\Category.cs" />
+		<Compile Remove="Data\Customer.cs" />
+		<Compile Remove="Data\CustomerDemographic.cs" />
+		<Compile Remove="Data\Employee.cs" />
+		<Compile Remove="Data\Order.cs" />
+		<Compile Remove="Data\Order_Detail.cs" />
+		<Compile Remove="Data\Product.cs" />
+		<Compile Remove="Data\Region.cs" />
+		<Compile Remove="Data\Shipper.cs" />
+		<Compile Remove="Data\Supplier.cs" />
+		<Compile Remove="Data\Territory.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Include="Data\Category.cs">
 			<DependentUpon>Northwind.tt</DependentUpon>
 		</Compile>
@@ -104,21 +112,6 @@
 		</Compile>
 		<Compile Include="Data\Employee.cs">
 			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Northwind.Context.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Northwind.Context.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Northwind.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Northwind.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Data\Northwind.Designer.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Northwind.edmx</DependentUpon>
 		</Compile>
 		<Compile Include="Data\Order.cs">
 			<DependentUpon>Northwind.tt</DependentUpon>
@@ -141,74 +134,6 @@
 		<Compile Include="Data\Territory.cs">
 			<DependentUpon>Northwind.tt</DependentUpon>
 		</Compile>
-		<Compile Include="Global.asax.cs">
-			<DependentUpon>Global.asax</DependentUpon>
-		</Compile>
-		<Compile Include="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
-	<ItemGroup>
-		<EntityDeploy Include="Data\Northwind.edmx">
-			<Generator>EntityModelCodeGenerator</Generator>
-			<LastGenOutput>Northwind.Designer.cs</LastGenOutput>
-		</EntityDeploy>
-		<Content Include="Data\Northwind.edmx.diagram">
-			<DependentUpon>Northwind.edmx</DependentUpon>
-		</Content>
-		<None Include="Web.Debug.config">
-			<DependentUpon>Web.config</DependentUpon>
-		</None>
-		<None Include="Web.Release.config">
-			<DependentUpon>Web.config</DependentUpon>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.Restier.AspNet\Microsoft.Restier.AspNet.csproj">
-			<Project>{8ecf4e97-1816-44ad-ad63-6acf287ed520}</Project>
-			<Name>Microsoft.Restier.AspNet</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj">
-			<Project>{300b769a-3513-49d0-a035-7db965c8d2a4}</Project>
-			<Name>Microsoft.Restier.Core</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj">
-			<Project>{0E373B2A-2ED2-4566-A275-6BE81CFFE00B}</Project>
-			<Name>Microsoft.Restier.EntityFramework</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup />
-	<ItemGroup>
-		<Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-	</ItemGroup>
-	<PropertyGroup>
-		<VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-	</PropertyGroup>
-	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-	<Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-	<Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-	<ProjectExtensions>
-		<VisualStudio>
-			<FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-				<WebProjectProperties>
-					<UseIIS>True</UseIIS>
-					<AutoAssignPort>True</AutoAssignPort>
-					<DevelopmentServerPort>60605</DevelopmentServerPort>
-					<DevelopmentServerVPath>/</DevelopmentServerVPath>
-					<IISUrl>http://localhost:60605/</IISUrl>
-					<NTLMAuthentication>False</NTLMAuthentication>
-					<UseCustomServer>False</UseCustomServer>
-					<CustomServerUrl>
-					</CustomServerUrl>
-					<SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-				</WebProjectProperties>
-			</FlavorProperties>
-		</VisualStudio>
-	</ProjectExtensions>
-	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

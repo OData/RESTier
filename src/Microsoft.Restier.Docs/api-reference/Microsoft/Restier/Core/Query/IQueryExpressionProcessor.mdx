@@ -1,0 +1,71 @@
+---
+title: IQueryExpressionProcessor
+description: "Represents a service that processes a query expression."
+icon: plug
+keywords: ['IQueryExpressionProcessor', 'Microsoft.Restier.Core.Query.IQueryExpressionProcessor', 'Microsoft.Restier.Core.Query', 'interface']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Query
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Query.IQueryExpressionProcessor
+```
+
+## Summary
+
+Represents a service that processes a query expression.
+
+## Remarks
+
+
+
+
+            Query expression processing converts an expression node into a
+            different expression node according to API logic such as a
+            restricting filter on top of some composable API data.
+            
+
+
+
+
+            Processing is the third step that occurs when visiting a query
+            expression after its children have been visited, so it occurs during
+            upward traversal of the query expression and after inspection and
+            expansion. Since processing fundamentally alters the query expression,
+            the resulting expression is recursively processed to ensure that all
+            appropriate normalization, inspection, expansion, processing and
+            sourcing occurs.
+            
+
+
+
+## Methods
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Process <Badge color="orange">Abstract</Badge>
+
+Processes an expression.
+
+#### Syntax
+
+```csharp
+System.Linq.Expressions.Expression Process(Microsoft.Restier.Core.Query.QueryExpressionContext context)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `context` | `Microsoft.Restier.Core.Query.QueryExpressionContext` | The query expression context. |
+
+#### Returns
+
+Type: `System.Linq.Expressions.Expression`
+A processed expression of the same type as the visited node, or
+            if processing did not apply, the visited node.
+

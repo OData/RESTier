@@ -1,0 +1,215 @@
+---
+title: "Contribution Guidelines"
+description: "Learn how to contribute to the Restier project"
+icon: "code-pull-request"
+sidebarTitle: "Contributing"
+---
+
+# How Can I Contribute?
+
+There are many ways for you to contribute to RESTier. The easiest way is to participate in discussion of features and issues. You can also contribute by sending pull requests of features or bug fixes to us. Contribution to the [documentation](http://odata.github.io/RESTier/) is also highly welcomed.
+
+<CardGroup cols={3}>
+  <Card title="Discussion" icon="comments">
+    Participate in discussions and ask questions about RESTier at our [GitHub issues](https://github.com/OData/RESTier/issues).
+  </Card>
+
+  <Card title="Bug Reports" icon="bug">
+    Report bugs using the issue template. Issues related to other libraries should be reported to their respective trackers.
+  </Card>
+
+  <Card title="Pull Requests" icon="code-pull-request">
+    Submit pull requests for features, bug fixes, and documentation improvements.
+  </Card>
+</CardGroup>
+
+## Discussion
+
+You can participate in discussions and ask questions about RESTier at our [GitHub issues](https://github.com/OData/RESTier/issues).
+
+## Bug Reports
+
+<Warning>
+When reporting a bug at the issue tracker, fill the template of the issue. Issues related to other libraries should not be reported in RESTier library issue tracker, but be reported to other libraries' issue tracker.
+</Warning>
+
+## Pull Requests
+
+<Info>
+**Pull request is the only way we accept code and document contribution.** Pull requests for documentation, features, and bug fixes are all welcomed. Refer to this [link](https://help.github.com/articles/using-pull-requests/) to learn details about pull requests. Before you send a pull request to us, you need to make sure you've followed the steps listed below.
+</Info>
+
+### Pick an issue to work on
+
+<Steps>
+  <Step title="Find or create an issue">
+    You should either create or pick an issue on the [issue tracker](https://github.com/OData/RESTier/issues) before you work on the pull request.
+  </Step>
+
+  <Step title="Wait for approval">
+    After the RESTier team has reviewed this issue and changed its label to "accepting pull request", you can work on the code change.
+  </Step>
+</Steps>
+
+### Prepare Tools
+
+<Tabs>
+  <Tab title="Documentation">
+    - [Atom](https://atom.io/) with package [atom-beautify](https://atom.io/packages/atom-beautify) and [markdown-toc](https://atom.io/packages/markdown-toc)
+    - [MarkdownPad](http://www.markdownpad.com/)
+  </Tab>
+
+  <Tab title="Code">
+    - Visual Studio 2015 or later
+  </Tab>
+</Tabs>
+
+### Steps to create a pull request
+
+These are the recommended steps to create a pull request:
+
+<Steps>
+  <Step title="Fork the repository">
+    Create a forked repository of [https://github.com/OData/RESTier.git](https://github.com/OData/RESTier.git)
+  </Step>
+
+  <Step title="Clone locally">
+    Clone the forked repository into your local environment
+  </Step>
+
+  <Step title="Add upstream remote">
+    Add a git remote to upstream for local repository:
+
+    ```bash
+    git remote add upstream https://github.com/OData/RESTier.git
+    ```
+  </Step>
+
+  <Step title="Make code changes">
+    Make code changes and add test cases (refer to Test specification section for more details about tests)
+  </Step>
+
+  <Step title="Test your changes">
+    Test the changed code with one-click build and test script
+  </Step>
+
+  <Step title="Commit changes">
+    Commit changed code to local repository with clear message
+  </Step>
+
+  <Step title="Rebase with upstream">
+    Rebase the code to upstream and resolve conflicts if any:
+
+    ```bash
+    git pull --rebase upstream master
+    # If conflicts exist:
+    git pull --rebase continue
+    ```
+  </Step>
+
+  <Step title="Push to fork">
+    Push local commit to the forked repository
+  </Step>
+
+  <Step title="Create pull request">
+    Create pull request from forked repository Web console via comparing with upstream
+  </Step>
+
+  <Step title="Complete CLA">
+    Complete a Contributor License Agreement (CLA), refer below section for more details
+  </Step>
+
+  <Step title="Review process">
+    Pull request will be reviewed by Microsoft OData team
+  </Step>
+
+  <Step title="Address feedback">
+    Address comments and revise code if necessary. Commit the changes to local repository or amend existing commit:
+
+    ```bash
+    git commit --amend
+    ```
+  </Step>
+
+  <Step title="Rebase again">
+    Rebase the code with upstream again and resolve conflicts if any:
+
+    ```bash
+    git pull --rebase upstream master
+    # If conflicts exist:
+    git pull --rebase continue
+    ```
+  </Step>
+
+  <Step title="Test again">
+    Test the changed code with one-click build and test script again
+  </Step>
+
+  <Step title="Push updates">
+    Push changes to the forked repository (use `--force` option if existing commit is amended)
+  </Step>
+
+  <Step title="Merge">
+    Microsoft OData team will merge the pull request into upstream
+  </Step>
+</Steps>
+
+### Test specification
+
+All tests need to be written with **xUnit**. Here are some rules to follow when you are organizing the test code:
+
+<AccordionGroup>
+  <Accordion title="Project name correspondence" icon="folder">
+    Format: `X -> X.Tests`
+
+    For instance, all the test code of the `Microsoft.Restier.Core` project should be placed in the `Microsoft.Restier.Core.Tests` project.
+
+    **Path and file name correspondence**: `X/Y/Z/A.cs -> X.Tests/Y/Z/ATests.cs`
+
+    For example, the test code of the `ConventionBasedApiModelBuilder` class (in the `Microsoft.Restier.Core/Convention/ConventionBasedApiModelBuilder.cs` file) should be placed in the `Microsoft.Restier.Core.Tests/Convention/ConventionBasedApiModelBuilderTests.cs` file.
+  </Accordion>
+
+  <Accordion title="Namespace correspondence" icon="code">
+    Format: `X.Tests/Y/Z -> X.Tests.Y.Z`
+
+    The namespace of the file should strictly follow the path. For example, the namespace of the `ConventionBasedApiModelBuilderTests.cs` file should be `Microsoft.Restier.Core.Tests.Convention`.
+  </Accordion>
+
+  <Accordion title="Utility classes" icon="wrench">
+    The file for a utility class can be placed at the same level of its user or a shared level that is visible to all its users. But the file name must **NOT** end with `Tests` to avoid any confusion.
+  </Accordion>
+
+  <Accordion title="Integration and scenario tests" icon="flask">
+    Those tests usually involve multiple modules and have some specific scenarios. They should be placed separately in `X.Tests/IntegrationTests` and `X.Tests/ScenarioTests`. There is no hard requirement of the folder structure for those tests. But they should be organized logically and systematically as possible.
+  </Accordion>
+</AccordionGroup> 
+
+### Complete a Contribution License Agreement (CLA)
+
+<Note>
+You will need to complete a Contributor License Agreement (CLA). Briefly, this agreement testifies that you are granting us permission to use the submitted change according to the terms of the project's license, and that the work being submitted is under appropriate copyright.
+</Note>
+
+Please submit a Contributor License Agreement (CLA) before submitting a pull request:
+
+<Steps>
+  <Step title="Download the agreement">
+    [Download the Microsoft Contribution License Agreement](https://github.com/odata/odatacpp/wiki/files/Microsoft Contribution License Agreement.pdf)
+  </Step>
+
+  <Step title="Sign and scan">
+    Sign the agreement and scan it
+  </Step>
+
+  <Step title="Email to Microsoft">
+    Email the signed agreement to [cla@microsoft.com](mailto:cla@microsoft.com)
+
+    <Tip>
+    Be sure to include your GitHub username along with the agreement.
+    </Tip>
+  </Step>
+</Steps>
+
+<Info>
+Only after we have received the signed CLA will we review the pull request that you send. You only need to do this once for contributing to any Microsoft open source projects.
+</Info>

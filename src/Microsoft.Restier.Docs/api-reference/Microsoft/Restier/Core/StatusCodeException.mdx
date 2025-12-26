@@ -1,0 +1,119 @@
+---
+title: StatusCodeException
+description: "Use this exception when you want to return a specific status code"
+icon: file-brackets-curly
+keywords: ['StatusCodeException', 'Microsoft.Restier.Core.StatusCodeException', 'Microsoft.Restier.Core', 'class', 'System.Exception']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core
+
+**Inheritance:** System.Exception
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.StatusCodeException
+```
+
+## Summary
+
+Use this exception when you want to return a specific status code
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the StatusCodeException class.
+
+#### Syntax
+
+```csharp
+public StatusCodeException()
+```
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the StatusCodeException class.
+
+#### Syntax
+
+```csharp
+public StatusCodeException(string message)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | `string` | Plain text error message for this exception. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the StatusCodeException class.
+
+#### Syntax
+
+```csharp
+public StatusCodeException(string message, System.Exception innerException)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `message` | `string` | Plain text error message for this exception. |
+| `innerException` | `System.Exception` | Exception that caused this exception to be thrown. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the StatusCodeException class.
+
+#### Syntax
+
+```csharp
+public StatusCodeException(System.Net.HttpStatusCode statusCode, string message)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `statusCode` | `System.Net.HttpStatusCode` | - |
+| `message` | `string` | Plain text error message for this exception. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Initializes a new instance of the StatusCodeException class.
+
+#### Syntax
+
+```csharp
+public StatusCodeException(System.Net.HttpStatusCode statusCode, string message, System.Exception innerException)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `statusCode` | `System.Net.HttpStatusCode` | - |
+| `message` | `string` | Plain text error message for this exception. |
+| `innerException` | `System.Exception` | Exception that caused this exception to be thrown. |
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> StatusCode
+
+#### Syntax
+
+```csharp
+public System.Net.HttpStatusCode StatusCode { get; private set; }
+```
+
+#### Property Value
+
+Type: `System.Net.HttpStatusCode`
+

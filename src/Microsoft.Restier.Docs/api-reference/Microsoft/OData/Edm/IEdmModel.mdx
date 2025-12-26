@@ -1,0 +1,75 @@
+---
+title: IEdmModel
+description: "Extension methods for IEdmModel from Microsoft.OData.Edm"
+icon: file-brackets-curly
+keywords: ['IEdmModel', 'Microsoft.OData.Edm.IEdmModel', 'Microsoft.OData.Edm', 'error']
+---
+
+## Definition
+
+**Assembly:** Microsoft.OData.Edm.dll
+
+**Namespace:** Microsoft.OData.Edm
+
+## Syntax
+
+```csharp
+Microsoft.OData.Edm.IEdmModel
+```
+
+## Summary
+
+This type is defined in Microsoft.OData.Edm.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmmodel) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GenerateConventionDefinitions <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Restier.Breakdance.IEdmModelExtensions`</Note>
+
+Generates a list of detailed information about the expected Restier conventions for a given Api.
+
+#### Syntax
+
+```csharp
+public static System.Collections.Generic.List<Microsoft.Restier.Breakdance.RestierConventionDefinition> GenerateConventionDefinitions(Microsoft.OData.Edm.IEdmModel edmModel)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmModel` | `Microsoft.OData.Edm.IEdmModel` | The [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) to use to generate the convention definitions list. |
+
+#### Returns
+
+Type: `System.Collections.Generic.List<Microsoft.Restier.Breakdance.RestierConventionDefinition>`
+A [List`1](https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1) containing detailed information about the expected Restier conventions.
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GenerateConventionReport <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Restier.Breakdance.IEdmModelExtensions`</Note>
+
+Generates a human-readable list of conventions for a Restier Api.
+
+#### Syntax
+
+```csharp
+public static string GenerateConventionReport(Microsoft.OData.Edm.IEdmModel edmModel, bool addTableSeparators = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `edmModel` | `Microsoft.OData.Edm.IEdmModel` | The [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) to use to generate the conventions list. |
+| `addTableSeparators` | `bool` | A boolean specifying whether or not to add visual separators to the list. |
+
+#### Returns
+
+Type: `string`
+

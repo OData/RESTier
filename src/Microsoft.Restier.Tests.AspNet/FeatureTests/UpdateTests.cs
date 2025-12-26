@@ -176,12 +176,14 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
         }
 
         /// <summary>
-        /// TODO: @robertmclaws: This test needs to be able to run in parallel between the Legacy and Endpoint Routing tests.
+        /// Tests that the OnUpdating interceptor is called when updating a Publisher.
         /// </summary>
         /// <returns></returns>
         [TestMethod]
         public async Task UpdatePublisher_ShouldCallInterceptor()
         {
+            // First, get the publisher and reset LastUpdated to a known old value.
+            // This ensures the test works correctly even when running in parallel with other tests.
             var publisherRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')",
                 acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
                 useEndpointRouting: UseEndpointRouting);
@@ -189,24 +191,47 @@ namespace Microsoft.Restier.Tests.AspNet.FeatureTests
             var (publisher, ErrorContent) = await publisherRequest.DeserializeResponseAsync<Publisher>();
 
             publisher.Should().NotBeNull();
-            publisher.LastUpdated.Should().NotBeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 5));
 
+            // Reset LastUpdated to a known old value to ensure test isolation
+            var oldDate = DateTimeOffset.Now.AddDays(-1);
+            publisher.LastUpdated = oldDate;
             publisher.Books = null;
-            var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher,
+            var resetRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisher.Id}')", payload: publisher,
+                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
+            resetRequest.IsSuccessStatusCode.Should().BeTrue();
+
+            // Re-fetch to verify the reset worked (interceptor will have updated LastUpdated, but we'll use a fresh baseline)
+            var publisherRequest2 = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')",
+                acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
+                useEndpointRouting: UseEndpointRouting);
+            publisherRequest2.IsSuccessStatusCode.Should().BeTrue();
+            var (publisherBaseline, _) = await publisherRequest2.DeserializeResponseAsync<Publisher>();
+            var baselineTime = publisherBaseline.LastUpdated;
+
+            // Wait a moment to ensure time difference is measurable
+            await Task.Delay(100);
+
+            // Now perform the actual update we want to test
+            publisherBaseline.Books = null;
+            var publisherEditRequest = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Put, resource: $"/Publishers('{publisherBaseline.Id}')", payload: publisherBaseline,
                 acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
                 useEndpointRouting: UseEndpointRouting);
             var result = await TestContext.LogAndReturnMessageContentAsync(publisherEditRequest);
 
             publisherEditRequest.IsSuccessStatusCode.Should().BeTrue();
 
-            var publisherRequest2 = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')",
+            // Fetch the publisher again to verify the interceptor updated LastUpdated
+            var publisherRequest3 = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(HttpMethod.Get, resource: "/Publishers('Publisher1')",
                 acceptHeader: ODataConstants.DefaultAcceptHeader, serviceCollection: (services) => services.AddEntityFrameworkServices<LibraryContext>(),
                 useEndpointRouting: UseEndpointRouting);
-            publisherRequest2.IsSuccessStatusCode.Should().BeTrue();
-            var (publisher2, ErrorContent2) = await publisherRequest2.DeserializeResponseAsync<Publisher>();
+            publisherRequest3.IsSuccessStatusCode.Should().BeTrue();
+            var (publisherAfterUpdate, _) = await publisherRequest3.DeserializeResponseAsync<Publisher>();
 
-            publisher2.Should().NotBeNull();
-            publisher2.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 6));
+            publisherAfterUpdate.Should().NotBeNull();
+            // The interceptor should have updated LastUpdated to a time after our baseline
+            publisherAfterUpdate.LastUpdated.Should().BeAfter(baselineTime, "the OnUpdating interceptor should update LastUpdated");
+            publisherAfterUpdate.LastUpdated.Should().BeCloseTo(DateTimeOffset.Now, new TimeSpan(0, 0, 0, 6));
         }
 
         public async Task Cleanup(Guid bookId, string title)

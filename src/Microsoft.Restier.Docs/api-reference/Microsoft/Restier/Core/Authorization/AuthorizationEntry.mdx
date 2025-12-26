@@ -1,0 +1,285 @@
+---
+title: AuthorizationEntry
+description: "Describes the methods of verifying various CRUD operations for a given EF Entity. Useful in code generation scenarios"
+icon: file-brackets-curly
+keywords: ['AuthorizationEntry', 'Microsoft.Restier.Core.Authorization.AuthorizationEntry', 'Microsoft.Restier.Core.Authorization', 'class', 'System.Object']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Restier.Core.dll
+
+**Namespace:** Microsoft.Restier.Core.Authorization
+
+**Inheritance:** System.Object
+
+## Syntax
+
+```csharp
+Microsoft.Restier.Core.Authorization.AuthorizationEntry
+```
+
+## Summary
+
+Describes the methods of verifying various CRUD operations for a given EF Entity. Useful in code generation scenarios
+
+## Constructors
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Creates a new instance of an [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry) for a given [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type). Assumes all authorization checks will return false by default.
+
+#### Syntax
+
+```csharp
+public AuthorizationEntry(System.Type t)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `t` | `System.Type` | The [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) to track authorization methods for. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Creates a new instance of an [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry) for a given [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) while allowing you to specify the action to run when authorizing Inserts.
+
+#### Syntax
+
+```csharp
+public AuthorizationEntry(System.Type t, System.Func<bool> canInsertAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `t` | `System.Type` | The [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) to track authorization methods for. |
+| `canInsertAction` | `System.Func<bool>` | A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be inserted through the Restier API. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Creates a new instance of an [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry) for a given [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) while allowing you to specify the actions to run when authorizing Inserts and Updates.
+
+#### Syntax
+
+```csharp
+public AuthorizationEntry(System.Type t, System.Func<bool> canInsertAction, System.Func<bool> canUpdateAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `t` | `System.Type` | The [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) to track authorization methods for. |
+| `canInsertAction` | `System.Func<bool>` | A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be inserted through the Restier API. |
+| `canUpdateAction` | `System.Func<bool>` | A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be updated through the Restier API. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
+
+Creates a new instance of an [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry) for a given [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) while allowing you to specify the actions to run when authorizing Inserts, Updates, and Deletes.
+
+#### Syntax
+
+```csharp
+public AuthorizationEntry(System.Type t, System.Func<bool> canInsertAction, System.Func<bool> canUpdateAction, System.Func<bool> canDeleteAction)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `t` | `System.Type` | The [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) to track authorization methods for. |
+| `canInsertAction` | `System.Func<bool>` | A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be inserted through the Restier API. |
+| `canUpdateAction` | `System.Func<bool>` | A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be updated through the Restier API. |
+| `canDeleteAction` | `System.Func<bool>` | A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be deleted through the Restier API. |
+
+### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public Object()
+```
+
+## Properties
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanDeleteAction
+
+A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be deleted through the Restier API. The default is false.
+
+#### Syntax
+
+```csharp
+public System.Func<bool> CanDeleteAction { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Func<bool>`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanInsertAction
+
+A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be inserted through the Restier API. The default is false.
+
+#### Syntax
+
+```csharp
+public System.Func<bool> CanInsertAction { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Func<bool>`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> CanUpdateAction
+
+A [Func`1](https://learn.microsoft.com/dotnet/api/system.func-1) that evaluates to a [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean) specifying whether or not a record can be updated through the Restier API. The default is false.
+
+#### Syntax
+
+```csharp
+public System.Func<bool> CanUpdateAction { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Func<bool>`
+
+### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type
+
+The [AuthorizationEntry.Type](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry#type) to register this [AuthorizationEntry](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry) for in the [AuthorizationFactory](/api-reference/Microsoft/Restier/Core/Authorization/AuthorizationFactory)AuthorizationFactory's&lt;/see&gt; backing Dictionary.
+
+#### Syntax
+
+```csharp
+public System.Type Type { get; set; }
+```
+
+#### Property Value
+
+Type: `System.Type`
+
+## Methods
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual bool Equals(object obj)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Equals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool Equals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetHashCode <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual int GetHashCode()
+```
+
+#### Returns
+
+Type: `int`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public System.Type GetType()
+```
+
+#### Returns
+
+Type: `System.Type`
+
+### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> MemberwiseClone <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+protected internal object MemberwiseClone()
+```
+
+#### Returns
+
+Type: `object`
+
+### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public static bool ReferenceEquals(object objA, object objB)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objA` | `object?` | - |
+| `objB` | `object?` | - |
+
+#### Returns
+
+Type: `bool`
+
+### <Icon icon="code-fork" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToString <Badge color="gray">Inherited</Badge> <Badge color="orange">Virtual</Badge>
+
+<Note>Inherited from `object`</Note>
+
+#### Syntax
+
+```csharp
+public virtual string ToString()
+```
+
+#### Returns
+
+Type: `string?`
+

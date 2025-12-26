@@ -1,0 +1,7 @@
+D:\GitHub\RESTier\src\Microsoft.Restier.AspNet\bin\Debug\net48\Microsoft.Restier.AspNet.dll
+D:\GitHub\RESTier\src\Microsoft.Restier.AspNetCore\bin\Debug\net8.0\Microsoft.Restier.AspNetCore.dll
+D:\GitHub\RESTier\src\Microsoft.Restier.AspNetCore.Swagger\bin\Debug\net9.0\Microsoft.Restier.AspNetCore.Swagger.dll
+D:\GitHub\RESTier\src\Microsoft.Restier.Breakdance\bin\Debug\net48\Microsoft.Restier.Breakdance.dll
+D:\GitHub\RESTier\src\Microsoft.Restier.Core\bin\Debug\net48\Microsoft.Restier.Core.dll
+D:\GitHub\RESTier\src\Microsoft.Restier.EntityFramework\bin\Debug\net48\Microsoft.Restier.EntityFramework.dll
+D:\GitHub\RESTier\src\Microsoft.Restier.EntityFrameworkCore\bin\Debug\net9.0\Microsoft.Restier.EntityFrameworkCore.dll

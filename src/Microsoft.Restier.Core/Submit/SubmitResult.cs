@@ -71,6 +71,7 @@ namespace Microsoft.Restier.Core.Submit
             {
                 Ensure.NotNull(value, nameof(value));
                 completedChangeSet = value;
+                exception = null;
             }
         }
     }

@@ -1,0 +1,52 @@
+---
+title: GeographyPoint
+description: "Extension methods for GeographyPoint from Microsoft.Spatial"
+icon: file-brackets-curly
+keywords: ['GeographyPoint', 'Microsoft.Spatial.GeographyPoint', 'Microsoft.Spatial', 'error']
+---
+
+## Definition
+
+**Assembly:** Microsoft.Spatial.dll
+
+**Namespace:** Microsoft.Spatial
+
+## Syntax
+
+```csharp
+Microsoft.Spatial.GeographyPoint
+```
+
+## Summary
+
+This type is defined in Microsoft.Spatial.
+
+## Remarks
+
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.spatial.geographypoint) for more information about the rest of the API.
+
+## Methods
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ToDbGeography <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Restier.EntityFramework.GeographyConverter`</Note>
+
+Convert a Edm GeographyPoint to DbGeography
+
+#### Syntax
+
+```csharp
+public static System.Data.Entity.Spatial.DbGeography ToDbGeography(Microsoft.Spatial.GeographyPoint point)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `point` | `Microsoft.Spatial.GeographyPoint` | The Edm GeographyPoint to be converted |
+
+#### Returns
+
+Type: `System.Data.Entity.Spatial.DbGeography`
+A DbGeography
+

@@ -1,0 +1,285 @@
+{
+  "colors": {
+    "dark": "#3CD0E2",
+    "light": "#419AC5",
+    "primary": "#419AC5"
+  },
+  "name": "Restier",
+  "navigation": {
+    "pages": [
+      {
+        "group": "Getting Started",
+        "icon": "stars",
+        "pages": [
+          "index",
+          "why-restier",
+          "quickstart",
+          "contribution-guidelines"
+        ]
+      },
+      {
+        "group": "Guides",
+        "icon": "dog-leashed",
+        "pages": [
+          "guides/index",
+          {
+            "group": "Server",
+            "icon": "server",
+            "pages": [
+              "guides/server/model-building",
+              "guides/server/method-authorization",
+              "guides/server/filters",
+              "guides/server/interceptors"
+            ]
+          },
+          {
+            "group": "Extending Restier",
+            "icon": "puzzle",
+            "pages": [
+              "guides/extending-restier/additional-operations",
+              "guides/extending-restier/in-memory-provider",
+              "guides/extending-restier/temporal-types"
+            ]
+          },
+          {
+            "group": "Clients",
+            "icon": "laptop-code",
+            "pages": [
+              "guides/clients/dot-net",
+              "guides/clients/dot-net-standard",
+              "guides/clients/typescript"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Providers",
+        "icon": "books",
+        "pages": [
+          "providers/index",
+          {
+            "group": "EF 6",
+            "icon": "/images/icons/mintlify.svg",
+            "pages": [
+              "providers/mintlify/index",
+              "providers/mintlify/navigation",
+              "providers/mintlify/dotnet-library"
+            ]
+          },
+          {
+            "group": "EF Core",
+            "icon": "/images/icons/mintlify.svg",
+            "pages": [
+              "providers/mintlify/index",
+              "providers/mintlify/navigation",
+              "providers/mintlify/dotnet-library"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Learnings",
+        "icon": "chalkboard-user",
+        "pages": [
+          "learnings/bridge-assemblies",
+          "learnings/sdk-packaging"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "icon": "code",
+        "pages": [
+          {
+            "group": "Microsoft",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "EntityFrameworkCore",
+                "icon": "folder-tree",
+                "pages": [
+                  "api-reference/Microsoft/EntityFrameworkCore/index",
+                  "api-reference/Microsoft/EntityFrameworkCore/DbContext"
+                ]
+              },
+              {
+                "group": "Extensions",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "DependencyInjection",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Extensions/DependencyInjection/index",
+                      "api-reference/Microsoft/Extensions/DependencyInjection/IServiceCollection"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Restier",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Core",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/Core/index",
+                      "api-reference/Microsoft/Restier/Core/ApiBase",
+                      "api-reference/Microsoft/Restier/Core/ChangeSetValidationException",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemAuthorizer",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemFilter",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedChangeSetItemValidator",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedMethodNameFactory",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedOperationAuthorizer",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedOperationFilter",
+                      "api-reference/Microsoft/Restier/Core/ConventionBasedQueryExpressionProcessor",
+                      "api-reference/Microsoft/Restier/Core/ConventionInvocationException",
+                      "api-reference/Microsoft/Restier/Core/DataSourceStub",
+                      "api-reference/Microsoft/Restier/Core/EdmModelValidationException",
+                      "api-reference/Microsoft/Restier/Core/InvocationContext",
+                      "api-reference/Microsoft/Restier/Core/RestierApiBuilder",
+                      "api-reference/Microsoft/Restier/Core/RestierContainerBuilder",
+                      "api-reference/Microsoft/Restier/Core/RestierEntitySetOperation",
+                      "api-reference/Microsoft/Restier/Core/RestierOperationMethod",
+                      "api-reference/Microsoft/Restier/Core/RestierPipelineState",
+                      "api-reference/Microsoft/Restier/Core/RestierRouteBuilder",
+                      "api-reference/Microsoft/Restier/Core/StatusCodeException",
+                      {
+                        "group": "Authorization",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Authorization/index",
+                          "api-reference/Microsoft/Restier/Core/Authorization/AuthorizationEntry",
+                          "api-reference/Microsoft/Restier/Core/Authorization/AuthorizationFactory"
+                        ]
+                      },
+                      {
+                        "group": "Model",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Model/index",
+                          "api-reference/Microsoft/Restier/Core/Model/IModelBuilder",
+                          "api-reference/Microsoft/Restier/Core/Model/IModelMapper",
+                          "api-reference/Microsoft/Restier/Core/Model/ModelContext"
+                        ]
+                      },
+                      {
+                        "group": "Operation",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Operation/index",
+                          "api-reference/Microsoft/Restier/Core/Operation/IOperationAuthorizer",
+                          "api-reference/Microsoft/Restier/Core/Operation/IOperationExecutor",
+                          "api-reference/Microsoft/Restier/Core/Operation/IOperationFilter",
+                          "api-reference/Microsoft/Restier/Core/Operation/OperationContext"
+                        ]
+                      },
+                      {
+                        "group": "Query",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Query/index",
+                          "api-reference/Microsoft/Restier/Core/Query/DataSourceStubModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExecutor",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionAuthorizer",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionExpander",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionProcessor",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionSourcer",
+                          "api-reference/Microsoft/Restier/Core/Query/ParameterModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/PropertyModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryContext",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryExpressionContext",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryRequest",
+                          "api-reference/Microsoft/Restier/Core/Query/QueryResult"
+                        ]
+                      },
+                      {
+                        "group": "Submit",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Submit/index",
+                          "api-reference/Microsoft/Restier/Core/Submit/ChangeSet",
+                          "api-reference/Microsoft/Restier/Core/Submit/ChangeSetItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/ChangeSetItemValidationResult",
+                          "api-reference/Microsoft/Restier/Core/Submit/DataModificationItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/DataModificationItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/DefaultChangeSetInitializer",
+                          "api-reference/Microsoft/Restier/Core/Submit/DefaultSubmitExecutor",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetInitializer",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemAuthorizer",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemFilter",
+                          "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemValidator",
+                          "api-reference/Microsoft/Restier/Core/Submit/ISubmitExecutor",
+                          "api-reference/Microsoft/Restier/Core/Submit/SubmitContext",
+                          "api-reference/Microsoft/Restier/Core/Submit/SubmitResult"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "EntityFramework",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/EntityFramework/index",
+                      "api-reference/Microsoft/Restier/EntityFramework/EFChangeSetInitializer",
+                      "api-reference/Microsoft/Restier/EntityFramework/EntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFramework/IEntityFrameworkApi"
+                    ]
+                  },
+                  {
+                    "group": "EntityFrameworkCore",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/index",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/EFChangeSetInitializer",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/EntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/IEntityFrameworkApi"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Spatial",
+                "icon": "folder-tree",
+                "pages": [
+                  "api-reference/Microsoft/Spatial/index",
+                  "api-reference/Microsoft/Spatial/GeographyLineString",
+                  "api-reference/Microsoft/Spatial/GeographyPoint"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "System",
+            "icon": "folder-tree",
+            "pages": [
+              {
+                "group": "Data",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Entity",
+                    "icon": "folder-tree",
+                    "pages": [
+                      {
+                        "group": "Spatial",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/System/Data/Entity/Spatial/index",
+                          "api-reference/System/Data/Entity/Spatial/DbGeography"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple"
+}

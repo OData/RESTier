@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net9.0;</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
@@ -10,8 +10,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Breakdance.Assemblies" Version="7.*" />
+		<PackageReference Include="Breakdance.Assemblies" Version="8.*" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.*" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
