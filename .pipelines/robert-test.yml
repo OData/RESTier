@@ -1,0 +1,47 @@
+# Standalone, manually-triggered pipeline that exports the public signing
+# certificate (.cer) from Azure Key Vault so it can be uploaded to NuGet.org
+# for author signature verification.
+#
+# This pipeline is intentionally not wired to any branch trigger and is meant
+# to be run on demand from a throwaway branch.
+
+trigger: none
+pr: none
+
+name: ExportSigningCert-$(Date:yyyyMMdd)$(Rev:.r)
+
+stages:
+- stage: ExportCert
+  displayName: Export Signing Certificate
+  jobs:
+  - deployment: ExportCert
+    displayName: Export .cer from Key Vault
+    pool:
+      vmImage: windows-latest
+    environment: Code Sign - Approvals
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@2
+            displayName: Download public certificate (.cer)
+            inputs:
+              azureSubscription: Code Signing
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                $vaultUrl  = "$(SignKeyVaultUrl)".TrimEnd('/')
+                $vaultName = ([Uri]$vaultUrl).Host.Split('.')[0]
+                $outDir    = "$(Build.ArtifactStagingDirectory)/Cert"
+                New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+                az keyvault certificate download `
+                  --vault-name $vaultName `
+                  --name "$(SignKeyVaultCertificate)" `
+                  --file "$outDir/RESTier-CodeSigning.cer" `
+                  --encoding DER
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Artifact: signingCert'
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)/Cert'
+              artifact: signingCert
