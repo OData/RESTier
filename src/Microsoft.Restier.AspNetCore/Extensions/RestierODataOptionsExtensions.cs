@@ -148,7 +148,7 @@ public static class RestierODataOptionsExtensions
         oDataOptions.AddRouteComponents(routePrefix, model, services =>
         {
             // Register the Restier route marker so MapRestier() can identify this as a Restier route.
-            services.AddSingleton<RestierRouteMarker>();
+            services.AddSingleton(new RestierRouteMarker(type));
 
             //RWM: Add the API as the specific API type first, then if an ApiBase instance is requested from the container,
             //     get the existing instance.

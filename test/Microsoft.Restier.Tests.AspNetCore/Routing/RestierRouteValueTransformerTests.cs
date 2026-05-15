@@ -66,7 +66,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
                 var odataOptions = new ODataOptions();
                 odataOptions.AddRouteComponents(routePrefix, model, routeServices =>
                 {
-                    routeServices.AddSingleton<RestierRouteMarker>();
+                    routeServices.AddSingleton(new RestierRouteMarker(typeof(object)));
                 });
                 return Options.Create(odataOptions);
             });
