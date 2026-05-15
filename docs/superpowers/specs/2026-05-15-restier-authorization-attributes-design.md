@@ -26,7 +26,7 @@ DbSet-backed entity sets are explicitly out of scope (they have no anchor on `Ap
 | Pipeline ordering | None — `MatcherPolicy` does not require changes to the user's `Configure` method | The user's existing `UseRouting → UseAuthentication → UseAuthorization → UseEndpoints` ordering is sufficient. |
 | Per-segment lookup | First "significant" segment of `ODataFeature.Path` (EntitySet / Singleton / OperationImport / Operation) | Matches what an OData consumer thinks of as "the action surface." Metadata / service document paths fall back to class-level only. |
 | Precedence between class and member | Delegated to `AuthorizationMiddleware` | We add all collected attributes to endpoint metadata. ASP.NET Core's standard rule — `IAllowAnonymous` overrides any `IAuthorizeData` regardless of order — already does the right thing. |
-| Caching | `(apiType, targetKey) → wrapped Endpoint` cached in a `ConcurrentDictionary<,>` on the policy | Reflection lookup happens once per (API type, target) tuple; subsequent requests hit the cache. Endpoints are immutable, so caching is safe. |
+| Caching | `(apiType, targetKey) → IReadOnlyList<object> attributes` cached in a `ConcurrentDictionary<,>` on the policy. Wrapped `Endpoint` is **rebuilt per candidate** from the cached attribute list. | Reflection happens once per (API type, target) tuple. Wrapping is a small allocation per request and avoids cross-action / cross-prefix endpoint reuse. (RESTier chooses different `RestierController` actions — `Get`/`Post`/`Put`/…/`GetMetadata` — for the same `apiType+targetKey` based on HTTP method, and the same API type can be mapped under multiple route prefixes. Caching the wrapped `Endpoint` itself would smear those.) Empty-list cache entries (no attributes anywhere) are also stored so subsequent requests skip the reflection entirely and avoid wrapping at all. |
 | Inheritance | `GetCustomAttributes(inherit: true)` | A custom API class inheriting from a base that declares `[Authorize]` picks it up. Standard CLR convention. |
 | `$batch` requests | Each child request goes through routing → policy fires per child | No special-casing in the policy. Attributes apply per child operation. Covered by a dedicated test. |
 | Bound operations on entity sets (`/Books({id})/Restier.DiscontinueBooks`) | Use the operation method's attributes (last `OperationSegment` wins) | Matches ASP.NET Core's "the action's attributes apply" convention. |
@@ -64,8 +64,12 @@ Two reasons:
 ```csharp
 internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpointSelectorPolicy
 {
-    private readonly IOptions<ODataOptions> odataOptions;
-    private readonly ConcurrentDictionary<(Type apiType, string targetKey), Endpoint> cache = new();
+    // Cached attribute lookup keyed by (API type, target key). An empty array means
+    // "no attributes present anywhere" — cached so subsequent requests skip reflection
+    // AND skip endpoint wrapping. The cache holds attribute lists only, never endpoints,
+    // so it cannot bleed across HTTP-method actions or route prefixes.
+    private static readonly object[] EmptyAttributes = Array.Empty<object>();
+    private readonly ConcurrentDictionary<(Type apiType, string targetKey), object[]> attributeCache = new();
 
     // DynamicControllerEndpointMatcherPolicy.Order == int.MinValue + 100. We run after it so the
     // OData path is already parsed and the candidate endpoint is the RestierController action.
@@ -74,7 +78,7 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
     public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
     {
         // Cheap filter: only engage if at least one endpoint has the RestierRouteMarker
-        // in its metadata. Attached by MapRestier via the dynamic route's route services.
+        // in its metadata. Attached by MapRestier via .WithMetadata(...).
         for (var i = 0; i < endpoints.Count; i++)
         {
             if (endpoints[i].Metadata.GetMetadata<RestierRouteMarker>() is not null) return true;
@@ -96,12 +100,17 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
             var targetKey = ComputeTargetKey(path);
             var cacheKey = (marker.ApiType, targetKey);
 
-            if (!cache.TryGetValue(cacheKey, out var wrapped))
-            {
-                wrapped = BuildWrappedEndpoint(candidate.Endpoint, marker.ApiType, path, targetKey);
-                cache.TryAdd(cacheKey, wrapped);
-            }
+            var attributes = attributeCache.GetOrAdd(
+                cacheKey,
+                static (key) => DiscoverAttributes(key.apiType, key.targetKey));
 
+            if (attributes.Length == 0) continue; // no auth metadata to add — leave the candidate alone
+
+            // Build a fresh wrapped endpoint per candidate. This is intentional:
+            // the same (apiType, targetKey) can map to different candidate endpoints
+            // depending on HTTP method (RestierController.Get vs .Post vs .Put …) and on
+            // route prefix. The cheap allocation here is the price of correctness.
+            var wrapped = WrapEndpoint(candidate.Endpoint, attributes);
             candidates.ReplaceEndpoint(i, wrapped, candidate.Values);
         }
 
@@ -110,7 +119,9 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
 }
 ```
 
-`BuildWrappedEndpoint` collects `IAuthorizeData` and `IAllowAnonymous` attributes from (in order) the API class and the target member, then returns either the original endpoint (no attributes found — saves an allocation) or a new `RouteEndpoint` whose metadata is the original's metadata plus the collected attributes.
+`DiscoverAttributes(apiType, targetKey)` does the reflection: resolves the target `MemberInfo` from the key string, collects `IAuthorizeData` and `IAllowAnonymous` attributes from (in order) the API class and the target member, and returns them as a single `object[]`. Returns `EmptyAttributes` when nothing is found.
+
+`WrapEndpoint(original, attributes)` builds a `RouteEndpoint` (or matching `Endpoint` subclass — we copy the existing concrete type so route values, display name, request delegate, etc. are preserved) with `Metadata = new EndpointMetadataCollection(original.Metadata.Concat(attributes))`. This is a small per-request allocation, but it is the operation that guarantees the wrapping matches the *actual* candidate endpoint that routing chose.
 
 ### Target key resolution
 
@@ -169,8 +180,11 @@ Request: `GET /api/Books`.
    3. `ApplyAsync` runs:
       - Reads `marker.ApiType = typeof(TrippinApi)`.
       - `ComputeTargetKey(path) = "class"` (no `[Resource] Books` on `TrippinApi`; DbSet-backed entity set; falls back to class).
-      - Cache miss. `BuildWrappedEndpoint` reads `typeof(TrippinApi).GetCustomAttributes(inherit: true)` → finds `[AllowAnonymous]`. Builds wrapped `RouteEndpoint` with augmented metadata.
+      - Cache miss. `DiscoverAttributes` reads `typeof(TrippinApi).GetCustomAttributes(inherit: true)` → finds `[AllowAnonymous]`. Caches `{ AllowAnonymousAttribute }` under `(TrippinApi, "class")`.
+      - `WrapEndpoint(originalRestierControllerGetEndpoint, { AllowAnonymousAttribute })` builds a new endpoint mirroring the candidate's request delegate, display name, route values, plus augmented metadata.
       - `candidates.ReplaceEndpoint(0, wrapped, candidate.Values)`.
+
+   *(A subsequent `POST /api/Books` for the same API type takes the cached attribute list but freshly wraps `RestierController.Post`'s endpoint — no cross-action smear.)*
 2. `EndpointMiddleware` stores the wrapped endpoint on the request.
 3. `AuthenticationMiddleware` runs.
 4. `AuthorizationMiddleware` reads endpoint metadata, sees `IAllowAnonymous`, bypasses the global `[Authorize]` requirement.
@@ -218,14 +232,14 @@ Request: `GET /api/BooksWithPublisher`.
 
 ## Error Handling & Edge Cases
 
-- **No attribute on either class or target.** Policy is a no-op for that request: cache stores the original endpoint, `ReplaceEndpoint` is still called but with the same endpoint (no allocation beyond the cache entry, which is one-shot).
+- **No attribute on either class or target.** `DiscoverAttributes` returns `Array.Empty<object>()`, which the cache stores. The hot path then short-circuits before any endpoint wrapping (`if (attributes.Length == 0) continue;`). No per-request allocation in steady state.
 - **Conflicting class + member attributes.** `[Authorize]` on the class + `[AllowAnonymous]` on a member → both end up in metadata; `AuthorizationMiddleware` enforces "AllowAnonymous wins." No special handling required.
 - **`$batch` requests.** Each child request runs through routing. `ODataBatchHttpContextFixerMiddleware` and the batch handler set up per-child `HttpContext` state; the matcher policy fires for each child operation. **Covered by a dedicated test.**
 - **Operations bound to a resource path** (`/Books({id})/Restier.DiscontinueBooks`). `ComputeTargetKey` walks to the last `OperationSegment` — the operation's attributes win, not the entity set's.
 - **`OperationSegment` for a function vs action.** Both are looked up by method name on the API type; no behavior difference.
 - **Inheritance.** `GetCustomAttributes(inherit: true)` picks up attributes on a base API class. If a user has `class TrippinApi : RestrictedApi` and `[Authorize]` sits on `RestrictedApi`, subclasses inherit it unless they declare `[AllowAnonymous]` themselves.
 - **Schemes / roles.** `[Authorize(AuthenticationSchemes="X", Roles="Y")]` is `IAuthorizeData`; passes through unchanged. The matcher policy doesn't introspect the attribute contents.
-- **Cache scope.** The cache lives on the singleton policy instance, which is registered into the application's root service provider. API types are static (loaded assemblies); attribute decoration cannot change at runtime. No invalidation needed. In test harnesses each test builds its own host with its own service provider and thus its own policy instance — no cross-test contamination.
+- **Cache scope and safety.** The cache lives on the singleton policy instance, which is registered into the application's root service provider. API types are static (loaded assemblies); attribute decoration cannot change at runtime. No invalidation needed. The cache holds only `object[]` attribute lists — never `Endpoint` instances — so values cannot leak between HTTP-method actions (`Get` vs `Post` vs `Put` …) or between route prefixes that map to the same API type. Per-test isolation: each test builds its own host with its own service provider and thus its own policy instance, so no cross-test contamination.
 
 ## Testing Strategy
 
@@ -275,7 +289,22 @@ Test scenarios:
 | 11 | `[Authorize]` on class, `[AllowAnonymous]` on a `[Resource]` property → that resource bypasses auth | 200 OK on the resource, 401/403 elsewhere |
 | 12 | Inheritance: `[Authorize]` on base class, no override on subclass → subclass requires auth | 401 anonymous, 200 authenticated |
 
-`RestierTestHelpers.ExecuteTestRequest` is the established pattern (see `AuthorizationTests.cs` for the harness shape). Tests register a global `AuthorizeFilter` and a fake authentication scheme via `services` to exercise the full middleware pipeline.
+### Test harness — authentication wiring
+
+`RestierBreakdanceTestBase.EnsureTestServerAsync` builds its pipeline as `UseRouting → UseAuthorization → UseEndpoints` (`src/Microsoft.Restier.Breakdance/RestierBreakdanceTestBase.cs:111-117`). There is no `UseAuthentication()` call, so any test that needs an authenticated `ClaimsPrincipal` populated on `HttpContext.User` cannot rely on the harness as-is. The existing `AuthorizationTests.cs` works because it tests RESTier-level chained services (`IQueryExpressionAuthorizer`), not middleware-level authentication.
+
+Scenarios 6, 7, and 12 (policy-based admin success/failure, inheritance with an authenticated user) need real middleware-level authentication. Plan:
+
+1. **Use the existing `ApplicationBuilderAction` hook** (`RestierBreakdanceTestBase.cs:106`) — it runs *before* `UseRouting` in the harness. Tests inject `app.UseAuthentication()` through it. `UseAuthentication` runs before `UseRouting` is fine: it populates `HttpContext.User` from the configured scheme, and `UseAuthorization` (which reads `User` against the augmented endpoint metadata) runs later in the pipeline.
+2. **Ship a `TestAuthHandler`** in `test/Microsoft.Restier.Tests.AspNetCore` (a small `AuthenticationHandler<AuthenticationSchemeOptions>` that constructs a `ClaimsPrincipal` from an `X-Test-User` request header). Anonymous request → no header → unauthenticated. `X-Test-User: Admin` → principal with `ClaimTypes.Role == "admin"`. Etc.
+3. **Register the scheme and policies via the test's `services` callback** to `ExecuteTestRequest`:
+   ```csharp
+   services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => {});
+   services.AddAuthorization(o => o.AddPolicy("Admin", p => p.RequireRole("admin")));
+   ```
+4. **Cover scenarios 6/7/12 in `AnonymousAccessTests.cs`** using this fixture-by-composition pattern; the rest (anonymous-only scenarios 1–5, 8–11) work with the default Breakdance pipeline because they never read `HttpContext.User` — they only need `AuthorizationMiddleware` to *not* deny.
+
+No changes to `RestierBreakdanceTestBase` itself; the hooks it already exposes are sufficient. If a future need arises to bake `UseAuthentication()` into the default pipeline, that should be a separate Breakdance-package change with its own design discussion.
 
 ## Documentation
 
