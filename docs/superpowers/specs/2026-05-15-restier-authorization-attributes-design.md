@@ -136,7 +136,7 @@ Given `ODataPath`, `ComputeTargetKey` returns one of:
 | `/{OperationImport}` | `"operation:{name}"` | The method on `apiType` |
 | Path ending in `/Restier.{Operation}` (bound) | `"operation:{name}"` | The method on `apiType` |
 
-`ComputeTargetKey` deals only in string keys; the reflection happens once when `BuildWrappedEndpoint` populates the cache miss.
+`ComputeTargetKey` deals only in string keys; the reflection happens once when `DiscoverAttributes` populates the cache miss.
 
 ### `RestierRouteMarker` enrichment
 
@@ -208,7 +208,8 @@ Request: `POST /api/ResetDataSource`.
 1. Routing matches `RestierController.PostAction`.
 2. Matcher policy:
    - `ComputeTargetKey(path) = "operation:ResetDataSource"`.
-   - `BuildWrappedEndpoint` finds the `ResetDataSource` method on `TrippinApi`, reads `[Authorize(Policy="Admin")]`. Adds to metadata.
+   - `DiscoverAttributes` finds the `ResetDataSource` method on `TrippinApi`, reads `[Authorize(Policy="Admin")]`, caches `{ AuthorizeAttribute(Policy="Admin") }` under `(TrippinApi, "operation:ResetDataSource")`.
+   - `WrapEndpoint` builds a per-candidate wrapped endpoint with that attribute appended to the metadata.
 3. `AuthorizationMiddleware` evaluates the `"Admin"` policy via the user's `IAuthorizationPolicyProvider`. Allows or denies as configured.
 
 ### `[AllowAnonymous]` on a `[Resource]` property
@@ -227,7 +228,7 @@ public class LibraryApi : EntityFrameworkApi<LibraryContext>
 Request: `GET /api/BooksWithPublisher`.
 
 1. Matcher policy: `ComputeTargetKey(path) = "resource:BooksWithPublisher"`.
-2. `BuildWrappedEndpoint` finds the property, reads `[AllowAnonymous]`.
+2. `DiscoverAttributes` finds the property, reads `[AllowAnonymous]`, caches `{ AllowAnonymousAttribute }` under `(LibraryApi, "resource:BooksWithPublisher")`. `WrapEndpoint` builds the per-candidate wrapped endpoint.
 3. Auth bypassed for this resource only. Plain `/Books` (DbSet-backed) still hits class-level (or, if no class-level attribute, gets the global `[Authorize]`).
 
 ## Error Handling & Edge Cases
