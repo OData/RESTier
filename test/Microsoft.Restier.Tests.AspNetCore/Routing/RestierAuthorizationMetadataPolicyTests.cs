@@ -9,6 +9,7 @@ using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Routing;
@@ -239,6 +240,66 @@ public partial class RestierAuthorizationMetadataPolicyTests
         var attrs = RestierAuthorizationMetadataPolicy.DiscoverAttributes(typeof(ClassAuthorizeApi), "operation:Anything");
         attrs.Should().ContainSingle()
              .Which.Should().BeAssignableTo<Microsoft.AspNetCore.Authorization.IAuthorizeData>();
+    }
+
+    #endregion
+
+    #region AppliesToEndpoints
+
+    private static Microsoft.AspNetCore.Http.Endpoint MakeEndpoint(params object[] metadata)
+    {
+        return new Microsoft.AspNetCore.Http.Endpoint(
+            requestDelegate: _ => System.Threading.Tasks.Task.CompletedTask,
+            metadata: new Microsoft.AspNetCore.Http.EndpointMetadataCollection(metadata),
+            displayName: "test");
+    }
+
+    private static Microsoft.AspNetCore.Http.Endpoint MakeRestierEndpoint(params object[] extraMetadata)
+    {
+        // Mirror what MVC's routing builds for RestierController.Get: an endpoint whose
+        // ControllerActionDescriptor.ControllerTypeInfo points to RestierController.
+        var descriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor
+        {
+            ControllerTypeInfo = typeof(Microsoft.Restier.AspNetCore.RestierController).GetTypeInfo(),
+            ActionName = "Get",
+        };
+
+        var allMetadata = new object[extraMetadata.Length + 1];
+        allMetadata[0] = descriptor;
+        Array.Copy(extraMetadata, 0, allMetadata, 1, extraMetadata.Length);
+
+        return new Microsoft.AspNetCore.Http.Endpoint(
+            requestDelegate: _ => System.Threading.Tasks.Task.CompletedTask,
+            metadata: new Microsoft.AspNetCore.Http.EndpointMetadataCollection(allMetadata),
+            displayName: "RestierController.Get");
+    }
+
+    [Fact]
+    public void AppliesToEndpoints_NoRestierEndpoint_ReturnsFalse()
+    {
+        var policy = new RestierAuthorizationMetadataPolicy();
+        var endpoints = new[] { MakeEndpoint(), MakeEndpoint("some-other-marker") };
+
+        var applies = ((Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy)policy)
+            .AppliesToEndpoints(endpoints);
+
+        applies.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AppliesToEndpoints_OneRestierEndpoint_ReturnsTrue()
+    {
+        var policy = new RestierAuthorizationMetadataPolicy();
+        var endpoints = new[]
+        {
+            MakeEndpoint(),
+            MakeRestierEndpoint(),
+        };
+
+        var applies = ((Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy)policy)
+            .AppliesToEndpoints(endpoints);
+
+        applies.Should().BeTrue();
     }
 
     #endregion

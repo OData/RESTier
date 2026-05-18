@@ -2,6 +2,8 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.OData.UriParser;
@@ -10,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Microsoft.Restier.AspNetCore.Routing;
 
@@ -21,7 +24,7 @@ namespace Microsoft.Restier.AspNetCore.Routing;
 /// properties, or its <see cref="Model.BoundOperationAttribute"/> /
 /// <see cref="Model.UnboundOperationAttribute"/> methods.
 /// </summary>
-internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy
+internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpointSelectorPolicy
 {
     private const string ClassKey = "class";
     private const string OperationPrefix = "operation:";
@@ -136,4 +139,27 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy
     // DynamicControllerEndpointMatcherPolicy.Order == int.MinValue + 100. We run after it so the
     // OData path is already parsed and the candidate endpoint is the RestierController action.
     public override int Order => int.MinValue + 110;
+
+    /// <inheritdoc/>
+    public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
+    {
+        // Fast path: only engage if at least one candidate endpoint is a RestierController action.
+        // The dynamic-route trick routes every Restier request through this controller.
+        for (var i = 0; i < endpoints.Count; i++)
+        {
+            var descriptor = endpoints[i].Metadata.GetMetadata<ControllerActionDescriptor>();
+            if (descriptor?.ControllerTypeInfo.AsType() == typeof(RestierController))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public Task ApplyAsync(HttpContext httpContext, CandidateSet candidates)
+    {
+        // Stub — implemented in the next bundle.
+        return Task.CompletedTask;
+    }
 }
