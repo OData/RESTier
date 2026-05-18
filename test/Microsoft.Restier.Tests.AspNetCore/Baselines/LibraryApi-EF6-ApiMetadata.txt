@@ -63,6 +63,7 @@
         <Property Name="HeadquartersLocation" Type="Edm.Geography" />
         <Property Name="ServiceArea" Type="Edm.GeographyPolygon" />
         <Property Name="FloorPlan" Type="Edm.Geometry" />
+        <Property Name="RouteLine" Type="Edm.Geography" />
       </EntityType>
       <ComplexType Name="Address">
         <Property Name="Street" Type="Edm.String" />
