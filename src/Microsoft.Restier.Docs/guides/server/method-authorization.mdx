@@ -21,11 +21,17 @@ RESTier honors the standard ASP.NET Core authorization attributes — `[AllowAno
 | Surface | Example | Scope |
 |---------|---------|-------|
 | The API class itself | `[AllowAnonymous] public class TrippinApi : EntityFrameworkApi<TrippinContext>` | Every route this API serves |
-| Operation methods | `[UnboundOperation] [Authorize(Policy = "Admin")] public void ResetData()` | Just that operation |
+| Operation methods | `[UnboundOperation] [AllowAnonymous] public string Hello()` | Just that operation |
 
-These attributes participate in `AuthorizationMiddleware` via endpoint metadata, exactly like they do on any other ASP.NET Core controller. ASP.NET Core's standard precedence rules apply: `[AllowAnonymous]` always wins over `[Authorize]`, regardless of whether one is on the class and the other on a method.
+These attributes participate in `AuthorizationMiddleware` via endpoint metadata, exactly like they do on any other ASP.NET Core controller. ASP.NET Core's standard precedence rules apply: `[AllowAnonymous]` **always wins** over `[Authorize]`, regardless of whether one is on the class and the other on a method.
 
-### Example
+<Warning>
+Because `[AllowAnonymous]` always wins, you cannot use it on a class to *only* override a global filter while keeping `[Authorize(Policy = "…")]` enforced on a single method. The method-level policy is silently bypassed. If you want most of an API anonymous *except* an admin-only operation, leave the class with `[Authorize]` and put `[AllowAnonymous]` on the operations that should be public — never the other way around.
+</Warning>
+
+### Examples
+
+**Pattern 1 — Most of the API is public, a few operations require auth.** Leave the class with no attribute (or with `[AllowAnonymous]`) and add `[Authorize(...)]` only to the gated operations. Note the verb shape: OData actions (with side effects) can be `void`; OData functions must return a value. RESTier's `OperationAttribute` defaults to function, so void methods must explicitly set `OperationType = OperationType.Action`.
 
 ```csharp TrippinApi.cs
 using Microsoft.AspNetCore.Authorization;
@@ -34,19 +40,41 @@ using Microsoft.Restier.EntityFrameworkCore;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
-    // 1. Class-level [AllowAnonymous] — overrides a globally-registered [Authorize] filter
-    //    for every route served by this API.
-    [AllowAnonymous]
+    [AllowAnonymous]   // every route on this API is anonymous-allowed
     public class TrippinApi : EntityFrameworkApi<TrippinContext>
     {
         public TrippinApi(TrippinContext db, IEdmModel m, IQueryHandler q, ISubmitHandler s)
             : base(db, m, q, s) { }
 
-        // 2. Operation method — admin-only, regardless of the class-level [AllowAnonymous].
+        // Anonymous function — accessible to everyone (return type is required for functions).
         [UnboundOperation]
-        [Authorize(Policy = "Admin")]
-        public void ResetData() { /* ... */ }
+        [AllowAnonymous]
+        public string Hello() => "Hi!";
+
+        // Admin-only operation. Class-level [AllowAnonymous] would silently override this!
+        // Do NOT mix class-level [AllowAnonymous] with method-level [Authorize].
     }
+}
+```
+
+**Pattern 2 — Most of the API requires auth, a few operations are public.** This is the safe pattern when you need fine-grained gating.
+
+```csharp TrippinApi.cs
+[Authorize]   // every route on this API requires authentication
+public class TrippinApi : EntityFrameworkApi<TrippinContext>
+{
+    public TrippinApi(TrippinContext db, IEdmModel m, IQueryHandler q, ISubmitHandler s)
+        : base(db, m, q, s) { }
+
+    // Public probe — overrides the class-level [Authorize] for just this operation.
+    [UnboundOperation]
+    [AllowAnonymous]
+    public string Healthcheck() => "OK";
+
+    // Admin-only action. void return type → must be OperationType.Action explicitly.
+    [UnboundOperation(OperationType = OperationType.Action)]
+    [Authorize(Policy = "Admin")]
+    public void ResetData() { /* ... */ }
 }
 ```
 

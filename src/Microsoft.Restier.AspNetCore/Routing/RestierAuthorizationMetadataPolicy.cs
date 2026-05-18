@@ -26,9 +26,10 @@ namespace Microsoft.Restier.AspNetCore.Routing;
 /// A <see cref="MatcherPolicy"/> that augments the matched <see cref="Microsoft.AspNetCore.Http.Endpoint"/>
 /// for a Restier route with any <see cref="Microsoft.AspNetCore.Authorization.IAuthorizeData"/> or
 /// <see cref="Microsoft.AspNetCore.Authorization.IAllowAnonymous"/> attributes found on the user's
-/// <see cref="Core.ApiBase"/> subclass, its <see cref="Model.ResourceAttribute"/>-decorated
-/// properties, or its <see cref="Model.BoundOperationAttribute"/> /
-/// <see cref="Model.UnboundOperationAttribute"/> methods.
+/// <see cref="Core.ApiBase"/> subclass or its <see cref="Model.BoundOperationAttribute"/> /
+/// <see cref="Model.UnboundOperationAttribute"/>-decorated methods. Per-<see cref="Model.ResourceAttribute"/>-property
+/// placement is not supported because the BCL's <c>AllowAnonymousAttribute</c> and <c>AuthorizeAttribute</c>
+/// target <c>class | method</c> only — they cannot be applied to properties.
 /// </summary>
 internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpointSelectorPolicy
 {
@@ -85,9 +86,9 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
 
     /// <summary>
     /// Reflects on <paramref name="apiType"/> and the target identified by <paramref name="targetKey"/>
-    /// (one of <c>"class"</c>, <c>"resource:Name"</c>, or <c>"operation:Name"</c>) to collect every
+    /// (either <c>"class"</c> or <c>"operation:Name"</c>) to collect every
     /// <see cref="IAuthorizeData"/> and <see cref="IAllowAnonymous"/> attribute placed on the API class
-    /// and (where applicable) on a <see cref="ResourceAttribute"/>-decorated property or a
+    /// and, when the target is an operation, on the matching
     /// <see cref="BoundOperationAttribute"/> / <see cref="UnboundOperationAttribute"/>-decorated method.
     /// Class attributes come first, member attributes second; ASP.NET Core's
     /// <c>AuthorizationMiddleware</c> applies its standard "AllowAnonymous wins" precedence later.
