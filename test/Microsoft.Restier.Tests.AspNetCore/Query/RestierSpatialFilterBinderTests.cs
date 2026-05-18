@@ -97,11 +97,13 @@ public class RestierSpatialFilterBinderTests
 
     /// <summary>
     /// geo.length(RouteLine) must lower to a MemberExpression on the storage type's "Length"
-    /// property. NTS LineString inherits Length from Geometry — GetProperty walks inheritance,
-    /// so this works without any reflection helper for the property case.
+    /// property. NTS LineString <em>overrides</em> Geometry.Length, so the binder must
+    /// normalize the PropertyInfo to its base declaration on Geometry — EF Core's SqlServer
+    /// NTS translator dictionary keys on <c>typeof(Geometry).GetRuntimeProperty("Length")</c>
+    /// and rejects the LineString-flavored member by MemberInfo equality.
     /// </summary>
     [Fact]
-    public void BindGeoLength_EmitsLengthPropertyAccess()
+    public void BindGeoLength_EmitsLengthPropertyAccessOnBaseDeclaringType()
     {
         var (model, source) = BuildNtsFixture();
         var clause = ParseFilter(model, "Things", "geo.length(RouteLine) gt 0");
@@ -110,22 +112,21 @@ public class RestierSpatialFilterBinderTests
         var context = new QueryBinderContext(model, new ODataQuerySettings(), typeof(NtsEntity));
 
         var bound = binder.ApplyBind(source, clause, context);
-
-        // The body should be a BinaryExpression(GreaterThan, MemberExpression(prop.Length), Constant(0))
-        // — but the easiest sanity check is that we got an IQueryable back without throwing.
         bound.Should().NotBeNull("the binder must successfully translate geo.length(RouteLine) gt 0");
 
-        // Walk the expression tree looking for "Length" property access on a Geometry-derived type.
-        // If we never find it, the dispatch arm wasn't reached.
         var visitor = new FindLengthAccessVisitor();
         visitor.Visit(bound.Expression);
         visitor.Found.Should().BeTrue(
             "the bound expression must contain a MemberExpression accessing the Length property of the storage type");
+        visitor.MemberDeclaringType.Should().Be(typeof(NetTopologySuite.Geometries.Geometry),
+            "the PropertyInfo must be normalized to its base declaration so EF Core's SqlServer NTS " +
+            "translator (which keys on Geometry.Length) can match it");
     }
 
     private class FindLengthAccessVisitor : ExpressionVisitor
     {
         public bool Found { get; private set; }
+        public Type MemberDeclaringType { get; private set; }
 
         protected override Expression VisitMember(MemberExpression node)
         {
@@ -133,6 +134,7 @@ public class RestierSpatialFilterBinderTests
                 && typeof(NetTopologySuite.Geometries.Geometry).IsAssignableFrom(node.Expression?.Type))
             {
                 Found = true;
+                MemberDeclaringType = node.Member.DeclaringType;
             }
             return base.VisitMember(node);
         }

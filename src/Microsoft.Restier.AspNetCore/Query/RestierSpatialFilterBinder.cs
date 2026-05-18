@@ -88,10 +88,11 @@ public class RestierSpatialFilterBinder : FilterBinder
         var args = node.Parameters.ToArray();
         var bound = base.Bind(args[0], context);
 
-        // Geometry.Length (NTS) and DbGeography.Length / DbGeometry.Length (EF6) are all
-        // instance properties. GetProperty walks inheritance, so a concrete LineString-typed
-        // expression still finds the inherited Length on Geometry.
-        return Expression.Property(bound, "Length");
+        var prop = ResolveSpatialInstanceProperty(bound.Type, "Length")
+            ?? throw new ODataException(
+                $"Could not resolve instance property 'Length' on '{bound.Type.FullName}'.");
+
+        return Expression.Property(bound, prop);
     }
 
     /// <summary>
@@ -249,6 +250,36 @@ public class RestierSpatialFilterBinder : FilterBinder
             }
         }
         return null;
+    }
+
+    /// <summary>
+    /// Resolves a public instance property on <paramref name="sourceType"/> and normalizes
+    /// the returned <see cref="PropertyInfo"/> so that
+    /// <see cref="MemberInfo.DeclaringType"/> equals <see cref="MemberInfo.ReflectedType"/>
+    /// and matches the type that originally declared the virtual property — even when the
+    /// runtime type <em>overrides</em> it. For example, <c>LineString.Length</c> overrides
+    /// <c>Geometry.Length</c>, but EF Core's SqlServer NTS translator dictionary keys on
+    /// <c>typeof(Geometry).GetRuntimeProperty("Length")</c>; without this normalization the
+    /// <c>LineString</c>-flavored <see cref="PropertyInfo"/> never matches and the LINQ
+    /// expression cannot be translated to <c>STLength()</c>.
+    /// </summary>
+    internal static PropertyInfo ResolveSpatialInstanceProperty(Type sourceType, string propertyName)
+    {
+        var prop = sourceType.GetProperty(
+            propertyName, BindingFlags.Public | BindingFlags.Instance);
+        if (prop is null)
+        {
+            return null;
+        }
+
+        var baseGetter = prop.GetMethod?.GetBaseDefinition();
+        if (baseGetter is null || baseGetter.DeclaringType == prop.DeclaringType)
+        {
+            return prop;
+        }
+
+        return baseGetter.DeclaringType.GetProperty(
+            propertyName, BindingFlags.Public | BindingFlags.Instance) ?? prop;
     }
 
     /// <summary>

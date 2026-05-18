@@ -53,7 +53,14 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
                     return false;
                 }
 
-                using var connection = new Microsoft.Data.SqlClient.SqlConnection(raw);
+                // Probe against master so the check does not depend on the LibraryApiEFCore
+                // collection fixture having created the test database yet.
+                var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(raw)
+                {
+                    InitialCatalog = "master",
+                };
+
+                using var connection = new Microsoft.Data.SqlClient.SqlConnection(builder.ConnectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
                 // STDistance is a CLR-routed geography method. If CLR is disabled, this
