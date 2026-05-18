@@ -157,17 +157,14 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
     /// <inheritdoc/>
     public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
     {
-        // Fast path: only engage if at least one candidate endpoint is a RestierController action.
-        // The dynamic-route trick routes every Restier request through this controller.
-        for (var i = 0; i < endpoints.Count; i++)
-        {
-            var descriptor = endpoints[i].Metadata.GetMetadata<ControllerActionDescriptor>();
-            if (descriptor?.ControllerTypeInfo.AsType() == typeof(RestierController))
-            {
-                return true;
-            }
-        }
-        return false;
+        // We can't filter here. At node-builder time the only visible endpoint for a Restier
+        // route is the dynamic catch-all (e.g. "api/tests/{**odataPath}"), which has no
+        // ControllerActionDescriptor metadata yet — that gets attached after the dynamic
+        // controller endpoint matcher policy resolves the action at request time.
+        //
+        // Returning true unconditionally means ApplyAsync runs for every request, but the
+        // hot path inside it short-circuits in a few cycles for non-Restier routes.
+        return true;
     }
 
     /// <inheritdoc/>

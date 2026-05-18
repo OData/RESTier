@@ -296,29 +296,17 @@ public partial class RestierAuthorizationMetadataPolicyTests
     }
 
     [Fact]
-    public void AppliesToEndpoints_NoRestierEndpoint_ReturnsFalse()
+    public void AppliesToEndpoints_AlwaysReturnsTrue()
     {
+        // At node-builder time the only visible Restier endpoint is the dynamic catch-all,
+        // which has no ControllerActionDescriptor metadata yet. So the policy applies
+        // unconditionally and filters per-request inside ApplyAsync.
         var policy = MakePolicy();
-        var endpoints = new[] { MakeEndpoint(), MakeEndpoint("some-other-marker") };
+        var endpoints = new[] { MakeEndpoint(), MakeRestierEndpoint() };
 
-        var applies = ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(endpoints);
-
-        applies.Should().BeFalse();
-    }
-
-    [Fact]
-    public void AppliesToEndpoints_OneRestierEndpoint_ReturnsTrue()
-    {
-        var policy = MakePolicy();
-        var endpoints = new[]
-        {
-            MakeEndpoint(),
-            MakeRestierEndpoint(),
-        };
-
-        var applies = ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(endpoints);
-
-        applies.Should().BeTrue();
+        ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(endpoints).Should().BeTrue();
+        ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(new[] { MakeEndpoint() }).Should().BeTrue();
+        ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(System.Array.Empty<Endpoint>()).Should().BeTrue();
     }
 
     #endregion
