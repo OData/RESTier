@@ -6,17 +6,68 @@ sidebarTitle: "Authorization"
 ---
 
 Method Authorization allows you to have fine-grain control over how different types of API requests can be executed.
-Since most of RESTier uses built-in convention over repetitive boiler-plate Controllers, you can't just add security attributes
-to the controller methods, like you can with Web API.
 
-However, there are two different methods for defining per-request security. One, like the rest of RESTier, is
-convention-based, and the other executes before every request, allowing you to centralize your authorization logic.
-This allows you to pick the approach that works best for your architecture.
+RESTier separates this into two concerns:
 
-No matter what approach you chose, the concept is simple. Either technique uses a function that returns boolean. 
-Return `true`, and processing continues normally. Return `false`, and RESTier returns a 403 Unauthorized to the client.
+1. **ASP.NET Core authentication and authorization** — controlled by the standard `[AllowAnonymous]` / `[Authorize]` attributes on your API class and its operation methods, enforced by `AuthorizationMiddleware` before the request reaches RESTier.
+2. **RESTier-level authorization** — finer-grained, per-entity-set and per-operation rules expressed as convention methods (`Can{Operation}{TargetName}`) or as a centralized `IChangeSetItemAuthorizer`, evaluated inside RESTier once the request has been authenticated.
+
+The two layers are complementary. The first decides *whether the request reaches RESTier at all*; the second decides *what an authenticated request is allowed to do*.
+
+## Using `[AllowAnonymous]` and `[Authorize]`
+
+RESTier honors the standard ASP.NET Core authorization attributes — `[AllowAnonymous]`, `[Authorize]`, `[Authorize(Policy = "…")]`, `[Authorize(Roles = "…")]`, `[Authorize(AuthenticationSchemes = "…")]` — on two surfaces of your API class:
+
+| Surface | Example | Scope |
+|---------|---------|-------|
+| The API class itself | `[AllowAnonymous] public class TrippinApi : EntityFrameworkApi<TrippinContext>` | Every route this API serves |
+| Operation methods | `[UnboundOperation] [Authorize(Policy = "Admin")] public void ResetData()` | Just that operation |
+
+These attributes participate in `AuthorizationMiddleware` via endpoint metadata, exactly like they do on any other ASP.NET Core controller. ASP.NET Core's standard precedence rules apply: `[AllowAnonymous]` always wins over `[Authorize]`, regardless of whether one is on the class and the other on a method.
+
+### Example
+
+```csharp TrippinApi.cs
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Restier.EntityFrameworkCore;
+
+namespace Microsoft.OData.Service.Sample.Trippin.Api
+{
+    // 1. Class-level [AllowAnonymous] — overrides a globally-registered [Authorize] filter
+    //    for every route served by this API.
+    [AllowAnonymous]
+    public class TrippinApi : EntityFrameworkApi<TrippinContext>
+    {
+        public TrippinApi(TrippinContext db, IEdmModel m, IQueryHandler q, ISubmitHandler s)
+            : base(db, m, q, s) { }
+
+        // 2. Operation method — admin-only, regardless of the class-level [AllowAnonymous].
+        [UnboundOperation]
+        [Authorize(Policy = "Admin")]
+        public void ResetData() { /* ... */ }
+    }
+}
+```
+
+### Inheritance
+
+Attributes on a base API class flow through to subclasses by default. If `class TrippinApi : RestrictedApi` and `[Authorize]` sits on `RestrictedApi`, `TrippinApi` inherits the requirement unless it declares its own `[AllowAnonymous]`.
+
+<Info>
+The standard `[AllowAnonymous]` and `[Authorize]` attributes target `class | method` only — they cannot be placed on properties. That means entity-set–level granularity using these standard attributes is not available. For per-entity-set rules, use the convention-based `Can{Operation}{EntitySet}` methods below, which can inspect `ClaimsPrincipal.Current` directly.
+</Info>
+
+### Out of the box, no `app.Use…` call required
+
+`AddRestier()` registers an `IEndpointSelectorPolicy` (a `MatcherPolicy`) that wires user attributes into endpoint metadata at routing time. The user's existing `UseRouting → UseAuthentication → UseAuthorization` pipeline is sufficient — no additional middleware registration is required.
 
 ## Convention-Based Authorization
+
+<Tip>
+For controlling **whether ASP.NET Core auth runs at all** (e.g. overriding a global `[Authorize]` filter), use `[AllowAnonymous]` / `[Authorize]` as described in the section above. The convention-based methods here run *after* ASP.NET Core authorization has admitted the request — they decide what an *authenticated* request is allowed to do.
+</Tip>
+
 Users can control if one of the four submit operations is allowed on some EntitySet or Action by putting some 
 `protected internal` methods into the `Api` class. The method name must conform to the convention
 `Can{Operation}{TargetName}`.

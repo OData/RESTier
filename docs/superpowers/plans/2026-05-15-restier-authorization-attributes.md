@@ -31,7 +31,7 @@
 | `src/Microsoft.Restier.AspNetCore/Routing/RestierRouteMarker.cs` | Modify | Add `Type ApiType { get; }` and constructor parameter. |
 | `src/Microsoft.Restier.AspNetCore/Routing/RestierAuthorizationMetadataPolicy.cs` | Create | The `IEndpointSelectorPolicy` — `AppliesToEndpoints`, `ApplyAsync`, `ComputeTargetKey`, `DiscoverAttributes`, `WrapEndpoint`. |
 | `src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs` | Modify | Inside `AddRouteComponents` services lambda, pass `typeof(TApi)` to the `RestierRouteMarker` constructor (was `services.AddSingleton<RestierRouteMarker>()`). |
-| `src/Microsoft.Restier.AspNetCore/Extensions/RestierEndpointRouteBuilderExtensions.cs` | Modify | Resolve `RestierRouteMarker` from route services and attach it as endpoint metadata via `.WithMetadata(marker)`. |
+| `src/Microsoft.Restier.AspNetCore/Extensions/RestierEndpointRouteBuilderExtensions.cs` | (no change) | The two-arg `MapDynamicControllerRoute<T>(pattern, state)` overload returns `void`, so we cannot chain `.WithMetadata(marker)`. The matcher policy filters by `ControllerActionDescriptor` instead — see Task 8/9 below. |
 | `src/Microsoft.Restier.AspNetCore/Extensions/RestierIMvcBuilderExtensions.cs` | Modify | Factor a private `AddRestierServices(IServiceCollection)` helper called from all four `AddRestier` overloads; helper registers the matcher policy via `TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, RestierAuthorizationMetadataPolicy>())`. |
 | `test/Microsoft.Restier.Tests.AspNetCore/Routing/RestierAuthorizationMetadataPolicyTests.cs` | Create | Unit tests: `ComputeTargetKey` across path shapes, `DiscoverAttributes` across surfaces, `AppliesToEndpoints` filter, `ApplyAsync` cache-miss / cache-hit / no-attributes / wrap-builds-correctly. |
 | `test/Microsoft.Restier.Tests.AspNetCore/Routing/RestierRouteValueTransformerTests.cs` | Modify | Existing tests register `services.AddSingleton<RestierRouteMarker>()` (line 69) — change to `services.AddSingleton(new RestierRouteMarker(typeof(SomeApi)))`. |
@@ -169,72 +169,15 @@ EOF
 )"
 ```
 
-### Task 3: Attach `RestierRouteMarker` to endpoint metadata in `MapRestier`
+### Task 3: ~~Attach `RestierRouteMarker` to endpoint metadata in `MapRestier`~~ — SKIPPED
 
-**Files:**
-- Modify: `src/Microsoft.Restier.AspNetCore/Extensions/RestierEndpointRouteBuilderExtensions.cs`
+**Status:** Skipped after discovering that `MapDynamicControllerRoute<TTransformer>(string pattern, object state)` returns `void` — not `IEndpointConventionBuilder`. There is no clean way to add metadata to that endpoint without reaching into internal ASP.NET Core types via reflection.
 
-- [ ] **Step 1: Update `MapRestier` to resolve the marker and attach it as endpoint metadata**
+**Replacement approach:** The matcher policy filters by **`ControllerActionDescriptor`** instead: a candidate endpoint is a Restier endpoint iff its `ControllerActionDescriptor.ControllerTypeInfo` is `typeof(RestierController)`. `RestierController` is unique to this project, so this is a robust filter with no reflection.
 
-Open `src/Microsoft.Restier.AspNetCore/Extensions/RestierEndpointRouteBuilderExtensions.cs`. Replace the body of the `foreach` loop in `MapRestier` (currently lines 28–43) with:
+The marker stays registered in per-route DI services (Task 2 completed). The policy resolves it at request time via `IOptions<ODataOptions>` — see Tasks 8/9 (`AppliesToEndpoints`) and 10/11 (`ApplyAsync`) below.
 
-```csharp
-        foreach (var (prefix, _) in odataOptions.RouteComponents)
-        {
-            // Only map routes for Restier APIs (identified by the RestierRouteMarker sentinel).
-            var routeServices = odataOptions.GetRouteServices(prefix);
-            var marker = routeServices.GetService(typeof(RestierRouteMarker)) as RestierRouteMarker;
-            if (marker is null)
-            {
-                continue;
-            }
-
-            var pattern = string.IsNullOrEmpty(prefix)
-                ? "{**odataPath}"
-                : prefix + "/{**odataPath}";
-
-            endpoints.MapDynamicControllerRoute<RestierRouteValueTransformer>(pattern, state: prefix)
-                .WithMetadata(marker);
-        }
-```
-
-The `.WithMetadata(marker)` call attaches the same `RestierRouteMarker` instance to the dynamic-route endpoint's static metadata. `RestierAuthorizationMetadataPolicy.AppliesToEndpoints` reads this in its fast filter (no DI lookups in the hot path).
-
-- [ ] **Step 2: Build the source**
-
-Run:
-```bash
-dotnet build src/Microsoft.Restier.AspNetCore/Microsoft.Restier.AspNetCore.csproj
-```
-
-Expected: succeeds.
-
-- [ ] **Step 3: Run the full AspNetCore test project (smoke check)**
-
-Run:
-```bash
-dotnet test test/Microsoft.Restier.Tests.AspNetCore/Microsoft.Restier.Tests.AspNetCore.csproj
-```
-
-Expected: all tests pass. (Metadata attached to dynamic routes does not change any existing behavior; this is a smoke check that no test reads `endpoints.DataSources` and asserts the metadata is empty.)
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add src/Microsoft.Restier.AspNetCore/Extensions/RestierEndpointRouteBuilderExtensions.cs
-git commit -m "$(cat <<'EOF'
-feat(routing): attach RestierRouteMarker as endpoint metadata in MapRestier
-
-Endpoint metadata is the right place for matcher policies to read
-"is this a Restier route?" in the fast-filter path. The marker stays
-registered in route services too (existing transformers depend on it).
-
-Foundation for #717.
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
-EOF
-)"
-```
+No source change for Task 3. Move on to Phase 2.
 
 ---
 
