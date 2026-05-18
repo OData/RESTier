@@ -1,11 +1,15 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.OData.UriParser;
+using Microsoft.Restier.AspNetCore.Model;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.Restier.AspNetCore.Routing;
 
@@ -20,13 +24,16 @@ namespace Microsoft.Restier.AspNetCore.Routing;
 internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy
 {
     private const string ClassKey = "class";
-    private const string ResourcePrefix = "resource:";
     private const string OperationPrefix = "operation:";
 
     /// <summary>
     /// Maps an <see cref="ODataPath"/> to a stable string key identifying the user-code target
-    /// whose attributes should be honored: the class, a named resource property, or a named
+    /// whose attributes should be honored: either the API class (the default) or a named
     /// operation method. The key doubles as a cache key for the discovered attribute list.
+    /// Entity-set and singleton paths return <c>"class"</c> — see <c>DbSet-backed entity sets</c>
+    /// in the design spec for why per-entity-set placement isn't supported (the standard
+    /// <c>[AllowAnonymous]</c> / <c>[Authorize]</c> attributes target <c>class | method</c> only,
+    /// so there is no anchor for them on an entity-set property).
     /// </summary>
     internal static string ComputeTargetKey(ODataPath path)
     {
@@ -41,8 +48,8 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy
             return ClassKey;
         }
 
-        // Operations win because they are the actual action being invoked. A bound operation
-        // (path ending in OperationSegment) overrides the entity-set's attributes.
+        // Operations are the only non-class surface where standard auth attributes can land.
+        // A bound operation (path ending in OperationSegment) overrides the entity-set's class-level attribute.
         if (lastSegment is OperationImportSegment opImport)
         {
             var op = opImport.OperationImports.FirstOrDefault();
@@ -54,18 +61,75 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy
             return op is null ? ClassKey : OperationPrefix + op.Name;
         }
 
-        // Otherwise the first segment identifies the resource the request targets.
-        var firstSegment = path.FirstOrDefault();
-        if (firstSegment is EntitySetSegment esSeg)
+        return ClassKey;
+    }
+
+    private static readonly object[] EmptyAttributes = Array.Empty<object>();
+
+    /// <summary>
+    /// Reflects on <paramref name="apiType"/> and the target identified by <paramref name="targetKey"/>
+    /// (one of <c>"class"</c>, <c>"resource:Name"</c>, or <c>"operation:Name"</c>) to collect every
+    /// <see cref="IAuthorizeData"/> and <see cref="IAllowAnonymous"/> attribute placed on the API class
+    /// and (where applicable) on a <see cref="ResourceAttribute"/>-decorated property or a
+    /// <see cref="BoundOperationAttribute"/> / <see cref="UnboundOperationAttribute"/>-decorated method.
+    /// Class attributes come first, member attributes second; ASP.NET Core's
+    /// <c>AuthorizationMiddleware</c> applies its standard "AllowAnonymous wins" precedence later.
+    /// Returns an empty array when nothing is found, so callers can fast-path-skip.
+    /// </summary>
+    internal static object[] DiscoverAttributes(Type apiType, string targetKey)
+    {
+        if (apiType is null) throw new ArgumentNullException(nameof(apiType));
+        if (targetKey is null) throw new ArgumentNullException(nameof(targetKey));
+
+        var classAttrs = CollectAuthAttributes(apiType.GetCustomAttributes(inherit: true));
+        var memberAttrs = CollectMemberAttributes(apiType, targetKey);
+
+        if (classAttrs.Count == 0 && memberAttrs.Count == 0)
         {
-            return ResourcePrefix + esSeg.EntitySet.Name;
-        }
-        if (firstSegment is SingletonSegment singletonSeg)
-        {
-            return ResourcePrefix + singletonSeg.Singleton.Name;
+            return EmptyAttributes;
         }
 
-        return ClassKey;
+        var combined = new object[classAttrs.Count + memberAttrs.Count];
+        classAttrs.CopyTo(combined, 0);
+        memberAttrs.CopyTo(combined, classAttrs.Count);
+        return combined;
+    }
+
+    private static List<object> CollectMemberAttributes(Type apiType, string targetKey)
+    {
+        if (targetKey.StartsWith(OperationPrefix, StringComparison.Ordinal))
+        {
+            var name = targetKey.Substring(OperationPrefix.Length);
+            var method = apiType.GetMethod(
+                name,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+            // The method must be a real Restier operation — otherwise we'd be honoring attributes
+            // on arbitrary methods, which would surprise users.
+            if (method is null
+                || (!method.IsDefined(typeof(BoundOperationAttribute), inherit: true)
+                    && !method.IsDefined(typeof(UnboundOperationAttribute), inherit: true)))
+            {
+                return new List<object>(0);
+            }
+
+            return CollectAuthAttributes(method.GetCustomAttributes(inherit: true));
+        }
+
+        return new List<object>(0);
+    }
+
+    private static List<object> CollectAuthAttributes(object[] attributes)
+    {
+        var result = new List<object>(attributes.Length);
+        foreach (var attr in attributes)
+        {
+            if (attr is IAuthorizeData || attr is IAllowAnonymous)
+            {
+                result.Add(attr);
+            }
+        }
+        return result;
     }
 
     /// <inheritdoc/>
