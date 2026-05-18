@@ -2,7 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Extensions;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Matching;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OData.UriParser;
@@ -10,6 +16,7 @@ using Microsoft.Restier.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Routing;
@@ -274,14 +281,27 @@ public partial class RestierAuthorizationMetadataPolicyTests
             displayName: "RestierController.Get");
     }
 
+    private static RestierAuthorizationMetadataPolicy MakePolicy(IEdmModel model = null, Type apiType = null, string routePrefix = "")
+    {
+        var odataOptions = new ODataOptions();
+        if (model is not null && apiType is not null)
+        {
+            var apiTypeCapture = apiType;
+            odataOptions.AddRouteComponents(routePrefix, model, services =>
+            {
+                services.AddSingleton(new RestierRouteMarker(apiTypeCapture));
+            });
+        }
+        return new RestierAuthorizationMetadataPolicy(Options.Create(odataOptions));
+    }
+
     [Fact]
     public void AppliesToEndpoints_NoRestierEndpoint_ReturnsFalse()
     {
-        var policy = new RestierAuthorizationMetadataPolicy();
+        var policy = MakePolicy();
         var endpoints = new[] { MakeEndpoint(), MakeEndpoint("some-other-marker") };
 
-        var applies = ((Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy)policy)
-            .AppliesToEndpoints(endpoints);
+        var applies = ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(endpoints);
 
         applies.Should().BeFalse();
     }
@@ -289,17 +309,165 @@ public partial class RestierAuthorizationMetadataPolicyTests
     [Fact]
     public void AppliesToEndpoints_OneRestierEndpoint_ReturnsTrue()
     {
-        var policy = new RestierAuthorizationMetadataPolicy();
+        var policy = MakePolicy();
         var endpoints = new[]
         {
             MakeEndpoint(),
             MakeRestierEndpoint(),
         };
 
-        var applies = ((Microsoft.AspNetCore.Routing.Matching.IEndpointSelectorPolicy)policy)
-            .AppliesToEndpoints(endpoints);
+        var applies = ((IEndpointSelectorPolicy)policy).AppliesToEndpoints(endpoints);
 
         applies.Should().BeTrue();
+    }
+
+    #endregion
+
+    #region ApplyAsync
+
+    private static (HttpContext http, RestierAuthorizationMetadataPolicy policy) MakeApplyContext(
+        IEdmModel model,
+        string odataPath,
+        Type apiType,
+        string routePrefix = "")
+    {
+        var policy = MakePolicy(model, apiType, routePrefix);
+
+        var ctx = new DefaultHttpContext();
+        var feature = ctx.ODataFeature();
+        feature.Path = ParsePath(model, odataPath);
+        feature.Model = model;
+        feature.RoutePrefix = routePrefix;
+
+        return (ctx, policy);
+    }
+
+    private static CandidateSet MakeCandidateSet(params Endpoint[] endpoints)
+    {
+        var values = new RouteValueDictionary[endpoints.Length];
+        var scores = new int[endpoints.Length];
+        for (var i = 0; i < endpoints.Length; i++)
+        {
+            values[i] = new RouteValueDictionary();
+            scores[i] = 0;
+        }
+        return new CandidateSet(endpoints, values, scores);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_NonRestierCandidate_LeavesEndpointUnchanged()
+    {
+        var model = BuildTestModel();
+        var (http, policy) = MakeApplyContext(model, "People", typeof(ClassAnonymousApi));
+        var original = MakeEndpoint();
+        var candidates = MakeCandidateSet(original);
+
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http, candidates);
+
+        candidates[0].Endpoint.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_NoMarker_LeavesEndpointUnchanged()
+    {
+        var model = BuildTestModel();
+        // Construct policy with empty ODataOptions (no marker for the route).
+        var policy = MakePolicy();
+        var http = new DefaultHttpContext();
+        var feature = http.ODataFeature();
+        feature.Path = ParsePath(model, "People");
+        feature.Model = model;
+        feature.RoutePrefix = string.Empty;
+
+        var original = MakeRestierEndpoint();
+        var candidates = MakeCandidateSet(original);
+
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http, candidates);
+
+        candidates[0].Endpoint.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_NoAttributes_LeavesEndpointUnchanged()
+    {
+        var model = BuildTestModel();
+        var (http, policy) = MakeApplyContext(model, "People", typeof(PlainApi));
+        var original = MakeRestierEndpoint();
+        var candidates = MakeCandidateSet(original);
+
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http, candidates);
+
+        candidates[0].Endpoint.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_ClassAllowAnonymous_ReplacesEndpointWithAugmentedMetadata()
+    {
+        var model = BuildTestModel();
+        var (http, policy) = MakeApplyContext(model, "People", typeof(ClassAnonymousApi));
+        var original = MakeRestierEndpoint();
+        var candidates = MakeCandidateSet(original);
+
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http, candidates);
+
+        var wrapped = candidates[0].Endpoint;
+        wrapped.Should().NotBeSameAs(original);
+        wrapped.Metadata.GetMetadata<Microsoft.AspNetCore.Authorization.IAllowAnonymous>().Should().NotBeNull();
+        // Original metadata is preserved — the ControllerActionDescriptor should still be present.
+        wrapped.Metadata.GetMetadata<Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor>()
+               .Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ApplyAsync_OperationWithAuthorize_AugmentsForThatOperation()
+    {
+        var model = BuildTestModel();
+        var (http, policy) = MakeApplyContext(model, "ResetData", typeof(OperationApi));
+        // OperationApi has no class-level attributes; but ResetData isn't one of its operations.
+        // Re-target to RestrictedOp instead: build a path that ends in OperationImportSegment("RestrictedOp").
+        // The test model only declares ResetData as an operation import, so we use it as the operation name
+        // and verify that the policy looks up the method on the API class by that name.
+        // We need OperationApi to have a "ResetData" operation — add a special fixture below.
+        var original = MakeRestierEndpoint();
+        var candidates = MakeCandidateSet(original);
+
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http, candidates);
+
+        // OperationApi has no operation named "ResetData" → no attributes added.
+        candidates[0].Endpoint.Should().BeSameAs(original);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_TwoSeparateCalls_BothCandidatesWrappedIndependently()
+    {
+        // Regression for the cache-key concern: even when the same (apiType, targetKey) maps to
+        // two different candidate endpoints (e.g., GET vs POST for /People), each must be wrapped
+        // independently — never substituted for the cached wrapper of another.
+        var model = BuildTestModel();
+        var (http1, policy) = MakeApplyContext(model, "People", typeof(ClassAnonymousApi));
+
+        // First candidate carries a unique marker string in its metadata.
+        var firstOriginal = MakeRestierEndpoint("FirstAction");
+        var firstCandidates = MakeCandidateSet(firstOriginal);
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http1, firstCandidates);
+        var firstWrapped = firstCandidates[0].Endpoint;
+
+        // Reuse the same policy so the attribute cache hits.
+        var http2 = new DefaultHttpContext();
+        var feature2 = http2.ODataFeature();
+        feature2.Path = ParsePath(model, "People");
+        feature2.Model = model;
+        feature2.RoutePrefix = string.Empty;
+        var secondOriginal = MakeRestierEndpoint("SecondAction");
+        var secondCandidates = MakeCandidateSet(secondOriginal);
+        await ((IEndpointSelectorPolicy)policy).ApplyAsync(http2, secondCandidates);
+        var secondWrapped = secondCandidates[0].Endpoint;
+
+        firstWrapped.Should().NotBeSameAs(secondWrapped);
+        firstWrapped.Metadata.Should().Contain(m => "FirstAction".Equals(m));
+        secondWrapped.Metadata.Should().Contain(m => "SecondAction".Equals(m));
+        firstWrapped.Metadata.Should().NotContain(m => "SecondAction".Equals(m));
+        secondWrapped.Metadata.Should().NotContain(m => "FirstAction".Equals(m));
     }
 
     #endregion

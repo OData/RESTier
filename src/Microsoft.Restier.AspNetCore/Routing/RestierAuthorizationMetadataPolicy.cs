@@ -4,11 +4,17 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
+using Microsoft.AspNetCore.Routing.Patterns;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore.Model;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,6 +34,14 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
 {
     private const string ClassKey = "class";
     private const string OperationPrefix = "operation:";
+
+    private readonly IOptions<ODataOptions> odataOptions;
+    private readonly ConcurrentDictionary<(Type apiType, string targetKey), object[]> attributeCache = new();
+
+    public RestierAuthorizationMetadataPolicy(IOptions<ODataOptions> odataOptions)
+    {
+        this.odataOptions = odataOptions ?? throw new ArgumentNullException(nameof(odataOptions));
+    }
 
     /// <summary>
     /// Maps an <see cref="ODataPath"/> to a stable string key identifying the user-code target
@@ -159,7 +173,86 @@ internal sealed class RestierAuthorizationMetadataPolicy : MatcherPolicy, IEndpo
     /// <inheritdoc/>
     public Task ApplyAsync(HttpContext httpContext, CandidateSet candidates)
     {
-        // Stub — implemented in the next bundle.
+        // Locate the Restier route this request belongs to. ODataFeature.RoutePrefix is set by
+        // RestierRouteValueTransformer earlier in the routing pipeline. From there we reach the
+        // per-route service provider where the marker (carrying the API type) was registered.
+        var routePrefix = httpContext.ODataFeature().RoutePrefix ?? string.Empty;
+        var routeServices = odataOptions.Value.GetRouteServices(routePrefix);
+        var marker = routeServices?.GetService<RestierRouteMarker>();
+        if (marker is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        var path = httpContext.ODataFeature().Path;
+        var targetKey = ComputeTargetKey(path);
+        var cacheKey = (marker.ApiType, targetKey);
+
+        var attributes = attributeCache.GetOrAdd(
+            cacheKey,
+            static key => DiscoverAttributes(key.apiType, key.targetKey));
+
+        if (attributes.Length == 0)
+        {
+            // No auth metadata to add — fastest path: skip allocation entirely.
+            return Task.CompletedTask;
+        }
+
+        for (var i = 0; i < candidates.Count; i++)
+        {
+            if (!candidates.IsValidCandidate(i))
+            {
+                continue;
+            }
+
+            var candidate = candidates[i];
+            var descriptor = candidate.Endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();
+            if (descriptor?.ControllerTypeInfo.AsType() != typeof(RestierController))
+            {
+                continue;
+            }
+
+            // Build a fresh wrapped endpoint per candidate. This is intentional:
+            // the same (apiType, targetKey) tuple can map to different RestierController actions
+            // (Get / Post / Put / …) depending on HTTP method, and different route prefixes.
+            // We cache the attribute LIST, never the wrapped endpoint, so candidates always get
+            // metadata appropriate to the actual underlying action.
+            var wrapped = WrapEndpoint(candidate.Endpoint, attributes);
+            candidates.ReplaceEndpoint(i, wrapped, candidate.Values);
+        }
+
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Builds a fresh <see cref="Endpoint"/> whose metadata is the original's metadata concatenated
+    /// with the discovered auth attributes.
+    /// </summary>
+    internal static Endpoint WrapEndpoint(Endpoint original, object[] extraAttributes)
+    {
+        var originalMetadata = original.Metadata;
+        var combined = new object[originalMetadata.Count + extraAttributes.Length];
+        var index = 0;
+        foreach (var item in originalMetadata)
+        {
+            combined[index++] = item;
+        }
+        for (var i = 0; i < extraAttributes.Length; i++)
+        {
+            combined[index++] = extraAttributes[i];
+        }
+        var combinedMetadata = new EndpointMetadataCollection(combined);
+
+        if (original is RouteEndpoint routeEndpoint)
+        {
+            return new RouteEndpoint(
+                routeEndpoint.RequestDelegate,
+                routeEndpoint.RoutePattern,
+                routeEndpoint.Order,
+                combinedMetadata,
+                routeEndpoint.DisplayName);
+        }
+
+        return new Endpoint(original.RequestDelegate, combinedMetadata, original.DisplayName);
     }
 }
