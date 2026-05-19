@@ -120,8 +120,15 @@ namespace Microsoft.Restier.EntityFramework
             // Execute against EF to load entities with navigation properties
             var materializedEntities = await efQuery.ToArrayAsync(cancellationToken).ConfigureAwait(false);
 
-            // Apply the SelectExpand projection in-memory
-            var compiledSelect = (Func<TSource, TElement>)selectLambda.Compile();
+            // The OData SelectExpandBinder generates a SQL-style projection (no null guards)
+            // for the EF6 LINQ provider, on the assumption that LEFT JOIN + SQL null propagation
+            // will handle missing rows. We're running that lambda in-memory now, so a null
+            // navigation property (e.g. an orphan Book with no Publisher) NREs on the first
+            // nested member access (book.Publisher.Books). Rewrite the body to short-circuit
+            // member access and instance calls on a null receiver before compiling.
+            var nullSafeBody = NullSafeMemberAccessRewriter.Rewrite(selectLambda.Body, selectLambda.Parameters[0]);
+            var nullSafeLambda = Expression.Lambda<Func<TSource, TElement>>(nullSafeBody, selectLambda.Parameters);
+            var compiledSelect = nullSafeLambda.Compile();
             var projected = materializedEntities.Select(compiledSelect).ToArray();
 
             return new QueryResult(projected);
@@ -252,6 +259,100 @@ namespace Microsoft.Restier.EntityFramework
                 }
 
                 return base.VisitMember(node);
+            }
+        }
+
+        /// <summary>
+        /// Rewrites member access and instance method calls so that a null receiver short-circuits
+        /// to a default value, matching SQL/EF semantics for the OData projection lambda when
+        /// it's executed in-memory. The lambda parameter itself is never guarded — it's never null.
+        /// </summary>
+        private sealed class NullSafeMemberAccessRewriter : ExpressionVisitor
+        {
+            private readonly ParameterExpression rootParameter;
+
+            private NullSafeMemberAccessRewriter(ParameterExpression rootParameter)
+            {
+                this.rootParameter = rootParameter;
+            }
+
+            public static Expression Rewrite(Expression body, ParameterExpression rootParameter)
+                => new NullSafeMemberAccessRewriter(rootParameter).Visit(body);
+
+            protected override Expression VisitMember(MemberExpression node)
+            {
+                var newSource = node.Expression is null ? null : Visit(node.Expression);
+                var updated = node.Update(newSource);
+
+                if (!NeedsGuard(newSource))
+                {
+                    return updated;
+                }
+
+                return BuildNullGuard(newSource, updated, node.Type);
+            }
+
+            protected override Expression VisitMethodCall(MethodCallExpression node)
+            {
+                var newObj = node.Object is null ? null : Visit(node.Object);
+                var newArgs = new Expression[node.Arguments.Count];
+                for (var i = 0; i < node.Arguments.Count; i++)
+                {
+                    newArgs[i] = Visit(node.Arguments[i]);
+                }
+
+                var updated = node.Update(newObj, newArgs);
+
+                // Instance method on a potentially-null reference receiver.
+                if (newObj is not null && NeedsGuard(newObj))
+                {
+                    return BuildNullGuard(newObj, updated, node.Type);
+                }
+
+                // Extension/static method whose first argument is the de-facto receiver
+                // (e.g. Enumerable.Select(source, selector)) — guard on that source.
+                if (newObj is null && node.Method.IsStatic && newArgs.Length > 0 && NeedsGuard(newArgs[0]))
+                {
+                    return BuildNullGuard(newArgs[0], updated, node.Type);
+                }
+
+                return updated;
+            }
+
+            private bool NeedsGuard(Expression expr)
+            {
+                if (expr is null)
+                {
+                    return false;
+                }
+
+                // The root lambda parameter is never null by construction.
+                if (expr == rootParameter)
+                {
+                    return false;
+                }
+
+                // Value types (other than Nullable<T>) cannot be null.
+                if (expr.Type.IsValueType && Nullable.GetUnderlyingType(expr.Type) is null)
+                {
+                    return false;
+                }
+
+                // Constants speak for themselves — let them flow through.
+                if (expr is ConstantExpression)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            private static Expression BuildNullGuard(Expression receiver, Expression access, Type accessType)
+            {
+                var nullConst = Expression.Constant(null, receiver.Type);
+                var isNull = Expression.Equal(receiver, nullConst);
+                var defaultValue = Expression.Default(accessType);
+                return Expression.Condition(isNull, defaultValue, access, accessType);
             }
         }
 
