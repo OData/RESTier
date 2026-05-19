@@ -80,7 +80,10 @@ namespace Microsoft.Restier.EntityFrameworkCore
             EntityFrameworkCoreGetEntities(out var entitySetMap, out var entitySetKeyMap, out var sourceFactoryMap);
 #endif
 #if EF6
-            EntityFramework6GetEntitySets(out var entitySetMap, out var entitySetKeyMap, out var sourceFactoryMap);
+            // Keyless views (#741) are EF Core-only. EF6 throws upstream on any keyless EntitySet
+            // so this map stays empty.
+            EntityFramework6GetEntitySets(out var entitySetMap, out var entitySetKeyMap);
+            var sourceFactoryMap = new Dictionary<string, Func<object, IQueryable>>();
 #endif
             // Get the inner model if it exists.
             var innerModel = Inner?.GetEdmModel();

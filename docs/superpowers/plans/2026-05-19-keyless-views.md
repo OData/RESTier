@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Auto-map keyless EF Core (`[Keyless]` / `HasNoKey()` / `ToView`) and EF6 (keyless `DbSet<T>` / `DbQuery<T>` / EDMX-only entity sets) types to a `ComplexType<T>` + unbound `FunctionImport` returning `Collection(<ComplexType>)`, dispatched at request time by a registry-based fallback in `RestierOperationExecutor`. Views become accessible read-only via `GET /odata/<ViewName>()`. Closes [#741](https://github.com/OData/RESTier/issues/741).
+**Goal:** Auto-map keyless EF Core (`[Keyless]` / `HasNoKey()` / `ToView`) types to a `ComplexType<T>` + unbound `FunctionImport` returning `Collection(<ComplexType>)`, dispatched at request time by a registry-based fallback in `RestierOperationExecutor`. Views become accessible read-only via `GET /odata/<ViewName>()`. **EFCore-only.** EF6 throws an explicit "not supported" error on any keyless EntitySet; the EDMX path is out of scope. Closes [#741](https://github.com/OData/RESTier/issues/741).
 
-**Architecture:** A new host-agnostic `KeylessViewRegistry` (in `Microsoft.Restier.Core`) maps function-import name → `(CLR type, Func<object, IQueryable>)`. The EF model builders (shared + EF6/EFCore partials) detect keyless types, register them as `ComplexType<T>`, add the function import on the EDM container, and `Register(...)` them in the registry. `RestierODataOptionsExtensions.AddRestierRoute` bridges the registry across the model-building service provider's `Dispose()` boundary by capturing the populated instance locally before disposal and re-registering it into the per-route services lambda, mirroring the existing `RestierWebApiModelExtender` pattern. `RestierOperationExecutor` gets a `KeylessViewRegistry` constructor parameter; when its existing method lookup returns null, it consults the registry and returns the source factory's `IQueryable` directly (no `api.QueryAsync` — that's deferred follow-up work). AspNetCore.OData applies `$filter`/`$select`/`$orderby`/`$top`/`$skip` to the returned queryable at the OData layer. Writes are 405 by virtue of `RestierController.Post`'s existing function-import branch.
+**Architecture:** A new host-agnostic `KeylessViewRegistry` (in `Microsoft.Restier.Core`) maps function-import name → `(CLR type, Func<object, IQueryable>)`. The EFCore partial of `EFModelBuilder` detects keyless types via `FindPrimaryKey() == null`, registers them as `ComplexType<T>`, adds the function import on the EDM container (in a `<namespace>.Views` sub-namespace to avoid colliding with the ComplexType name), and `Register(...)`s them in the registry. The EF6 partial of `EFModelBuilder` throws an early `InvalidOperationException` for any entity set with empty `KeyProperties` so EF6 users get a clear "not supported" signal. `RestierODataOptionsExtensions.AddRestierRoute` bridges the registry across the model-building service provider's `Dispose()` boundary by capturing the populated instance locally before disposal and re-registering it into the per-route services lambda, mirroring the existing `RestierWebApiModelExtender` pattern. `RestierOperationExecutor` gets a `KeylessViewRegistry` constructor parameter; when its existing method lookup returns null, it consults the registry and returns the source factory's `IQueryable` directly (no `api.QueryAsync` — that's deferred follow-up work). AspNetCore.OData applies `$filter`/`$select`/`$orderby`/`$top`/`$skip` to the returned queryable at the OData layer. Writes return 405 via guards in `RestierController.Post` / `Delete` / `Update`.
 
 **Tech Stack:** C# (.NET 8/9/10), Microsoft.OData.Edm (`EdmModel`, `EdmComplexType`, `EdmFunction`, `EdmEntityContainer.AddFunctionImport`), Microsoft.OData.ModelBuilder 2.x (`ODataConventionModelBuilder.ComplexType<T>`), Microsoft.AspNetCore.OData 9.x, Entity Framework 6.5.x (`IObjectContextAdapter`, `ObjectContext.CreateQuery<T>`), Entity Framework Core 8/9/10 (`IEntityType.FindPrimaryKey()`), xUnit v3, AwesomeAssertions (imported as `FluentAssertions`), NSubstitute, DotNetDocs SDK + Mintlify MDX.
 
@@ -32,25 +32,21 @@
 | `src/Microsoft.Restier.Core/Model/KeylessViewRegistry.cs` | Create | New host-agnostic registry. `Register(name, clrType, factory)` / `TryGet(name, out entry)`. Throws on duplicate name. |
 | `src/Microsoft.Restier.Core/Model/KeylessViewEntry.cs` | Create | DTO holding name, CLR type, source factory. |
 | `src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs` | Modify | Lifetime bridge: register `KeylessViewRegistry` in `modelBuildingServices`, capture after `GetEdmModel`, re-register inside `AddRouteComponents`. |
-| `src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs` | Modify | Take `KeylessViewRegistry` ctor param. `BuildEdmModelFromEntitySetMaps` splits `entitySetMap` into keyed and keyless dictionaries, registers keyless as `ComplexType<T>`, adds function imports, populates registry. Empty key list normalised to "keyless." |
-| `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` | Modify | `EntityFrameworkCoreGetEntities` also emits `Dictionary<string, Func<object, IQueryable>>` of source factories keyed by entity-set / DbSet property name (reflection on the DbSet property). Adjust shared method signature. |
-| `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` | Modify | `EntityFramework6GetEntitySets` normalises empty `KeyProperties` lists to empty (so shared logic treats them as keyless), emits a `Dictionary<string, Func<object, IQueryable>>` of source factories keyed by EntitySet name. Property-backed factory preferred (any property assignable to `IQueryable<T>` — covers `DbSet<T>` / `IDbSet<T>` / `DbQuery<T>`); EDMX-only ESQL fallback via `ObjectContext.CreateQuery<T>("[Container].[EntitySet]")`. |
+| `src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs` | Modify | Take `KeylessViewRegistry` ctor param. `BuildEdmModelFromEntitySetMaps` splits `entitySetMap` into keyed and keyless dictionaries, registers keyless as `ComplexType<T>`, adds function imports (in a `<namespace>.Views` sub-namespace), populates registry. |
+| `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` | Modify | `EntityFrameworkCoreGetEntities` also emits `Dictionary<string, Func<object, IQueryable>>` of source factories keyed by DbSet property name (reflection on the DbSet property). Adjust shared method signature. |
+| `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` | Modify | EF6 throws an explicit `InvalidOperationException` on any entity set with empty `KeyProperties` (keyless not supported on EF6 — code-first model validation rejects, EDMX path out of scope). Shared `GetEdmModel` provides an empty `sourceFactoryMap` for the EF6 branch. |
 | `src/Microsoft.Restier.AspNetCore/Operation/RestierOperationExecutor.cs` | Modify | Add `KeylessViewRegistry` ctor parameter. After reflective method lookup returns null, consult registry; on hit, return `entry.SourceFactory(api)` as `IQueryable`. |
-| `src/Microsoft.Restier.Core/Microsoft.Restier.Core.csproj` | Check | No change expected; new file picks up by glob. |
+| `src/Microsoft.Restier.AspNetCore/RestierController.cs` | Modify | Add `OperationImportSegment + IsFunctionImport` 405 guards to `Delete` and the private `Update` method (POST already had the guard). |
 | `test/Microsoft.Restier.Tests.Core/Model/KeylessViewRegistryTests.cs` | Create | Unit tests for `Register` / `TryGet` / duplicate-throws. |
-| `test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/BooksByPublisher.cs` | Create | Move from `Tests.EntityFrameworkCore` into shared (so AspNetCore tests can reference it too). |
-| `test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsContext.cs` | Create | Real-SQL DbContext (replaces the existing in-memory one in `Tests.EntityFrameworkCore`). |
-| `test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsApi.cs` | Create | API class derived from `EntityFrameworkApi<LibraryWithViewsContext>` with an instrumented `OnFilteringBooksByPublisher` (counter) to prove the v1 limitation. |
-| `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/BooksByPublisher.cs` | Create | EF6 view CLR type. |
-| `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsContext.cs` | Create | EF6 DbContext exposing the view; CREATE VIEW SQL in its `Database.SetInitializer`. |
-| `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsApi.cs` | Create | EF6 API class with instrumented filter convention method. |
+| `test/Microsoft.Restier.Tests.Shared/Scenarios/Library/BooksByPublisher.cs` | Create | View CLR type (TFM-agnostic, in shared Library scenario). |
+| `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryContext.cs` | Modify | Under `#if EFCore`, add `DbSet<BooksByPublisher>` + fluent `HasNoKey().ToView("BooksByPublisher")`. |
+| `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryTestInitializer.cs` | Modify | Under `#if EFCore`, after the main seed, run `CREATE VIEW BooksByPublisher` via `ExecuteSqlRaw` (guarded by `IsRelational()` so in-memory tests aren't tripped). |
+| `test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsApi.cs` | Create | Thin `EntityFrameworkApi<LibraryContext>` derived class hosting the instrumented `OnFilteringBooksByPublisher` probe. |
 | `test/Microsoft.Restier.Tests.EntityFrameworkCore/EFModelBuilderTests.cs` | Modify | Flip the existing keyless test from "throws" to "produces ComplexType + FunctionImport". Add mixed-model test. |
-| `test/Microsoft.Restier.Tests.EntityFramework/EFModelBuilderTests.cs` | Create | EF6 mirror of EFCore model-builder tests. |
-| `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EFCore/Issue741_KeylessViews.cs` | Create | EFCore end-to-end: GET rows, $filter, OnFiltering doesn't fire, POST 405. |
-| `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EF6/Issue741_KeylessViews.cs` | Create | EF6 mirror. |
-| `test/Microsoft.Restier.Tests.EntityFrameworkCore/Scenarios/Views/BooksByPublisher.cs` | Delete | Moved to shared. |
-| `test/Microsoft.Restier.Tests.EntityFrameworkCore/Scenarios/Views/LibaryWithViewsContext.cs` | Delete | Moved to shared (note the typo in the existing filename — gone). |
-| `test/Microsoft.Restier.Tests.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsApi.cs` | Delete | Moved to shared. |
+| `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EFCore/Issue741_KeylessViews.cs` | Create | EFCore end-to-end: GET rows, $filter, OnFiltering doesn't fire, write verbs return 405. |
+| `test/Microsoft.Restier.Tests.AspNetCore/Baselines/LibraryApi-EFCore-ApiMetadata.txt` | Modify | Refresh baseline to include the new ComplexType + FunctionImport + Views schema. |
+| `test/Microsoft.Restier.Tests.EntityFrameworkCore.Spatial/EFModelBuilderSpatialIntegrationTests.cs` | Modify | Update the two direct `new EFModelBuilder<>(...)` call sites to pass a fresh `KeylessViewRegistry`. |
+| `test/Microsoft.Restier.Tests.AspNetCore/Operation/RestierOperationExecutorTests.cs` | Modify | Update the executor-construction helper to pass a fresh `KeylessViewRegistry`. |
 | `src/Microsoft.Restier.Docs/guides/server/keyless-views.mdx` | Create | New user-facing docs page. |
 | `src/Microsoft.Restier.Docs/guides/server/model-building.mdx` | Modify | Cross-link to keyless-views page. |
 | `src/Microsoft.Restier.Docs/guides/server/operations.mdx` | Modify | Note about auto-generated function imports. |
@@ -1439,546 +1435,14 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 ---
 
-## Phase 4 — EF6 model builder + tests
+## Phase 4 — EF6 (removed)
 
-### Task 11: Source-factory pipe in EF6 partial
+**EFCore-only scope.** EF6 was originally planned to ship the same keyless-views auto-mapping, but EF6's `DbModelBuilder.BuildAndValidate()` rejects any code-first entity without a key, and the EDMX-defined-keyless-entity-set path was explicitly removed from scope. The EF6 partial of `EFModelBuilder` instead throws an explicit `InvalidOperationException` for any entity set with empty `KeyProperties` — implemented and committed alongside the EFCore work. See spec **Out of scope** and **Follow-up C** for the rationale and the future re-scoping option (`[KeylessView]` attribute + `SqlQuery` escape hatch).
 
-**Files:**
-- Modify: `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs`
-
-- [ ] **Step 1: Change `EntityFramework6GetEntitySets` to emit factories and normalise empty key list**
-
-Replace the method body with:
-
-```csharp
-private void EntityFramework6GetEntitySets(
-    out Dictionary<string, Type> entitySetMap,
-    out Dictionary<Type, ICollection<PropertyInfo>> entitySetKeyMap,
-    out Dictionary<string, Func<object, IQueryable>> sourceFactoryMap)
-{
-    var efModel = (_dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
-    var efEntityContainers = efModel.GetItems<EntityContainer>(DataSpace.CSpace);
-    var efEntityContainer = efEntityContainers.FirstOrDefault(c => c.Name == _dbContext.GetType().Name);
-
-    if (efEntityContainer is null)
-    {
-        if (efEntityContainers.Count > 1)
-        {
-            var containerNames = efEntityContainers.Aggregate(
-                string.Empty, (current, next) => next.Name + ", ");
-            throw new Exception(string.Format(
-                CultureInfo.InvariantCulture,
-                Resources.MultipleDbContextsExpectedException,
-                containerNames[..^2],
-                _dbContext.GetType().Name));
-        }
-
-        throw new Exception(string.Format(
-            CultureInfo.InvariantCulture,
-            Resources.DbContextCouldNotBeFoundException,
-            efEntityContainers[0].Name,
-            _dbContext.GetType().Name));
-    }
-
-    entitySetMap = [];
-    entitySetKeyMap = [];
-    sourceFactoryMap = [];
-
-    var itemCollection = (ObjectItemCollection)efModel.GetItemCollection(DataSpace.OSpace);
-    var containerName = efEntityContainer.Name;
-
-    // Capture the DbContext properties once for fast property-backed source-factory resolution.
-    var contextProperties = _dbContext.GetType().GetProperties();
-
-    foreach (var efEntitySet in efEntityContainer.EntitySets)
-    {
-        var efEntityType = efEntitySet.ElementType;
-        var objectSpaceType = efModel.GetObjectSpaceType(efEntityType);
-        var clrType = itemCollection.GetClrType(objectSpaceType);
-
-        if (entitySetMap.ContainsKey(efEntitySet.Name))
-        {
-            continue;
-        }
-
-        entitySetMap.Add(efEntitySet.Name, clrType);
-
-        // Normalise: an empty list signals "keyless" to the shared builder.
-        // (EF6 normally returns a populated list for keyed entities, empty for keyless views.)
-        var keyProperties = efEntityType.KeyProperties
-            .Select(property => clrType.GetProperty(property.Name))
-            .Where(p => p != null)
-            .ToList();
-        entitySetKeyMap.Add(clrType, keyProperties);
-
-        // Source factory: prefer reflection on a CLR property whose element type matches the
-        // discovered EDM entity set. We scan for properties whose type is assignable to
-        // IQueryable<clrType> — that covers DbSet<T>, IDbSet<T>, and DbQuery<T> in one check
-        // (all three implement IQueryable<T>). If no property matches, fall back to
-        // ObjectContext.CreateQuery for EDMX-only entity sets.
-        //
-        // NOTE: discovery happens via efEntityContainer.EntitySets above — i.e. the EDM
-        // model. A DbQuery<T> or DbSet<T> that is NOT configured as an entity in the model
-        // does not appear here. That's by design: ObjectContext can only query EDM entity
-        // sets, so a property not in the EDM has no underlying entity set to query against.
-        var iqueryableOfClr = typeof(IQueryable<>).MakeGenericType(clrType);
-        var matchingProp = contextProperties.FirstOrDefault(p =>
-            iqueryableOfClr.IsAssignableFrom(p.PropertyType));
-
-        Func<object, IQueryable> sourceFactory;
-        if (matchingProp is not null)
-        {
-            var capturedProp = matchingProp;
-            sourceFactory = api =>
-            {
-                var ctx = ((IEntityFrameworkApi)api).DbContext;
-                return (IQueryable)capturedProp.GetValue(ctx);
-            };
-        }
-        else
-        {
-            var capturedClrType = clrType;
-            var capturedContainerName = containerName;
-            var capturedEntitySetName = efEntitySet.Name;
-            sourceFactory = api =>
-            {
-                var ctx = (DbContext)((IEntityFrameworkApi)api).DbContext;
-                var oc = ((IObjectContextAdapter)ctx).ObjectContext;
-                var createQuery = typeof(ObjectContext).GetMethod(nameof(ObjectContext.CreateQuery))
-                    .MakeGenericMethod(capturedClrType);
-                var esql = $"[{capturedContainerName}].[{capturedEntitySetName}]";
-                return (IQueryable)createQuery.Invoke(oc, new object[] { esql, Array.Empty<ObjectParameter>() });
-            };
-        }
-
-        sourceFactoryMap[efEntitySet.Name] = sourceFactory;
-    }
-}
-```
-
-- [ ] **Step 2: Ensure the `using`s cover the new types**
-
-At the top of the file, ensure:
-
-```csharp
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using Microsoft.Restier.Core.Model;
-```
-
-- [ ] **Step 3: Build EF6**
-
-Run: `dotnet build src/Microsoft.Restier.EntityFramework/Microsoft.Restier.EntityFramework.csproj`
-Expected: success.
-
-- [ ] **Step 4: Build everything**
-
-Run: `dotnet build RESTier.slnx`
-Expected: success across all projects.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs
-git commit -m "feat(ef6): emit source factories + normalise empty key lists
-
-Captures a Dictionary<string, Func<object, IQueryable>> alongside the
-entity-set and key maps. Property-backed factories (DbSet/DbQuery/IDbSet)
-are preferred; EDMX-only entity sets fall back to ObjectContext.CreateQuery
-with an ESQL '[Container].[EntitySet]' string. Empty KeyProperties lists
-flow through to the shared builder as 'keyless'.
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
-```
+EF6 users wanting view-shaped read-only resources continue to hand-author `[UnboundOperation]` methods on their API class.
 
 ---
 
-### Task 12: Create EF6 view test fixtures
-
-**Files:**
-- Create: `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/BooksByPublisher.cs`
-- Create: `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsContext.cs`
-- Create: `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsApi.cs`
-- Create: `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsTestInitializer.cs`
-
-- [ ] **Step 1: View CLR type (EF6, no `[Keyless]` attribute — EF6 uses fluent or annotations differently)**
-
-```csharp
-// test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/BooksByPublisher.cs
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
-
-namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
-{
-    public partial class BooksByPublisher
-    {
-        // Publisher.Id is a string in the shared Library fixture (e.g. "Publisher1").
-        public string PublisherId { get; set; }
-        public string BookName { get; set; }
-        public int BookCount { get; set; }
-    }
-}
-```
-
-- [ ] **Step 2: EF6 DbContext, with view mapped via fluent API (no key)**
-
-```csharp
-// test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsContext.cs
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
-
-using System.Data.Entity;
-using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-
-namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
-{
-    public class LibraryWithViewsContext : LibraryContext
-    {
-        public DbSet<BooksByPublisher> BooksByPublisher { get; set; }
-
-        public LibraryWithViewsContext() : base("LibraryWithViewsContext")
-            => Database.SetInitializer(new LibraryWithViewsTestInitializer());
-
-        public LibraryWithViewsContext(string connectionString) : base(connectionString)
-            => Database.SetInitializer(new LibraryWithViewsTestInitializer());
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            // EF6 keyless: map the view to a table-less entity by giving every property a key
-            // we then remove via fluent — OR use ToTable+Ignore patterns. Simplest is to NOT
-            // declare any key. The EFModelMapper produces an empty KeyProperties list, which
-            // the shared builder (Task 6) now treats as keyless.
-            modelBuilder.Entity<BooksByPublisher>().ToTable("BooksByPublisher");
-        }
-    }
-}
-```
-
-- [ ] **Step 3a: Refactor EF6 `LibraryTestInitializer` to expose a public static seed helper**
-
-The existing EF6 `LibraryTestInitializer.Seed(LibraryContext)` is `protected override` and so unreachable from another initialiser. Open `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryTestInitializer.cs` and (under the `#if EF6` branch only) extract the seed body into a public static method, then have the existing `Seed` override delegate to it.
-
-Find this in the EF6 branch (around line 33):
-
-```csharp
-#if EF6
-        : DropCreateDatabaseIfModelChanges<LibraryContext>
-    {
-
-        protected override void Seed(LibraryContext libraryContext)
-        {
-
-#else
-```
-
-Restructure the EF6 portion of the class so that:
-
-```csharp
-#if EF6
-        : DropCreateDatabaseIfModelChanges<LibraryContext>
-    {
-        protected override void Seed(LibraryContext libraryContext)
-        {
-            SeedLibraryData(libraryContext);
-        }
-
-        /// <summary>
-        /// Publicly-callable seed used by derived initialisers (e.g. LibraryWithViewsTestInitializer)
-        /// that need the same publishers / books / readers populated before they apply their own
-        /// migrations such as creating SQL views.
-        /// </summary>
-        public static void SeedLibraryData(LibraryContext libraryContext)
-        {
-            // ... move the entire existing EF6 Seed body here, including the EF6 #if block at the
-            // bottom that does the spatial save. The body uses libraryContext (parameter name
-            // preserved so the existing variable references compile unchanged).
-        }
-#else
-```
-
-The EF6 `#if`-block that does the SpatialPlace save+catch (existing lines ~206-238) moves inside `SeedLibraryData` together with the rest of the body.
-
-The EFCore `IDatabaseInitializer.Seed(DbContext context)` is already public — leave that branch alone.
-
-- [ ] **Step 3b: Create the EF6 `LibraryWithViewsTestInitializer`**
-
-```csharp
-// test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsTestInitializer.cs
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
-
-using System.Data.Entity;
-
-namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
-{
-    /// <summary>
-    /// Drops and recreates the LibraryWithViews database every run (test infra calls
-    /// this once per process via SeedDatabase&lt;TContext&gt;), seeds publishers / books
-    /// via LibraryTestInitializer.SeedLibraryData, then creates the BooksByPublisher
-    /// SQL view on top of the seeded data.
-    /// </summary>
-    public class LibraryWithViewsTestInitializer : DropCreateDatabaseAlways<LibraryWithViewsContext>
-    {
-        protected override void Seed(LibraryWithViewsContext context)
-        {
-            LibraryTestInitializer.SeedLibraryData(context);
-            context.SaveChanges();
-
-            context.Database.ExecuteSqlCommand(@"
-                IF OBJECT_ID('BooksByPublisher', 'V') IS NOT NULL DROP VIEW BooksByPublisher;
-                EXEC('CREATE VIEW BooksByPublisher AS
-                       SELECT p.Id AS PublisherId,
-                              b.Title AS BookName,
-                              CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS INT) AS BookCount
-                       FROM Publishers p
-                       INNER JOIN Books b ON b.PublisherId = p.Id;');
-            ");
-        }
-    }
-}
-```
-
-The EFCore counterpart created in Task 9b uses `new LibraryTestInitializer().Seed(dbContext)` — already public via `IDatabaseInitializer.Seed(DbContext)`. No refactor needed on the EFCore side.
-
-- [ ] **Step 4: EF6 API class with the instrumented convention probe**
-
-```csharp
-// test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsApi.cs
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
-
-using System.Linq;
-using Microsoft.OData.Edm;
-using Microsoft.Restier.Core.Query;
-using Microsoft.Restier.Core.Submit;
-using Microsoft.Restier.EntityFramework;
-
-namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
-{
-    public class LibraryWithViewsApi : EntityFrameworkApi<LibraryWithViewsContext>
-    {
-        public static int OnFilteringBooksByPublisherCallCount;
-
-        public LibraryWithViewsApi(LibraryWithViewsContext dbContext, IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler)
-            : base(dbContext, model, queryHandler, submitHandler)
-        {
-        }
-
-        protected internal IQueryable<BooksByPublisher> OnFilteringBooksByPublisher(IQueryable<BooksByPublisher> entitySet)
-        {
-            System.Threading.Interlocked.Increment(ref OnFilteringBooksByPublisherCallCount);
-            return entitySet;
-        }
-    }
-}
-```
-
-- [ ] **Step 5: Build both EF6 test projects**
-
-Run: `dotnet build test/Microsoft.Restier.Tests.Shared.EntityFramework/Microsoft.Restier.Tests.Shared.EntityFramework.csproj test/Microsoft.Restier.Tests.EntityFramework/Microsoft.Restier.Tests.EntityFramework.csproj`
-Expected: success.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/
-git commit -m "test(ef6): keyless-view scenario fixtures
-
-Mirrors the EFCore Views scenario: BooksByPublisher entity, LibraryWithViewsContext
-with the view fluent-mapped without a key, an initialiser that creates the
-SQL view post-migration, and an API class with an instrumented OnFiltering
-convention probe to pin the v1 limitation.
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
-```
-
----
-
-### Task 13: EF6 model-builder test
-
-**Files:**
-- Create: `test/Microsoft.Restier.Tests.EntityFramework/EFModelBuilderTests.cs`
-
-- [ ] **Step 1: Write the test**
-
-```csharp
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
-
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Breakdance;
-using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views;
-using Xunit;
-
-namespace Microsoft.Restier.Tests.EntityFramework;
-
-public class EFModelBuilderTests
-{
-    [Fact]
-    public async Task EFModelBuilder_Should_HandleViews()
-    {
-        var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryWithViewsApi>(
-            serviceCollection: services => services.AddEntityFrameworkServices<LibraryWithViewsContext>());
-
-        metadata.Should().NotBeNull();
-        var metadataString = metadata.ToString();
-
-        metadataString.Should().Contain("ComplexType Name=\"BooksByPublisher\"");
-        metadataString.Should().NotContain("EntityType Name=\"BooksByPublisher\"");
-        metadataString.Should().Contain("FunctionImport Name=\"BooksByPublisher\"");
-    }
-
-    [Fact]
-    public async Task EFModelBuilder_Should_HandleMixedModel()
-    {
-        var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryWithViewsApi>(
-            serviceCollection: services => services.AddEntityFrameworkServices<LibraryWithViewsContext>());
-
-        var metadataString = metadata.ToString();
-
-        metadataString.Should().Contain("EntityType Name=\"Book\"");
-        metadataString.Should().Contain("EntitySet Name=\"Books\"");
-        metadataString.Should().Contain("ComplexType Name=\"BooksByPublisher\"");
-        metadataString.Should().Contain("FunctionImport Name=\"BooksByPublisher\"");
-    }
-}
-```
-
-- [ ] **Step 2: Add the user-secret for `LibraryWithViewsContext` (EF6)**
-
-```bash
-cd test/Microsoft.Restier.Tests.Shared.EntityFramework
-dotnet user-secrets set "ConnectionStrings:LibraryWithViewsContext" "Server=(localdb)\mssqllocaldb;Database=LibraryWithViewsContext_EF6;Trusted_Connection=true;TrustServerCertificate=true"
-```
-
-- [ ] **Step 3: Run the tests**
-
-Run: `dotnet test test/Microsoft.Restier.Tests.EntityFramework/Microsoft.Restier.Tests.EntityFramework.csproj --filter "FullyQualifiedName~EFModelBuilder"`
-Expected: 2 passed per TFM.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add test/Microsoft.Restier.Tests.EntityFramework/EFModelBuilderTests.cs
-git commit -m "test(ef6): model-builder produces ComplexType + FunctionImport for views
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
-```
-
----
-
-### Task 14: EF6 end-to-end regression test
-
-**Files:**
-- Create: `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EF6/Issue741_KeylessViews.cs`
-
-- [ ] **Step 1: Write the test class (mirrors the EFCore one)**
-
-```csharp
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// Licensed under the MIT License.  See License.txt in the project root for license information.
-
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Restier.Breakdance;
-using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views;
-using Xunit;
-
-namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EF6;
-
-public class Issue741_KeylessViews
-{
-    private static Action<IServiceCollection> ConfigureServices => services =>
-        services.AddEntityFrameworkServices<LibraryWithViewsContext>();
-
-    [Fact]
-    public async Task Get_KeylessView_Returns200WithRows()
-    {
-        LibraryWithViewsApi.OnFilteringBooksByPublisherCallCount = 0;
-
-        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
-            HttpMethod.Get,
-            resource: "/BooksByPublisher()",
-            serviceCollection: ConfigureServices);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadAsStringAsync();
-        body.Should().Contain("\"value\"");
-    }
-
-    [Fact]
-    public async Task Get_KeylessView_WithFilter_AppliesFilter()
-    {
-        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
-            HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
-            serviceCollection: ConfigureServices);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task Get_KeylessView_DoesNotInvokeOnFilteringConvention()
-    {
-        LibraryWithViewsApi.OnFilteringBooksByPublisherCallCount = 0;
-
-        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
-            HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
-            serviceCollection: ConfigureServices);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        LibraryWithViewsApi.OnFilteringBooksByPublisherCallCount.Should().Be(0,
-            because: "v1 does not invoke OnFiltering<View> for keyless-view function imports; see Follow-up A");
-    }
-
-    [Theory]
-    [InlineData("POST")]
-    [InlineData("PUT")]
-    [InlineData("PATCH")]
-    [InlineData("DELETE")]
-    public async Task Write_KeylessView_Returns405(string verb)
-    {
-        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
-            new HttpMethod(verb),
-            resource: "/BooksByPublisher()",
-            payload: verb == "DELETE" ? null : "{}",
-            serviceCollection: ConfigureServices);
-
-        response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
-    }
-}
-```
-
-- [ ] **Step 2: Run the tests**
-
-Run: `dotnet test test/Microsoft.Restier.Tests.AspNetCore/Microsoft.Restier.Tests.AspNetCore.csproj --filter "FullyQualifiedName~EF6.Issue741_KeylessViews"`
-Expected: 3 passed + 4 theory rows = 7 passed per TFM.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EF6/Issue741_KeylessViews.cs
-git commit -m "test(ef6): end-to-end keyless-view coverage via Issue741_KeylessViews
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
-```
-
----
 
 ## Phase 5 — Documentation
 
@@ -2040,8 +1504,6 @@ GET /odata/BooksByPublisher()?$select=BookName,BookCount
 GET /odata/BooksByPublisher()?$orderby=BookCount desc&$top=10
 ```
 
-<Tabs>
-  <Tab title="EF Core">
 ```csharp
 public class LibraryContext : DbContext
 {
@@ -2066,32 +1528,10 @@ public class BooksByPublisher
     public int BookCount { get; set; }
 }
 ```
-  </Tab>
-  <Tab title="EF6">
-```csharp
-public class LibraryContext : DbContext
-{
-    public DbSet<Book> Books { get; set; }
-    public DbSet<BooksByPublisher> BooksByPublisher { get; set; }
 
-    protected override void OnModelCreating(DbModelBuilder mb)
-    {
-        // No key configured — RESTier treats this as a keyless view.
-        mb.Entity<BooksByPublisher>().ToTable("BooksByPublisher");
-    }
-}
-
-public class BooksByPublisher
-{
-    public string PublisherId { get; set; }
-    public string BookName { get; set; }
-    public int BookCount { get; set; }
-}
-```
-
-EDMX-only entity sets that don't appear as a DbSet/DbQuery property are also supported — RESTier falls back to `ObjectContext.CreateQuery<T>` for those.
-  </Tab>
-</Tabs>
+<Note>
+**EF Core only.** EF6 doesn't support keyless entity types in code-first (model validation rejects entities without a key), and the EDMX-defined-keyless-entity-set path is explicitly out of scope. EF6 users who want view-shaped resources hand-author `[UnboundOperation]` methods on their API class.
+</Note>
 
 ## Read-only by construction
 
@@ -2124,10 +1564,8 @@ Both limitations are tracked in the [keyless-views follow-up issue]() and will b
 |---|---|
 | EF Core `[Keyless]` + `DbSet<T>` | `ComplexType<T>` + `FunctionImport` named after the DbSet |
 | EF Core `HasNoKey()` + `ToView("X")` + `DbSet<T>` | Same |
-| EF6 fluent `Entity<T>().ToTable("X")` with no key configured (whether the property is `DbSet<T>`, `IDbSet<T>`, or `DbQuery<T>`) | `ComplexType<T>` + `FunctionImport` named after the EntitySet |
-| EF6 EDMX-only entity set (no CLR property) | `ComplexType<T>` + `FunctionImport`; runtime queries use `ObjectContext.CreateQuery<T>("[Container].[EntitySet]")` |
-| Keyless type with no DbSet (EFCore query type only) | Not exposed (no entity-set-name to map to a function import) |
-| EF6 `DbQuery<T>` (or `DbSet<T>`) not configured via `modelBuilder.Entity<T>()` / EDMX | Not exposed. Configure the entity in the model first — the property type itself does not matter. |
+| EF Core keyless type with no DbSet (pure query type) | Not exposed — no entity-set-name to map to a function import |
+| EF6 (any flavour) | Not supported — `EFModelBuilder` throws `InvalidOperationException` if it encounters an empty key list. Use `[UnboundOperation]` to hand-author a view-shaped resource on EF6. |
 ```
 
 - [ ] **Step 2: Build the docs**
@@ -2142,7 +1580,7 @@ git add src/Microsoft.Restier.Docs/guides/server/keyless-views.mdx
 git commit -m "docs(server): add keyless-views guide
 
 Introduces the auto-mapping of keyless EF types as ComplexType + unbound
-FunctionImport. Covers EFCore and EF6 patterns (including EF6 EDMX-only).
+FunctionImport. EFCore-only; EF6 callout explains the limitation.
 Calls out v1 limitations (no convention hooks, no RestierEFOptions
 no-tracking) under a Warning component pending the follow-up.
 
@@ -2368,5 +1806,5 @@ git status
 - [ ] HTTP status: every test expecting "not allowed" asserts **405**, not 404 (Tasks 10, 14).
 - [ ] Convention hooks: every test about `OnFiltering<View>` asserts the call count is **0** (Tasks 10, 14) — pinned as the v1 limitation.
 - [ ] Bridge: `KeylessViewRegistry` registered in `modelBuildingServices` AND captured locally AND re-registered into the route services lambda (Task 3). All three steps present.
-- [ ] EF6 EDMX-only fallback present in Task 11 (`ObjectContext.CreateQuery<T>("[Container].[EntitySet]")`).
+- [ ] EF6 partial throws an explicit `InvalidOperationException` for empty key lists (not silently no-op).
 - [ ] Docs deliverable: new page (Task 15), cross-links (Task 16), navigation (Task 17), release notes (Task 18), all in scope.
