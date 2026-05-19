@@ -93,7 +93,7 @@ namespace Microsoft.Restier.Core.Model
         /// <param name="sourceFactory">Builds an <see cref="IQueryable"/> over the underlying view, given the live API instance.</param>
         public KeylessViewEntry(string functionImportName, Type clrType, Func<object, IQueryable> sourceFactory)
         {
-            Ensure.NotNullOrEmpty(functionImportName, nameof(functionImportName));
+            Ensure.NotNullOrWhiteSpace(functionImportName, nameof(functionImportName));
             Ensure.NotNull(clrType, nameof(clrType));
             Ensure.NotNull(sourceFactory, nameof(sourceFactory));
 
@@ -265,7 +265,7 @@ namespace Microsoft.Restier.Core.Model
         /// </summary>
         public void Register(string functionImportName, Type clrType, Func<object, IQueryable> sourceFactory)
         {
-            Ensure.NotNullOrEmpty(functionImportName, nameof(functionImportName));
+            Ensure.NotNullOrWhiteSpace(functionImportName, nameof(functionImportName));
             Ensure.NotNull(clrType, nameof(clrType));
             Ensure.NotNull(sourceFactory, nameof(sourceFactory));
 
