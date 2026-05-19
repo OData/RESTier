@@ -1,14 +1,14 @@
 # Keyless EF Views as Read-Only RESTier Resources
 
 **Date:** 2026-05-19
-**Status:** Design draft — awaiting confirmation
+**Status:** Design draft — second revision after code-review pushback (awaiting confirmation)
 **Issue:** [OData/RESTier#741](https://github.com/OData/RESTier/issues/741) (predecessor: [#692](https://github.com/OData/RESTier/issues/692))
 
 ## Goal
 
 Expose EF Core `[Keyless]` / `HasNoKey()` and EF6 keyless `DbSet<T>` / `DbQuery<T>` entities — typically database views — as read-only RESTier resources, so a single Restier API can serve both tables and views without forcing users to hand-author `[UnboundOperation]` complex-type wrappers. The current behaviour (throw `InvalidOperationException` at model-build time with a message that tells the user to do exactly that wrapping themselves) is replaced with automatic complex-type + function-import wiring through `EFModelBuilder`. Both EF flavours behave identically from the consumer's perspective.
 
-`GET /odata/BooksByPublisher()` (function-call URL, parens required) returns the rows; `$filter`, `$select`, `$orderby`, `$top`, `$skip` work as normal OData query options; convention interceptors (`OnFiltering<View>`) fire just like on a sourced query; writes are unavailable by construction (no entity set ⇒ no `EntitySetRoutingConvention` match ⇒ 404 from AspNetCore.OData).
+`GET /odata/BooksByPublisher()` (function-call URL, parens required) returns the rows; `$filter`, `$select`, `$orderby`, `$top`, `$skip` work as normal OData query options applied by AspNetCore.OData over the returned `IQueryable`; writes return HTTP 405 (`RestierController.Post`'s existing function-import branch returns `MethodNotAllowed`). Convention interceptors (`OnFiltering<View>` etc.) **do not fire** in v1 — that requires widening `ConventionBasedQueryExpressionProcessor` to function-import model references and is deferred to a follow-up spec.
 
 ## Decisions
 
@@ -16,10 +16,11 @@ Expose EF Core `[Keyless]` / `HasNoKey()` and EF6 keyless `DbSet<T>` / `DbQuery<
 |----------|--------|-----------|
 | URL shape | Function-import call: `GET /odata/BooksByPublisher()` (parens required) | OData v4 entity sets require keyed entity types per spec — this is unchanged in OData 8 / AspNetCore.OData 9 (Microsoft Learn: *"abstract entity type without keys can't be used to define any navigation sources"*). Function imports over `Collection(ComplexType)` are the spec-aligned shape and what the original RESTier error message already pointed users to. |
 | EDM modelling | `ComplexType<T>` + unbound `FunctionImport` named after the DbSet/EntitySet returning `Collection(<ComplexType>)` | Smallest spec-aligned surface. No synthetic keys (would lie about the data model and expose insert/update/delete URLs we'd then have to hand-block). No singleton (singletons return one entity, not a collection). |
-| Dispatch | Registry-based fallback inside `RestierOperationExecutor` — no EDM annotations | A single shared `KeylessViewRegistry` (DI singleton, per-API) maps function-import name → CLR type + source factory. The executor's existing "method by name" lookup falls through to the registry when no API method matches. Avoids leaking RESTier-private vocabulary terms into `$metadata` and keeps OData-Core unaware of the feature. |
+| Dispatch | Registry-based fallback inside `RestierOperationExecutor` — no EDM annotations | A single shared `KeylessViewRegistry` (defined in `Microsoft.Restier.Core`, populated by EF model builders, lifetime-bridged into the route container) maps function-import name → CLR type + source factory. The executor's existing "method by name" lookup falls through to the registry when no API method matches. Avoids leaking RESTier-private vocabulary terms into `$metadata` and keeps OData-Core unaware of the feature. |
 | Source factory | Captured at model-build time, EF-flavour-specific | EF Core: reflection on the DbSet property. EF6 DbSet/DbQuery-backed: reflection on the property. EF6 EDMX-only (no CLR property): `((IObjectContextAdapter)ctx).ObjectContext.CreateQuery<T>("[Container].[EntitySet]")`. The executor stays EF-agnostic — it only ever invokes `Func<object api, IQueryable>`. |
-| Query pipeline integration | Route through `api.QueryAsync(new QueryRequest(...))` | Conventions (`OnFiltering<View>`), authorizers, processors, and the no-tracking handling already wired by `RestierEFOptions` apply uniformly. `EFQueryExpressionSourcer` is *not* invoked (there is no `EntitySet` model reference); the factory produces the leaf `IQueryable` instead. |
-| Writes | Not supported, no special handling needed | No entity set means AspNetCore.OData's `EntitySetRoutingConvention` never matches POST/PATCH/PUT/DELETE on the view URL. Default response is 404 — that's the desired UX. No submit-pipeline plumbing. |
+| Query pipeline integration (v1) | Executor returns the factory's `IQueryable` *directly*, bypassing `api.QueryAsync` | `ApiBase.QueryAsync` only accepts `QueryableSource<T>` requests (`ApiBase.cs:77-80`), produced via `api.GetQueryableSource<T>(name)`, which in turn requires the name to resolve through `IModelMapper` — and the mapper currently maps only entity sets/singletons, not function imports (`RestierModelMapper.cs:40-67`; the second overload has an explicit `TODO GitHubIssue#39` for composable function imports). Wiring keyless views into the query pipeline would require new mapper + sourcer entries *and* convention-processor changes. Out of scope for v1. AspNetCore.OData's query-option layer still applies `$filter`/`$select`/`$orderby`/`$top`/`$skip` to the returned `IQueryable` at the OData layer — that path is independent of `api.QueryAsync`. |
+| Convention interceptors (`OnFiltering<View>` etc.) | **Not fired in v1** | `ConventionBasedQueryExpressionProcessor.Process` returns null unless `context.ModelReference.Element is IEdmEntitySet` whose element type is `IEdmEntityType` (`ConventionBasedQueryExpressionProcessor.cs:51-66`). A function-import-with-Collection-of-ComplexType return doesn't satisfy either condition. v1 documents this as a limitation and points users at `[Authorize]` on the function import, or row-filtering in the view SQL, for security. A follow-up spec can widen the convention processor to recognise function-import model references. |
+| Writes | 405 Method Not Allowed via `RestierController.Post` | POST/PATCH/PUT/DELETE on a function-import URL is dispatched to `RestierController.Post` via the standard routing transformer, hits the `OperationImportSegment + IsFunctionImport` branch at `RestierController.cs:178-182`, and returns `MethodNotAllowed()`. No submit-pipeline plumbing, no controller changes. |
 | EF flavour parity | EF6 + EF Core both ship in this spec | EF6 keyless detection is currently a *silent-bug* path (empty `keyProperties` list, not `null`, so the existing throw at `EFModelBuilder.cs:141` doesn't fire, and downstream OData chokes on a zero-key entity type). Normalising both flavours unblocks EF6 and EFCore at once. |
 | EF6 EDMX-only fallback | Included in v1 (not deferred) | EF6 customers are heavily EDMX-first; restricting the feature to property-backed views would miss a large slice of the audience. The fallback is small (one `ObjectContext.CreateQuery<T>` call) and isolated to the EF6 partial. |
 | Detection criterion (both flavours) | Key collection is `null` OR empty | EFCore reports `null` for `FindPrimaryKey()` on keyless; EF6's `efEntityType.KeyProperties` returns an empty `ReadOnlyMetadataCollection<EdmMember>`. Normalising to "missing-or-empty ⇒ keyless" makes the shared `BuildEdmModelFromEntitySetMaps` symmetric. |
@@ -67,7 +68,15 @@ if (method is null)
 Auto-generated keyless-view function imports have no backing API method by definition. Two options were considered:
 
 1. **EDM annotation marker** — tag each generated import with a RESTier-private vocabulary term, dispatch on the annotation. Leaks an internal concern into `$metadata` consumed by clients, adds a dependency on AspNetCore.OData's annotation surface from the executor.
-2. **Registry fallback** *(chosen)* — a `KeylessViewRegistry` (per-API DI singleton) holds `{name → (clrType, sourceFactory)}`. The executor falls through to the registry on a null method lookup. Zero metadata pollution; one new class; localised change.
+2. **Registry fallback** *(chosen)* — a `KeylessViewRegistry` (constructor-injected into `RestierOperationExecutor`) holds `{name → (clrType, sourceFactory)}`. The executor falls through to the registry on a null method lookup. Zero metadata pollution; one new class; localised change.
+
+### Why the registry lives in Core, with a manual lifetime bridge
+
+`RestierODataOptionsExtensions.AddRestierRoute` (`src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs:111-141`) builds the EDM model in a temporary `modelBuildingServiceProvider` that is *disposed* before `oDataOptions.AddRouteComponents(...)` constructs the per-route service container at line 148. A registry registered as a `Singleton` in `modelBuildingServices` and populated during `modelBuilder.GetEdmModel()` is on a different container than the one the request-time `RestierOperationExecutor` resolves from — the populated instance would be GC'd along with the model-building SP.
+
+The existing precedent is `RestierWebApiModelExtender`: registered into `modelBuildingServices` (line 117), captured into a local `modelExtender` variable *before* the `finally`-clause disposal (line 132), then re-registered into the route services as `AddSingleton(modelExtender)` (line 181). The keyless-view registry follows the same shape — three local captures across the dispose boundary instead of two.
+
+This dictates two design choices: (1) the registry class lives in `Microsoft.Restier.Core` (no EF dependency, so `AddRestierRoute` can reference it without leaking layering), and (2) it's constructor-injected into `RestierOperationExecutor`, since `ApiBase` doesn't expose a service provider for ad-hoc resolution.
 
 ## Design
 
@@ -98,10 +107,11 @@ Auto-generated keyless-view function imports have no backing API method by defin
 ┌──────────────────────────────────────────────────────────┐
 │ RestierOperationExecutor.ExecuteOperationAsync           │
 │   1. reflective method lookup → null                     │
-│   2. NEW fallback: consult KeylessViewRegistry           │
+│   2. NEW fallback: consult constructor-injected registry │
 │   3. sourceFactory(api) → IQueryable                     │
-│   4. api.QueryAsync(new QueryRequest(...))               │
-│   5. return composed IQueryable                          │
+│   4. return that IQueryable directly                     │
+│      (AspNetCore.OData applies $filter / $select etc.    │
+│       at the OData query-options layer)                  │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -109,18 +119,17 @@ Auto-generated keyless-view function imports have no backing API method by defin
 
 | Component | Change | Path |
 |---|---|---|
-| `KeylessViewRegistry` (new) | Per-API singleton. Members: `Register(string functionImportName, Type clrType, Func<object, IQueryable> sourceFactory)`, `TryGet(string name, out KeylessViewEntry entry)`. Entry stores name, CLR type, factory. Throws on duplicate name registration. | `src/Microsoft.Restier.EntityFramework.Shared/Model/KeylessViewRegistry.cs` |
-| `EFModelBuilder<TDbContext>` shared partial — `BuildEdmModelFromEntitySetMaps` | Replace the `throw` at line 141. New branch: when `pair.Value` is null OR empty, demote to complex (skip the `EntitySet<T>` call by removing the type from `entitySetMap` *before* the convention builder iterates it — see Implementation note below), call `builder.ComplexType<T>()`, add a function import on the container post-`GetEdmModel`, register in `KeylessViewRegistry`. | `src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs` |
-| `EFModelBuilder<TDbContext>` EF Core partial — `EntityFrameworkCoreGetEntities` | Normalise the keyless case (already produces `null`, leave alone). Also produce a new `Dictionary<Type, Func<object, IQueryable>>` of source factories: reflection on the DbSet property captured at model-build time. Wire into the shared method's signature. | `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` |
-| `EFModelBuilder<TDbContext>` EF6 partial — `EntityFramework6GetEntitySets` | Same factory dictionary. Logic: prefer reflection on a matching `DbSet<T>` / `DbQuery<T>` property; fall back to `((IObjectContextAdapter)ctx).ObjectContext.CreateQuery<T>("[Container].[EntitySet]")` when no property exists (EDMX-only case). | `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` |
-| `RestierOperationExecutor.ExecuteOperationAsync` | After the existing reflective method lookup, if `method is null`, resolve `KeylessViewRegistry` from `restierOperationContext.Api`'s service provider and try `TryGet(OperationName, ...)`. On hit: invoke `sourceFactory(api)`, wrap in `QueryRequest`, call `api.QueryAsync`, return `result.Results.AsQueryable()`. On miss: existing `throw new NotImplementedException`. | `src/Microsoft.Restier.AspNetCore/Operation/RestierOperationExecutor.cs` |
-| `AddEF6ProviderServices` / `AddEFCoreProviderServices` | Register `KeylessViewRegistry` as singleton in the shared DI block. Same lifetime/scope as the model. | EF DI extension files (paths below) |
+| `KeylessViewRegistry` (new) | Plain class (not a DI service in the EF DI block — see lifetime-bridge component below). Members: `Register(string functionImportName, Type clrType, Func<object, IQueryable> sourceFactory)`, `TryGet(string name, out KeylessViewEntry entry)`. Entry stores name, CLR type, factory. Throws on duplicate name registration. **Lives in `Microsoft.Restier.Core` so the AspNetCore layer's `AddRestierRoute` can reference it without depending on EF.** | `src/Microsoft.Restier.Core/Model/KeylessViewRegistry.cs` |
+| Lifetime bridge in `AddRestierRoute` | Add a third locally-captured object alongside `model` and `modelExtender`. Register `KeylessViewRegistry` into `modelBuildingServices`, capture the populated instance from the SP *before* the `finally` disposal, then `services.AddSingleton(keylessViewRegistry)` inside the `AddRouteComponents` lambda. Mirrors the `RestierWebApiModelExtender` bridge exactly. | `src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs:111-181` |
+| `EFModelBuilder<TDbContext>` shared partial — `BuildEdmModelFromEntitySetMaps` | Replace the `throw` at line 141. New branch: when `pair.Value` is null OR empty, demote to complex (split `entitySetMap` into `keyedEntitySets` and `keylessViewSets` *before* the convention builder iterates — see Implementation note below), call `builder.ComplexType<T>()`, add a function import on the container post-`GetEdmModel`, register in the `KeylessViewRegistry` resolved from the model-building SP. Takes `KeylessViewRegistry` as a constructor dependency (or passed through the partial-class signature). | `src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs` |
+| `EFModelBuilder<TDbContext>` EF Core partial — `EntityFrameworkCoreGetEntities` | Already produces `null` for the keyless case. Additionally produce a `Dictionary<Type, Func<object, IQueryable>>` of source factories: reflection on the DbSet property captured at model-build time. Wire into the shared method's signature. | `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` |
+| `EFModelBuilder<TDbContext>` EF6 partial — `EntityFramework6GetEntitySets` | Same factory dictionary. Logic: prefer reflection on a matching `DbSet<T>` / `DbQuery<T>` / `IDbSet<T>` property; fall back to `((IObjectContextAdapter)ctx).ObjectContext.CreateQuery<T>("[Container].[EntitySet]")` when no property exists (EDMX-only case). Also normalises *empty* `KeyProperties` lists to "keyless" so the shared throw-or-demote logic fires. | `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` |
+| `RestierOperationExecutor` | Add a `KeylessViewRegistry` constructor parameter (route-DI resolves it; the lifetime bridge above guarantees it's the populated instance). In `ExecuteOperationAsync`: after the existing reflective method lookup, if `method is null`, try `registry.TryGet(OperationName, out var entry)`. On hit: `var iq = entry.SourceFactory(restierOperationContext.Api); return iq;` — return directly, no `api.QueryAsync` (see "v1 pipeline simplification" decision row). On miss: existing `throw new NotImplementedException`. | `src/Microsoft.Restier.AspNetCore/Operation/RestierOperationExecutor.cs` |
+| `AddEF6ProviderServices` / `AddEFCoreProviderServices` | **No direct registration** — the registry is registered by the AspNetCore-layer lifetime bridge described above. EF DI extension files are unchanged on this axis. | (no change) |
 
-DI registration sites (verified against worktree):
+Registration site (verified against worktree):
 
-- `src/Microsoft.Restier.EntityFramework/Extensions/ServiceCollectionExtensions.cs` (EF6 `AddEF6ProviderServices`)
-- `src/Microsoft.Restier.EntityFrameworkCore/Extensions/ServiceCollectionExtensions.cs` (EFCore `AddEFCoreProviderServices`)
-- `src/Microsoft.Restier.EntityFramework.Shared/Extensions/ServiceCollectionExtensions.cs` if it already centralises a shared DI block; otherwise register independently in each EF flavour's file. Singleton lifetime — same scope as the EDM model.
+- `src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs:AddRestierRoute` — single location for the lifetime-bridge dance. Registers `KeylessViewRegistry` into `modelBuildingServices` (line ~117), captures the populated instance after `modelBuilder.GetEdmModel()` (around line ~132), re-registers the same instance into the route services lambda (around line ~181). No registration in the EF DI extension files — the registry is host-agnostic and the host (AspNetCore.OData route construction) owns the lifetime.
 
 ### Implementation note — "demote before iteration" vs "EntitySet then ignore"
 
@@ -162,11 +171,18 @@ Func<object, IQueryable> sourceFactory = api =>
 2. Routes to `RestierController.Get`; the path's last segment is an `OperationImportSegment` (handled at `RestierController.cs:106-110`).
 3. `RestierController` calls `ExecuteOperationAsync` → `IOperationExecutor.ExecuteOperationAsync` (resolved as `RestierOperationExecutor`).
 4. Reflective method lookup against `LibraryWithViewsApi` returns null (no API method named `BooksByPublisher`).
-5. **NEW:** Executor consults `KeylessViewRegistry.TryGet("BooksByPublisher", out var entry)` → hit.
-6. `entry.SourceFactory(api)` produces the underlying `IQueryable<BooksByPublisher>` (from `DbContext.BooksByPublisher`).
-7. Executor wraps in `QueryRequest(queryable)`, calls `api.QueryAsync(request, ct)`. The `IQueryExpressionAuthorizer`, `ConventionBasedQueryExpressionProcessor` (which fires `OnFiltering<BooksByPublisher>`), and `DefaultQueryExecutor` run normally. `EFQueryExpressionSourcer` does not insert a source — the leaf is already the `IQueryable` from the factory.
-8. Result `IQueryable` returns to `RestierController`, which lets AspNetCore.OData apply the `$filter=PublisherId eq 1` query option as usual for a function-import result.
-9. Wire serialisation: the function returns `Collection(<ComplexType>)`, so OData's complex-type serializer handles output.
+5. **NEW:** Executor consults its constructor-injected `KeylessViewRegistry.TryGet("BooksByPublisher", out var entry)` → hit. (The registry was populated during model build and bridged into the route container by `AddRestierRoute`.)
+6. `entry.SourceFactory(restierOperationContext.Api)` produces the underlying `IQueryable<BooksByPublisher>` (from `DbContext.BooksByPublisher`).
+7. Executor returns that `IQueryable` directly. **No `api.QueryAsync` call** — `ApiBase.QueryAsync` would reject the request because the query is not a `QueryableSource<T>` (the only type it accepts; `ApiBase.cs:77-80`). Wiring through the RESTier query pipeline would require new `IModelMapper` + `IQueryExpressionSourcer` entries for function-import names; that's deferred.
+8. The returned `IQueryable` flows back to `RestierController` and then to AspNetCore.OData, which applies `$filter=PublisherId eq 1` (and any other OData query options) at the OData layer just as it does for any function-import result.
+9. Serialisation: the function returns `Collection(<ComplexType>)`, so OData's complex-type serializer handles output.
+
+**What's NOT in this flow** (intentional v1 limitations):
+
+- `IQueryExpressionAuthorizer` does not run for these requests. Use `[Authorize]` on the EDM function import (or row-filter inside the view's SQL) for security.
+- `ConventionBasedQueryExpressionProcessor` does not fire — its early-return at `ConventionBasedQueryExpressionProcessor.cs:51-66` rejects anything that isn't an `IEdmEntitySet` of an `IEdmEntityType`. `OnFiltering<View>` / `OnExecuting<View>` therefore do not run for v1.
+- `EFQueryExpressionSourcer` is not invoked — the leaf `IQueryable` comes from the source factory, not from a sourcer chain.
+- `RestierEFOptions.NoTracking` is *not* applied here. The source factory returns whatever `DbSet<T>` exposes by default (tracking, in EFCore). Out of scope for v1; if real-world usage shows this is wrong, lift no-tracking into the source factory (one extra `AsNoTracking` call per EFCore view).
 
 ### Edge cases
 
@@ -174,11 +190,11 @@ Func<object, IQueryable> sourceFactory = api =>
 |---|---|
 | Keyless type that isn't a DbSet (e.g. EFCore query type only) | Not in `entitySetMap` → not iterated → unaffected. Same as today. |
 | Two keyless DbSets with the same name (impossible in EF, but defended anyway) | Registry throws `InvalidOperationException` on the second `Register`. Caught at startup, not at request time. |
-| `OnFiltering<View>` / `OnExecuting<View>` conventions on the view | Fire normally (step 7 above). Documented as the row-level-security integration point. |
-| POST/PATCH/PUT/DELETE on the view URL | No `EntitySetRoutingConvention` match → 404 from AspNetCore.OData. No custom handling added. |
+| `OnFiltering<View>` / `OnExecuting<View>` conventions on the view | **Do not fire** in v1. Use `[Authorize]` on the function import or pre-filter in the view SQL. Follow-up spec to extend `ConventionBasedQueryExpressionProcessor` to recognise function-import model references. |
+| POST / PATCH / PUT / DELETE on the view URL | Dispatched to `RestierController.Post` (and its sibling action methods) via the standard transformer; hits the `OperationImportSegment + IsFunctionImport` branch (`RestierController.cs:178-182`) and returns **HTTP 405 Method Not Allowed**. No controller changes. |
 | Mixed model — regular entity sets and keyless views in the same DbContext | Both paths coexist; `keyedEntitySets` vs `keylessViewSets` split is per-DbContext-instance, no cross-talk. |
 | Versioning / Swagger | Function imports already appear in `$metadata`; `Microsoft.Restier.AspNetCore.Swagger` generates them via the OpenAPI converter as paths under `/odata/<name>()`. Verify; no code change planned unless a regression appears. |
-| `RestierEFOptions` no-tracking | EF Core honours `AsNoTracking` set on `DbSet<T>` regardless of whether the query was sourced via `EFQueryExpressionSourcer`. The factory returns the raw `DbSet` `IQueryable` — `EFQueryExecutor` (or whatever applies the no-tracking pass on the EF chain) sees it as it would any other queryable. Confirm during implementation; if no-tracking is *only* applied inside `EFQueryExpressionSourcer`, lift that into a stage that runs unconditionally on every EF-sourced query. |
+| `RestierEFOptions` no-tracking | **Not applied in v1.** The source factory returns the raw `DbSet<T>` (EFCore default: tracking). Out of scope. If real-world usage shows this is wrong, the source factory in `EntityFrameworkCoreGetEntities` can call `AsNoTracking()` on the returned queryable — one extra line per view. |
 | EF6 reflection on `IDbSet<T>` properties | `IDbSet<T>` inherits from `IQueryable<T>`, so the factory's `(IQueryable)prop.GetValue(dbContext)` works without casting through `DbSet<T>`. Tested as part of EF6 coverage. |
 | EF6 DbQuery<T> obsolete? | `DbQuery<T>` is the EF6 read-only sibling of `DbSet<T>` and is *not* deprecated in EF6 (it was removed in EFCore 3.0+). Including it in the property scan keeps the EF6 path complete. |
 
@@ -202,8 +218,8 @@ Per-flavour, against real SQL Server using the existing user-secrets / `AddEntit
 |---|---|---|
 | `GET /BooksByPublisher() returns rows` | `Microsoft.Restier.Tests.AspNetCore` (both EF6 and EFCore under `RegressionTests/EF6` and `RegressionTests/EFCore`, named `Issue741_KeylessViews.cs`) | Basic happy path. |
 | `GET /BooksByPublisher()?$filter=PublisherId eq 1` filters | both flavours | OData query option works on the result. |
-| `OnFilteringBooksByPublisher` convention fires | both flavours | Hook a counting interceptor on the API; assert it ran. |
-| `POST /BooksByPublisher` returns 404 | both flavours | Read-only-by-construction sanity check. |
+| `OnFilteringBooksByPublisher` convention does **NOT** fire | both flavours | Hook a counting interceptor on the API and assert it was *not* invoked. Pins the v1 limitation; flipping this test to "did fire" is the entry condition for the convention-processor follow-up. |
+| `POST /BooksByPublisher()` returns **HTTP 405** | both flavours | Verifies `RestierController.Post`'s function-import branch. |
 
 ### Test infrastructure changes
 
@@ -214,15 +230,20 @@ Per-flavour, against real SQL Server using the existing user-secrets / `AddEntit
 
 ### Out of scope (call out, don't ship)
 
-- Function imports with parameters (e.g. `BooksByPublisher(publisherId=1)`). v1 always returns the unfiltered collection; users compose with `$filter`. Parameterised function imports are a natural follow-up but require the model builder to pick up parameter conventions (and become almost indistinguishable from hand-written `[UnboundOperation]` methods, so the cost/benefit shifts).
-- Make the parens-free URL (`GET /odata/BooksByPublisher`) work. Function-import semantics with parens were explicitly chosen in the brainstorm.
-- Submit-pipeline plumbing — read-only by construction.
-- EF6 stored-procedure result sets that share the same shape as a view. Out of scope; the user can hand-author `[UnboundOperation]` today.
+- **RESTier query-pipeline integration for keyless views.** No `IQueryExpressionAuthorizer`, no `ConventionBasedQueryExpressionProcessor`, no `IQueryExpressionSourcer` chain for the view path. Follow-up spec scope:
+  - Extend `IModelMapper.TryGetRelevantType` to resolve function-import names (`RestierModelMapper.cs` second overload has a `TODO GitHubIssue#39` placeholder).
+  - Widen `ConventionBasedQueryExpressionProcessor.Process` so the first early-return at line 51-66 also accepts `IEdmFunctionImport` / `IEdmCollectionType<IEdmComplexType>` model references.
+  - Add a `KeylessViewQueryExpressionSourcer` that recognises `DataSourceStub.GetQueryableSource<T>(viewName)` calls and substitutes the registry's source factory.
+  - Once those are in, `RestierOperationExecutor` can route the view through `api.GetQueryableSource<T>(name)` → `api.QueryAsync(QueryRequest)` and `OnFiltering<View>` will fire.
+- **No-tracking for EFCore keyless views.** Tied to the same follow-up — once the query goes through `EFQueryExpressionSourcer` (or whatever stage applies `RestierEFOptions.NoTracking`), the view sees it for free.
+- **Function imports with parameters** (e.g. `BooksByPublisher(publisherId=1)`). v1 always returns the unfiltered collection; users compose with `$filter`. Parameterised function imports would shadow hand-written `[UnboundOperation]` methods, so the cost/benefit shifts.
+- **Parens-free URL** (`GET /odata/BooksByPublisher`). Function-import semantics with parens were explicitly chosen in the brainstorm.
+- **Submit-pipeline plumbing** — read-only by construction; 405 from `RestierController.Post`'s existing branch is the desired UX.
+- **EF6 stored-procedure result sets** that share the same shape as a view. Out of scope; the user can hand-author `[UnboundOperation]` today.
 
 ## Open questions
 
 1. Where does the EF6 `EntityContainer` name come from in the ESQL fallback string? `efEntityContainer.Name` is already in scope of `EntityFramework6GetEntitySets`; capture and pass through.
-2. Does `RestierEFOptions`-driven no-tracking get applied to the factory's `IQueryable` automatically, or only inside `EFQueryExpressionSourcer`? Quick spike during implementation; if the latter, lift the no-tracking pass into a stage that runs on every EF-sourced query.
-3. Does `Microsoft.Restier.AspNetCore.Swagger` generate sensible OpenAPI paths for function imports returning `Collection(<ComplexType>)`? Verify with the existing Postgres / Northwind samples once a view is wired in.
+2. Does `Microsoft.Restier.AspNetCore.Swagger` generate sensible OpenAPI paths for function imports returning `Collection(<ComplexType>)`? Verify with the existing Postgres / Northwind samples once a view is wired in.
 
 These don't block the spec — they're flagged for the implementation plan.
