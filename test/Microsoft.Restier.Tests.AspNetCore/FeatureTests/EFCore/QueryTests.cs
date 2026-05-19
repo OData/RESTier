@@ -86,7 +86,7 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
     }
 
     [Fact]
-    public async Task CollectionNavFromExistingParentReturns200EmptyWhenStrict()
+    public async Task CollectionNavFromExistingParentReturns200WhenStrict()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
             HttpMethod.Get,
