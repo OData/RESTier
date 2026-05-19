@@ -221,6 +221,26 @@ Per-flavour, against real SQL Server using the existing user-secrets / `AddEntit
 | `OnFilteringBooksByPublisher` convention does **NOT** fire | both flavours | Hook a counting interceptor on the API and assert it was *not* invoked. Pins the v1 limitation; flipping this test to "did fire" is the entry condition for the convention-processor follow-up. |
 | `POST /BooksByPublisher()` returns **HTTP 405** | both flavours | Verifies `RestierController.Post`'s function-import branch. |
 
+### Documentation
+
+A new user-facing MDX page is part of v1, not a follow-up. The docs project (`src/Microsoft.Restier.Docs/`, DotNetDocs SDK) generates Mintlify-flavoured MDX; hand-authored content lives under `guides/`.
+
+Required:
+
+- **New page:** `src/Microsoft.Restier.Docs/guides/server/keyless-views.mdx`. Covers:
+  - When the feature applies (EF Core `[Keyless]` / `HasNoKey()` / `ToView`, EF6 keyless `DbSet<T>` / `DbQuery<T>` / EDMX-only entity sets).
+  - The auto-generated EDM shape: `ComplexType<T>` + unbound `FunctionImport` returning `Collection(<ComplexType>)`. Sample `$metadata` snippet.
+  - URL shape: `GET /odata/<ViewName>()` (parens required) with `$filter` / `$select` / `$orderby` / `$top` / `$skip` examples.
+  - **v1 limitations callout** (`<Warning>` Mintlify component): no `OnFiltering<View>` interceptor, no `IQueryExpressionAuthorizer`, no `RestierEFOptions.NoTracking`. Security: use `[Authorize]` on the function import or pre-filter inside the view SQL. Link to the follow-up tracking issue when filed.
+  - Write attempts return HTTP 405 — show the response shape.
+  - End-to-end EF Core sample (DbContext + Api class + view CLR type + cURL request/response).
+  - Brief EF6 sample (DbContext + DbSet-backed view + EDMX-only ESQL-fallback note).
+- **Navigation:** add the new page to the `<MintlifyTemplate>` block in `src/Microsoft.Restier.Docs/Microsoft.Restier.Docs.docsproj`. Place under the existing "Server" group, near `model-building.mdx`. The SDK regenerates `docs.json` on build — commit the regenerated `docs.json` alongside the template change but do not hand-edit it.
+- **Cross-links from existing pages:**
+  - `guides/server/model-building.mdx` — short paragraph in the "What can RESTier model?" section pointing to the new keyless-views page.
+  - `guides/server/operations.mdx` — note that keyless views appear as unbound function imports but are auto-generated, not user-authored.
+- **Release notes:** add an entry to `src/Microsoft.Restier.Docs/release-notes/` (matching the existing release-notes folder structure for the current vnext release) summarising the new capability and the v1 limitations.
+
 ### Test infrastructure changes
 
 - `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/` — add `LibraryWithViewsContext.cs` (EF6 + EFCore via the existing `#if EF6 / EFCore` pattern) plus `BooksByPublisher.cs` view CLR type (already exists for EFCore; mirror for EF6).
@@ -230,20 +250,36 @@ Per-flavour, against real SQL Server using the existing user-secrets / `AddEntit
 
 ### Out of scope (call out, don't ship)
 
-- **RESTier query-pipeline integration for keyless views.** No `IQueryExpressionAuthorizer`, no `ConventionBasedQueryExpressionProcessor`, no `IQueryExpressionSourcer` chain for the view path. Follow-up spec scope:
-  - Extend `IModelMapper.TryGetRelevantType` to resolve function-import names (`RestierModelMapper.cs` second overload has a `TODO GitHubIssue#39` placeholder).
-  - Widen `ConventionBasedQueryExpressionProcessor.Process` so the first early-return at line 51-66 also accepts `IEdmFunctionImport` / `IEdmCollectionType<IEdmComplexType>` model references.
-  - Add a `KeylessViewQueryExpressionSourcer` that recognises `DataSourceStub.GetQueryableSource<T>(viewName)` calls and substitutes the registry's source factory.
-  - Once those are in, `RestierOperationExecutor` can route the view through `api.GetQueryableSource<T>(name)` → `api.QueryAsync(QueryRequest)` and `OnFiltering<View>` will fire.
-- **No-tracking for EFCore keyless views.** Tied to the same follow-up — once the query goes through `EFQueryExpressionSourcer` (or whatever stage applies `RestierEFOptions.NoTracking`), the view sees it for free.
 - **Function imports with parameters** (e.g. `BooksByPublisher(publisherId=1)`). v1 always returns the unfiltered collection; users compose with `$filter`. Parameterised function imports would shadow hand-written `[UnboundOperation]` methods, so the cost/benefit shifts.
 - **Parens-free URL** (`GET /odata/BooksByPublisher`). Function-import semantics with parens were explicitly chosen in the brainstorm.
 - **Submit-pipeline plumbing** — read-only by construction; 405 from `RestierController.Post`'s existing branch is the desired UX.
 - **EF6 stored-procedure result sets** that share the same shape as a view. Out of scope; the user can hand-author `[UnboundOperation]` today.
 
-## Open questions
+## Follow-ups (deferred work, must be tracked)
 
-1. Where does the EF6 `EntityContainer` name come from in the ESQL fallback string? `efEntityContainer.Name` is already in scope of `EntityFramework6GetEntitySets`; capture and pass through.
-2. Does `Microsoft.Restier.AspNetCore.Swagger` generate sensible OpenAPI paths for function imports returning `Collection(<ComplexType>)`? Verify with the existing Postgres / Northwind samples once a view is wired in.
+**These are not optional eventually — they're the gaps between "the feature works" and "the feature feels like a first-class RESTier resource." File a follow-up issue (or two) at the end of v1 implementation; link it from the docs `<Warning>` callout described in the Documentation section.**
 
-These don't block the spec — they're flagged for the implementation plan.
+### Follow-up A — Convention hooks and query-pipeline integration for keyless views
+
+Goal: `OnFiltering<View>`, `OnExecuting<View>`, and the `IQueryExpressionAuthorizer` chain run for keyless-view function imports the same way they run for entity sets.
+
+Required code changes:
+
+1. **`IModelMapper.TryGetRelevantType`** — extend `RestierModelMapper` (`src/Microsoft.Restier.AspNetCore/Model/RestierModelMapper.cs:40-67`) to also resolve `IEdmFunctionImport` names returning collections (currently it filters to `IEdmEntitySet` and `IEdmSingleton`). The second overload at line 82 has a pre-existing `TODO GitHubIssue#39` for composable function imports and is the natural home.
+2. **`ConventionBasedQueryExpressionProcessor.Process`** — widen the first early-return at `src/Microsoft.Restier.Core/Conventions/ConventionBasedQueryExpressionProcessor.cs:51-66` so a `DataSourceStubModelReference` whose `Element` is an `IEdmFunctionImport` (or whose return is `IEdmCollectionType` over `IEdmComplexType`) also routes to `AppendOnFilterExpression`. The method-name convention (`OnFiltering<ViewName>`) is the same.
+3. **`KeylessViewQueryExpressionSourcer`** (new) — chained `IQueryExpressionSourcer` that recognises `DataSourceStub.GetQueryableSource<T>(viewName)` calls where `viewName` is in `KeylessViewRegistry` and returns `Expression.Constant(entry.SourceFactory(api))`. Mirrors `EFQueryExpressionSourcer` for entity sets.
+4. **`RestierOperationExecutor` switch** — once the above are in, the executor's keyless-view branch swaps from "return factory IQueryable directly" to `var qs = api.GetQueryableSource<T>(name); var result = await api.QueryAsync(new QueryRequest(qs), ct); return result.Results.AsQueryable();`. The `T` is reflectively obtained from `entry.ClrType`.
+5. **Test flip** — the v1 test `OnFilteringBooksByPublisher does NOT fire` flips to `does fire`. The docs `<Warning>` callout is removed and replaced with the standard interceptor docs cross-link.
+
+### Follow-up B — `RestierEFOptions` no-tracking for keyless views
+
+Goal: keyless-view queries respect the `NoTracking` setting on `RestierEFOptions`.
+
+Required code changes:
+
+- Either the EFCore-specific source factory in `EntityFrameworkCoreGetEntities` reads `RestierEFOptions` and calls `AsNoTracking()` when the option is set, **or** (preferred) Follow-up A's `KeylessViewQueryExpressionSourcer` lives in the EF layer (one per flavour) and applies the existing EF-layer no-tracking pass uniformly. Either way, B falls out of A more or less for free — list as a *sub-task* of A if filed as a single follow-up issue.
+
+### Follow-up C — Spec-time open questions to verify
+
+1. **EF6 `EntityContainer` name in the ESQL fallback string.** `efEntityContainer.Name` is already in scope of `EntityFramework6GetEntitySets`; capture and pass through to the factory closure. Trivial; resolve during v1 implementation, mention here for completeness.
+2. **`Microsoft.Restier.AspNetCore.Swagger` / NSwag OpenAPI generation** for function imports returning `Collection(<ComplexType>)`. Verify with the existing Postgres / Northwind samples once a view is wired in. If the OpenAPI output is malformed, file as a separate Swagger-side issue — out of scope of v1's EDM work.
