@@ -215,8 +215,14 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 var complexTypeReference = new EdmComplexTypeReference(edmComplexType, isNullable: false);
                 var collectionTypeReference = new EdmCollectionTypeReference(new EdmCollectionType(complexTypeReference));
 
+                // The EdmFunction's schema-level name must be distinct from the ComplexType's
+                // (they share a schema namespace under the convention builder). Putting the
+                // function in a "<namespace>.Views" sub-namespace keeps the URL/import name
+                // unchanged (clients still hit `GET /odata/<viewName>()`) while sidestepping
+                // the OData CSDL uniqueness rule for schema-level elements.
+                var functionNamespace = $"{container.Namespace}.Views";
                 var function = new EdmFunction(
-                    container.Namespace,
+                    functionNamespace,
                     viewName,
                     collectionTypeReference,
                     isBound: false,

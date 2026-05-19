@@ -33,7 +33,7 @@ public class EFModelBuilderTests
     public async Task EFModelBuilder_Should_HandleViews()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryWithViewsApi>(
-            serviceCollection: services => services.AddEFCoreProviderServices<LibraryWithViewsContext>((Action<DbContextOptionsBuilder>)null));
+            serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 
         metadata.Should().NotBeNull();
         var metadataString = metadata.ToString();
@@ -51,7 +51,7 @@ public class EFModelBuilderTests
     public async Task EFModelBuilder_Should_HandleMixedModel()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryWithViewsApi>(
-            serviceCollection: services => services.AddEFCoreProviderServices<LibraryWithViewsContext>((Action<DbContextOptionsBuilder>)null));
+            serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>());
 
         var metadataString = metadata.ToString();
 

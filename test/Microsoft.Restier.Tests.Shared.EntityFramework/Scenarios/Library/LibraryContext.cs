@@ -79,6 +79,12 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore
 
         public DbSet<SpatialPlace> SpatialPlaces { get; set; }
 
+        // Keyless view (issue #741). Mapped via fluent HasNoKey().ToView(...) in OnModelCreating.
+        // EF6 code-first does not support keyless entity types so this DbSet is EFCore-only;
+        // EF6 keyless-view support requires EDMX-defined entity sets (covered by Task 11 in the
+        // shared partial's source-factory pipe but not exercised by this code-first fixture).
+        public DbSet<BooksByPublisher> BooksByPublisher { get; set; }
+
         #endregion
 
         #region Constructors
@@ -124,6 +130,15 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore
                 // IndoorOrigin uses [Spatial(typeof(GeographyPoint))] to exercise the attribute on a second geography Point.
                 e.Property(x => x.IndoorOrigin).HasColumnType("geography");
                 e.Property(x => x.RouteLine).HasColumnType("geography");
+            });
+
+            // Issue #741: keyless view mapped via HasNoKey + ToView. Restier picks this up
+            // (null key list from FindPrimaryKey()) and demotes it to ComplexType + unbound
+            // FunctionImport. The CREATE VIEW DDL runs in LibraryTestInitializer.Seed.
+            modelBuilder.Entity<BooksByPublisher>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("BooksByPublisher");
             });
         }
 

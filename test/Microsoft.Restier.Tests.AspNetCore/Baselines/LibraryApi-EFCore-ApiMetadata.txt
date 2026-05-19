@@ -65,6 +65,11 @@
         <Property Name="IndoorOrigin" Type="Edm.GeographyPoint" />
         <Property Name="RouteLine" Type="Edm.GeographyLineString" />
       </EntityType>
+      <ComplexType Name="BooksByPublisher">
+        <Property Name="PublisherId" Type="Edm.String" />
+        <Property Name="BookName" Type="Edm.String" />
+        <Property Name="BookCount" Type="Edm.Int32" Nullable="false" />
+      </ComplexType>
       <ComplexType Name="Address">
         <Property Name="Street" Type="Edm.String" />
         <Property Name="Zip" Type="Edm.String" />
@@ -149,6 +154,7 @@
           <NavigationPropertyBinding Path="Book" Target="Books" />
         </EntitySet>
         <EntitySet Name="SpatialPlaces" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.SpatialPlace" />
+        <FunctionImport Name="BooksByPublisher" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.Views.BooksByPublisher" />
         <Singleton Name="MyFavoriteBook" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
           <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
           <NavigationPropertyBinding Path="Reviews" Target="Reviews" />
@@ -163,6 +169,11 @@
         <FunctionImport Name="PublishBooks" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBooks" EntitySet="Books" />
         <FunctionImport Name="SubmitTransaction" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.SubmitTransaction" EntitySet="Books" />
       </EntityContainer>
+    </Schema>
+    <Schema Namespace="Microsoft.Restier.Tests.Shared.Scenarios.Library.Views" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Function Name="BooksByPublisher">
+        <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.BooksByPublisher)" Nullable="false" />
+      </Function>
     </Schema>
   </edmx:DataServices>
 </edmx:Edmx>

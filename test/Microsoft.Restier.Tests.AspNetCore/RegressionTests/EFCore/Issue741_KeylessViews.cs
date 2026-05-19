@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore;
 public class Issue741_KeylessViews
 {
     private static Action<IServiceCollection> ConfigureServices => services =>
-        services.AddEntityFrameworkServices<LibraryWithViewsContext>();
+        services.AddEntityFrameworkServices<LibraryContext>();
 
     [Fact]
     public async Task Get_KeylessView_Returns200WithRows()
@@ -71,10 +72,13 @@ public class Issue741_KeylessViews
     [InlineData("DELETE")]
     public async Task Write_KeylessView_Returns405(string verb)
     {
+        // No payload — the 405 guard in RestierController fires on the function-import
+        // segment before any body parsing happens. Passing a non-null payload trips up the
+        // Breakdance helper's StringContent ctor (it reuses the OData Accept header as the
+        // Content-Type media type, which the framework rejects).
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             new HttpMethod(verb),
             resource: "/BooksByPublisher()",
-            payload: verb == "DELETE" ? null : new { },
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);

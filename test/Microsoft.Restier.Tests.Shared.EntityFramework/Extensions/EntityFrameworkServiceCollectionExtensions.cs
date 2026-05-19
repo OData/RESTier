@@ -232,10 +232,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.SeedDatabase<MarvelContext, MarvelTestInitializer>();
             }
-            else if (typeof(TDbContext) == typeof(LibraryWithViewsContext))
-            {
-                services.SeedDatabase<LibraryWithViewsContext, LibraryWithViewsTestInitializer>();
-            }
 
             return services;
         }

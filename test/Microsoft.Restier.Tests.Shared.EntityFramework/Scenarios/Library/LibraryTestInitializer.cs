@@ -240,6 +240,23 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore
 #if EFCore
             libraryContext.SaveChanges();
 
+            // Issue #741 — create the BooksByPublisher SQL view on top of the seeded
+            // Publishers/Books. Guarded by IsRelational() because some tests use
+            // UseInMemoryDatabase (no ExecuteSqlRaw support); the keyless-view tests run
+            // against real SQL Server via AddEntityFrameworkServices<LibraryContext>().
+            if (libraryContext.Database.IsRelational())
+            {
+                libraryContext.Database.ExecuteSqlRaw(@"
+                    IF OBJECT_ID('BooksByPublisher', 'V') IS NOT NULL DROP VIEW BooksByPublisher;
+                    EXEC('CREATE VIEW BooksByPublisher AS
+                           SELECT p.Id AS PublisherId,
+                                  b.Title AS BookName,
+                                  CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS INT) AS BookCount
+                           FROM Publishers p
+                           INNER JOIN Books b ON b.PublisherId = p.Id;');
+                ");
+            }
+
             // Spatial seeding requires CLR to be enabled on SQL Server (sp_configure 'clr enabled', 1).
             // If the instance doesn't have CLR enabled (e.g., bare Docker SQL Server), skip spatial values.
             try
