@@ -29,6 +29,7 @@
                             <Group Name="Server" Icon="server">
                                 <Pages>
                                     guides/server/model-building;
+                                    guides/server/keyless-views;
                                     guides/server/method-authorization;
                                     guides/server/filters;
                                     guides/server/interceptors;

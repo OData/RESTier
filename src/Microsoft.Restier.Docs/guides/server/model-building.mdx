@@ -24,8 +24,10 @@ Let's take a look at how each of these methods work.
 There are several situations where you are likely going to want to use this approach to create your Model.
 For example, if you're migrating from an existing Web API OData v3 or v4 implementation, and needed to
 customize that model, you will be able to copy/paste your existing code over, with just a few small changes.
-If you're building a new model, but you're using Entity Framework Model First + SQL Views, then you'll
-likely need to define a primary key, or omit the View from your service.
+
+For SQL views specifically, RESTier auto-maps EF Core `[Keyless]` / `HasNoKey()` / `ToView()` types to
+read-only OData function imports — no custom model code required. See [Keyless Views](./keyless-views).
+EF6 users still need to define a primary key on the view's CLR type or omit the view from their service.
 
 With the Entity Framework provider, the model is built with the
 [**ODataConventionModelBuilder**](http://odata.github.io/WebApi/#02-04-convention-model-builder). To 
