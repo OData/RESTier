@@ -26,7 +26,7 @@ builder.Services
             routeServices.AddEFCoreProviderServices<BookstoreContext>(dbOptions =>
                 dbOptions.UseSqlServer(connectionString));
         },
-        namingConvention: RestierNamingConvention.LowerCamelCase);
+        opts => opts.NamingConvention = RestierNamingConvention.LowerCamelCase);
     });
 ```
 
@@ -165,7 +165,7 @@ builder.Services
             routeServices.AddEFCoreProviderServices<AppContext>(dbOptions =>
                 dbOptions.UseSqlServer(connectionString));
         },
-        namingConvention: RestierNamingConvention.LowerCamelCase);
+        opts => opts.NamingConvention = RestierNamingConvention.LowerCamelCase);
     });
 ```
 

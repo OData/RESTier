@@ -265,7 +265,7 @@ public class OptOutOfComputedForId : IModelBuilder
 Register it inside `AddRestierRoute` like any other chained model builder:
 
 ```csharp
-options.AddRestierRoute<CatalogApi>(restierServices =>
+options.AddRestierRoute<CatalogApi>("", restierServices =>
 {
     restierServices
         .AddEFCoreProviderServices<CatalogContext>(/* ... */)

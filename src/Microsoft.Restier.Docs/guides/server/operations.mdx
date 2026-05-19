@@ -329,7 +329,7 @@ see [Method Authorization](/guides/server/method-authorization).
 RESTier supports OData batch requests, which allow clients to bundle multiple operations into a single HTTP
 request. Batch support is enabled by default when you register a route with `AddRestierRoute<TApi>()`.
 
-To disable batching, pass `useRestierBatching: false`:
+To disable batching, set `UseRestierBatching = false` in the options callback:
 
 ```csharp
 builder.Services.AddControllers().AddRestier(options =>
@@ -337,7 +337,7 @@ builder.Services.AddControllers().AddRestier(options =>
     options.AddRestierRoute<LibraryApi>("api", routeServices =>
     {
         routeServices.AddEntityFrameworkServices<LibraryContext>();
-    }, useRestierBatching: false);
+    }, opts => opts.UseRestierBatching = false);
 });
 ```
 

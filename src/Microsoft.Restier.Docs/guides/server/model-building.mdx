@@ -67,7 +67,7 @@ services
     .AddControllers()
     .AddRestier(options =>
     {
-        options.AddRestierRoute<TrippinApi>(restierServices =>
+        options.AddRestierRoute<TrippinApi>("", restierServices =>
         {
             restierServices
                 .AddEFCoreProviderServices<TrippinContext>(...)
@@ -271,7 +271,7 @@ services
     .AddControllers()
     .AddRestier(options =>
     {
-        options.AddRestierRoute<TrippinApi>(restierServices =>
+        options.AddRestierRoute<TrippinApi>("", restierServices =>
         {
             restierServices
                 .AddEFCoreProviderServices<TrippinContext>(...)
