@@ -51,7 +51,7 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                     options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
                     options.TimeZone = TimeZoneInfo.Utc;
 
-                    options.AddRestierRoute<NorthwindApi>(restierServices =>
+                    options.AddRestierRoute<NorthwindApi>(string.Empty, restierServices =>
                     {
                         restierServices
                             .AddEFCoreProviderServices<NorthwindContext>((services, dbOptions) =>
