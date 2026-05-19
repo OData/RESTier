@@ -11,6 +11,7 @@ Restier release history. Click a version for the full notes.
 
 | Version | Released | Highlights |
 |---|---|---|
+| [1.2](/release-notes/1-2-0) | TBD | GET queries default to no-tracking; `RestierEFTrackingBehavior` override |
 | [1.1 RTM](/release-notes/1-1-0) | 2023-11-28 | .NET 8 support, endpoint routing, async conventions, Swagger |
 | [1.0 RTM](/release-notes/1-0-0) | 2023-06-05 | ASP.NET Classic 4.7.2+, ASP.NET Core 3.1+, EF Core 5+ |
 | [1.0 RC1](/release-notes/1-0-0-rc1) | 2019-10-05 | Major DI refactor, simplified registration, decoupled EF provider |
