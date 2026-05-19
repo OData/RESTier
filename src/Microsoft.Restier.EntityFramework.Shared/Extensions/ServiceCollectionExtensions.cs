@@ -39,7 +39,8 @@ public static partial class ServiceCollectionExtensions
 
         services.AddSingleton<IChainedService<IModelBuilder>, EFModelBuilder<TDbContext>>()
             .AddSingleton<IChainedService<IModelMapper>, EFModelMapper>()
-            .AddSingleton<IChainedService<IQueryExpressionSourcer>, EFQueryExpressionSourcer>()
+            .AddSingleton<IChainedService<IQueryExpressionSourcer>>(sp =>
+                new EFQueryExpressionSourcer(sp.GetRequiredService<RestierEFOptions>()))
             .AddSingleton<IChainedService<IQueryExecutor>, EFQueryExecutor>()
             .AddSingleton<IChainedService<IQueryExpressionProcessor>, EFQueryExpressionProcessor>()
             .AddSingleton<IChangeSetInitializer, EFChangeSetInitializer>()
