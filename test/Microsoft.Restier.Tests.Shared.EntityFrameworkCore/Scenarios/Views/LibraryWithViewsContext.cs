@@ -5,15 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 
-namespace Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.Views
+namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views
 {
-
     /// <summary>
-    /// The data context for the Library scenario.
+    /// LibraryContext + a single keyless view (BooksByPublisher) for keyless-view tests.
     /// </summary>
+    /// <remarks>
+    /// OnConfiguring falls back to in-memory ONLY when no provider has been configured —
+    /// model-shape tests rely on this fallback so they can build the EDM without a real DB,
+    /// while end-to-end tests (which supply a UseSqlServer options action via
+    /// AddEntityFrameworkServices&lt;T&gt;) get the relational provider and the fallback skips.
+    /// </remarks>
     public class LibraryWithViewsContext : LibraryContext
     {
-
         public virtual DbSet<BooksByPublisher> BooksByPublisher { get; set; }
 
         public LibraryWithViewsContext(DbContextOptions<LibraryWithViewsContext> options) : base(options)
@@ -22,24 +26,20 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.Views
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase(nameof(LibraryWithViewsContext));
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseInMemoryDatabase(nameof(LibraryWithViewsContext));
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<BooksByPublisher>(entity =>
             {
-                entity.ToView("Sales By Category");
-                entity.Property(e => e.PublisherId).HasColumnName("PublisherID");
-                entity.Property(e => e.PublisherName)
-                    .IsRequired()
-                    .HasMaxLength(15);
-                entity.Property(e => e.BookName);
-                entity.Property(e => e.BookCount);
+                entity.HasNoKey();
+                entity.ToView("BooksByPublisher");
             });
-            base.OnModelCreating(modelBuilder);
         }
-
     }
-
 }

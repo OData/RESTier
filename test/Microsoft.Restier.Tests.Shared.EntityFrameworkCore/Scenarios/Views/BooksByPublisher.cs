@@ -3,21 +3,14 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.Views
+namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views
 {
-
     [Keyless]
     public partial class BooksByPublisher
     {
-
-        public int PublisherId { get; set; }
-
-        public string PublisherName { get; set; }
-
+        // Publisher.Id is a string in the shared Library fixture (e.g. "Publisher1").
+        public string PublisherId { get; set; }
         public string BookName { get; set; }
-
-        public decimal BookCount { get; set; }
-
+        public int BookCount { get; set; }
     }
-
 }

@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.IncorrectLibrary;
-using Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.Views;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
 using Xunit;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore;
