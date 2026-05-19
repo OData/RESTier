@@ -59,4 +59,42 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
             }
         }
     }
+
+    [Fact]
+    public async Task CollectionNavFromMissingParentReturns200ByDefault()
+    {
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
+            HttpMethod.Get,
+            resource: "/Books(00000000-0000-0000-0000-000000000000)/Reviews",
+            serviceCollection: ConfigureServices);
+        _ = await TraceListener.LogAndReturnMessageContentAsync(response);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task CollectionNavFromMissingParentReturns404WhenStrict()
+    {
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
+            HttpMethod.Get,
+            resource: "/Books(00000000-0000-0000-0000-000000000000)/Reviews",
+            serviceCollection: ConfigureServices,
+            configureOptions: options => options.Conformance.StrictMissingParentForCollections = true);
+        _ = await TraceListener.LogAndReturnMessageContentAsync(response);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task CollectionNavFromExistingParentReturns200EmptyWhenStrict()
+    {
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
+            HttpMethod.Get,
+            resource: "/Publishers('Publisher1')/Books",
+            serviceCollection: ConfigureServices,
+            configureOptions: options => options.Conformance.StrictMissingParentForCollections = true);
+        _ = await TraceListener.LogAndReturnMessageContentAsync(response);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }
