@@ -618,6 +618,25 @@ namespace Microsoft.Restier.AspNetCore
                 return response;
             }
 
+            // Opt-in OData v4 §11.2.6 strictness: when a collection-valued nav segment
+            // sits below a key segment whose parent does not exist, the addressed
+            // resource doesn't exist, so 404 is required by the spec. Off by default —
+            // see RestierConformanceOptions.StrictMissingParentForCollections.
+            if (typeReference.IsCollection() && path.OfType<KeySegment>().Any())
+            {
+                var conformance = HttpContext.Request.GetRouteServices()
+                    .GetService<RestierConformanceOptions>();
+                if (conformance?.StrictMissingParentForCollections == true)
+                {
+                    var parentExists = await ParentEntityExistsAsync(path, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (!parentExists)
+                    {
+                        return NotFound(Resources.ResourceNotFound);
+                    }
+                }
+            }
+
             if (typeReference.IsCollection())
             {
                 var elementType = typeReference.AsCollection().ElementType();
