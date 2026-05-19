@@ -28,13 +28,14 @@ public class RestierOperationExecutorTests
 
     private RestierOperationExecutor CreateExecutor(
         IOperationAuthorizer authorizer = null,
-        IOperationFilter filter = null)
+        IOperationFilter filter = null,
+        KeylessViewRegistry keylessViewRegistry = null)
     {
         var authorizerFactory = Substitute.For<IChainOfResponsibilityFactory<IOperationAuthorizer>>();
         authorizerFactory.Create().Returns(authorizer ?? _authorizer);
         var filterFactory = Substitute.For<IChainOfResponsibilityFactory<IOperationFilter>>();
         filterFactory.Create().Returns(filter ?? _filter);
-        return new RestierOperationExecutor(authorizerFactory, filterFactory, new KeylessViewRegistry());
+        return new RestierOperationExecutor(authorizerFactory, filterFactory, keylessViewRegistry ?? new KeylessViewRegistry());
     }
 
     [Fact]
@@ -102,6 +103,43 @@ public class RestierOperationExecutorTests
 
         await _filter.Received(1).OnOperationExecutingAsync(context, Arg.Any<CancellationToken>());
         await _filter.Received(1).OnOperationExecutedAsync(context, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteOperationAsync_KeylessView_Invokes_Filters_With_NonNull_ParameterValues()
+    {
+        // Regression test: the keyless-view dispatch path must initialise
+        // RestierOperationContext.ParameterValues to a non-null array before invoking the
+        // operation-filter pipeline, matching the invariant the normal method path maintains.
+        // Custom IOperationFilter implementations can then read context.ParameterValues without
+        // null-guarding (the built-in ConventionBasedOperationFilter happens to null-guard, but
+        // that's not a contract third-party filters can rely on).
+        var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
+        var context = new RestierOperationContext(
+            api, _ => null, "MyKeylessView", isFunction: true, bindingParameterValue: null);
+
+        _authorizer.AuthorizeAsync(Arg.Any<OperationContext>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(true));
+
+        var registry = new KeylessViewRegistry();
+        registry.Register("MyKeylessView", typeof(string), _ => Enumerable.Empty<string>().AsQueryable());
+
+        // Capture ParameterValues seen by the filter at the moment OnOperationExecutingAsync runs.
+        System.Collections.Generic.ICollection<object> capturedParameterValues = null;
+        await _filter.OnOperationExecutingAsync(Arg.Do<OperationContext>(c =>
+            capturedParameterValues = ((RestierOperationContext)c).ParameterValues), Arg.Any<CancellationToken>());
+
+        var executor = CreateExecutor(_authorizer, _filter, registry);
+
+        await executor.ExecuteOperationAsync(context, CancellationToken.None);
+
+        await _filter.Received(1).OnOperationExecutingAsync(context, Arg.Any<CancellationToken>());
+        await _filter.Received(1).OnOperationExecutedAsync(context, Arg.Any<CancellationToken>());
+
+        capturedParameterValues.Should().NotBeNull(
+            because: "the keyless-view dispatch path must initialise ParameterValues before the filter pipeline runs");
+        capturedParameterValues.Should().BeEmpty(
+            because: "keyless-view function imports have no parameters");
     }
 
     // TestApi for testing reflection
