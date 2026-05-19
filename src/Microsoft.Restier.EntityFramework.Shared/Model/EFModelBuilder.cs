@@ -34,6 +34,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
     {
         private readonly TDbContext _dbContext;
         private readonly ModelMerger _modelMerger;
+        private readonly KeylessViewRegistry _keylessViewRegistry;
         private readonly RestierNamingConvention _namingConvention;
         private readonly SpatialModelConvention _spatialConvention;
 
@@ -42,6 +43,7 @@ namespace Microsoft.Restier.EntityFrameworkCore
         /// </summary>
         /// <param name="dbContext">The DbContext to use for model building.</param>
         /// <param name="modelMerger">The model merger to use.</param>
+        /// <param name="keylessViewRegistry">The keyless view registry used to capture keyless CLR types discovered during model building.</param>
         /// <param name="namingConvention">The naming convention to use for the EDM model.</param>
         /// <param name="spatialMetadataProviders">
         /// Optional set of spatial metadata providers. When non-empty, spatial-typed entity properties are
@@ -51,13 +53,16 @@ namespace Microsoft.Restier.EntityFrameworkCore
         public EFModelBuilder(
             TDbContext dbContext,
             ModelMerger modelMerger,
+            KeylessViewRegistry keylessViewRegistry,
             RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase,
             IEnumerable<ISpatialModelMetadataProvider> spatialMetadataProviders = null)
         {
             Ensure.NotNull(dbContext, nameof(dbContext));
             Ensure.NotNull(modelMerger, nameof(modelMerger));
+            Ensure.NotNull(keylessViewRegistry, nameof(keylessViewRegistry));
             this._dbContext = dbContext;
             this._modelMerger = modelMerger;
+            this._keylessViewRegistry = keylessViewRegistry;
             this._namingConvention = namingConvention;
             this._spatialConvention = new SpatialModelConvention(spatialMetadataProviders);
         }

@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             using var ctx = new IntegrationContext();
             var providers = new ISpatialModelMetadataProvider[] { new NtsSpatialModelMetadataProvider() };
             var modelMerger = new ModelMerger();
-            var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger, RestierNamingConvention.PascalCase, providers);
+            var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger, new KeylessViewRegistry(), RestierNamingConvention.PascalCase, providers);
 
             var model = builder.GetEdmModel();
 
@@ -58,7 +58,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
         {
             using var ctx = new IntegrationContext();
             var modelMerger = new ModelMerger();
-            var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger);
+            var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger, new KeylessViewRegistry());
 
             var model = builder.GetEdmModel();
 
