@@ -35,39 +35,48 @@ namespace Microsoft.Restier.AspNetCore;
 public static class RestierODataOptionsExtensions
 {
     /// <summary>
-    /// Adds a Restier route for the specified API type to the OData options.
+    /// Adds a Restier route at the empty (root) prefix.
     /// </summary>
-    /// <typeparam name="TApi">The type of the API to add.</typeparam>
+    /// <typeparam name="TApi">The Restier API type.</typeparam>
     /// <param name="oDataOptions">The <see cref="ODataOptions"/> to add a route to.</param>
-    /// <param name="configureRouteServices">Action to configure the Restier Route services.</param>
-    /// <param name="useRestierBatching">Use the default Restier Batching Handler</param>
-    /// <param name="namingConvention">The naming convention to use for OData JSON property names.</param>
-    /// <returns>The <see cref="ODataOptions"/>.</returns>
-    public static ODataOptions AddRestierRoute<TApi>
-    (this ODataOptions oDataOptions,
-            Action<IServiceCollection> configureRouteServices, bool useRestierBatching = true,
-            RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase)
-    where TApi : ApiBase
-        => oDataOptions.AddRestierRoute<TApi>(string.Empty, configureRouteServices, useRestierBatching, namingConvention);
+    /// <param name="routePrefix">The route prefix. Pass <see cref="string.Empty"/> for an unprefixed route.</param>
+    /// <param name="configureRouteServices">Per-route DI configuration delegate.</param>
+    /// <returns>The same <see cref="ODataOptions"/> for chaining.</returns>
+    public static ODataOptions AddRestierRoute<TApi>(
+        this ODataOptions oDataOptions,
+        string routePrefix,
+        Action<IServiceCollection> configureRouteServices)
+        where TApi : ApiBase
+        => oDataOptions.AddRestierRoute<TApi>(routePrefix, configureRouteServices, configureOptions: null);
 
     /// <summary>
-    /// Adds a Restier route for the specified API type to the OData options.
+    /// Adds a Restier route with full per-route configuration.
     /// </summary>
-    /// <typeparam name="TApi">The type of the API to add.</typeparam>
+    /// <typeparam name="TApi">The Restier API type.</typeparam>
     /// <param name="oDataOptions">The <see cref="ODataOptions"/> to add a route to.</param>
-    /// <param name="routePrefix">The route prefix to use.</param>
-    /// <param name="configureRouteServices">Action to configure the Restier Route services.</param>
-    /// <param name="useRestierBatching">Use the default Restier Batching Handler</param>
-    /// <param name="namingConvention">The naming convention to use for OData JSON property names.</param>
-    /// <returns>The <see cref="ODataOptions"/>.</returns>
+    /// <param name="routePrefix">The route prefix. Pass <see cref="string.Empty"/> for an unprefixed route.</param>
+    /// <param name="configureRouteServices">Per-route DI configuration delegate.</param>
+    /// <param name="configureOptions">Optional callback to mutate the <see cref="RestierRouteOptions"/> bag. The bag's settings are authoritative — see remarks on DI precedence.</param>
+    /// <returns>The same <see cref="ODataOptions"/> for chaining.</returns>
+    /// <remarks>
+    /// <paramref name="configureOptions"/> is the single canonical channel for configuring
+    /// <see cref="DeepOperationSettings"/>, <see cref="RestierConformanceOptions"/>,
+    /// <c>UseRestierBatching</c>, and <see cref="RestierNamingConvention"/>. Any
+    /// registrations of <see cref="DeepOperationSettings"/> or
+    /// <see cref="RestierConformanceOptions"/> made inside
+    /// <paramref name="configureRouteServices"/> are silently replaced by the bag's instances.
+    /// </remarks>
     public static ODataOptions AddRestierRoute<TApi>(
         this ODataOptions oDataOptions,
         string routePrefix,
         Action<IServiceCollection> configureRouteServices,
-        bool useRestierBatching = true,
-        RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase)
-    where TApi : ApiBase
-    => AddRestierRoute(oDataOptions, typeof(TApi), routePrefix , configureRouteServices, useRestierBatching, namingConvention);
+        Action<RestierRouteOptions> configureOptions)
+        where TApi : ApiBase
+    {
+        var options = new RestierRouteOptions();
+        configureOptions?.Invoke(options);
+        return AddRestierRoute(oDataOptions, typeof(TApi), routePrefix, configureRouteServices, options);
+    }
 
 
     /// <summary>
@@ -91,29 +100,25 @@ public static class RestierODataOptionsExtensions
 
     private static ODataOptions AddRestierRoute(
         ODataOptions oDataOptions,
-        Type type, string routePrefix,
+        Type type,
+        string routePrefix,
         Action<IServiceCollection> configureRouteServices,
-        bool useRestierBatching,
-        RestierNamingConvention namingConvention)
+        RestierRouteOptions options)
     {
         Ensure.NotNull(oDataOptions, nameof(oDataOptions));
         Ensure.NotNull(type, nameof(type));
         Ensure.NotNull(routePrefix, nameof(routePrefix));
+        Ensure.NotNull(options, nameof(options));
 
         // Restier does not support qualified operation calls.
         oDataOptions.RouteOptions.EnableQualifiedOperationCall = false;
 
-        // We have to do some trickery here. The model building process in OData is now separate from the route building process,
-        // but Restier is not really expecting that. So we have to build the model first and then add the model and the model extender
-        // to the route services. That also means that we have to invoke the service configuring action twice: once for the model building container
-        // and once for the route container.
-        // It might make sense to redesign the model builder to 
         var modelBuildingServices = new ServiceCollection();
         modelBuildingServices.TryAddSingleton<IChainOfResponsibilityFactory<IModelBuilder>, DefaultChainOfResponsibilityFactory<IModelBuilder>>();
         modelBuildingServices.TryAddSingleton<ModelMerger>();
-        configureRouteServices.Invoke(modelBuildingServices);
-        modelBuildingServices.AddSingleton(typeof(RestierNamingConvention), (object)namingConvention);
-        modelBuildingServices.AddSingleton< IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
+        configureRouteServices?.Invoke(modelBuildingServices);
+        modelBuildingServices.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
+        modelBuildingServices.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
             .AddSingleton(new RestierWebApiModelExtender(type))
             .AddSingleton<IChainedService<IModelBuilder>>(sp => new RestierWebApiOperationModelBuilder(type, sp.GetRequiredService<RestierWebApiModelExtender>()))
             .AddSingleton<IChainedService<IModelBuilder>>(sp => new ConventionBasedAnnotationModelBuilder(type));
@@ -140,42 +145,28 @@ public static class RestierODataOptionsExtensions
             modelBuildingServiceProvider?.Dispose();
         }
 
-//        var extType = Type.GetType("Microsoft.AspNetCore.OData.Edm.EdmModelExtensions, Microsoft.AspNetCore.OData");
-//;
-//        var method = extType.GetMethod("ResolveNavigationSource", BindingFlags.Static | BindingFlags.Public, new[] { typeof(IEdmModel), typeof(string), typeof(bool) });
-//        method.Invoke(null, [model, "Test", true]);
-
         oDataOptions.AddRouteComponents(routePrefix, model, services =>
         {
-            // Register the Restier route marker so MapRestier() can identify this as a Restier route.
             services.AddSingleton(new RestierRouteMarker(type));
 
-            //RWM: Add the API as the specific API type first, then if an ApiBase instance is requested from the container,
-            //     get the existing instance.
             services
                 .AddScoped(type, type)
                 .AddScoped(sp => (ApiBase)sp.GetService(type));
 
-            services.AddSingleton(typeof(RestierNamingConvention), (object)namingConvention);
-            // RemoveAll is required: AspNetCore.OData's AddOData() registers ODataQuerySettings
-            // in the outer service collection (and the route container inherits from it), so
-            // without this our TryAddScoped below silently no-ops and the route ends up with the
-            // default (TimeZone=null) settings — re-opening issue #704.
+            services.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
             services.RemoveAll<ODataQuerySettings>()
                 .AddRestierCoreServices()
                 .AddRestierConventionBasedServices(type);
 
-            // Replace AspNetCoreOData's default IFilterBinder with the spatial-aware subclass.
-            // The binder falls through to base for every non-geo.* call and for geo.* calls when
-            // no ISpatialTypeConverter is registered, so this has zero behavioral impact on
-            // non-spatial Restier APIs. Inserted BEFORE configureRouteServices.Invoke so consumers
-            // who register their own IFilterBinder in their route-services delegate still win.
             services.RemoveAll<IFilterBinder>();
             services.AddSingleton<IFilterBinder, RestierSpatialFilterBinder>();
 
-            configureRouteServices.Invoke(services);
+            configureRouteServices?.Invoke(services);
 
-            services.TryAddSingleton(new DeepOperationSettings());
+            // Bag wins: applied *after* configureRouteServices so it overrides any
+            // registrations of these types the caller may have made in DI.
+            services.AddSingleton(options.DeepOperations);
+            services.AddSingleton(options.Conformance);
 
             services.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
                 .AddSingleton(modelExtender)
@@ -185,33 +176,20 @@ public static class RestierODataOptionsExtensions
                 .AddSingleton<IChainedService<IQueryExpressionExpander>, RestierQueryExpressionExpander>()
                 .AddSingleton<IChainedService<IQueryExpressionSourcer>, RestierQueryExpressionSourcer>();
 
-            // Stock AspNetCore.OData does not register ODataQuerySettings in DI — it constructs
-            // one on-demand from EnableQueryAttribute defaults. Restier registers one here so the
-            // RestierController and RestierQueryBuilder share a single, route-scoped instance.
-            // Propagate ODataOptions.TimeZone so the AspNetCore.OData filter binder converts
-            // DateTimeOffset literals into DateTime constants with the right DateTimeKind. Without
-            // this, the binder falls back to TimeZoneInfo.Local and emits Kind=Local, which
-            // Npgsql 6+ then rejects against "timestamp with time zone" columns. See
-            // https://github.com/OData/RESTier/issues/704.
             services.TryAddScoped((sp) => new ODataQuerySettings
             {
                 HandleNullPropagation = HandleNullPropagationOption.False,
-                PageSize = null,  // no support for server enforced PageSize, yet
+                PageSize = null,
                 TimeZone = oDataOptions.TimeZone,
             });
 
-            // default registration, same as OData. Should not be necesary but just in case.
             services.TryAddSingleton<ODataValidationSettings>();
 
-            // OData already registers the ODataSerializerProvider, so if we have 2, either the developer
-            // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<IODataSerializerProvider>() < 2)
             {
                 services.AddSingleton<IODataSerializerProvider, DefaultRestierSerializerProvider>();
             }
 
-            // OData already registers the ODataDeserializerProvider, so if we have 2, either the developer
-            // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<IODataDeserializerProvider>() < 2)
             {
                 services.AddSingleton<IODataDeserializerProvider, DefaultRestierDeserializerProvider>();
@@ -219,8 +197,6 @@ public static class RestierODataOptionsExtensions
 
             services.TryAddSingleton<IOperationExecutor, RestierOperationExecutor>();
 
-            // OData already registers the ODataPayloadValueConverter, so if we have 2, either the developer
-            // added one, or we already did. OData resolves the right one so multiple can be registered.
             if (services.HasServiceCount<ODataPayloadValueConverter>() < 2)
             {
                 services.AddSingleton<ODataPayloadValueConverter, RestierPayloadValueConverter>();
@@ -229,7 +205,7 @@ public static class RestierODataOptionsExtensions
             services.AddSingleton<IChainedService<IModelMapper>, RestierModelMapper>();
             services.AddSingleton<IChainedService<IQueryExecutor>, RestierQueryExecutor>();
 
-            if (useRestierBatching)
+            if (options.UseRestierBatching)
             {
                 services.AddSingleton<ODataBatchHandler>(sp => new RestierBatchHandler()
                 {
