@@ -126,9 +126,15 @@ namespace Microsoft.Restier.AspNetCore
 
                 if (lastSegment is OperationSegment segment)
                 {
+                    // The binding-source query for a bound function (HTTP GET)
+                    // is a top-level read path — opt it into no-tracking.
+                    // ApplyQueryOptions runs later on the operation's *result*
+                    // (line 143), which is a different QueryRequest, so we set
+                    // AllowNoTracking here on the binding-source request explicitly.
                     var queryRequest = new QueryRequest(queryable)
                     {
                         ShouldReturnCount = shouldReturnCount,
+                        AllowNoTracking = true,
                     };
 
                     result = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
