@@ -440,16 +440,53 @@ Add the using at the top:
 using Microsoft.Restier.Core.Model;
 ```
 
-- [ ] **Step 2: Build both EF projects**
+- [ ] **Step 2: Update the two direct call sites in the EFCore Spatial integration tests**
 
-Run: `dotnet build src/Microsoft.Restier.EntityFrameworkCore/Microsoft.Restier.EntityFrameworkCore.csproj src/Microsoft.Restier.EntityFramework/Microsoft.Restier.EntityFramework.csproj`
+`EFModelBuilder<TDbContext>` is constructed directly (no DI) in two places. Open `test/Microsoft.Restier.Tests.EntityFrameworkCore.Spatial/EFModelBuilderSpatialIntegrationTests.cs`.
+
+At line 42, replace:
+
+```csharp
+var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger, RestierNamingConvention.PascalCase, providers);
+```
+
+with:
+
+```csharp
+var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger, new KeylessViewRegistry(), RestierNamingConvention.PascalCase, providers);
+```
+
+At line 61, replace:
+
+```csharp
+var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger);
+```
+
+with:
+
+```csharp
+var builder = new EFModelBuilder<IntegrationContext>(ctx, modelMerger, new KeylessViewRegistry());
+```
+
+Add `using Microsoft.Restier.Core.Model;` to the file's usings.
+
+These are the only two non-DI call sites in the repository (verified by `grep "new EFModelBuilder"` — only these two files match).
+
+- [ ] **Step 3: Build both EF projects**
+
+Run: `dotnet build src/Microsoft.Restier.EntityFrameworkCore/Microsoft.Restier.EntityFrameworkCore.csproj src/Microsoft.Restier.EntityFramework/Microsoft.Restier.EntityFramework.csproj test/Microsoft.Restier.Tests.EntityFrameworkCore.Spatial/Microsoft.Restier.Tests.EntityFrameworkCore.Spatial.csproj`
 Expected: success. DI will resolve `KeylessViewRegistry` because we registered it in Task 3.
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs
+git add src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs test/Microsoft.Restier.Tests.EntityFrameworkCore.Spatial/EFModelBuilderSpatialIntegrationTests.cs
 git commit -m "feat(ef): inject KeylessViewRegistry into shared EFModelBuilder
+
+Updates the two direct-construction call sites in the EFCore Spatial
+integration tests to pass a fresh KeylessViewRegistry. Production code
+gets the registry via DI through the lifetime bridge in
+AddRestierRoute (see prior commit).
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```
@@ -909,6 +946,96 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 ---
 
+### Task 8b: Return HTTP 405 for DELETE / PUT / PATCH on function-import URLs
+
+**Files:**
+- Modify: `src/Microsoft.Restier.AspNetCore/RestierController.cs`
+
+The existing controller returns 405 from `Post` for function-import paths (line 178-182) but `Delete` (line 311) and `Update` (line 435 — handles both PUT and PATCH) throw `NotImplementedException` for non-entity-set paths, which surfaces as HTTP 500. For keyless views to be honestly read-only, all four write verbs need to return 405.
+
+- [ ] **Step 1: Add the function-import guard to `Delete`**
+
+In `RestierController.Delete` (line 311), insert the guard immediately after `GetPath()`:
+
+```csharp
+public async Task<IActionResult> Delete(CancellationToken cancellationToken)
+{
+    EnsureInitialized();
+    var path = GetPath();
+    var lastSegment = path.Last();
+
+    if (lastSegment is OperationSegment opSeg && opSeg.Operations.FirstOrDefault().IsFunction())
+    {
+        return MethodNotAllowed();
+    }
+
+    if (lastSegment is OperationImportSegment opImpSeg && opImpSeg.OperationImports.FirstOrDefault().IsFunctionImport())
+    {
+        return MethodNotAllowed();
+    }
+
+    if (path.NavigationSource() is not IEdmEntitySet entitySet)
+    {
+        throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
+    }
+    // ... existing body continues unchanged ...
+}
+```
+
+- [ ] **Step 2: Add the same guard to `Update`**
+
+In the private `Update` method (line 435 — called by both PUT and PATCH endpoints), insert immediately after `GetPath()`:
+
+```csharp
+private async Task<IActionResult> Update(
+    EdmEntityObject edmEntityObject,
+    bool isFullReplaceUpdate,
+    CancellationToken cancellationToken)
+{
+    var path = GetPath();
+    var lastSegment = path.Last();
+
+    if (lastSegment is OperationSegment opSeg && opSeg.Operations.FirstOrDefault().IsFunction())
+    {
+        return MethodNotAllowed();
+    }
+
+    if (lastSegment is OperationImportSegment opImpSeg && opImpSeg.OperationImports.FirstOrDefault().IsFunctionImport())
+    {
+        return MethodNotAllowed();
+    }
+
+    var entitySet = path.NavigationSource() as IEdmEntitySet;
+    if (entitySet is null)
+    {
+        throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
+    }
+    // ... existing body continues unchanged ...
+}
+```
+
+- [ ] **Step 3: Build**
+
+Run: `dotnet build src/Microsoft.Restier.AspNetCore/Microsoft.Restier.AspNetCore.csproj`
+Expected: success.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/Microsoft.Restier.AspNetCore/RestierController.cs
+git commit -m "feat(aspnetcore): return 405 for DELETE/PUT/PATCH on function imports
+
+Mirrors the existing 405 branch in Post. Without this, DELETE/PUT/PATCH
+on a function-import URL (e.g. a keyless-view import) threw
+NotImplementedException, surfacing as HTTP 500. Now all four write verbs
+return 405 Method Not Allowed consistently — the desired UX for a
+read-only resource.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 9: Move EFCore view test fixtures into `Tests.Shared.EntityFrameworkCore`
 
 **Files:**
@@ -1061,7 +1188,115 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 
 ---
 
-### Task 10: EFCore end-to-end — GET returns rows + $filter + convention NOT firing + POST 405
+### Task 9b: Wire `LibraryWithViewsContext` seeding into the shared EF test helper
+
+**Files:**
+- Modify: `test/Microsoft.Restier.Tests.Shared.EntityFramework/Extensions/EntityFrameworkServiceCollectionExtensions.cs` (both `#if EF6` and `#if EFCore` blocks)
+
+The existing helper only seeds `LibraryContext` or `MarvelContext` by literal type comparison. Without a branch for `LibraryWithViewsContext` the end-to-end tests get an empty database and the view DDL never runs.
+
+- [ ] **Step 1: Create EFCore `LibraryWithViewsTestInitializer`**
+
+Create `test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsTestInitializer.cs`:
+
+```csharp
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
+
+namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views
+{
+    /// <summary>
+    /// Reuses LibraryTestInitializer to populate publishers/books, then creates the
+    /// BooksByPublisher SQL view on top of the seeded data.
+    /// </summary>
+    public class LibraryWithViewsTestInitializer : IDatabaseInitializer
+    {
+        public void Seed(DbContext dbContext)
+        {
+            // Seed publishers + books via the base initialiser (same data the
+            // LibraryContext tests use).
+            new LibraryTestInitializer().Seed(dbContext);
+
+            // Create the view on top. ExecuteSqlRaw because DbContext.Database
+            // doesn't expose a CREATE VIEW API.
+            dbContext.Database.ExecuteSqlRaw(@"
+                IF OBJECT_ID('BooksByPublisher', 'V') IS NOT NULL DROP VIEW BooksByPublisher;
+                EXEC('CREATE VIEW BooksByPublisher AS
+                       SELECT p.Id AS PublisherId,
+                              p.Name AS PublisherName,
+                              b.Title AS BookName,
+                              CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS DECIMAL(18,0)) AS BookCount
+                       FROM Publishers p
+                       INNER JOIN Books b ON b.PublisherId = p.Id;');
+            ");
+        }
+    }
+}
+```
+
+(Verify the existing `IDatabaseInitializer` shape and `LibraryTestInitializer.Seed` signature; adjust the override accordingly.)
+
+- [ ] **Step 2: Add the EFCore branch to the helper**
+
+Open `test/Microsoft.Restier.Tests.Shared.EntityFramework/Extensions/EntityFrameworkServiceCollectionExtensions.cs`.
+
+In the `#if EFCore` block, after the existing `MarvelContext` branch (line ~185), add:
+
+```csharp
+else if (typeof(TDbContext) == typeof(LibraryWithViewsContext))
+{
+    services.SeedDatabase<LibraryWithViewsContext, LibraryWithViewsTestInitializer>();
+}
+```
+
+Add the using at the top of the EFCore section:
+
+```csharp
+using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
+```
+
+- [ ] **Step 3: Add the EF6 branch to the helper**
+
+In the `#if EF6` block, the seeding model is different — EF6 uses `Database.SetInitializer` on the context itself. The `LibraryWithViewsContext` (created in Task 12) already sets `LibraryWithViewsTestInitializer` in its constructor, which runs on first connection and creates the view. So the EF6 path needs no explicit `else if` branch — the existing `services.AddEF6ProviderServices<TDbContext>(builder.ConnectionString)` line picks up the initialiser automatically.
+
+However, the `SeedDatabase<TContext>(connectionString)` call (line ~90 in EF6 block) is currently called unconditionally for *every* TDbContext and uses `Activator.CreateInstance(typeof(TContext), connectionString)`. Verify that `LibraryWithViewsContext`'s `(string)` constructor exists and is reachable. If it doesn't, add it (Task 12 already includes this constructor).
+
+No additional EF6 branch is needed if the constructor pattern matches. If it doesn't, add the same shape:
+
+```csharp
+// EF6 path — only if SeedDatabase doesn't already handle it
+```
+
+- [ ] **Step 4: Build all touched projects**
+
+Run: `dotnet build test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj test/Microsoft.Restier.Tests.Shared.EntityFramework/Microsoft.Restier.Tests.Shared.EntityFramework.csproj`
+Expected: success.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsTestInitializer.cs test/Microsoft.Restier.Tests.Shared.EntityFramework/Extensions/EntityFrameworkServiceCollectionExtensions.cs
+git commit -m "test(infra): wire LibraryWithViewsContext seeding into shared EF helper
+
+EFCore: SeedDatabase<LibraryWithViewsContext, LibraryWithViewsTestInitializer>
+runs after AddEFCoreProviderServices, populating publishers/books from the
+existing LibraryTestInitializer and then creating the BooksByPublisher
+SQL view on top.
+
+EF6: relies on Database.SetInitializer in the LibraryWithViewsContext
+constructor (LibraryWithViewsTestInitializer), which the existing
+SeedDatabase<TContext>(connectionString) call activates per process.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
+```
+
+---
+
+### Task 10: EFCore end-to-end — GET returns rows + $filter + convention NOT firing + write verbs 405
 
 **Files:**
 - Create: `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EFCore/Issue741_KeylessViews.cs`
@@ -1144,13 +1379,17 @@ public class Issue741_KeylessViews
             because: "v1 does not invoke OnFiltering<View> for keyless-view function imports; see Follow-up A");
     }
 
-    [Fact]
-    public async Task Post_KeylessView_Returns405()
+    [Theory]
+    [InlineData("POST")]
+    [InlineData("PUT")]
+    [InlineData("PATCH")]
+    [InlineData("DELETE")]
+    public async Task Write_KeylessView_Returns405(string verb)
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
-            HttpMethod.Post,
+            new HttpMethod(verb),
             resource: "/BooksByPublisher()",
-            payload: "{}",
+            payload: verb == "DELETE" ? null : "{}",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
@@ -1169,32 +1408,20 @@ dotnet user-secrets set "ConnectionStrings:LibraryWithViewsContext" "Server=(loc
 
 On macOS without LocalDB, point at whatever SQL Server you use for the other Library tests (the existing `LibraryContext` connection string is a fine template — copy it and change the Initial Catalog).
 
-- [ ] **Step 4: Seed the view in the DB**
+- [ ] **Step 4: Verify the DB and view exist**
 
-The view needs to actually exist. Pick the seeding path that matches how `LibraryWithViewsContext` is initialised — likely in `LibraryTestInitializer.Seed`. Add a method to the initialiser (or extend it) that issues the DDL after `EnsureCreated`:
+The seeding is wired in Task 9b. To confirm, run a one-shot test:
 
-```csharp
-public void SeedView(LibraryWithViewsContext dbContext)
-{
-    dbContext.Database.ExecuteSqlRaw(@"
-        IF OBJECT_ID('BooksByPublisher', 'V') IS NOT NULL DROP VIEW BooksByPublisher;
-        EXEC('CREATE VIEW BooksByPublisher AS
-               SELECT p.Id AS PublisherId,
-                      p.Name AS PublisherName,
-                      b.Title AS BookName,
-                      CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS DECIMAL(18,0)) AS BookCount
-               FROM Publishers p
-               INNER JOIN Books b ON b.PublisherId = p.Id;');
-    ");
-}
+```bash
+dotnet test test/Microsoft.Restier.Tests.AspNetCore/Microsoft.Restier.Tests.AspNetCore.csproj --filter "FullyQualifiedName=Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore.Issue741_KeylessViews.Get_KeylessView_Returns200WithRows" --logger "console;verbosity=normal"
 ```
 
-Wire this into `AddEntityFrameworkServices<LibraryWithViewsContext>` so the view is created in the seeded DB. Look at the existing `SeedDatabase<LibraryContext, LibraryTestInitializer>` pattern in `EFServiceCollectionExtensions` and add a parallel `SeedDatabase<LibraryWithViewsContext, ...>` call with the view DDL.
+If the test fails because the view doesn't exist, inspect the SQL log and revisit Task 9b's `LibraryWithViewsTestInitializer.Seed` implementation.
 
 - [ ] **Step 5: Run the regression tests**
 
 Run: `dotnet test test/Microsoft.Restier.Tests.AspNetCore/Microsoft.Restier.Tests.AspNetCore.csproj --filter "FullyQualifiedName~Issue741_KeylessViews"`
-Expected: 4 passed per TFM.
+Expected: 3 Facts + 4 Theory rows (one per verb) = 7 passed per TFM.
 
 - [ ] **Step 6: Commit**
 
@@ -1284,16 +1511,19 @@ private void EntityFramework6GetEntitySets(
             .ToList();
         entitySetKeyMap.Add(clrType, keyProperties);
 
-        // Source factory: prefer reflection on a DbSet<T> / DbQuery<T> / IDbSet<T> property whose
-        // element type matches; fall back to ObjectContext.CreateQuery for EDMX-only entity sets.
+        // Source factory: prefer reflection on a CLR property whose element type matches the
+        // discovered EDM entity set. We scan for properties whose type is assignable to
+        // IQueryable<clrType> — that covers DbSet<T>, IDbSet<T>, and DbQuery<T> in one check
+        // (all three implement IQueryable<T>). If no property matches, fall back to
+        // ObjectContext.CreateQuery for EDMX-only entity sets.
+        //
+        // NOTE: discovery happens via efEntityContainer.EntitySets above — i.e. the EDM
+        // model. A DbQuery<T> or DbSet<T> that is NOT configured as an entity in the model
+        // does not appear here. That's by design: ObjectContext can only query EDM entity
+        // sets, so a property not in the EDM has no underlying entity set to query against.
+        var iqueryableOfClr = typeof(IQueryable<>).MakeGenericType(clrType);
         var matchingProp = contextProperties.FirstOrDefault(p =>
-        {
-            var dbSetType = p.PropertyType.FindGenericType(typeof(DbSet<>));
-            var dbQueryType = p.PropertyType.FindGenericType(typeof(DbQuery<>));
-            var iDbSetType = p.PropertyType.FindGenericType(typeof(IDbSet<>));
-            var generic = dbSetType ?? dbQueryType ?? iDbSetType;
-            return generic is not null && generic.GetGenericArguments()[0] == clrType;
-        });
+            iqueryableOfClr.IsAssignableFrom(p.PropertyType));
 
         Func<object, IQueryable> sourceFactory;
         if (matchingProp is not null)
@@ -1667,13 +1897,17 @@ public class Issue741_KeylessViews
             because: "v1 does not invoke OnFiltering<View> for keyless-view function imports; see Follow-up A");
     }
 
-    [Fact]
-    public async Task Post_KeylessView_Returns405()
+    [Theory]
+    [InlineData("POST")]
+    [InlineData("PUT")]
+    [InlineData("PATCH")]
+    [InlineData("DELETE")]
+    public async Task Write_KeylessView_Returns405(string verb)
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
-            HttpMethod.Post,
+            new HttpMethod(verb),
             resource: "/BooksByPublisher()",
-            payload: "{}",
+            payload: verb == "DELETE" ? null : "{}",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
@@ -1684,7 +1918,7 @@ public class Issue741_KeylessViews
 - [ ] **Step 2: Run the tests**
 
 Run: `dotnet test test/Microsoft.Restier.Tests.AspNetCore/Microsoft.Restier.Tests.AspNetCore.csproj --filter "FullyQualifiedName~EF6.Issue741_KeylessViews"`
-Expected: 4 passed per TFM.
+Expected: 3 passed + 4 theory rows = 7 passed per TFM.
 
 - [ ] **Step 3: Commit**
 
@@ -1844,10 +2078,10 @@ Both limitations are tracked in the [keyless-views follow-up issue]() and will b
 |---|---|
 | EF Core `[Keyless]` + `DbSet<T>` | `ComplexType<T>` + `FunctionImport` named after the DbSet |
 | EF Core `HasNoKey()` + `ToView("X")` + `DbSet<T>` | Same |
-| EF6 fluent `Entity<T>().ToTable("X")` with no key configured | `ComplexType<T>` + `FunctionImport` named after the EntitySet |
-| EF6 `DbQuery<T>` property | Same as DbSet path |
+| EF6 fluent `Entity<T>().ToTable("X")` with no key configured (whether the property is `DbSet<T>`, `IDbSet<T>`, or `DbQuery<T>`) | `ComplexType<T>` + `FunctionImport` named after the EntitySet |
 | EF6 EDMX-only entity set (no CLR property) | `ComplexType<T>` + `FunctionImport`; runtime queries use `ObjectContext.CreateQuery<T>("[Container].[EntitySet]")` |
 | Keyless type with no DbSet (EFCore query type only) | Not exposed (no entity-set-name to map to a function import) |
+| EF6 `DbQuery<T>` (or `DbSet<T>`) not configured via `modelBuilder.Entity<T>()` / EDMX | Not exposed. Configure the entity in the model first — the property type itself does not matter. |
 ```
 
 - [ ] **Step 2: Build the docs**
