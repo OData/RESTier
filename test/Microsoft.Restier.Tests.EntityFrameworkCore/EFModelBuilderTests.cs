@@ -2,11 +2,13 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.IncorrectLibrary;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
@@ -63,6 +65,33 @@ public class EFModelBuilderTests
 
         metadataString.Should().Contain("ComplexType Name=\"BooksByPublisher\"");
         metadataString.Should().Contain("FunctionImport Name=\"BooksByPublisher\"");
+    }
+
+    [Fact]
+    public async Task EFModelBuilder_LowerCamelCase_KeylessViewImport_MatchesEntitySetCasing()
+    {
+        // ODataConventionModelBuilder.EnableLowerCamelCase() lower-camel-cases *property* and
+        // enum-member names — NOT container-level names. EntitySets stay PascalCase in
+        // LowerCamelCase routes; keyless-view function imports should match. This pins the
+        // behaviour so a future "let's also lower-camel-case the function import" tweak would
+        // be a deliberate choice rather than an accidental drift.
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
+            HttpMethod.Get,
+            resource: "/$metadata",
+            acceptHeader: "application/xml",
+            serviceCollection: services => services.AddEntityFrameworkServices<LibraryContext>(),
+            namingConvention: RestierNamingConvention.LowerCamelCase);
+
+        response.IsSuccessStatusCode.Should().BeTrue();
+        var metadataString = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        // Convention sanity: entity-set names stay PascalCase, but properties get camelCased.
+        metadataString.Should().Contain("EntitySet Name=\"Books\"");
+        metadataString.Should().Contain("Property Name=\"isbn\"");
+
+        // The keyless-view function import follows the EntitySet casing rule — PascalCase.
+        metadataString.Should().Contain("FunctionImport Name=\"BooksByPublisher\"");
+        metadataString.Should().NotContain("FunctionImport Name=\"booksByPublisher\"");
     }
 
     [Fact]

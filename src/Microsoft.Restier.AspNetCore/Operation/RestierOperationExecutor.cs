@@ -91,7 +91,12 @@ namespace Microsoft.Restier.AspNetCore.Operation
                 // Fallback: is this an auto-generated keyless-view function import?
                 if (keylessViewRegistry.TryGet(restierOperationContext.OperationName, out var viewEntry))
                 {
+                    // Auto-generated views still go through the IOperationFilter pipeline so
+                    // auditing / metrics / mutation / validation hooks fire the same way they
+                    // do for any other unbound function import.
+                    await PerformPreEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
                     var viewQueryable = viewEntry.SourceFactory(context.Api);
+                    await PerformPostEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
                     return viewQueryable;
                 }
 

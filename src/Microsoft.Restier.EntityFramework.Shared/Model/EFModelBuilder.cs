@@ -207,6 +207,11 @@ namespace Microsoft.Restier.EntityFrameworkCore
             var container = edmModel.EntityContainer as EdmEntityContainer
                 ?? throw new InvalidOperationException("Keyless view registration requires a writable EdmEntityContainer.");
 
+            // Naming-convention note: ODataConventionModelBuilder.EnableLowerCamelCase() in OData
+            // ModelBuilder 2.x lower-camel-cases *property* and *enum-member* names only; it does
+            // not touch container-level names (EntitySet / Singleton / FunctionImport). So we
+            // keep the function-import name as the raw DbSet property name (PascalCase),
+            // matching how regular EntitySets surface in LowerCamelCase routes.
             foreach (var pair in keylessViewSets)
             {
                 var viewName = pair.Key;
