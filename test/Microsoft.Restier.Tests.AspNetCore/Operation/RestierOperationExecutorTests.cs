@@ -12,6 +12,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Operation;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.DependencyInjection;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -33,7 +34,7 @@ public class RestierOperationExecutorTests
         authorizerFactory.Create().Returns(authorizer ?? _authorizer);
         var filterFactory = Substitute.For<IChainOfResponsibilityFactory<IOperationFilter>>();
         filterFactory.Create().Returns(filter ?? _filter);
-        return new RestierOperationExecutor(authorizerFactory, filterFactory);
+        return new RestierOperationExecutor(authorizerFactory, filterFactory, new KeylessViewRegistry());
     }
 
     [Fact]

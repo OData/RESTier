@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.Restier.Core.Model;
@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Globalization;
 using System.Linq;
@@ -19,7 +20,10 @@ namespace Microsoft.Restier.EntityFramework;
 public partial class EFModelBuilder<TDbContext> : IModelBuilder
     where TDbContext : DbContext
 {
-    private void EntityFramework6GetEntitySets(out Dictionary<string, Type> entitySetMap, out Dictionary<Type, ICollection<PropertyInfo>> entitySetKeyMap)
+    private void EntityFramework6GetEntitySets(
+        out Dictionary<string, Type> entitySetMap,
+        out Dictionary<Type, ICollection<PropertyInfo>> entitySetKeyMap,
+        out Dictionary<string, Func<object, IQueryable>> sourceFactoryMap)
     {
         var efModel = (_dbContext as IObjectContextAdapter).ObjectContext.MetadataWorkspace;
 
@@ -61,8 +65,13 @@ public partial class EFModelBuilder<TDbContext> : IModelBuilder
 
         entitySetMap = [];
         entitySetKeyMap = [];
+        sourceFactoryMap = [];
 
         var itemCollection = (ObjectItemCollection)efModel.GetItemCollection(DataSpace.OSpace);
+        var containerName = efEntityContainer.Name;
+
+        // Capture the DbContext properties once for fast property-backed source-factory resolution.
+        var contextProperties = _dbContext.GetType().GetProperties();
 
         foreach (var efEntitySet in efEntityContainer.EntitySets)
         {
@@ -79,9 +88,55 @@ public partial class EFModelBuilder<TDbContext> : IModelBuilder
             // As entity set name and type map
             entitySetMap.Add(efEntitySet.Name, clrType);
 
-            var keyProperties = efEntityType.KeyProperties.Select(property => clrType.GetProperty(property.Name)).ToList();
-
+            // Normalise: an empty list signals "keyless" to the shared builder.
+            // (EF6 normally returns a populated list for keyed entities, empty for keyless views.)
+            var keyProperties = efEntityType.KeyProperties
+                .Select(property => clrType.GetProperty(property.Name))
+                .Where(p => p != null)
+                .ToList();
             entitySetKeyMap.Add(clrType, keyProperties);
+
+            // Source factory: prefer reflection on a CLR property whose element type matches the
+            // discovered EDM entity set. We scan for properties whose type is assignable to
+            // IQueryable<clrType> — that covers DbSet<T>, IDbSet<T>, and DbQuery<T> in one check
+            // (all three implement IQueryable<T>). If no property matches, fall back to
+            // ObjectContext.CreateQuery for EDMX-only entity sets.
+            //
+            // NOTE: discovery happens via efEntityContainer.EntitySets above — i.e. the EDM
+            // model. A DbQuery<T> or DbSet<T> that is NOT configured as an entity in the model
+            // does not appear here. That's by design: ObjectContext can only query EDM entity
+            // sets, so a property not in the EDM has no underlying entity set to query against.
+            var iqueryableOfClr = typeof(IQueryable<>).MakeGenericType(clrType);
+            var matchingProp = contextProperties.FirstOrDefault(p =>
+                iqueryableOfClr.IsAssignableFrom(p.PropertyType));
+
+            Func<object, IQueryable> sourceFactory;
+            if (matchingProp is not null)
+            {
+                var capturedProp = matchingProp;
+                sourceFactory = api =>
+                {
+                    var ctx = ((IEntityFrameworkApi)api).DbContext;
+                    return (IQueryable)capturedProp.GetValue(ctx);
+                };
+            }
+            else
+            {
+                var capturedClrType = clrType;
+                var capturedContainerName = containerName;
+                var capturedEntitySetName = efEntitySet.Name;
+                sourceFactory = api =>
+                {
+                    var ctx = (DbContext)((IEntityFrameworkApi)api).DbContext;
+                    var oc = ((IObjectContextAdapter)ctx).ObjectContext;
+                    var createQuery = typeof(ObjectContext).GetMethod(nameof(ObjectContext.CreateQuery))
+                        .MakeGenericMethod(capturedClrType);
+                    var esql = $"[{capturedContainerName}].[{capturedEntitySetName}]";
+                    return (IQueryable)createQuery.Invoke(oc, new object[] { esql, Array.Empty<ObjectParameter>() });
+                };
+            }
+
+            sourceFactoryMap[efEntitySet.Name] = sourceFactory;
         }
     }
 }

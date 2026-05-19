@@ -323,6 +323,8 @@
                           "api-reference/Microsoft/Restier/Core/Model/index",
                           "api-reference/Microsoft/Restier/Core/Model/IModelBuilder",
                           "api-reference/Microsoft/Restier/Core/Model/IModelMapper",
+                          "api-reference/Microsoft/Restier/Core/Model/KeylessViewEntry",
+                          "api-reference/Microsoft/Restier/Core/Model/KeylessViewRegistry",
                           "api-reference/Microsoft/Restier/Core/Model/ModelMerger"
                         ]
                       },
