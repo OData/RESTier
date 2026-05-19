@@ -72,5 +72,48 @@ namespace Microsoft.Restier.Tests.Core.Query
             testClass.ShouldReturnCount = testValue;
             testClass.ShouldReturnCount.Should().Be(testValue);
         }
+
+        /// <summary>
+        /// HasRecursiveExpand defaults to false.
+        /// </summary>
+        [Fact]
+        public void HasRecursiveExpand_DefaultsToFalse()
+        {
+            testClass.HasRecursiveExpand.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// HasRecursiveExpand can be set by internal code (e.g. the controller layer).
+        /// </summary>
+        [Fact]
+        public void HasRecursiveExpand_CanBeSet()
+        {
+            typeof(QueryRequest)
+                .GetProperty(nameof(QueryRequest.HasRecursiveExpand))!
+                .SetValue(testClass, true);
+            testClass.HasRecursiveExpand.Should().BeTrue();
+        }
+
+        /// <summary>
+        /// AllowNoTracking defaults to false so the submit pipeline and any
+        /// direct (non-controller) QueryAsync call preserves tracked behavior.
+        /// </summary>
+        [Fact]
+        public void AllowNoTracking_DefaultsToFalse()
+        {
+            testClass.AllowNoTracking.Should().BeFalse();
+        }
+
+        /// <summary>
+        /// AllowNoTracking can be set by internal code (the AspNetCore controller).
+        /// </summary>
+        [Fact]
+        public void AllowNoTracking_CanBeSet()
+        {
+            typeof(QueryRequest)
+                .GetProperty(nameof(QueryRequest.AllowNoTracking))!
+                .SetValue(testClass, true);
+            testClass.AllowNoTracking.Should().BeTrue();
+        }
     }
 }
