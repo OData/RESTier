@@ -77,17 +77,16 @@ namespace Microsoft.Restier.EntityFrameworkCore
         {
             // Get the Entity set maps from the respective EF versions.
 #if EFCore
-
-            EntityFrameworkCoreGetEntities(out var entitySetMap, out var entitySetKeyMap);
+            EntityFrameworkCoreGetEntities(out var entitySetMap, out var entitySetKeyMap, out var sourceFactoryMap);
 #endif
 #if EF6
-            EntityFramework6GetEntitySets(out var entitySetMap, out var entitySetKeyMap);
+            EntityFramework6GetEntitySets(out var entitySetMap, out var entitySetKeyMap, out var sourceFactoryMap);
 #endif
             // Get the inner model if it exists.
             var innerModel = Inner?.GetEdmModel();
 
             // Build the model from the Entity Framework Entity Sets.
-            var result = BuildEdmModelFromEntitySetMaps(entitySetMap, entitySetKeyMap, _namingConvention, _spatialConvention, _dbContext);
+            var result = BuildEdmModelFromEntitySetMaps(entitySetMap, entitySetKeyMap, sourceFactoryMap, _namingConvention, _spatialConvention, _dbContext, _keylessViewRegistry);
 
             // merge the inner model into the result.
             if (innerModel is not null)
@@ -101,37 +100,54 @@ namespace Microsoft.Restier.EntityFrameworkCore
         private static EdmModel BuildEdmModelFromEntitySetMaps(
             Dictionary<string, Type> entitySetMap,
             Dictionary<Type, ICollection<PropertyInfo>> entitySetKeyMap,
+            Dictionary<string, Func<object, IQueryable>> sourceFactoryMap,
             RestierNamingConvention namingConvention,
             SpatialModelConvention spatialConvention,
-            object spatialProviderContext)
+            object spatialProviderContext,
+            KeylessViewRegistry keylessViewRegistry)
         {
             if (!entitySetMap.Any())
             {
                 return new EdmModel();
             }
 
-            // Collection of entity type and set name is set by EF now,
-            // and EF model producer will not build model any more
-            // Web Api OData conversion model built is been used here,
-            // refer to Web Api OData document for the detail conversions been used for model built.
+            // Split: keyed entity sets become EntitySet<T>; keyless DbSets/EntitySets become ComplexType<T> + FunctionImport.
+            // A type is keyless if its key collection is null OR empty (EF Core reports null, EF6 reports an empty list).
+            var keyedEntitySets = new Dictionary<string, Type>();
+            var keylessViewSets = new Dictionary<string, Type>();
+            foreach (var pair in entitySetMap)
+            {
+                var keyList = entitySetKeyMap.TryGetValue(pair.Value, out var keys) ? keys : null;
+                if (keyList is null || keyList.Count == 0)
+                {
+                    keylessViewSets.Add(pair.Key, pair.Value);
+                }
+                else
+                {
+                    keyedEntitySets.Add(pair.Key, pair.Value);
+                }
+            }
+
             var builder = new ODataConventionModelBuilder
             {
                 // This namespace is used by container
                 Namespace = entitySetMap.First().Value.Namespace
             };
 
-            var method = typeof(ODataConventionModelBuilder).GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            var entitySetMethod = typeof(ODataConventionModelBuilder).GetMethod("EntitySet", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            var complexTypeMethod = typeof(ODataConventionModelBuilder).GetMethod("ComplexType", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy, Type.EmptyTypes);
 
-            foreach (var pair in entitySetMap)
+            foreach (var pair in keyedEntitySets)
             {
-                // Build a method with the specific type argument
-                var specifiedMethod = method.MakeGenericMethod(pair.Value);
-                var parameters = new object[]
-                {
-                    pair.Key,
-                };
-
+                var specifiedMethod = entitySetMethod.MakeGenericMethod(pair.Value);
+                var parameters = new object[] { pair.Key };
                 specifiedMethod.Invoke(builder, parameters);
+            }
+
+            foreach (var pair in keylessViewSets)
+            {
+                var specifiedMethod = complexTypeMethod.MakeGenericMethod(pair.Value);
+                specifiedMethod.Invoke(builder, Array.Empty<object>());
             }
 
             foreach (var pair in entitySetKeyMap)
@@ -141,11 +157,10 @@ namespace Microsoft.Restier.EntityFrameworkCore
                     continue;
                 }
 
-                if (pair.Value is null)
+                if (pair.Value is null || pair.Value.Count == 0)
                 {
-                    throw new InvalidOperationException($"The entity '{pair.Key}' does not have a key specified. Entities tagged with the [Keyless] attribute " +
-                                                        $"(or otherwise do not have a key specified) are not supported in either OData or Restier. Please map the object as a ComplexType and " +
-                                                        $"implement as an [UnboundOperation] on your API instead.");
+                    // Keyless types are handled above (registered as ComplexType, not EntityType).
+                    continue;
                 }
 
                 foreach (var property in pair.Value)
@@ -163,17 +178,63 @@ namespace Microsoft.Restier.EntityFrameworkCore
                     break;
             }
 
-            // Phase 1: capture spatial-typed properties and remove them from the convention builder so they
-            // aren't published as the storage CLR type. Short-circuits when no spatial providers are registered.
             var entityClrTypes = entitySetMap.Values.Distinct().ToList();
             var spatialCaptures = spatialConvention.CapturePhase(builder, entityClrTypes, spatialProviderContext);
 
             var edmModel = (EdmModel)builder.GetEdmModel();
 
-            // Phase 2: add the captured spatial properties to the resulting model as Microsoft.Spatial EDM primitives.
             spatialConvention.AugmentPhase(edmModel, spatialCaptures, namingConvention);
 
+            AddKeylessViewFunctionImports(edmModel, keylessViewSets, sourceFactoryMap, keylessViewRegistry);
+
             return edmModel;
+        }
+
+        private static void AddKeylessViewFunctionImports(
+            EdmModel edmModel,
+            Dictionary<string, Type> keylessViewSets,
+            Dictionary<string, Func<object, IQueryable>> sourceFactoryMap,
+            KeylessViewRegistry keylessViewRegistry)
+        {
+            if (keylessViewSets.Count == 0)
+            {
+                return;
+            }
+
+            var container = edmModel.EntityContainer as EdmEntityContainer
+                ?? throw new InvalidOperationException("Keyless view registration requires a writable EdmEntityContainer.");
+
+            foreach (var pair in keylessViewSets)
+            {
+                var viewName = pair.Key;
+                var clrType = pair.Value;
+                var edmComplexType = edmModel.SchemaElements.OfType<IEdmComplexType>().FirstOrDefault(c => c.Name == clrType.Name)
+                    ?? throw new InvalidOperationException(
+                        $"Could not find ComplexType '{clrType.Name}' in the EDM model for keyless view '{viewName}'.");
+
+                var complexTypeReference = new EdmComplexTypeReference(edmComplexType, isNullable: false);
+                var collectionTypeReference = new EdmCollectionTypeReference(new EdmCollectionType(complexTypeReference));
+
+                var function = new EdmFunction(
+                    container.Namespace,
+                    viewName,
+                    collectionTypeReference,
+                    isBound: false,
+                    entitySetPathExpression: null,
+                    isComposable: false);
+
+                edmModel.AddElement(function);
+                container.AddFunctionImport(viewName, function, entitySet: null);
+
+                if (!sourceFactoryMap.TryGetValue(viewName, out var sourceFactory))
+                {
+                    throw new InvalidOperationException(
+                        $"No source factory was supplied for keyless view '{viewName}'. " +
+                        $"This is an internal bug in the EF model builder.");
+                }
+
+                keylessViewRegistry.Register(viewName, clrType, sourceFactory);
+            }
         }
     }
 }

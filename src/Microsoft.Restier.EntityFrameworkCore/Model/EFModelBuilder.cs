@@ -18,7 +18,10 @@ namespace Microsoft.Restier.EntityFrameworkCore;
 public partial class EFModelBuilder<TDbContext> : IModelBuilder
     where TDbContext : DbContext
 {
-    private void EntityFrameworkCoreGetEntities(out Dictionary<string, Type> entitySetMap, out Dictionary<Type, ICollection<PropertyInfo>> entitySetKeyMap)
+    private void EntityFrameworkCoreGetEntities(
+        out Dictionary<string, Type> entitySetMap,
+        out Dictionary<Type, ICollection<PropertyInfo>> entitySetKeyMap,
+        out Dictionary<string, Func<object, IQueryable>> sourceFactoryMap)
     {
         // @robertmclaws: Validate that no Owned Types are mapped to DbSet<>. If there are, EFCore calls to GetModel will fail.
         var ownedTypes = _dbContext.Model.GetEntityTypes().Where(c => c.IsOwned()).ToList();
@@ -30,16 +33,30 @@ public partial class EFModelBuilder<TDbContext> : IModelBuilder
                                                   $"You must remove the following DbSet mappings for EFCore to function properly with Restier: {string.Join(",", dbSetMappedTypes.Select(c => c.ShortName()))}");
         }
 
-        // @caldwell0414: This code is looking for all the DBSets on the context and generating a dictionary of DbSet Name and the Entity type.
-        entitySetMap = _dbContext.GetType().GetProperties()
+        // Map { DbSet property name -> CLR type }.
+        var dbSetProperties = _dbContext.GetType().GetProperties()
             .Where(e => e.PropertyType.FindGenericType(typeof(DbSet<>)) is not null)
-            .ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);
+            .ToList();
 
-        // @caldwell0414: This code goes through all the Entity types in the model, and where not marked as "owned" builds a dictionary of name and primary-key type.
+        entitySetMap = dbSetProperties.ToDictionary(e => e.Name, e => e.PropertyType.GetGenericArguments()[0]);
 
-            entitySetKeyMap = _dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !IsImplicitManyToManyJoinEntity(c)).ToDictionary(
-                            e => e.ClrType,
-                            e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType?.GetProperty(p.Name)).ToList()));
+        // Map { entity-set name -> source factory } via reflection on the DbSet property captured here.
+        sourceFactoryMap = dbSetProperties.ToDictionary(
+            p => p.Name,
+            p =>
+            {
+                var capturedProp = p;
+                Func<object, IQueryable> factory = api =>
+                {
+                    var ctx = ((IEntityFrameworkApi)api).DbContext;
+                    return (IQueryable)capturedProp.GetValue(ctx);
+                };
+                return factory;
+            });
+
+        entitySetKeyMap = _dbContext.Model.GetEntityTypes().Where(c => !c.IsOwned() && !IsImplicitManyToManyJoinEntity(c)).ToDictionary(
+                        e => e.ClrType,
+                        e => ((ICollection<PropertyInfo>)e.FindPrimaryKey()?.Properties.Select(p => e.ClrType?.GetProperty(p.Name)).ToList()));
     }
 
     /// <summary>
