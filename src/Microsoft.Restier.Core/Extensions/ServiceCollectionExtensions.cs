@@ -74,6 +74,7 @@ namespace Microsoft.Restier.Core
             services.TryAddSingleton<IChainedService<IQueryExecutor>, DefaultQueryExecutor>();
             services.TryAddSingleton<ISubmitHandler, DefaultSubmitHandler>();
             services.TryAddSingleton<IQueryHandler, DefaultQueryHandler>();
+            services.TryAddSingleton<IExpandCycleDetector, DefaultExpandCycleDetector>();
 
             return services;
         }
