@@ -740,6 +740,34 @@ namespace Microsoft.Restier.AspNetCore
             var queryContext = new ODataQueryContext(model, queryRequest.Query.ElementType, path);
             var queryOptions = new ODataQueryOptions(queryContext, Request);
 
+            // This is the controller's HTTP read path — opt this request into
+            // the no-tracking transformation. Internal QueryAsync calls (submit
+            // pipeline, deep-update classifier, ResourceExists checks at
+            // line 712) leave AllowNoTracking false and stay tracked.
+            queryRequest.AllowNoTracking = true;
+
+            // Surface the recursive-expand hint on the QueryRequest so the
+            // EF6 sourcer can fall back to tracked queries (EFCore ignores
+            // the hint — AsNoTrackingWithIdentityResolution covers it).
+            var rootEntityType = path.GetEdmType() switch
+            {
+                IEdmCollectionType coll => coll.ElementType.Definition as IEdmEntityType,
+                IEdmEntityType entity => entity,
+                _ => null,
+            };
+
+            if (rootEntityType is not null && queryOptions.SelectExpand?.SelectExpandClause is not null)
+            {
+                var detector = HttpContext.Request.GetRouteServices()
+                    .GetService(typeof(IExpandCycleDetector)) as IExpandCycleDetector;
+                if (detector is not null)
+                {
+                    queryRequest.HasRecursiveExpand = detector.HasCycle(
+                        rootEntityType,
+                        queryOptions.SelectExpand.SelectExpandClause);
+                }
+            }
+
             // Get etag for query request
             if (queryOptions.IfMatch is not null)
             {
