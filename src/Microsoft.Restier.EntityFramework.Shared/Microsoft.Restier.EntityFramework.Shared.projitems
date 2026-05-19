@@ -19,6 +19,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Query\SelectExpandHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Query\EFQueryExpressionProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Query\EFQueryExpressionSourcer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RestierEFOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RestierEFTrackingBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Submit\EFSubmitExecutor.cs" />
   </ItemGroup>
 </Project>
