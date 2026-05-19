@@ -153,7 +153,6 @@ public static class RestierODataOptionsExtensions
                 .AddScoped(type, type)
                 .AddScoped(sp => (ApiBase)sp.GetService(type));
 
-            services.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
             services.RemoveAll<ODataQuerySettings>()
                 .AddRestierCoreServices()
                 .AddRestierConventionBasedServices(type);
@@ -165,6 +164,7 @@ public static class RestierODataOptionsExtensions
 
             // Bag wins: applied *after* configureRouteServices so it overrides any
             // registrations of these types the caller may have made in DI.
+            services.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
             services.AddSingleton(options.DeepOperations);
             services.AddSingleton(options.Conformance);
 

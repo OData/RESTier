@@ -15,19 +15,21 @@ Restier exposes per-route configuration through a single `RestierRouteOptions` b
 ## Configuring a route
 
 ```csharp
-builder.Services.AddOData(options =>
-{
-    options.AddRestierRoute<NorthwindApi>(
-        "api",
-        services => services.AddEntityFrameworkServices<NorthwindContext>(),
-        options =>
-        {
-            options.Conformance.StrictMissingParentForCollections = true;
-            options.DeepOperations.MaxDepth = 10;
-            options.UseRestierBatching = false;
-            options.NamingConvention = RestierNamingConvention.LowerCamelCase;
-        });
-});
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.AddRestierRoute<NorthwindApi>(
+            "api",
+            services => services.AddEntityFrameworkServices<NorthwindContext>(),
+            options =>
+            {
+                options.Conformance.StrictMissingParentForCollections = true;
+                options.DeepOperations.MaxDepth = 10;
+                options.UseRestierBatching = false;
+                options.NamingConvention = RestierNamingConvention.LowerCamelCase;
+            });
+    });
 ```
 
 The first argument is the route prefix — pass `""` for an unprefixed route. The second is the per-route DI delegate. The third is the optional `RestierRouteOptions` callback.
