@@ -23,6 +23,8 @@ The conformance toggle is the user-visible deliverable. The options-object refac
 | `routePrefix` placement | Stays as a positional argument | Route identity, not configuration; forcing it through options hurts ergonomics |
 | `ConfigureServices` placement | Stays as its own `Action<IServiceCollection>` parameter | DI registration is a different concern from settings; mixing them in one object muddies both |
 | `ODataOptions` membership | *Not* folded into `RestierRouteOptions` | Owned by `AddOData()`, lives at a different scope (one container, many routes) |
+| DI precedence (options vs. `configureRouteServices`) | Options bag wins | `AddSingleton` (not `TryAdd`) applied *after* `configureRouteServices` runs; the bag is the single canonical source for these settings, no silent dual paths |
+| Versioning layer migration | Replace positional `useRestierBatching` + `namingConvention` on `AddVersion` with `Action<RestierRouteOptions>` | `Microsoft.Restier.AspNetCore.Versioning` reflects into the core overload; spec must carry the change through to keep that package compiling |
 
 ## Background
 
@@ -125,6 +127,52 @@ public static ODataOptions AddRestierRoute<TApi>(
 
 The two-overload variant builds a `RestierRouteOptions`, invokes the user's `configureOptions` callback against it, then forwards into a single internal registration helper. The one-overload variant defers to the two-overload form with a `null` `configureOptions`, which produces all-default settings.
 
+### Versioning layer impact
+
+`Microsoft.Restier.AspNetCore.Versioning` depends on the removed `AddRestierRoute` shape in three places, all of which must move with the core surface:
+
+1. **`IRestierApiVersioningBuilder`** (`src/Microsoft.Restier.AspNetCore.Versioning/IRestierApiVersioningBuilder.cs`) currently exposes two `AddVersion` overloads with positional `useRestierBatching` and `namingConvention`. These two parameters are replaced by a single `Action<RestierRouteOptions> configureOptions` (defaulting to `null`), mirroring the new core overload:
+
+   ```csharp
+   IRestierApiVersioningBuilder AddVersion<TApi>(
+       string basePrefix,
+       Action<IServiceCollection> configureRouteServices,
+       Action<RestierVersioningOptions> configureVersioning = null,
+       Action<RestierRouteOptions> configureOptions = null)
+       where TApi : ApiBase;
+
+   IRestierApiVersioningBuilder AddVersion<TApi>(
+       ApiVersion apiVersion,
+       bool deprecated,
+       string basePrefix,
+       Action<IServiceCollection> configureRouteServices,
+       Action<RestierVersioningOptions> configureVersioning = null,
+       Action<RestierRouteOptions> configureOptions = null)
+       where TApi : ApiBase;
+   ```
+
+2. **`PendingVersionRegistration`** (`Internal/PendingVersionRegistration.cs`) drops the `UseRestierBatching` and `NamingConvention` properties and gains an `Action<RestierRouteOptions> ConfigureOptions` property carrying the per-version callback through to the configurator.
+
+3. **`RestierApiVersioningOptionsConfigurator.ApplyOne`** (`Internal/RestierApiVersioningOptionsConfigurator.cs`, line ~109) uses reflection to find the 5-parameter `AddRestierRoute` overload. That reflection is rewritten to find the new 4-parameter overload (`ODataOptions`, `string`, `Action<IServiceCollection>`, `Action<RestierRouteOptions>`) and invoke it with `pending.ConfigureOptions`:
+
+   ```csharp
+   var addRestierRoute = typeof(RestierODataOptionsExtensions)
+       .GetMethods(BindingFlags.Public | BindingFlags.Static)
+       .First(m => m.Name == nameof(RestierODataOptionsExtensions.AddRestierRoute)
+           && m.IsGenericMethod
+           && m.GetParameters().Length == 4);
+   var closed = addRestierRoute.MakeGenericMethod(pending.ApiType);
+   closed.Invoke(null, new object[]
+   {
+       options,
+       routePrefix,
+       pending.ConfigureRouteServices,
+       pending.ConfigureOptions,
+   });
+   ```
+
+The versioning unit and integration tests are updated alongside these changes. Any sample app or doc page that calls `AddVersion<...>` with positional `useRestierBatching` / `namingConvention` is updated to use `configureOptions` in the same PR.
+
 ### Controller change
 
 `RestierController.CreateQueryResponse` (`src/Microsoft.Restier.AspNetCore/RestierController.cs`) gains one block immediately before the existing `if (typeReference.IsCollection())` at line 621:
@@ -148,21 +196,27 @@ if (typeReference.IsCollection() && path.OfType<KeySegment>().Any())
 
 `ParentEntityExistsAsync` is the existing helper introduced by PR #614 (line 680). No changes to it.
 
-### DI registration
+### DI registration and precedence
 
-The internal `AddRestierRoute` body that today calls `services.TryAddSingleton(new DeepOperationSettings())` is updated to:
+**Decision:** the options bag is authoritative for `DeepOperationSettings` and `RestierConformanceOptions`. Registrations of those types inside `configureRouteServices` are *not* a supported way to override them — the new `configureOptions` callback is.
+
+Implementation: register the bag's instances via `AddSingleton` (not `TryAddSingleton`) **after** `configureRouteServices` has run. Last writer wins, and the bag writes last:
 
 ```csharp
-services.TryAddSingleton(options.DeepOperations);
-services.TryAddSingleton(options.Conformance);
+services.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
+// ... other Restier core services ...
+configureRouteServices?.Invoke(services);
+services.AddSingleton(options.DeepOperations);    // authoritative
+services.AddSingleton(options.Conformance);       // authoritative
+// ... rest of the body ...
 ```
 
-The supplied `RestierRouteOptions` instance owns these objects, so the same configured instance is what the controller resolves at request time.
+This is a behavior change vs. today's `TryAddSingleton(new DeepOperationSettings())`: callers who previously registered `DeepOperationSettings` themselves from inside `configureRouteServices` will silently lose that registration. The migration story in the documentation calls this out and points them at `configureOptions` instead.
 
 ### Configuration flow
 
 ```
-AddRestierRoute<TApi>(routePrefix, configureServices, configureOptions)
+AddRestierRoute<TApi>(routePrefix, configureRouteServices, configureOptions)
     |
     v
 new RestierRouteOptions() — defaults
@@ -172,9 +226,11 @@ configureOptions?.Invoke(options) — caller mutates the bag
     |
     v
 AddRouteComponents(routePrefix, model, services => {
-    services.TryAddSingleton(options.DeepOperations);
-    services.TryAddSingleton(options.Conformance);
-    configureRouteServices.Invoke(services);
+    // Restier core services registered first
+    ...
+    configureRouteServices?.Invoke(services);     // user DI
+    services.AddSingleton(options.DeepOperations); // bag wins
+    services.AddSingleton(options.Conformance);
     ...
 })
     |
@@ -186,15 +242,17 @@ At request time: RestierController resolves RestierConformanceOptions
 
 ## Tests
 
+**Test-helper change.** `RestierTestHelpers.ExecuteTestRequest` and the related setup helpers gain a new optional `Action<RestierRouteOptions> configureOptions = null` parameter and pass it through to `AddRestierRoute(prefix, services, options)`. This is the channel by which feature tests configure `RestierRouteOptions` on the public API path — not by registering settings via the existing `serviceCollection` parameter. Without this, the new tests would not actually exercise the new `configureOptions` overload.
+
 Three new `[Fact]`s in `test/Microsoft.Restier.Tests.AspNetCore/FeatureTests/EFCore/QueryTests.cs`:
 
-1. **`CollectionNavFromMissingParentReturns200ByDefault`** — `GET /Books(00000000-...)/Reviews` with no `configureOptions`, asserts `200 OK`. Locks in the default behavior.
+1. **`CollectionNavFromMissingParentReturns200ByDefault`** — `GET /Books(00000000-...)/Reviews` with no `configureOptions` argument, asserts `200 OK`. Locks in the default behavior and proves the one-overload variant still produces a working route.
 
-2. **`CollectionNavFromMissingParentReturns404WhenStrict`** — same request, but the test's `ConfigureServices` (or a per-test override) sets `StrictMissingParentForCollections = true`. Asserts `404 Not Found`.
+2. **`CollectionNavFromMissingParentReturns404WhenStrict`** — same request, but with `configureOptions: o => o.Conformance.StrictMissingParentForCollections = true` passed through `ExecuteTestRequest`. Asserts `404 Not Found`. This test must fail if the new `AddRestierRoute(prefix, services, options)` overload is removed or its wiring is broken, so it verifies the full public path: callback → bag → DI → controller.
 
-3. **`CollectionNavFromExistingParentReturns200EmptyWhenStrict`** — `GET /Publishers('Publisher1')/Books` (existing publisher, may or may not have books) with strict mode on. Asserts `200 OK` — confirms strict mode doesn't false-positive on empty-but-valid collections.
+3. **`CollectionNavFromExistingParentReturns200EmptyWhenStrict`** — `GET /Publishers('Publisher1')/Books` (existing publisher) with the same `configureOptions` strict toggle. Asserts `200 OK` — confirms strict mode doesn't false-positive on empty-but-valid collections, and again exercises the public callback path.
 
-Plus call-site updates throughout the test suite to migrate from the removed overloads to the new two-overload surface. Test helpers (`RestierTestHelpers.ExecuteTestRequest` and similar) are not part of the public API and may need internal refactoring to pass an `Action<RestierRouteOptions>` through.
+Plus call-site updates throughout the test suite to migrate from the removed overloads to the new two-overload surface, and parallel updates to the versioning test helpers and tests so they go through `configureOptions` rather than the removed positional arguments.
 
 ## Documentation
 
@@ -219,8 +277,8 @@ Existing pages that show `AddRestierRoute` call samples (any quickstart/guide us
 
 `feature/vnext` is pre-release, so breaking changes are acceptable. The cleanup is:
 
-- Four existing `AddRestierRoute` overloads removed. Replaced by two new overloads with the same `routePrefix` + `configureRouteServices` shape, plus an optional `configureOptions` action.
-- `useRestierBatching` and `namingConvention` no longer take positional arguments — they move onto `RestierRouteOptions`.
-- Call sites that omitted `routePrefix` (relying on the unprefixed convenience overload) must now pass `string.Empty` explicitly.
+- **Core (`Microsoft.Restier.AspNetCore`):** four existing `AddRestierRoute` overloads removed. Replaced by two new overloads with the same `routePrefix` + `configureRouteServices` shape, plus an optional `configureOptions` action. `useRestierBatching` and `namingConvention` no longer take positional arguments — they move onto `RestierRouteOptions`. Call sites that omitted `routePrefix` (relying on the unprefixed convenience overload) must now pass `string.Empty` explicitly.
+- **Versioning (`Microsoft.Restier.AspNetCore.Versioning`):** both `AddVersion<TApi>` overloads on `IRestierApiVersioningBuilder` lose their positional `useRestierBatching` and `namingConvention` parameters; they gain an optional `Action<RestierRouteOptions> configureOptions`. `PendingVersionRegistration` and `RestierApiVersioningOptionsConfigurator` are updated to carry and forward the callback.
+- **DI behavior:** users who previously registered `DeepOperationSettings` directly inside `configureRouteServices` will find that registration silently replaced by the bag's instance (`AddSingleton` after `configureRouteServices`). The supported path is now `configureOptions`.
 
-A migration note will live alongside the conformance-options doc page.
+A migration note will live alongside the conformance-options doc page covering all of the above.
