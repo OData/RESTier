@@ -21,6 +21,7 @@ using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
 using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel.EFCore;
 #endif
 
@@ -230,6 +231,10 @@ namespace Microsoft.Extensions.DependencyInjection
             else if (typeof(TDbContext) == typeof(MarvelContext))
             {
                 services.SeedDatabase<MarvelContext, MarvelTestInitializer>();
+            }
+            else if (typeof(TDbContext) == typeof(LibraryWithViewsContext))
+            {
+                services.SeedDatabase<LibraryWithViewsContext, LibraryWithViewsTestInitializer>();
             }
 
             return services;
