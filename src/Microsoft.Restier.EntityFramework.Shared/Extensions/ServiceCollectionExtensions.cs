@@ -35,6 +35,8 @@ public static partial class ServiceCollectionExtensions
     internal static IServiceCollection AddEFProviderServices<TDbContext>(this IServiceCollection services)
         where TDbContext : DbContext
     {
+        services.TryAddSingleton(new RestierEFOptions());
+
         services.AddSingleton<IChainedService<IModelBuilder>, EFModelBuilder<TDbContext>>()
             .AddSingleton<IChainedService<IModelMapper>, EFModelMapper>()
             .AddSingleton<IChainedService<IQueryExpressionSourcer>, EFQueryExpressionSourcer>()
