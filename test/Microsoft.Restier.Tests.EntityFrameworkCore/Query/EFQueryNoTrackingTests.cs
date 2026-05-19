@@ -76,4 +76,109 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
             context.ChangeTracker.Entries().Should().BeEmpty();
         }
     }
+
+    /// <summary>
+    /// Direct unit tests for <see cref="EFQueryExpressionSourcer.ApplyTracking"/>
+    /// on the EFCore compilation. These cover the full
+    /// <see cref="RestierEFTrackingBehavior"/> × <c>HasRecursiveExpand</c>
+    /// decision matrix by inspecting the IQueryable expression tree returned
+    /// for each combination. The EFCore path ignores the recursive-expand hint
+    /// — identity resolution covers cycles natively via
+    /// <c>AsNoTrackingWithIdentityResolution</c>.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public class EFQuerySourcerTrackingTests : IDisposable
+    {
+        private readonly LibraryContext context;
+
+        public EFQuerySourcerTrackingTests()
+        {
+            var options = new DbContextOptionsBuilder<LibraryContext>()
+                .UseInMemoryDatabase($"sourcer-{Guid.NewGuid()}")
+                .Options;
+            context = new LibraryContext(options);
+        }
+
+        public void Dispose() => context?.Dispose();
+
+        /// <summary>
+        /// EFCore + Default → identity-resolved no-tracking. Assert with the
+        /// more specific method name so we don't get a false positive from the
+        /// substring "AsNoTracking".
+        /// </summary>
+        [Fact]
+        public void Default_NoRecursiveExpand_AppliesAsNoTrackingWithIdentityResolution()
+        {
+            var result = EFQueryExpressionSourcer.ApplyTracking(
+                context.Books,
+                RestierEFTrackingBehavior.Default,
+                hasRecursiveExpand: false);
+
+            result.Expression.ToString().Should().Contain("AsNoTrackingWithIdentityResolution");
+        }
+
+        /// <summary>
+        /// EFCore + Default + recursive-expand=true → still identity-resolved
+        /// no-tracking. The hint is irrelevant on EFCore because
+        /// AsNoTrackingWithIdentityResolution preserves identity across cycles.
+        /// </summary>
+        [Fact]
+        public void Default_HasRecursiveExpand_StillAppliesAsNoTrackingWithIdentityResolution()
+        {
+            var result = EFQueryExpressionSourcer.ApplyTracking(
+                context.Books,
+                RestierEFTrackingBehavior.Default,
+                hasRecursiveExpand: true);
+
+            result.Expression.ToString().Should().Contain("AsNoTrackingWithIdentityResolution");
+        }
+
+        /// <summary>
+        /// EFCore + TrackAll → bare DbSet regardless of recursive-expand.
+        /// </summary>
+        [Fact]
+        public void TrackAll_AlwaysTracked()
+        {
+            var noCycle = EFQueryExpressionSourcer.ApplyTracking(
+                context.Books, RestierEFTrackingBehavior.TrackAll, hasRecursiveExpand: false);
+            var withCycle = EFQueryExpressionSourcer.ApplyTracking(
+                context.Books, RestierEFTrackingBehavior.TrackAll, hasRecursiveExpand: true);
+
+            noCycle.Expression.ToString().Should().NotContain("AsNoTracking");
+            withCycle.Expression.ToString().Should().NotContain("AsNoTracking");
+        }
+
+        /// <summary>
+        /// EFCore + NoTracking → plain AsNoTracking, NOT the identity-resolution
+        /// variant. We assert both: the substring "AsNoTracking" appears, and
+        /// the more specific "AsNoTrackingWithIdentityResolution" does not.
+        /// </summary>
+        [Fact]
+        public void NoTracking_AppliesAsNoTrackingOnly()
+        {
+            var result = EFQueryExpressionSourcer.ApplyTracking(
+                context.Books,
+                RestierEFTrackingBehavior.NoTracking,
+                hasRecursiveExpand: false);
+
+            var expr = result.Expression.ToString();
+            expr.Should().Contain("AsNoTracking");
+            expr.Should().NotContain("AsNoTrackingWithIdentityResolution");
+        }
+
+        /// <summary>
+        /// EFCore + NoTrackingWithIdentityResolution → identity-resolved
+        /// no-tracking.
+        /// </summary>
+        [Fact]
+        public void NoTrackingWithIdentityResolution_AppliesAsNoTrackingWithIdentityResolution()
+        {
+            var result = EFQueryExpressionSourcer.ApplyTracking(
+                context.Books,
+                RestierEFTrackingBehavior.NoTrackingWithIdentityResolution,
+                hasRecursiveExpand: false);
+
+            result.Expression.ToString().Should().Contain("AsNoTrackingWithIdentityResolution");
+        }
+    }
 }

@@ -127,7 +127,12 @@ namespace Microsoft.Restier.EntityFramework
             }
         }
 
-        private static IQueryable ApplyTracking(
+        /// <summary>
+        /// Applies the configured tracking transformation to <paramref name="dbSet"/>.
+        /// Exposed as <c>internal</c> for direct unit-test coverage of the
+        /// EF6/EFCore decision matrix.
+        /// </summary>
+        internal static IQueryable ApplyTracking(
             IQueryable dbSet,
             RestierEFTrackingBehavior behavior,
             bool hasRecursiveExpand)
