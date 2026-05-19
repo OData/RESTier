@@ -11,7 +11,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
 
     /// <summary>
     /// One pending versioned-route registration captured by
-    /// <see cref="IRestierApiVersioningBuilder.AddVersion{TApi}(string, Action{IServiceCollection}, Action{RestierVersioningOptions}, bool, RestierNamingConvention)"/>
+    /// <see cref="IRestierApiVersioningBuilder.AddVersion{TApi}(string, Action{IServiceCollection}, Action{RestierVersioningOptions}, Action{RestierRouteOptions})"/>
     /// (and overloads) and consumed by <c>RestierApiVersioningOptionsConfigurator</c> when
     /// <c>ODataOptions</c> materializes.
     /// </summary>
@@ -25,8 +25,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
             string basePrefix,
             Action<IServiceCollection> configureRouteServices,
             Action<RestierVersioningOptions> applyVersioningOptions,
-            bool useRestierBatching,
-            RestierNamingConvention namingConvention)
+            Action<RestierRouteOptions> configureOptions)
         {
             ApiType = apiType;
             ApiVersion = apiVersion;
@@ -34,8 +33,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
             BasePrefix = basePrefix;
             ConfigureRouteServices = configureRouteServices;
             ApplyVersioningOptions = applyVersioningOptions;
-            UseRestierBatching = useRestierBatching;
-            NamingConvention = namingConvention;
+            ConfigureOptions = configureOptions;
         }
 
         public Type ApiType { get; }
@@ -50,9 +48,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
 
         public Action<RestierVersioningOptions> ApplyVersioningOptions { get; }
 
-        public bool UseRestierBatching { get; }
-
-        public RestierNamingConvention NamingConvention { get; }
+        public Action<RestierRouteOptions> ConfigureOptions { get; }
 
     }
 

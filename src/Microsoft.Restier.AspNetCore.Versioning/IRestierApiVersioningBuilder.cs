@@ -24,14 +24,12 @@ namespace Microsoft.Restier.AspNetCore.Versioning
         /// <param name="basePrefix">The logical API prefix; the version segment is appended to it.</param>
         /// <param name="configureRouteServices">Per-route DI configuration delegate.</param>
         /// <param name="configureVersioning">Optional per-call versioning options (segment formatter, sunset, explicit prefix).</param>
-        /// <param name="useRestierBatching">Pass <c>useRestierBatching</c> through to <c>AddRestierRoute</c>.</param>
-        /// <param name="namingConvention">Pass <c>namingConvention</c> through to <c>AddRestierRoute</c>.</param>
+        /// <param name="configureOptions">Optional callback to mutate the per-route <see cref="RestierRouteOptions"/> bag.</param>
         IRestierApiVersioningBuilder AddVersion<TApi>(
             string basePrefix,
             Action<IServiceCollection> configureRouteServices,
             Action<RestierVersioningOptions> configureVersioning = null,
-            bool useRestierBatching = true,
-            RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase)
+            Action<RestierRouteOptions> configureOptions = null)
             where TApi : ApiBase;
 
         /// <summary>
@@ -44,16 +42,14 @@ namespace Microsoft.Restier.AspNetCore.Versioning
         /// <param name="basePrefix">The logical API prefix; the version segment is appended to it.</param>
         /// <param name="configureRouteServices">Per-route DI configuration delegate.</param>
         /// <param name="configureVersioning">Optional per-call versioning options (segment formatter, sunset, explicit prefix).</param>
-        /// <param name="useRestierBatching">Pass <c>useRestierBatching</c> through to <c>AddRestierRoute</c>.</param>
-        /// <param name="namingConvention">Pass <c>namingConvention</c> through to <c>AddRestierRoute</c>.</param>
+        /// <param name="configureOptions">Optional callback to mutate the per-route <see cref="RestierRouteOptions"/> bag.</param>
         IRestierApiVersioningBuilder AddVersion<TApi>(
             ApiVersion apiVersion,
             bool deprecated,
             string basePrefix,
             Action<IServiceCollection> configureRouteServices,
             Action<RestierVersioningOptions> configureVersioning = null,
-            bool useRestierBatching = true,
-            RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase)
+            Action<RestierRouteOptions> configureOptions = null)
             where TApi : ApiBase;
 
     }

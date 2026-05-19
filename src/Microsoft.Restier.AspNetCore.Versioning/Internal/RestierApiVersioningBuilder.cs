@@ -37,8 +37,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
             string basePrefix,
             Action<IServiceCollection> configureRouteServices,
             Action<RestierVersioningOptions> configureVersioning = null,
-            bool useRestierBatching = true,
-            RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase)
+            Action<RestierRouteOptions> configureOptions = null)
             where TApi : ApiBase
         {
             if (basePrefix is null)
@@ -62,8 +61,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
                         basePrefix,
                         configureRouteServices,
                         configureVersioning,
-                        useRestierBatching,
-                        namingConvention));
+                        configureOptions));
                 }
             }
 
@@ -76,8 +74,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
             string basePrefix,
             Action<IServiceCollection> configureRouteServices,
             Action<RestierVersioningOptions> configureVersioning = null,
-            bool useRestierBatching = true,
-            RestierNamingConvention namingConvention = RestierNamingConvention.PascalCase)
+            Action<RestierRouteOptions> configureOptions = null)
             where TApi : ApiBase
         {
             if (apiVersion is null)
@@ -104,8 +101,7 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
                     basePrefix,
                     configureRouteServices,
                     configureVersioning,
-                    useRestierBatching,
-                    namingConvention));
+                    configureOptions));
             }
 
             return this;

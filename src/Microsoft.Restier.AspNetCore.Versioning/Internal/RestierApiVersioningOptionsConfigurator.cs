@@ -7,6 +7,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
 using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.Core;
 
 namespace Microsoft.Restier.AspNetCore.Versioning.Internal
 {
@@ -103,22 +104,20 @@ namespace Microsoft.Restier.AspNetCore.Versioning.Internal
                 groupName,
                 versioningOptions.SunsetDate);
 
-            // Reflect into the existing AddRestierRoute extension. Because that extension is generic,
-            // we cannot avoid reflection here — the caller of this configurator runs at startup,
-            // so the cost is paid once per host boot.
+            // Reflect into the AddRestierRoute extension. The generic constraint makes this
+            // a one-time cost per host boot.
             var addRestierRoute = typeof(RestierODataOptionsExtensions)
                 .GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .First(m => m.Name == nameof(RestierODataOptionsExtensions.AddRestierRoute)
                     && m.IsGenericMethod
-                    && m.GetParameters().Length == 5);
+                    && m.GetParameters().Length == 4);
             var closed = addRestierRoute.MakeGenericMethod(pending.ApiType);
             closed.Invoke(null, new object[]
             {
                 options,
                 routePrefix,
                 pending.ConfigureRouteServices,
-                pending.UseRestierBatching,
-                pending.NamingConvention,
+                pending.ConfigureOptions,
             });
         }
 
