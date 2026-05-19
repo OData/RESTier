@@ -7,7 +7,7 @@ using System.Linq;
 namespace Microsoft.Restier.Core.Model
 {
 	/// <summary>
-	/// A single entry in the <c>KeylessViewRegistry</c>. Carries enough information to
+	/// A single entry in the <see cref="KeylessViewRegistry"/>. Carries enough information to
 	/// dispatch a request for a keyless-view function import back to its underlying IQueryable
 	/// source at request time.
 	/// </summary>
