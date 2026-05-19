@@ -36,9 +36,9 @@ The first argument is the route prefix — pass `""` for an unprefixed route. Th
 
 ## `RestierConformanceOptions.StrictMissingParentForCollections`
 
-When `true`, requests to a collection-valued navigation property whose parent entity does not exist — for example `GET /Books(missing-guid)/Reviews` — return `404 Not Found` per [OData v4 Part 1 §11.2.6](https://docs.oasis-open.org/odata/odata/v4.0/odata-v4.0-part1-protocol.html#_Toc31358950).
+When `true`, requests to a collection-valued navigation property whose parent entity does not exist — for example `GET /Books(missing-guid)/Reviews` — return `404 Not Found` per [OData v4 Part 1 §11.2.6](https://docs.oasis-open.org/odata/odata/v4.0/odata-v4.0-part1-protocol.html#_Toc31358950). The same applies to `$count` on those collections: `GET /Books(missing-guid)/Reviews/$count` also returns `404` instead of `200 OK { 0 }`.
 
-When `false` (the default), the same request returns `200 OK` with an empty value array. That matches Restier's historical behavior and keeps the wire format friendly for clients that expect a collection shape regardless of parent state.
+When `false` (the default), the same requests return `200 OK` — an empty `value` array for the collection, or `0` for `$count`. That matches Restier's historical behavior and keeps the wire format friendly for clients that expect a collection shape regardless of parent state.
 
 ### When to enable it
 
