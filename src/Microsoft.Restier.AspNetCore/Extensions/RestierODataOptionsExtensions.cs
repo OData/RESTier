@@ -118,6 +118,7 @@ public static class RestierODataOptionsExtensions
         modelBuildingServices.TryAddSingleton<ModelMerger>();
         configureRouteServices?.Invoke(modelBuildingServices);
         modelBuildingServices.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
+        modelBuildingServices.AddSingleton<KeylessViewRegistry>();
         modelBuildingServices.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
             .AddSingleton(new RestierWebApiModelExtender(type))
             .AddSingleton<IChainedService<IModelBuilder>>(sp => new RestierWebApiOperationModelBuilder(type, sp.GetRequiredService<RestierWebApiModelExtender>()))
@@ -125,6 +126,7 @@ public static class RestierODataOptionsExtensions
 
         IEdmModel model;
         RestierWebApiModelExtender modelExtender;
+        KeylessViewRegistry keylessViewRegistry;
         ServiceProvider modelBuildingServiceProvider = null;
 
         try
@@ -135,6 +137,7 @@ public static class RestierODataOptionsExtensions
             var modelBuilder = modelBuilderFactory.Create();
             model = modelBuilder.GetEdmModel();
             modelExtender = modelBuildingServiceProvider.GetRequiredService<RestierWebApiModelExtender>();
+            keylessViewRegistry = modelBuildingServiceProvider.GetRequiredService<KeylessViewRegistry>();
         }
         catch (Exception exception)
         {
@@ -170,6 +173,7 @@ public static class RestierODataOptionsExtensions
 
             services.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
                 .AddSingleton(modelExtender)
+                .AddSingleton(keylessViewRegistry)
                 .AddSingleton<IChainedService<IModelBuilder>>(sp => new RestierWebApiOperationModelBuilder(type, sp.GetRequiredService<RestierWebApiModelExtender>()))
                 .AddSingleton<IChainedService<IModelBuilder>>(sp => new ConventionBasedAnnotationModelBuilder(type))
                 .AddSingleton<IChainedService<IModelMapper>, RestierWebApiModelMapper>()
