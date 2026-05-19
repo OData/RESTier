@@ -554,6 +554,32 @@ namespace Microsoft.Restier.AspNetCore
         private async Task<IActionResult> CreateQueryResponse(IQueryable query, IEdmType edmType, ETag etag, ODataPath path, CancellationToken cancellationToken)
         {
             var typeReference = GetTypeReference(edmType);
+
+            // Opt-in OData v4 §11.2.6 strictness: when a request addresses a
+            // collection-valued navigation property (or its $count) below a key
+            // segment whose parent does not exist, the addressed resource doesn't
+            // exist either, so 404 is required by the spec. Off by default — see
+            // RestierConformanceOptions.StrictMissingParentForCollections.
+            //
+            // The check covers both shapes:
+            //   * GET /Entity(missing)/CollectionNav         → typeReference is Collection
+            //   * GET /Entity(missing)/CollectionNav/$count  → typeReference is Primitive
+            //                                                  but shouldReturnCount is set
+            if (path.OfType<KeySegment>().Any() && (typeReference.IsCollection() || shouldReturnCount))
+            {
+                var conformance = HttpContext.Request.GetRouteServices()
+                    .GetService<RestierConformanceOptions>();
+                if (conformance?.StrictMissingParentForCollections == true)
+                {
+                    var parentExists = await ParentEntityExistsAsync(path, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (!parentExists)
+                    {
+                        return NotFound(Resources.ResourceNotFound);
+                    }
+                }
+            }
+
             BaseSingleResult singleResult = null;
             IActionResult response = null;
 
@@ -616,25 +642,6 @@ namespace Microsoft.Restier.AspNetCore
                 }
 
                 return response;
-            }
-
-            // Opt-in OData v4 §11.2.6 strictness: when a collection-valued nav segment
-            // sits below a key segment whose parent does not exist, the addressed
-            // resource doesn't exist, so 404 is required by the spec. Off by default —
-            // see RestierConformanceOptions.StrictMissingParentForCollections.
-            if (typeReference.IsCollection() && path.OfType<KeySegment>().Any())
-            {
-                var conformance = HttpContext.Request.GetRouteServices()
-                    .GetService<RestierConformanceOptions>();
-                if (conformance?.StrictMissingParentForCollections == true)
-                {
-                    var parentExists = await ParentEntityExistsAsync(path, cancellationToken)
-                        .ConfigureAwait(false);
-                    if (!parentExists)
-                    {
-                        return NotFound(Resources.ResourceNotFound);
-                    }
-                }
             }
 
             if (typeReference.IsCollection())

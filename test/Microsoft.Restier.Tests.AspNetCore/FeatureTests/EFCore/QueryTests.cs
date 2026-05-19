@@ -97,4 +97,29 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
+    [Fact]
+    public async Task CollectionNavCountFromMissingParentReturns200ByDefault()
+    {
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
+            HttpMethod.Get,
+            resource: "/Books(00000000-0000-0000-0000-000000000000)/Reviews/$count",
+            serviceCollection: ConfigureServices);
+        _ = await TraceListener.LogAndReturnMessageContentAsync(response);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task CollectionNavCountFromMissingParentReturns404WhenStrict()
+    {
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
+            HttpMethod.Get,
+            resource: "/Books(00000000-0000-0000-0000-000000000000)/Reviews/$count",
+            serviceCollection: ConfigureServices,
+            configureOptions: options => options.Conformance.StrictMissingParentForCollections = true);
+        _ = await TraceListener.LogAndReturnMessageContentAsync(response);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }
