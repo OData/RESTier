@@ -318,6 +318,21 @@ namespace Microsoft.Restier.AspNetCore
         {
             EnsureInitialized();
             var path = GetPath();
+            var lastSegment = path.Last();
+
+            // if the request is to a function or function import, return MethodNotAllowed
+            if (lastSegment is OperationSegment operationSegment &&
+                operationSegment.Operations.FirstOrDefault().IsFunction())
+            {
+                return MethodNotAllowed();
+            }
+
+            if (lastSegment is OperationImportSegment operationImportSegment &&
+                operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            {
+                return MethodNotAllowed();
+            }
+
             if (path.NavigationSource() is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
@@ -444,6 +459,21 @@ namespace Microsoft.Restier.AspNetCore
             CancellationToken cancellationToken)
         {
             var path = GetPath();
+            var lastSegment = path.Last();
+
+            // if the request is to a function or function import, return MethodNotAllowed
+            if (lastSegment is OperationSegment operationSegment &&
+                operationSegment.Operations.FirstOrDefault().IsFunction())
+            {
+                return MethodNotAllowed();
+            }
+
+            if (lastSegment is OperationImportSegment operationImportSegment &&
+                operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            {
+                return MethodNotAllowed();
+            }
+
             var entitySet = path.NavigationSource() as IEdmEntitySet;
             if (entitySet is null)
             {
