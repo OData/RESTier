@@ -33,8 +33,8 @@
 | `src/Microsoft.Restier.Core/Model/KeylessViewEntry.cs` | Create | DTO holding name, CLR type, source factory. |
 | `src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs` | Modify | Lifetime bridge: register `KeylessViewRegistry` in `modelBuildingServices`, capture after `GetEdmModel`, re-register inside `AddRouteComponents`. |
 | `src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs` | Modify | Take `KeylessViewRegistry` ctor param. `BuildEdmModelFromEntitySetMaps` splits `entitySetMap` into keyed and keyless dictionaries, registers keyless as `ComplexType<T>`, adds function imports, populates registry. Empty key list normalised to "keyless." |
-| `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` | Modify | `EntityFrameworkCoreGetEntities` also emits `Dictionary<Type, Func<object, IQueryable>>` of source factories (reflection on DbSet property). Adjust shared method signature. |
-| `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` | Modify | `EntityFramework6GetEntitySets` normalises empty `KeyProperties` to null (so shared logic treats it as keyless), emits source factories. Property-backed factory preferred; EDMX-only ESQL fallback via `ObjectContext.CreateQuery<T>("[Container].[EntitySet]")`. |
+| `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` | Modify | `EntityFrameworkCoreGetEntities` also emits `Dictionary<string, Func<object, IQueryable>>` of source factories keyed by entity-set / DbSet property name (reflection on the DbSet property). Adjust shared method signature. |
+| `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` | Modify | `EntityFramework6GetEntitySets` normalises empty `KeyProperties` lists to empty (so shared logic treats them as keyless), emits a `Dictionary<string, Func<object, IQueryable>>` of source factories keyed by EntitySet name. Property-backed factory preferred (any property assignable to `IQueryable<T>` — covers `DbSet<T>` / `IDbSet<T>` / `DbQuery<T>`); EDMX-only ESQL fallback via `ObjectContext.CreateQuery<T>("[Container].[EntitySet]")`. |
 | `src/Microsoft.Restier.AspNetCore/Operation/RestierOperationExecutor.cs` | Modify | Add `KeylessViewRegistry` ctor parameter. After reflective method lookup returns null, consult registry; on hit, return `entry.SourceFactory(api)` as `IQueryable`. |
 | `src/Microsoft.Restier.Core/Microsoft.Restier.Core.csproj` | Check | No change expected; new file picks up by glob. |
 | `test/Microsoft.Restier.Tests.Core/Model/KeylessViewRegistryTests.cs` | Create | Unit tests for `Register` / `TryGet` / duplicate-throws. |
@@ -1060,10 +1060,10 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views
     [Keyless]
     public partial class BooksByPublisher
     {
-        public int PublisherId { get; set; }
-        public string PublisherName { get; set; }
+        // Publisher.Id is a string in the shared Library fixture (e.g. "Publisher1").
+        public string PublisherId { get; set; }
         public string BookName { get; set; }
-        public decimal BookCount { get; set; }
+        public int BookCount { get; set; }
     }
 }
 ```
@@ -1227,9 +1227,8 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views
                 IF OBJECT_ID('BooksByPublisher', 'V') IS NOT NULL DROP VIEW BooksByPublisher;
                 EXEC('CREATE VIEW BooksByPublisher AS
                        SELECT p.Id AS PublisherId,
-                              p.Name AS PublisherName,
                               b.Title AS BookName,
-                              CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS DECIMAL(18,0)) AS BookCount
+                              CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS INT) AS BookCount
                        FROM Publishers p
                        INNER JOIN Books b ON b.PublisherId = p.Id;');
             ");
@@ -1354,12 +1353,13 @@ public class Issue741_KeylessViews
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 1",
+            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await response.Content.ReadAsStringAsync();
-        body.Should().NotContain("\"PublisherId\": 2");
+        body.Should().Contain("\"PublisherId\":\"Publisher1\"");
+        body.Should().NotContain("\"PublisherId\":\"Publisher2\"");
     }
 
     [Fact]
@@ -1371,7 +1371,7 @@ public class Issue741_KeylessViews
 
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 1",
+            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -1619,10 +1619,10 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
 {
     public partial class BooksByPublisher
     {
-        public int PublisherId { get; set; }
-        public string PublisherName { get; set; }
+        // Publisher.Id is a string in the shared Library fixture (e.g. "Publisher1").
+        public string PublisherId { get; set; }
         public string BookName { get; set; }
-        public decimal BookCount { get; set; }
+        public int BookCount { get; set; }
     }
 }
 ```
@@ -1662,7 +1662,53 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
 }
 ```
 
-- [ ] **Step 3: EF6 test initialiser that creates the view after schema migration**
+- [ ] **Step 3a: Refactor EF6 `LibraryTestInitializer` to expose a public static seed helper**
+
+The existing EF6 `LibraryTestInitializer.Seed(LibraryContext)` is `protected override` and so unreachable from another initialiser. Open `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryTestInitializer.cs` and (under the `#if EF6` branch only) extract the seed body into a public static method, then have the existing `Seed` override delegate to it.
+
+Find this in the EF6 branch (around line 33):
+
+```csharp
+#if EF6
+        : DropCreateDatabaseIfModelChanges<LibraryContext>
+    {
+
+        protected override void Seed(LibraryContext libraryContext)
+        {
+
+#else
+```
+
+Restructure the EF6 portion of the class so that:
+
+```csharp
+#if EF6
+        : DropCreateDatabaseIfModelChanges<LibraryContext>
+    {
+        protected override void Seed(LibraryContext libraryContext)
+        {
+            SeedLibraryData(libraryContext);
+        }
+
+        /// <summary>
+        /// Publicly-callable seed used by derived initialisers (e.g. LibraryWithViewsTestInitializer)
+        /// that need the same publishers / books / readers populated before they apply their own
+        /// migrations such as creating SQL views.
+        /// </summary>
+        public static void SeedLibraryData(LibraryContext libraryContext)
+        {
+            // ... move the entire existing EF6 Seed body here, including the EF6 #if block at the
+            // bottom that does the spatial save. The body uses libraryContext (parameter name
+            // preserved so the existing variable references compile unchanged).
+        }
+#else
+```
+
+The EF6 `#if`-block that does the SpatialPlace save+catch (existing lines ~206-238) moves inside `SeedLibraryData` together with the rest of the body.
+
+The EFCore `IDatabaseInitializer.Seed(DbContext context)` is already public — leave that branch alone.
+
+- [ ] **Step 3b: Create the EF6 `LibraryWithViewsTestInitializer`**
 
 ```csharp
 // test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/LibraryWithViewsTestInitializer.cs
@@ -1673,31 +1719,34 @@ using System.Data.Entity;
 
 namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6.Views
 {
+    /// <summary>
+    /// Drops and recreates the LibraryWithViews database every run (test infra calls
+    /// this once per process via SeedDatabase&lt;TContext&gt;), seeds publishers / books
+    /// via LibraryTestInitializer.SeedLibraryData, then creates the BooksByPublisher
+    /// SQL view on top of the seeded data.
+    /// </summary>
     public class LibraryWithViewsTestInitializer : DropCreateDatabaseAlways<LibraryWithViewsContext>
     {
         protected override void Seed(LibraryWithViewsContext context)
         {
-            // Reuse the base LibraryTestInitializer seeding by delegating to it.
-            new LibraryTestInitializer().SeedFor(context);
+            LibraryTestInitializer.SeedLibraryData(context);
+            context.SaveChanges();
 
             context.Database.ExecuteSqlCommand(@"
                 IF OBJECT_ID('BooksByPublisher', 'V') IS NOT NULL DROP VIEW BooksByPublisher;
                 EXEC('CREATE VIEW BooksByPublisher AS
                        SELECT p.Id AS PublisherId,
-                              p.Name AS PublisherName,
                               b.Title AS BookName,
-                              CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS DECIMAL(18,0)) AS BookCount
+                              CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS INT) AS BookCount
                        FROM Publishers p
                        INNER JOIN Books b ON b.PublisherId = p.Id;');
             ");
-
-            context.SaveChanges();
         }
     }
 }
 ```
 
-Note: `LibraryTestInitializer.SeedFor` may not exist; check the actual EF6 initialiser shape (`Seed(LibraryContext context)`). If the existing seed isn't reusable, extract a small static helper that fills publishers and books from the same data the LibraryContext seed uses.
+The EFCore counterpart created in Task 9b uses `new LibraryTestInitializer().Seed(dbContext)` — already public via `IDatabaseInitializer.Seed(DbContext)`. No refactor needed on the EFCore side.
 
 - [ ] **Step 4: EF6 API class with the instrumented convention probe**
 
@@ -1876,7 +1925,7 @@ public class Issue741_KeylessViews
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 1",
+            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -1889,7 +1938,7 @@ public class Issue741_KeylessViews
 
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 1",
+            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -1961,10 +2010,9 @@ So a `DbSet<BooksByPublisher> BooksByPublisher` on a keyless type shows up in `$
 
 ```xml
 <ComplexType Name="BooksByPublisher">
-  <Property Name="PublisherId" Type="Edm.Int32" Nullable="false" />
-  <Property Name="PublisherName" Type="Edm.String" />
+  <Property Name="PublisherId" Type="Edm.String" />
   <Property Name="BookName" Type="Edm.String" />
-  <Property Name="BookCount" Type="Edm.Decimal" Nullable="false" />
+  <Property Name="BookCount" Type="Edm.Int32" Nullable="false" />
 </ComplexType>
 
 <Function Name="BooksByPublisher" IsBound="false">
@@ -1987,7 +2035,7 @@ GET /odata/BooksByPublisher()
 OData query options work as usual on the returned collection:
 
 ```http
-GET /odata/BooksByPublisher()?$filter=PublisherId eq 1
+GET /odata/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'
 GET /odata/BooksByPublisher()?$select=BookName,BookCount
 GET /odata/BooksByPublisher()?$orderby=BookCount desc&$top=10
 ```
@@ -2013,10 +2061,9 @@ public class LibraryContext : DbContext
 [Keyless]
 public class BooksByPublisher
 {
-    public int PublisherId { get; set; }
-    public string PublisherName { get; set; }
+    public string PublisherId { get; set; }
     public string BookName { get; set; }
-    public decimal BookCount { get; set; }
+    public int BookCount { get; set; }
 }
 ```
   </Tab>
@@ -2036,10 +2083,9 @@ public class LibraryContext : DbContext
 
 public class BooksByPublisher
 {
-    public int PublisherId { get; set; }
-    public string PublisherName { get; set; }
+    public string PublisherId { get; set; }
     public string BookName { get; set; }
-    public decimal BookCount { get; set; }
+    public int BookCount { get; set; }
 }
 ```
 

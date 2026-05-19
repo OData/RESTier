@@ -122,7 +122,7 @@ This dictates two design choices: (1) the registry class lives in `Microsoft.Res
 | `KeylessViewRegistry` (new) | Plain class (not a DI service in the EF DI block — see lifetime-bridge component below). Members: `Register(string functionImportName, Type clrType, Func<object, IQueryable> sourceFactory)`, `TryGet(string name, out KeylessViewEntry entry)`. Entry stores name, CLR type, factory. Throws on duplicate name registration. **Lives in `Microsoft.Restier.Core` so the AspNetCore layer's `AddRestierRoute` can reference it without depending on EF.** | `src/Microsoft.Restier.Core/Model/KeylessViewRegistry.cs` |
 | Lifetime bridge in `AddRestierRoute` | Add a third locally-captured object alongside `model` and `modelExtender`. Register `KeylessViewRegistry` into `modelBuildingServices`, capture the populated instance from the SP *before* the `finally` disposal, then `services.AddSingleton(keylessViewRegistry)` inside the `AddRouteComponents` lambda. Mirrors the `RestierWebApiModelExtender` bridge exactly. | `src/Microsoft.Restier.AspNetCore/Extensions/RestierODataOptionsExtensions.cs:111-181` |
 | `EFModelBuilder<TDbContext>` shared partial — `BuildEdmModelFromEntitySetMaps` | Replace the `throw` at line 141. New branch: when `pair.Value` is null OR empty, demote to complex (split `entitySetMap` into `keyedEntitySets` and `keylessViewSets` *before* the convention builder iterates — see Implementation note below), call `builder.ComplexType<T>()`, add a function import on the container post-`GetEdmModel`, register in the `KeylessViewRegistry` resolved from the model-building SP. Takes `KeylessViewRegistry` as a constructor dependency (or passed through the partial-class signature). | `src/Microsoft.Restier.EntityFramework.Shared/Model/EFModelBuilder.cs` |
-| `EFModelBuilder<TDbContext>` EF Core partial — `EntityFrameworkCoreGetEntities` | Already produces `null` for the keyless case. Additionally produce a `Dictionary<Type, Func<object, IQueryable>>` of source factories: reflection on the DbSet property captured at model-build time. Wire into the shared method's signature. | `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` |
+| `EFModelBuilder<TDbContext>` EF Core partial — `EntityFrameworkCoreGetEntities` | Already produces `null` for the keyless case. Additionally produce a `Dictionary<string, Func<object, IQueryable>>` of source factories keyed by DbSet property / entity-set name (reflection on the DbSet property captured at model-build time). Wire into the shared method's signature. | `src/Microsoft.Restier.EntityFrameworkCore/Model/EFModelBuilder.cs` |
 | `EFModelBuilder<TDbContext>` EF6 partial — `EntityFramework6GetEntitySets` | Same factory dictionary. Discovery still iterates `efEntityContainer.EntitySets` (unchanged). Source-factory selection: prefer reflection on a context property whose type is assignable to `IQueryable<T>` (covers `DbSet<T>`, `IDbSet<T>`, `DbQuery<T>`); fall back to `((IObjectContextAdapter)ctx).ObjectContext.CreateQuery<T>("[Container].[EntitySet]")` when no such property exists (EDMX-only case). Also normalises *empty* `KeyProperties` lists to "keyless" so the shared throw-or-demote logic fires. | `src/Microsoft.Restier.EntityFramework/Model/EfModelBuilder.cs` |
 | `RestierOperationExecutor` | Add a `KeylessViewRegistry` constructor parameter (route-DI resolves it; the lifetime bridge above guarantees it's the populated instance). In `ExecuteOperationAsync`: after the existing reflective method lookup, if `method is null`, try `registry.TryGet(OperationName, out var entry)`. On hit: `var iq = entry.SourceFactory(restierOperationContext.Api); return iq;` — return directly, no `api.QueryAsync` (see "v1 pipeline simplification" decision row). On miss: existing `throw new NotImplementedException`. | `src/Microsoft.Restier.AspNetCore/Operation/RestierOperationExecutor.cs` |
 | `RestierController.Delete` + private `Update` method | Add the same `OperationSegment IsFunction()` / `OperationImportSegment IsFunctionImport()` early-return guard that `Post` already has, returning `MethodNotAllowed()`. Without this, PUT/PATCH/DELETE on a function-import URL throw `NotImplementedException` (HTTP 500). | `src/Microsoft.Restier.AspNetCore/RestierController.cs` |
@@ -166,7 +166,7 @@ Func<object, IQueryable> sourceFactory = api =>
 };
 ```
 
-### Data flow — `GET /odata/BooksByPublisher()?$filter=PublisherId eq 1`
+### Data flow — `GET /odata/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'`
 
 1. AspNetCore.OData `OperationImportRoutingConvention` matches `BooksByPublisher` against the function import in `$metadata`.
 2. Routes to `RestierController.Get`; the path's last segment is an `OperationImportSegment` (handled at `RestierController.cs:106-110`).
@@ -175,7 +175,7 @@ Func<object, IQueryable> sourceFactory = api =>
 5. **NEW:** Executor consults its constructor-injected `KeylessViewRegistry.TryGet("BooksByPublisher", out var entry)` → hit. (The registry was populated during model build and bridged into the route container by `AddRestierRoute`.)
 6. `entry.SourceFactory(restierOperationContext.Api)` produces the underlying `IQueryable<BooksByPublisher>` (from `DbContext.BooksByPublisher`).
 7. Executor returns that `IQueryable` directly. **No `api.QueryAsync` call** — `ApiBase.QueryAsync` would reject the request because the query is not a `QueryableSource<T>` (the only type it accepts; `ApiBase.cs:77-80`). Wiring through the RESTier query pipeline would require new `IModelMapper` + `IQueryExpressionSourcer` entries for function-import names; that's deferred.
-8. The returned `IQueryable` flows back to `RestierController` and then to AspNetCore.OData, which applies `$filter=PublisherId eq 1` (and any other OData query options) at the OData layer just as it does for any function-import result.
+8. The returned `IQueryable` flows back to `RestierController` and then to AspNetCore.OData, which applies `$filter=PublisherId eq 'Publisher1'` (and any other OData query options) at the OData layer just as it does for any function-import result.
 9. Serialisation: the function returns `Collection(<ComplexType>)`, so OData's complex-type serializer handles output.
 
 **What's NOT in this flow** (intentional v1 limitations):
@@ -218,7 +218,7 @@ Per-flavour, against real SQL Server using the existing user-secrets / `AddEntit
 | Test | Project | Coverage |
 |---|---|---|
 | `GET /BooksByPublisher() returns rows` | `Microsoft.Restier.Tests.AspNetCore` (both EF6 and EFCore under `RegressionTests/EF6` and `RegressionTests/EFCore`, named `Issue741_KeylessViews.cs`) | Basic happy path. |
-| `GET /BooksByPublisher()?$filter=PublisherId eq 1` filters | both flavours | OData query option works on the result. |
+| `GET /BooksByPublisher()?$filter=PublisherId eq 'Publisher1'` filters | both flavours | OData query option works on the result. |
 | `OnFilteringBooksByPublisher` convention does **NOT** fire | both flavours | Hook a counting interceptor on the API and assert it was *not* invoked. Pins the v1 limitation; flipping this test to "did fire" is the entry condition for the convention-processor follow-up. |
 | `POST /BooksByPublisher()` returns **HTTP 405** | both flavours | Verifies `RestierController.Post`'s function-import branch. |
 
@@ -246,7 +246,7 @@ Required:
 
 - `test/Microsoft.Restier.Tests.Shared.EntityFramework/Scenarios/Library/` — add `LibraryWithViewsContext.cs` (EF6 + EFCore via the existing `#if EF6 / EFCore` pattern) plus `BooksByPublisher.cs` view CLR type (already exists for EFCore; mirror for EF6).
 - The existing `LibraryWithViewsContext` in `test/Microsoft.Restier.Tests.EntityFrameworkCore/Scenarios/Views/` uses `UseInMemoryDatabase`. For the model-shape tests this is fine (no DB calls). For the end-to-end tests, route through `AddEntityFrameworkServices<LibraryWithViewsContext>` (real SQL) and create the view in the seeded DB via the test initialiser:
-  - EFCore — `dbContext.Database.ExecuteSqlRaw("CREATE OR ALTER VIEW BooksByPublisher AS SELECT p.Id AS PublisherId, p.Name AS PublisherName, b.Title AS BookName, COUNT(b.Id) OVER(PARTITION BY p.Id) AS BookCount FROM Publishers p JOIN Books b ON b.PublisherId = p.Id")` inside `LibraryTestInitializer.Seed`.
+  - EFCore — `dbContext.Database.ExecuteSqlRaw("CREATE OR ALTER VIEW BooksByPublisher AS SELECT p.Id AS PublisherId, b.Title AS BookName, CAST(COUNT(b.Id) OVER(PARTITION BY p.Id) AS INT) AS BookCount FROM Publishers p INNER JOIN Books b ON b.PublisherId = p.Id")` inside `LibraryWithViewsTestInitializer.Seed` (which delegates to `LibraryTestInitializer.SeedLibraryData` for the underlying publishers/books).
   - EF6 — same SQL via `context.Database.ExecuteSqlCommand(...)` inside the EF6 initialiser.
 
 ### Out of scope (call out, don't ship)
