@@ -5,6 +5,7 @@
     using System.Data.Common;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.SqlClient;
     using System.Runtime.InteropServices;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
@@ -98,6 +99,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// (typically <see cref="DropCreateDatabaseIfModelChanges{TContext}"/>) to recreate the
         /// schema and run Seed.
         /// </summary>
+        /// <remarks>
+        /// Uses <c>ALTER DATABASE ... SET SINGLE_USER WITH ROLLBACK IMMEDIATE</c> to force-close
+        /// any pooled connections (e.g. from a prior test run) before dropping. Without this,
+        /// <c>SqlException: Cannot drop database "X" because it is currently in use</c> would
+        /// surface on repeated runs against the same SQL Server instance — common on macOS
+        /// where the Docker SQL Server stays alive between runs and connections persist in the
+        /// pool. The force-close runs against <c>master</c> so it isn't blocked by our own
+        /// target-DB connection.
+        /// </remarks>
         private static void SeedDatabase<TContext>(string connectionString)
             where TContext : DbContext
         {
@@ -109,15 +119,53 @@ namespace Microsoft.Extensions.DependencyInjection
                     return;
                 }
 
+                ForceDropDatabase(connectionString);
+
                 using var context = (TContext)Activator.CreateInstance(typeof(TContext), connectionString);
-                if (context.Database.Exists())
-                {
-                    context.Database.Delete();
-                }
                 context.Database.Initialize(force: true);
 
                 InitializedDatabases[connectionString] = true;
             }
+        }
+
+        /// <summary>
+        /// Force-drops the database named in <paramref name="connectionString"/> if it exists.
+        /// Connects to <c>master</c> and switches the target DB to SINGLE_USER WITH ROLLBACK
+        /// IMMEDIATE so pooled connections from previous test runs are evicted before the DROP.
+        /// No-op if the database does not exist.
+        /// </summary>
+        private static void ForceDropDatabase(string connectionString)
+        {
+            var sourceBuilder = new SqlConnectionStringBuilder(connectionString);
+            var dbName = !string.IsNullOrEmpty(sourceBuilder.InitialCatalog)
+                ? sourceBuilder.InitialCatalog
+                : null;
+            if (string.IsNullOrEmpty(dbName))
+            {
+                // Connection string has no target catalog — nothing to drop.
+                return;
+            }
+
+            var masterBuilder = new SqlConnectionStringBuilder(connectionString)
+            {
+                InitialCatalog = "master",
+            };
+
+            using var connection = new SqlConnection(masterBuilder.ConnectionString);
+            connection.Open();
+
+            // Identifier injection guard: SQL Server database names allow brackets but must not
+            // contain a closing bracket. Escape ] -> ]] inside the [...] form.
+            var escaped = dbName.Replace("]", "]]");
+
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText =
+                $"IF DB_ID(N'{dbName.Replace("'", "''")}') IS NOT NULL " +
+                $"BEGIN " +
+                $"  ALTER DATABASE [{escaped}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; " +
+                $"  DROP DATABASE [{escaped}]; " +
+                $"END";
+            cmd.ExecuteNonQuery();
         }
 
 #endif
