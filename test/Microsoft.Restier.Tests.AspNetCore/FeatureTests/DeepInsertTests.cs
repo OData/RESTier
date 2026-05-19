@@ -11,7 +11,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Xunit;
@@ -170,11 +169,8 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             resource: "/Publishers",
             payload: payload,
             acceptHeader: WebApiConstants.DefaultAcceptHeader,
-            serviceCollection: services =>
-            {
-                ConfigureServices(services);
-                services.AddSingleton(new DeepOperationSettings { MaxDepth = 1 });
-            });
+            serviceCollection: ConfigureServices,
+            configureOptions: o => o.DeepOperations.MaxDepth = 1);
 
         var postContent = await postResponse.Content.ReadAsStringAsync(TestContext.CancellationToken);
         postResponse.StatusCode.Should().Be(HttpStatusCode.Created,
@@ -205,19 +201,17 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             },
         };
 
-        // Override DeepOperationSettings to set MaxDepth = 1, allowing only 1 level of nesting
-        Action<IServiceCollection> configureWithMaxDepth = services =>
-        {
-            ConfigureServices(services);
-            services.AddSingleton(new DeepOperationSettings { MaxDepth = 1 });
-        };
-
+        // Set MaxDepth = 1 via the RestierRouteOptions bag. Registrations of
+        // DeepOperationSettings made via the route IServiceCollection are
+        // silently replaced by the bag in AddRestierRoute, so the bag is the
+        // single canonical channel for this setting.
         var postResponse = await RestierTestHelpers.ExecuteTestRequest<TApi>(
             HttpMethod.Post,
             resource: "/Publishers",
             payload: payload,
             acceptHeader: WebApiConstants.DefaultAcceptHeader,
-            serviceCollection: configureWithMaxDepth);
+            serviceCollection: ConfigureServices,
+            configureOptions: o => o.DeepOperations.MaxDepth = 1);
 
         postResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest,
             because: "nesting depth exceeds MaxDepth=1 (Publisher->Books is OK at depth 0, but Books->Reviews at depth 1 should be rejected)");
