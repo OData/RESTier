@@ -32,3 +32,57 @@ If you are using EF6 and working with large result sets combined with `$expand`/
 
 - Using server-side paging (`$top` / `$skip`) to limit result sizes
 - Migrating to Entity Framework Core, which does not have this limitation
+
+## Tracking behavior
+
+By default, RESTier executes GET queries with change tracking disabled —
+the single largest perf knob for read-heavy APIs. The behavior differs
+slightly between EF Core and EF6:
+
+- **EF Core**: `AsNoTrackingWithIdentityResolution()`. Entities are not
+  added to the change tracker, but identity is preserved within a single
+  query result, so recursive `$expand` (e.g. `Employee → Manager: Employee`)
+  still returns the same instance per key.
+- **EF6**: `AsNoTracking()` — except when the request's `$expand` tree
+  contains a cycle (same-type recursion or cross-type cycles like
+  `Department → Employees → Department`). In that case RESTier falls back
+  to a tracked query, because EF6 has no
+  `AsNoTrackingWithIdentityResolution` equivalent.
+
+<Info>
+Internal queries (the submit pipeline's UPDATE/DELETE entity load, deep-
+update parent lookups, ResourceExists checks) always stay tracked.
+Only top-level HTTP read paths flow through the no-tracking
+transformation.
+</Info>
+
+<Warning>
+If hook code (`OnFiltering*`, `OnLoaded*`, etc.) mutates entities returned
+from a GET expecting those mutations to be persisted on the next
+`SaveChanges`, opt back into tracking with
+`RestierEFTrackingBehavior.TrackAll`.
+</Warning>
+
+### Overriding the default
+
+<CodeGroup>
+
+```csharp EF Core
+services.AddEFCoreProviderServices<LibraryContext>(
+    dbOpts => dbOpts.UseSqlServer(connectionString),
+    restierOpts => restierOpts.TrackingBehavior = RestierEFTrackingBehavior.TrackAll);
+```
+
+```csharp EF6
+services.AddEF6ProviderServices<LibraryContext>(
+    restierOpts => restierOpts.TrackingBehavior = RestierEFTrackingBehavior.NoTracking);
+```
+
+</CodeGroup>
+
+The available values are:
+
+- `Default` — provider-aware default (EFCore: identity-resolved no-tracking; EF6: no-tracking with cycle-aware fallback).
+- `NoTracking` — force `AsNoTracking()` regardless of request shape.
+- `NoTrackingWithIdentityResolution` — EFCore only; falls back to `NoTracking` on EF6.
+- `TrackAll` — restore pre-1.2 behavior.

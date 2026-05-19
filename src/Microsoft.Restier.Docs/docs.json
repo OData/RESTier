@@ -68,6 +68,7 @@
         "icon": "clipboard-list",
         "pages": [
           "release-notes/index",
+          "release-notes/1-2-0",
           "release-notes/1-1-0",
           "release-notes/1-0-0",
           "release-notes/1-0-0-rc1",
@@ -408,6 +409,8 @@
                       "api-reference/Microsoft/Restier/EntityFramework/EFModelMapper",
                       "api-reference/Microsoft/Restier/EntityFramework/EntityFrameworkApi",
                       "api-reference/Microsoft/Restier/EntityFramework/IEntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFramework/RestierEFOptions",
+                      "api-reference/Microsoft/Restier/EntityFramework/RestierEFTrackingBehavior",
                       {
                         "group": "Shared",
                         "icon": "folder-tree",
@@ -443,6 +446,8 @@
                       "api-reference/Microsoft/Restier/EntityFrameworkCore/EFModelMapper",
                       "api-reference/Microsoft/Restier/EntityFrameworkCore/EntityFrameworkApi",
                       "api-reference/Microsoft/Restier/EntityFrameworkCore/IEntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/RestierEFOptions",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/RestierEFTrackingBehavior",
                       {
                         "group": "Spatial",
                         "icon": "folder-tree",

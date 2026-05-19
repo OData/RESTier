@@ -64,4 +64,67 @@ public static partial class ServiceCollectionExtensions
 
         return AddEFProviderServices<TDbContext>(services);
     }
+
+    /// <summary>
+    /// Adds EF6 provider services with custom RESTier EF options.
+    /// </summary>
+    /// <typeparam name="TDbContext">The DbContext type.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="configureOptions">An action to configure the
+    /// <see cref="RestierEFOptions"/> for this API.</param>
+    /// <returns>The configured <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddEF6ProviderServices<TDbContext>(
+        this IServiceCollection services,
+        Action<RestierEFOptions> configureOptions)
+        where TDbContext : DbContext
+    {
+        Ensure.NotNull(services, nameof(services));
+        Ensure.NotNull(configureOptions, nameof(configureOptions));
+
+        var options = new RestierEFOptions();
+        configureOptions(options);
+        services.AddSingleton(options);
+
+        services.TryAddScoped(sp =>
+        {
+            var dbContext = Activator.CreateInstance<TDbContext>();
+            dbContext.Configuration.ProxyCreationEnabled = false;
+            return dbContext;
+        });
+
+        return AddEFProviderServices<TDbContext>(services);
+    }
+
+    /// <summary>
+    /// Adds EF6 provider services with an explicit connection string and custom RESTier EF options.
+    /// </summary>
+    /// <typeparam name="TDbContext">The DbContext type.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="connectionString">The connection string to use for the DbContext.</param>
+    /// <param name="configureOptions">An action to configure the
+    /// <see cref="RestierEFOptions"/> for this API.</param>
+    /// <returns>The configured <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddEF6ProviderServices<TDbContext>(
+        this IServiceCollection services,
+        string connectionString,
+        Action<RestierEFOptions> configureOptions)
+        where TDbContext : DbContext
+    {
+        Ensure.NotNull(services, nameof(services));
+        Ensure.NotNull(connectionString, nameof(connectionString));
+        Ensure.NotNull(configureOptions, nameof(configureOptions));
+
+        var options = new RestierEFOptions();
+        configureOptions(options);
+        services.AddSingleton(options);
+
+        services.TryAddScoped(sp =>
+        {
+            var dbContext = (TDbContext)Activator.CreateInstance(typeof(TDbContext), connectionString);
+            dbContext.Configuration.ProxyCreationEnabled = false;
+            return dbContext;
+        });
+
+        return AddEFProviderServices<TDbContext>(services);
+    }
 }
