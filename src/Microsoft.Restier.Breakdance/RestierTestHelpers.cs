@@ -181,12 +181,14 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appended in between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="configureOptions">An optional <see cref="Action{RestierRouteOptions}"/> for tuning the per-route <see cref="RestierRouteOptions"/> bag. Applied after the helper's defaults, so callers can override.</param>
         /// <returns></returns>
         public static async Task<TService> GetTestableInjectedService<TApi, TService>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default,
+            Action<RestierRouteOptions> configureOptions = null)
             where TApi : ApiBase
-            where TService : class 
-            => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection).ConfigureAwait(false)).GetService<TService>();
+            where TService : class
+            => (await GetTestableInjectionContainer<TApi>(routeName, routePrefix, serviceCollection, configureOptions: configureOptions).ConfigureAwait(false)).GetService<TService>();
 
         #endregion
 
@@ -199,14 +201,16 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">The name that will be assigned to the route in the route configuration dictionary.</param>
         /// <param name="routePrefix">The string that will be appendedin between the Host and the Resource when constructing a URL.</param>
         /// <param name="serviceCollection"></param>
+        /// <param name="configureOptions">An optional <see cref="Action{RestierRouteOptions}"/> for tuning the per-route <see cref="RestierRouteOptions"/> bag. Applied after the helper's defaults, so callers can override.</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "<Pending>")]
         public static async Task<IServiceProvider> GetTestableInjectionContainer<TApi>(string routeName = WebApiConstants.RouteName, string routePrefix = WebApiConstants.RoutePrefix,
-            Action<IServiceCollection> serviceCollection = default)
+            Action<IServiceCollection> serviceCollection = default,
+            Action<RestierRouteOptions> configureOptions = null)
              where TApi : ApiBase
         {
 
-            using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection);
+            using var testBase = GetTestBaseInstance<TApi>(routeName, routePrefix, serviceCollection, configureOptions: configureOptions);
             return await Task.FromResult(testBase.GetScopedRequestContainer(routeName)).ConfigureAwait(false);
         }
 
