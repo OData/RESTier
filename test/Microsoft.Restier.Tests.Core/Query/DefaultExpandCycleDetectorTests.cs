@@ -25,6 +25,9 @@ namespace Microsoft.Restier.Tests.Core.Query
     ///     Employees     : Employee[]   (collection nav — back to Employee)
     ///     Parent        : Department   (single nav, self-referential)
     ///     Location      : Address      (single nav — terminal, no further navs)
+    ///     HeadManager   : Manager      (single nav — declared target is the
+    ///                                   derived Manager type, used to exercise
+    ///                                   the BaseEntityType() inheritance walk)
     ///   Manager : Employee             (derived type)
     ///   Customer (no nav back to Employee)
     ///   Address  (terminal — no navs)
@@ -104,11 +107,14 @@ namespace Microsoft.Restier.Tests.Core.Query
         [Fact]
         public void InheritanceCounts_DerivedTypeRevisitsBase_ReturnsTrue()
         {
-            // /Employees?$expand=Manager  where Manager : Employee
-            // Already covered by SelfCycleViaSingleNav, but explicit assertion here for
-            // the inheritance rule: visiting a derived type after the base is a cycle.
-            var clause = edm.Expand(edm.EmployeeType, "Manager");
-            detector.HasCycle(edm.EmployeeType, clause).Should().BeTrue();
+            // /Departments?$expand=HeadManager($expand=Reports)
+            // Path: [Department, Manager] -> target Employee.
+            // Manager and Employee share an inheritance hierarchy (Manager : Employee),
+            // so the algorithm should detect a cycle via the BaseEntityType() walk —
+            // this is what type-equality alone wouldn't catch.
+            var inner = edm.Expand(edm.ManagerType, "Reports");
+            var clause = edm.Expand(edm.DepartmentType, "HeadManager", inner);
+            detector.HasCycle(edm.DepartmentType, clause).Should().BeTrue();
         }
 
         [Fact]
@@ -196,6 +202,12 @@ namespace Microsoft.Restier.Tests.Core.Query
             {
                 Name = "Location",
                 Target = AddressType,
+                TargetMultiplicity = EdmMultiplicity.ZeroOrOne,
+            });
+            DepartmentType.AddUnidirectionalNavigation(new EdmNavigationPropertyInfo
+            {
+                Name = "HeadManager",
+                Target = ManagerType,
                 TargetMultiplicity = EdmMultiplicity.ZeroOrOne,
             });
 
