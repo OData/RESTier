@@ -39,6 +39,7 @@
               "guides/server/api-versioning",
               "guides/server/multi-tenancy",
               "guides/server/concurrency",
+              "guides/server/conformance-options",
               "guides/server/performance"
             ]
           },
@@ -289,10 +290,12 @@
                       "api-reference/Microsoft/Restier/Core/DataSourceStub",
                       "api-reference/Microsoft/Restier/Core/EdmModelValidationException",
                       "api-reference/Microsoft/Restier/Core/InvocationContext",
+                      "api-reference/Microsoft/Restier/Core/RestierConformanceOptions",
                       "api-reference/Microsoft/Restier/Core/RestierEntitySetOperation",
                       "api-reference/Microsoft/Restier/Core/RestierNamingConvention",
                       "api-reference/Microsoft/Restier/Core/RestierOperationMethod",
                       "api-reference/Microsoft/Restier/Core/RestierPipelineState",
+                      "api-reference/Microsoft/Restier/Core/RestierRouteOptions",
                       "api-reference/Microsoft/Restier/Core/StatusCodeException",
                       {
                         "group": "Authorization",
@@ -340,6 +343,7 @@
                           "api-reference/Microsoft/Restier/Core/Query/index",
                           "api-reference/Microsoft/Restier/Core/Query/DataSourceStubModelReference",
                           "api-reference/Microsoft/Restier/Core/Query/DefaultQueryExecutor",
+                          "api-reference/Microsoft/Restier/Core/Query/IExpandCycleDetector",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExecutor",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionAuthorizer",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionExpander",

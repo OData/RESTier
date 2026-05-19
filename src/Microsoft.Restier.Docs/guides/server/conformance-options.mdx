@@ -1,0 +1,76 @@
+---
+title: 'OData Conformance Options'
+description: 'Opt-in toggles for stricter OData v4 spec conformance, plus the per-route RestierRouteOptions configuration bag.'
+---
+
+Restier exposes per-route configuration through a single `RestierRouteOptions` bag passed to `AddRestierRoute` (or `AddVersion`, when using the versioning package). The bag groups four sets of knobs:
+
+| Property | Type | Default | Purpose |
+|---|---|---|---|
+| `DeepOperations` | `DeepOperationSettings` | `new() { MaxDepth = 5 }` | Maximum nesting depth for deep insert / deep update. |
+| `Conformance` | `RestierConformanceOptions` | `new()` | Opt-in OData v4 spec strictness toggles. |
+| `UseRestierBatching` | `bool` | `true` | Whether the Restier batch handler is registered. |
+| `NamingConvention` | `RestierNamingConvention` | `PascalCase` | EDM-to-JSON property naming. |
+
+## Configuring a route
+
+```csharp
+builder.Services.AddOData(options =>
+{
+    options.AddRestierRoute<NorthwindApi>(
+        "api",
+        services => services.AddEntityFrameworkServices<NorthwindContext>(),
+        options =>
+        {
+            options.Conformance.StrictMissingParentForCollections = true;
+            options.DeepOperations.MaxDepth = 10;
+            options.UseRestierBatching = false;
+            options.NamingConvention = RestierNamingConvention.LowerCamelCase;
+        });
+});
+```
+
+The first argument is the route prefix — pass `""` for an unprefixed route. The second is the per-route DI delegate. The third is the optional `RestierRouteOptions` callback.
+
+## `RestierConformanceOptions.StrictMissingParentForCollections`
+
+When `true`, requests to a collection-valued navigation property whose parent entity does not exist — for example `GET /Books(missing-guid)/Reviews` — return `404 Not Found` per [OData v4 Part 1 §11.2.6](https://docs.oasis-open.org/odata/odata/v4.0/odata-v4.0-part1-protocol.html#_Toc31358950).
+
+When `false` (the default), the same request returns `200 OK` with an empty value array. That matches Restier's historical behavior and keeps the wire format friendly for clients that expect a collection shape regardless of parent state.
+
+### When to enable it
+
+- Your clients are strict OData v4 implementations that distinguish between "no related entities" (200 empty) and "parent doesn't exist" (404).
+- You're publishing an interop surface that's validated against the OData v4 spec.
+
+### Trade-off
+
+Strict mode runs one extra parent-existence query per collection-nav request whose path includes a key segment. We can't tell from a deferred `IQueryable` whether a collection is empty without materializing it, so the parent check has to run unconditionally whenever strict mode is on. Don't enable this on hot read paths if you don't need it.
+
+<Note>
+Single-entity-by-key requests (e.g. `GET /Books(missing)`, `GET /Books(missing)/Publisher`, `GET /Publishers('P1')/Books(missing)`) already return `404 Not Found` unconditionally — they don't go through this toggle. Only the collection-from-missing-parent case was previously lenient.
+</Note>
+
+## DI precedence
+
+`configureOptions` is the canonical channel for `DeepOperationSettings` and `RestierConformanceOptions`. Inside `AddRestierRoute`, the bag's instances are registered via `AddSingleton` *after* `configureRouteServices` runs, so they override any registrations of those types made from the per-route DI delegate. If you've been wiring `DeepOperationSettings` through DI in earlier Restier versions, move that configuration into `configureOptions`.
+
+## Migration from earlier `feature/vnext` snapshots
+
+Earlier snapshots of `feature/vnext` exposed two `AddRestierRoute` overloads with positional `useRestierBatching` and `namingConvention` parameters, plus an unprefixed convenience overload. Those are removed.
+
+```csharp
+// Old
+options.AddRestierRoute<MyApi>(services => { ... });
+options.AddRestierRoute<MyApi>("api", services => { ... }, useRestierBatching: false, namingConvention: RestierNamingConvention.LowerCamelCase);
+
+// New
+options.AddRestierRoute<MyApi>("", services => { ... });
+options.AddRestierRoute<MyApi>("api", services => { ... }, opts =>
+{
+    opts.UseRestierBatching = false;
+    opts.NamingConvention = RestierNamingConvention.LowerCamelCase;
+});
+```
+
+The same shape applies to `IRestierApiVersioningBuilder.AddVersion` in the `Microsoft.Restier.AspNetCore.Versioning` package: the old `useRestierBatching` / `namingConvention` positional parameters are replaced by an optional `Action<RestierRouteOptions>`.
