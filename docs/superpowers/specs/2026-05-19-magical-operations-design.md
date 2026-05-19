@@ -10,9 +10,9 @@ The current `RestierWebApiOperationModelBuilder` discovers methods decorated wit
 
 1. **#651** — Parameter and return types that are not already in the model (e.g. POCO request/response types) fall through `EdmHelpers.GetTypeReference` as `null`, so users must take over `IModelBuilder` to register them.
 2. **#652** — If the same operation is declared both manually (via `ODataModelBuilder.Action`/`Function`) and via an `[Operation]` attribute, no idempotency check exists; the EDM model contains two identical entries.
-3. **#656** — Method parameters that are nullable (`int? p = null`), have a C# default value (`int p = 5`), or are marked `[Optional]` are emitted into the EDM model as non-nullable, required parameters, so `?p=null` fails at conversion time.
+3. **#656** — Method parameters that are nullable (`int?`), have a C# default value (`int p = 5`), or are marked `[Optional]` are emitted into the EDM model as non-nullable, required parameters, so `?p=null` fails at conversion time.
 
-The umbrella issue also asks for "looping through all the supported annotations." `[Description]` already maps to `Core.V1.Description` on operations (`be817e21`). This spec extends that pattern to `[Obsolete]` → `Core.V1.Revisions` and parameter `[DefaultValue]`.
+The umbrella issue also asks for "looping through all the supported annotations." `[Description]` already maps to `Core.V1.Description` on operations (`be817e21`). This spec extends that pattern to `[Obsolete]` → `Core.V1.Revisions`. The `[DefaultValue]` attribute is also consumed in this spec — not as a vocabulary annotation, but as a source for `EdmOptionalParameter.DefaultValue` literals (see Optional parameters below).
 
 The goal is "tag a method, model builds itself" — the operation builder should auto-register referenced types, dedupe gracefully, honor parameter optionality, and emit the documentation annotations that come for free from `System.ComponentModel`.
 
@@ -23,10 +23,12 @@ The goal is "tag a method, model builds itself" — the operation builder should
 | Complex-type registration approach | Dedicated pre-pass stage driving `ODataConventionModelBuilder` | Keeps the operation builder focused, defers convention work to OData ModelBuilder (enums, nested types, `[Required]`, `[MaxLength]`), single source of truth |
 | Pre-pass placement | New `OperationTypeRegistrationModelBuilder` runs between `RestierWebApiModelBuilder` and `RestierWebApiOperationModelBuilder` | Standard `IChainedService<IModelBuilder>` pattern; types are registered before operations look them up |
 | Type classification | `[Key]` or `Id`-property convention → `EntityType` (no `EntitySet`); `Enum` → `EnumType`; else `ComplexType` | Mirrors `ODataConventionModelBuilder` heuristics; entity-shaped returns work for keyed operation results |
-| Duplicate detection | Match by full signature (namespace+name+ordered parameter types, including binding parameter for bound ops) | Preserves OData's legitimate overload-by-parameter-set; only exact duplicates are suppressed |
-| Duplicate behavior | Skip with `Trace.TraceWarning` | Matches the existing warning style at `RestierWebApiOperationModelBuilder.cs:154`; loud enough to fix, doesn't break startup |
-| Optional-parameter signals | `ParameterInfo.HasDefaultValue` OR `Nullable<T>` OR `[Optional]` attribute | Covers #656 reporter (B), plus explicit escape hatch for reference-type cases under NRT-disabled compilation |
-| Optional default-value source | `[DefaultValue]` > `ParameterInfo.DefaultValue` (compiler-supplied) > `null` for `[Optional]` or `Nullable<T>` | Lets users override compiler defaults; `[DefaultValue]` also handles non-constant defaults; falls back to `null` literal when only optionality is signalled |
+| Duplicate detection | Match by **namespace + name** alone (not signature) | `RestierOperationExecutor` resolves operations by name via `GetMethod(name, BindingFlags...)` with no type array (see `RestierOperationExecutor.cs:78-80` and the comment at `:76`). Any same-name pair the model accepted would either be unreachable or trigger `AmbiguousMatchException` at dispatch. Overload-by-parameter-set support would require a separate spec that also updates the executor. |
+| Duplicate behavior | First-registration wins; subsequent registration skipped with `Trace.TraceWarning` | Matches the existing warning style at `RestierWebApiOperationModelBuilder.cs:154`; loud enough to fix, doesn't break startup. Manual `ODataModelBuilder` registration in `Inner` runs first and therefore wins; attribute-driven adds are suppressed with the warning. |
+| Type-ref nullability (accept `null` as a value) | `Nullable<T>` OR `[Optional]` | The literal #656 repro is `?p=null` on `int?` — that's nullability, not omittability. Emit the EDM type reference with `Nullable = true`. |
+| EDM optional parameter (omittable from URL) | `ParameterInfo.HasDefaultValue` OR `[DefaultValue]` OR `[Optional]` | These are the only signals that imply "user may leave it out." A pure `Nullable<T>` with no default does NOT make the parameter omittable — `Foo(int? p)` is still a required positional CLR argument. |
+| Optional default-value source | `[DefaultValue]` > `ParameterInfo.DefaultValue` (compiler-supplied) > `null` literal for `[Optional]` alone | Lets users override compiler defaults; `[DefaultValue]` also handles non-constant defaults; `null` fallback only applies when omittability is signalled by `[Optional]` and the param type accepts null |
+| Runtime handling of omitted optional params | Extend `RestierOperationExecutor` to fill `parameters[i]` with the parameter's resolved default when `GetParameterValueFunc(name)` returns null | `MethodInfo.Invoke` does not honor C# compile-time defaults (those are a compiler call-site feature, not a reflection feature). Without this, omitting an optional param would call the method with `null` / `default(T)`, not the declared default. |
 | Nullable reference types | Out of scope | Project compiles with NRT disabled (per `CLAUDE.md`); the `[Optional]` attribute covers the escape hatch |
 | `[Obsolete]` mapping | Method-level → `Core.V1.Revisions` annotation on `EdmOperation` with `Kind = Deprecated` and `Description = Obsolete.Message` | Round-trips into OpenAPI's `deprecated` field for the existing Swagger/NSwag integration on this branch |
 | `[DisplayName]` mapping | Out of scope for this spec | OpenAPI tooling rarely surfaces it; revisit if requested |
@@ -35,6 +37,8 @@ The goal is "tag a method, model builds itself" — the operation builder should
 
 ### Pipeline order
 
+Model-build chain:
+
 ```
 Inner (EF model builder)                  ← entity sets, entity types
     ↓
@@ -42,12 +46,14 @@ RestierWebApiModelBuilder                 ← convention-based entity sets / sin
     ↓
 OperationTypeRegistrationModelBuilder     ← NEW: scans [Operation] methods, registers
     ↓                                       missing complex/entity/enum types
-RestierWebApiOperationModelBuilder        ← MODIFIED: dedup, optional params,
-    ↓                                       [Obsolete] → Core.V1.Revisions
+RestierWebApiOperationModelBuilder        ← MODIFIED: dedup by namespace+name,
+    ↓                                       nullability/optionality split, annotations
 ConventionBasedAnnotationModelBuilder
 ```
 
 `OperationTypeRegistrationModelBuilder` runs **after** the entity-set extender so that already-registered entity types are visible; it runs **before** the operation builder so types are present when `BuildOperationParameters` resolves type references.
+
+Runtime-side, `RestierOperationExecutor` is extended to honor optional-parameter defaults during reflective invocation (see Runtime section below) — this is a separate concern from model building but conceptually paired with the optionality work.
 
 ### Pre-pass: `OperationTypeRegistrationModelBuilder`
 
@@ -68,7 +74,11 @@ public class OperationTypeRegistrationModelBuilder : IModelBuilder
         var auxBuilder = new ODataConventionModelBuilder();
         foreach (var known in model.SchemaElements.OfType<IEdmSchemaType>())
         {
-            var clr = known.GetClrType(model);                            // via existing ClrTypeAnnotation lookup
+            // Read ClrTypeAnnotation directly: EdmHelpers.GetClrType throws when annotation is missing,
+            // so we must NOT call it here. Schema types that lack the annotation (e.g. types added by
+            // a custom ODataModelBuilder without RESTier conventions) are simply skipped — the final
+            // merge step guards collisions with `model.FindDeclaredType(...) is null`.
+            var clr = model.GetAnnotationValue<ClrTypeAnnotation>(known)?.ClrType;
             if (clr is null) continue;
             auxBuilder.Ignore(clr);                                       // suppress re-emission of types already in inner model
         }
@@ -103,28 +113,32 @@ Key behaviors:
 Before `model.AddElement(operation)`:
 
 ```csharp
-var signature = BuildSignatureKey(namespaceName, operationInfo.Name, operationInfo.Method, isBound);
-var existing = model.SchemaElements.OfType<IEdmOperation>()
-    .FirstOrDefault(op => BuildSignatureKey(op) == signature);
-if (existing is not null)
+var alreadyDeclared = model.SchemaElements.OfType<IEdmOperation>()
+    .Any(op => op.Namespace == namespaceName && op.Name == operationInfo.Name);
+if (alreadyDeclared)
 {
-    Trace.TraceWarning($"Restier: Operation '{namespaceName}.{operationInfo.Name}' is already declared with the same signature. " +
-                       $"Skipping the duplicate registration from [Operation] attribute. " +
-                       $"Remove the manual ModelBuilder registration or the [Operation] attribute to silence this warning.");
+    Trace.TraceWarning($"Restier: An operation named '{namespaceName}.{operationInfo.Name}' is already declared on the model " +
+                       $"(likely via a custom ODataModelBuilder registration). Skipping the duplicate registration from " +
+                       $"[Operation] attribute. Remove either the manual registration or the [Operation] attribute to silence this warning. " +
+                       $"Note: same-name overloads are not supported by RestierOperationExecutor (resolves by name only).");
     continue;
 }
 ```
 
-`BuildSignatureKey(IEdmOperation)` formats as `Namespace.Name(BindingTypeFullName,ParamTypeFullName,...)`. For unbound operations the binding-type slot is empty. Action/Function import duplicates are similarly checked against `entityContainer.Elements` (action imports and function imports use distinct EDM lookups).
+The match is on `namespace + name` alone — the runtime executor cannot dispatch overloads (see Design Decisions table), so accepting a same-name pair would create unreachable metadata. The unbound case additionally guards against duplicate `OperationImport` entries on the entity container by checking `entityContainer.Elements.OfType<IEdmOperationImport>().Any(...)` with the same name match.
 
-#### Parameter optionality (`BuildOperationParameters`)
+#### Parameter classification (`BuildOperationParameters`)
+
+Nullability and optionality are independent signals — see Design Decisions. They are computed separately:
 
 ```csharp
 foreach (var parameter in method.GetParameters())
 {
-    var (isOptional, defaultValueLiteral) = ClassifyParameter(parameter);
     var underlyingType = TypeHelper.GetUnderlyingTypeOrSelf(parameter.ParameterType);
-    var typeRef = underlyingType.GetTypeReference(model, nullable: isOptional || IsNullable(parameter.ParameterType));
+    var isNullableInModel = ComputeNullable(parameter);    // Nullable<T> OR [Optional] OR class type
+    var (isOptional, defaultValueLiteral) = ClassifyOptionality(parameter);
+
+    var typeRef = underlyingType.GetTypeReference(model, nullable: isNullableInModel);
 
     EdmOperationParameter edmParam = isOptional
         ? new EdmOptionalParameter(operation, parameter.Name, typeRef, defaultValueLiteral)
@@ -135,15 +149,50 @@ foreach (var parameter in method.GetParameters())
 }
 ```
 
-`ClassifyParameter` order of precedence:
+`ComputeNullable(parameter)` returns true when:
+- `Nullable.GetUnderlyingType(parameter.ParameterType) is not null`, OR
+- `parameter.GetCustomAttribute<OptionalAttribute>() is not null`, OR
+- `parameter.ParameterType.IsClass` (matches existing OData ModelBuilder behavior for reference types).
 
-1. `parameter.GetCustomAttribute<DefaultValueAttribute>()?.Value` → optional with that literal.
-2. `parameter.HasDefaultValue` → optional with `parameter.DefaultValue.ToInvariantString()`.
-3. `parameter.GetCustomAttribute<OptionalAttribute>() is not null` → optional with `null` literal.
-4. `Nullable.GetUnderlyingType(parameter.ParameterType) is not null` → optional with `null` literal.
-5. Otherwise → required.
+`ClassifyOptionality(parameter)` returns `(isOptional, defaultLiteral)` by checking in order:
 
-`EdmHelpers.GetTypeReference` gains a `bool nullable = true` overload so the builder can pass `false` for non-optional value types.
+1. `parameter.GetCustomAttribute<DefaultValueAttribute>()?.Value` → `(true, value.ToInvariantString())`.
+2. `parameter.HasDefaultValue` → `(true, parameter.DefaultValue.ToInvariantString())`.
+3. `parameter.GetCustomAttribute<OptionalAttribute>() is not null` → `(true, "null")`. Requires the parameter type to be nullable; otherwise the builder emits a `Trace.TraceWarning` and treats it as required.
+4. Otherwise → `(false, null)`.
+
+A bare `Nullable<T>` with no default and no `[Optional]` produces `isOptional = false` but `isNullableInModel = true` — the model accepts `?p=null` (the #656 literal repro) but the URL must still mention `p`. This separation matches OData's two-axis representation and avoids changing the contract for parameters that the method signature still treats as required.
+
+`EdmHelpers.GetTypeReference` gains a `bool nullable = true` overload so the builder can explicitly pass `false` for non-nullable value-type parameters.
+
+#### Runtime: honoring optional defaults (`RestierOperationExecutor`)
+
+`MethodInfo.Invoke` does not honor compile-time defaults — the runtime executor must fill them itself. The loop at `RestierOperationExecutor.cs:102-129` is extended:
+
+```csharp
+for (; paraIndex < parameterArray.Length; paraIndex++)
+{
+    var parameter = parameterArray[paraIndex];
+    var currentParameterValue = restierOperationContext.GetParameterValueFunc(parameter.Name);
+
+    object convertedValue;
+    if (currentParameterValue is null && IsOmittedOptional(parameter))
+    {
+        convertedValue = ResolveDefault(parameter);   // [DefaultValue].Value, then parameter.DefaultValue, then null
+    }
+    else if (restierOperationContext.IsFunction)
+    {
+        // existing path — ConvertValue
+    }
+    else
+    {
+        // existing path — ConvertCollectionType
+    }
+    parameters[paraIndex] = convertedValue;
+}
+```
+
+`IsOmittedOptional(parameter)` mirrors `ClassifyOptionality` from the model builder. Without this change, omitting an optional URL parameter would invoke the method with `null` / `default(T)` instead of the declared default, defeating the purpose of `EdmOptionalParameter.DefaultValue`. The classification helper is extracted to a small static class shared between the model builder and the executor to avoid duplication.
 
 #### Annotations (`BuildOperations`)
 
@@ -200,9 +249,11 @@ The chain factory composes these by registration order; the operation builder re
 | File | Change |
 |------|--------|
 | `Model/OptionalAttribute.cs` | **NEW** — parameter-level marker |
+| `Model/OperationParameterClassifier.cs` | **NEW** — static helpers `IsOmittedOptional` / `ResolveDefault` / `ComputeNullable` shared between model builder and executor |
 | `Model/ApiExtension/OperationTypeRegistrationModelBuilder.cs` | **NEW** — pre-pass that auto-registers types referenced by `[Operation]` methods |
-| `Model/ApiExtension/RestierWebApiOperationModelBuilder.cs` | **MODIFY** — dedup-by-signature with Trace warning; classify+emit optional parameters; emit `Core.V1.Revisions` from `[Obsolete]`; emit parameter-level `Core.V1.Description` |
-| `Model/EdmHelpers.cs` | **MODIFY** — add `GetTypeReference(this Type, IEdmModel, bool nullable)` overload so value-type parameters can be emitted as non-nullable when not optional |
+| `Model/ApiExtension/RestierWebApiOperationModelBuilder.cs` | **MODIFY** — dedup by namespace+name with Trace warning; classify+emit optional parameters using the new classifier; emit `Core.V1.Revisions` from `[Obsolete]`; emit parameter-level `Core.V1.Description` |
+| `Model/EdmHelpers.cs` | **MODIFY** — add `GetTypeReference(this Type, IEdmModel, bool nullable)` overload so value-type parameters can be emitted as non-nullable when neither nullable nor optional |
+| `Operation/RestierOperationExecutor.cs` | **MODIFY** — when a URL-side parameter value is null and the parameter is omittable per `OperationParameterClassifier`, fill the positional slot with the resolved default (`[DefaultValue]` > `ParameterInfo.DefaultValue` > `null`) instead of the converted-from-null value |
 | `Extensions/RestierODataOptionsExtensions.cs` | **MODIFY** — register `OperationTypeRegistrationModelBuilder` between web-api model builder and operation model builder (both `AddRestierRoute` paths) |
 
 ### `test/Microsoft.Restier.Tests.AspNetCore`
@@ -230,34 +281,44 @@ Unit (xUnit + FluentAssertions + NSubstitute, following `RestierWebApiOperationM
   - Does not re-register a type already declared on the inner model
   - Recurses: registers a nested complex type referenced only through another complex type's property
 - `RestierWebApiOperationModelBuilder` (extending existing test class):
-  - Dedup: when `model` already contains an operation with the matching signature, skip and emit `Trace.TraceWarning` containing the operation name
-  - Dedup: same name, different parameter types → both kept (legitimate overload)
-  - Optional via `int p = 5` → `EdmOptionalParameter` with `DefaultValue = "5"`
-  - Optional via `int? p` → `EdmOptionalParameter` with `DefaultValue = "null"` and type ref `Nullable = true`
-  - Optional via `[Optional] int p` → `EdmOptionalParameter` with `DefaultValue = "null"`
+  - Dedup: when `model` already contains an operation with the same namespace+name, skip and emit `Trace.TraceWarning` containing the operation name
+  - Dedup: same name, different parameter types → second registration is also skipped (overload preservation is *not* a goal; comment ties this to the executor's name-only dispatch)
+  - Nullable: bare `int? p` (no default) → `EdmOperationParameter` (required), type ref `Nullable = true`
+  - Optional via `int p = 5` → `EdmOptionalParameter` with `DefaultValue = "5"`, type ref `Nullable = false`
+  - Optional via `int? p = null` → `EdmOptionalParameter` with `DefaultValue = "null"`, type ref `Nullable = true`
+  - Optional via `[Optional] int? p` → `EdmOptionalParameter` with `DefaultValue = "null"`, type ref `Nullable = true`
+  - `[Optional] int p` (non-nullable, no default) → builder logs a `Trace.TraceWarning` and treats the parameter as required (cannot represent omission of a non-nullable value type without a default)
   - `[DefaultValue("foo")] string p` → `EdmOptionalParameter` with `DefaultValue = "foo"`
   - `[Obsolete("Use Bar instead.")]` → vocabulary annotation with `Core.V1.Revisions` term, `Description = "Use Bar instead."`
   - Plain `int p` (no defaults, no attribute) → `EdmOperationParameter` with type ref `Nullable = false`
+- `RestierOperationExecutor` (new test file `Operation/RestierOperationExecutorOptionalTests.cs`):
+  - When `?p` is absent on a function whose declared parameter is `int p = 5`, the executor invokes the method with the integer `5` (not `0`)
+  - When `?p` is absent and the parameter has `[DefaultValue("hello")] string p`, the executor passes `"hello"`
+  - When `?p=null` is present on `int? p` (nullable, not optional), the executor passes `null`
+  - When `?p` is absent on a required `int p`, existing behavior is preserved (URL parsing surfaces the missing-parameter error path)
 
 HTTP integration (Breakdance, following `FeatureTests/DeepInsertTests.cs` style):
 
-- A `[UnboundOperation]` taking `int? parameter1 = null` responds 200 to `Query(parameter1=null)` (the literal #656 repro)
+- A `[UnboundOperation]` taking `int? parameter1` responds 200 to `Query(parameter1=null)` (the literal #656 repro — nullability, not omittability)
+- A `[UnboundOperation]` taking `int parameter1 = 5` responds 200 to `Query()` and the returned body reflects that the method received `5` (not `0`)
 - `$metadata` contains the expected `Annotation Term="Core.V1.Description"` and `Annotation Term="Core.V1.Revisions"` markup
-- Registering the same `[UnboundOperation]` and also calling `ODataModelBuilder.Function(...)` for it produces exactly one `OperationImport` in `$metadata`
+- Registering the same `[UnboundOperation]` and also calling `ODataModelBuilder.Function(...)` for it produces exactly one `OperationImport` in `$metadata` and a single `Trace.TraceWarning`
 - A `[UnboundOperation]` whose parameter and return are custom POCOs (no manual `ComplexType` registration) responds correctly and emits both types in `$metadata`
 
 ## Risks & Open Questions
 
-- **Aux builder type re-emission**: pre-Ignoring every already-declared type on `ODataConventionModelBuilder` requires CLR-type resolution from the inner `EdmModel`. RESTier already retrieves CLR types via `ClrTypeAnnotation` (see `EdmHelpers.GetClrType`). If a known schema element has no `ClrTypeAnnotation`, fall back to skipping its registration; the merge step also guards with `model.FindDeclaredType(...) is null` so a collision is impossible.
+- **Aux builder type re-emission**: pre-Ignoring every already-declared type on `ODataConventionModelBuilder` requires CLR-type resolution from the inner `EdmModel`. The pre-pass reads `ClrTypeAnnotation` directly via `model.GetAnnotationValue<ClrTypeAnnotation>(known)?.ClrType` rather than calling `EdmHelpers.GetClrType` (which throws when the annotation is missing — see `EdmHelpers.cs:52-67`). Schema types lacking that annotation are simply skipped; the merge step also guards with `model.FindDeclaredType(...) is null` so a collision is impossible.
 - **`ODataConventionModelBuilder.Ignore` API shape**: the exact method/property used to suppress emission of a known type on the auxiliary builder will be confirmed during implementation against the version of `Microsoft.OData.ModelBuilder` pinned by the solution. If the literal `Ignore(...)` shape differs (e.g. requires per-property ignore), the implementation plan should call that out and adjust.
 - **Bound operations referencing types not on any `EntitySet`**: registering a missing keyed type as `EntityType` (no `EntitySet`) is sufficient for the operation builder but means that type is not directly queryable. That's the existing OData behavior; documented in the operations guide.
 - **`[Obsolete]` term Version string**: the OData `Core.V1.Revisions` schema requires a `Version` field; the literal `"obsolete"` is a convention placeholder. If a future iteration wants real semver tracking, that would be a separate spec.
-- **Optional parameter type nullability**: When a parameter is optional and its CLR type is a non-nullable value type (e.g. `int p = 5`), the EDM type ref must still be nullable per OData's representation of optional parameters with default values. Confirmed against `EdmOptionalParameter` semantics; the test for "Optional via `int p = 5`" verifies this.
+- **Optional parameter type nullability**: Nullability and optionality are independently emitted (see `ComputeNullable` and `ClassifyOptionality`). An `EdmOptionalParameter` with `DefaultValue = "5"` and a non-nullable `Edm.Int32` type ref is the intended shape for `int p = 5`. Tests under "Parameter classification" pin this contract.
+- **Action vs. function optional handling**: The executor extension applies to both function and action parameters, but action parameters typically come from a JSON body where omission means the property is missing. The `IsOmittedOptional` check fires regardless of `IsFunction`; the test matrix covers function URL parameters explicitly and treats action-body coverage as a follow-up if real-world action scenarios surface in code review.
 
 ## Out of Scope (Deferred)
 
+- **Same-name operation overloads.** Preserving multiple operations with the same namespace+name would require also updating `RestierOperationExecutor` to dispatch by parameter type list (today it does `GetMethod(name, BindingFlags...)` — see `RestierOperationExecutor.cs:78-80` and the comment at `:76`). That change is its own design question (URL parsing must select the right overload from candidate signatures) and is left to a future spec.
 - `[DisplayName]` → `Core.V1.LongDescription` mapping
-- Nullable reference types (`string?`) as an optional signal — requires reading `NullableAttribute` byte arrays; the `[Optional]` escape hatch is sufficient under NRT-disabled compilation
+- Nullable reference types (`string?`) as a nullable/optional signal — requires reading `NullableAttribute` byte arrays; the `[Optional]` escape hatch is sufficient under NRT-disabled compilation
 - `[Action]` / `[Function]` attribute aliases replacing the `OperationType` enum (separate UX-only refactor)
 - Auto-registration of types referenced only by entity sets (`RestierWebApiModelBuilder` already handles that path)
 - Composable function inference from method signature (separate "operation composition" topic)
