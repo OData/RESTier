@@ -35,7 +35,7 @@ namespace Microsoft.Restier.AspNetCore;
 public static class RestierODataOptionsExtensions
 {
     /// <summary>
-    /// Adds a Restier route at the empty (root) prefix.
+    /// Adds a Restier route for <typeparamref name="TApi"/> using default per-route options.
     /// </summary>
     /// <typeparam name="TApi">The Restier API type.</typeparam>
     /// <param name="oDataOptions">The <see cref="ODataOptions"/> to add a route to.</param>
