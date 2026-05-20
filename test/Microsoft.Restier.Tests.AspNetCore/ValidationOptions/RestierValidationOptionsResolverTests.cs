@@ -159,6 +159,61 @@ public class RestierValidationOptionsResolverTests
         built.MaxExpansionDepth.Should().Be(4);
         built.MaxTop.Should().BeNull();
     }
+
+    [Fact]
+    public void ResolveMaxTop_BagNull_GlobalSet_ReturnsGlobal()
+    {
+        var globalOptions = new ODataOptions();
+        globalOptions.SetMaxTop(50);
+
+        var maxTop = RestierValidationOptionsResolver.ResolveMaxTop(bag: null, globalOptions);
+
+        maxTop.Should().Be(50);
+    }
+
+    [Fact]
+    public void ResolveMaxTop_BagSetsValue_GlobalSet_ReturnsBagValue()
+    {
+        var bag = new RestierValidationOptions { MaxTop = 25 };
+        var globalOptions = new ODataOptions();
+        globalOptions.SetMaxTop(50);
+
+        var maxTop = RestierValidationOptionsResolver.ResolveMaxTop(bag, globalOptions);
+
+        maxTop.Should().Be(25);
+    }
+
+    [Fact]
+    public void ResolveMaxTop_BagNull_GlobalNull_ReturnsNull()
+    {
+        var maxTop = RestierValidationOptionsResolver.ResolveMaxTop(bag: null, globalOptions: null);
+
+        maxTop.Should().BeNull();
+    }
+
+    [Fact]
+    public void ResolveMaxTop_BagNull_GlobalZero_ReturnsNull()
+    {
+        // 0 is the "unset" sentinel for ODataOptions.QueryConfigurations.MaxTop.
+        var globalOptions = new ODataOptions();
+        // Don't call SetMaxTop; the property defaults to 0.
+
+        var maxTop = RestierValidationOptionsResolver.ResolveMaxTop(bag: null, globalOptions);
+
+        maxTop.Should().BeNull();
+    }
+
+    [Fact]
+    public void ResolveMaxTop_EmptyBag_GlobalSet_ReturnsGlobal()
+    {
+        var bag = new RestierValidationOptions();  // MaxTop is null
+        var globalOptions = new ODataOptions();
+        globalOptions.SetMaxTop(100);
+
+        var maxTop = RestierValidationOptionsResolver.ResolveMaxTop(bag, globalOptions);
+
+        maxTop.Should().Be(100);
+    }
 }
 
 public class AddRestierRouteValidationGuardTests

@@ -53,8 +53,9 @@ namespace Microsoft.Restier.AspNetCore.NSwag
             var model = routeComponent.EdmModel;
             var routeServices = odataOptions.GetRouteServices(routePrefix);
             var validationOptions = routeServices.GetService<RestierValidationOptions>();
+            var topExample = Routing.RestierValidationOptionsResolver.ResolveMaxTop(validationOptions, odataOptions) ?? 5;
 
-            var settings = new OpenApiConvertSettings { TopExample = validationOptions?.MaxTop ?? 5 };
+            var settings = new OpenApiConvertSettings { TopExample = topExample };
             openApiSettings?.Invoke(settings);
 
             if (request is not null)

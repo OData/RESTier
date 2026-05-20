@@ -17,9 +17,28 @@ namespace Microsoft.Restier.AspNetCore.Routing;
 /// A bag <c>MaxTop</c> that disagrees with the global
 /// <c>SetMaxTop</c> wins and emits a <see cref="Trace.TraceWarning(string)"/>.
 /// </summary>
-internal static class RestierValidationOptionsResolver
+public static class RestierValidationOptionsResolver
 {
     private const string WarningPrefix = "Restier: ";
+
+    /// <summary>
+    /// Resolves the effective <c>MaxTop</c> that applies to a route — the
+    /// bag's <see cref="RestierValidationOptions.MaxTop"/> if set, otherwise
+    /// the value passed to <c>ODataOptions.SetMaxTop</c>, otherwise
+    /// <c>null</c> (no client-supplied limit). Use this from OpenAPI
+    /// document generators (Swagger, NSwag) and any other call site that
+    /// needs the effective <c>$top</c> ceiling without materializing a full
+    /// <see cref="ODataValidationSettings"/>.
+    /// </summary>
+    /// <param name="bag">The route's <see cref="RestierValidationOptions"/>, or <c>null</c>.</param>
+    /// <param name="globalOptions">The app-level <see cref="ODataOptions"/>, or <c>null</c>.</param>
+    public static int? ResolveMaxTop(RestierValidationOptions bag, ODataOptions globalOptions)
+    {
+        // ODataOptions.QueryConfigurations.MaxTop uses 0 as the "unset" sentinel; treat it as null.
+        var rawGlobal = globalOptions?.QueryConfigurations?.MaxTop;
+        var globalMaxTop = rawGlobal.HasValue && rawGlobal.Value > 0 ? rawGlobal : null;
+        return bag?.MaxTop ?? globalMaxTop;
+    }
 
     /// <summary>
     /// Builds the route's <see cref="ODataValidationSettings"/> from the
@@ -29,7 +48,7 @@ internal static class RestierValidationOptionsResolver
     /// time for its warning side-effect; use <see cref="Build"/> at
     /// request time to avoid duplicate warnings.
     /// </summary>
-    public static ODataValidationSettings Resolve(
+    internal static ODataValidationSettings Resolve(
         RestierValidationOptions bag,
         ODataOptions globalOptions,
         string routePrefix)
@@ -55,16 +74,12 @@ internal static class RestierValidationOptionsResolver
     /// Builds the route's <see cref="ODataValidationSettings"/> silently
     /// (no warnings). Used per-request by <c>RestierController</c>.
     /// </summary>
-    public static ODataValidationSettings Build(
+    internal static ODataValidationSettings Build(
         RestierValidationOptions bag,
         ODataOptions globalOptions)
     {
         var resolved = new ODataValidationSettings();
-
-        // ODataOptions.QueryConfigurations.MaxTop uses 0 as the "unset" sentinel; treat it as null.
-        var rawGlobal = globalOptions?.QueryConfigurations?.MaxTop;
-        var globalMaxTop = rawGlobal.HasValue && rawGlobal.Value > 0 ? rawGlobal : null;
-        resolved.MaxTop = bag.MaxTop ?? globalMaxTop;
+        resolved.MaxTop = ResolveMaxTop(bag, globalOptions);
 
         // ODataValidationSettings.MaxSkip is int?, the others are int — that's why the assignment shape differs.
         if (bag.MaxSkip.HasValue) { resolved.MaxSkip = bag.MaxSkip; }
