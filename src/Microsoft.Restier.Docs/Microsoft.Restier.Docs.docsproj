@@ -65,6 +65,7 @@
                         <Group Name="Release Notes" Icon="clipboard-list">
                             <Pages>
                                 release-notes/index;
+                                release-notes/2-0-0-beta;
                                 release-notes/1-2-0;
                                 release-notes/1-1-0;
                                 release-notes/1-0-0;
