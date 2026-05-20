@@ -4,7 +4,6 @@
 using CloudNimble.EasyAF.Http.OData;
 using FluentAssertions;
 using CloudNimble.Breakdance.AspNetCore;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
@@ -60,12 +59,6 @@ public abstract class AuthorizationTests<TApi, TContext> : RestierTestBase<TApi>
         Action<IServiceCollection> services = serviceCollection =>
         {
             ConfigureServices(serviceCollection);
-            serviceCollection.AddSingleton(new ODataValidationSettings
-            {
-                MaxTop = 5,
-                MaxAnyAllExpressionDepth = 3,
-                MaxExpansionDepth = 3,
-            });
         };
 
         var employeeResponse = await RestierTestHelpers.ExecuteTestRequest<TApi>(

@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,20 +47,19 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 .AddControllers()
                 .AddRestier(options =>
                 {
-                    options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
                     options.TimeZone = TimeZoneInfo.Utc;
 
                     options.AddRestierRoute<NorthwindApi>(string.Empty, restierServices =>
                     {
                         restierServices
                             .AddEFCoreProviderServices<NorthwindContext>((services, dbOptions) =>
-                                dbOptions.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
-                            .AddSingleton(new ODataValidationSettings
-                            {
-                                MaxTop = 5,
-                                MaxAnyAllExpressionDepth = 3,
-                                MaxExpansionDepth = 3,
-                            });
+                                dbOptions.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")));
+                    },
+                    bag =>
+                    {
+                        bag.Validation.MaxAnyAllExpressionDepth = 3;
+                        bag.Validation.MaxExpansionDepth = 3;
                     });
                 })
                 .AddApplicationPart(typeof(NorthwindApi).Assembly)

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using CloudNimble.EasyAF.Http.OData;
 using Flurl;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder.Config;
@@ -419,18 +418,14 @@ namespace Microsoft.Restier.Breakdance
             {
                 odataOptions.AddRestierRoute<TApi>(routeName, restierServices =>
                 {
-                    restierServices
-                        .AddSingleton(new ODataValidationSettings
-                        {
-                            MaxTop = 5,
-                            MaxAnyAllExpressionDepth = 3,
-                            MaxExpansionDepth = 3,
-                        });
                     apiServiceCollection?.Invoke(restierServices);
                 },
                 options =>
                 {
                     options.NamingConvention = namingConvention;
+                    options.Validation.MaxTop = 5;
+                    options.Validation.MaxAnyAllExpressionDepth = 3;
+                    options.Validation.MaxExpansionDepth = 3;
                     configureOptions?.Invoke(options);
                 });
             };

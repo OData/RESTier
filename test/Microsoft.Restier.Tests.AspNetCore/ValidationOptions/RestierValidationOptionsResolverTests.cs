@@ -1,12 +1,16 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.Diagnostics;
 using FluentAssertions;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Query.Validator;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.AspNetCore.Routing;
+using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.ValidationOptions;
@@ -154,5 +158,28 @@ public class RestierValidationOptionsResolverTests
 
         built.MaxExpansionDepth.Should().Be(4);
         built.MaxTop.Should().BeNull();
+    }
+}
+
+public class AddRestierRouteValidationGuardTests
+{
+    [Fact]
+    public void AddRestierRoute_UserRegistersODataValidationSettings_Throws()
+    {
+        var act = () =>
+        {
+            using var server = RestierTestHelpers
+                .GetTestableRestierServer<LibraryApi>(
+                    routeName: "api",
+                    routePrefix: "api",
+                    apiServiceCollection: services =>
+                    {
+                        services.AddEntityFrameworkServices<LibraryContext>();
+                        services.AddSingleton(new ODataValidationSettings { MaxTop = 5 });
+                    });
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*ODataValidationSettings*RestierRouteOptions.Validation*");
     }
 }

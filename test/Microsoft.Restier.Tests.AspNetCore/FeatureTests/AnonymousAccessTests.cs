@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Breakdance;
@@ -64,12 +63,12 @@ public class AnonymousAccessTests
         {
             odataOptions.AddRestierRoute<TApi>(WebApiConstants.RouteName, restierServices =>
             {
-                restierServices.AddSingleton(new ODataValidationSettings
-                {
-                    MaxTop = 5,
-                    MaxAnyAllExpressionDepth = 3,
-                    MaxExpansionDepth = 3,
-                });
+            },
+            options =>
+            {
+                options.Validation.MaxTop = 5;
+                options.Validation.MaxAnyAllExpressionDepth = 3;
+                options.Validation.MaxExpansionDepth = 3;
             });
         };
 

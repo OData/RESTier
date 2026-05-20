@@ -298,6 +298,7 @@
                       "api-reference/Microsoft/Restier/Core/RestierOperationMethod",
                       "api-reference/Microsoft/Restier/Core/RestierPipelineState",
                       "api-reference/Microsoft/Restier/Core/RestierRouteOptions",
+                      "api-reference/Microsoft/Restier/Core/RestierValidationOptions",
                       "api-reference/Microsoft/Restier/Core/StatusCodeException",
                       {
                         "group": "Authorization",

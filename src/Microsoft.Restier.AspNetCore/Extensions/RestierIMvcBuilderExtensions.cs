@@ -45,23 +45,23 @@ public static class RestierIMvcBuilderExtensions
     ///         .AddRestierApi<SomeApi>(routeServices =>
     ///             routeServices
     ///                 .AddEF6ProviderServices<SomeDbContext>()
-    ///                 .AddChainedService<IModelBuilder, SomeDbContextModelBuilder>()
-    ///                 .AddSingleton(new ODataValidationSettings
-    ///                 {
-    ///                     MaxAnyAllExpressionDepth = 3,
-    ///                     MaxExpansionDepth = 3,
-    ///                 })
+    ///                 .AddChainedService<IModelBuilder, SomeDbContextModelBuilder>(),
+    ///             bag =>
+    ///             {
+    ///                 bag.Validation.MaxAnyAllExpressionDepth = 3;
+    ///                 bag.Validation.MaxExpansionDepth = 3;
+    ///             }
     ///         )
     ///
     ///         .AddRestierApi<AnotherApi>(routeServices =>
     ///             routeServices
     ///                 .AddEF6ProviderServices<AnotherDbContext>()
-    ///                 .AddChainedService<IModelBuilder, AnotherDbContextModelBuilder>()
-    ///                 .AddSingleton(new ODataValidationSettings
-    ///                 {
-    ///                     MaxAnyAllExpressionDepth = 3,
-    ///                     MaxExpansionDepth = 3,
-    ///                 })
+    ///                 .AddChainedService<IModelBuilder, AnotherDbContextModelBuilder>(),
+    ///             bag =>
+    ///             {
+    ///                 bag.Validation.MaxAnyAllExpressionDepth = 3;
+    ///                 bag.Validation.MaxExpansionDepth = 3;
+    ///             }
     ///         );
     ///    );
     ///
