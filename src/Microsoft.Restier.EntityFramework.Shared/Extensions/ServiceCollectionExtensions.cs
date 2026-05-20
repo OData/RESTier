@@ -39,6 +39,15 @@ public static partial class ServiceCollectionExtensions
 
         services.AddSingleton<IChainedService<IModelBuilder>, EFModelBuilder<TDbContext>>()
             .AddSingleton<IChainedService<IModelMapper>, EFModelMapper>()
+            // Register BEFORE EFQueryExpressionSourcer so it becomes the EF sourcer's
+            // Inner — the chain factory wires services in registration order, where each
+            // newly seen service receives the previously seen one as its Inner. EF
+            // sourcer calls Inner first, so the keyless-view sourcer gets first crack at
+            // function-import references; entity-set references fall through unchanged.
+            .AddSingleton<IChainedService<IQueryExpressionSourcer>>(sp =>
+                new KeylessViewQueryExpressionSourcer(
+                    sp.GetRequiredService<KeylessViewRegistry>(),
+                    sp.GetRequiredService<RestierEFOptions>()))
             .AddSingleton<IChainedService<IQueryExpressionSourcer>>(sp =>
                 new EFQueryExpressionSourcer(sp.GetRequiredService<RestierEFOptions>()))
             .AddSingleton<IChainedService<IQueryExecutor>, EFQueryExecutor>()
