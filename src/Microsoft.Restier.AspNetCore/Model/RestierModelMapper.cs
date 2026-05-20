@@ -22,11 +22,11 @@ namespace Microsoft.Restier.AspNetCore.Model
         public IModelMapper Inner { get; set; }
 
         /// <summary>
-        /// Tries to get the relevant type of an entity
-        /// set, singleton, or composable function import.
+        /// Tries to get the relevant type of an entity set, singleton,
+        /// or unbound function import (e.g. a keyless-view dispatch entry point).
         /// </summary>
         /// <param name="invocationContext">The invocationContext for model mapper.</param>
-        /// <param name="name">The name of an entity set, singleton or composable function import.</param>
+        /// <param name="name">The name of an entity set, singleton, or unbound function import.</param>
         /// <param name="relevantType">When this method returns, provides the relevant type of the queryable source.</param>
         /// <returns>
         /// <c>true</c> if the relevant type was provided; otherwise, <c>false</c>.
@@ -41,23 +41,32 @@ namespace Microsoft.Restier.AspNetCore.Model
 
             if (element is not null)
             {
-                IEdmType entityType = null;
+                IEdmType targetType = null;
                 if (element is IEdmEntitySet entitySet)
                 {
                     var entitySetType = entitySet.Type as IEdmCollectionType;
-                    entityType = entitySetType.ElementType.Definition;
+                    targetType = entitySetType.ElementType.Definition;
                 }
-                else
+                else if (element is IEdmSingleton singleton)
                 {
-                    if (element is IEdmSingleton singleton)
+                    targetType = singleton.Type;
+                }
+                else if (element is IEdmFunctionImport functionImport)
+                {
+                    // Keyless-view shape: an unbound function import returning Collection(<ComplexType>).
+                    // The ClrTypeAnnotation is attached to the return-type element by EFModelBuilder
+                    // when it demotes keyless DbSets/EntitySets to ComplexType<T> + FunctionImport.
+                    var returnTypeRef = functionImport.Function.GetReturn()?.Type;
+                    if (returnTypeRef is not null && returnTypeRef.IsCollection())
                     {
-                        entityType = singleton.Type;
+                        var collectionType = (IEdmCollectionType)returnTypeRef.Definition;
+                        targetType = collectionType.ElementType.Definition;
                     }
                 }
 
-                if (entityType is not null)
+                if (targetType is not null)
                 {
-                    var annotation = model.GetAnnotationValue<ClrTypeAnnotation>(entityType);
+                    var annotation = model.GetAnnotationValue<ClrTypeAnnotation>(targetType);
                     if (annotation is not null)
                     {
                         relevantType = annotation.ClrType;
