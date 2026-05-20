@@ -398,3 +398,70 @@ preserve changeset atomicity. Be aware of the following:
   (e.g., `OnInsertingBooks`) will see individual single-item changesets rather than the combined changeset.
   If your interceptors depend on seeing all changeset items together, prefer client-supplied keys so that the
   concurrent path (strategy 2) is used instead.
+
+## Auto-registration, optional parameters, and annotations
+
+In RESTier 2.0, methods decorated with `[BoundOperation]` or `[UnboundOperation]`
+are fully self-registering. You no longer need to take over the model builder
+just to declare a complex-typed parameter or return.
+
+### Complex / entity / enum types
+
+Any POCO, enum, or keyed entity type referenced by an operation parameter or
+return value is automatically registered when the model is built. Classes with
+an `Id` property or a `[Key]`-decorated property are registered as entity types
+(without an entity set); enums are registered as enum types; other classes are
+registered as complex types. Nested complex properties are picked up
+recursively by the convention builder.
+
+```csharp
+public class SearchCriteria { public string Query { get; set; } public int Limit { get; set; } }
+public class SearchResult { public bool Found { get; set; } }
+
+public class MyApi : EntityFrameworkApi<MyContext>
+{
+    // SearchCriteria and SearchResult are auto-registered as ComplexType.
+    [UnboundOperation]
+    public SearchResult Search(SearchCriteria criteria) => ...;
+}
+```
+
+### Optional parameters and nullability
+
+Nullability and optionality are independent.
+
+| Signal | EDM type ref `Nullable` | EDM parameter shape |
+|---|---|---|
+| `int p` | `false` | `EdmOperationParameter` (required) |
+| `int? p` | `true` | `EdmOperationParameter` (required-but-nullable) |
+| `int p = 5` | `false` | `EdmOptionalParameter` (default `5`) |
+| `int? p = null` | `true` | `EdmOptionalParameter` (default `null`) |
+| `[DefaultValue("x")] string p` | `true` | `EdmOptionalParameter` (default `x`) |
+| `[Optional] int? p` | `true` | `EdmOptionalParameter` (default `null`) |
+
+`Foo(int? p)` *accepts* `?p=null` from the URL, but the URL must still mention
+`p`. To make a parameter omittable, give it a default value or use the
+`[Optional]` attribute (from `Microsoft.Restier.AspNetCore.Model`, distinct
+from `System.Runtime.InteropServices.OptionalAttribute`).
+
+When both signals apply — for example `int? p = 5` — `Foo()` substitutes the
+default (`5`) and `Foo(p=null)` passes `null`. Explicit null beats default
+substitution.
+
+### Vocabulary annotations
+
+| .NET attribute | EDM annotation |
+|---|---|
+| `[Description("…")]` on method | `Core.V1.Description` on `EdmOperation` |
+| `[Description("…")]` on parameter | `Core.V1.Description` on `EdmOperationParameter` |
+| `[Obsolete("…")]` on method | `Core.V1.Revisions` with `Kind = Deprecated` |
+
+These annotations round-trip through OpenAPI/Swagger generation as `description`
+and `deprecated` fields on the matching paths.
+
+### Duplicate-name handling
+
+If the same operation is declared both manually (via `ODataModelBuilder.Action`/`Function`)
+and via `[Operation]`, the manual registration wins and the attribute-driven
+add is skipped with a `Trace.TraceWarning`. Same-name overloads are *not*
+supported — `RestierOperationExecutor` dispatches by name only.
