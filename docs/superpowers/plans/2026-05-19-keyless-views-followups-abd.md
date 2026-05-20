@@ -232,10 +232,12 @@ Task 4 already produces a `KeylessViewQueryExpressionSourcer` that calls `EFQuer
 ### Task 8: EFCore end-to-end assertion for `NoTracking` on keyless views
 
 **Files:**
-- Modify: `test/Microsoft.Restier.Tests.EntityFrameworkCore/Query/KeylessViewQueryExpressionSourcerTests.cs` (or a sibling test file under the same folder if a separate file fits the project's conventions better)
+- Create: `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EFCore/KeylessView_TrackingBehavior_Tests.cs`
 
-- [ ] With `RestierEFOptions.TrackingBehavior = NoTracking` wired through `AddEFCoreProviderServices`, fire a real GET against the LibraryWithViewsApi keyless view, then assert `((IEntityFrameworkApi)api).DbContext.ChangeTracker.Entries().Count() == 0`.
-- [ ] If a `TrackAll` variant adds confidence cheaply (one extra `[Theory]` row, same fixture), include it; otherwise leave the per-behaviour matrix at the unit level in Task 4.
+The test lives in `Microsoft.Restier.Tests.AspNetCore` (not the EFCore-package test project) because `RestierTestHelpers.ExecuteTestRequest` — the canonical helper for firing a real HTTP request through the Restier controller + route + query pipeline — is only wired from the AspNetCore test project. The EFCore test project hosts unit-level tests with substituted dependencies; an end-to-end assertion requires the full request scaffolding that already powers `Issue741_KeylessViews.cs` in this folder.
+
+- [x] With `RestierEFOptions.TrackingBehavior = NoTracking` wired through `AddEFCoreProviderServices`, fire a real GET against the LibraryWithViewsApi keyless view, then assert `((IEntityFrameworkApi)api).DbContext.ChangeTracker.Entries().Count() == 0`. The DbContext is captured via a chained `IQueryExecutor` that inspects `((IEntityFrameworkApi)context.Api).DbContext.ChangeTracker` after the inner executor materialises the query — captured while the request scope is still alive, so the inspected DbContext is the same instance the sourcer wrapped.
+- [x] `TrackAll` contrast row included (cheap, same fixture). Pins that keyless types stay untracked even under `TrackingBehavior = TrackAll`, so a future regression in the keyless-view sourcer's tracking-passthrough surfaces a clear story.
 
 ### Task 9: Update docs for A + B
 
