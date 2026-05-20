@@ -117,9 +117,10 @@ builder.Services.AddRestierNSwag(settings =>
 });
 ```
 
-<Note>RESTier automatically sets `TopExample` to your configured `MaxTop` value from
-`ODataValidationSettings` and populates `ServiceRoot` from the incoming HTTP request. Any values you
-set in the configuration action will override these defaults.</Note>
+<Note>RESTier automatically sets `TopExample` to the resolved `MaxTop` value (the bag's
+`RestierRouteOptions.Validation.MaxTop`, or — when the bag is silent — the value from
+`ODataOptions.SetMaxTop`). It also populates `ServiceRoot` from the incoming HTTP request. Any values
+you set in the configuration action will override these defaults.</Note>
 
 ## Multiple Restier APIs
 

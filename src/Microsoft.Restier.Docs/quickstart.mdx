@@ -163,27 +163,25 @@ Key points about the configuration:
 
 ### Configuring OData Validation Settings
 
-You can register an `ODataValidationSettings` instance in the route services to control query validation limits. This is useful when clients send complex `$filter` expressions that exceed default thresholds:
+You can tighten per-route query validation limits via the `RestierRouteOptions.Validation` bag passed as a third argument to `AddRestierRoute`. This is useful when clients send complex `$filter` expressions that exceed default thresholds:
 
 ```csharp Program.cs (with validation settings)
-using Microsoft.AspNetCore.OData.Query.Validator;
+options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
 
-options.AddRestierRoute<BookstoreApi.BookstoreApi>("api", routeServices =>
-{
-    routeServices.AddEFCoreProviderServices<BookstoreContext>(dbOptions =>
-        dbOptions.UseInMemoryDatabase("Bookstore"));
-
-    routeServices.AddSingleton(new ODataValidationSettings
+options.AddRestierRoute<BookstoreApi.BookstoreApi>(
+    "api",
+    restierServices => restierServices
+        .AddEFCoreProviderServices<BookstoreContext>(dbOptions =>
+            dbOptions.UseInMemoryDatabase("Bookstore")),
+    bag =>
     {
-        MaxTop = 100,
-        MaxExpansionDepth = 5,
-        MaxAnyAllExpressionDepth = 3,
-        MaxNodeCount = 200,   // default is 100; increase for complex $filter expressions
+        bag.Validation.MaxExpansionDepth = 5;
+        bag.Validation.MaxAnyAllExpressionDepth = 3;
+        bag.Validation.MaxNodeCount = 200;   // default is 100; increase for complex $filter expressions
     });
-});
 ```
 
-If you do not register a custom `ODataValidationSettings`, RESTier uses the OData library defaults.
+`MaxTop` is set globally via `SetMaxTop(100)` on the outer `ODataOptions`; the bag inherits it automatically. If you do not configure the bag, RESTier uses the defaults shown in the [Validation Options guide](/guides/server/validation-options).
 
 ## 7. Run the Application
 
