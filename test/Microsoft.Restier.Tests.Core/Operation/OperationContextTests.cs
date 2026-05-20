@@ -24,7 +24,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
     {
         private OperationContext testClass;
         private TestApi api;
-        private Func<string, object> getParameterValueFunc;
+        private Func<string, (bool Present, object Value)> getParameterValueFunc;
         private string operationName;
         private bool isFunction;
         private IEnumerable bindingParameterValue;
@@ -38,7 +38,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
                 Substitute.For<IEdmModel>(),
                 Substitute.For<IQueryHandler>(),
                 Substitute.For<ISubmitHandler>()); 
-            getParameterValueFunc = name => this;
+            getParameterValueFunc = name => (true, (object)this);
             operationName = "Insert";
             isFunction = true;
             bindingParameterValue = new List<object>();
@@ -73,7 +73,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         {
             Action act = () => new OperationContext(
                 default(ApiBase),
-                default(Func<string, object>),
+                default(Func<string, (bool Present, object Value)>),
                 "TestValue719188563",
                 true,
                 Substitute.For<IEnumerable>());
@@ -88,7 +88,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         {
             Action act = () => new OperationContext(
                 api,
-                default(Func<string, object>),
+                default(Func<string, (bool Present, object Value)>),
                 "TestValue734278354",
                 false,
                 Substitute.For<IEnumerable>());
@@ -103,7 +103,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         {
             Action act = () => new OperationContext(
                 api,
-                default(Func<string, object>),
+                default(Func<string, (bool Present, object Value)>),
                 "TestValue715530316",
                 true,
                 default(IEnumerable));
@@ -122,7 +122,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         {
             Action act = () => new OperationContext(
                 api,
-                default(Func<string, object>),
+                default(Func<string, (bool Present, object Value)>),
                 value,
                 false,
                 Substitute.For<IEnumerable>());

@@ -70,7 +70,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(EmptyApi));
             var context = new OperationContext(
                 new EmptyApi(model, queryHandler, submitHandler),
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(ExecuteApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -109,7 +109,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(ExecuteApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -143,7 +143,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(EmptyApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -162,7 +162,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(ExecuteApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -182,7 +182,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(ExecuteAsyncApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -202,7 +202,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(PrivateMethodApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -223,7 +223,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(WrongReturnTypeApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -244,7 +244,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(ExecuteApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -265,7 +265,7 @@ namespace Microsoft.Restier.Tests.Core
             var testClass = new ConventionBasedOperationFilter(typeof(IncorrectArgumentsApi));
             var context = new OperationContext(
                 api,
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -304,7 +304,7 @@ namespace Microsoft.Restier.Tests.Core
             };
             var context = new OperationContext(
                 new EmptyApi(model, queryHandler, submitHandler),
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);
@@ -332,7 +332,7 @@ namespace Microsoft.Restier.Tests.Core
             };
             var context = new OperationContext(
                 new EmptyApi(model, queryHandler, submitHandler),
-                s => new object(),
+                s => (true, new object()),
                 "Test",
                 true,
                 null);

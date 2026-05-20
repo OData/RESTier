@@ -22,20 +22,20 @@ namespace Microsoft.Restier.AspNetCore.Operation
         /// An Api.
         /// </param>
         /// <param name="getParameterValueFunc">
-        /// The function that used to retrieve the parameter value name.
+        /// The function used to retrieve a parameter's URL value alongside a presence flag.
         /// </param>
         /// <param name="operationName">
         /// The operation name.
         /// </param>
         /// <param name="isFunction">
-        /// A flag indicates this is a function call or action call.
+        /// A flag indicating this is a function call or action call.
         /// </param>
         /// <param name="bindingParameterValue">
-        /// A queryable for binding parameter value and if it is function/action import, the value will be null.
+        /// A queryable for the binding-parameter value; <see langword="null"/> for function/action imports.
         /// </param>
         public RestierOperationContext(
             ApiBase api,
-            Func<string, object> getParameterValueFunc,
+            Func<string, (bool Present, object Value)> getParameterValueFunc,
             string operationName,
             bool isFunction,
             IEnumerable bindingParameterValue)

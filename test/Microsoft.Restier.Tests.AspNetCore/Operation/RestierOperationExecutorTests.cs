@@ -50,7 +50,7 @@ public class RestierOperationExecutorTests
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
         var executor = CreateExecutor();
-        var context = Substitute.For<OperationContext>(api, new Func<string, object>(_ => null), "Test", true, null);
+        var context = Substitute.For<OperationContext>(api, new Func<string, (bool Present, object Value)>(_ => (false, null)), "Test", true, null);
         Func<Task> act = async () => await executor.ExecuteOperationAsync(context, CancellationToken.None);
         await act.Should().ThrowAsync<NotImplementedException>();
     }
@@ -59,7 +59,7 @@ public class RestierOperationExecutorTests
     public async Task ExecuteOperationAsync_Should_Throw_If_Method_Not_Found()
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
-        var context = Substitute.For<RestierOperationContext>(api, new Func<string, object>(_ => null), "NonExistentMethod", true, null);
+        var context = Substitute.For<RestierOperationContext>(api, new Func<string, (bool Present, object Value)>(_ => (false, null)), "NonExistentMethod", true, null);
         var authorizer = Substitute.For<IOperationAuthorizer>();
         authorizer.AuthorizeAsync(Arg.Any<OperationContext>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));
@@ -75,7 +75,7 @@ public class RestierOperationExecutorTests
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
         var method = typeof(DummyApi).GetMethod(nameof(DummyApi.TestMethod));
         var context = new RestierOperationContext(
-                    new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>()), _ => null, nameof(DummyApi.TestMethod), true, null);
+                    new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>()), _ => (false, null), nameof(DummyApi.TestMethod), true, null);
 
         var authorizer = Substitute.For<IOperationAuthorizer>();
         authorizer.AuthorizeAsync(Arg.Any<OperationContext>(), Arg.Any<CancellationToken>())
@@ -92,7 +92,7 @@ public class RestierOperationExecutorTests
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
         var context = new RestierOperationContext(
-            api, _ => null, nameof(DummyApi.TestMethod), true, null);
+            api, _ => (false, null), nameof(DummyApi.TestMethod), true, null);
 
         _authorizer.AuthorizeAsync(Arg.Any<OperationContext>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));
@@ -116,7 +116,7 @@ public class RestierOperationExecutorTests
         // that's not a contract third-party filters can rely on).
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
         var context = new RestierOperationContext(
-            api, _ => null, "MyKeylessView", isFunction: true, bindingParameterValue: null);
+            api, _ => (false, null), "MyKeylessView", isFunction: true, bindingParameterValue: null);
 
         _authorizer.AuthorizeAsync(Arg.Any<OperationContext>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(true));

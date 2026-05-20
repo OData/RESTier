@@ -183,7 +183,7 @@ namespace Microsoft.Restier.Tests.Core
         {
             var operationImport = new OperationContext(
                 new EmptyApi(model, queryHandler, submitHandler),
-                name => this,
+                name => (true, (object)this),
                 "Calculate",
                 false,
                 Substitute.For<IEnumerable>());
