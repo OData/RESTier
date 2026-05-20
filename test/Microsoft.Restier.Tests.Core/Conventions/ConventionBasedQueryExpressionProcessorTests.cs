@@ -4,9 +4,11 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
@@ -119,6 +121,75 @@ namespace Microsoft.Restier.Tests.Core
             instance.Inner.Should().Be(testValue);
         }
 
+        /// <summary>
+        /// Verifies that when a DataSourceStubModelReference resolves to an unbound
+        /// IEdmFunctionImport returning Collection(ComplexType) — the keyless-view shape —
+        /// Process routes through the shared OnFilter pipeline, the convention method is
+        /// invoked, and a non-null filtered expression is returned. This is the
+        /// function-import counterpart to the IEdmEntitySet branch.
+        /// </summary>
+        [Fact]
+        public void Process_FunctionImportReturningComplexCollection_InvokesOnFilterConvention()
+        {
+            // Arrange — EDM scaffold: one ComplexType + one function import returning Collection(ComplexType).
+            var edmModel = new EdmModel();
+            var complexType = new EdmComplexType("TestNs", "FakeView");
+            complexType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32);
+            edmModel.AddElement(complexType);
+            edmModel.SetAnnotationValue(complexType, new ClrTypeAnnotation(typeof(FakeView)));
+
+            var returnTypeRef = new EdmCollectionTypeReference(
+                new EdmCollectionType(new EdmComplexTypeReference(complexType, isNullable: true)));
+            var function = new EdmFunction(
+                "TestNs.Views",
+                "FakeView",
+                returnTypeRef,
+                isBound: false,
+                entitySetPathExpression: null,
+                isComposable: false);
+            edmModel.AddElement(function);
+
+            var container = new EdmEntityContainer("TestNs", "Container");
+            container.AddFunctionImport("FakeView", function);
+            edmModel.AddElement(container);
+
+            // Arrange — API + query context.
+            var api = new FunctionImportFilterApi(edmModel, queryHandler, submitHandler);
+            var queryable = new[] { new FakeView { Id = 1 } }.AsQueryable();
+            var queryRequest = new QueryRequest(queryable);
+            var queryContext = new QueryContext(api, queryRequest)
+            {
+                Model = edmModel,
+            };
+            var queryExpressionContext = new QueryExpressionContext(queryContext);
+
+            // Build a MethodCallExpression for DataSourceStub.GetQueryableSource<FakeView>("FakeView", new object[0])
+            // so that QueryExpressionContext.ModelReference resolves to a DataSourceStubModelReference
+            // whose Element is the function import.
+            var getQueryableSource = typeof(DataSourceStub)
+                .GetMethods()
+                .Single(m => m.Name == nameof(DataSourceStub.GetQueryableSource)
+                    && m.IsGenericMethodDefinition
+                    && m.GetParameters().Length == 2)
+                .MakeGenericMethod(typeof(FakeView));
+
+            var stubCall = Expression.Call(
+                null,
+                getQueryableSource,
+                Expression.Constant("FakeView"),
+                Expression.Constant(Array.Empty<object>(), typeof(object[])));
+            queryExpressionContext.PushVisitedNode(stubCall);
+
+            var processor = new ConventionBasedQueryExpressionProcessor(typeof(FunctionImportFilterApi));
+
+            // Act
+            var result = processor.Process(queryExpressionContext);
+
+            // Assert — the function-import branch fired the OnFilterFakeView convention method.
+            result.Should().NotBeNull();
+            api.OnFilterCallCount.Should().Be(1);
+        }
+
         private class EmptyApi : ApiBase
         {
             public EmptyApi(IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler) : base(model, queryHandler, submitHandler)
@@ -131,6 +202,26 @@ namespace Microsoft.Restier.Tests.Core
             public QueryFilterApi(IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler) : base(model, queryHandler, submitHandler)
             {
             }
+        }
+
+        private class FunctionImportFilterApi : ApiBase
+        {
+            public FunctionImportFilterApi(IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler) : base(model, queryHandler, submitHandler)
+            {
+            }
+
+            public int OnFilterCallCount { get; private set; }
+
+            protected internal IQueryable<FakeView> OnFilterFakeView(IQueryable<FakeView> source)
+            {
+                OnFilterCallCount++;
+                return source.Where(v => v.Id > 0);
+            }
+        }
+
+        private class FakeView
+        {
+            public int Id { get; set; }
         }
 
         private class Test

@@ -50,24 +50,55 @@ namespace Microsoft.Restier.Core
 
             if (context.ModelReference is DataSourceStubModelReference dataSourceStubReference)
             {
-                if (dataSourceStubReference.Element is not IEdmEntitySet entitySet)
+                if (dataSourceStubReference.Element is IEdmEntitySet entitySet)
                 {
-                    return null;
+                    if (entitySet.Type is not IEdmCollectionType entityCollectionType)
+                    {
+                        return null;
+                    }
+
+                    if (entityCollectionType.ElementType.Definition is not IEdmEntityType entityType)
+                    {
+                        return null;
+                    }
+
+                    var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(
+                        entitySet, RestierPipelineState.Submit, RestierEntitySetOperation.Filter);
+                    return AppendOnFilterExpression(context, expectedMethodName, entitySet.Name, entityType);
                 }
 
-                if (entitySet.Type is not IEdmCollectionType collectionType)
+                if (dataSourceStubReference.Element is IEdmFunctionImport functionImport)
                 {
-                    return null;
+                    // Keyless-view shape: an unbound function import returning Collection(<ComplexType>).
+                    // Routes through the shared OnFilter pipeline using a method name produced by
+                    // GetFunctionImportMethodName (e.g. OnFilterBooksByPublisher).
+                    var returnTypeRef = functionImport.Function.GetReturn()?.Type;
+                    if (returnTypeRef is null || !returnTypeRef.IsCollection())
+                    {
+                        return null;
+                    }
+
+                    if (returnTypeRef.Definition is not IEdmCollectionType complexCollectionType)
+                    {
+                        return null;
+                    }
+
+                    if (complexCollectionType.ElementType.Definition is not IEdmComplexType complexType)
+                    {
+                        return null;
+                    }
+
+                    var expectedMethodName = ConventionBasedMethodNameFactory.GetFunctionImportMethodName(
+                        functionImport.Name, RestierPipelineState.Submit, RestierEntitySetOperation.Filter);
+                    if (string.IsNullOrEmpty(expectedMethodName))
+                    {
+                        return null;
+                    }
+
+                    return AppendOnFilterExpression(context, expectedMethodName, functionImport.Name, complexType);
                 }
 
-                if (collectionType.ElementType.Definition is not IEdmEntityType entityType)
-                {
-                    return null;
-                }
-
-                var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(
-                    entitySet, RestierPipelineState.Submit, RestierEntitySetOperation.Filter);
-                return AppendOnFilterExpression(context, expectedMethodName, entitySet.Name, entityType);
+                return null;
             }
 
             if (context.ModelReference is PropertyModelReference propertyModelReference && propertyModelReference.Property is not null)
