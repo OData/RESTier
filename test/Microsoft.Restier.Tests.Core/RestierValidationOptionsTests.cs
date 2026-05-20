@@ -42,4 +42,14 @@ public class RestierValidationOptionsTests
         options.MaxOrderByNodeCount.Should().Be(4);
         options.MaxNodeCount.Should().Be(50);
     }
+
+    [Fact]
+    public void Properties_AreReassignableAfterConstruction()
+    {
+        var options = new RestierValidationOptions { MaxTop = 50 };
+
+        options.MaxTop = 100;
+
+        options.MaxTop.Should().Be(100);
+    }
 }
