@@ -81,6 +81,45 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
+        /// Generates the complete MethodName for an unbound function import (e.g., a keyless view),
+        /// given the import name, the current <see cref="RestierPipelineState"/>, and an
+        /// entity-set-shaped <see cref="RestierEntitySetOperation"/>.
+        /// </summary>
+        /// <remarks>
+        /// Mirrors <see cref="GetEntitySetMethodName(IEdmEntitySet, RestierPipelineState, RestierEntitySetOperation)"/>:
+        /// the same <see cref="ExcludedFilterStates"/> and <see cref="ExcludedEntitySetSubmitOperations"/>
+        /// suppression rules apply, so the (Filter, Authorization) combo returns <see cref="string.Empty"/>.
+        /// This keeps the convention contract for keyless-view function imports identical to entity sets —
+        /// no <c>CanFilter&lt;View&gt;</c> surface is invented for a pipeline state that has no backing convention.
+        /// The trailing token in the resulting method name is the supplied <paramref name="functionImportName"/>.
+        /// </remarks>
+        /// <param name="functionImportName">The unbound function import name (e.g., <c>BooksByPublisher</c>).</param>
+        /// <param name="restierPipelineState">The part of the Restier pipeline currently executing.</param>
+        /// <param name="operation">The <see cref="RestierEntitySetOperation"/> currently being executed.</param>
+        /// <returns>A string representing the fully-realized MethodName, or <see cref="string.Empty"/> if no convention applies.</returns>
+        public static string GetFunctionImportMethodName(string functionImportName, RestierPipelineState restierPipelineState, RestierEntitySetOperation operation)
+        {
+            if (string.IsNullOrWhiteSpace(functionImportName)
+                || (operation == RestierEntitySetOperation.Filter && ExcludedFilterStates.Contains(restierPipelineState))
+                || (restierPipelineState == RestierPipelineState.Submit && ExcludedEntitySetSubmitOperations.Contains(operation)))
+            {
+                return string.Empty;
+            }
+
+            var prefix = GetPipelinePrefixInternal(restierPipelineState);
+
+            //JWS: If, for some reason, we don't have a prefix, then we don't have a method for this operation. So don't do anything.
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return string.Empty;
+            }
+
+            var operationName = GetRestierOperationNameInternal(operation, restierPipelineState);
+            var suffix = operation != RestierEntitySetOperation.Filter ? GetPipelineSuffixInternal(restierPipelineState) : string.Empty;
+            return $"{prefix}{operationName}{suffix}{functionImportName}";
+        }
+
+        /// <summary>
         /// Generates the complete MethodName for a given <see cref="IEdmOperationImport"/>, <see cref="RestierPipelineState"/>, and <see cref="RestierEntitySetOperation"/>.
         /// </summary>
         /// <param name="item">The <see cref="DataModificationItem"/> that contains the details for the EntitySet and the Entities it holds.</param>

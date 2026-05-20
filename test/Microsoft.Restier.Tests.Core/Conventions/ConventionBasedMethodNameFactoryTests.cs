@@ -192,6 +192,36 @@ namespace Microsoft.Restier.Tests.Core
             result.Should().Be(expected);
         }
 
+        /// <summary>
+        /// Verifies that GetFunctionImportMethodName returns the OnFilter form for Submit+Filter
+        /// against an unbound function import (e.g., a keyless view), mirroring GetEntitySetMethodName
+        /// which forces the suffix to empty for the Filter operation.
+        /// </summary>
+        [Fact]
+        public void GetFunctionImportMethodName_FilterOnSubmit_ReturnsOnFilterName()
+        {
+            var result = ConventionBasedMethodNameFactory.GetFunctionImportMethodName(
+                "BooksByPublisher",
+                RestierPipelineState.Submit,
+                RestierEntitySetOperation.Filter);
+            result.Should().Be("OnFilterBooksByPublisher");
+        }
+
+        /// <summary>
+        /// Verifies that GetFunctionImportMethodName suppresses the (Filter, Authorization) combo
+        /// the same way GetEntitySetMethodName does — no <c>CanFilter&lt;View&gt;</c> surface is
+        /// invented for a pipeline state that has no backing convention.
+        /// </summary>
+        [Fact]
+        public void GetFunctionImportMethodName_FilterOnAuthorization_ReturnsEmpty()
+        {
+            var result = ConventionBasedMethodNameFactory.GetFunctionImportMethodName(
+                "BooksByPublisher",
+                RestierPipelineState.Authorization,
+                RestierEntitySetOperation.Filter);
+            result.Should().Be(string.Empty);
+        }
+
         public static IEnumerable<TheoryDataRow<RestierPipelineState, RestierEntitySetOperation, string>> GetMethodNameData()
         {
             yield return ( RestierPipelineState.Authorization, RestierEntitySetOperation.Delete, "CanDeleteTest" );
