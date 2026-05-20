@@ -4,10 +4,13 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
+using Microsoft.Restier.Core.DependencyInjection;
+using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
 using Xunit;
@@ -22,7 +25,7 @@ public class Issue741_KeylessViews
     [Fact]
     public async Task Get_KeylessView_Returns200WithRows()
     {
-        LibraryWithViewsApi.OnFilteringBooksByPublisherCallCount = 0;
+        LibraryWithViewsApi.OnFilterBooksByPublisherCallCount = 0;
 
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             HttpMethod.Get,
@@ -49,20 +52,55 @@ public class Issue741_KeylessViews
     }
 
     [Fact]
-    public async Task Get_KeylessView_DoesNotInvokeOnFilteringConvention()
+    public async Task Get_KeylessView_InvokesOnFilterConvention()
     {
-        // v1 limitation pin: convention hooks do NOT fire on keyless-view function imports.
-        // When the convention-processor follow-up lands, flip this test to assert the call count > 0.
-        LibraryWithViewsApi.OnFilteringBooksByPublisherCallCount = 0;
+        LibraryWithViewsApi.OnFilterBooksByPublisherCallCount = 0;
 
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
             HttpMethod.Get,
-            resource: "/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'",
+            resource: "/BooksByPublisher()",
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        LibraryWithViewsApi.OnFilteringBooksByPublisherCallCount.Should().Be(0,
-            because: "v1 does not invoke OnFiltering<View> for keyless-view function imports; see Follow-up A");
+        LibraryWithViewsApi.OnFilterBooksByPublisherCallCount.Should().BeGreaterThan(0,
+            because: "Follow-up A routes keyless-view function imports through the query pipeline so OnFilter<View> fires");
+    }
+
+    [Fact]
+    public async Task Get_KeylessView_OnFilterFilterReachesResponse()
+    {
+        LibraryWithViewsApi.OnFilterBooksByPublisherCallCount = 0;
+
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
+            HttpMethod.Get,
+            resource: "/BooksByPublisher()",
+            serviceCollection: ConfigureServices);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.Should().NotContain("\"PublisherId\":\"Publisher3\"",
+            because: "OnFilterBooksByPublisher filters out Publisher3 rows; the convention now fires through the query pipeline");
+    }
+
+    [Fact]
+    public async Task Get_KeylessView_QueryAuthorizerFires()
+    {
+        CountingQueryExpressionAuthorizer.InvocationCount = 0;
+
+        Action<IServiceCollection> configure = services =>
+        {
+            ConfigureServices(services);
+            services.AddSingleton<IChainedService<IQueryExpressionAuthorizer>, CountingQueryExpressionAuthorizer>();
+        };
+
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
+            HttpMethod.Get,
+            resource: "/BooksByPublisher()",
+            serviceCollection: configure);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        CountingQueryExpressionAuthorizer.InvocationCount.Should().BeGreaterThan(0,
+            because: "Follow-up A routes keyless-view function imports through DefaultQueryHandler.QueryAsync so IQueryExpressionAuthorizer.Authorize fires");
     }
 
     [Theory]
@@ -82,5 +120,24 @@ public class Issue741_KeylessViews
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.MethodNotAllowed);
+    }
+
+    /// <summary>
+    /// Counting <see cref="IQueryExpressionAuthorizer"/> probe used by
+    /// <see cref="Get_KeylessView_QueryAuthorizerFires"/>. Implements
+    /// <see cref="IChainedService{TService}"/> via the base interface declaration on
+    /// <see cref="IQueryExpressionAuthorizer"/> so a single registration suffices.
+    /// </summary>
+    public sealed class CountingQueryExpressionAuthorizer : IQueryExpressionAuthorizer
+    {
+        public static int InvocationCount;
+
+        public IQueryExpressionAuthorizer Inner { get; set; }
+
+        public bool Authorize(QueryExpressionContext context)
+        {
+            Interlocked.Increment(ref InvocationCount);
+            return Inner?.Authorize(context) ?? true;
+        }
     }
 }

@@ -14,29 +14,37 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views
     /// <summary>
     /// Thin LibraryApi-shaped class used by the keyless-view regression tests
     /// (<c>Issue741_KeylessViews</c>) to host an instrumented
-    /// <see cref="OnFilteringBooksByPublisher" /> convention probe. The view itself lives on
+    /// <see cref="OnFilterBooksByPublisher" /> convention probe. The view itself lives on
     /// <see cref="LibraryContext" /> (added under <c>#if EFCore</c>); this class exists only so
     /// the probe doesn't pollute the widely-shared <c>LibraryApi</c> fixture.
     /// </summary>
     public class LibraryWithViewsApi : EntityFrameworkApi<LibraryContext>
     {
         /// <summary>
-        /// Static counter incremented if/when the convention processor invokes this method.
-        /// In v1 it stays at 0 (convention hooks do not fire for keyless-view function imports;
-        /// see Follow-up A in the spec). Flipping this to "did fire" is the entry condition for
-        /// the convention-processor follow-up.
+        /// Static counter incremented when the convention processor invokes this method.
+        /// Follow-up A routes keyless-view function imports through the query pipeline, so
+        /// the canonical convention name <c>OnFilter&lt;View&gt;</c> (no gerund — matches
+        /// <c>GetFunctionImportMethodName</c> and the entity-set <c>OnFilter&lt;EntitySet&gt;</c>
+        /// contract) now fires for keyless-view GETs.
         /// </summary>
-        public static int OnFilteringBooksByPublisherCallCount;
+        public static int OnFilterBooksByPublisherCallCount;
 
         public LibraryWithViewsApi(LibraryContext dbContext, IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler)
             : base(dbContext, model, queryHandler, submitHandler)
         {
         }
 
-        protected internal IQueryable<BooksByPublisher> OnFilteringBooksByPublisher(IQueryable<BooksByPublisher> entitySet)
+        /// <summary>
+        /// Convention-based filter probe for the BooksByPublisher keyless view. Increments
+        /// <see cref="OnFilterBooksByPublisherCallCount"/> so the regression suite can prove the
+        /// convention fired, and filters out <c>Publisher3</c> rows so the convention's effect is
+        /// observable in the HTTP response body (distinguishing provider-side composition from a
+        /// no-op pipeline pass).
+        /// </summary>
+        protected internal IQueryable<BooksByPublisher> OnFilterBooksByPublisher(IQueryable<BooksByPublisher> entitySet)
         {
-            System.Threading.Interlocked.Increment(ref OnFilteringBooksByPublisherCallCount);
-            return entitySet;
+            System.Threading.Interlocked.Increment(ref OnFilterBooksByPublisherCallCount);
+            return entitySet.Where(b => b.PublisherId != "Publisher3");
         }
     }
 }
