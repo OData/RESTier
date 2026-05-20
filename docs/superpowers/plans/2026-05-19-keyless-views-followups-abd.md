@@ -110,10 +110,10 @@ This is the only design in this codebase that satisfies both:
 - Modify: `test/Microsoft.Restier.Tests.Core/Conventions/ConventionBasedMethodNameFactoryTests.cs`
 
 - [ ] Add `GetFunctionImportMethodName(string importName, RestierPipelineState state, RestierEntitySetOperation operation)`.
-- [ ] Match existing entity-set filter semantics:
-  - `Submit + Filter` => `OnFilteringBooksByPublisher`
+- [ ] Match existing entity-set filter semantics exactly:
+  - `Submit + Filter` => `OnFilterBooksByPublisher` (no `-ing` suffix). The entity-set helper at `ConventionBasedMethodNameFactory.cs:78` forces the suffix to empty for `Filter`, so the actual entity-set convention is `OnFilter<EntitySet>` (confirmed by `LibraryApi.cs:186` — `OnFilterBooks`). The V1 keyless-views fixture used the gerund form `OnFilteringBooksByPublisher`, but the V1 convention never actually fired so the wrong name was never observable. Task 7 of this plan renames the probe to the correct `OnFilterBooksByPublisher`.
   - `Authorization + Filter` => `string.Empty` (entity sets suppress this combo via `ExcludedFilterStates`; the function-import helper must do the same so no `CanFilter<View>` surface is invented for a pipeline state that has no backing convention)
-- [ ] Do **not** invent a different accessibility or naming contract than the entity-set path.
+- [ ] Do **not** invent a different accessibility or naming contract than the entity-set path. The function-import helper's body must mirror `GetEntitySetMethodName`'s logic line-for-line, swapping the trailing entity-set name for the supplied `functionImportName`.
 - [ ] Add tests for the two names above.
 
 ### Task 2: Extend `ConventionBasedQueryExpressionProcessor` for function imports
@@ -132,7 +132,7 @@ This is the only design in this codebase that satisfies both:
 - [ ] Keep the accessibility rule exactly aligned with the existing processor:
   - accepted: `protected`, `protected internal`
   - not accepted: `public`, plain `internal`
-- [ ] Add a unit test that feeds a function-import-shaped `QueryExpressionContext` and verifies `OnFilteringBooksByPublisher` is resolved.
+- [ ] Add a unit test that feeds a function-import-shaped `QueryExpressionContext` and verifies `OnFilterBooksByPublisher` is resolved.
 
 ### Task 3: Resolve keyless-view function imports in `RestierModelMapper`
 
@@ -213,11 +213,12 @@ The keyless-view fallback inside `ExecuteOperationAsync` (V1, lines ~92–107 �
 - Modify: `test/Microsoft.Restier.Tests.AspNetCore/RegressionTests/EFCore/Issue741_KeylessViews.cs`
 - Modify: `test/Microsoft.Restier.Tests.Shared.EntityFrameworkCore/Scenarios/Views/LibraryWithViewsApi.cs`
 
+- [ ] Rename the V1 probe from `OnFilteringBooksByPublisher` to `OnFilterBooksByPublisher` so it matches the actual convention name produced by `GetFunctionImportMethodName` (and the existing entity-set convention `OnFilter<EntitySet>` — see Task 1). Rename `OnFilteringBooksByPublisherCallCount` accordingly. Update all references in `Issue741_KeylessViews.cs`, in the LibraryWithViews docs, and anywhere else the gerund spelling appears.
 - [ ] Replace the v1 limitation test with positive assertions:
-  - `Get_KeylessView_InvokesOnFilteringConvention`
-  - `Get_KeylessView_OnFilteringFilterReachesResponse`
+  - `Get_KeylessView_InvokesOnFilterConvention`
+  - `Get_KeylessView_OnFilterFilterReachesResponse`
   - `Get_KeylessView_QueryAuthorizerFires`
-- [ ] Make `OnFilteringBooksByPublisher(...)` observably alter the result, for example:
+- [ ] Make `OnFilterBooksByPublisher(...)` observably alter the result, for example:
   - `return entitySet.Where(b => b.PublisherId != "Publisher3");`
 - [ ] If needed, add a minimal query authorizer probe in the test services so the regression test can prove the authorizer chain was reached.
 - [ ] Do not use a `$top=1` smoke test as proof of provider-side composition; it does not distinguish deferred provider execution from in-memory LINQ.
