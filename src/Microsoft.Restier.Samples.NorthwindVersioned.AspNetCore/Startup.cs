@@ -39,7 +39,7 @@ namespace Microsoft.Restier.Samples.NorthwindVersioned.AspNetCore
 
             services.AddControllers().AddRestier(options =>
             {
-                options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+                options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
                 options.TimeZone = TimeZoneInfo.Utc;
             });
 
@@ -53,7 +53,6 @@ namespace Microsoft.Restier.Samples.NorthwindVersioned.AspNetCore
                 opts => opts.SunsetDate = new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero),
                 bag =>
                 {
-                    bag.Validation.MaxTop = 5;
                     bag.Validation.MaxAnyAllExpressionDepth = 3;
                     bag.Validation.MaxExpansionDepth = 3;
                 })
@@ -66,7 +65,6 @@ namespace Microsoft.Restier.Samples.NorthwindVersioned.AspNetCore
                 configureVersioning: null,
                 configureOptions: bag =>
                 {
-                    bag.Validation.MaxTop = 5;
                     bag.Validation.MaxAnyAllExpressionDepth = 3;
                     bag.Validation.MaxExpansionDepth = 3;
                 }));

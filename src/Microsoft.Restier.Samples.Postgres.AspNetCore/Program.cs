@@ -26,7 +26,7 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore
                 .AddControllers()
                 .AddRestier(options =>
                 {
-                    options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
                     options.TimeZone = TimeZoneInfo.Utc;
 
                     options.AddRestierRoute<RestierTestContextApi>("v3", restierServices =>
@@ -39,7 +39,6 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore
                     },
                     bag =>
                     {
-                        bag.Validation.MaxTop = 5;
                         bag.Validation.MaxAnyAllExpressionDepth = 3;
                         bag.Validation.MaxExpansionDepth = 3;
                     });
