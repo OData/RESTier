@@ -52,4 +52,26 @@ public class RestierValidationOptionsTests
 
         options.MaxTop.Should().Be(100);
     }
+
+    [Fact]
+    public void RestierRouteOptions_Validation_DefaultsToNonNullEmptyBag()
+    {
+        var route = new RestierRouteOptions();
+
+        route.Validation.Should().NotBeNull();
+        route.Validation.MaxTop.Should().BeNull();
+        route.Validation.MaxExpansionDepth.Should().BeNull();
+    }
+
+    [Fact]
+    public void RestierRouteOptions_Validation_IsMutableViaPropertyAccess()
+    {
+        var route = new RestierRouteOptions();
+
+        route.Validation.MaxTop = 25;
+        route.Validation.MaxExpansionDepth = 3;
+
+        route.Validation.MaxTop.Should().Be(25);
+        route.Validation.MaxExpansionDepth.Should().Be(3);
+    }
 }
