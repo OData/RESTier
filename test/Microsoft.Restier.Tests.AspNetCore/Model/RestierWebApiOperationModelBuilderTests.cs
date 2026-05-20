@@ -181,6 +181,63 @@ public class RestierWebApiOperationModelBuilderTests
             Trace.Listeners.Remove(testTraceListener);
         }
     }
+
+    [Theory]
+    [InlineData(nameof(SampleApi.IntWithDefault), "5", false)]
+    [InlineData(nameof(SampleApi.NullableIntWithDefault), "null", true)]
+    [InlineData(nameof(SampleApi.OptionalRef), "null", true)]
+    [InlineData(nameof(SampleApi.DefaultValueAttr), "hello", true)]
+    public void GetEdmModel_EmitsOptionalParameter_WithExpectedDefaultAndNullability(
+        string operationName, string expectedDefault, bool expectedNullable)
+    {
+        var edmModel = new EdmModel();
+        edmModel.AddElement(new EdmEntityContainer("TestNamespace", "DefaultContainer"));
+        _innerModelBuilder.GetEdmModel().Returns(edmModel);
+        var extender = new RestierWebApiModelExtender(_targetApiType);
+        var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender) { Inner = _innerModelBuilder };
+
+        var result = builder.GetEdmModel() as EdmModel;
+
+        var op = result.SchemaElements.OfType<IEdmOperation>().Single(o => o.Name == operationName);
+        var param = op.Parameters.Single();
+        param.Should().BeAssignableTo<IEdmOptionalParameter>();
+        ((IEdmOptionalParameter)param).DefaultValueString.Should().Be(expectedDefault);
+        param.Type.IsNullable.Should().Be(expectedNullable);
+    }
+
+    [Fact]
+    public void GetEdmModel_BareNullableParam_IsNullableButRequired()
+    {
+        var edmModel = new EdmModel();
+        edmModel.AddElement(new EdmEntityContainer("TestNamespace", "DefaultContainer"));
+        _innerModelBuilder.GetEdmModel().Returns(edmModel);
+        var extender = new RestierWebApiModelExtender(_targetApiType);
+        var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender) { Inner = _innerModelBuilder };
+
+        var result = builder.GetEdmModel() as EdmModel;
+
+        var op = result.SchemaElements.OfType<IEdmOperation>().Single(o => o.Name == nameof(SampleApi.NullableInt));
+        var param = op.Parameters.Single();
+        param.Should().NotBeAssignableTo<IEdmOptionalParameter>();   // not optional
+        param.Type.IsNullable.Should().BeTrue();                     // but nullable
+    }
+
+    [Fact]
+    public void GetEdmModel_PlainValueTypeParam_IsNonNullableAndRequired()
+    {
+        var edmModel = new EdmModel();
+        edmModel.AddElement(new EdmEntityContainer("TestNamespace", "DefaultContainer"));
+        _innerModelBuilder.GetEdmModel().Returns(edmModel);
+        var extender = new RestierWebApiModelExtender(_targetApiType);
+        var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender) { Inner = _innerModelBuilder };
+
+        var result = builder.GetEdmModel() as EdmModel;
+
+        var op = result.SchemaElements.OfType<IEdmOperation>().Single(o => o.Name == nameof(SampleApi.PlainValueType));
+        var param = op.Parameters.Single();
+        param.Should().NotBeAssignableTo<IEdmOptionalParameter>();
+        param.Type.IsNullable.Should().BeFalse();
+    }
 }
 
 // Sample API class for testing purposes
@@ -197,4 +254,22 @@ public class SampleApi
     {
         return 42;
     }
+
+    [UnboundOperation]
+    public int IntWithDefault(int p = 5) => p;
+
+    [UnboundOperation]
+    public int? NullableInt(int? p) => p;
+
+    [UnboundOperation]
+    public int? NullableIntWithDefault(int? p = null) => p;
+
+    [UnboundOperation]
+    public string OptionalRef([Microsoft.Restier.AspNetCore.Model.OptionalAttribute] string p) => p;
+
+    [UnboundOperation]
+    public string DefaultValueAttr([System.ComponentModel.DefaultValue("hello")] string p) => p;
+
+    [UnboundOperation]
+    public int PlainValueType(int p) => p;
 }

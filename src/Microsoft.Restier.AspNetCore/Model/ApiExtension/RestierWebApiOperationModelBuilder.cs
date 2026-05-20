@@ -118,8 +118,15 @@ public class RestierWebApiOperationModelBuilder : IModelBuilder
     {
         foreach (var parameter in method.GetParameters())
         {
-            var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
-            var operationParam = new EdmOperationParameter(operation, parameter.Name, parameterTypeReference);
+            var isNullable = OperationParameterClassifier.ComputeNullable(parameter);
+            var (isOptional, defaultLiteral) = OperationParameterClassifier.ClassifyOptionality(parameter);
+
+            var parameterTypeReference = parameter.ParameterType.GetTypeReference(model, isNullable);
+
+            EdmOperationParameter operationParam = isOptional
+                ? new EdmOptionalParameter(operation, parameter.Name, parameterTypeReference, defaultLiteral)
+                : new EdmOperationParameter(operation, parameter.Name, parameterTypeReference);
+
             operation.AddParameter(operationParam);
         }
     }

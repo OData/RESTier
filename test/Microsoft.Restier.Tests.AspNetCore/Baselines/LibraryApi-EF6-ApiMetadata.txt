@@ -99,7 +99,7 @@
         <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
       </Action>
       <Function Name="DiscontinueBooks" IsBound="true" EntitySetPath="books" IsComposable="true">
-        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" Nullable="false" />
         <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
       </Function>
       <Function Name="FavoriteBooks">
@@ -127,7 +127,7 @@
         <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
       </Function>
       <Action Name="DeactivateBooks" IsBound="true" EntitySetPath="books">
-        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" Nullable="false" />
       </Action>
       <EntityContainer Name="Container">
         <EntitySet Name="Books" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
