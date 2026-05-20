@@ -28,7 +28,8 @@ The goal is "tag a method, model builds itself" — the operation builder should
 | Type-ref nullability (accept `null` as a value) | `Nullable<T>` OR `[Optional]` | The literal #656 repro is `?p=null` on `int?` — that's nullability, not omittability. Emit the EDM type reference with `Nullable = true`. |
 | EDM optional parameter (omittable from URL) | `ParameterInfo.HasDefaultValue` OR `[DefaultValue]` OR `[Optional]` | These are the only signals that imply "user may leave it out." A pure `Nullable<T>` with no default does NOT make the parameter omittable — `Foo(int? p)` is still a required positional CLR argument. |
 | Optional default-value source | `[DefaultValue]` > `ParameterInfo.DefaultValue` (compiler-supplied) > `null` literal for `[Optional]` alone | Lets users override compiler defaults; `[DefaultValue]` also handles non-constant defaults; `null` fallback only applies when omittability is signalled by `[Optional]` and the param type accepts null |
-| Runtime handling of omitted optional params | Extend `RestierOperationExecutor` to fill `parameters[i]` with the parameter's resolved default when `GetParameterValueFunc(name)` returns null | `MethodInfo.Invoke` does not honor C# compile-time defaults (those are a compiler call-site feature, not a reflection feature). Without this, omitting an optional param would call the method with `null` / `default(T)`, not the declared default. |
+| Runtime handling of omitted optional params | Make the parameter-value lookup **presence-aware** end-to-end, then extend `RestierOperationExecutor` to substitute defaults on absence | `MethodInfo.Invoke` does not honor C# compile-time defaults (a compiler call-site feature, not a reflection feature). The existing `Func<string, object>` delegate returns `null` for both "URL omitted the parameter" and "URL supplied `p=null`" (see `RestierController.cs:109` and `:143` — `Parameters.FirstOrDefault(...).Value`). Distinguishing those is required to support both default substitution AND explicit-null semantics on the same parameter. |
+| Parameter-value delegate shape | Change `Func<string, object>` to `Func<string, (bool present, object value)>` (or an equivalent struct) on `RestierOperationContext`; update both controller call sites | A presence flag is the only way to disambiguate omission from explicit null at the executor without re-deriving it from the URL/segment by name. |
 | Nullable reference types | Out of scope | Project compiles with NRT disabled (per `CLAUDE.md`); the `[Optional]` attribute covers the escape hatch |
 | `[Obsolete]` mapping | Method-level → `Core.V1.Revisions` annotation on `EdmOperation` with `Kind = Deprecated` and `Description = Obsolete.Message` | Round-trips into OpenAPI's `deprecated` field for the existing Swagger/NSwag integration on this branch |
 | `[DisplayName]` mapping | Out of scope for this spec | OpenAPI tooling rarely surfaces it; revisit if requested |
@@ -165,34 +166,71 @@ A bare `Nullable<T>` with no default and no `[Optional]` produces `isOptional = 
 
 `EdmHelpers.GetTypeReference` gains a `bool nullable = true` overload so the builder can explicitly pass `false` for non-nullable value-type parameters.
 
-#### Runtime: honoring optional defaults (`RestierOperationExecutor`)
+#### Runtime: presence-aware parameter lookup and default substitution
 
-`MethodInfo.Invoke` does not honor compile-time defaults — the runtime executor must fill them itself. The loop at `RestierOperationExecutor.cs:102-129` is extended:
+Two paired changes are required: the parameter-value delegate must surface *presence*, not just *value*; and the executor must substitute declared defaults on absence.
+
+##### Delegate-shape change
+
+`RestierOperationContext.GetParameterValueFunc` changes from `Func<string, object>` to `Func<string, (bool present, object value)>`. Both controller call sites become:
+
+```csharp
+// RestierController.cs:109 (unbound function)
+Func<string, (bool, object)> getParaValueFunc = p =>
+{
+    var match = unboundSegment.Parameters.FirstOrDefault(c => c.Name == p);
+    return (match is not null, match?.Value);
+};
+
+// RestierController.cs:143 (bound function) — analogous on segment.Parameters
+```
+
+The change is internal to the `RestierController` ↔ `RestierOperationExecutor` contract; it does not affect any public `ApiBase` surface.
+
+##### Executor branching
+
+The loop at `RestierOperationExecutor.cs:102-129` becomes:
 
 ```csharp
 for (; paraIndex < parameterArray.Length; paraIndex++)
 {
     var parameter = parameterArray[paraIndex];
-    var currentParameterValue = restierOperationContext.GetParameterValueFunc(parameter.Name);
+    var (isPresent, urlValue) = restierOperationContext.GetParameterValueFunc(parameter.Name);
 
     object convertedValue;
-    if (currentParameterValue is null && IsOmittedOptional(parameter))
+    if (!isPresent && OperationParameterClassifier.IsOmittedOptional(parameter))
     {
-        convertedValue = ResolveDefault(parameter);   // [DefaultValue].Value, then parameter.DefaultValue, then null
+        // Parameter omitted from URL and declared omittable → substitute resolved default.
+        convertedValue = OperationParameterClassifier.ResolveDefault(parameter);
     }
     else if (restierOperationContext.IsFunction)
     {
-        // existing path — ConvertValue
+        // Existing path — covers both "explicit value supplied" and "explicit null on nullable param".
+        // ConvertValue handles `null` literal correctly when the EDM type ref is nullable.
+        var parameterTypeRef = parameter.ParameterType.GetTypeReference(model);
+        convertedValue = DeserializationHelpers.ConvertValue(urlValue, parameter.Name, parameter.ParameterType,
+            parameterTypeRef, model, restierOperationContext.Request, restierOperationContext.Request.GetRouteServices());
     }
     else
     {
-        // existing path — ConvertCollectionType
+        convertedValue = DeserializationHelpers.ConvertCollectionType(urlValue, parameter.ParameterType);
     }
+
     parameters[paraIndex] = convertedValue;
 }
 ```
 
-`IsOmittedOptional(parameter)` mirrors `ClassifyOptionality` from the model builder. Without this change, omitting an optional URL parameter would invoke the method with `null` / `default(T)` instead of the declared default, defeating the purpose of `EdmOptionalParameter.DefaultValue`. The classification helper is extracted to a small static class shared between the model builder and the executor to avoid duplication.
+##### Semantics of the four cases (for `int? p = 5` / `string p = "hello"` etc.)
+
+| URL form | `isPresent` | `urlValue` | Executor behavior |
+|----------|-------------|------------|-------------------|
+| `Query()` — omitted | `false` | `null` | If `p` is omittable → substitute declared default (`5`/`"hello"`). If `p` is required → existing missing-required path (the OData URL parser usually rejects earlier, but the executor falls back to the existing `ConvertValue(null, …)` outcome). |
+| `Query(p=5)` — explicit value | `true` | `5` | Existing `ConvertValue` path. |
+| `Query(p=null)` — explicit null | `true` | `null` | Existing `ConvertValue` path; succeeds when the EDM type ref is nullable (covered by the nullability split). |
+
+This preserves explicit-null semantics on nullable parameters — `Query(p=null)` on `int? p` still passes `null` even when `p` is also omittable — and only substitutes the declared default when the parameter is genuinely absent from the URL.
+
+For action parameter bodies (POST), the existing controller code already populates a dictionary of body properties; the delegate adapter wraps that dictionary with the same `(present, value)` semantics by checking dictionary key membership.
 
 #### Annotations (`BuildOperations`)
 
@@ -244,6 +282,12 @@ The chain factory composes these by registration order; the operation builder re
 
 ## Component Changes
 
+### `src/Microsoft.Restier.Core`
+
+| File | Change |
+|------|--------|
+| `Operation/OperationContext.cs` | **MODIFY (breaking)** — change the `GetParameterValueFunc` property type and the corresponding constructor parameter from `Func<string, object>` to `Func<string, (bool present, object value)>`. This is a binary-breaking change to a public API on `Microsoft.Restier.Core`. vNext (2.0) already accepts breaking changes (cf. the `AddRestierRoute` options-bag and `AddVersion` migrations on this branch). Release notes need a migration callout. |
+
 ### `src/Microsoft.Restier.AspNetCore`
 
 | File | Change |
@@ -253,7 +297,8 @@ The chain factory composes these by registration order; the operation builder re
 | `Model/ApiExtension/OperationTypeRegistrationModelBuilder.cs` | **NEW** — pre-pass that auto-registers types referenced by `[Operation]` methods |
 | `Model/ApiExtension/RestierWebApiOperationModelBuilder.cs` | **MODIFY** — dedup by namespace+name with Trace warning; classify+emit optional parameters using the new classifier; emit `Core.V1.Revisions` from `[Obsolete]`; emit parameter-level `Core.V1.Description` |
 | `Model/EdmHelpers.cs` | **MODIFY** — add `GetTypeReference(this Type, IEdmModel, bool nullable)` overload so value-type parameters can be emitted as non-nullable when neither nullable nor optional |
-| `Operation/RestierOperationExecutor.cs` | **MODIFY** — when a URL-side parameter value is null and the parameter is omittable per `OperationParameterClassifier`, fill the positional slot with the resolved default (`[DefaultValue]` > `ParameterInfo.DefaultValue` > `null`) instead of the converted-from-null value |
+| `RestierController.cs` | **MODIFY** — update both function-segment delegate builders at `:109` and `:143` to construct the presence-aware delegate from `OperationSegmentParameter` membership |
+| `Operation/RestierOperationExecutor.cs` | **MODIFY** — consume the presence-aware delegate; on absence-of-an-omittable-parameter, fill the positional slot with `OperationParameterClassifier.ResolveDefault(parameter)` instead of routing through `ConvertValue(null, …)` |
 | `Extensions/RestierODataOptionsExtensions.cs` | **MODIFY** — register `OperationTypeRegistrationModelBuilder` between web-api model builder and operation model builder (both `AddRestierRoute` paths) |
 
 ### `test/Microsoft.Restier.Tests.AspNetCore`
@@ -291,16 +336,19 @@ Unit (xUnit + FluentAssertions + NSubstitute, following `RestierWebApiOperationM
   - `[DefaultValue("foo")] string p` → `EdmOptionalParameter` with `DefaultValue = "foo"`
   - `[Obsolete("Use Bar instead.")]` → vocabulary annotation with `Core.V1.Revisions` term, `Description = "Use Bar instead."`
   - Plain `int p` (no defaults, no attribute) → `EdmOperationParameter` with type ref `Nullable = false`
-- `RestierOperationExecutor` (new test file `Operation/RestierOperationExecutorOptionalTests.cs`):
-  - When `?p` is absent on a function whose declared parameter is `int p = 5`, the executor invokes the method with the integer `5` (not `0`)
-  - When `?p` is absent and the parameter has `[DefaultValue("hello")] string p`, the executor passes `"hello"`
-  - When `?p=null` is present on `int? p` (nullable, not optional), the executor passes `null`
-  - When `?p` is absent on a required `int p`, existing behavior is preserved (URL parsing surfaces the missing-parameter error path)
+- `RestierOperationExecutor` (new test file `Operation/RestierOperationExecutorOptionalTests.cs`) — substitute a fake presence-aware delegate to control `(isPresent, value)` directly:
+  - Omitted (`isPresent = false`) on `int p = 5` → method receives `5`
+  - Omitted on `[DefaultValue("hello")] string p` → method receives `"hello"`
+  - Explicit null (`isPresent = true, value = null`) on `int? p` (nullable, not optional) → method receives `null`
+  - Explicit null (`isPresent = true, value = null`) on `int? p = 5` (nullable AND optional) → method receives `null`, **not** the default — explicit-null wins over default substitution
+  - Omitted (`isPresent = false`) on `int? p = 5` → method receives `5`
+  - Omitted on a required `int p` → existing missing-required behavior (the test exercises whatever the current code does without further change)
 
 HTTP integration (Breakdance, following `FeatureTests/DeepInsertTests.cs` style):
 
-- A `[UnboundOperation]` taking `int? parameter1` responds 200 to `Query(parameter1=null)` (the literal #656 repro — nullability, not omittability)
-- A `[UnboundOperation]` taking `int parameter1 = 5` responds 200 to `Query()` and the returned body reflects that the method received `5` (not `0`)
+- A `[UnboundOperation]` taking `int? parameter1` responds 200 to `Query(parameter1=null)` (the literal #656 repro — nullability, not omittability) and the returned body shows the method received `null`
+- A `[UnboundOperation]` taking `int parameter1 = 5` responds 200 to `Query()` and the returned body shows the method received `5` (not `0`)
+- A `[UnboundOperation]` taking `int? parameter1 = 5` responds 200 to both `Query()` (receives `5`) and `Query(parameter1=null)` (receives `null`) — explicit null wins over default
 - `$metadata` contains the expected `Annotation Term="Core.V1.Description"` and `Annotation Term="Core.V1.Revisions"` markup
 - Registering the same `[UnboundOperation]` and also calling `ODataModelBuilder.Function(...)` for it produces exactly one `OperationImport` in `$metadata` and a single `Trace.TraceWarning`
 - A `[UnboundOperation]` whose parameter and return are custom POCOs (no manual `ComplexType` registration) responds correctly and emits both types in `$metadata`
@@ -313,6 +361,11 @@ HTTP integration (Breakdance, following `FeatureTests/DeepInsertTests.cs` style)
 - **`[Obsolete]` term Version string**: the OData `Core.V1.Revisions` schema requires a `Version` field; the literal `"obsolete"` is a convention placeholder. If a future iteration wants real semver tracking, that would be a separate spec.
 - **Optional parameter type nullability**: Nullability and optionality are independently emitted (see `ComputeNullable` and `ClassifyOptionality`). An `EdmOptionalParameter` with `DefaultValue = "5"` and a non-nullable `Edm.Int32` type ref is the intended shape for `int p = 5`. Tests under "Parameter classification" pin this contract.
 - **Action vs. function optional handling**: The executor extension applies to both function and action parameters, but action parameters typically come from a JSON body where omission means the property is missing. The `IsOmittedOptional` check fires regardless of `IsFunction`; the test matrix covers function URL parameters explicitly and treats action-body coverage as a follow-up if real-world action scenarios surface in code review.
+- **`GetParameterValueFunc` is a Core public API and the change is binary-breaking.** `OperationContext.GetParameterValueFunc` and its constructor parameter live in `Microsoft.Restier.Core.Operation` and are `public`. Changing the delegate type breaks any downstream consumer that constructs an `OperationContext` directly or reads the delegate. Two options considered:
+  1. **Parallel API**: keep the old delegate, add a new `Func<string, (bool, object)>` property that the executor prefers when non-null. Pros: no break. Cons: two ways to do the same thing; old callers silently miss the new presence semantics and fall back to the existing all-omitted-look-like-null behavior.
+  2. **Replace the type** (recommended): change `Func<string, object>` to `Func<string, (bool present, object value)>` outright. vNext (2.0) already accepts breaking changes — the `AddRestierRoute` options-bag and `AddVersion` migrations on this branch set the precedent. Pros: single contract, presence semantics are mandatory for every code path. Cons: source/binary break.
+  Plan: ship option 2 with a migration callout in the 2.0 release notes; revisit if pre-implementation review surfaces a real downstream consumer that would block the upgrade.
+- **Custom `RestierController` subclasses**: any downstream consumer that overrides `Get` and constructs its own `getParaValueFunc` will break at compile time. Acceptable on vNext; covered by the same release-notes migration entry.
 
 ## Out of Scope (Deferred)
 
