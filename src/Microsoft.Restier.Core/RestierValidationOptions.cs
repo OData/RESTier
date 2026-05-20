@@ -23,7 +23,7 @@ namespace Microsoft.Restier.Core
     {
         /// <summary>
         /// Maximum value the client may supply for <c>$top</c>. When unset,
-        /// inherits <c>ODataOptions.QuerySettings.MaxTop</c>.
+        /// inherits <c>ODataOptions.QueryConfigurations.MaxTop</c>.
         /// </summary>
         public int? MaxTop { get; set; }
 
