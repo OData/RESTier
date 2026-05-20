@@ -251,6 +251,14 @@
                         ]
                       },
                       {
+                        "group": "Routing",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Routing/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Routing/RestierValidationOptionsResolver"
+                        ]
+                      },
+                      {
                         "group": "Versioning",
                         "icon": "folder-tree",
                         "pages": [
