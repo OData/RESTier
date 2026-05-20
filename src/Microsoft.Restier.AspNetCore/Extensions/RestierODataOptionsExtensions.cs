@@ -210,7 +210,6 @@ public static class RestierODataOptionsExtensions
                 TimeZone = oDataOptions.TimeZone,
             });
 
-
             if (services.HasServiceCount<IODataSerializerProvider>() < 2)
             {
                 services.AddSingleton<IODataSerializerProvider, DefaultRestierSerializerProvider>();
