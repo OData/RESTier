@@ -133,6 +133,54 @@ public class RestierWebApiOperationModelBuilderTests
             Trace.Listeners.Remove(testTraceListener);
         }
     }
+
+    [Fact]
+    public void GetEdmModel_DuplicateOperationByName_SkipsAttributeAdditionWithWarning()
+    {
+        var testTraceListener = new TestTraceListener();
+        Trace.Listeners.Add(testTraceListener);
+        try
+        {
+            // Arrange — inner model already declares an EdmFunction named "SampleMethod"
+            // matching the [UnboundOperation] on SampleApi.SampleMethod.
+            var edmModel = new EdmModel();
+            var container = new EdmEntityContainer("TestNamespace", "DefaultContainer");
+            edmModel.AddElement(container);
+            var int32Ref = new EdmPrimitiveTypeReference(
+                EdmCoreModel.Instance.GetPrimitiveType(EdmPrimitiveTypeKind.Int32),
+                isNullable: false);
+            // Use the same namespace the builder will compute via GetNamespaceName:
+            // modelNamespace = model.DeclaredNamespaces.FirstOrDefault() = "TestNamespace".
+            var preexistingFunction = new EdmFunction(
+                "TestNamespace", "SampleMethod", int32Ref);
+            edmModel.AddElement(preexistingFunction);
+            container.AddFunctionImport("SampleMethod", preexistingFunction);
+            _innerModelBuilder.GetEdmModel().Returns(edmModel);
+
+            var extender = new RestierWebApiModelExtender(_targetApiType);
+            var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender)
+            {
+                Inner = _innerModelBuilder
+            };
+
+            // Act
+            var result = builder.GetEdmModel();
+
+            // Assert — exactly one EdmFunction named "SampleMethod" exists (the preexisting one),
+            // exactly one OperationImport, and the warning has been emitted.
+            result.Should().NotBeNull();
+            result.SchemaElements.OfType<IEdmOperation>()
+                .Count(o => o.Name == "SampleMethod").Should().Be(1);
+            result.EntityContainer.Elements.OfType<IEdmOperationImport>()
+                .Count(i => i.Name == "SampleMethod").Should().Be(1);
+            testTraceListener.Messages.Should().Contain("already declared");
+            testTraceListener.Messages.Should().Contain("SampleMethod");
+        }
+        finally
+        {
+            Trace.Listeners.Remove(testTraceListener);
+        }
+    }
 }
 
 // Sample API class for testing purposes
