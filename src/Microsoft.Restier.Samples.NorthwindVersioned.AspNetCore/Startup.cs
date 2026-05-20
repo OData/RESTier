@@ -6,7 +6,6 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +39,7 @@ namespace Microsoft.Restier.Samples.NorthwindVersioned.AspNetCore
 
             services.AddControllers().AddRestier(options =>
             {
-                options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+                options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
                 options.TimeZone = TimeZoneInfo.Utc;
             });
 
@@ -49,26 +48,25 @@ namespace Microsoft.Restier.Samples.NorthwindVersioned.AspNetCore
                 {
                     restierServices
                         .AddEFCoreProviderServices<NorthwindContextV1>((sp, dbOptions) =>
-                            dbOptions.UseInMemoryDatabase("Northwind-V1"))
-                        .AddSingleton(new ODataValidationSettings
-                        {
-                            MaxTop = 5,
-                            MaxAnyAllExpressionDepth = 3,
-                            MaxExpansionDepth = 3,
-                        });
+                            dbOptions.UseInMemoryDatabase("Northwind-V1"));
                 },
-                opts => opts.SunsetDate = new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero))
+                opts => opts.SunsetDate = new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                bag =>
+                {
+                    bag.Validation.MaxAnyAllExpressionDepth = 3;
+                    bag.Validation.MaxExpansionDepth = 3;
+                })
                 .AddVersion<NorthwindApiV2>("api", restierServices =>
                 {
                     restierServices
                         .AddEFCoreProviderServices<NorthwindContextV2>((sp, dbOptions) =>
-                            dbOptions.UseInMemoryDatabase("Northwind-V2"))
-                        .AddSingleton(new ODataValidationSettings
-                        {
-                            MaxTop = 5,
-                            MaxAnyAllExpressionDepth = 3,
-                            MaxExpansionDepth = 3,
-                        });
+                            dbOptions.UseInMemoryDatabase("Northwind-V2"));
+                },
+                configureVersioning: null,
+                configureOptions: bag =>
+                {
+                    bag.Validation.MaxAnyAllExpressionDepth = 3;
+                    bag.Validation.MaxExpansionDepth = 3;
                 }));
 
             services.AddRestierNSwag();

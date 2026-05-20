@@ -3,12 +3,12 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.OData;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Versioning;
+using Microsoft.Restier.Core;
 using System;
 using System.Linq;
 
@@ -40,9 +40,10 @@ namespace Microsoft.Restier.AspNetCore.Swagger
 
             var model = routeComponent.EdmModel;
             var routeServices = odataOptions.GetRouteServices(routePrefix);
-            var odataValidationSettings = routeServices.GetService<ODataValidationSettings>();
+            var validationOptions = routeServices.GetService<RestierValidationOptions>();
+            var topExample = Routing.RestierValidationOptionsResolver.ResolveMaxTop(validationOptions, odataOptions) ?? 5;
 
-            var settings = new OpenApiConvertSettings { TopExample = odataValidationSettings?.MaxTop ?? 5 };
+            var settings = new OpenApiConvertSettings { TopExample = topExample };
             openApiSettings?.Invoke(settings);
 
             if (request is not null)

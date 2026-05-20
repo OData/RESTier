@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
@@ -1031,8 +1032,14 @@ namespace Microsoft.Restier.AspNetCore
             var container = HttpContext.Request.GetRouteServices();
             api = container.GetRequiredService<ApiBase>();
             querySettings = container.GetRequiredService<ODataQuerySettings>();
-            validationSettings = container.GetRequiredService<ODataValidationSettings>();
             operationExecutor = container.GetRequiredService<IOperationExecutor>();
+
+            // ODataValidationSettings is no longer a DI service — build it
+            // from the route's bag plus the app-level ODataOptions snapshot.
+            var bag = container.GetRequiredService<RestierValidationOptions>();
+            var odataOptions = HttpContext.RequestServices
+                .GetService<IOptions<ODataOptions>>()?.Value;
+            validationSettings = Routing.RestierValidationOptionsResolver.Build(bag, odataOptions);
         }
     }
 }

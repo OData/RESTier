@@ -41,6 +41,7 @@
               "guides/server/multi-tenancy",
               "guides/server/concurrency",
               "guides/server/conformance-options",
+              "guides/server/validation-options",
               "guides/server/performance"
             ]
           },
@@ -69,6 +70,7 @@
         "icon": "clipboard-list",
         "pages": [
           "release-notes/index",
+          "release-notes/2-0-0-beta",
           "release-notes/1-2-0",
           "release-notes/1-1-0",
           "release-notes/1-0-0",
@@ -249,6 +251,14 @@
                         ]
                       },
                       {
+                        "group": "Routing",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Routing/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Routing/RestierValidationOptionsResolver"
+                        ]
+                      },
+                      {
                         "group": "Versioning",
                         "icon": "folder-tree",
                         "pages": [
@@ -298,6 +308,7 @@
                       "api-reference/Microsoft/Restier/Core/RestierOperationMethod",
                       "api-reference/Microsoft/Restier/Core/RestierPipelineState",
                       "api-reference/Microsoft/Restier/Core/RestierRouteOptions",
+                      "api-reference/Microsoft/Restier/Core/RestierValidationOptions",
                       "api-reference/Microsoft/Restier/Core/StatusCodeException",
                       {
                         "group": "Authorization",

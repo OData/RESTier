@@ -24,6 +24,17 @@ namespace Microsoft.Restier.Core
         public RestierConformanceOptions Conformance { get; } = new();
 
         /// <summary>
+        /// Per-route query validation limits (<c>$top</c>, <c>$expand</c>
+        /// depth, etc.). Any property left <c>null</c> defaults from the
+        /// global <c>ODataOptions</c> or the OData framework default. Values
+        /// set here take precedence over any caller-supplied
+        /// <c>ODataValidationSettings</c> DI registration; conflicts with
+        /// <c>ODataOptions.SetMaxTop</c> emit a Trace warning at route-add
+        /// time.
+        /// </summary>
+        public RestierValidationOptions Validation { get; } = new();
+
+        /// <summary>
         /// When <c>true</c> (default), the Restier batch handler is registered
         /// for the route.
         /// </summary>

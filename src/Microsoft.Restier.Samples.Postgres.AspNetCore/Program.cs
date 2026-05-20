@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +26,7 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore
                 .AddControllers()
                 .AddRestier(options =>
                 {
-                    options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
                     options.TimeZone = TimeZoneInfo.Utc;
 
                     options.AddRestierRoute<RestierTestContextApi>("v3", restierServices =>
@@ -36,13 +35,12 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore
                         restierServices
                             .AddEFCoreProviderServices<RestierTestContext>(dbOptions =>
                                 dbOptions.UseNpgsql(connectionString, o => o.UseNetTopologySuite()))
-                            .AddRestierSpatial()
-                            .AddSingleton(new ODataValidationSettings
-                            {
-                                MaxTop = 5,
-                                MaxAnyAllExpressionDepth = 3,
-                                MaxExpansionDepth = 3,
-                            });
+                            .AddRestierSpatial();
+                    },
+                    bag =>
+                    {
+                        bag.Validation.MaxAnyAllExpressionDepth = 3;
+                        bag.Validation.MaxExpansionDepth = 3;
                     });
                 })
                 .AddApplicationPart(typeof(RestierTestContextApi).Assembly)

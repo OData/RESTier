@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.EasyAF.Http.OData;
 using FluentAssertions;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core.DependencyInjection;
@@ -28,14 +27,13 @@ public class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
         {
             options.AddRestierRoute<FallbackApi>(WebApiConstants.RoutePrefix, restierServices =>
             {
-                restierServices
-                    .AddSingleton(new ODataValidationSettings
-                    {
-                        MaxTop = 5,
-                        MaxAnyAllExpressionDepth = 3,
-                        MaxExpansionDepth = 3,
-                    });
                 AddTestServices(restierServices);
+            },
+            bag =>
+            {
+                bag.Validation.MaxTop = 5;
+                bag.Validation.MaxAnyAllExpressionDepth = 3;
+                bag.Validation.MaxExpansionDepth = 3;
             });
         };
         TestSetup();

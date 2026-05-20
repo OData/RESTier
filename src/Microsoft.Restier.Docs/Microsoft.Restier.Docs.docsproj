@@ -43,6 +43,7 @@
                                     guides/server/multi-tenancy;
                                     guides/server/concurrency;
                                     guides/server/conformance-options;
+                                    guides/server/validation-options;
                                     guides/server/performance;
                                 </Pages>
                             </Group>
@@ -64,6 +65,7 @@
                         <Group Name="Release Notes" Icon="clipboard-list">
                             <Pages>
                                 release-notes/index;
+                                release-notes/2-0-0-beta;
                                 release-notes/1-2-0;
                                 release-notes/1-1-0;
                                 release-notes/1-0-0;

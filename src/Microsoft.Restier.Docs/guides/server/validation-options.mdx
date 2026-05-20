@@ -1,0 +1,111 @@
+---
+title: 'Query Validation Options'
+description: 'Per-route limits for $top, $expand, $filter and $orderby. The RestierRouteOptions.Validation bag is the only configuration channel — directly DI-registering ODataValidationSettings throws.'
+---
+
+In ASP.NET Core OData, query validation lives in two places:
+
+- `ODataOptions` (the global `AddOData(...)` configuration) sets app-wide ceilings such as `SetMaxTop`, plus the boolean flags `Select()`, `Expand()`, `Filter()`, `OrderBy()`, `Count()`.
+- `ODataValidationSettings` is a *per-action* object that upstream OData passes to `ODataQueryOptions.Validate(...)` inside an `[EnableQuery]` controller method.
+
+Restier collapses every entity set on a route into a single shared `RestierController`. **There is no per-action layer.** Pre-2.0 versions registered `ODataValidationSettings` in route DI as a workaround; that pattern blurred the line between the per-action upstream model and Restier's per-route reality, and it produced silent conflicts with the global `SetMaxTop`. As of 2.0:
+
+- The `RestierRouteOptions.Validation` bag is the only public configuration channel.
+- Registering `ODataValidationSettings` directly in route services throws `InvalidOperationException` at route-add time.
+- `ODataValidationSettings` is **no longer a route-DI service at all**. `RestierController` builds one on demand from the bag for the upstream `queryOptions.Validate(...)` call, and the OpenAPI generators (Swagger / NSwag) read `MaxTop` straight from the bag. Third-party code that previously resolved `ODataValidationSettings` from route services must switch to `RestierValidationOptions`.
+
+## The bag
+
+| Property | Type | Default when unset | Maps to |
+|---|---|---|---|
+| `MaxTop` | `int?` | `ODataOptions.QueryConfigurations.MaxTop` (the value you passed to `SetMaxTop`) | `ODataValidationSettings.MaxTop` |
+| `MaxSkip` | `int?` | OData framework default (no upper bound) | `ODataValidationSettings.MaxSkip` |
+| `MaxExpansionDepth` | `int?` | `2` | `ODataValidationSettings.MaxExpansionDepth` |
+| `MaxAnyAllExpressionDepth` | `int?` | `1` | `ODataValidationSettings.MaxAnyAllExpressionDepth` |
+| `MaxOrderByNodeCount` | `int?` | `5` | `ODataValidationSettings.MaxOrderByNodeCount` |
+| `MaxNodeCount` | `int?` | `100` | `ODataValidationSettings.MaxNodeCount` |
+
+The bag intentionally exposes only the six integer knobs that matter for Restier's collection-oriented model. The upstream enum knobs (`AllowedQueryOptions`, `AllowedFunctions`, `AllowedArithmeticOperators`, `AllowedLogicalOperators`, `AllowedOrderByProperties`) are designed to gate individual controller actions — a concept Restier does not expose. If you need fine-grained gating, implement it through Restier interceptors or the convention-based authorization pipeline, not through `ODataValidationSettings`.
+
+## Configuring a route
+
+```csharp
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.Select().Expand().Filter().OrderBy().SetMaxTop(50).Count();
+        options.TimeZone = TimeZoneInfo.Utc;
+
+        options.AddRestierRoute<NorthwindApi>(
+            "api",
+            services => services.AddEFCoreProviderServices<NorthwindContext>(...),
+            bag =>
+            {
+                bag.Validation.MaxExpansionDepth = 3;
+                bag.Validation.MaxAnyAllExpressionDepth = 2;
+                // Leave MaxTop unset — inherits 50 from SetMaxTop above.
+            });
+    });
+```
+
+The third argument to `AddRestierRoute` is the `RestierRouteOptions` bag. The `.Validation` property is mutable; set the limits you care about and leave the rest alone.
+
+## `MaxTop` and the global `SetMaxTop`
+
+`MaxTop` is the one validation knob that *can* be set in two places: on `RestierRouteOptions.Validation.MaxTop` and on the global `ODataOptions.SetMaxTop(...)`. When the bag's `MaxTop` is `null`, Restier inherits the global value. When the bag's `MaxTop` is set, the bag wins — and if it disagrees with the global, Restier emits a `Trace.TraceWarning` at route-add time:
+
+```
+Restier: Route 'api': RestierValidationOptions.MaxTop = 25 overrides ODataOptions.SetMaxTop value 100.
+```
+
+The warning is loud on purpose. Either set `MaxTop` in one place (the simpler choice — usually `SetMaxTop`), or set both to the same value. The historic confusion behind issue [#684](https://github.com/OData/RESTier/issues/684) was exactly two `MaxTop` values that disagreed silently.
+
+## Migrating from the legacy pattern
+
+Pre-2.0 code typically looked like this:
+
+```csharp
+options.AddRestierRoute<NorthwindApi>(string.Empty, restierServices =>
+{
+    restierServices
+        .AddEFCoreProviderServices<NorthwindContext>(...)
+        .AddSingleton(new ODataValidationSettings
+        {
+            MaxTop = 5,
+            MaxAnyAllExpressionDepth = 3,
+            MaxExpansionDepth = 3,
+        });
+});
+```
+
+As of 2.0, this **throws** at startup:
+
+```
+System.InvalidOperationException: Route '': registering ODataValidationSettings directly
+in route services is not supported. Restier has no per-query/per-action layer for this
+upstream OData class to attach to. Configure query validation limits via the
+RestierRouteOptions.Validation bag on AddRestierRoute instead.
+```
+
+Migrate to the bag form:
+
+```csharp
+options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
+
+options.AddRestierRoute<NorthwindApi>(
+    string.Empty,
+    restierServices => restierServices
+        .AddEFCoreProviderServices<NorthwindContext>(...),
+    bag =>
+    {
+        bag.Validation.MaxAnyAllExpressionDepth = 3;
+        bag.Validation.MaxExpansionDepth = 3;
+    });
+```
+
+`MaxTop` lives in one place (the global `SetMaxTop`) and the route-specific limits live on the bag. No conflict, no warning.
+
+## Why not just allow `ODataValidationSettings` in DI?
+
+The upstream class is designed for the per-action `[EnableQuery]` model. Restier has no per-action layer to attach it to, so any DI registration of it was always a workaround — and one that quietly conflicted with the global `SetMaxTop`. Removing that channel removes a whole class of "which value wins?" confusion. The bag is the only knob; the warning around `MaxTop` is the only reconciliation; the upstream per-action class stays in upstream where it belongs and never appears as a Restier-registered service. See issue [#751](https://github.com/OData/RESTier/issues/751) for the design rationale.

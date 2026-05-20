@@ -170,6 +170,29 @@ public static class RestierODataOptionsExtensions
             services.AddSingleton(typeof(RestierNamingConvention), (object)options.NamingConvention);
             services.AddSingleton(options.DeepOperations);
             services.AddSingleton(options.Conformance);
+            services.AddSingleton(options.Validation);
+
+            // ODataValidationSettings is a per-action object in upstream OData
+            // (designed for use inside an [EnableQuery] controller method).
+            // Restier has no per-action layer, so DI-registering it in route
+            // services is meaningless. Reject the legacy pattern with a clear
+            // migration message — the bag is the only supported channel.
+            for (var i = 0; i < services.Count; i++)
+            {
+                if (services[i].ServiceType == typeof(ODataValidationSettings))
+                {
+                    throw new InvalidOperationException(
+                        $"Route '{routePrefix}': registering ODataValidationSettings directly in route services " +
+                        $"is not supported. Restier has no per-query/per-action layer for this upstream OData class to attach to. " +
+                        $"Configure query validation limits via the RestierRouteOptions.Validation bag on AddRestierRoute instead.");
+                }
+            }
+
+            // Call Resolve once for its conflict-warning side effect; we don't
+            // store the result. RestierController and the OpenAPI generators
+            // build/read settings on demand from the bag at request time.
+            Routing.RestierValidationOptionsResolver.Resolve(
+                options.Validation, oDataOptions, routePrefix);
 
             services.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
                 .AddSingleton(modelExtender)
@@ -186,8 +209,6 @@ public static class RestierODataOptionsExtensions
                 PageSize = null,
                 TimeZone = oDataOptions.TimeZone,
             });
-
-            services.TryAddSingleton<ODataValidationSettings>();
 
             if (services.HasServiceCount<IODataSerializerProvider>() < 2)
             {
