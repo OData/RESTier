@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData.Formatter.Deserialization;
 using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -42,6 +43,15 @@ namespace Microsoft.Restier.AspNetCore.Formatter
             HttpRequest request,
             IServiceProvider serviceProvider)
         {
+            // OData URL parser represents ?p=null as a ConstantNode whose Value is null.
+            // ODataModelBinderConverter.Convert passes ConstantNode.Value (= null) to
+            // EdmPrimitiveHelper.ConvertPrimitiveValue, which throws NullReferenceException.
+            // Short-circuit here for nullable parameters (issue #656).
+            if (odataValue is Microsoft.OData.UriParser.ConstantNode constNode && constNode.Value is null
+                && (propertyType is null || propertyType.IsNullable))
+            {
+                return null;
+            }
 
             var readContext = new ODataDeserializerContext
             {
