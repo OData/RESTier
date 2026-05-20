@@ -9,6 +9,7 @@ Restier exposes per-route configuration through a single `RestierRouteOptions` b
 |---|---|---|---|
 | `DeepOperations` | `DeepOperationSettings` | `new() { MaxDepth = 5 }` | Maximum nesting depth for deep insert / deep update. |
 | `Conformance` | `RestierConformanceOptions` | `new()` | Opt-in OData v4 spec strictness toggles. |
+| `Validation` | `RestierValidationOptions` | `new()` (all properties null → inherit from `ODataOptions`) | Per-route limits for `$top`, `$expand`, `$filter`, `$orderby`. See [Query Validation Options](/guides/server/validation-options). |
 | `UseRestierBatching` | `bool` | `true` | Whether the Restier batch handler is registered. |
 | `NamingConvention` | `RestierNamingConvention` | `PascalCase` | EDM-to-JSON property naming. |
 
