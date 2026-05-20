@@ -38,6 +38,8 @@ public class ConventionBasedAnnotationModelBuilder : IModelBuilder
         ValidationVocabularyModel.Instance.FindDeclaredTerm("Org.OData.Validation.V1.Maximum");
     private static readonly IEdmTerm ValidationPatternTerm =
         ValidationVocabularyModel.Instance.FindDeclaredTerm("Org.OData.Validation.V1.Pattern");
+    private static readonly IEdmTerm RevisionsTerm =
+        CoreVocabularyModel.Instance.FindDeclaredTerm("Org.OData.Core.V1.Revisions");
 
     private readonly Type apiType;
     private readonly Dictionary<string, MethodInfo> operationMethods;
@@ -125,6 +127,8 @@ public class ConventionBasedAnnotationModelBuilder : IModelBuilder
             }
 
             ApplyDescription(model, operation, method);
+            ApplyRevisions(model, operation, method);
+            ApplyParameterAnnotations(model, operation, method);
         }
     }
 
@@ -333,6 +337,172 @@ public class ConventionBasedAnnotationModelBuilder : IModelBuilder
             new EdmStringConstant(description));
         annotation.SetSerializationLocation(model, EdmVocabularyAnnotationSerializationLocation.Inline);
         model.AddVocabularyAnnotation(annotation);
+    }
+
+    private static void ApplyDescription(
+        EdmModel model,
+        IEdmVocabularyAnnotatable target,
+        ParameterInfo clrParameter)
+    {
+        var description = clrParameter.GetCustomAttribute<DescriptionAttribute>(inherit: true)?.Description;
+        if (string.IsNullOrEmpty(description))
+        {
+            return;
+        }
+
+        if (HasAnnotation(model, target, CoreVocabularyModel.DescriptionTerm))
+        {
+            return;
+        }
+
+        var annotation = new EdmVocabularyAnnotation(
+            target,
+            CoreVocabularyModel.DescriptionTerm,
+            new EdmStringConstant(description));
+        annotation.SetSerializationLocation(model, EdmVocabularyAnnotationSerializationLocation.Inline);
+        model.AddVocabularyAnnotation(annotation);
+    }
+
+    private static void ApplyRevisions(
+        EdmModel model,
+        IEdmVocabularyAnnotatable target,
+        MemberInfo clrMember)
+    {
+        if (RevisionsTerm is null)
+        {
+            return;
+        }
+
+        var obsolete = clrMember.GetCustomAttribute<ObsoleteAttribute>(inherit: true);
+        if (obsolete is null)
+        {
+            return;
+        }
+
+        if (HasAnnotation(model, target, RevisionsTerm))
+        {
+            return;
+        }
+
+        try
+        {
+            var deprecatedMember = ResolveDeprecatedMember();
+            if (deprecatedMember is null)
+            {
+                Trace.TraceWarning(
+                    "ConventionBasedAnnotationModelBuilder: Could not resolve Core.V1.RevisionKind/Deprecated member; skipping [Obsolete] annotation for '{0}'.",
+                    (target as IEdmNamedElement)?.Name);
+                return;
+            }
+
+            var record = new EdmRecordExpression(
+                new EdmPropertyConstructor("Version", new EdmStringConstant("obsolete")),
+                new EdmPropertyConstructor("Kind", new EdmEnumMemberExpression(deprecatedMember)),
+                new EdmPropertyConstructor("Description",
+                    new EdmStringConstant(obsolete.Message ?? "Deprecated.")));
+
+            var annotation = new EdmVocabularyAnnotation(
+                target,
+                RevisionsTerm,
+                new EdmCollectionExpression(record));
+            annotation.SetSerializationLocation(model, EdmVocabularyAnnotationSerializationLocation.Inline);
+            model.AddVocabularyAnnotation(annotation);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning(
+                "ConventionBasedAnnotationModelBuilder: Failed to emit [Obsolete] annotation: {0}", ex.Message);
+        }
+    }
+
+    private static void ApplyRevisions(
+        EdmModel model,
+        IEdmVocabularyAnnotatable target,
+        ParameterInfo clrParameter)
+    {
+        if (RevisionsTerm is null)
+        {
+            return;
+        }
+
+        var obsolete = clrParameter.GetCustomAttribute<ObsoleteAttribute>(inherit: true);
+        if (obsolete is null)
+        {
+            return;
+        }
+
+        if (HasAnnotation(model, target, RevisionsTerm))
+        {
+            return;
+        }
+
+        try
+        {
+            var deprecatedMember = ResolveDeprecatedMember();
+            if (deprecatedMember is null)
+            {
+                Trace.TraceWarning(
+                    "ConventionBasedAnnotationModelBuilder: Could not resolve Core.V1.RevisionKind/Deprecated member; skipping [Obsolete] annotation for parameter '{0}'.",
+                    clrParameter.Name);
+                return;
+            }
+
+            var record = new EdmRecordExpression(
+                new EdmPropertyConstructor("Version", new EdmStringConstant("obsolete")),
+                new EdmPropertyConstructor("Kind", new EdmEnumMemberExpression(deprecatedMember)),
+                new EdmPropertyConstructor("Description",
+                    new EdmStringConstant(obsolete.Message ?? "Deprecated.")));
+
+            var annotation = new EdmVocabularyAnnotation(
+                target,
+                RevisionsTerm,
+                new EdmCollectionExpression(record));
+            annotation.SetSerializationLocation(model, EdmVocabularyAnnotationSerializationLocation.Inline);
+            model.AddVocabularyAnnotation(annotation);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning(
+                "ConventionBasedAnnotationModelBuilder: Failed to emit [Obsolete] annotation: {0}", ex.Message);
+        }
+    }
+
+    private static IEdmEnumMember ResolveDeprecatedMember()
+    {
+        // Core.V1.Revisions is a Collection(Core.V1.RevisionType). RevisionType has a Kind
+        // property whose type is the Core.V1.RevisionKind enum with members Added/Modified/Deprecated.
+        if (RevisionsTerm?.Type.AsCollection().ElementType().Definition is not IEdmComplexType revisionType)
+        {
+            return null;
+        }
+
+        var kindProperty = revisionType.FindProperty("Kind");
+        if (kindProperty?.Type.Definition is not IEdmEnumType kindEnum)
+        {
+            return null;
+        }
+
+        return kindEnum.Members.FirstOrDefault(
+            m => string.Equals(m.Name, "Deprecated", StringComparison.Ordinal));
+    }
+
+    private static void ApplyParameterAnnotations(
+        EdmModel model,
+        IEdmOperation operation,
+        MethodInfo method)
+    {
+        var clrParameters = method.GetParameters();
+        foreach (var edmParameter in operation.Parameters)
+        {
+            var clrParameter = clrParameters.FirstOrDefault(p => p.Name == edmParameter.Name);
+            if (clrParameter is null)
+            {
+                continue;
+            }
+
+            ApplyDescription(model, (IEdmVocabularyAnnotatable)edmParameter, clrParameter);
+            ApplyRevisions(model, (IEdmVocabularyAnnotatable)edmParameter, clrParameter);
+        }
     }
 
     private static bool HasAnnotation(IEdmModel model, IEdmVocabularyAnnotatable target, IEdmTerm term)

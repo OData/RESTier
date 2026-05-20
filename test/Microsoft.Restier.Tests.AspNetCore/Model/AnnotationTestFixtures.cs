@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 using System.ComponentModel;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
@@ -51,6 +52,27 @@ internal static class AnnotationTestFixtures
 
         returnTypeRef ??= EdmCoreModel.Instance.GetPrimitive(EdmPrimitiveTypeKind.Int32, false);
         var function = new EdmFunction(namespaceName, functionName, returnTypeRef);
+        model.AddElement(function);
+        container.AddFunctionImport(functionName, function);
+        return model;
+    }
+
+    /// <summary>
+    /// Builds an <see cref="EdmModel"/> with a single unbound function that has one
+    /// named string parameter. Used to test parameter-level annotations.
+    /// </summary>
+    public static EdmModel BuildModelWithUnboundFunctionWithParameter(
+        string namespaceName,
+        string functionName,
+        string parameterName)
+    {
+        var model = new EdmModel();
+        var container = new EdmEntityContainer(namespaceName, "Default");
+        model.AddElement(container);
+
+        var returnTypeRef = EdmCoreModel.Instance.GetPrimitive(EdmPrimitiveTypeKind.Int32, false);
+        var function = new EdmFunction(namespaceName, functionName, returnTypeRef);
+        function.AddParameter(parameterName, EdmCoreModel.Instance.GetPrimitive(EdmPrimitiveTypeKind.String, true));
         model.AddElement(function);
         container.AddFunctionImport(functionName, function);
         return model;
@@ -255,4 +277,21 @@ internal class ApiWithIndexerProperty : ApiBase
         [System.ComponentModel.Description("Should not be treated as an operation.")]
         get => 0;
     }
+}
+
+internal class ApiWithObsoleteOperation : ApiBase
+{
+    public ApiWithObsoleteOperation() : base(null, null, null) { }
+
+    [Microsoft.Restier.AspNetCore.Model.UnboundOperation]
+    [Obsolete("Use NewMethod instead.")]
+    public int DeprecatedMethod() => 0;
+}
+
+internal class ApiWithDescribedParameter : ApiBase
+{
+    public ApiWithDescribedParameter() : base(null, null, null) { }
+
+    [Microsoft.Restier.AspNetCore.Model.UnboundOperation]
+    public int ParamWithDescription([System.ComponentModel.Description("Search string.")] string query) => 0;
 }
