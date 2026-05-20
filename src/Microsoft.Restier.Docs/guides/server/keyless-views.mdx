@@ -104,20 +104,54 @@ DELETE /odata/BooksByPublisher() → 405 Method Not Allowed
 
 No submit-pipeline plumbing is involved — there's no entity set to write to.
 
-## v1 limitations
+## Interceptors
 
-<Warning>
-**Convention interceptors do not fire for keyless views in this release.** `OnFiltering<View>`, `OnExecuting<View>`, `OnInserting<View>`, and the rest of the convention surface stay silent. The RESTier query pipeline (`IQueryExpressionAuthorizer`, `ConventionBasedQueryExpressionProcessor`) is not invoked.
+Keyless-view function imports flow through the normal RESTier query pipeline, so convention-based filters and centralized query-expression services run for view GETs the same way they do for entity sets.
 
-For security:
+### Convention-based filter (`OnFilter<View>`)
 
-- Apply `[Authorize]` to the function import via your standard ASP.NET Core authorization (the operation appears as a normal OData function-import endpoint).
-- Or pre-filter inside the view's SQL definition (e.g. row-level security in SQL Server).
+Add a `protected internal` method named `OnFilter{ViewName}` to your API class — exactly the same shape as the [EntitySet filter convention](/guides/server/filters). The method takes and returns `IQueryable<T>`; the returned `Where` composes into the deferred expression tree, so OData query options (`$filter`, `$select`, `$top`, `$orderby`) still execute provider-side as a single SQL roundtrip.
 
-`RestierEFOptions.NoTracking` is also not applied to keyless-view queries in this release. EF Core defaults to tracking; the consequence is small because the result is serialised straight to the response (no entity-graph state is retained beyond the request), but watch out if you read large views in tight loops within a single DbContext lifetime.
+```csharp
+public class LibraryApi : EntityFrameworkApi<LibraryContext>
+{
+    public LibraryApi(LibraryContext dbContext, IEdmModel model,
+        IQueryHandler queryHandler, ISubmitHandler submitHandler)
+        : base(dbContext, model, queryHandler, submitHandler) { }
 
-Both limitations will be lifted by widening the convention processor + adding a `KeylessViewQueryExpressionSourcer` to the chain.
-</Warning>
+    /// <summary>
+    /// Filters the BooksByPublisher keyless view to public rows only. Composes
+    /// into the EF Core query, so $filter / $top / $orderby still run as one SQL
+    /// query against the view.
+    /// </summary>
+    protected internal IQueryable<BooksByPublisher> OnFilterBooksByPublisher(
+        IQueryable<BooksByPublisher> source)
+    {
+        return source.Where(b => b.IsPublic);
+    }
+}
+```
+
+<Note>
+The convention name is `OnFilter<ViewName>` — **no gerund**, matching the entity-set `OnFilter<EntitySet>` contract. Pre-2.0 documentation referred to the convention as `OnFiltering<View>`; that was a doc bug. The gerund form was never observable because pre-2.0 keyless views did not run the convention pipeline at all.
+</Note>
+
+### Centralized query interception and authorization
+
+The full query pipeline runs for keyless-view GETs, so custom registrations on these services see view requests just like entity-set requests:
+
+- **`IQueryExpressionAuthorizer`** — register via `AddChainedService<IQueryExpressionAuthorizer>()` to reject view queries based on the current principal, headers, or claims. Throwing or returning `false` from the chain produces a 403 the same way it does for entity sets.
+- **`IQueryExpressionProcessor`** — register via `AddChainedService<IQueryExpressionProcessor>()` to centralize cross-cutting filters (row-level security, tenant scoping, soft-delete exclusion) across all views and entity sets. This is also the recommended hook if you need pre/post-execution side effects on view reads.
+
+See [Interceptors](/guides/server/interceptors) for the general convention vocabulary and [EntitySet Filters](/guides/server/filters) for the centralized-filter pattern.
+
+### Tracking behavior
+
+`RestierEFOptions.TrackingBehavior` applies to keyless-view reads. The default (`RestierEFTrackingBehavior.Default`) translates to provider-aware no-tracking for top-level GETs — including views — and `NoTracking`, `NoTrackingWithIdentityResolution`, and `TrackAll` work as documented in [Performance — Tracking behavior](/guides/server/performance#tracking-behavior).
+
+<Note>
+The operation-filter pipeline (`IOperationFilter` / `OnExecuting<View>` / `OnExecuted<View>`) does **not** fire for keyless-view GETs. The RESTier controller routes view requests through the query pipeline rather than the operation executor, so view requests bypass operation-level filters even though `$metadata` exposes the view as a `FunctionImport`. Use `IQueryExpressionProcessor` or the `OnFilter<View>` convention for pre/post hooks on view reads.
+</Note>
 
 ## Mapping table
 
