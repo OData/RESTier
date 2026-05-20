@@ -43,6 +43,7 @@
                                     guides/server/multi-tenancy;
                                     guides/server/concurrency;
                                     guides/server/conformance-options;
+                                    guides/server/validation-options;
                                     guides/server/performance;
                                 </Pages>
                             </Group>
