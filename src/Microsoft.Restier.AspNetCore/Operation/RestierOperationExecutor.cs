@@ -31,6 +31,10 @@ namespace Microsoft.Restier.AspNetCore.Operation
     {
         private readonly IOperationAuthorizer operationAuthorizer;
         private readonly IOperationFilter operationFilter;
+
+        // Retained for ctor-injection compat; the GET path now handles keyless views in
+        // RestierController.Get (Follow-up A, Task 5). Removing this parameter is a
+        // separate behaviour-neutral cleanup.
         private readonly KeylessViewRegistry keylessViewRegistry;
 
         /// <summary>
@@ -88,24 +92,6 @@ namespace Microsoft.Restier.AspNetCore.Operation
 
             if (method is null)
             {
-                // Fallback: is this an auto-generated keyless-view function import?
-                if (keylessViewRegistry.TryGet(restierOperationContext.OperationName, out var viewEntry))
-                {
-                    // Match the normal-path invariant: ParameterValues is a non-null array.
-                    // Keyless-view function imports have no parameters, so it's the empty array.
-                    // Custom IOperationFilter implementations can rely on this the same way they
-                    // can for hand-authored [UnboundOperation] methods.
-                    restierOperationContext.ParameterValues = Array.Empty<object>();
-
-                    // Auto-generated views still go through the IOperationFilter pipeline so
-                    // auditing / metrics / mutation / validation hooks fire the same way they
-                    // do for any other unbound function import.
-                    await PerformPreEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
-                    var viewQueryable = viewEntry.SourceFactory(context.Api);
-                    await PerformPostEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
-                    return viewQueryable;
-                }
-
                 throw new NotImplementedException(AspNetResources.OperationNotImplemented);
             }
 
