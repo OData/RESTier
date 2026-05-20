@@ -19,28 +19,41 @@ namespace Microsoft.Restier.AspNetCore.Model
         private const string DefaultEntityContainerName = "DefaultContainer";
 
         /// <summary>
-        /// The type to get the primitive type reference.
+        /// The type to get the primitive type reference. Nullability mirrors the CLR type:
+        /// <c>Nullable&lt;T&gt;</c> emits nullable; plain value types emit non-nullable.
         /// </summary>
         /// <param name="type">The clr type to get edm type reference.</param>
         /// <returns>The edm type reference for the clr type.</returns>
         public static EdmTypeReference GetPrimitiveTypeReference(this Type type)
+            => type.GetPrimitiveTypeReference(nullable: false);
+
+        /// <summary>
+        /// The type to get the primitive type reference with explicit nullability.
+        /// </summary>
+        /// <param name="type">The clr type to get edm type reference.</param>
+        /// <param name="nullable">
+        /// Whether the resulting type reference should be marked nullable. For <c>Nullable&lt;T&gt;</c>
+        /// inputs the reference is always nullable regardless of this argument.
+        /// </param>
+        /// <returns>The edm type reference for the clr type.</returns>
+        public static EdmTypeReference GetPrimitiveTypeReference(this Type type, bool nullable)
         {
             if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            // Only handle primitive type right now
-            var primitiveTypeKind = EdmHelpers.GetPrimitiveTypeKind(type, out var isNullable);
+            var primitiveTypeKind = EdmHelpers.GetPrimitiveTypeKind(type, out var isNullableValueType);
 
             if (!primitiveTypeKind.HasValue)
             {
                 return null;
             }
 
+            // Nullable<T> always emits nullable. Otherwise honor the caller's hint.
             return new EdmPrimitiveTypeReference(
                 EdmCoreModel.Instance.GetPrimitiveType(primitiveTypeKind.Value),
-                isNullable);
+                isNullableValueType || nullable);
         }
 
         /// <summary>
@@ -67,7 +80,9 @@ namespace Microsoft.Restier.AspNetCore.Model
         }
 
         /// <summary>
-        /// Get the edm type reference for a clr type.
+        /// Get the edm type reference for a clr type. Enum, complex, and entity types are
+        /// emitted as nullable; primitive types mirror CLR nullability (<c>Nullable&lt;T&gt;</c>
+        /// is nullable, plain value types are non-nullable).
         /// </summary>
         /// <param name="type">The clr type.</param>
         /// <param name="model">The Edm model.</param>
@@ -78,6 +93,12 @@ namespace Microsoft.Restier.AspNetCore.Model
             {
                 return null;
             }
+
+            // NOTE: This overload preserves the original (pre-vNext-magical-ops) behavior:
+            // declared enum/complex/entity types are hardcoded nullable=true, primitives
+            // follow CLR nullability via GetPrimitiveTypeReference(). The three-arg overload
+            // (GetTypeReference(type, model, bool nullable)) supports explicit per-call
+            // nullability and does NOT subsume this method — they intentionally diverge.
 
             if (type.TryGetElementType(out var elementType))
             {
@@ -102,6 +123,51 @@ namespace Microsoft.Restier.AspNetCore.Model
             }
 
             return type.GetPrimitiveTypeReference();
+        }
+
+        /// <summary>
+        /// Get the edm type reference for a clr type with explicit control over nullability.
+        /// </summary>
+        /// <param name="type">The clr type.</param>
+        /// <param name="model">The Edm model.</param>
+        /// <param name="nullable">
+        /// Whether the resulting type reference should be marked nullable. For <c>Nullable&lt;T&gt;</c>
+        /// inputs the reference is always nullable regardless of this argument.
+        /// </param>
+        /// <returns>The Edm type reference.</returns>
+        public static IEdmTypeReference GetTypeReference(this Type type, IEdmModel model, bool nullable)
+        {
+            if (type is null || model is null)
+            {
+                return null;
+            }
+
+            if (type.TryGetElementType(out var elementType))
+            {
+                return EdmCoreModel.GetCollection(GetTypeReference(elementType, model, nullable));
+            }
+
+            // Nullable<T> implies a nullable reference no matter what the caller passed.
+            var effectiveNullable = nullable || Nullable.GetUnderlyingType(type) is not null;
+
+            var edmType = model.FindDeclaredType(type.FullName);
+
+            if (edmType is IEdmEnumType enumType)
+            {
+                return new EdmEnumTypeReference(enumType, effectiveNullable);
+            }
+
+            if (edmType is IEdmComplexType complexType)
+            {
+                return new EdmComplexTypeReference(complexType, effectiveNullable);
+            }
+
+            if (edmType is IEdmEntityType entityType)
+            {
+                return new EdmEntityTypeReference(entityType, effectiveNullable);
+            }
+
+            return type.GetPrimitiveTypeReference(effectiveNullable);
         }
 
         /// <summary>
