@@ -61,11 +61,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddEntityFrameworkServices<TDbContext>(this IServiceCollection services) where TDbContext : DbContext
         {
-            var connectionString = Configuration.GetConnectionString(typeof(TDbContext).Name);
+            var connectionString = Configuration.GetConnectionString(typeof(TDbContext).Name)
+                ?? Environment.GetEnvironmentVariable($"ConnectionStrings__{typeof(TDbContext).Name}");
 
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new InvalidOperationException($"Connection string 'ConnectionStrings:{typeof(TDbContext).Name}' is required. Add it with dotnet user-secrets.");
+                throw new InvalidOperationException($"Connection string 'ConnectionStrings:{typeof(TDbContext).Name}' is required. Add it with dotnet user-secrets or set the ConnectionStrings__{typeof(TDbContext).Name} environment variable.");
             }
 
             // Append the runtime version to the database name so that parallel TFM test runs
@@ -203,11 +204,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The service collection for chaining.</returns>
         public static IServiceCollection AddEntityFrameworkServices<TDbContext>(this IServiceCollection services) where TDbContext : DbContext
         {
-            var connectionString = Configuration.GetConnectionString(typeof(TDbContext).Name);
+            var connectionString = Configuration.GetConnectionString(typeof(TDbContext).Name)
+                ?? Environment.GetEnvironmentVariable($"ConnectionStrings__{typeof(TDbContext).Name}");
 
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new InvalidOperationException($"Connection string 'ConnectionStrings:{typeof(TDbContext).Name}' is required. Add it with dotnet user-secrets.");
+                throw new InvalidOperationException($"Connection string 'ConnectionStrings:{typeof(TDbContext).Name}' is required. Add it with dotnet user-secrets or set the ConnectionStrings__{typeof(TDbContext).Name} environment variable.");
             }
 
             var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };

@@ -35,6 +35,20 @@ stages:
         packageType: sdk
         version: 10.0.100
 
+    # net8/net9 runtimes for multi-targeted test execution; UseDotNet@2 above
+    # pins dotnet to the tool cache, hiding the agent's pre-installed runtimes.
+    - task: UseDotNet@2
+      displayName: Use .NET Runtime 9.x
+      inputs:
+        packageType: runtime
+        version: 9.x
+
+    - task: UseDotNet@2
+      displayName: Use .NET Runtime 8.x
+      inputs:
+        packageType: runtime
+        version: 8.x
+
     # --- Restore & Build ---
     - task: DotNetCoreCLI@2
       displayName: dotnet restore
@@ -58,6 +72,9 @@ stages:
     # --- Test ---
     - task: DotNetCoreCLI@2
       displayName: dotnet test
+      env:
+        ConnectionStrings__LibraryContext: 'Server=(localdb)\MSSQLLocalDB;Initial Catalog=LibraryContext;Trusted_Connection=true;TrustServerCertificate=true'
+        ConnectionStrings__MarvelContext: 'Server=(localdb)\MSSQLLocalDB;Initial Catalog=MarvelContext;Trusted_Connection=true;TrustServerCertificate=true'
       inputs:
         command: test
         projects: 'test/**/*.csproj'
