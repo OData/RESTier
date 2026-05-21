@@ -11,8 +11,7 @@ Restier release history. Click a version for the full notes.
 
 | Version | Released | Highlights |
 |---|---|---|
-| [2.0 — Magical Operations](/release-notes/2-0-0-beta-magical-operations) | TBD | Operation auto-registration, optional parameters, `GetParameterValueFunc` breaking change |
-| [2.0.0-beta](/release-notes/2-0-0-beta) | TBD | Bag-only query validation; `ODataValidationSettings` DI removed |
+| [2.0.0-beta](/release-notes/2-0-0-beta) | TBD | Options-bag config; endpoint routing; magical operations; keyless views; multi-tenancy; spatial types; deep operations; OpenAPI annotations; NSwag + versioning packages |
 | [1.2](/release-notes/1-2-0) | TBD | GET queries default to no-tracking; `RestierEFTrackingBehavior` override |
 | [1.1 RTM](/release-notes/1-1-0) | 2023-11-28 | .NET 8 support, endpoint routing, async conventions, Swagger |
 | [1.0 RTM](/release-notes/1-0-0) | 2023-06-05 | ASP.NET Classic 4.7.2+, ASP.NET Core 3.1+, EF Core 5+ |

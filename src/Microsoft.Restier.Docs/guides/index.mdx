@@ -1,22 +1,123 @@
 ---
 title: Guides
 sidebarTitle: Overview
-description: The Guides will help you get the most out of Restier.
+description: Build, secure, scale, and extend your Restier API. Pick a topic below.
 icon: circle-info
 ---
 
-# Restier Guides
+These guides walk through the practical surface of Restier — what you reach for after the [Quickstart](/quickstart). They're grouped by what you're trying to accomplish.
 
-Comprehensive guides for building, securing, and extending your Restier APIs.
+## Building your API
 
-## Server-Side Development
+The day-to-day topics for shaping what your service exposes and how it behaves.
 
-Learn how to configure and customize your Restier server.
+<CardGroup cols={2}>
+  <Card title="Customizing the Entity Model" icon="sitemap" href="/guides/server/model-building">
+    Customize and extend the Entity Data Model (EDM) Restier generates from your `DbContext`.
+  </Card>
+  <Card title="Operations" icon="bolt" href="/guides/server/operations">
+    OData functions and actions, with auto-registration of parameter and return types, optional parameters, and `[Description]` / `[Obsolete]` annotations.
+  </Card>
+  <Card title="Keyless Views" icon="eye" href="/guides/server/keyless-views">
+    Expose EF Core keyless types (database views) as read-only function imports with `OnFilter` convention support.
+  </Card>
+  <Card title="EntitySet Filters" icon="filter-list" href="/guides/server/filters">
+    Constrain entity sets — global row-level filtering and visibility rules.
+  </Card>
+  <Card title="Interceptors" icon="filter" href="/guides/server/interceptors">
+    Hook into the submit pipeline with `OnInserting`, `OnUpdating`, `OnValidating`, and friends.
+  </Card>
+</CardGroup>
 
-## Client Integration
+## Configuration
 
-Connect to Restier APIs from various platforms and languages.
+Per-route knobs on the `RestierRouteOptions` bag passed to `AddRestierRoute`.
+
+<CardGroup cols={2}>
+  <Card title="OData Conformance Options" icon="scale-balanced" href="/guides/server/conformance-options">
+    Tour the `RestierRouteOptions` bag and opt-in OData v4 spec strictness toggles.
+  </Card>
+  <Card title="Query Validation Options" icon="ruler" href="/guides/server/validation-options">
+    Per-route limits for `$top`, `$expand`, `$filter`, and `$orderby`.
+  </Card>
+  <Card title="Naming Conventions" icon="tag" href="/guides/server/naming-conventions">
+    Switch the entire pipeline (`$metadata`, payloads, request bodies, ETags) to camelCase.
+  </Card>
+</CardGroup>
+
+## Security
+
+<CardGroup cols={2}>
+  <Card title="Method Authorization" icon="shield-halved" href="/guides/server/method-authorization">
+    Combine ASP.NET Core `[Authorize]` / `[AllowAnonymous]` on your API surface with Restier's per-entity-set `Can{Operation}{Set}` convention rules.
+  </Card>
+  <Card title="Optimistic Concurrency" icon="key" href="/guides/server/concurrency">
+    ETag-driven concurrency control with `[ConcurrencyCheck]` and `If-Match`.
+  </Card>
+</CardGroup>
+
+## OpenAPI
+
+<CardGroup cols={2}>
+  <Card title="OpenAPI / NSwag (recommended)" icon="code" href="/guides/server/nswag">
+    Generate an OpenAPI document and render it with NSwag UI or ReDoc.
+  </Card>
+  <Card title="OpenAPI / Swagger" icon="code" href="/guides/server/swagger">
+    The Swashbuckle-based integration; still supported for projects already invested in it.
+  </Card>
+  <Card title="OpenAPI Annotation Attributes" icon="tags" href="/guides/server/openapi-annotations">
+    `[Description]`, `[DatabaseGenerated]`, `[ReadOnly]`, `[Range]`, `[RegularExpression]`, `[Obsolete]` → OData vocabulary annotations → richer OpenAPI output.
+  </Card>
+</CardGroup>
+
+## Scaling and lifecycle
+
+<CardGroup cols={2}>
+  <Card title="API Versioning" icon="code-branch" href="/guides/server/api-versioning">
+    URL-segment versioning via `Microsoft.Restier.AspNetCore.Versioning` — one API per version, per-version `$metadata` and OpenAPI documents, standard discovery headers.
+  </Card>
+  <Card title="Multi-Tenancy" icon="building" href="/guides/server/multi-tenancy">
+    Serve multiple tenants from one API by resolving the tenant in middleware and picking a per-tenant connection string at `DbContext` resolution time.
+  </Card>
+  <Card title="Performance Considerations" icon="gauge-high" href="/guides/server/performance">
+    Tracking behavior, `$expand` cycle detection, and other knobs that influence latency.
+  </Card>
+</CardGroup>
+
+## Testing
+
+<CardGroup cols={1}>
+  <Card title="Testing with Breakdance" icon="vial" href="/guides/server/testing">
+    In-memory integration testing for Restier APIs using `Microsoft.Restier.Breakdance`.
+  </Card>
+</CardGroup>
 
 ## Extending Restier
 
-Advanced topics for extending Restier functionality.
+Advanced topics — drop in your own providers or surface specialized CLR types.
+
+<CardGroup cols={2}>
+  <Card title="Temporal Types" icon="clock" href="/guides/extending-restier/temporal-types">
+    `DateTimeOffset`, `DateOnly`, `TimeOnly`, and timezone handling across EF6 and EF Core.
+  </Card>
+  <Card title="Spatial Types" icon="globe" href="/guides/extending-restier/spatial-types">
+    Round-trip `Microsoft.Spatial` types via EF6 `DbGeography`/`DbGeometry` or EF Core NetTopologySuite, with server-side `geo.*` filter translation.
+  </Card>
+  <Card title="In-Memory Data Provider" icon="database" href="/guides/extending-restier/in-memory-provider">
+    Build OData services backed entirely by in-memory collections — no database required.
+  </Card>
+</CardGroup>
+
+## Clients
+
+<CardGroup cols={3}>
+  <Card title=".NET Framework" icon="windows" href="/guides/clients/dot-net">
+    Consume Restier APIs from .NET Framework applications.
+  </Card>
+  <Card title=".NET Standard / Core" icon="code" href="/guides/clients/dot-net-standard">
+    Consume Restier APIs from .NET Standard and .NET Core applications.
+  </Card>
+  <Card title="TypeScript / JavaScript" icon="js" href="/guides/clients/typescript">
+    Consume Restier APIs from TypeScript and JavaScript applications.
+  </Card>
+</CardGroup>
