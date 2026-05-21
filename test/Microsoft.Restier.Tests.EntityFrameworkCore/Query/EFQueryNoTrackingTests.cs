@@ -89,7 +89,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
     /// </summary>
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class EFQuerySourcerTrackingTests : IDisposable
+    public class EFQuerySourcerTrackingTests
     {
         private readonly LibraryContext context;
 
@@ -101,7 +101,8 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
             context = new LibraryContext(options);
         }
 
-        public void Dispose() => context?.Dispose();
+        [TestCleanup]
+        public void Cleanup() => context?.Dispose();
 
         /// <summary>
         /// EFCore + Default → identity-resolved no-tracking. Assert with the
