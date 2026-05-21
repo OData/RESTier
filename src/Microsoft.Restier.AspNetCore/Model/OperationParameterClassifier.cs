@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using RestierOptional = Microsoft.Restier.AspNetCore.Model.OptionalAttribute;
@@ -24,28 +25,27 @@ namespace Microsoft.Restier.AspNetCore.Model
     {
         /// <summary>
         /// Returns <see langword="true"/> when the EDM type reference for this parameter
-        /// should be emitted with <c>Nullable = true</c>.
+        /// should be emitted with <c>Nullable = true</c>. Driven purely by whether the
+        /// CLR type can hold <see langword="null"/>; the <see cref="OptionalAttribute"/>
+        /// itself does not change type-ref nullability, only optionality.
         /// </summary>
         public static bool ComputeNullable(ParameterInfo parameter)
         {
             Ensure.NotNull(parameter, nameof(parameter));
-            if (Nullable.GetUnderlyingType(parameter.ParameterType) is not null)
-            {
-                return true;
-            }
-
-            if (parameter.GetCustomAttribute<RestierOptional>(true) is not null)
-            {
-                return true;
-            }
-
-            return parameter.ParameterType.IsClass;
+            return CanHoldNull(parameter);
         }
 
         /// <summary>
         /// Classifies whether the parameter is omittable (an <c>EdmOptionalParameter</c>)
         /// and returns the literal string used as the EDM default-value attribute.
         /// </summary>
+        /// <remarks>
+        /// <see cref="OptionalAttribute"/> on a non-nullable value type with no default value
+        /// is rejected (treated as required) with a <see cref="Trace.TraceWarning(string)"/>:
+        /// such a parameter cannot represent the omitted-state at runtime because
+        /// <c>MethodInfo.Invoke</c> cannot pass <see langword="null"/> for a non-nullable
+        /// value-type slot.
+        /// </remarks>
         public static (bool IsOptional, string DefaultLiteral) ClassifyOptionality(ParameterInfo parameter)
         {
             Ensure.NotNull(parameter, nameof(parameter));
@@ -63,11 +63,26 @@ namespace Microsoft.Restier.AspNetCore.Model
 
             if (parameter.GetCustomAttribute<RestierOptional>(true) is not null)
             {
-                return (true, "null");
+                if (CanHoldNull(parameter))
+                {
+                    return (true, "null");
+                }
+
+                Trace.TraceWarning(
+                    $"Restier: Parameter '{parameter.Name}' on '{parameter.Member?.DeclaringType?.FullName}.{parameter.Member?.Name}' " +
+                    $"is marked [Optional] but its type '{parameter.ParameterType.Name}' is a non-nullable value type with no default value, " +
+                    $"so the parameter cannot be omitted from the request. Treating as required. " +
+                    $"To make it omittable, give it a default value (e.g. '{parameter.ParameterType.Name} {parameter.Name} = default') " +
+                    $"or change the type to '{parameter.ParameterType.Name}?'.");
+                return (false, null);
             }
 
             return (false, null);
         }
+
+        private static bool CanHoldNull(ParameterInfo parameter)
+            => Nullable.GetUnderlyingType(parameter.ParameterType) is not null
+               || parameter.ParameterType.IsClass;
 
         /// <summary>
         /// Returns <see langword="true"/> when this parameter, if absent from a request,
