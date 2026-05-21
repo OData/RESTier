@@ -35,18 +35,21 @@ stages:
         packageType: sdk
         version: 10.0.100
 
-    # net8/net9 runtimes for multi-targeted test execution; UseDotNet@2 above
-    # pins dotnet to the tool cache, hiding the agent's pre-installed runtimes.
+    # net8/net9 SDKs for multi-targeted test execution. UseDotNet@2 above pins
+    # dotnet to the tool cache, hiding the agent's pre-installed runtimes; and
+    # packageType: runtime only installs Microsoft.NETCore.App, not the
+    # Microsoft.AspNetCore.App shared framework the tests need, so we install
+    # SDKs (which bundle both runtimes) instead.
     - task: UseDotNet@2
-      displayName: Use .NET Runtime 9.x
+      displayName: Use .NET SDK 9.x
       inputs:
-        packageType: runtime
+        packageType: sdk
         version: 9.x
 
     - task: UseDotNet@2
-      displayName: Use .NET Runtime 8.x
+      displayName: Use .NET SDK 8.x
       inputs:
-        packageType: runtime
+        packageType: sdk
         version: 8.x
 
     # --- Restore & Build ---
