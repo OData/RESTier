@@ -51,8 +51,13 @@ namespace Microsoft.Restier.AspNetCore.Model
             }
 
             // Nullable<T> always emits nullable. Otherwise honor the caller's hint.
-            return new EdmPrimitiveTypeReference(
-                EdmCoreModel.Instance.GetPrimitiveType(primitiveTypeKind.Value),
+            // Issue #766: route through EdmCoreModel.GetPrimitive so facet-bearing primitives
+            // (String, Binary, Decimal, temporals, spatials) return their typed subclass
+            // (EdmStringTypeReference, etc.) instead of a bare EdmPrimitiveTypeReference.
+            // Downstream consumers such as Microsoft.OpenApi.OData hard-cast to those
+            // subtype interfaces and otherwise blow up with InvalidCastException.
+            return (EdmTypeReference)EdmCoreModel.Instance.GetPrimitive(
+                primitiveTypeKind.Value,
                 isNullableValueType || nullable);
         }
 
