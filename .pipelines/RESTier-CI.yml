@@ -1,0 +1,168 @@
+trigger:
+- main
+
+# name below is overridden by Set Build Name step
+name: 1.0.0-CI-$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+  BuildConfiguration: Release
+
+stages:
+
+# ============================================================
+# Build stage
+# ============================================================
+- stage: Build
+  displayName: Build and Pack Restier
+  jobs:
+  - job: Build
+    pool:
+      vmImage: windows-latest
+    steps:
+    - checkout: self
+
+    # --- Set Build Name ---
+    - powershell: |
+        $buildName = "1.2.0-CI-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+        Write-Host "##vso[build.updatebuildnumber]$buildName"
+      displayName: Set Build Name
+
+    # --- SDKs ---
+    # .slnx CLI support starting in 9.0.200
+    - task: UseDotNet@2
+      displayName: Use .NET SDK 10.x
+      inputs:
+        packageType: sdk
+        version: 10.0.100
+
+    # --- Restore & Build ---
+    - task: DotNetCoreCLI@2
+      displayName: dotnet restore
+      inputs:
+        command: restore
+        projects: 'src/RESTier.slnx'
+        feedsToUse: config
+        nugetConfigPath: 'NuGet.Config'
+
+    - task: DotNetCoreCLI@2
+      displayName: dotnet build
+      inputs:
+        command: build
+        projects: |
+          **/*.csproj
+          !**/Microsoft.Restier.Samples.*.*.csproj
+        arguments: >
+          --configuration $(BuildConfiguration)
+          --no-restore
+
+    # --- Pack ---
+    - powershell: |
+        $projects = @(
+          "src/Microsoft.Restier.Core/Microsoft.Restier.Core.csproj",
+          "src/Microsoft.Restier.EntityFramework/Microsoft.Restier.EntityFramework.csproj",
+          "src/Microsoft.Restier.EntityFrameworkCore/Microsoft.Restier.EntityFrameworkCore.csproj",
+          "src/Microsoft.Restier.AspNet/Microsoft.Restier.AspNet.csproj",
+          "src/Microsoft.Restier.AspNetCore/Microsoft.Restier.AspNetCore.csproj",
+          "src/Microsoft.Restier.AspNetCore.Swagger/Microsoft.Restier.AspNetCore.Swagger.csproj",
+          "src/Microsoft.Restier.Breakdance/Microsoft.Restier.Breakdance.csproj"
+        )
+        foreach ($proj in $projects) {
+          dotnet pack $proj `
+            --configuration $(BuildConfiguration) `
+            --no-build `
+            --output "$(Build.ArtifactStagingDirectory)/Packages" `
+            /p:PackageVersion="$(Build.BuildNumber)" `
+            /p:SymbolPackageFormat=snupkg
+        }
+      displayName: dotnet pack
+
+    # --- Validate packages ---
+    - powershell: |
+        if (-not (Get-ChildItem "$(Build.ArtifactStagingDirectory)/Packages" -Filter *.nupkg)) {
+          throw "No nupkg produced"
+        }
+        if (-not (Get-ChildItem "$(Build.ArtifactStagingDirectory)/Packages" -Filter *.snupkg)) {
+          throw "No snupkg produced"
+        }
+      displayName: Validate Packages
+
+    # --- Publish unsigned packages ---
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: _unsignedPackages'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/Packages'
+        artifact: _unsignedPackages
+
+# ============================================================
+# Code signing stage
+# ============================================================
+- stage: CodeSign
+  displayName: Code Sign Packages
+  dependsOn: Build
+  condition: and(succeeded('Build'), not(eq(variables['Build.Reason'], 'PullRequest')))
+  jobs:
+  - deployment: CodeSign
+    displayName: Code Signing
+    pool:
+      vmImage: windows-latest
+    environment: Code Sign - Approvals
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # --- Download unsigned packages ---
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Unsigned Packages
+            inputs:
+              artifact: _unsignedPackages
+              path: $(Pipeline.Workspace)/Packages
+
+          # --- Install dotnet sign tool ---
+          - task: DotNetCoreCLI@2
+            displayName: Install SignTool
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . --prerelease sign
+
+          # --- Code signing using Azure Key Vault ---
+          - task: AzureCLI@2
+            displayName: Code Signing - RESTier Packages
+            inputs:
+              azureSubscription: Code Signing
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                .\sign code azure-key-vault `
+                  "**/*.nupkg" `
+                  --base-directory "$(Pipeline.Workspace)/Packages" `
+                  --output "$(Build.ArtifactStagingDirectory)/SignedPackages" `
+                  --publisher-name "OData Labs" `
+                  --description "RESTier" `
+                  --description-url "https://github.com/OData/RESTier" `
+                  --azure-key-vault-certificate "$(SignKeyVaultCertificate)" `
+                  --azure-key-vault-url "$(SignKeyVaultUrl)"
+
+          # --- Copy snupkg  ---
+          - task: CopyFiles@2
+            displayName: Copy snupkg into SignedPackages
+            inputs:
+              SourceFolder: '$(Pipeline.Workspace)/Packages'
+              Contents: '*.snupkg'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)/SignedPackages'
+              OverWrite: true
+
+          # --- Validate signing completeness ---
+
+          - powershell: |
+              $in  = (Get-ChildItem "$(Pipeline.Workspace)/Packages" -Filter *.nupkg).Count
+              $out = (Get-ChildItem "$(Build.ArtifactStagingDirectory)/SignedPackages" -Filter *.nupkg).Count
+              if ($in -ne $out) { throw "Signing incomplete" }
+            displayName: Validate Signed Packages
+
+          # --- Publish signed artifacts ---
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish Artifact: drop'
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)'
+              artifact: drop
