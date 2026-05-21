@@ -13,8 +13,8 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
 {
@@ -30,6 +30,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
     /// <see cref="IQueryable"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class KeylessViewQueryExpressionSourcerTests
     {
         private const string ViewName = "FakeView";
@@ -42,7 +43,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// <c>ConstantExpression</c> whose value is the IQueryable produced
         /// by the registered <see cref="KeylessViewEntry.SourceFactory"/>.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ReplaceQueryableSource_RegistryHit_TrackingNotRequested_ReturnsConstantOfFactoryResult()
         {
             // Arrange
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// Registry is empty for the view name → returns <c>null</c> so the
         /// chain falls through to the next sourcer.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ReplaceQueryableSource_RegistryMiss_ReturnsNull()
         {
             // Arrange — empty registry.
@@ -86,7 +87,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// the keyless-view sourcer must return <c>null</c> and let the
         /// next link handle it.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ReplaceQueryableSource_NotADataSourceStubReference_ReturnsNull()
         {
             // Arrange — a QueryExpressionContext with no visited node yields
@@ -120,7 +121,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// tests because ApplyTracking reflects on EF-specific extension methods
         /// that don't compose against a plain in-memory IQueryable.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ReplaceQueryableSource_AllowNoTrackingTrue_TrackAll_PassesThrough()
         {
             // Arrange
@@ -146,7 +147,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// If the inner sourcer in the chain produced a result, the keyless-view
         /// sourcer must return it untouched and never consult the registry.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ReplaceQueryableSource_InnerProducesResult_ShortCircuits()
         {
             // Arrange

@@ -7,13 +7,14 @@ using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.IncorrectLibrary;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore;
 
+[TestClass]
 public class EFCoreDbContextExtensionsTests
 {
-    [Fact]
+    [TestMethod]
     public void IsDbSetMapped_CanFind_MappedDbSets()
     {
         using var context = new LibraryContext(new DbContextOptions<LibraryContext> { });

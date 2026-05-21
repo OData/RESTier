@@ -11,13 +11,14 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore;
 
+[TestClass]
 public class EFModelMapperTests
 {
-    [Fact]
+    [TestMethod]
     public async Task TryGetRelevantType_KnownEntitySet_ReturnsTrue_AndCorrectType()
     {
         var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(
@@ -41,7 +42,7 @@ public class EFModelMapperTests
         relevantType.Should().Be(typeof(Book));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryGetRelevantType_UnknownName_ReturnsFalse()
     {
         var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(
@@ -63,7 +64,7 @@ public class EFModelMapperTests
         relevantType.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryGetRelevantType_NamespaceOverload_ReturnsFalse()
     {
         var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(
@@ -85,7 +86,7 @@ public class EFModelMapperTests
         relevantType.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryGetRelevantType_AllKnownEntitySets_ReturnCorrectTypes()
     {
         var api = await RestierTestHelpers.GetTestableApiInstance<LibraryApi>(

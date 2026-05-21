@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
 {
@@ -20,30 +20,31 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
     /// tests cover the options API.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class EFQueryNoTrackingTests
     {
-        [Fact]
+        [TestMethod]
         public void Default_TrackingBehavior_IsDefault()
         {
             var options = new RestierEFOptions();
             options.TrackingBehavior.Should().Be(RestierEFTrackingBehavior.Default);
         }
 
-        [Fact]
+        [TestMethod]
         public void TrackingBehavior_RoundTrips_TrackAll()
         {
             var options = new RestierEFOptions { TrackingBehavior = RestierEFTrackingBehavior.TrackAll };
             options.TrackingBehavior.Should().Be(RestierEFTrackingBehavior.TrackAll);
         }
 
-        [Fact]
+        [TestMethod]
         public void TrackingBehavior_RoundTrips_NoTracking()
         {
             var options = new RestierEFOptions { TrackingBehavior = RestierEFTrackingBehavior.NoTracking };
             options.TrackingBehavior.Should().Be(RestierEFTrackingBehavior.NoTracking);
         }
 
-        [Fact]
+        [TestMethod]
         public void TrackingBehavior_RoundTrips_NoTrackingWithIdentityResolution()
         {
             var options = new RestierEFOptions { TrackingBehavior = RestierEFTrackingBehavior.NoTrackingWithIdentityResolution };
@@ -55,7 +56,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// real EF Core query actually leaves the change tracker empty. Acts as
         /// a guard against future EF Core API changes.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void AsNoTrackingWithIdentityResolution_LeavesChangeTrackerEmpty()
         {
             var options = new DbContextOptionsBuilder<LibraryContext>()
@@ -87,6 +88,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
     /// <c>AsNoTrackingWithIdentityResolution</c>.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class EFQuerySourcerTrackingTests : IDisposable
     {
         private readonly LibraryContext context;
@@ -106,7 +108,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// more specific method name so we don't get a false positive from the
         /// substring "AsNoTracking".
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void Default_NoRecursiveExpand_AppliesAsNoTrackingWithIdentityResolution()
         {
             var result = EFQueryExpressionSourcer.ApplyTracking(
@@ -122,7 +124,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// no-tracking. The hint is irrelevant on EFCore because
         /// AsNoTrackingWithIdentityResolution preserves identity across cycles.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void Default_HasRecursiveExpand_StillAppliesAsNoTrackingWithIdentityResolution()
         {
             var result = EFQueryExpressionSourcer.ApplyTracking(
@@ -136,7 +138,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// <summary>
         /// EFCore + TrackAll → bare DbSet regardless of recursive-expand.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void TrackAll_AlwaysTracked()
         {
             var noCycle = EFQueryExpressionSourcer.ApplyTracking(
@@ -153,7 +155,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// variant. We assert both: the substring "AsNoTracking" appears, and
         /// the more specific "AsNoTrackingWithIdentityResolution" does not.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void NoTracking_AppliesAsNoTrackingOnly()
         {
             var result = EFQueryExpressionSourcer.ApplyTracking(
@@ -170,7 +172,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Query
         /// EFCore + NoTrackingWithIdentityResolution → identity-resolved
         /// no-tracking.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void NoTrackingWithIdentityResolution_AppliesAsNoTrackingWithIdentityResolution()
         {
             var result = EFQueryExpressionSourcer.ApplyTracking(
