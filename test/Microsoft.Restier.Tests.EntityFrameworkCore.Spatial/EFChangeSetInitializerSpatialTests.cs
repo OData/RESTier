@@ -5,9 +5,9 @@ using FluentAssertions;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Spatial;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetTopologySuite.Geometries;
 using NSubstitute;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
