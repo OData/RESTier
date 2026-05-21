@@ -14,8 +14,8 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
 #else
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
@@ -23,12 +23,13 @@ namespace Microsoft.Restier.Tests.AspNetCore.Model;
 /// Tests for the RestierWebApiModelBuilder verifying EDM model generation
 /// for complex and primitive types from entity framework models.
 /// </summary>
+[TestClass]
 public class RestierModelBuilderTests : RestierTestBase<LibraryApi>
 {
     private static void ConfigureServices(IServiceCollection services)
         => services.AddEntityFrameworkServices<LibraryContext>();
 
-    [Fact]
+    [TestMethod]
     public async Task ComplexTypeShouldWork()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(
@@ -43,7 +44,7 @@ public class RestierModelBuilderTests : RestierTestBase<LibraryApi>
         address.Properties().Should().HaveCount(2);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PrimitiveTypesShouldWork()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<LibraryApi>(

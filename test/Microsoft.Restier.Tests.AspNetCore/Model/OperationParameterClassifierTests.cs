@@ -6,31 +6,32 @@ using System.Reflection;
 using FluentAssertions;
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.Tests.Shared;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestierOptional = Microsoft.Restier.AspNetCore.Model.OptionalAttribute;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
+[TestClass]
 public class OperationParameterClassifierTests
 {
     private static ParameterInfo Param(string methodName, int index = 0)
         => typeof(SampleParameters).GetMethod(methodName)!.GetParameters()[index];
 
-    [Fact]
+    [TestMethod]
     public void ComputeNullable_ReturnsTrue_ForNullableValueType()
     {
         OperationParameterClassifier.ComputeNullable(Param(nameof(SampleParameters.NullableInt)))
             .Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeNullable_ReturnsTrue_ForReferenceType()
     {
         OperationParameterClassifier.ComputeNullable(Param(nameof(SampleParameters.ReferenceString)))
             .Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeNullable_ReturnsTrue_ForOptionalAttributeOnNullableValueType()
     {
         // [Optional] int? p — nullable via the underlying Nullable<T>, not via the attribute.
@@ -38,7 +39,7 @@ public class OperationParameterClassifierTests
             .Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeNullable_ReturnsFalse_ForOptionalAttributeOnNonNullableValueType()
     {
         // [Optional] int p — non-nullable value type. The attribute alone does not
@@ -47,14 +48,14 @@ public class OperationParameterClassifierTests
             .Should().BeFalse();
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeNullable_ReturnsFalse_ForBareValueType()
     {
         OperationParameterClassifier.ComputeNullable(Param(nameof(SampleParameters.PlainInt)))
             .Should().BeFalse();
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_ReturnsRequired_ForBareValueType()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.PlainInt)));
@@ -62,7 +63,7 @@ public class OperationParameterClassifierTests
         literal.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_ReturnsRequired_ForBareNullable_NoDefault()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.NullableInt)));
@@ -70,7 +71,7 @@ public class OperationParameterClassifierTests
         literal.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_ReturnsOptional_ForCompilerDefault()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.IntWithDefault)));
@@ -78,7 +79,7 @@ public class OperationParameterClassifierTests
         literal.Should().Be("5");
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_ReturnsOptional_ForDefaultValueAttribute()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.StringWithDefaultValueAttribute)));
@@ -86,7 +87,7 @@ public class OperationParameterClassifierTests
         literal.Should().Be("hello");
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_DefaultValueAttribute_OverridesCompilerDefault()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.AttributeOverridesCompilerDefault)));
@@ -94,7 +95,7 @@ public class OperationParameterClassifierTests
         literal.Should().Be("attribute");
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_ReturnsOptional_ForOptionalAttribute()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.OptionalNullableInt)));
@@ -102,7 +103,7 @@ public class OperationParameterClassifierTests
         literal.Should().Be("null");
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_OptionalOnNonNullableValueType_WarnsAndReturnsRequired()
     {
         // [Optional] int p (no default) — the attribute cannot be honored because the
@@ -126,7 +127,7 @@ public class OperationParameterClassifierTests
         }
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_OptionalOnNonNullableValueTypeWithDefault_StaysOptional()
     {
         // [Optional] int p = 5 — the compiler default rescues optionality;
@@ -148,7 +149,7 @@ public class OperationParameterClassifierTests
         }
     }
 
-    [Fact]
+    [TestMethod]
     public void ClassifyOptionality_NullCompilerDefault_EmitsNullLiteral()
     {
         var (isOptional, literal) = OperationParameterClassifier.ClassifyOptionality(Param(nameof(SampleParameters.NullableIntWithNullDefault)));
@@ -156,28 +157,28 @@ public class OperationParameterClassifierTests
         literal.Should().Be("null");
     }
 
-    [Fact]
+    [TestMethod]
     public void IsOmittedOptional_MirrorsClassifyOptionality()
     {
         OperationParameterClassifier.IsOmittedOptional(Param(nameof(SampleParameters.IntWithDefault))).Should().BeTrue();
         OperationParameterClassifier.IsOmittedOptional(Param(nameof(SampleParameters.PlainInt))).Should().BeFalse();
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveDefault_ReturnsAttributeValue_WhenPresent()
     {
         OperationParameterClassifier.ResolveDefault(Param(nameof(SampleParameters.StringWithDefaultValueAttribute)))
             .Should().Be("hello");
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveDefault_ReturnsCompilerDefault_WhenNoAttribute()
     {
         OperationParameterClassifier.ResolveDefault(Param(nameof(SampleParameters.IntWithDefault)))
             .Should().Be(5);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveDefault_ReturnsNull_ForOptionalAttribute_Only()
     {
         OperationParameterClassifier.ResolveDefault(Param(nameof(SampleParameters.OptionalNullableInt)))

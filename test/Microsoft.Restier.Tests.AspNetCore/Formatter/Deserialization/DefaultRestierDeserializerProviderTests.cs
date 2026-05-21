@@ -6,17 +6,18 @@ using FluentAssertions;
 using Microsoft.AspNetCore.OData.Formatter.Deserialization;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter
 {
     /// <summary>
     /// unit tests for the <see cref="DefaultRestierDeserializerProvider"/>
     /// </summary>
+    [TestClass]
     public class DefaultRestierDeserializerProviderTests
     {
-        [Fact]
+        [TestMethod]
         public void Constructor_ShouldInitializeEnumDeserializer()
         {
             // Arrange
@@ -29,7 +30,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             provider.Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetEdmTypeDeserializer_ShouldReturnEnumDeserializer_WhenEdmTypeIsEnum()
         {
             // Arrange
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             deserializer.Should().BeOfType<RestierEnumDeserializer>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetEdmTypeDeserializer_ShouldCallBaseMethod_WhenEdmTypeIsNotEnum()
         {
             // Arrange

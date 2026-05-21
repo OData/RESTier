@@ -9,10 +9,11 @@ using Microsoft.OData.Edm.Csdl;
 using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.AspNetCore.Model;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
+[TestClass]
 public class ConventionBasedAnnotationModelBuilderTests
 {
     private const string CoreDescriptionTerm = "Org.OData.Core.V1.Description";
@@ -23,7 +24,7 @@ public class ConventionBasedAnnotationModelBuilderTests
     private const string ValidationMaximumTerm = "Org.OData.Validation.V1.Maximum";
     private const string ValidationPatternTerm = "Org.OData.Validation.V1.Pattern";
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreDescription_WhenEntityTypeHasDescriptionAttribute()
     {
         // Arrange
@@ -48,7 +49,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         stringValue.Value.Should().Be("A described entity.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreDescription_WhenPropertyHasDescriptionAttribute()
     {
         // Arrange
@@ -72,7 +73,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("The display name of the entity.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreDescription_WhenEdmPropertyNameIsLowerCamelCase()
     {
         // Arrange — EnableLowerCamelCase() makes the EDM property name "name",
@@ -97,7 +98,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("The display name of the entity.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreDescription_WhenComplexTypeHasDescriptionAttribute()
     {
         // Arrange
@@ -121,7 +122,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("A postal address.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreDescription_WhenOperationMethodHasDescriptionAttribute()
     {
         // Arrange
@@ -145,7 +146,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("Returns the active record count.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreComputed_WhenPropertyIsDatabaseGeneratedIdentity()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithIdentityKey>();
@@ -164,7 +165,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmBooleanConstantExpression)annotation.Value).Value.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreComputed_WhenPropertyIsDatabaseGeneratedComputed()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithComputedProperty>();
@@ -183,7 +184,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmBooleanConstantExpression)annotation.Value).Value.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_DoesNotEmitCoreComputed_WhenPropertyIsDatabaseGeneratedNone()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithNoneOption>();
@@ -200,7 +201,7 @@ public class ConventionBasedAnnotationModelBuilderTests
             .Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreImmutable_WhenPropertyIsReadOnlyTrue()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithReadOnlyTrue>();
@@ -219,7 +220,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmBooleanConstantExpression)annotation.Value).Value.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_DoesNotEmitCoreImmutable_WhenPropertyIsReadOnlyFalse()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithReadOnlyFalse>();
@@ -236,7 +237,7 @@ public class ConventionBasedAnnotationModelBuilderTests
             .Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsIntegerMinMax_WhenIntPropertyHasRangeAttribute()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithIntRange>();
@@ -259,7 +260,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmIntegerConstantExpression)max.Value).Value.Should().Be(100L);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsFloatingMinMax_WhenDoublePropertyHasRangeAttribute()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithDoubleRange>();
@@ -282,7 +283,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmFloatingConstantExpression)max.Value).Value.Should().Be(1.0);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsDecimalMinMax_WhenDecimalPropertyHasRangeAttribute()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithDecimalRange>();
@@ -305,7 +306,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmDecimalConstantExpression)max.Value).Value.Should().Be(999.99m);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_DoesNotEmitMinMax_WhenRangeAppliedToStringProperty()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithRangeOnString>();
@@ -325,7 +326,7 @@ public class ConventionBasedAnnotationModelBuilderTests
             .Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsValidationPattern_WhenPropertyHasRegularExpression()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithRegexProperty>();
@@ -345,7 +346,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("^[A-Z]{2}$");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_DoesNotOverrideExistingDescriptionAnnotation()
     {
         // Arrange — build the model and pre-add a Description annotation manually.
@@ -373,7 +374,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("Pre-existing.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_ReturnsNull_WhenInnerIsNull()
     {
         var sut = new ConventionBasedAnnotationModelBuilder(typeof(AnnotationTestFixtures.StubApi))
@@ -384,7 +385,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         sut.GetEdmModel().Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_ReturnsNull_WhenInnerReturnsNull()
     {
         var sut = new ConventionBasedAnnotationModelBuilder(typeof(AnnotationTestFixtures.StubApi))
@@ -395,14 +396,14 @@ public class ConventionBasedAnnotationModelBuilderTests
         sut.GetEdmModel().Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_Throws_WhenApiTypeIsNull()
     {
         var act = () => new ConventionBasedAnnotationModelBuilder(null);
         act.Should().Throw<ArgumentNullException>().WithParameterName("apiType");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_DoesNotEmitVocabularyAnnotation_ForMaxLengthAttribute()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWith<EntityWithMaxLength>();
@@ -422,7 +423,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         property.Type.AsString().MaxLength.Should().Be(13, "the structural facet should still carry the constraint");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_AnnotatesOperation_WhenMethodIsDeclaredOnBaseClass()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWithUnboundFunction(
@@ -442,7 +443,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("Inherited operation.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_AnnotatesOperation_WhenMethodIsProtectedInternal()
     {
         var inputModel = AnnotationTestFixtures.BuildModelWithUnboundFunction(
@@ -462,7 +463,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)annotation.Value).Value.Should().Be("Protected operation.");
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_DoesNotIndexSpecialNameMethods_AsOperations()
     {
         // Arrange — feed in a model with a function named "get_Item" (the indexer's getter name).
@@ -484,7 +485,7 @@ public class ConventionBasedAnnotationModelBuilderTests
             .Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreRevisions_WhenOperationMethodHasObsoleteAttribute()
     {
         // Arrange
@@ -522,7 +523,7 @@ public class ConventionBasedAnnotationModelBuilderTests
         ((IEdmStringConstantExpression)descConstructor.Value).Value.Should().Be("Use NewMethod instead.");
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_EmitsCoreDescription_WhenOperationParameterHasDescriptionAttribute()
     {
         // Arrange

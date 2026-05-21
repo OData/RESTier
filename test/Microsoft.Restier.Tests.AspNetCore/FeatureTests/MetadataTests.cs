@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -35,7 +35,7 @@ public abstract class MetadataTests<TApi, TContext> : RestierTestBase<TApi>
     /// </summary>
     protected abstract string MarvelBaselinePrefix { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task LibraryApi_CompareCurrentApiMetadataToPriorRun()
     {
         var fileName = $"{Path.Combine(RelativePath, BaselineFolder)}{typeof(TApi).Name}-{ProviderName}-ApiMetadata.txt";
@@ -51,7 +51,7 @@ public abstract class MetadataTests<TApi, TContext> : RestierTestBase<TApi>
         oldReport.Should().BeEquivalentTo(newReport.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MarvelApi_CompareCurrentApiMetadataToPriorRun()
     {
         var fileName = $"{Path.Combine(RelativePath, BaselineFolder)}{MarvelBaselinePrefix}-ApiMetadata.txt";
@@ -66,7 +66,7 @@ public abstract class MetadataTests<TApi, TContext> : RestierTestBase<TApi>
         oldReport.Should().BeEquivalentTo(newReport.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task StoreApi_CompareCurrentApiMetadataToPriorRun()
     {
         var fileName = $"{Path.Combine(RelativePath, BaselineFolder)}{nameof(StoreApi)}-ApiMetadata.txt";

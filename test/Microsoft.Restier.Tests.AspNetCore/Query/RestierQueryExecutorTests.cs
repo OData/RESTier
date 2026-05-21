@@ -12,16 +12,16 @@ using Microsoft.Restier.AspNetCore.Query;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using NSubstitute.Core;
-using Xunit;
-using Xunit.Sdk;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Query;
 
+[TestClass]
 public class RestierQueryExecutorTests
 {
-    [Fact]
+    [TestMethod]
     public async Task ExecuteQueryAsync_WhenIncludeTotalCountIsSet_DelegatesToInnerAndSetsTotalCount()
     {
         // Arrange
@@ -68,7 +68,7 @@ public class RestierQueryExecutorTests
         totalCountValue.Should().Be(3);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteExpressionAsync_DelegatesToInner()
     {
         // Arrange
@@ -91,7 +91,7 @@ public class RestierQueryExecutorTests
         await inner.Received(1).ExecuteExpressionAsync<int>(context, provider, expression, cancellationToken);
     }
 
-    [Fact]
+    [TestMethod]
     public void Inner_CanBeSetAndGet()
     {
         // Arrange

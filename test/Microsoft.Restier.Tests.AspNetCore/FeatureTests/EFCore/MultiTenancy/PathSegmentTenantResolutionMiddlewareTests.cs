@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore.MultiTenancy;
 
+[TestClass]
 public class PathSegmentTenantResolutionMiddlewareTests
 {
     private static (HttpContext ctx, ITenantContext tenant, IDisposable cleanup) BuildContext(string path)
@@ -60,7 +61,7 @@ public class PathSegmentTenantResolutionMiddlewareTests
         });
     }
 
-    [Fact]
+    [TestMethod]
     public async Task KnownTenant_StripsSegmentAndPopulatesContext()
     {
         var (ctx, tenant, cleanup) = BuildContext("/acme/odata/Books");
@@ -79,7 +80,7 @@ public class PathSegmentTenantResolutionMiddlewareTests
         ctx.Response.StatusCode.Should().Be(200, because: "default status when next pipeline ran without overriding");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnknownTenant_ShortCircuitsWith400()
     {
         var (ctx, tenant, cleanup) = BuildContext("/unknown/odata/Books");
@@ -98,7 +99,7 @@ public class PathSegmentTenantResolutionMiddlewareTests
         ctx.Request.Path.Value.Should().Be("/unknown/odata/Books", because: "the path should not be rewritten on the failure path");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EmptyPath_ShortCircuitsWith400()
     {
         var (ctx, _, cleanup) = BuildContext("/");
@@ -114,7 +115,7 @@ public class PathSegmentTenantResolutionMiddlewareTests
         ctx.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TenantOnlyPath_StillRewritesPathBase()
     {
         // Tenant-only request like /acme/ — the rewritten path is just "/", which RESTier

@@ -7,8 +7,8 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core.Spatial;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 #pragma warning disable CS0618 // Date and TimeOfDay are obsolete but still used by OData
 namespace Microsoft.Restier.Tests.AspNetCore;
@@ -16,6 +16,7 @@ namespace Microsoft.Restier.Tests.AspNetCore;
 /// <summary>
 /// Unit tests for the <see cref="RestierPayloadValueConverter"/> class.
 /// </summary>
+[TestClass]
 public class RestierPayloadValueConverterTests
 {
     private readonly RestierPayloadValueConverter _converter;
@@ -25,7 +26,7 @@ public class RestierPayloadValueConverterTests
         _converter = new RestierPayloadValueConverter();
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnDate_ForDateTimeAndEdmDate()
     {
         // Arrange
@@ -39,7 +40,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<Date>().Which.Should().BeEquivalentTo(new Date(2025, 4, 21));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnDateTimeOffsetWithLocalOffset_ForDateTimeWithLocalKind()
     {
         // Arrange
@@ -53,7 +54,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<DateTimeOffset>().Which.Offset.Should().Be(TimeZoneInfo.Local.GetUtcOffset(dateTime));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnDateTimeOffsetWithZeroOffset_ForDateTimeWithUtcKind()
     {
         // Arrange
@@ -67,7 +68,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<DateTimeOffset>().Which.Offset.Should().Be(TimeSpan.Zero);
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnTimeOfDay_ForTimeSpanAndEdmTimeOfDay()
     {
         // Arrange
@@ -81,7 +82,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<TimeOfDay>().Which.Should().BeEquivalentTo(new TimeOfDay(10, 30, 0, 0));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnDate_ForDateTimeOffsetAndEdmDate()
     {
         // Arrange
@@ -95,7 +96,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<Date>().Which.Should().BeEquivalentTo(new Date(2025, 4, 21));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnDate_ForDateOnlyAndEdmDate()
     {
         // Arrange
@@ -109,7 +110,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<Date>().Which.Should().BeEquivalentTo(new Date(2025, 4, 21));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldReturnTimeOfDay_ForTimeOnlyAndEdmTimeOfDay()
     {
         // Arrange
@@ -123,7 +124,7 @@ public class RestierPayloadValueConverterTests
         result.Should().BeOfType<TimeOfDay>().Which.Should().BeEquivalentTo(new TimeOfDay(10, 30, 45, 500));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldCallBaseMethod_ForUnsupportedTypes()
     {
         // Arrange
@@ -142,7 +143,7 @@ public class RestierPayloadValueConverterTests
         converter.Received(1).ConvertToPayloadValue(unsupportedValue, edmTypeReference);
     }
 
-    [Fact]
+    [TestMethod]
     public void Spatial_branch_dispatches_to_registered_ISpatialTypeConverter()
     {
         var fakeStorageValue = new object();
@@ -165,7 +166,7 @@ public class RestierPayloadValueConverterTests
         converter.Received().ToEdm(fakeStorageValue, typeof(Microsoft.Spatial.GeographyPoint));
     }
 
-    [Fact]
+    [TestMethod]
     public void Parameterless_construction_still_works()
     {
         var sut = new RestierPayloadValueConverter();

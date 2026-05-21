@@ -5,21 +5,22 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Batch;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Batch;
 
 /// <summary>
 /// Unit tests for the <see cref="ChangeSetDependencyResolver"/> class.
 /// </summary>
+[TestClass]
 public class ChangeSetDependencyResolverTests
 {
     #region DetectDependencies Tests
 
-    [Fact]
+    [TestMethod]
     public void DetectDependencies_NoDependencies_ReturnsEmpty()
     {
         // Arrange
@@ -36,7 +37,7 @@ public class ChangeSetDependencyResolverTests
         result.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void DetectDependencies_DirectReference_ReturnsDependency()
     {
         // Arrange
@@ -54,7 +55,7 @@ public class ChangeSetDependencyResolverTests
         result["2"].Should().ContainSingle().Which.Should().Be("1");
     }
 
-    [Fact]
+    [TestMethod]
     public void DetectDependencies_MultipleReferences_ReturnsAll()
     {
         // Arrange
@@ -75,7 +76,7 @@ public class ChangeSetDependencyResolverTests
         result["3"].Should().Contain("2");
     }
 
-    [Fact]
+    [TestMethod]
     public void DetectDependencies_DollarSignNotContentId_ReturnsEmpty()
     {
         // Arrange
@@ -95,7 +96,7 @@ public class ChangeSetDependencyResolverTests
 
     #region ComputeExpectedEntityUrl Tests
 
-    [Fact]
+    [TestMethod]
     public void ComputeExpectedEntityUrl_PatchRequest_ReturnsRequestUrl()
     {
         // Arrange
@@ -109,7 +110,7 @@ public class ChangeSetDependencyResolverTests
         result.Should().Be("http://localhost/api/Books(1)");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeExpectedEntityUrl_DeleteRequest_ReturnsRequestUrl()
     {
         // Arrange
@@ -123,7 +124,7 @@ public class ChangeSetDependencyResolverTests
         result.Should().Be("http://localhost/api/Books(79874b37-ce46-4f4c-aa74-8e02ce4d8b67)");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeExpectedEntityUrl_PostWithGuidKey_ReturnsEntityUrl()
     {
         // Arrange
@@ -138,7 +139,7 @@ public class ChangeSetDependencyResolverTests
         result.Should().Be("http://localhost/api/Books(79874b37-ce46-4f4c-aa74-8e02ce4d8b67)");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeExpectedEntityUrl_PostWithIntKey_ReturnsEntityUrl()
     {
         // Arrange
@@ -153,7 +154,7 @@ public class ChangeSetDependencyResolverTests
         result.Should().Be("http://localhost/api/Categories(42)");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeExpectedEntityUrl_PostWithoutKeyInBody_ReturnsNull()
     {
         // Arrange
@@ -172,7 +173,7 @@ public class ChangeSetDependencyResolverTests
 
     #region ResolveContentIdInUrl Tests
 
-    [Fact]
+    [TestMethod]
     public void ResolveContentIdInUrl_ReplacesReference()
     {
         // Arrange
@@ -189,7 +190,7 @@ public class ChangeSetDependencyResolverTests
         result.Should().Be("http://localhost/api/Books(1)/Details");
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveContentIdInUrl_PreservesODataQueryOptions()
     {
         // Arrange

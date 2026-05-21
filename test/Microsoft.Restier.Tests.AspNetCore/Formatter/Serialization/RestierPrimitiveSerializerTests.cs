@@ -15,16 +15,19 @@ using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter;
 
 /// <summary>
 /// Unit tests for the <see cref="RestierPrimitiveSerializer"/> class.
 /// </summary>
+[TestClass]
 public class RestierPrimitiveSerializerTests
 {
+    public TestContext TestContext { get; set; }
+
     private readonly ODataPayloadValueConverter _mockPayloadValueConverter;
     private readonly RestierPrimitiveSerializer _serializer;
 
@@ -34,7 +37,7 @@ public class RestierPrimitiveSerializerTests
         _serializer = new RestierPrimitiveSerializer(_mockPayloadValueConverter);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_ShouldHandlePrimitiveResult()
     {
         // Arrange
@@ -69,11 +72,11 @@ public class RestierPrimitiveSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 
-    [Fact]
+    [TestMethod]
     public void CreateODataPrimitiveValue_ShouldConvertDateTimeToDateTimeOffset()
     {
         // Arrange
@@ -93,7 +96,7 @@ public class RestierPrimitiveSerializerTests
         ((ODataPrimitiveValue)result).Value.Should().Be(new DateTimeOffset(dateTime, TimeSpan.Zero));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToPayloadValue_ShouldUsePayloadValueConverter()
     {
         // Arrange
@@ -117,7 +120,7 @@ public class RestierPrimitiveSerializerTests
         result.Should().Be(value);
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_ShouldThrowIfPayloadValueConverterIsNull()
     {
         // Act

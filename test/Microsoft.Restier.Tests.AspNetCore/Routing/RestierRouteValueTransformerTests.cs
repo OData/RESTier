@@ -12,15 +12,16 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore.Routing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Routing
 {
     /// <summary>
     /// Unit tests for <see cref="RestierRouteValueTransformer"/>.
     /// </summary>
+    [TestClass]
     public class RestierRouteValueTransformerTests
     {
         #region Helper Methods
@@ -99,7 +100,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
 
         #region Test Cases
 
-        [Fact]
+        [TestMethod]
         public async Task Get_EntitySet_ReturnsGetActionWithEntitySetSegment()
         {
             // Arrange
@@ -120,7 +121,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.Path.Should().ContainItemsAssignableTo<EntitySetSegment>();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Get_EntityWithKey_ReturnsGetActionWithTwoSegments()
         {
             // Arrange
@@ -141,7 +142,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.Path.Should().HaveCount(2);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Post_EntitySet_ReturnsPostAction()
         {
             // Arrange
@@ -158,7 +159,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("Post");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Post_BoundAction_ReturnsPostActionAction()
         {
             // Arrange
@@ -175,7 +176,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("PostAction");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Put_EntityWithKey_ReturnsPutAction()
         {
             // Arrange
@@ -192,7 +193,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("Put");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Patch_EntityWithKey_ReturnsPatchAction()
         {
             // Arrange
@@ -209,7 +210,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("Patch");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Delete_EntityWithKey_ReturnsDeleteAction()
         {
             // Arrange
@@ -226,7 +227,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("Delete");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Get_InvalidPath_ReturnsNull()
         {
             // Arrange
@@ -241,7 +242,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result.Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Get_EmptyPath_ReturnsGetServiceDocumentAction()
         {
             // Arrange
@@ -262,7 +263,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.Path.Should().HaveCount(0);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Get_MetadataPath_ReturnsGetMetadataAction()
         {
             // Arrange
@@ -283,7 +284,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.Path.LastOrDefault().Should().BeOfType<MetadataSegment>();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task ODataFeature_IsCorrectlyPopulated()
         {
             // Arrange
@@ -305,7 +306,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.BaseAddress.Should().EndWith("/");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task RoutePrefix_PopulatesCorrectBaseAddress()
         {
             // Arrange
@@ -325,7 +326,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.BaseAddress.Should().EndWith("/");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task NonRestierRoute_IsIgnored()
         {
             // Arrange
@@ -358,7 +359,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result.Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Get_BoundFunction_ReturnsGetAction()
         {
             // Arrange
@@ -375,7 +376,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("Get");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Post_ActionImport_ReturnsPostActionAction()
         {
             // Arrange
@@ -392,7 +393,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result["action"].Should().Be("PostAction");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Options_UnsupportedMethod_ReturnsNull()
         {
             // Arrange
@@ -407,7 +408,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result.Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task NullHttpContext_ReturnsNull()
         {
             // Arrange
@@ -421,11 +422,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result.Should().BeNull();
         }
 
-        [Theory]
-        [InlineData("POST")]
-        [InlineData("PUT")]
-        [InlineData("PATCH")]
-        [InlineData("DELETE")]
+        [TestMethod]
+        [DataRow("POST")]
+        [DataRow("PUT")]
+        [DataRow("PATCH")]
+        [DataRow("DELETE")]
         public async Task NonGet_Metadata_ReturnsNull(string method)
         {
             // Arrange
@@ -440,11 +441,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result.Should().BeNull();
         }
 
-        [Theory]
-        [InlineData("POST")]
-        [InlineData("PUT")]
-        [InlineData("PATCH")]
-        [InlineData("DELETE")]
+        [TestMethod]
+        [DataRow("POST")]
+        [DataRow("PUT")]
+        [DataRow("PATCH")]
+        [DataRow("DELETE")]
         public async Task NonGet_ServiceDocument_ReturnsNull(string method)
         {
             // Arrange
@@ -459,7 +460,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             result.Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task PathBase_IncludedInBaseAddress()
         {
             // Arrange
@@ -477,7 +478,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.BaseAddress.Should().Be("https://localhost/myapp/");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task PathBase_WithRoutePrefix_IncludedInBaseAddress()
         {
             // Arrange
@@ -495,7 +496,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.BaseAddress.Should().Be("https://localhost/myapp/api/v1/");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task PathBase_RootSlash_DoesNotProduceDoubleSlash()
         {
             // Arrange
@@ -513,7 +514,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Routing
             feature.BaseAddress.Should().Be("https://localhost/");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Get_NavigationProperty_ReturnsGetAction()
         {
             // Arrange

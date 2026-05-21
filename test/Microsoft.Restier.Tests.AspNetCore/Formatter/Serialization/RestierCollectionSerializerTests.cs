@@ -7,22 +7,25 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter
 {
     /// <summary>
     /// Unit tests for <see cref="RestierCollectionSerializer"/>.
     /// </summary>
+    [TestClass]
     public class RestierCollectionSerializerTests
     {
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+        [TestMethod]
         public async Task WriteObjectAsync_CallsBaseWriteObjectAsync_WithUnpackedResult()
         {
             // Arrange
@@ -47,11 +50,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             // Assert
             stream.Position = 0;
             using var reader = new StreamReader(stream);
-            var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+            var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
             result.Should().Be(expected);
         }
 
-        [Fact]
+        [TestMethod]
         public void UnpackResult_ReturnsCorrectGraphAndType_ForNonResourceCollectionResult()
         {
             // Arrange
@@ -69,7 +72,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             type.Should().Implement(expectedType);
         }
 
-        [Fact]
+        [TestMethod]
         public void UnpackResult_ReturnsOriginalGraphAndType_ForNonNonResourceCollectionResult()
         {
             // Arrange

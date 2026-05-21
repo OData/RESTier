@@ -13,14 +13,15 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore.Routing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Routing;
 
+[TestClass]
 public partial class RestierAuthorizationMetadataPolicyTests
 {
     #region Test model
@@ -52,14 +53,14 @@ public partial class RestierAuthorizationMetadataPolicyTests
 
     #region ComputeTargetKey
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_NullPath_ReturnsClass()
     {
         var key = RestierAuthorizationMetadataPolicy.ComputeTargetKey(path: null);
         key.Should().Be("class");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_EmptyPath_ReturnsClass()
     {
         var path = new ODataPath(new List<ODataPathSegment>());
@@ -67,7 +68,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         key.Should().Be("class");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_MetadataSegment_ReturnsClass()
     {
         var model = BuildTestModel();
@@ -76,7 +77,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         key.Should().Be("class");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_EntitySet_ReturnsClass()
     {
         // Standard [AllowAnonymous] / [Authorize] target class | method only — there is no
@@ -87,7 +88,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         key.Should().Be("class");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_EntitySetWithKey_ReturnsClass()
     {
         var model = BuildTestModel();
@@ -96,7 +97,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         key.Should().Be("class");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_Singleton_ReturnsClass()
     {
         var model = BuildTestModel();
@@ -105,7 +106,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         key.Should().Be("class");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_OperationImport_ReturnsOperation()
     {
         var model = BuildTestModel();
@@ -114,7 +115,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         key.Should().Be("operation:ResetData");
     }
 
-    [Fact]
+    [TestMethod]
     public void ComputeTargetKey_BoundOperationOnEntitySet_ReturnsOperation()
     {
         var model = BuildTestModel();
@@ -174,14 +175,14 @@ public partial class RestierAuthorizationMetadataPolicyTests
 
     #region DiscoverAttributes
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_PlainApi_ReturnsEmpty()
     {
         var attrs = RestierAuthorizationMetadataPolicy.DiscoverAttributes(typeof(PlainApi), "class");
         attrs.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_ClassAllowAnonymous_ReturnsAllowAnonymous()
     {
         var attrs = RestierAuthorizationMetadataPolicy.DiscoverAttributes(typeof(ClassAnonymousApi), "class");
@@ -189,7 +190,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
              .Which.Should().BeAssignableTo<Microsoft.AspNetCore.Authorization.IAllowAnonymous>();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_ClassAuthorize_ReturnsAuthorize()
     {
         var attrs = RestierAuthorizationMetadataPolicy.DiscoverAttributes(typeof(ClassAuthorizeApi), "class");
@@ -197,7 +198,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
              .Which.Should().BeAssignableTo<Microsoft.AspNetCore.Authorization.IAuthorizeData>();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_RestrictedOperation_ReturnsAuthorize()
     {
         var attrs = RestierAuthorizationMetadataPolicy.DiscoverAttributes(typeof(OperationApi), "operation:RestrictedOp");
@@ -205,14 +206,14 @@ public partial class RestierAuthorizationMetadataPolicyTests
              .Which.Should().BeAssignableTo<Microsoft.AspNetCore.Authorization.IAuthorizeData>();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_NormalOperation_ReturnsEmpty()
     {
         var attrs = RestierAuthorizationMetadataPolicy.DiscoverAttributes(typeof(OperationApi), "operation:NormalOp");
         attrs.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_NonOperationMethod_IsIgnored()
     {
         // [AllowAnonymous] on a method without [Bound|Unbound]Operation must be ignored.
@@ -220,7 +221,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         attrs.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_DerivedClassAnonymous_OverridesBaseAuthorize()
     {
         // Both attributes flow through; AuthorizationMiddleware applies "AllowAnonymous wins" later.
@@ -230,7 +231,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         attrs.Should().Contain(a => a is Microsoft.AspNetCore.Authorization.IAuthorizeData);
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_InheritedAuthorize_IsDiscovered()
     {
         // Subclass with no attributes inherits [Authorize] from the base class.
@@ -239,7 +240,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
              .Which.Should().BeAssignableTo<Microsoft.AspNetCore.Authorization.IAuthorizeData>();
     }
 
-    [Fact]
+    [TestMethod]
     public void DiscoverAttributes_ClassAndUnknownOperationCombined_ReturnsClassOnly()
     {
         // ClassAuthorizeApi has [Authorize]; no operation method named "Anything" exists,
@@ -295,7 +296,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         return new RestierAuthorizationMetadataPolicy(Options.Create(odataOptions));
     }
 
-    [Fact]
+    [TestMethod]
     public void AppliesToEndpoints_AlwaysReturnsTrue()
     {
         // At node-builder time the only visible Restier endpoint is the dynamic catch-all,
@@ -342,7 +343,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         return new CandidateSet(endpoints, values, scores);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyAsync_NonRestierCandidate_LeavesEndpointUnchanged()
     {
         var model = BuildTestModel();
@@ -355,7 +356,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         candidates[0].Endpoint.Should().BeSameAs(original);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyAsync_NoMarker_LeavesEndpointUnchanged()
     {
         var model = BuildTestModel();
@@ -375,7 +376,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         candidates[0].Endpoint.Should().BeSameAs(original);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyAsync_NoAttributes_LeavesEndpointUnchanged()
     {
         var model = BuildTestModel();
@@ -388,7 +389,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         candidates[0].Endpoint.Should().BeSameAs(original);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyAsync_ClassAllowAnonymous_ReplacesEndpointWithAugmentedMetadata()
     {
         var model = BuildTestModel();
@@ -406,7 +407,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
                .Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyAsync_OperationWithAuthorize_AugmentsForThatOperation()
     {
         var model = BuildTestModel();
@@ -425,7 +426,7 @@ public partial class RestierAuthorizationMetadataPolicyTests
         candidates[0].Endpoint.Should().BeSameAs(original);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyAsync_TwoSeparateCalls_BothCandidatesWrappedIndependently()
     {
         // Regression for the cache-key concern: even when the same (apiType, targetKey) maps to

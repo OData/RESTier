@@ -11,13 +11,13 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -60,7 +60,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
 
     #region GET / Query
 
-    [Fact]
+    [TestMethod]
     public async Task GetEntitySet_ReturnsCamelCasePropertyNames()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -73,7 +73,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().NotContain("\"FullName\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetMetadata_ShowsCamelCasePropertyNames()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -87,7 +87,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().Contain("Name=\"fullName\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetWithSelect_WorksWithCamelCase()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -98,7 +98,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().Contain("\"fullName\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetWithFilter_WorksWithCamelCase()
     {
         // Test that $filter with camelCase property names returns 200 (not 400 Bad Request).
@@ -110,7 +110,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         response.IsSuccessStatusCode.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetWithExpand_WorksWithCamelCase()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -121,7 +121,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().Contain("\"books\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetWithOrderBy_WorksWithCamelCase()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -135,7 +135,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
 
     #region POST creates entity with camelCase properties
 
-    [Fact]
+    [TestMethod]
     public async Task PostBook_WithCamelCasePayload_CreatesEntity()
     {
         using var client = CreateCamelCaseClient();
@@ -149,7 +149,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().Contain("0118006345789");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PatchPublisher_WithCamelCasePayload_Succeeds()
     {
         // PATCH against a seeded publisher with a camelCase property change
@@ -161,7 +161,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         patchResponse.IsSuccessStatusCode.Should().BeTrue($"PATCH failed ({patchResponse.StatusCode}): {content}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PutPublisher_WithCamelCasePayload_Succeeds()
     {
         // PUT against a seeded publisher
@@ -178,7 +178,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
 
     #region Key Handling
 
-    [Fact]
+    [TestMethod]
     public async Task GetByKey_WorksWithCamelCase()
     {
         // Use a LibraryCard key (seeded with a known GUID, no OnFilter convention)
@@ -191,7 +191,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().Contain("\"id\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteLibraryCard_WithCamelCase_Returns428WithoutETag()
     {
         // DELETE without ETag against concurrency-enabled entity returns 428.
@@ -203,7 +203,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
             $"DELETE without ETag should return 428. Got {response.StatusCode}: {await TraceListener.LogAndReturnMessageContentAsync(response)}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PatchPublisher_WithIfMatchETag_WorksWithCamelCase()
     {
         // Test the ETag normalization path: PATCH with If-Match wildcard ETag.
@@ -227,7 +227,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
 
     #region Concurrency (ETag)
 
-    [Fact]
+    [TestMethod]
     public async Task GetLibraryCard_WithCamelCase_ReturnsCamelCasePropertyNames()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -243,7 +243,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
 
     #region Enum Members
 
-    [Fact]
+    [TestMethod]
     public async Task PostBook_WithCamelCaseEnumValue_CreatesEntity()
     {
         using var client = CreateCamelCaseClient();
@@ -254,7 +254,7 @@ public abstract class NamingConventionTests<TApi, TContext> : RestierTestBase<TA
         content.Should().Contain("Enum Test Book");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetMetadata_WithEnumMembers_ShowsCamelCaseEnumValues()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(

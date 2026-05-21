@@ -13,7 +13,7 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests;
 
@@ -39,7 +39,7 @@ public abstract class Issue671_MultipleContexts_SingleLibraryContext<TApi, TCont
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SingleContext_LibraryApiWorks()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/LibraryCards");
@@ -71,7 +71,7 @@ public abstract class Issue671_MultipleContexts_SingleMarvelContext<TApi, TConte
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SingleContext_MarvelApiWorks()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Characters");
@@ -108,7 +108,7 @@ public abstract class Issue671_MultipleContexts<TLibraryApi, TMarvelApi> : Resti
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MultipleContexts_ShouldQueryFirstContext()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, routePrefix: "Library", resource: "/Books?$count=true");
@@ -124,7 +124,7 @@ public abstract class Issue671_MultipleContexts<TLibraryApi, TMarvelApi> : Resti
             because: "the database is seeded with 5 active books (OnFilterBooks hides inactive)");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MultipleContexts_ShouldQuerySecondContext()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, routePrefix: "Marvel", resource: "/Characters?$count=true");

@@ -10,13 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore;
 
 /// <summary>
 /// Tests for the <see cref="RestierController"/> covering basic CRUD and operation routing.
 /// </summary>
+[TestClass]
 public class RestierControllerTests : RestierTestBase<StoreApi>
 {
     private static void di(IServiceCollection services)
@@ -24,25 +25,25 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         services.AddTestStoreApiServices();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetTest()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products(1)", serviceCollection: di);
-        var content = await response.Content.ReadAsStringAsync(Xunit.TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token);
         TraceListener.WriteLine(content);
         response.IsSuccessStatusCode.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetNonExistingEntityTest()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/Products(-1)", serviceCollection: di);
-        var content = await response.Content.ReadAsStringAsync(Xunit.TestContext.Current.CancellationToken);
+        var content = await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token);
         TraceListener.WriteLine(content);
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Post_WithBody_ShouldReturnCreated()
     {
         var payload = new {
@@ -56,7 +57,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Post_WithoutBody_ShouldReturnBadRequest()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/Products",
@@ -66,7 +67,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         content.Should().Contain("A POST requires an object to be present in the request body.");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FunctionImport_NotInModel_ShouldReturnNotFound()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct2", serviceCollection: di);
@@ -74,7 +75,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FunctionImport_NotInController_ShouldReturnNotImplemented()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/GetBestProduct", serviceCollection: di);
@@ -82,7 +83,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         response.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ActionImport_NotInModel_ShouldReturnNotFound()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct2", serviceCollection: di);
@@ -90,7 +91,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ActionImport_NotInController_ShouldReturnNotImplemented()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/RemoveWorstProduct", serviceCollection: di);
@@ -102,7 +103,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         content.Should().Contain("Model state is not valid");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetActionImport_ShouldReturnNotFound()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Get, resource: "/RemoveWorstProduct", serviceCollection: di);
@@ -110,7 +111,7 @@ public class RestierControllerTests : RestierTestBase<StoreApi>
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FunctionImport_Post_WithoutBody_ShouldReturnMethodNotAllowed()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<StoreApi>(HttpMethod.Post, resource: "/GetBestProduct", serviceCollection: di);

@@ -13,6 +13,7 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Common;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Net;
@@ -20,7 +21,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -28,7 +28,7 @@ public abstract class AuthorizationTests<TApi, TContext> : RestierTestBase<TApi>
 {
     protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task Authorization_FilterReturns403()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -46,7 +46,7 @@ public abstract class AuthorizationTests<TApi, TContext> : RestierTestBase<TApi>
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Authorization_UpdateEmployee_ShouldReturn400()
     {
         var settings = new JsonSerializerOptions

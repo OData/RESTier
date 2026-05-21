@@ -14,11 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -35,6 +35,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 ///   hook *before* UseRouting, so the principal is populated before the matcher policy and
 ///   authorization middleware see the endpoint).
 /// </summary>
+[TestClass]
 public class AnonymousAccessTests
 {
     private static RestierBreakdanceTestBase<TApi> BuildHost<TApi>(bool addAdminPolicy = false)
@@ -106,7 +107,7 @@ public class AnonymousAccessTests
     // require entity-set query plumbing, and the metadata path resolves to "class" target key —
     // exactly the surface we want to test for class-level [AllowAnonymous] / [Authorize].
 
-    [Fact]
+    [TestMethod]
     public async Task ClassAllowAnonymous_MetadataAccessibleAnonymously()
     {
         // Global [Authorize] + class [AllowAnonymous] + anonymous GET /$metadata → 200.
@@ -116,7 +117,7 @@ public class AnonymousAccessTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NoClassAttribute_AnonymousRequest_Returns401()
     {
         // Control case: global [Authorize], no class attribute, anonymous GET /$metadata → 401.
@@ -126,7 +127,7 @@ public class AnonymousAccessTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ClassAllowAnonymous_ServiceDocumentAccessible()
     {
         // Service document (GET /) + class [AllowAnonymous] → 200.
@@ -140,7 +141,7 @@ public class AnonymousAccessTests
 
     #region Operation method
 
-    [Fact]
+    [TestMethod]
     public async Task OperationAllowAnonymous_AccessibleAnonymously()
     {
         // Scenario 5: [AllowAnonymous] on action → anonymous POST /Hello must NOT be denied
@@ -154,7 +155,7 @@ public class AnonymousAccessTests
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OperationWithAdminPolicy_AdminUser_Allowed()
     {
         // Scenario 7: [Authorize(Policy = "AdminOnly")] on action, authenticated admin: auth passes.
@@ -165,7 +166,7 @@ public class AnonymousAccessTests
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OperationWithAdminPolicy_NonAdminUser_Returns403()
     {
         // Scenario 6: same operation, authenticated non-admin user → 403.
@@ -175,7 +176,7 @@ public class AnonymousAccessTests
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OperationWithoutAttribute_AnonymousReturns401()
     {
         // Operation method with no attribute inherits the global [Authorize] filter.
@@ -189,7 +190,7 @@ public class AnonymousAccessTests
 
     #region Inheritance
 
-    [Fact]
+    [TestMethod]
     public async Task InheritedAuthorize_AnonymousReturns401()
     {
         // Subclass with no override inherits [Authorize] from the base class.
@@ -199,7 +200,7 @@ public class AnonymousAccessTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InheritedAuthorize_AuthenticatedUserSucceeds()
     {
         // Same inheritance, authenticated user → 200.

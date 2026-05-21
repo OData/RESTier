@@ -10,20 +10,21 @@ using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Core;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
 /// <summary>
 /// Unit tests for the <see cref="RestierWebApiOperationModelBuilder"/> class.
 /// </summary>
+[TestClass]
 public class RestierWebApiOperationModelBuilderTests
 {
     private readonly Type _targetApiType = typeof(SampleApi);
     private readonly IModelBuilder _innerModelBuilder = Substitute.For<IModelBuilder>();
 
-    [Fact]
+    [TestMethod]
     public void Constructor_ShouldInitializeProperties()
     {
         // Arrange
@@ -36,7 +37,7 @@ public class RestierWebApiOperationModelBuilderTests
         builder.Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_ShouldReturnNull_WhenInnerModelBuilderReturnsNull()
     {
         // Arrange
@@ -54,7 +55,7 @@ public class RestierWebApiOperationModelBuilderTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_ShouldReturnModel_WhenInnerModelBuilderReturnsValidModel()
     {
         // Arrange
@@ -77,7 +78,7 @@ public class RestierWebApiOperationModelBuilderTests
         result.Should().BeAssignableTo<EdmModel>();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_ShouldExtendModelWithOperations()
     {
         // Arrange
@@ -101,7 +102,7 @@ public class RestierWebApiOperationModelBuilderTests
         test.Count().Should().Be(1);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_ShouldWarnWhenBoundOperationHasNoParameters()
     {
         var testTraceListener = new TestTraceListener();
@@ -134,7 +135,7 @@ public class RestierWebApiOperationModelBuilderTests
         }
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_DuplicateOperationByName_SkipsAttributeAdditionWithWarning()
     {
         var testTraceListener = new TestTraceListener();
@@ -182,11 +183,11 @@ public class RestierWebApiOperationModelBuilderTests
         }
     }
 
-    [Theory]
-    [InlineData(nameof(SampleApi.IntWithDefault), "5", false)]
-    [InlineData(nameof(SampleApi.NullableIntWithDefault), "null", true)]
-    [InlineData(nameof(SampleApi.OptionalRef), "null", true)]
-    [InlineData(nameof(SampleApi.DefaultValueAttr), "hello", true)]
+    [TestMethod]
+    [DataRow(nameof(SampleApi.IntWithDefault), "5", false)]
+    [DataRow(nameof(SampleApi.NullableIntWithDefault), "null", true)]
+    [DataRow(nameof(SampleApi.OptionalRef), "null", true)]
+    [DataRow(nameof(SampleApi.DefaultValueAttr), "hello", true)]
     public void GetEdmModel_EmitsOptionalParameter_WithExpectedDefaultAndNullability(
         string operationName, string expectedDefault, bool expectedNullable)
     {
@@ -205,7 +206,7 @@ public class RestierWebApiOperationModelBuilderTests
         param.Type.IsNullable.Should().Be(expectedNullable);
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_BareNullableParam_IsNullableButRequired()
     {
         var edmModel = new EdmModel();
@@ -222,7 +223,7 @@ public class RestierWebApiOperationModelBuilderTests
         param.Type.IsNullable.Should().BeTrue();                     // but nullable
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_PlainValueTypeParam_IsNonNullableAndRequired()
     {
         var edmModel = new EdmModel();

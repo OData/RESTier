@@ -4,19 +4,20 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Restier.AspNetCore.Middleware;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Middleware;
 
 /// <summary>
 /// Unit tests for <see cref="RestierClaimsPrincipalMiddleware"/>.
 /// </summary>
+[TestClass]
 public class RestierClaimsPrincipalMiddlewareTests
 {
-    [Fact]
+    [TestMethod]
     public async Task InvokeAsync_ShouldSetHttpContextInContextAccessor()
     {
         // Arrange
@@ -33,7 +34,7 @@ public class RestierClaimsPrincipalMiddlewareTests
         contextAccessor.HttpContext.Should().Be(httpContext);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvokeAsync_ShouldSetClaimsPrincipalSelector()
     {
         // Arrange
@@ -51,7 +52,7 @@ public class RestierClaimsPrincipalMiddlewareTests
         ClaimsPrincipal.ClaimsPrincipalSelector().Should().Be(httpContext.User);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvokeAsync_ShouldCallNextMiddleware()
     {
         // Arrange

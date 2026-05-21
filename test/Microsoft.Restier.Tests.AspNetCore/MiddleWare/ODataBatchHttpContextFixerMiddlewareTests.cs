@@ -5,17 +5,18 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Restier.AspNetCore.Middleware;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Middleware;
 
 /// <summary>
 /// Unit tests for <see cref="ODataBatchHttpContextFixerMiddleware"/>.
 /// </summary>
+[TestClass]
 public class ODataBatchHttpContextFixerMiddlewareTests
 {
-    [Fact]
+    [TestMethod]
     public async Task InvokeAsync_ShouldSetHttpContext_WhenHttpContextIsNull()
     {
         // Arrange
@@ -33,7 +34,7 @@ public class ODataBatchHttpContextFixerMiddlewareTests
         await requestDelegate.Received(1).Invoke(httpContext);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvokeAsync_ShouldNotOverrideHttpContext_WhenHttpContextIsNotNull()
     {
         // Arrange

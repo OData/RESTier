@@ -12,7 +12,7 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests;
 
@@ -42,7 +42,7 @@ public abstract class Issue519_SingleNavPropertyFilter<TApi, TContext> : Restier
     /// Verifies that OnFilter is applied to single navigation properties during $expand.
     /// Books whose publisher does not pass the OnFilterPublishers filter should have null Publisher.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task ExpandSingleNavProperty_ShouldApplyFilter()
     {
         // Query books with expanded Publisher. The FilteredPublisherLibraryApi filters publishers
@@ -67,7 +67,7 @@ public abstract class Issue519_SingleNavPropertyFilter<TApi, TContext> : Restier
     /// <summary>
     /// Verifies that the collection navigation $expand still works with filters applied.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task ExpandCollectionNavProperty_ShouldStillApplyFilter()
     {
         // Query publishers with expanded Books. The OnFilterBooks filter (from LibraryApi)

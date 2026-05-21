@@ -10,12 +10,12 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -25,7 +25,7 @@ public abstract class UpdateTests<TApi, TContext> : RestierTestBase<TApi> where 
 
     protected abstract Task Cleanup(Guid bookId, string title);
 
-    [Fact]
+    [TestMethod]
     public async Task UpdateBookWithPublisher_IgnoresNavigationProperty()
     {
         // Filter to a book with a publisher so the result is deterministic regardless of residual
@@ -62,7 +62,7 @@ public abstract class UpdateTests<TApi, TContext> : RestierTestBase<TApi> where 
         await Cleanup(book.Id, originalTitle);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UpdateBook()
     {
         var bookRequest = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -99,7 +99,7 @@ public abstract class UpdateTests<TApi, TContext> : RestierTestBase<TApi> where 
         await Cleanup(book.Id, originalTitle);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PatchBook()
     {
         var bookRequest = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -140,7 +140,7 @@ public abstract class UpdateTests<TApi, TContext> : RestierTestBase<TApi> where 
         await Cleanup(book.Id, originalTitle);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UpdatePublisher_ShouldCallInterceptor()
     {
         var publisherRequest = await RestierTestHelpers.ExecuteTestRequest<TApi>(

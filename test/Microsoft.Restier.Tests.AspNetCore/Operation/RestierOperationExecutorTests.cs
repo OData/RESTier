@@ -13,11 +13,12 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Operation;
 
+[TestClass]
 public class RestierOperationExecutorTests
 {
     private readonly IOperationAuthorizer _authorizer = Substitute.For<IOperationAuthorizer>();
@@ -34,14 +35,14 @@ public class RestierOperationExecutorTests
         return new RestierOperationExecutor(authorizerFactory, filterFactory);
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_Should_Set_Dependencies()
     {
         var executor = CreateExecutor();
         executor.Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteOperationAsync_Should_Throw_If_Context_Is_Not_RestierOperationContext()
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
@@ -51,7 +52,7 @@ public class RestierOperationExecutorTests
         await act.Should().ThrowAsync<NotImplementedException>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteOperationAsync_Should_Throw_If_Method_Not_Found()
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
@@ -65,7 +66,7 @@ public class RestierOperationExecutorTests
         await act.Should().ThrowAsync<NotImplementedException>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteOperationAsync_Should_Throw_If_Not_Authorized()
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
@@ -83,7 +84,7 @@ public class RestierOperationExecutorTests
         await act.Should().ThrowAsync<SecurityException>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteOperationAsync_Should_Invoke_Filters()
     {
         var api = new DummyApi(Substitute.For<IEdmModel>(), Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());

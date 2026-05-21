@@ -8,10 +8,10 @@ using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -25,7 +25,7 @@ public abstract class NavigationPropertyTests<TApi, TContext> : RestierTestBase<
 
     protected abstract void CleanupPublisherData(object contextObj, Publisher publisher);
 
-    [Fact]
+    [TestMethod]
     public async Task NavigationProperties_ChildrenShouldFilter_IsActive()
     {
         var publisher = new Publisher
@@ -68,7 +68,7 @@ public abstract class NavigationPropertyTests<TApi, TContext> : RestierTestBase<
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NavigationProperties_ChildrenShouldFilter_Explicit()
     {
         var publisher = new Publisher
@@ -111,7 +111,7 @@ public abstract class NavigationPropertyTests<TApi, TContext> : RestierTestBase<
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NavigationProperties_ChildrenShouldFilter_AcrossProviders()
     {
         var publisher1 = new Publisher

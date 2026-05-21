@@ -12,8 +12,8 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Operation;
 
@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Operation;
 /// The explicit-null path (Present = true, Value = null) requires a real HttpRequest for
 /// ConvertValue and is covered instead by HTTP-level integration tests (Task 12).
 /// </summary>
+[TestClass]
 public class RestierOperationExecutorOptionalTests
 {
     private readonly OptionalParamsApi _api = new();
@@ -35,7 +36,7 @@ public class RestierOperationExecutorOptionalTests
         return new RestierOperationExecutor(authorizerFactory, filterFactory);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OmittedCompilerDefault_PassesDeclaredDefault()
     {
         var executor = CreateExecutor();
@@ -50,7 +51,7 @@ public class RestierOperationExecutorOptionalTests
         _api.LastReceived.Should().Be(5);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OmittedDefaultValueAttribute_PassesAttributeValue()
     {
         var executor = CreateExecutor();
@@ -65,7 +66,7 @@ public class RestierOperationExecutorOptionalTests
         _api.LastReceived.Should().Be("hello");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OmittedNullableWithDefault_SubstitutesDefault()
     {
         var executor = CreateExecutor();

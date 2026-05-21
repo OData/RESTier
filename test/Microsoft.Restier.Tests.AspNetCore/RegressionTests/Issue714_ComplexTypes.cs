@@ -14,7 +14,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests;
 
@@ -32,7 +32,7 @@ public abstract class Issue714_ComplexTypes<TApi> : RestierTestBase<TApi>
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ComplexTypes_WorkAsExpected()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/ComplexTypeTest()");

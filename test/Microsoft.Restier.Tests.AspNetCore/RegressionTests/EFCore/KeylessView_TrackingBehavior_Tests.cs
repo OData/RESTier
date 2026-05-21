@@ -16,7 +16,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore;
 
@@ -36,6 +36,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore;
 /// is the single end-to-end pin that motivated Follow-up B plus one
 /// <c>TrackAll</c> contrast row for cheap confidence.
 /// </summary>
+[TestClass]
 public class KeylessView_TrackingBehavior_Tests
 {
     /// <summary>
@@ -57,7 +58,7 @@ public class KeylessView_TrackingBehavior_Tests
             services.AddSingleton<IChainedService<IQueryExecutor>, ChangeTrackerProbeExecutor>();
         };
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_WithNoTrackingOption_LeavesChangeTrackerEmpty()
     {
         ChangeTrackerProbeExecutor.Reset();
@@ -74,7 +75,7 @@ public class KeylessView_TrackingBehavior_Tests
             because: "RestierEFOptions.TrackingBehavior = NoTracking should keep the ChangeTracker empty for keyless-view GET requests");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_WithTrackAllOption_LeavesChangeTrackerEmpty()
     {
         // Keyless types are unconditionally untrackable in EF Core regardless of

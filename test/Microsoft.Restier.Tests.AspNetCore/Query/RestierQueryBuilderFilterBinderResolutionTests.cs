@@ -11,8 +11,8 @@ using Microsoft.Restier.AspNetCore.Query;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Query;
 
@@ -21,6 +21,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Query;
 /// IFilterBinder parameter is honored by HandleFilterPathSegment when present, and that the
 /// fallback to a fresh FilterBinder() works when no binder is passed.
 /// </summary>
+[TestClass]
 public class RestierQueryBuilderFilterBinderResolutionTests
 {
     /// <summary>
@@ -28,7 +29,7 @@ public class RestierQueryBuilderFilterBinderResolutionTests
     /// We assert the ctor signature compiles; full end-to-end coverage of path-segment $filter
     /// behavior is exercised by SpatialTypeIntegrationTests.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void Ctor_AcceptsOptionalFilterBinder_DoesNotThrow()
     {
         var binder = Substitute.For<IFilterBinder>();
@@ -49,7 +50,7 @@ public class RestierQueryBuilderFilterBinderResolutionTests
     /// The IFilterBinder parameter is optional — callers that don't pass one must continue to
     /// compile against the (api, path, querySettings) ctor signature.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void Ctor_FilterBinderParameter_IsOptional()
     {
         var api = new TestApi(

@@ -11,10 +11,10 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -22,7 +22,7 @@ public abstract class ValidationTests<TApi, TContext> : RestierTestBase<TApi> wh
 {
     protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task Validation_StringLengthExceeded()
     {
         var bookRequest = await RestierTestHelpers.ExecuteTestRequest<TApi>(

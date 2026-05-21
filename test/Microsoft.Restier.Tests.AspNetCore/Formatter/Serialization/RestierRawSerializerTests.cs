@@ -8,21 +8,24 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter.Serialization;
 
 /// <summary>
 /// Unit tests for <see cref="RestierRawSerializer"/>.
 /// </summary>
+[TestClass]
 public class RestierRawSerializerTests
 {
+    public TestContext TestContext { get; set; }
+
     private readonly ODataPayloadValueConverter _mockPayloadValueConverter;
     private readonly RestierRawSerializer _serializer;
 
@@ -32,7 +35,7 @@ public class RestierRawSerializerTests
         _serializer = new RestierRawSerializer(_mockPayloadValueConverter);
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_ShouldThrowArgumentNullException_WhenPayloadValueConverterIsNull()
     {
         // Act
@@ -43,7 +46,7 @@ public class RestierRawSerializerTests
             .WithMessage("*payloadValueConverter*");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_ShouldUseRawResult_WhenGraphIsRawResult()
     {
         // Arrange
@@ -78,11 +81,11 @@ public class RestierRawSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_ShouldConvertToPayloadValue_WhenWriteContextIsNotNull()
     {
         // Arrange
@@ -106,11 +109,11 @@ public class RestierRawSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_ShouldSerializeEmptyString_WhenGraphIsNull()
     {
         // Arrange       
@@ -130,7 +133,7 @@ public class RestierRawSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(string.Empty);
     }
 }

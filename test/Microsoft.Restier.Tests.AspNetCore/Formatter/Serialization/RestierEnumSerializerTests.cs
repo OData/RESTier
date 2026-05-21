@@ -7,22 +7,25 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter;
 
 /// <summary>
 /// Unit tests for <see cref="RestierEnumSerializer"/>.
 /// </summary>
+[TestClass]
 public class RestierEnumSerializerTests
 {
-    [Fact]
+    public TestContext TestContext { get; set; }
+
+    [TestMethod]
     public async Task WriteObjectAsync_ShouldCallBaseWriteObjectAsync_WithUnpackedResult()
     {
         // Arrange
@@ -50,11 +53,11 @@ public class RestierEnumSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 
-    [Fact]
+    [TestMethod]
     public void UnpackResult_ShouldReturnGraphAndType_WhenInputIsEnumResult()
     {
         // Arrange
@@ -72,7 +75,7 @@ public class RestierEnumSerializerTests
         result.Type.Should().Be(typeof(AttributeTargets));
     }
 
-    [Fact]
+    [TestMethod]
     public void UnpackResult_ShouldReturnOriginalGraphAndType_WhenInputIsNotEnumResult()
     {
         // Arrange

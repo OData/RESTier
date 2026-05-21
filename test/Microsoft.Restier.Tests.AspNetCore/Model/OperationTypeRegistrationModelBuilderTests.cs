@@ -7,11 +7,12 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.Core.Model;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
+[TestClass]
 public class OperationTypeRegistrationModelBuilderTests
 {
     private readonly IModelBuilder _innerModelBuilder = Substitute.For<IModelBuilder>();
@@ -26,7 +27,7 @@ public class OperationTypeRegistrationModelBuilderTests
         return string.IsNullOrEmpty(ns) ? type.Name : ns + "." + type.Name;
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_NullInnerModel_ReturnsNull()
     {
         _innerModelBuilder.GetEdmModel().Returns((IEdmModel)null);
@@ -38,7 +39,7 @@ public class OperationTypeRegistrationModelBuilderTests
         builder.GetEdmModel().Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_NoOperations_PassesModelThrough()
     {
         var inner = new EdmModel();
@@ -53,7 +54,7 @@ public class OperationTypeRegistrationModelBuilderTests
         result.SchemaElements.OfType<IEdmSchemaType>().Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_OperationWithMissingComplexType_RegistersIt()
     {
         var inner = new EdmModel();
@@ -68,7 +69,7 @@ public class OperationTypeRegistrationModelBuilderTests
         result.FindDeclaredType(EdmName(typeof(SearchCriteria))).Should().BeAssignableTo<IEdmComplexType>();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_OperationWithMissingEnumReturn_RegistersIt()
     {
         var inner = new EdmModel();
@@ -82,7 +83,7 @@ public class OperationTypeRegistrationModelBuilderTests
         result.FindDeclaredType(EdmName(typeof(Color))).Should().BeAssignableTo<IEdmEnumType>();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_OperationWithMissingEntityReturn_RegistersAsEntityType()
     {
         var inner = new EdmModel();
@@ -99,7 +100,7 @@ public class OperationTypeRegistrationModelBuilderTests
         result.EntityContainer.EntitySets().Should().NotContain(s => s.EntityType.FullName() == EdmName(typeof(Author)));
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_NestedComplexType_RegistersBoth()
     {
         var inner = new EdmModel();
@@ -114,7 +115,7 @@ public class OperationTypeRegistrationModelBuilderTests
         result.FindDeclaredType(EdmName(typeof(InnerComplex))).Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_OperationWithIReadOnlyListReturn_RegistersElementType()
     {
         var inner = new EdmModel();
@@ -133,7 +134,7 @@ public class OperationTypeRegistrationModelBuilderTests
             .Should().Contain(t => t.Name == nameof(SearchCriteria));
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_RegisteredType_HasClrTypeAnnotation()
     {
         var inner = new EdmModel();
@@ -151,7 +152,7 @@ public class OperationTypeRegistrationModelBuilderTests
         clrAnnotation.ClrType.Should().Be(typeof(SearchCriteria));
     }
 
-    [Fact]
+    [TestMethod]
     public void GetEdmModel_TypeAlreadyDeclared_DoesNotDuplicate()
     {
         var inner = new EdmModel();

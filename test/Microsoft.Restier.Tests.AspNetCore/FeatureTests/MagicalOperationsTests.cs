@@ -11,15 +11,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.AspNetCore.Scenarios.MagicalOps;
 using Microsoft.Restier.Tests.Shared;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
+[TestClass]
 public class MagicalOperationsTests
 {
     private static System.Action<IServiceCollection> ConfigureServices => services => services.AddTestDefaultServices();
 
-    [Fact]
+    [TestMethod]
     public async Task Echo_WithNullParameter_ReturnsNoContent()
     {
         // Literal #656 repro: ?parameter1=null on a Nullable<int> parameter must succeed
@@ -34,7 +35,7 @@ public class MagicalOperationsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent, body);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WithDefault_OmittedParameter_PassesDeclaredDefault()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<MagicalOpsApi>(
@@ -46,7 +47,7 @@ public class MagicalOperationsTests
         body.Should().Contain("\"value\":5");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NullableWithDefault_ExplicitNull_PassesNull()
     {
         // int? p = 5 is both nullable and optional. Explicit null must beat default.
@@ -59,7 +60,7 @@ public class MagicalOperationsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent, body);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NullableWithDefault_Omitted_PassesDefault()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<MagicalOpsApi>(
@@ -71,7 +72,7 @@ public class MagicalOperationsTests
         body.Should().Contain("\"value\":5");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Metadata_DeprecatedMethod_EmitsRevisionsAnnotation()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<MagicalOpsApi>(
@@ -82,7 +83,7 @@ public class MagicalOperationsTests
         xml.Should().Contain("Use NewMethod instead.");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Metadata_DescribedMethod_EmitsDescriptionAnnotation()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<MagicalOpsApi>(
@@ -93,7 +94,7 @@ public class MagicalOperationsTests
         xml.Should().Contain("Returns nothing.");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Metadata_UnknownComplexType_IsRegistered()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<MagicalOpsApi>(

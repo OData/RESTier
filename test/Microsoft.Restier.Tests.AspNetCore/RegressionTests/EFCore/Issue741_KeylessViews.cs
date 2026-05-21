@@ -13,16 +13,19 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore;
 
+[TestClass]
 public class Issue741_KeylessViews
 {
+    public TestContext TestContext { get; set; }
+
     private static Action<IServiceCollection> ConfigureServices => services =>
         services.AddEntityFrameworkServices<LibraryContext>();
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_Returns200WithRows()
     {
         LibraryWithViewsApi.OnFilterBooksByPublisherCallCount = 0;
@@ -33,11 +36,11 @@ public class Issue741_KeylessViews
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var body = await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token);
         body.Should().Contain("\"value\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_WithFilter_AppliesFilter()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryWithViewsApi>(
@@ -46,12 +49,12 @@ public class Issue741_KeylessViews
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var body = await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token);
         body.Should().Contain("\"PublisherId\":\"Publisher1\"");
         body.Should().NotContain("\"PublisherId\":\"Publisher2\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_InvokesOnFilterConvention()
     {
         LibraryWithViewsApi.OnFilterBooksByPublisherCallCount = 0;
@@ -66,7 +69,7 @@ public class Issue741_KeylessViews
             because: "Follow-up A routes keyless-view function imports through the query pipeline so OnFilter<View> fires");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_OnFilterFilterReachesResponse()
     {
         LibraryWithViewsApi.OnFilterBooksByPublisherCallCount = 0;
@@ -77,12 +80,12 @@ public class Issue741_KeylessViews
             serviceCollection: ConfigureServices);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var body = await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token);
         body.Should().NotContain("\"PublisherId\":\"Publisher3\"",
             because: "OnFilterBooksByPublisher filters out Publisher3 rows; the convention now fires through the query pipeline");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_KeylessView_QueryAuthorizerFires()
     {
         CountingQueryExpressionAuthorizer.InvocationCount = 0;
@@ -103,11 +106,11 @@ public class Issue741_KeylessViews
             because: "Follow-up A routes keyless-view function imports through DefaultQueryHandler.QueryAsync so IQueryExpressionAuthorizer.Authorize fires");
     }
 
-    [Theory]
-    [InlineData("POST")]
-    [InlineData("PUT")]
-    [InlineData("PATCH")]
-    [InlineData("DELETE")]
+    [TestMethod]
+    [DataRow("POST")]
+    [DataRow("PUT")]
+    [DataRow("PATCH")]
+    [DataRow("DELETE")]
     public async Task Write_KeylessView_Returns405(string verb)
     {
         // No payload — the 405 guard in RestierController fires on the function-import

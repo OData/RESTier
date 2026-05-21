@@ -11,10 +11,11 @@ using Microsoft.Restier.AspNetCore.Routing;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.ValidationOptions;
 
+[TestClass]
 public class RestierValidationOptionsResolverTests
 {
     private sealed class CapturingTraceListener : TraceListener
@@ -48,7 +49,7 @@ public class RestierValidationOptionsResolverTests
         public void Dispose() => Trace.Listeners.Remove(listener);
     }
 
-    [Fact]
+    [TestMethod]
     public void Resolve_EmptyBag_NoGlobalMaxTop_ProducesFrameworkDefaults()
     {
         var bag = new RestierValidationOptions();
@@ -61,7 +62,7 @@ public class RestierValidationOptionsResolverTests
         resolved.MaxExpansionDepth.Should().Be(new ODataValidationSettings().MaxExpansionDepth);
     }
 
-    [Fact]
+    [TestMethod]
     public void Resolve_EmptyBag_GlobalMaxTopSet_InheritsGlobalMaxTop()
     {
         var bag = new RestierValidationOptions();
@@ -73,7 +74,7 @@ public class RestierValidationOptionsResolverTests
         resolved.MaxTop.Should().Be(50);
     }
 
-    [Fact]
+    [TestMethod]
     public void Resolve_BagMaxTop_GlobalMaxTopDisagrees_BagWinsAndEmitsWarning()
     {
         var (listener, scope) = AttachListener();
@@ -93,7 +94,7 @@ public class RestierValidationOptionsResolverTests
             w.Contains("50", System.StringComparison.Ordinal));
     }
 
-    [Fact]
+    [TestMethod]
     public void Resolve_BagMaxTop_GlobalMaxTopAgrees_NoWarning()
     {
         var (listener, scope) = AttachListener();
@@ -109,7 +110,7 @@ public class RestierValidationOptionsResolverTests
         listener.Warnings.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void Resolve_BagSetsAllFields_AllFlowThrough()
     {
         var bag = new RestierValidationOptions
@@ -132,7 +133,7 @@ public class RestierValidationOptionsResolverTests
         resolved.MaxNodeCount.Should().Be(50);
     }
 
-    [Fact]
+    [TestMethod]
     public void Build_BagMaxTop_GlobalDisagrees_BagWinsAndDoesNotEmitWarning()
     {
         var (listener, scope) = AttachListener();
@@ -149,7 +150,7 @@ public class RestierValidationOptionsResolverTests
             because: "Build is the silent per-request path; the conflict warning is only emitted by Resolve at route-add time");
     }
 
-    [Fact]
+    [TestMethod]
     public void Build_NullODataOptions_DoesNotThrow()
     {
         var bag = new RestierValidationOptions { MaxExpansionDepth = 4 };
@@ -160,7 +161,7 @@ public class RestierValidationOptionsResolverTests
         built.MaxTop.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveMaxTop_BagNull_GlobalSet_ReturnsGlobal()
     {
         var globalOptions = new ODataOptions();
@@ -171,7 +172,7 @@ public class RestierValidationOptionsResolverTests
         maxTop.Should().Be(50);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveMaxTop_BagSetsValue_GlobalSet_ReturnsBagValue()
     {
         var bag = new RestierValidationOptions { MaxTop = 25 };
@@ -183,7 +184,7 @@ public class RestierValidationOptionsResolverTests
         maxTop.Should().Be(25);
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveMaxTop_BagNull_GlobalNull_ReturnsNull()
     {
         var maxTop = RestierValidationOptionsResolver.ResolveMaxTop(bag: null, globalOptions: null);
@@ -191,7 +192,7 @@ public class RestierValidationOptionsResolverTests
         maxTop.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveMaxTop_BagNull_GlobalZero_ReturnsNull()
     {
         // 0 is the "unset" sentinel for ODataOptions.QueryConfigurations.MaxTop.
@@ -203,7 +204,7 @@ public class RestierValidationOptionsResolverTests
         maxTop.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void ResolveMaxTop_EmptyBag_GlobalSet_ReturnsGlobal()
     {
         var bag = new RestierValidationOptions();  // MaxTop is null
@@ -216,9 +217,10 @@ public class RestierValidationOptionsResolverTests
     }
 }
 
+[TestClass]
 public class AddRestierRouteValidationGuardTests
 {
-    [Fact]
+    [TestMethod]
     public void AddRestierRoute_UserRegistersODataValidationSettings_Throws()
     {
         var act = () =>

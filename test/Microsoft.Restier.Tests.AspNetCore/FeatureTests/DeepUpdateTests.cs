@@ -17,7 +17,7 @@ using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -42,7 +42,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
     };
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_PatchBookTitle()
     {
         // GET a book to find its id and original title
@@ -103,7 +103,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         cleanupResponse.IsSuccessStatusCode.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_NullUnlinks_V40()
     {
         // GET a book that has a publisher. Filter so the result is deterministic regardless of
@@ -171,7 +171,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         cleanupResponse.IsSuccessStatusCode.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_InlineNewChildWithoutKey_Inserts()
     {
         // Create a publisher, then PATCH it with an inline new Book (no Id)
@@ -227,7 +227,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
             because: "OnInsertingBook should have assigned a server-generated Guid");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_Put_OmittedChildrenUnlinked()
     {
         // Create a publisher with 2 books via deep insert
@@ -317,7 +317,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
             because: "the non-contained omitted book should have its FK set to null (unlinked, not deleted)");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_SingleNavProperty_ReplaceWithExisting()
     {
         // Create a Book linked to Publisher1
@@ -359,7 +359,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         updatedBook.PublisherId.Should().Be("Publisher2");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_MoveExistingChildToNewParent()
     {
         // Create two publishers, each with one book
@@ -420,7 +420,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         movedBook.PublisherId.Should().Be(pubA, because: "book should now be linked to Publisher A");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_FiresConventionMethods()
     {
         // Create a Book linked to Publisher1
@@ -475,7 +475,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
             because: "OnUpdatingPublisher should have set LastUpdated to DateTimeOffset.Now during the deep update");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_SingleNavProperty_InsertNewRelated_NoKey()
     {
         // Case A: single-nav insert with a server-generated key.
@@ -517,7 +517,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         updatedReview.Book.Title.Should().Be("Inline New Book");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepUpdate_SingleNavProperty_InsertNewRelated_ClientSuppliedKey()
     {
         // Create a Book linked to Publisher1
@@ -562,7 +562,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         updatedBook.Publisher.Addr.Street.Should().Be("789 New St");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Post_ODataVersion401_ReturnsClearErrorMessage()
     {
         var server = RestierTestHelpers.GetTestableRestierServer<TApi>(
@@ -585,7 +585,7 @@ public abstract class DeepUpdateTests<TApi, TContext> : RestierTestBase<TApi>
         content.Should().Contain("4.01 is not supported");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Patch_ODataVersion401_ReturnsClearErrorMessage()
     {
         // PATCH with OData-Version: 4.01 triggers deserialization failure (edmEntityObject = null).
