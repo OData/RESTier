@@ -40,7 +40,7 @@ stages:
       displayName: dotnet restore
       inputs:
         command: restore
-        projects: 'src/RESTier.slnx'
+        projects: 'RESTier.slnx'
         feedsToUse: config
         nugetConfigPath: 'NuGet.Config'
 
@@ -60,10 +60,13 @@ stages:
         $projects = @(
           "src/Microsoft.Restier.Core/Microsoft.Restier.Core.csproj",
           "src/Microsoft.Restier.EntityFramework/Microsoft.Restier.EntityFramework.csproj",
+          "src/Microsoft.Restier.EntityFramework.Spatial/Microsoft.Restier.EntityFramework.Spatial.csproj",
           "src/Microsoft.Restier.EntityFrameworkCore/Microsoft.Restier.EntityFrameworkCore.csproj",
-          "src/Microsoft.Restier.AspNet/Microsoft.Restier.AspNet.csproj",
+          "src/Microsoft.Restier.EntityFrameworkCore.Spatial/Microsoft.Restier.EntityFrameworkCore.Spatial.csproj",
           "src/Microsoft.Restier.AspNetCore/Microsoft.Restier.AspNetCore.csproj",
           "src/Microsoft.Restier.AspNetCore.Swagger/Microsoft.Restier.AspNetCore.Swagger.csproj",
+          "src/Microsoft.Restier.AspNetCore.NSwag/Microsoft.Restier.AspNetCore.NSwag.csproj",
+          "src/Microsoft.Restier.AspNetCore.Versioning/Microsoft.Restier.AspNetCore.Versioning.csproj",
           "src/Microsoft.Restier.Breakdance/Microsoft.Restier.Breakdance.csproj"
         )
         foreach ($proj in $projects) {
