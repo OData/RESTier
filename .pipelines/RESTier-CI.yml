@@ -103,8 +103,12 @@ stages:
         arguments: install dotnet-reportgenerator-globaltool --tool-path $(Agent.TempDirectory)/tools
 
     - powershell: |
+        Write-Host "=== Coverage files discovered under Agent.TempDirectory ==="
+        Get-ChildItem -Path "$(Agent.TempDirectory)" -Filter coverage.cobertura.xml -Recurse -ErrorAction SilentlyContinue |
+          ForEach-Object { Write-Host $_.FullName }
+        Write-Host "==========================================================="
         & "$(Agent.TempDirectory)/tools/reportgenerator.exe" `
-          "-reports:$(Agent.TempDirectory)/TestResults/**/coverage.cobertura.xml" `
+          "-reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml" `
           "-targetdir:$(Build.ArtifactStagingDirectory)/CoverageReport" `
           "-reporttypes:Cobertura;HtmlInline_AzurePipelines;TextSummary"
         Get-Content "$(Build.ArtifactStagingDirectory)/CoverageReport/Summary.txt"
