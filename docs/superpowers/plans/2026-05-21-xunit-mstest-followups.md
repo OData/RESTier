@@ -4,7 +4,7 @@
 
 **Goal:** Close the three known migration debts left after the xUnit→MSTest conversion: (1) restore conditional skips on the six spatial tests that were turned into unconditional `[Ignore]`s, (2) replace the leftover xUnit-style `IDisposable` cleanup in `EFQuerySourcerTrackingTests` with MSTest's `[TestCleanup]` (both the EFCore class that already implements `IDisposable` and the EF6 sibling class that needs disposal but has none), and (3) eliminate the solution-level `dotnet test RESTier.slnx` flakiness on net8.0 caused by multiple test-host processes hitting the same LocalDB databases concurrently — without sacrificing the cross-assembly parallelism that the in-memory-only and DB-less projects can safely keep.
 
-**Architecture:** Use MSTest's native idioms throughout: `Assert.Inconclusive("...")` for runtime-conditional skips (preserves "Skipped" outcome while letting the probe actually decide); `[TestCleanup]` for per-test cleanup. For the cross-process LocalDB race, add a *targeted* cross-process named semaphore that **only** the assemblies which actually touch shared LocalDB databases acquire in `[AssemblyInitialize]` (and release in `[AssemblyCleanup]`). Within those assemblies, MSTest's existing `[DoNotParallelize]` markers on `LibraryApi{EFCore,EF6}` consumers continue to govern in-process serialization exactly as the old xUnit `[Collection]` attributes did. Assemblies that don't touch shared LocalDB (`Tests.Core`, `*.Spatial`, `Tests.EntityFrameworkCore` which is in-memory only) never reference the semaphore and continue to run in full parallel across processes. The lock is a named OS primitive (Windows-only — guarded by an `OperatingSystem.IsWindows()` check because LocalDB itself is Windows-only, so non-Windows test hosts simply skip acquisition).
+**Architecture:** Use MSTest's native idioms throughout: `Assert.Inconclusive("...")` for runtime-conditional skips (preserves "Skipped" outcome while letting the probe actually decide); `[TestCleanup]` for per-test cleanup. For the cross-process LocalDB race, add a *targeted* cross-process named semaphore that **only** the assemblies which actually touch shared LocalDB databases acquire in `[AssemblyInitialize]` (and release in `[AssemblyCleanup]`). Within those assemblies, MSTest's existing `[DoNotParallelize]` markers on `LibraryApi{EFCore,EF6}` consumers continue to govern in-process serialization exactly as the old xUnit `[Collection]` attributes did. Assemblies that don't touch shared LocalDB (`Tests.Core`, `*.Spatial`, and the four `Tests.AspNetCore.*` swagger/nswag/versioning siblings which use in-process `TestHost` infrastructure that never wires `AddEntityFrameworkServices`) never reference the semaphore and continue to run in full parallel across processes. The lock is a named OS primitive (Windows-only — guarded by an `OperatingSystem.IsWindows()` check because LocalDB itself is Windows-only, so non-Windows test hosts simply skip acquisition).
 
 **Tech Stack:**
 - **Test framework:** MSTest 3.x (`Assert.Inconclusive`, `[TestCleanup]`, `[AssemblyInitialize]` / `[AssemblyCleanup]`)
@@ -61,21 +61,22 @@ Important rules:
 
 **Created, per LocalDB-consuming assembly (Task 5):**
 - `test/Microsoft.Restier.Tests.AspNetCore/AssemblyHooks.cs`
-- `test/Microsoft.Restier.Tests.AspNetCore.NSwag/AssemblyHooks.cs`
-- `test/Microsoft.Restier.Tests.AspNetCore.Swagger/AssemblyHooks.cs`
-- `test/Microsoft.Restier.Tests.AspNetCore.Versioning/AssemblyHooks.cs`
 - `test/Microsoft.Restier.Tests.EntityFramework/AssemblyHooks.cs`
+- `test/Microsoft.Restier.Tests.EntityFrameworkCore/AssemblyHooks.cs`
 
-**Why each of those five and only those five?** Verified by grep (`MSSQLLocalDB | LibraryContext | MarvelContext | ExecuteTestRequest | GetApiMetadata | RestierTestHelpers`):
+**Why exactly these three?** The initial draft of this plan listed five assemblies based on a naive grep that flagged any test using Breakdance/HTTP test helpers. During execution two corrections were applied:
 
-| Assembly | LocalDB-touching? | Adds AssemblyHooks? |
+1. `Tests.AspNetCore.{NSwag,Swagger,Versioning}` were **removed** from the list — closer inspection showed they use `Microsoft.AspNetCore.TestHost` with their own per-project `*.Infrastructure` test hosts that never reference `LibraryContext`, `LibraryApi`, `RestierTestHelpers`, or `AddEntityFrameworkServices`. Their tests never open a SQL connection. Adding the lock would have needlessly serialised them against the real LocalDB-touching assemblies.
+2. `Tests.EntityFrameworkCore` was **added** to the list — its `EFModelBuilderTests`, `EFModelMapperTests`, and `EFCoreDbContextExtensionsTests` call `AddEntityFrameworkServices<LibraryContext>()`, which in `test/Microsoft.Restier.Tests.Shared.EntityFramework/Extensions/EntityFrameworkServiceCollectionExtensions.cs` (the EFCore branch) wires `options.UseSqlServer(builder.ConnectionString, o => o.UseNetTopologySuite())`. That connection string targets the shared `LibraryContext_*_EFCore` LocalDB database which `Tests.AspNetCore`'s EFCore feature tests also use — so they MUST serialise against each other.
+
+| Assembly | Touches shared LocalDB? | AssemblyHooks? |
 |---|---|---|
-| `Tests.AspNetCore` | Yes (82 hits, Breakdance + `LibraryContext` on LocalDB) | **Yes** |
-| `Tests.AspNetCore.NSwag` | Yes (`CombinedAppTests`, `KeylessViewOpenApiTests` use Breakdance with `LibraryContext`) | **Yes** |
-| `Tests.AspNetCore.Swagger` | Yes (`Issue766_PrimitiveParamOperationTests`, `KeylessViewOpenApiTests` use Breakdance) | **Yes** |
-| `Tests.AspNetCore.Versioning` | Yes (`SwaggerIntegrationTests`, `NSwagIntegrationTests`, fixtures use Breakdance) | **Yes** |
-| `Tests.EntityFramework` | Yes (`ChangeSetPreparerTests` uses `LibraryContext` against real EF6 SQL) | **Yes** |
-| `Tests.EntityFrameworkCore` | No (every consumer uses `UseInMemoryDatabase($"…-{Guid.NewGuid()}")` — unique per test instance, no shared state) | No |
+| `Tests.AspNetCore` | Yes (82 hits, Breakdance + `LibraryContext` on LocalDB via `AddEntityFrameworkServices`) | **Yes** |
+| `Tests.EntityFramework` | Yes (`ChangeSetPreparerTests` uses `LibraryContext` against real EF6 SQL — `LibraryContext_{Major}` catalog) | **Yes** |
+| `Tests.EntityFrameworkCore` | Yes (`EFModelBuilderTests`/`EFModelMapperTests`/`EFCoreDbContextExtensionsTests` use `AddEntityFrameworkServices<LibraryContext>` → `UseSqlServer` against `LibraryContext_{Major}_EFCore` LocalDB) | **Yes** |
+| `Tests.AspNetCore.NSwag` | No (in-process `TestHost` with custom `*.Infrastructure` — no LocalDB wiring) | No |
+| `Tests.AspNetCore.Swagger` | No (same — in-process TestHost only) | No |
+| `Tests.AspNetCore.Versioning` | No (same — in-process TestHost only) | No |
 | `Tests.EntityFramework.Spatial`, `Tests.EntityFrameworkCore.Spatial` | No (offline `DbSpatialConverter` round-trips; no DB) | No |
 | `Tests.Core` | No (no DB references) | No |
 
