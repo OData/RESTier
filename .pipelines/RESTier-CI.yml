@@ -73,6 +73,13 @@ stages:
           --no-restore
 
     # --- Test ---
+    # Pre-start LocalDB so the first test's connection doesn't time out waiting
+    # on the ~60s auto-start (observed previously failing the net8 batch).
+    - powershell: |
+        sqllocaldb start MSSQLLocalDB
+        sqllocaldb info MSSQLLocalDB
+      displayName: Start LocalDB
+
     - task: DotNetCoreCLI@2
       displayName: dotnet test
       env:
