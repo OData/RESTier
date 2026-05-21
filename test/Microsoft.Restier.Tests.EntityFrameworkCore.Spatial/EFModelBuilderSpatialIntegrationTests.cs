@@ -9,10 +9,11 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
+    [TestClass]
     public class EFModelBuilderSpatialIntegrationTests
     {
         public class Place
@@ -33,7 +34,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
                 => modelBuilder.Entity<Place>(e => e.Property(x => x.Location).HasColumnType("geography"));
         }
 
-        [Fact]
+        [TestMethod]
         public void EFModelBuilder_publishes_spatial_property_as_GeographyPoint()
         {
             using var ctx = new IntegrationContext();
@@ -53,7 +54,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             loc.Type.Definition.FullTypeName().Should().Be("Edm.GeographyPoint");
         }
 
-        [Fact]
+        [TestMethod]
         public void EFModelBuilder_without_spatial_providers_is_a_noop_for_non_spatial_entities()
         {
             using var ctx = new IntegrationContext();

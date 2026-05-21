@@ -10,10 +10,11 @@ using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFramework.Shared.Model;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
 using Microsoft.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
+    [TestClass]
     public class SpatialModelConventionTests
     {
         private class City
@@ -64,7 +65,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void Phase1_captures_spatial_properties_with_resolved_edm_types()
         {
             using var ctx = new CityContext();
@@ -80,7 +81,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             captures.Should().Contain(c => c.PropertyInfo.Name == nameof(City.IndoorOrigin) && c.ResolvedEdmType == typeof(GeometryPoint));
         }
 
-        [Fact]
+        [TestMethod]
         public void Phase1_calls_Ignore_for_storage_types()
         {
             using var ctx = new CityContext();
@@ -98,7 +99,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
                 .Should().NotContain(new[] { nameof(City.HeadquartersLocation), nameof(City.IndoorOrigin) });
         }
 
-        [Fact]
+        [TestMethod]
         public void Phase2_adds_structural_properties_with_resolved_edm_types_PascalCase()
         {
             using var ctx = new CityContext();
@@ -123,7 +124,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             indoor.Type.Definition.FullTypeName().Should().Be("Edm.GeometryPoint");
         }
 
-        [Fact]
+        [TestMethod]
         public void Phase2_lowercases_property_names_under_LowerCamelCase()
         {
             using var ctx = new CityContext();
@@ -144,7 +145,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             cityType.FindProperty("indoorOrigin").Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void Phase2_attaches_ClrPropertyInfoAnnotation_so_EdmClrPropertyMapper_resolves_original_name()
         {
             using var ctx = new CityContext();
@@ -166,7 +167,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             clrName.Should().Be(nameof(City.HeadquartersLocation));
         }
 
-        [Fact]
+        [TestMethod]
         public void Spatial_attribute_with_non_Microsoft_Spatial_type_throws()
         {
             var convention = new SpatialModelConvention(new ISpatialModelMetadataProvider[] { new NtsSpatialModelMetadataProvider() });
@@ -179,7 +180,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
                 .WithMessage("*not a Microsoft.Spatial primitive type*");
         }
 
-        [Fact]
+        [TestMethod]
         public void Spatial_attribute_genus_mismatch_throws()
         {
             using var ctx = new CityContext();

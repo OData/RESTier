@@ -7,13 +7,14 @@ using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Spatial;
 using NetTopologySuite.Geometries;
 using NSubstitute;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
+    [TestClass]
     public class EFChangeSetInitializerSpatialTests
     {
-        [Fact]
+        [TestMethod]
         public void EFCore_ConvertToEfValue_dispatches_to_registered_spatial_converter()
         {
             var ntsPoint = new NetTopologySuite.Geometries.GeometryFactory(new PrecisionModel(), 4326)
@@ -31,7 +32,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             result.Should().BeSameAs(ntsPoint);
         }
 
-        [Fact]
+        [TestMethod]
         public void EFCore_ConvertToEfValue_passes_through_when_no_converter_registered()
         {
             var initializer = new EFChangeSetInitializer();

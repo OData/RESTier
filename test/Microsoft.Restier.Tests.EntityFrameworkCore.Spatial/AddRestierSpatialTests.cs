@@ -5,13 +5,14 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
+    [TestClass]
     public class AddRestierSpatialTests
     {
-        [Fact]
+        [TestMethod]
         public void AddRestierSpatial_registers_converter_and_provider()
         {
             var services = new ServiceCollection();
@@ -23,7 +24,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             sp.GetRequiredService<ISpatialModelMetadataProvider>().Should().BeOfType<NtsSpatialModelMetadataProvider>();
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierSpatial_is_idempotent()
         {
             var services = new ServiceCollection();

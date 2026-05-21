@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
 using NetTopologySuite.Geometries;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
+    [TestClass]
     public class NtsSpatialModelMetadataProviderTests
     {
         private class Probe
@@ -43,20 +44,20 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 
         private readonly NtsSpatialModelMetadataProvider _provider = new();
 
-        [Fact]
+        [TestMethod]
         public void IsSpatialStorageType_recognizes_NTS_subclasses()
         {
             _provider.IsSpatialStorageType(typeof(NetTopologySuite.Geometries.Point)).Should().BeTrue();
             _provider.IsSpatialStorageType(typeof(NetTopologySuite.Geometries.Geometry)).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void IsSpatialStorageType_rejects_other_types()
         {
             _provider.IsSpatialStorageType(typeof(string)).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void IgnoredStorageTypes_lists_Geometry_and_concrete_subclasses()
         {
             _provider.IgnoredStorageTypes.Should().Contain(typeof(Geometry));
@@ -69,7 +70,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             _provider.IgnoredStorageTypes.Should().Contain(typeof(GeometryCollection));
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_Geography_for_geography_column_type()
         {
             using var ctx = new ProbeContext();
@@ -79,7 +80,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
                 .Should().Be(SpatialGenus.Geography);
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_Geometry_for_geometry_prefixed_column_type()
         {
             using var ctx = new ProbeContext();
@@ -89,7 +90,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
                 .Should().Be(SpatialGenus.Geometry);
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_null_when_column_type_is_unspecified()
         {
             using var ctx = new ProbeContext();
@@ -99,7 +100,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
                 .Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_null_when_providerContext_is_null()
         {
             var prop = typeof(Probe).GetProperty(nameof(Probe.Geo));
