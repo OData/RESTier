@@ -27,6 +27,14 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
     {
         protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
+        /// <summary>
+        /// Restore the seed-orphan Book ("Sea of Rust", id 2D760F15-...) to PublisherId=null
+        /// after a test that bound it to a Publisher. The shared LocalDB persists across the
+        /// whole test process, so leaving the orphan attached corrupts other tests in the
+        /// same collection (e.g. OrphanExpandRepro's null-Publisher assertion).
+        /// </summary>
+        protected abstract Task RestoreOrphanBookAsync();
+
         /* JHC note: just leaving this here temporarily for reference
         #if EF6
                 void addTestServices<TDbContext>(IServiceCollection services) where TDbContext : DbContext => services.AddEF6ProviderServices<TDbContext>();
@@ -93,22 +101,29 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests
         [Fact]
         public async Task BoundAction_WithParameter_Returns200()
         {
-            var metadata = RestierTestHelpers.GetApiMetadataAsync<TApi>(serviceCollection: ConfigureServices);
+            try
+            {
+                var metadata = RestierTestHelpers.GetApiMetadataAsync<TApi>(serviceCollection: ConfigureServices);
 
-            var payload = new { bookId = new Guid("2D760F15-974D-4556-8CDF-D610128B537E") };
+                var payload = new { bookId = new Guid("2D760F15-974D-4556-8CDF-D610128B537E") };
 
-             var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(HttpMethod.Post, resource: "/Publishers('Publisher1')/PublishNewBook", payload: payload,
-                acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: ConfigureServices);
+                var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(HttpMethod.Post, resource: "/Publishers('Publisher1')/PublishNewBook", payload: payload,
+                   acceptHeader: WebApiConstants.DefaultAcceptHeader, serviceCollection: ConfigureServices);
 
-            var content = await TraceListener.LogAndReturnMessageContentAsync(response);
-            outputHelper.Write(content);
-            response.IsSuccessStatusCode.Should().BeTrue();
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var content = await TraceListener.LogAndReturnMessageContentAsync(response);
+                outputHelper.Write(content);
+                response.IsSuccessStatusCode.Should().BeTrue();
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var results = await response.DeserializeResponseAsync<Publisher>();
-            results.Should().NotBeNull();
-            results.Response.Should().NotBeNull();
-            results.Response.Books.All(c => c.Title == "Sea of Rust").Should().BeTrue();
+                var results = await response.DeserializeResponseAsync<Publisher>();
+                results.Should().NotBeNull();
+                results.Response.Should().NotBeNull();
+                results.Response.Books.All(c => c.Title == "Sea of Rust").Should().BeTrue();
+            }
+            finally
+            {
+                await RestoreOrphanBookAsync();
+            }
         }
     }
 
