@@ -67,7 +67,7 @@ conflicts if there is any then continue rebase via command _git pull --rebase co
 
 ### Test specification
 
-All tests need to be written with **xUnit v3**. Use **FluentAssertions** for assertions and **NSubstitute** for mocking. Here are some rules to follow when you are organizing the
+All tests need to be written with **MSTest 3.x**. Use **FluentAssertions** for assertions and **NSubstitute** for mocking. Here are some rules to follow when you are organizing the
 test code:
 
 - **Project name correspondence** (`Microsoft.Restier.X` -> `Microsoft.Restier.Tests.X`). For instance, all the test code of the `Microsoft.Restier.Core` project should be placed in the `Microsoft.Restier.Tests.Core` project. Path and file name correspondence. (`X/Y/Z/A.cs -> X.Tests/Y/Z/ATests.cs`). For example, the test code of the `ConventionBasedApiModelBuilder` class (in the `Microsoft.Restier.Core/Convention/ConventionBasedApiModelBuilder.cs` file) should be placed in the `Microsoft.Restier.Tests.Core/Convention/ConventionBasedApiModelBuilderTests.cs` file.
