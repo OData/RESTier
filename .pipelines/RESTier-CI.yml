@@ -23,7 +23,7 @@ stages:
 
     # --- Set Build Name ---
     - powershell: |
-        $buildName = "1.2.0-CI-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+        $buildName = "2.0.0-CI-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
         Write-Host "##vso[build.updatebuildnumber]$buildName"
       displayName: Set Build Name
 
@@ -54,6 +54,16 @@ stages:
         arguments: >
           --configuration $(BuildConfiguration)
           --no-restore
+
+    # --- Test ---
+    - task: DotNetCoreCLI@2
+      displayName: dotnet test
+      inputs:
+        command: test
+        projects: 'test/**/*.csproj'
+        arguments: >
+          --configuration $(BuildConfiguration)
+          --no-build
 
     # --- Pack ---
     - powershell: |
