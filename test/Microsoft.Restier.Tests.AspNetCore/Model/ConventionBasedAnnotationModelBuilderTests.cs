@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
 using Microsoft.OData.Edm.Vocabularies;
+using Microsoft.OData.Edm.Vocabularies.V1;
 using Microsoft.Restier.AspNetCore.Model;
 using Xunit;
 
@@ -15,6 +16,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Model;
 public class ConventionBasedAnnotationModelBuilderTests
 {
     private const string CoreDescriptionTerm = "Org.OData.Core.V1.Description";
+    private const string CoreRevisionsTerm = "Org.OData.Core.V1.Revisions";
     private const string CoreComputedTerm = "Org.OData.Core.V1.Computed";
     private const string CoreImmutableTerm = "Org.OData.Core.V1.Immutable";
     private const string ValidationMinimumTerm = "Org.OData.Validation.V1.Minimum";
@@ -480,5 +482,76 @@ public class ConventionBasedAnnotationModelBuilderTests
         var operation = result.SchemaElements.OfType<IEdmOperation>().Single();
         result.FindVocabularyAnnotations<IEdmVocabularyAnnotation>(operation, CoreDescriptionTerm)
             .Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetEdmModel_EmitsCoreRevisions_WhenOperationMethodHasObsoleteAttribute()
+    {
+        // Arrange
+        var inputModel = AnnotationTestFixtures.BuildModelWithUnboundFunction(
+            namespaceName: "Microsoft.Restier.Tests.AspNetCore.Model",
+            functionName: nameof(ApiWithObsoleteOperation.DeprecatedMethod));
+        var sut = new ConventionBasedAnnotationModelBuilder(typeof(ApiWithObsoleteOperation))
+        {
+            Inner = new AnnotationTestFixtures.StaticInnerBuilder(inputModel),
+        };
+
+        // Act
+        var result = sut.GetEdmModel();
+
+        // Assert — a Core.V1.Revisions annotation must exist on the operation.
+        var operation = result.SchemaElements.OfType<IEdmOperation>().Single();
+        var annotation = result
+            .FindVocabularyAnnotations<IEdmVocabularyAnnotation>(operation, CoreRevisionsTerm)
+            .Should().ContainSingle("an [Obsolete] method should emit a Revisions annotation").Subject;
+
+        // The annotation value is a collection with one record entry.
+        var collectionExpr = annotation.Value.Should().BeAssignableTo<IEdmCollectionExpression>().Subject;
+        var record = collectionExpr.Elements.Should().ContainSingle().Subject
+            .Should().BeAssignableTo<IEdmRecordExpression>().Subject;
+
+        // Kind = Deprecated
+        var kindConstructor = record.Properties.FirstOrDefault(p => p.Name == "Kind");
+        kindConstructor.Should().NotBeNull("the record must have a Kind property");
+        var enumExpr = kindConstructor.Value.Should().BeAssignableTo<IEdmEnumMemberExpression>().Subject;
+        enumExpr.EnumMembers.Should().ContainSingle(m => m.Name == "Deprecated");
+
+        // Description matches the obsolete message
+        var descConstructor = record.Properties.FirstOrDefault(p => p.Name == "Description");
+        descConstructor.Should().NotBeNull("the record must have a Description property");
+        ((IEdmStringConstantExpression)descConstructor.Value).Value.Should().Be("Use NewMethod instead.");
+    }
+
+    [Fact]
+    public void GetEdmModel_EmitsCoreDescription_WhenOperationParameterHasDescriptionAttribute()
+    {
+        // Arrange
+        var inputModel = AnnotationTestFixtures.BuildModelWithUnboundFunctionWithParameter(
+            namespaceName: "Microsoft.Restier.Tests.AspNetCore.Model",
+            functionName: nameof(ApiWithDescribedParameter.ParamWithDescription),
+            parameterName: "query");
+        var sut = new ConventionBasedAnnotationModelBuilder(typeof(ApiWithDescribedParameter))
+        {
+            Inner = new AnnotationTestFixtures.StaticInnerBuilder(inputModel),
+        };
+
+        // Act
+        var result = sut.GetEdmModel();
+
+        // Assert — the Description annotation must land on the *parameter*, not the operation.
+        var operation = result.SchemaElements.OfType<IEdmOperation>().Single();
+        var parameter = operation.FindParameter("query");
+        parameter.Should().NotBeNull("the EDM function should have a 'query' parameter");
+
+        // Parameter carries the Description.
+        var paramAnnotation = result
+            .FindVocabularyAnnotations<IEdmVocabularyAnnotation>(
+                (IEdmVocabularyAnnotatable)parameter, CoreDescriptionTerm)
+            .Should().ContainSingle("a parameter with [Description] should get a Core.V1.Description annotation").Subject;
+        ((IEdmStringConstantExpression)paramAnnotation.Value).Value.Should().Be("Search string.");
+
+        // The operation itself must NOT receive a Description from the parameter's attribute.
+        result.FindVocabularyAnnotations<IEdmVocabularyAnnotation>(operation, CoreDescriptionTerm)
+            .Should().BeEmpty("the [Description] is on the parameter, not the method");
     }
 }

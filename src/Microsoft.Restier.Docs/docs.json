@@ -70,6 +70,7 @@
         "icon": "clipboard-list",
         "pages": [
           "release-notes/index",
+          "release-notes/2-0-0-beta-magical-operations",
           "release-notes/2-0-0-beta",
           "release-notes/1-2-0",
           "release-notes/1-1-0",
@@ -221,7 +222,10 @@
                           "api-reference/Microsoft/Restier/AspNetCore/Model/BoundOperationAttribute",
                           "api-reference/Microsoft/Restier/AspNetCore/Model/ConventionBasedAnnotationModelBuilder",
                           "api-reference/Microsoft/Restier/AspNetCore/Model/OperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationParameterClassifier",
                           "api-reference/Microsoft/Restier/AspNetCore/Model/OperationType",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationTypeRegistrationModelBuilder",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OptionalAttribute",
                           "api-reference/Microsoft/Restier/AspNetCore/Model/ResourceAttribute",
                           "api-reference/Microsoft/Restier/AspNetCore/Model/RestierModelMapper",
                           "api-reference/Microsoft/Restier/AspNetCore/Model/RestierWebApiModelBuilder",

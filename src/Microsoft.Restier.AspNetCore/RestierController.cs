@@ -107,7 +107,11 @@ namespace Microsoft.Restier.AspNetCore
             if (lastSegment is OperationImportSegment unboundSegment)
             {
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
-                Func<string, object> getParaValueFunc = p => unboundSegment.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                Func<string, (bool Present, object Value)> getParaValueFunc = p =>
+                {
+                    var match = unboundSegment.Parameters.FirstOrDefault(c => c.Name == p);
+                    return (match is not null, match?.Value);
+                };
                 result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
 
                 var queryRequest = new QueryRequest(result)
@@ -141,7 +145,11 @@ namespace Microsoft.Restier.AspNetCore
                     result = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
 
                     var operation = segment.Operations.FirstOrDefault();
-                    Func<string, object> getParaValueFunc = p => segment.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                    Func<string, (bool Present, object Value)> getParaValueFunc = p =>
+                    {
+                        var match = segment.Parameters.FirstOrDefault(c => c.Name == p);
+                        return (match is not null, match?.Value);
+                    };
                     result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken).ConfigureAwait(false);
                     queryRequest = new QueryRequest(result)
                     {
@@ -388,15 +396,15 @@ namespace Microsoft.Restier.AspNetCore
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
 
             IQueryable result = null;
-            object GetParaValueFunc(string p)
+            (bool Present, object Value) GetParaValueFunc(string p)
             {
                 if (parameters is null)
                 {
-                    return null;
+                    return (false, null);
                 }
 
-                parameters.TryGetValue(p, out var parameter);
-                return parameter;
+                var found = parameters.TryGetValue(p, out var parameter);
+                return (found, parameter);
             }
 
             if (lastSegment is OperationImportSegment segment)
@@ -889,7 +897,7 @@ namespace Microsoft.Restier.AspNetCore
         }
 
         private Task<IQueryable> ExecuteOperationAsync(
-            Func<string, object> getParaValueFunc,
+            Func<string, (bool Present, object Value)> getParaValueFunc,
             string operationName,
             bool isFunction,
             IQueryable bindingParameterValue,

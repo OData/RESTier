@@ -133,6 +133,111 @@ public class RestierWebApiOperationModelBuilderTests
             Trace.Listeners.Remove(testTraceListener);
         }
     }
+
+    [Fact]
+    public void GetEdmModel_DuplicateOperationByName_SkipsAttributeAdditionWithWarning()
+    {
+        var testTraceListener = new TestTraceListener();
+        Trace.Listeners.Add(testTraceListener);
+        try
+        {
+            // Arrange — inner model already declares an EdmFunction named "SampleMethod"
+            // matching the [UnboundOperation] on SampleApi.SampleMethod.
+            var edmModel = new EdmModel();
+            var container = new EdmEntityContainer("TestNamespace", "DefaultContainer");
+            edmModel.AddElement(container);
+            var int32Ref = new EdmPrimitiveTypeReference(
+                EdmCoreModel.Instance.GetPrimitiveType(EdmPrimitiveTypeKind.Int32),
+                isNullable: false);
+            // Use the same namespace the builder will compute via GetNamespaceName:
+            // modelNamespace = model.DeclaredNamespaces.FirstOrDefault() = "TestNamespace".
+            var preexistingFunction = new EdmFunction(
+                "TestNamespace", "SampleMethod", int32Ref);
+            edmModel.AddElement(preexistingFunction);
+            container.AddFunctionImport("SampleMethod", preexistingFunction);
+            _innerModelBuilder.GetEdmModel().Returns(edmModel);
+
+            var extender = new RestierWebApiModelExtender(_targetApiType);
+            var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender)
+            {
+                Inner = _innerModelBuilder
+            };
+
+            // Act
+            var result = builder.GetEdmModel();
+
+            // Assert — exactly one EdmFunction named "SampleMethod" exists (the preexisting one),
+            // exactly one OperationImport, and the warning has been emitted.
+            result.Should().NotBeNull();
+            result.SchemaElements.OfType<IEdmOperation>()
+                .Count(o => o.Name == "SampleMethod").Should().Be(1);
+            result.EntityContainer.Elements.OfType<IEdmOperationImport>()
+                .Count(i => i.Name == "SampleMethod").Should().Be(1);
+            testTraceListener.Messages.Should().Contain("already declared");
+            testTraceListener.Messages.Should().Contain("SampleMethod");
+        }
+        finally
+        {
+            Trace.Listeners.Remove(testTraceListener);
+        }
+    }
+
+    [Theory]
+    [InlineData(nameof(SampleApi.IntWithDefault), "5", false)]
+    [InlineData(nameof(SampleApi.NullableIntWithDefault), "null", true)]
+    [InlineData(nameof(SampleApi.OptionalRef), "null", true)]
+    [InlineData(nameof(SampleApi.DefaultValueAttr), "hello", true)]
+    public void GetEdmModel_EmitsOptionalParameter_WithExpectedDefaultAndNullability(
+        string operationName, string expectedDefault, bool expectedNullable)
+    {
+        var edmModel = new EdmModel();
+        edmModel.AddElement(new EdmEntityContainer("TestNamespace", "DefaultContainer"));
+        _innerModelBuilder.GetEdmModel().Returns(edmModel);
+        var extender = new RestierWebApiModelExtender(_targetApiType);
+        var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender) { Inner = _innerModelBuilder };
+
+        var result = builder.GetEdmModel() as EdmModel;
+
+        var op = result.SchemaElements.OfType<IEdmOperation>().Single(o => o.Name == operationName);
+        var param = op.Parameters.Single();
+        param.Should().BeAssignableTo<IEdmOptionalParameter>();
+        ((IEdmOptionalParameter)param).DefaultValueString.Should().Be(expectedDefault);
+        param.Type.IsNullable.Should().Be(expectedNullable);
+    }
+
+    [Fact]
+    public void GetEdmModel_BareNullableParam_IsNullableButRequired()
+    {
+        var edmModel = new EdmModel();
+        edmModel.AddElement(new EdmEntityContainer("TestNamespace", "DefaultContainer"));
+        _innerModelBuilder.GetEdmModel().Returns(edmModel);
+        var extender = new RestierWebApiModelExtender(_targetApiType);
+        var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender) { Inner = _innerModelBuilder };
+
+        var result = builder.GetEdmModel() as EdmModel;
+
+        var op = result.SchemaElements.OfType<IEdmOperation>().Single(o => o.Name == nameof(SampleApi.NullableInt));
+        var param = op.Parameters.Single();
+        param.Should().NotBeAssignableTo<IEdmOptionalParameter>();   // not optional
+        param.Type.IsNullable.Should().BeTrue();                     // but nullable
+    }
+
+    [Fact]
+    public void GetEdmModel_PlainValueTypeParam_IsNonNullableAndRequired()
+    {
+        var edmModel = new EdmModel();
+        edmModel.AddElement(new EdmEntityContainer("TestNamespace", "DefaultContainer"));
+        _innerModelBuilder.GetEdmModel().Returns(edmModel);
+        var extender = new RestierWebApiModelExtender(_targetApiType);
+        var builder = new RestierWebApiOperationModelBuilder(_targetApiType, extender) { Inner = _innerModelBuilder };
+
+        var result = builder.GetEdmModel() as EdmModel;
+
+        var op = result.SchemaElements.OfType<IEdmOperation>().Single(o => o.Name == nameof(SampleApi.PlainValueType));
+        var param = op.Parameters.Single();
+        param.Should().NotBeAssignableTo<IEdmOptionalParameter>();
+        param.Type.IsNullable.Should().BeFalse();
+    }
 }
 
 // Sample API class for testing purposes
@@ -149,4 +254,22 @@ public class SampleApi
     {
         return 42;
     }
+
+    [UnboundOperation]
+    public int IntWithDefault(int p = 5) => p;
+
+    [UnboundOperation]
+    public int? NullableInt(int? p) => p;
+
+    [UnboundOperation]
+    public int? NullableIntWithDefault(int? p = null) => p;
+
+    [UnboundOperation]
+    public string OptionalRef([Microsoft.Restier.AspNetCore.Model.OptionalAttribute] string p) => p;
+
+    [UnboundOperation]
+    public string DefaultValueAttr([System.ComponentModel.DefaultValue("hello")] string p) => p;
+
+    [UnboundOperation]
+    public int PlainValueType(int p) => p;
 }

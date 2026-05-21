@@ -118,8 +118,15 @@ public class RestierWebApiOperationModelBuilder : IModelBuilder
     {
         foreach (var parameter in method.GetParameters())
         {
-            var parameterTypeReference = parameter.ParameterType.GetTypeReference(model);
-            var operationParam = new EdmOperationParameter(operation, parameter.Name, parameterTypeReference);
+            var isNullable = OperationParameterClassifier.ComputeNullable(parameter);
+            var (isOptional, defaultLiteral) = OperationParameterClassifier.ClassifyOptionality(parameter);
+
+            var parameterTypeReference = parameter.ParameterType.GetTypeReference(model, isNullable);
+
+            EdmOperationParameter operationParam = isOptional
+                ? new EdmOptionalParameter(operation, parameter.Name, parameterTypeReference, defaultLiteral)
+                : new EdmOperationParameter(operation, parameter.Name, parameterTypeReference);
+
             operation.AddParameter(operationParam);
         }
     }
@@ -136,6 +143,22 @@ public class RestierWebApiOperationModelBuilder : IModelBuilder
             var returnType = TypeHelper.GetUnderlyingTypeOrSelf(operationInfo.Method.ReturnType);
             var returnTypeReference = returnType.GetReturnTypeReference(model);
             var namespaceName = GetNamespaceName(operationInfo, modelNamespace);
+
+            // Dedup by namespace+name — RestierOperationExecutor dispatches by name only
+            // (see RestierOperationExecutor.cs and the comment around the GetMethod call),
+            // so a same-name pair would be either unreachable or trigger AmbiguousMatchException.
+            // Same-signature overloads are out of scope; see the magical-operations design.
+            var alreadyDeclared = model.SchemaElements.OfType<IEdmOperation>()
+                .Any(op => op.Namespace == namespaceName && op.Name == operationInfo.Name);
+            if (alreadyDeclared)
+            {
+                Trace.TraceWarning(
+                    $"Restier: An operation named '{namespaceName}.{operationInfo.Name}' is already declared on the model " +
+                    $"(likely via a custom ODataModelBuilder registration). Skipping the duplicate registration from " +
+                    $"[Operation] attribute. Remove either the manual registration or the [Operation] attribute to silence this warning. " +
+                    $"Note: same-name overloads are not supported by RestierOperationExecutor (resolves by name only).");
+                continue;
+            }
 
             // @robertmclaws: We're setting isBound here, so we can negate it later if a BindingParameter is not found.
             var isBound = operationInfo.OperationAttribute is BoundOperationAttribute;

@@ -121,6 +121,7 @@ public static class RestierODataOptionsExtensions
         modelBuildingServices.AddSingleton<KeylessViewRegistry>();
         modelBuildingServices.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
             .AddSingleton(new RestierWebApiModelExtender(type))
+            .AddSingleton<IChainedService<IModelBuilder>>(sp => new OperationTypeRegistrationModelBuilder(type))
             .AddSingleton<IChainedService<IModelBuilder>>(sp => new RestierWebApiOperationModelBuilder(type, sp.GetRequiredService<RestierWebApiModelExtender>()))
             .AddSingleton<IChainedService<IModelBuilder>>(sp => new ConventionBasedAnnotationModelBuilder(type));
 
@@ -197,6 +198,7 @@ public static class RestierODataOptionsExtensions
             services.AddSingleton<IChainedService<IModelBuilder>, RestierWebApiModelBuilder>()
                 .AddSingleton(modelExtender)
                 .AddSingleton(keylessViewRegistry)
+                .AddSingleton<IChainedService<IModelBuilder>>(sp => new OperationTypeRegistrationModelBuilder(type))
                 .AddSingleton<IChainedService<IModelBuilder>>(sp => new RestierWebApiOperationModelBuilder(type, sp.GetRequiredService<RestierWebApiModelExtender>()))
                 .AddSingleton<IChainedService<IModelBuilder>>(sp => new ConventionBasedAnnotationModelBuilder(type))
                 .AddSingleton<IChainedService<IModelMapper>, RestierWebApiModelMapper>()

@@ -127,17 +127,24 @@ namespace Microsoft.Restier.AspNetCore.Operation
             for (; paraIndex < parameterArray.Length; paraIndex++)
             {
                 var parameter = parameterArray[paraIndex];
-                var currentParameterValue = restierOperationContext.GetParameterValueFunc(parameter.Name);
+                var (isPresent, urlValue) = restierOperationContext.GetParameterValueFunc(parameter.Name);
 
                 object convertedValue;
-                if (restierOperationContext.IsFunction)
+                if (!isPresent && OperationParameterClassifier.IsOmittedOptional(parameter))
+                {
+                    // Parameter omitted from URL/body and declared omittable → substitute
+                    // the declared default. MethodInfo.Invoke does not honor compile-time
+                    // defaults, so we resolve them here.
+                    convertedValue = OperationParameterClassifier.ResolveDefault(parameter);
+                }
+                else if (restierOperationContext.IsFunction)
                 {
                     var parameterTypeRef = parameter.ParameterType.GetTypeReference(model);
 
                     // Change to right CLR class for collection/Enum/Complex/Entity
                     // JWS: As long as OData requires the ServiceProvider, we have to provide it. DI abuse smell.
                     convertedValue = DeserializationHelpers.ConvertValue(
-                        currentParameterValue,
+                        urlValue,
                         parameter.Name,
                         parameter.ParameterType,
                         parameterTypeRef,
@@ -148,7 +155,7 @@ namespace Microsoft.Restier.AspNetCore.Operation
                 else
                 {
                     convertedValue = DeserializationHelpers.ConvertCollectionType(
-                        currentParameterValue, parameter.ParameterType);
+                        urlValue, parameter.ParameterType);
                 }
 
                 parameters[paraIndex] = convertedValue;
