@@ -123,6 +123,9 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
     {
         private readonly TrackingTestContext context = new TrackingTestContext();
 
+        [TestCleanup]
+        public void Cleanup() => context?.Dispose();
+
         /// <summary>
         /// EF6 + Default + no cycle → wraps DbSet with AsNoTracking (returns a
         /// different IQueryable than the bare DbSet).
