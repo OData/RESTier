@@ -11,11 +11,11 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.AspNetCore.NSwag.Infrastructure;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.NSwag.IntegrationTests
 {
@@ -27,13 +27,16 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.IntegrationTests
     ///   * the function-import path exists;
     ///   * the complex-type schema component exists.
     /// </summary>
+    [TestClass]
     public class KeylessViewOpenApiTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+        [TestMethod]
         public async Task NSwagDoc_ContainsKeylessViewFunctionImportPathAndComplexTypeSchema()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildAsync(cancellationToken);
             var client = host.GetTestClient();
 

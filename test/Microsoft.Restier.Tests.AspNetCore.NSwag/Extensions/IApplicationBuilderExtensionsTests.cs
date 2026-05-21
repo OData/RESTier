@@ -12,24 +12,28 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.AspNetCore.NSwag.Infrastructure;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
 {
 
+    [TestClass]
     public class IApplicationBuilderExtensionsTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+
+        [TestMethod]
         public async Task UseRestierOpenApi_ServesEachRegisteredRouteUnderItsName()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostAsync(routes: new[] { ("", typeof(TestApi)), ("v3", typeof(TestApi)) }, cancellationToken);
             var client = host.GetTestClient();
 
@@ -57,10 +61,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             }
         }
 
-        [Fact]
+        [TestMethod]
         public async Task UseRestierOpenApi_ReturnsNotFound_ForUnknownDocumentName()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostAsync(routes: new[] { ("", typeof(TestApi)) }, cancellationToken);
             var client = host.GetTestClient();
 
@@ -68,10 +72,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task UseRestierOpenApi_ReflectsInboundHostAndPathBase_InServiceRoot()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostAsync(routes: new[] { ("v3", typeof(TestApi)) }, cancellationToken);
             var client = host.GetTestClient();
             client.DefaultRequestHeaders.Host = "example.com:8443";
@@ -86,10 +90,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             serverUrl.Should().EndWith("/v3", "ServiceRoot must include the route prefix");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task AddRestierNSwag_InvokesOpenApiConvertSettingsCallback_OnEachRequest()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             var callbackInvocations = 0;
             using var host = await BuildHostAsync(
                 routes: new[] { ("", typeof(TestApi)) },
@@ -110,10 +114,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
                 "the OpenApiConvertSettings configurator must be invoked when generating the document");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task UseRestierReDoc_ServesOnePagePerRoutePrefix_PointingAtRestierMiddlewareUrl()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostAsync(
                 routes: new[] { ("", typeof(TestApi)), ("v3", typeof(TestApi)) },
                 cancellationToken,
@@ -146,10 +150,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             v3Page.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task UseRestierNSwagUI_ListsAllRestierRoutes_AsSwaggerUrls()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostAsync(
                 routes: new[] { ("", typeof(TestApi)), ("v3", typeof(TestApi)) },
                 cancellationToken,
@@ -175,10 +179,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             body.Should().Contain("/openapi/v3/openapi.json", "Swagger UI must reference the v3 Restier doc URL");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task UseRestierNSwagUI_IncludesUserRegisteredNSwagDocuments_InDropdown()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostAsync(
                 routes: new[] { ("", typeof(TestApi)) },
                 cancellationToken,

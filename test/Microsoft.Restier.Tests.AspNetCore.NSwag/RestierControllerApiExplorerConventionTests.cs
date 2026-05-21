@@ -7,18 +7,19 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.NSwag;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Reflection;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.NSwag
 {
 
+    [TestClass]
     public class RestierControllerApiExplorerConventionTests
     {
 
-        [Fact]
+        [TestMethod]
         public void Apply_HidesRestierControllerActions_FromApiExplorer()
         {
             var convention = new RestierControllerApiExplorerConvention();
@@ -32,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag
             restierActions.Should().AllSatisfy(a => a.ApiExplorer.IsVisible.Should().Be(false));
         }
 
-        [Fact]
+        [TestMethod]
         public void Apply_LeavesNonRestierControllers_Untouched()
         {
             var convention = new RestierControllerApiExplorerConvention();
