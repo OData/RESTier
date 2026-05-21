@@ -92,7 +92,6 @@ stages:
           --configuration $(BuildConfiguration)
           --no-build
           --collect:"XPlat Code Coverage"
-          --results-directory $(Agent.TempDirectory)/TestResults
         publishTestResults: true
 
     # --- Coverage report ---
