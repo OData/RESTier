@@ -10,7 +10,6 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Operation;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.DependencyInjection;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -26,14 +25,13 @@ public class RestierOperationExecutorTests
 
     private RestierOperationExecutor CreateExecutor(
         IOperationAuthorizer authorizer = null,
-        IOperationFilter filter = null,
-        KeylessViewRegistry keylessViewRegistry = null)
+        IOperationFilter filter = null)
     {
         var authorizerFactory = Substitute.For<IChainOfResponsibilityFactory<IOperationAuthorizer>>();
         authorizerFactory.Create().Returns(authorizer ?? _authorizer);
         var filterFactory = Substitute.For<IChainOfResponsibilityFactory<IOperationFilter>>();
         filterFactory.Create().Returns(filter ?? _filter);
-        return new RestierOperationExecutor(authorizerFactory, filterFactory, keylessViewRegistry ?? new KeylessViewRegistry());
+        return new RestierOperationExecutor(authorizerFactory, filterFactory);
     }
 
     [Fact]

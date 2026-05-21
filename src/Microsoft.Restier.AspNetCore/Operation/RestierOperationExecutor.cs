@@ -17,7 +17,6 @@ using Microsoft.Restier.AspNetCore.Formatter;
 using Microsoft.Restier.AspNetCore.Model;
 using AspNetResources = Microsoft.Restier.AspNetCore.Resources;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.Restier.Core.DependencyInjection;
@@ -32,29 +31,20 @@ namespace Microsoft.Restier.AspNetCore.Operation
         private readonly IOperationAuthorizer operationAuthorizer;
         private readonly IOperationFilter operationFilter;
 
-        // Retained for ctor-injection compat; the GET path now handles keyless views in
-        // RestierController.Get (Follow-up A, Task 5). Removing this parameter is a
-        // separate behaviour-neutral cleanup.
-        private readonly KeylessViewRegistry keylessViewRegistry;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierOperationExecutor"/> class.
         /// </summary>
         /// <param name="operationAuthorizerFactory">The operation authorizer factory to be used for authorization.</param>
         /// <param name="operationFilterFactory">The operation filter factory to be used for filtering.</param>
-        /// <param name="keylessViewRegistry">The registry that maps unbound function-import names to keyless-view dispatch metadata.</param>
         public RestierOperationExecutor(
             IChainOfResponsibilityFactory<IOperationAuthorizer> operationAuthorizerFactory,
-            IChainOfResponsibilityFactory<IOperationFilter> operationFilterFactory,
-            KeylessViewRegistry keylessViewRegistry)
+            IChainOfResponsibilityFactory<IOperationFilter> operationFilterFactory)
         {
             Ensure.NotNull(operationAuthorizerFactory, nameof(operationAuthorizerFactory));
             Ensure.NotNull(operationFilterFactory, nameof(operationFilterFactory));
-            Ensure.NotNull(keylessViewRegistry, nameof(keylessViewRegistry));
 
             this.operationAuthorizer = operationAuthorizerFactory.Create();
             this.operationFilter = operationFilterFactory.Create();
-            this.keylessViewRegistry = keylessViewRegistry;
         }
 
         /// <summary>
