@@ -361,8 +361,23 @@ namespace Microsoft.Restier.Core.Query
                     {
                         var property = structuredType.FindProperty(member.Member.Name);
                         modelReference = GetModelReferenceForNode(parameterExpression);
-                        modelReference = new PropertyModelReference(modelReference, member.Member.Name, property);
-                        return modelReference;
+
+                        // The default ExpressionVisitor visits a lambda's body before its
+                        // parameters, so when this method runs for "$it As Derived" inside the body
+                        // the parameter hasn't been pushed yet and its model reference is missing
+                        // from the cache. Compute it inline from the enclosing query context so we
+                        // don't pass null to the PropertyModelReference ctor (issue #771).
+                        if (modelReference is null && parameterExpression is ParameterExpression parameter)
+                        {
+                            modelReference = ComputeParameterModelReference(parameter);
+                        }
+
+                        if (modelReference is not null)
+                        {
+                            return new PropertyModelReference(modelReference, member.Member.Name, property);
+                        }
+
+                        return null;
                     }
                 }
             }
