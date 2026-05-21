@@ -17,16 +17,17 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
 {
 
+    [TestClass]
     public class RestierApiVersionDescriptionProviderTests
     {
 
-        [Fact]
+        [TestMethod]
         public void ApiVersionDescriptions_TouchesIOptionsValueBeforeReadingRegistry()
         {
             var registry = new RestierApiVersionRegistry();
@@ -50,7 +51,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             descriptions[0].IsDeprecated.Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void ApiVersionDescriptions_PopulatesGroupNameAndDeprecatedFlagFromDescriptor()
         {
             var registry = new RestierApiVersionRegistry();
@@ -66,7 +67,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             provider.ApiVersionDescriptions.Should().ContainSingle(d => d.ApiVersion == new ApiVersion(2, 0) && !d.IsDeprecated && d.GroupName == "v2");
         }
 
-        [Fact]
+        [TestMethod]
         public void ApiVersionDescriptions_WhenInnerProviderPresent_MergesInnerAndRestierDescriptions()
         {
             var registry = new RestierApiVersionRegistry();
@@ -87,7 +88,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             provider.ApiVersionDescriptions.Should().ContainSingle(d => d.GroupName == "v2");
         }
 
-        [Fact]
+        [TestMethod]
         public void IsDeprecated_ReturnsTrueOnlyWhenAllRestierDescriptorsAreDeprecated()
         {
             var registry = new RestierApiVersionRegistry();
@@ -103,7 +104,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             provider.IsDeprecated(new ApiVersion(99, 0)).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void IsDeprecated_DelegatesToInnerForVersionsNotInRegistry()
         {
             var registry = new RestierApiVersionRegistry();

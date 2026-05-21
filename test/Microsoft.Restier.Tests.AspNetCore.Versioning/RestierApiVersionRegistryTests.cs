@@ -5,15 +5,16 @@ using System;
 using Asp.Versioning;
 using FluentAssertions;
 using Microsoft.Restier.AspNetCore.Versioning;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning
 {
 
+    [TestClass]
     public class RestierApiVersionRegistryTests
     {
 
-        [Fact]
+        [TestMethod]
         public void Add_AppendsDescriptorWithEverySpecifiedField()
         {
             var registry = new RestierApiVersionRegistry();
@@ -39,7 +40,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning
             registry.Descriptors[0].Should().BeSameAs(descriptor);
         }
 
-        [Fact]
+        [TestMethod]
         public void FindByPrefix_IsCaseSensitive()
         {
             var registry = new RestierApiVersionRegistry();
@@ -50,7 +51,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning
             registry.FindByPrefix("api/v2").Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void FindByGroupName_IsCaseInsensitive()
         {
             var registry = new RestierApiVersionRegistry();
@@ -61,7 +62,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning
             registry.FindByGroupName("v2").Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void FindByBasePrefix_ReturnsAllDescriptorsInGroup()
         {
             var registry = new RestierApiVersionRegistry();
@@ -75,7 +76,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning
             ordersGroup.Should().OnlyContain(d => d.BasePrefix == "orders");
         }
 
-        [Fact]
+        [TestMethod]
         public void FindByBasePrefix_ReturnsEmptyListForUnknownGroup()
         {
             var registry = new RestierApiVersionRegistry();

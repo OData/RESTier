@@ -6,7 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Restier.AspNetCore.Versioning;
 using Microsoft.Restier.AspNetCore.Versioning.Middleware;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
 {
@@ -17,10 +17,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
     /// <c>VersionHeadersIntegrationTests</c> because it depends on <c>HttpResponse.OnStarting</c>
     /// callbacks firing, which only happens through a real <c>TestServer</c>.
     /// </summary>
+    [TestClass]
     public class RestierVersionHeadersMiddlewareTests
     {
 
-        [Fact]
+        [TestMethod]
         public void TryMatch_NoDescriptors_ReturnsNull()
         {
             var registry = new RestierApiVersionRegistry();
@@ -28,7 +29,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
                 .Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void TryMatch_NoPrefixMatch_ReturnsNull()
         {
             var registry = new RestierApiVersionRegistry();
@@ -38,7 +39,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
                 .Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void TryMatch_ExactPrefix_Matches()
         {
             var registry = new RestierApiVersionRegistry();
@@ -48,7 +49,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
                 .Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void TryMatch_PrefixWithTrailing_Matches()
         {
             var registry = new RestierApiVersionRegistry();
@@ -58,7 +59,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
                 .Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void TryMatch_LookalikePrefix_DoesNotMatch()
         {
             var registry = new RestierApiVersionRegistry();
@@ -68,7 +69,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Middleware
                 .Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void TryMatch_LongestPrefixWins()
         {
             var registry = new RestierApiVersionRegistry();

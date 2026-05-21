@@ -5,22 +5,23 @@ using System;
 using Asp.Versioning;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Versioning;
 using Microsoft.Restier.AspNetCore.Versioning.Internal;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Microsoft.OData.Edm;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
 {
 
+    [TestClass]
     public class RestierApiVersioningBuilderTests
     {
 
-        [Fact]
+        [TestMethod]
         public void AddVersion_AttributeDriven_AppendsOneRegistrationPerApiVersionAttribute()
         {
             var builder = new RestierApiVersioningBuilder();
@@ -34,7 +35,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
                 r.ApiVersion == new ApiVersion(2, 0) && !r.IsDeprecated && r.BasePrefix == "api");
         }
 
-        [Fact]
+        [TestMethod]
         public void AddVersion_AttributeDriven_NoAttribute_Throws()
         {
             var builder = new RestierApiVersioningBuilder();
@@ -44,7 +45,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             act.Should().Throw<InvalidOperationException>().WithMessage($"*{typeof(UnannotatedApi).FullName}*");
         }
 
-        [Fact]
+        [TestMethod]
         public void AddVersion_Imperative_AppendsRegistrationWithExplicitDeprecatedFlag()
         {
             var builder = new RestierApiVersioningBuilder();
@@ -59,7 +60,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registration.ApiType.Should().Be(typeof(UnannotatedApi));
         }
 
-        [Fact]
+        [TestMethod]
         public void AddVersion_ReturnsSameBuilder_ForChaining()
         {
             var builder = new RestierApiVersioningBuilder();
@@ -69,7 +70,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             returned.Should().BeSameAs(builder);
         }
 
-        [Fact]
+        [TestMethod]
         public void AddVersion_ConfigureVersioning_RecordedOnRegistration()
         {
             var builder = new RestierApiVersioningBuilder();

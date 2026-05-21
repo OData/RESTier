@@ -17,15 +17,16 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
 {
 
+    [TestClass]
     public class RestierApiVersioningOptionsConfiguratorTests
     {
 
-        [Fact]
+        [TestMethod]
         public void Configure_DefaultFormatter_ComposesPrefixAsBaseSlashVMajor()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -42,7 +43,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registry.Descriptors[0].Version.Should().Be("1.0");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_EmptyBasePrefix_ComposesPrefixAsVMajor()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -57,7 +58,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registry.Descriptors[0].GroupName.Should().Be("v2");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_MajorMinorFormatter_ComposesPrefixAsBaseSlashVMajorDotMinor()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -73,7 +74,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registry.Descriptors[0].GroupName.Should().Be("v1.5");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_ExplicitRoutePrefix_UsedVerbatim_GroupNameStillFromFormatter()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -89,7 +90,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registry.Descriptors[0].GroupName.Should().Be("v1");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_PassesSunsetDateThroughToDescriptor()
         {
             var sunset = new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero);
@@ -104,7 +105,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registry.Descriptors[0].SunsetDate.Should().Be(sunset);
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_DuplicateApiVersionAndBasePrefix_Throws()
         {
             var (configurator, _, options) = BuildSubject(b =>
@@ -120,7 +121,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             act.Should().Throw<InvalidOperationException>().WithMessage("*1.0*api*");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_RunOnlyOnce_GuardsAgainstReEntry()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -134,7 +135,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             options.RouteComponents.Where(kvp => kvp.Key == "api/v1").Should().HaveCount(1);
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_NormalizesBasePrefix_TrailingSlashStrippedFromRouteAndDescriptor()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -149,7 +150,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
                 "trailing slash on basePrefix must be normalized so it groups with non-slashed registrations");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_ExplicitGroupNameFormatter_OverridesDefault()
         {
             var (configurator, registry, options) = BuildSubject(b =>
@@ -163,7 +164,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             registry.Descriptors[0].GroupName.Should().Be("orders-v1");
         }
 
-        [Fact]
+        [TestMethod]
         public void Configure_GroupNameCollisionAcrossBasePrefixes_Throws()
         {
             var (configurator, _, options) = BuildSubject(b =>

@@ -9,18 +9,22 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Restier.Tests.AspNetCore.Versioning.Infrastructure;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
 {
 
+    [TestClass]
     public class VersionedBatchTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+
+        [TestMethod]
         public async Task BatchToV1_RoutesV1InnerRequest()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await VersionedApiFixture.BuildHostAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -32,10 +36,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
             body.Should().NotContain("AuditLogs", "V1 batch must not see V2-only entity set");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task BatchToV2_RoutesV2InnerRequest()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await VersionedApiFixture.BuildHostAsync(cancellationToken);
             var client = host.GetTestClient();
 
