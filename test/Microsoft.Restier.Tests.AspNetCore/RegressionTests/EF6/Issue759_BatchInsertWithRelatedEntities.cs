@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EF6;
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class Issue759_BatchInsertWithRelatedEntities : Issue759_BatchInsertWithRelatedEntities<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices

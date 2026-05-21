@@ -16,12 +16,12 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel.EF6;
-
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EF6;
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class Issue714_ComplexTypes : Issue714_ComplexTypes<ComplexTypesApiEF6>
 {
     protected override Action<ODataOptions> ConfigureRoute => options =>

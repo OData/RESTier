@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore;
 
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class UpdateTests : UpdateTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices

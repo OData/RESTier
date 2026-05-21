@@ -18,7 +18,7 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore;
 
@@ -132,7 +132,8 @@ internal sealed class DateTimeKindVisitor : ExpressionVisitor
 /// Positive case: with options.TimeZone = TimeZoneInfo.Utc (RestierBreakdanceTestBase's default),
 /// a UTC filter literal must reach the executor as a DateTime constant with Kind == Utc.
 /// </summary>
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class Issue704_DateTimeFilterKind_UtcTimeZone : RestierTestBase<LibraryApi>
 {
     private readonly ExpressionCaptureSink sink = new();
@@ -156,7 +157,7 @@ public class Issue704_DateTimeFilterKind_UtcTimeZone : RestierTestBase<LibraryAp
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UtcLiteral_should_bind_as_DateTime_with_Kind_Utc()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Books?$filter=PublishDate ge 2000-01-01T00:00:00Z");
@@ -175,7 +176,7 @@ public class Issue704_DateTimeFilterKind_UtcTimeZone : RestierTestBase<LibraryAp
     // Path-segment filter syntax (OData 4.01) is bound by Restier's own RestierQueryBuilder
     // rather than the AspNetCore.OData filter binder, so it needs its own coverage to make sure
     // the per-route ODataQuerySettings (and its TimeZone) actually reaches that code path.
-    [Fact]
+    [TestMethod]
     public async Task UtcLiteral_in_pathSegment_filter_should_bind_as_DateTime_with_Kind_Utc()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Books/$filter(PublishDate ge 2000-01-01T00:00:00Z)");
@@ -197,7 +198,8 @@ public class Issue704_DateTimeFilterKind_UtcTimeZone : RestierTestBase<LibraryAp
 /// Kind is NOT Utc — proving the positive test would actually catch a regression. We pin the
 /// time zone to a fixed offset so the assertion is deterministic on any machine.
 /// </summary>
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class Issue704_DateTimeFilterKind_NonUtcTimeZone : RestierTestBase<LibraryApi>
 {
     private readonly ExpressionCaptureSink sink = new();
@@ -225,7 +227,7 @@ public class Issue704_DateTimeFilterKind_NonUtcTimeZone : RestierTestBase<Librar
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NonUtcTimeZone_should_strip_Utc_kind_from_filter_DateTime()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Books?$filter=PublishDate ge 2000-01-01T00:00:00Z");

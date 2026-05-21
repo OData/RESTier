@@ -8,11 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class MetadataTests : MetadataTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices

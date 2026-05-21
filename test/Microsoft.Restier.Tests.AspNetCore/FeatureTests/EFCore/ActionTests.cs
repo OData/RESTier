@@ -4,12 +4,13 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore;
 
-[Collection("LibraryApiEFCore")]
-public class ActionTests(ITestOutputHelper outputHelper) : ActionTests<LibraryApi, LibraryContext>(outputHelper)
+[TestClass]
+[DoNotParallelize]
+public class ActionTests : ActionTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices
         => services => services.AddEntityFrameworkServices<LibraryContext>();

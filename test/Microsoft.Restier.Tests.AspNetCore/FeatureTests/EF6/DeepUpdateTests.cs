@@ -4,11 +4,12 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class DeepUpdateTests : DeepUpdateTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices

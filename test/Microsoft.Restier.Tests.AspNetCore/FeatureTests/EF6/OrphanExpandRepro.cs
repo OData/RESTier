@@ -11,7 +11,7 @@ using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 
@@ -20,13 +20,14 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 // directly to Books with no Publisher), the OData-generated projection lambda used
 // to NRE on any nested member access against the null nav. The helper now runs the
 // lambda through a null-safe rewriter before compiling.
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class OrphanExpandRepro : RestierTestBase<LibraryApi>
 {
     private static Action<IServiceCollection> ConfigureServices =>
         services => services.AddEntityFrameworkServices<LibraryContext>();
 
-    [Fact]
+    [TestMethod]
     public async Task Books_ExpandPublisher_OrphanSerializesWithNullPublisher()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -40,7 +41,7 @@ public class OrphanExpandRepro : RestierTestBase<LibraryApi>
         body.Should().Contain("\"Publisher\":null", because: "the orphan has no publisher; the expand slot should be null");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Books_NestedExpandPublisherBooks_OrphanSerializesWithoutNRE()
     {
         // The nested case is the one that NRE'd: book.Publisher.Books dereferences a null Publisher
@@ -55,7 +56,7 @@ public class OrphanExpandRepro : RestierTestBase<LibraryApi>
         body.Should().Contain("Sea of Rust", because: "the orphan should still appear in the response");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Books_FilterToOrphanOnly_ExpandPublisher_DoesNotNRE()
     {
         // Reduce to just the orphan to make sure null-nav handling is the focus.

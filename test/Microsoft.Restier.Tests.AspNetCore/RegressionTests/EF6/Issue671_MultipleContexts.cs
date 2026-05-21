@@ -5,11 +5,12 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
 using Microsoft.Restier.Tests.Shared.Scenarios.Marvel.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EF6;
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class Issue671_MultipleContexts_SingleLibraryContext
     : Issue671_MultipleContexts_SingleLibraryContext<LibraryApi, LibraryContext>
 {
@@ -17,7 +18,8 @@ public class Issue671_MultipleContexts_SingleLibraryContext
         => services => services.AddEntityFrameworkServices<LibraryContext>();
 }
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class Issue671_MultipleContexts_SingleMarvelContext
     : Issue671_MultipleContexts_SingleMarvelContext<MarvelApi, MarvelContext>
 {
@@ -25,7 +27,8 @@ public class Issue671_MultipleContexts_SingleMarvelContext
         => services => services.AddEntityFrameworkServices<MarvelContext>();
 }
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class Issue671_MultipleContexts : Issue671_MultipleContexts<LibraryApi, MarvelApi>
 {
     protected override Action<IServiceCollection> ConfigureLibraryServices

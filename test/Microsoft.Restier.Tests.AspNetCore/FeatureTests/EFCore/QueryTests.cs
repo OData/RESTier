@@ -13,17 +13,18 @@ using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore;
 
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class QueryTests : QueryTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices
         => services => services.AddEntityFrameworkServices<LibraryContext>();
 
-    [Fact]
+    [TestMethod]
     public async Task NullNavigationPropertyOnExistingEntityReturns204()
     {
         // Create an isolated book with no Publisher so concurrent TFM runs can't interfere.
@@ -60,7 +61,7 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CollectionNavFromMissingParentReturns200ByDefault()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -72,7 +73,7 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CollectionNavFromMissingParentReturns404WhenStrict()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -85,7 +86,7 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CollectionNavFromExistingParentReturns200WhenStrict()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -98,7 +99,7 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CollectionNavCountFromMissingParentReturns200ByDefault()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -110,7 +111,7 @@ public class QueryTests : QueryTests<LibraryApi, LibraryContext>
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CollectionNavCountFromMissingParentReturns404WhenStrict()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
