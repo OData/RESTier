@@ -44,6 +44,14 @@ namespace Microsoft.Restier.Tests.Shared
                 return;
             }
 
+            if (_semaphore is not null)
+            {
+                // Already acquired in this process — no-op to avoid leaking the
+                // existing handle and to prevent a self-deadlock from a re-entrant
+                // WaitOne() on a count=1 semaphore.
+                return;
+            }
+
             // initialCount=1, maximumCount=1 → mutual exclusion. The out parameter
             // (createdNew) is intentionally discarded: we don't care which process
             // created the OS handle first.
