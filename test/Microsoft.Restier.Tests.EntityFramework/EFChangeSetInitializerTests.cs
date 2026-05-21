@@ -5,11 +5,12 @@ using System;
 using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.EntityFramework;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #pragma warning disable CS0618 // Date and TimeOfDay are obsolete but still used by OData
 namespace Microsoft.Restier.Tests.EntityFramework;
 
+[TestClass]
 public class EFChangeSetInitializerTests
 {
     private readonly EFChangeSetInitializer _initializer = new();
@@ -20,7 +21,7 @@ public class EFChangeSetInitializerTests
         Value2,
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnDateTime_ForEdmDate()
     {
         var edmDate = new Date(2025, 4, 21);
@@ -30,7 +31,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<DateTime>().Which.Should().Be(new DateTime(2025, 4, 21));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnDateTime_ForDateTimeOffset()
     {
         var dateTimeOffset = new DateTimeOffset(2025, 4, 21, 10, 30, 0, TimeSpan.FromHours(2));
@@ -40,7 +41,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<DateTime>().Which.Should().Be(new DateTime(2025, 4, 21, 10, 30, 0));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnTimeSpan_ForEdmTimeOfDay()
     {
         var edmTimeOfDay = new TimeOfDay(10, 30, 45, 0);
@@ -50,7 +51,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<TimeSpan>().Which.Should().Be(new TimeSpan(10, 30, 45));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldParseEnum_ForStringValue()
     {
         var result = _initializer.ConvertToEfValue(typeof(SampleEnum), "Value2");
@@ -58,7 +59,7 @@ public class EFChangeSetInitializerTests
         result.Should().Be(SampleEnum.Value2);
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnLong_ForIntValue()
     {
         var result = _initializer.ConvertToEfValue(typeof(long), 42);
@@ -66,7 +67,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<long>().Which.Should().Be(42L);
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnOriginalValue_ForUnmappedType()
     {
         var result = _initializer.ConvertToEfValue(typeof(string), "hello");
