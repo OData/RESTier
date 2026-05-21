@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.OData;
@@ -49,19 +48,6 @@ namespace Microsoft.Restier.AspNetCore
     {
         private const string IfMatchKey = "@IfMatchKey";
         private const string IfNoneMatchKey = "@IfNoneMatchKey";
-
-        // Cached reflection handle to the generic GetQueryableSource<TElement>(this ApiBase, string, params object[])
-        // overload. Used by the keyless-view branch of Get() to build a QueryableSource<TView> against the
-        // CLR element type stored in KeylessViewRegistry, so the query pipeline visitor can replace the
-        // DataSourceStub call with the registered IQueryable at request time.
-        private static readonly MethodInfo GetQueryableSourceMethod = typeof(QueryableApiExtensions)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Single(m =>
-                m.Name == nameof(QueryableApiExtensions.GetQueryableSource)
-                && m.IsGenericMethodDefinition
-                && m.GetParameters().Length == 3
-                && m.GetParameters()[0].ParameterType == typeof(ApiBase)
-                && m.GetParameters()[1].ParameterType == typeof(string));
 
         private ApiBase api;
         private ODataValidationSettings validationSettings;
@@ -134,10 +120,7 @@ namespace Microsoft.Restier.AspNetCore
                     // (ConventionBasedQueryExpressionProcessor), and any registered
                     // IQueryExpressionAuthorizer runs. EF composes the whole tree into a
                     // single SQL roundtrip.
-                    var getSource = GetQueryableSourceMethod.MakeGenericMethod(viewEntry.ClrType);
-                    var queryableSource = (IQueryable)getSource.Invoke(
-                        null,
-                        new object[] { api, operation.Name, Array.Empty<object>() });
+                    var queryableSource = api.GetQueryableSource(viewEntry.ClrType, operation.Name);
 
                     var queryRequest = new QueryRequest(queryableSource)
                     {
