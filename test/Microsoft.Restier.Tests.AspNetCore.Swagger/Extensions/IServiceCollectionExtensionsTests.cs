@@ -3,15 +3,16 @@
 
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Swagger.Extensions
 {
 
+    [TestClass]
     public class IServiceCollectionExtensionsTests
     {
 
-        [Fact]
+        [TestMethod]
         public void AddRestierSwagger_NoSettingsAction()
         {
             var collection = new ServiceCollection();
@@ -19,7 +20,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Swagger.Extensions
             collection.Should().ContainSingle();
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierSwagger_SettingsAction()
         {
             var collection = new ServiceCollection();

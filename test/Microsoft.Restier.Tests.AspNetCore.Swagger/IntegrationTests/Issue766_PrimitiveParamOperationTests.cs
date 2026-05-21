@@ -13,10 +13,10 @@ using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Swagger.IntegrationTests
 {
@@ -28,8 +28,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Swagger.IntegrationTests
     /// <c>EdmDecimalTypeReference</c>, etc. The OpenAPI generator hard-casts to those
     /// interfaces and failed at request time, breaking the entire Swagger document.
     /// </summary>
+    [TestClass]
     public class Issue766_PrimitiveParamOperationTests
     {
+
+        public TestContext TestContext { get; set; }
 
         public class PrimitiveParamApi : ApiBase
         {
@@ -51,10 +54,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Swagger.IntegrationTests
             public DateTimeOffset EchoTimestamp(DateTimeOffset at) => at;
         }
 
-        [Fact]
+        [TestMethod]
         public async Task SwaggerDoc_WithFacetBearingPrimitiveParams_GeneratesSuccessfully()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             var builder = Host.CreateDefaultBuilder()
                 .ConfigureWebHost(web => web
                     .UseTestServer()
