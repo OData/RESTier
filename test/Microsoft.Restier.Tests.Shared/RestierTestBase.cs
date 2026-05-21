@@ -3,32 +3,31 @@
 
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Shared
 {
-
     /// <summary>
-    /// 
+    /// Common base for Restier test classes. Adds a trace listener that captures output
+    /// for inspection by individual tests.
     /// </summary>
-    public class RestierTestBase<TApi>: RestierBreakdanceTestBase<TApi>
+    public class RestierTestBase<TApi> : RestierBreakdanceTestBase<TApi>
         where TApi : ApiBase
     {
         public RestierTestBase()
         {
             Trace.Listeners.Add(TraceListener);
         }
-        /// <summary>
-        /// Gets the XUnit test context.
-        /// </summary>
-        public ITestContext TestContext => Xunit.TestContext.Current;
 
         /// <summary>
-        /// Gets the Trace Listener that can be used for test output.
+        /// Gets or sets the MSTest test context. Populated by the runner.
+        /// </summary>
+        public TestContext TestContext { get; set; }
+
+        /// <summary>
+        /// Gets the trace listener that can be used for test output.
         /// </summary>
         public TraceListener TraceListener { get; } = new TestTraceListener();
-
     }
-
 }
