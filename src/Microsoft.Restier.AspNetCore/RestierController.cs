@@ -27,6 +27,7 @@ using Microsoft.Restier.AspNetCore.Operation;
 using Microsoft.Restier.AspNetCore.Query;
 using Microsoft.Restier.AspNetCore.Submit;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
@@ -107,20 +108,50 @@ namespace Microsoft.Restier.AspNetCore
             if (lastSegment is OperationImportSegment unboundSegment)
             {
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
-                Func<string, (bool Present, object Value)> getParaValueFunc = p =>
-                {
-                    var match = unboundSegment.Parameters.FirstOrDefault(c => c.Name == p);
-                    return (match is not null, match?.Value);
-                };
-                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
+                var routeServices = HttpContext.Request.GetRouteServices();
+                var registry = routeServices?.GetService<KeylessViewRegistry>();
 
-                var queryRequest = new QueryRequest(result)
+                if (registry is not null && registry.TryGet(operation.Name, out var viewEntry))
                 {
-                    ShouldReturnCount = shouldReturnCount,
-                };
+                    // Auto-generated keyless-view function import. Route through the full
+                    // query pipeline so the sourcer chain replaces the DataSourceStub call
+                    // with the registered IQueryable (KeylessViewQueryExpressionSourcer),
+                    // the processor chain fires OnFilter<View>
+                    // (ConventionBasedQueryExpressionProcessor), and any registered
+                    // IQueryExpressionAuthorizer runs. EF composes the whole tree into a
+                    // single SQL roundtrip.
+                    var queryableSource = api.GetQueryableSource(viewEntry.ClrType, operation.Name);
 
-                etag = ApplyQueryOptions(queryRequest, path, true);
-                result = queryRequest.Query;
+                    var queryRequest = new QueryRequest(queryableSource)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                        AllowNoTracking = true, // HTTP read path; matches the entity-set ApplyQueryOptions wiring.
+                    };
+
+                    etag = ApplyQueryOptions(queryRequest, path, true);
+                    result = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Hand-authored [UnboundOperation] method — keep V1 enumerate-at-
+                    // serialisation behaviour. ApplyQueryOptions composes onto the raw
+                    // queryable returned by ExecuteOperationAsync; CreateQueryResponse
+                    // enumerates downstream.
+                    Func<string, (bool Present, object Value)> getParaValueFunc = p =>
+                    {
+                        var match = unboundSegment.Parameters.FirstOrDefault(c => c.Name == p);
+                        return (match is not null, match?.Value);
+                    };
+                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
+
+                    var queryRequest = new QueryRequest(result)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                    };
+
+                    etag = ApplyQueryOptions(queryRequest, path, true);
+                    result = queryRequest.Query;
+                }
             }
             else
             {

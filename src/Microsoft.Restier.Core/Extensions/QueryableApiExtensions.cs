@@ -150,6 +150,55 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
+        /// Gets a queryable source for an entity set, singleton, or composable function import
+        /// whose element type is only known at runtime. Mirrors
+        /// <see cref="GetQueryableSource{TElement}(ApiBase, string, object[])"/> but takes the
+        /// element type as a parameter so callers don't need to reflect on
+        /// <see cref="DataSourceStub.GetQueryableSource{TElement}(string, object[])"/>.
+        /// </summary>
+        /// <param name="api">
+        /// An API.
+        /// </param>
+        /// <param name="elementType">
+        /// The element type of the queryable source.
+        /// </param>
+        /// <param name="name">
+        /// The name of an entity set, singleton or composable function import.
+        /// </param>
+        /// <param name="arguments">
+        /// If <paramref name="name"/> is a composable function import,
+        /// the arguments to be passed to the composable function import.
+        /// </param>
+        /// <returns>
+        /// A queryable source over <paramref name="elementType"/>.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// Throws <see cref="ArgumentException"/> when <paramref name="elementType"/> does not
+        /// match the element type resolved from the model — matching the contract of
+        /// <see cref="GetQueryableSource{TElement}(ApiBase, string, object[])"/>.
+        /// </para>
+        /// </remarks>
+        public static IQueryable GetQueryableSource(this ApiBase api, Type elementType, string name, params object[] arguments)
+        {
+            Ensure.NotNull(api, nameof(api));
+            Ensure.NotNull(elementType, nameof(elementType));
+            Ensure.NotNull(name, nameof(name));
+
+            var resolvedElementType = api.EnsureElementType(null, name);
+            if (resolvedElementType != elementType)
+            {
+                throw new ArgumentException(Resources.ElementTypeNotMatch);
+            }
+
+            // Delegate through the existing private SourceCore<T> via the SourceCoreMethod
+            // cache — no new reflection beyond the pattern already used by the file's other
+            // non-generic dispatch (SourceCore above).
+            var method = SourceCoreMethod.MakeGenericMethod(elementType);
+            return (IQueryable)method.Invoke(null, new object[] { null, name, arguments });
+        }
+
+        /// <summary>
         /// Gets a queryable source of data using an API context.
         /// </summary>
         /// <typeparam name="TElement">

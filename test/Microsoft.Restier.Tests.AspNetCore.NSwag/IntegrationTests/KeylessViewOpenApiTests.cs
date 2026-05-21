@@ -1,0 +1,98 @@
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
+
+using FluentAssertions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.Core.DependencyInjection;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.Tests.AspNetCore.NSwag.Infrastructure;
+using System;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace Microsoft.Restier.Tests.AspNetCore.NSwag.IntegrationTests
+{
+
+    /// <summary>
+    /// Verifies that a Restier keyless-view function import (unbound EDM function
+    /// returning <c>Collection(ComplexType)</c>) surfaces in the NSwag-flavour
+    /// OpenAPI document served at <c>/openapi/{name}/openapi.json</c>:
+    ///   * the function-import path exists;
+    ///   * the complex-type schema component exists.
+    /// </summary>
+    public class KeylessViewOpenApiTests
+    {
+
+        [Fact]
+        public async Task NSwagDoc_ContainsKeylessViewFunctionImportPathAndComplexTypeSchema()
+        {
+            var cancellationToken = TestContext.Current.CancellationToken;
+            using var host = await BuildAsync(cancellationToken);
+            var client = host.GetTestClient();
+
+            var json = await client.GetStringAsync("/openapi/default/openapi.json", cancellationToken);
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            root.GetProperty("paths").EnumerateObject()
+                .Should().Contain(p => p.Name.Contains("/TestViews", StringComparison.OrdinalIgnoreCase),
+                    "the OpenAPI doc must include the keyless-view function-import path");
+
+            // Schemas live under "components.schemas" for OpenAPI 3.0 (which is what the
+            // Restier middleware emits) and "definitions" for Swagger 2.0. Cover both
+            // so the assertion still holds if the serializer version is ever changed.
+            JsonElement schemasContainer;
+            if (root.TryGetProperty("components", out var components)
+                && components.TryGetProperty("schemas", out var schemas))
+            {
+                schemasContainer = schemas;
+            }
+            else
+            {
+                schemasContainer = root.GetProperty("definitions");
+            }
+
+            schemasContainer.EnumerateObject()
+                .Should().Contain(p => p.Name.Contains("KeylessViewTestRow", StringComparison.Ordinal),
+                    "the OpenAPI doc must include the complex-type schema");
+        }
+
+        private static async Task<IHost> BuildAsync(CancellationToken cancellationToken)
+        {
+            var builder = Host.CreateDefaultBuilder()
+                .ConfigureWebHost(web => web
+                    .UseTestServer()
+                    .ConfigureServices(services =>
+                    {
+                        services
+                            .AddControllers()
+                            .AddRestier(options =>
+                            {
+                                options.AddRestierRoute<KeylessViewTestApi>("", restierServices =>
+                                {
+                                    restierServices.AddSingleton<IChainedService<IModelBuilder>, KeylessViewTestApiModelBuilder>();
+                                });
+                            });
+
+                        services.AddRestierNSwag();
+                    })
+                    .Configure(app =>
+                    {
+                        app.UseRouting();
+                        app.UseEndpoints(endpoints => endpoints.MapRestier());
+                        app.UseRestierOpenApi();
+                    }));
+
+            return await builder.StartAsync(cancellationToken);
+        }
+
+    }
+
+}

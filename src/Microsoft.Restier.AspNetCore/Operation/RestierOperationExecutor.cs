@@ -17,7 +17,6 @@ using Microsoft.Restier.AspNetCore.Formatter;
 using Microsoft.Restier.AspNetCore.Model;
 using AspNetResources = Microsoft.Restier.AspNetCore.Resources;
 using Microsoft.Restier.Core;
-using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.Restier.Core.DependencyInjection;
@@ -31,26 +30,21 @@ namespace Microsoft.Restier.AspNetCore.Operation
     {
         private readonly IOperationAuthorizer operationAuthorizer;
         private readonly IOperationFilter operationFilter;
-        private readonly KeylessViewRegistry keylessViewRegistry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestierOperationExecutor"/> class.
         /// </summary>
         /// <param name="operationAuthorizerFactory">The operation authorizer factory to be used for authorization.</param>
         /// <param name="operationFilterFactory">The operation filter factory to be used for filtering.</param>
-        /// <param name="keylessViewRegistry">The registry that maps unbound function-import names to keyless-view dispatch metadata.</param>
         public RestierOperationExecutor(
             IChainOfResponsibilityFactory<IOperationAuthorizer> operationAuthorizerFactory,
-            IChainOfResponsibilityFactory<IOperationFilter> operationFilterFactory,
-            KeylessViewRegistry keylessViewRegistry)
+            IChainOfResponsibilityFactory<IOperationFilter> operationFilterFactory)
         {
             Ensure.NotNull(operationAuthorizerFactory, nameof(operationAuthorizerFactory));
             Ensure.NotNull(operationFilterFactory, nameof(operationFilterFactory));
-            Ensure.NotNull(keylessViewRegistry, nameof(keylessViewRegistry));
 
             this.operationAuthorizer = operationAuthorizerFactory.Create();
             this.operationFilter = operationFilterFactory.Create();
-            this.keylessViewRegistry = keylessViewRegistry;
         }
 
         /// <summary>
@@ -88,24 +82,6 @@ namespace Microsoft.Restier.AspNetCore.Operation
 
             if (method is null)
             {
-                // Fallback: is this an auto-generated keyless-view function import?
-                if (keylessViewRegistry.TryGet(restierOperationContext.OperationName, out var viewEntry))
-                {
-                    // Match the normal-path invariant: ParameterValues is a non-null array.
-                    // Keyless-view function imports have no parameters, so it's the empty array.
-                    // Custom IOperationFilter implementations can rely on this the same way they
-                    // can for hand-authored [UnboundOperation] methods.
-                    restierOperationContext.ParameterValues = Array.Empty<object>();
-
-                    // Auto-generated views still go through the IOperationFilter pipeline so
-                    // auditing / metrics / mutation / validation hooks fire the same way they
-                    // do for any other unbound function import.
-                    await PerformPreEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
-                    var viewQueryable = viewEntry.SourceFactory(context.Api);
-                    await PerformPostEvent(restierOperationContext, cancellationToken).ConfigureAwait(false);
-                    return viewQueryable;
-                }
-
                 throw new NotImplementedException(AspNetResources.OperationNotImplemented);
             }
 

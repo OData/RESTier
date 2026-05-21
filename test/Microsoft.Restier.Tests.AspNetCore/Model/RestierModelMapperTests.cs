@@ -127,4 +127,60 @@ public class RestierModelMapperTests
         result.Should().BeTrue();
         relevantType.Should().Be(expectedType);
     }
+
+    /// <summary>
+    /// Verifies that an unbound function import returning <c>Collection(&lt;ComplexType&gt;)</c>
+    /// — the keyless-view shape — resolves to the ClrTypeAnnotation on the return-type
+    /// element. Without this the keyless-view dispatch path (api.GetQueryableSource&lt;T&gt;(name))
+    /// would throw NotSupportedException, blocking the controller from routing view queries
+    /// through the query pipeline.
+    /// </summary>
+    [Fact]
+    public void TryGetRelevantType_KnownKeylessViewFunctionImport_ResolvesToClrType()
+    {
+        // Arrange — EDM scaffold: one ComplexType + an unbound function import returning Collection(ComplexType).
+        var edmModel = new EdmModel();
+        var complexType = new EdmComplexType("TestNs", "FakeView");
+        complexType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32);
+        edmModel.AddElement(complexType);
+        edmModel.SetAnnotationValue(complexType, new ClrTypeAnnotation(typeof(FakeView)));
+
+        var returnTypeRef = new EdmCollectionTypeReference(
+            new EdmCollectionType(new EdmComplexTypeReference(complexType, isNullable: true)));
+        var function = new EdmFunction(
+            "TestNs.Views",
+            "FakeView",
+            returnTypeRef,
+            isBound: false,
+            entitySetPathExpression: null,
+            isComposable: false);
+        edmModel.AddElement(function);
+
+        var container = new EdmEntityContainer("TestNs", "Container");
+        container.AddFunctionImport("FakeView", function);
+        edmModel.AddElement(container);
+
+        var mockInnerMapper = Substitute.For<IModelMapper>();
+        var mockApi = Substitute.For<ApiBase>(edmModel, Substitute.For<IQueryHandler>(), Substitute.For<ISubmitHandler>());
+
+        var context = new InvocationContext(mockApi);
+        var mapper = new RestierModelMapper { Inner = mockInnerMapper };
+
+        // Act
+        var result = mapper.TryGetRelevantType(context, "FakeView", out var relevantType);
+
+        // Assert
+        result.Should().BeTrue();
+        relevantType.Should().Be(typeof(FakeView));
+        mockInnerMapper.DidNotReceiveWithAnyArgs().TryGetRelevantType(default, default, out _);
+    }
+
+    /// <summary>
+    /// CLR-only stand-in for a keyless EF view; mirrors the shape used by
+    /// <c>ConventionBasedQueryExpressionProcessorTests.FakeView</c>.
+    /// </summary>
+    private sealed class FakeView
+    {
+        public int Id { get; set; }
+    }
 }

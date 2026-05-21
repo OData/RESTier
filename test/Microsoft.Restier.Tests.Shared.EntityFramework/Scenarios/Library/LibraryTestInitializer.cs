@@ -172,6 +172,32 @@ namespace Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore
                 }
             });
 
+            // Publisher3 exists so the BooksByPublisher keyless-view regression suite can prove
+            // that LibraryWithViewsApi.OnFilterBooksByPublisher (which filters out Publisher3)
+            // observably altered the response — distinguishing provider-side composition from a
+            // no-op pipeline pass. Issue #741 / Follow-up A.
+            libraryContext.Publishers.Add(new Publisher
+            {
+                Id = "Publisher3",
+                Addr = new Address
+                {
+                    Street = "345 Filtered Way.",
+                    Zip = "20020"
+                },
+                LastUpdated = DateTimeOffset.MinValue,
+                Books = new ObservableCollection<Book>
+                {
+                    new Book
+                    {
+                        Id = new Guid("3c3c3c3c-3333-4333-8333-333333333333"),
+                        Isbn = "3333333333333",
+                        Title = "Filtered Away",
+                        IsActive = true,
+                        PublishDate = new DateTime(2001, 3, 3, 0, 0, 0, DateTimeKind.Utc),
+                    }
+                }
+            });
+
             libraryContext.Books.Add(new Book
             {
                 Id = new Guid("2D760F15-974D-4556-8CDF-D610128B537E"),

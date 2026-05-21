@@ -21,6 +21,14 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore.Models
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
+            // Keyless view: HasNoKey().ToView wires the read path; the underlying
+            // database view itself is created by the AddUsersByTypeView migration.
+            modelBuilder.Entity<UsersByType>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("UsersByType");
+            });
+
             modelBuilder.Entity<UserType>().HasData(
                 new UserType { Id = AdminTypeId, DisplayName = "Administrator", IsActive = true, DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
                 new UserType { Id = EditorTypeId, DisplayName = "Editor", IsActive = true, DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) },

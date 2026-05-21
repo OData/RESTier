@@ -225,6 +225,61 @@ namespace Microsoft.Restier.Tests.Core
         }
 
         /// <summary>
+        /// Can call the non-generic Type-keyed GetQueryableSource overload.
+        /// </summary>
+        [Fact]
+        public void CanCallGetQueryableSourceWithApiBaseAndTypeAndStringAndArrayOfObject()
+        {
+            var api = new TestApi(model, queryHandler, submitHandler);
+            var name = "Tests";
+            Type expectedType = typeof(Test);
+
+            modelMapper.TryGetRelevantType(Arg.Any<InvocationContext>(), name, out Arg.Any<Type>()).Returns(true).AndDoes(x => x[2] = expectedType);
+
+            var arguments = new[] { new object(), new object(), new object() };
+            var result = api.GetQueryableSource(typeof(Test), name, arguments);
+
+            result.Should().BeAssignableTo<IQueryable<Test>>();
+        }
+
+        /// <summary>
+        /// Cannot call the non-generic Type-keyed GetQueryableSource with a null api.
+        /// </summary>
+        [Fact]
+        public void CannotCallGetQueryableSourceWithApiBaseAndTypeAndStringAndArrayOfObjectWithNullApi()
+        {
+            Action act = () => default(ApiBase).GetQueryableSource(typeof(Test), "TestValue", new[] { new object() });
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        /// <summary>
+        /// Cannot call the non-generic Type-keyed GetQueryableSource with a null element type.
+        /// </summary>
+        [Fact]
+        public void CannotCallGetQueryableSourceWithApiBaseAndNullTypeAndStringAndArrayOfObject()
+        {
+            Action act = () => new TestApi(model, queryHandler, submitHandler).GetQueryableSource(default(Type), "TestValue", new[] { new object() });
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        /// <summary>
+        /// Cannot call the non-generic Type-keyed GetQueryableSource when the supplied element type
+        /// does not match the type resolved from the model.
+        /// </summary>
+        [Fact]
+        public void CannotCallGetQueryableSourceWithApiBaseAndMismatchedTypeAndStringAndArrayOfObject()
+        {
+            var api = new TestApi(model, queryHandler, submitHandler);
+            var name = "Tests";
+            Type resolvedType = typeof(Test);
+
+            modelMapper.TryGetRelevantType(Arg.Any<InvocationContext>(), name, out Arg.Any<Type>()).Returns(true).AndDoes(x => x[2] = resolvedType);
+
+            Action act = () => api.GetQueryableSource(typeof(QueryableApiExtensionsTests), name, new[] { new object() });
+            act.Should().Throw<ArgumentException>();
+        }
+
+        /// <summary>
         /// Cannot call GetQueryAbleSource`1[TElement]. with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
