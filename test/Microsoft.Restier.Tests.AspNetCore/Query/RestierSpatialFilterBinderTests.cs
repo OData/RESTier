@@ -15,7 +15,7 @@ using Microsoft.Restier.AspNetCore.Query;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
 using Microsoft.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Query;
 
@@ -25,6 +25,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Query;
 /// ODataQueryOptionParser, applies the binder, and asserts on the resulting LINQ Expression
 /// tree shape. No DB, no HTTP.
 /// </summary>
+[TestClass]
 public class RestierSpatialFilterBinderTests
 {
     // ─────────────────────────────────────────────────────────────────────
@@ -102,7 +103,7 @@ public class RestierSpatialFilterBinderTests
     /// NTS translator dictionary keys on <c>typeof(Geometry).GetRuntimeProperty("Length")</c>
     /// and rejects the LineString-flavored member by MemberInfo equality.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void BindGeoLength_EmitsLengthPropertyAccessOnBaseDeclaringType()
     {
         var (model, source) = BuildNtsFixture();
@@ -151,7 +152,7 @@ public class RestierSpatialFilterBinderTests
     /// Point. The binder must resolve the method by parameter-type assignability, not by
     /// exact match.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void BindGeoDistance_EmitsStorageDistanceMethodCall_WithLoweredLiteral()
     {
         var (model, source) = BuildNtsFixture();
@@ -201,7 +202,7 @@ public class RestierSpatialFilterBinderTests
     /// that, lowered1 would independently re-probe and could pick a different storage
     /// root in cross-flavor configurations.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void BindGeoDistance_BothLiteralArguments_BothLoweredToSameStorageRoot()
     {
         var (model, source) = BuildNtsFixture();
@@ -231,7 +232,7 @@ public class RestierSpatialFilterBinderTests
     /// loweredLiteral). Same reflection-walk requirement as geo.distance — NTS's Intersects
     /// is declared on Geometry.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void BindGeoIntersects_EmitsStorageIntersectsMethodCall()
     {
         var (model, source) = BuildNtsFixture();
@@ -274,7 +275,7 @@ public class RestierSpatialFilterBinderTests
     /// which surfaces the stock "unknown function" error. Forward-compat for future OData
     /// spec additions and the long tail of non-core geo functions (geo.area, geo.contains, ...).
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void BindSingleValueFunctionCallNode_UnknownGeoFunction_FallsThroughToBase()
     {
         var (model, source) = BuildNtsFixture();
@@ -294,7 +295,7 @@ public class RestierSpatialFilterBinderTests
     /// against a spatial property must throw ODataException — this is the diagnostic for the
     /// "forgot to call AddRestierSpatial()" case.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void Ctor_NoConvertersRegistered_GeoFunctionAgainstSpatialProperty_ThrowsODataException()
     {
         var (model, source) = BuildNtsFixture();

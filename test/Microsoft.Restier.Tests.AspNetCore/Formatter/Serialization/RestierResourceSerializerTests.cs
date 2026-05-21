@@ -9,6 +9,7 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,18 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter;
 
 /// <summary>
 /// Unit tests for <see cref="RestierResourceSerializer"/>.
 /// </summary>
+[TestClass]
 public class RestierResourceSerializerTests
 {
-    [Fact]
+    public TestContext TestContext { get; set; }
+
+    [TestMethod]
     public void UnpackResult_ShouldReturnOriginalObject_WhenNotComplexResult()
     {
         // Arrange
@@ -40,7 +43,7 @@ public class RestierResourceSerializerTests
         result.Type.Should().Be(inputType);
     }
 
-    [Fact]
+    [TestMethod]
     public void UnpackResult_ShouldReturnComplexResultProperties_WhenComplexResult()
     {
         // Arrange
@@ -57,7 +60,7 @@ public class RestierResourceSerializerTests
         result.Type.Should().Be(typeof(Tuple<string, string>));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_ShouldCallBaseWriteObjectAsync_WithUnpackedResult()
     {
         // Arrange
@@ -92,7 +95,7 @@ public class RestierResourceSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 

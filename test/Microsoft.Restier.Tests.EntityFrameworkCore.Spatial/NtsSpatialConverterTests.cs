@@ -4,17 +4,18 @@
 using FluentAssertions;
 using Microsoft.Restier.EntityFrameworkCore.Spatial;
 using Microsoft.Spatial;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetTopologySuite.Geometries;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
 {
+    [TestClass]
     public class NtsSpatialConverterTests
     {
         private readonly NtsSpatialConverter _converter = new();
         private readonly NetTopologySuite.Geometries.GeometryFactory _ntsFactory = new(new PrecisionModel(), 4326);
 
-        [Fact]
+        [TestMethod]
         public void CanConvert_recognizes_NTS_Geometry_subclasses()
         {
             _converter.CanConvert(typeof(NetTopologySuite.Geometries.Point)).Should().BeTrue();
@@ -22,13 +23,13 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             _converter.CanConvert(typeof(NetTopologySuite.Geometries.Geometry)).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void CanConvert_rejects_non_NTS_types()
         {
             _converter.CanConvert(typeof(string)).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void Round_trips_NTS_Point_to_GeographyPoint_with_SRID_4326()
         {
             var nts = _ntsFactory.CreatePoint(new Coordinate(4.9041, 52.3676));
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             roundTrip.SRID.Should().Be(4326);
         }
 
-        [Fact]
+        [TestMethod]
         public void Round_trips_NTS_Polygon()
         {
             var ring = _ntsFactory.CreateLinearRing(new[]
@@ -66,7 +67,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             roundTrip.Coordinates.Should().HaveCount(5);
         }
 
-        [Fact]
+        [TestMethod]
         public void Preserves_planar_SRID_for_GeometryPoint()
         {
             var planarFactory = new NetTopologySuite.Geometries.GeometryFactory(new PrecisionModel(), 3857);
@@ -80,7 +81,7 @@ namespace Microsoft.Restier.Tests.EntityFrameworkCore.Spatial
             roundTrip.SRID.Should().Be(3857);
         }
 
-        [Fact]
+        [TestMethod]
         public void Null_storage_value_returns_null()
         {
             _converter.ToEdm(null, typeof(GeographyPoint)).Should().BeNull();

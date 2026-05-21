@@ -6,15 +6,16 @@ using System.Linq;
 using Asp.Versioning;
 using FluentAssertions;
 using Microsoft.Restier.AspNetCore.Versioning.Internal;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
 {
 
+    [TestClass]
     public class ApiVersionAttributeReaderTests
     {
 
-        [Fact]
+        [TestMethod]
         public void Read_SingleAttribute_ReturnsOneEntry()
         {
             var entries = ApiVersionAttributeReader.Read(typeof(SingleVersion)).ToArray();
@@ -24,7 +25,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             entries[0].IsDeprecated.Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void Read_MultipleAttributes_ReturnsAllEntriesInDeclarationOrder()
         {
             var entries = ApiVersionAttributeReader.Read(typeof(TwoVersions)).ToArray();
@@ -34,7 +35,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Internal
             entries.Should().ContainSingle(e => e.ApiVersion == new ApiVersion(2, 0) && !e.IsDeprecated);
         }
 
-        [Fact]
+        [TestMethod]
         public void Read_NoAttribute_ThrowsInvalidOperation()
         {
             Action act = () => ApiVersionAttributeReader.Read(typeof(NoAttribute)).ToArray();

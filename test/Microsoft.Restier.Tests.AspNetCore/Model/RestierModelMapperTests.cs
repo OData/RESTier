@@ -9,19 +9,20 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Linq;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
 /// <summary>
 /// Unit tests for <see cref="RestierModelMapper"/>.
 /// </summary>
+[TestClass]
 public class RestierModelMapperTests
 {
-    [Fact]
+    [TestMethod]
     public void TryGetRelevantType_ShouldReturnTrue_WhenEntitySetIsFound()
     {
         // Arrange
@@ -50,7 +51,7 @@ public class RestierModelMapperTests
         relevantType.Should().Be(typeof(string));
     }
 
-    [Fact]
+    [TestMethod]
     public void TryGetRelevantType_ShouldReturnFalse_WhenEntitySetIsNotFound()
     {
         // Arrange
@@ -73,7 +74,7 @@ public class RestierModelMapperTests
         relevantType.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void TryGetRelevantType_ShouldDelegateToInnerMapper_WhenElementIsNotFound()
     {
         // Arrange
@@ -104,7 +105,7 @@ public class RestierModelMapperTests
         relevantType.Should().Be(expectedType);
     }
 
-    [Fact]
+    [TestMethod]
     public void TryGetRelevantType_ComposableFunction_ShouldDelegateToInnerMapper()
     {
         // Arrange
@@ -135,7 +136,7 @@ public class RestierModelMapperTests
     /// would throw NotSupportedException, blocking the controller from routing view queries
     /// through the query pipeline.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public void TryGetRelevantType_KnownKeylessViewFunctionImport_ResolvesToClrType()
     {
         // Arrange — EDM scaffold: one ComplexType + an unbound function import returning Collection(ComplexType).

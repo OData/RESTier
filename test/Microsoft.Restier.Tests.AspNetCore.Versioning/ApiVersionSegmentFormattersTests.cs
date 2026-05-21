@@ -4,22 +4,23 @@
 using Asp.Versioning;
 using FluentAssertions;
 using Microsoft.Restier.AspNetCore.Versioning;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning
 {
 
+    [TestClass]
     public class ApiVersionSegmentFormattersTests
     {
 
-        [Fact]
+        [TestMethod]
         public void Major_FormatsAsVPrefixedMajorOnly()
         {
             ApiVersionSegmentFormatters.Major(new ApiVersion(1, 0)).Should().Be("v1");
             ApiVersionSegmentFormatters.Major(new ApiVersion(2, 7)).Should().Be("v2");
         }
 
-        [Fact]
+        [TestMethod]
         public void MajorMinor_FormatsAsVPrefixedMajorAndMinor()
         {
             ApiVersionSegmentFormatters.MajorMinor(new ApiVersion(1, 0)).Should().Be("v1.0");

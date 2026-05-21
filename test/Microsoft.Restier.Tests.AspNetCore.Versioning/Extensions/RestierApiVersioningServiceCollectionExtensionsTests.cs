@@ -5,21 +5,22 @@ using System.Linq;
 using Asp.Versioning;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Versioning;
 using Microsoft.Restier.AspNetCore.Versioning.Internal;
 using Microsoft.Restier.Core;
-using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Extensions
 {
 
+    [TestClass]
     public class RestierApiVersioningServiceCollectionExtensionsTests
     {
 
-        [Fact]
+        [TestMethod]
         public void AddRestierApiVersioning_RegistersRegistryAsSingleton()
         {
             var services = new ServiceCollection();
@@ -32,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Extensions
                 d.ServiceType == typeof(RestierApiVersionRegistry) && d.Lifetime == ServiceLifetime.Singleton);
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierApiVersioning_RegistersBuilderAsSingletonInstance()
         {
             var services = new ServiceCollection();
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Extensions
             descriptor.ImplementationInstance.Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierApiVersioning_CalledTwice_AppendsToSameBuilder()
         {
             var services = new ServiceCollection();
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Extensions
             builder.PendingRegistrations.Should().Contain(p => p.ApiVersion == new ApiVersion(2, 0));
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierApiVersioning_RegistersConfigureOptions()
         {
             var services = new ServiceCollection();
@@ -77,7 +78,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Extensions
                 && d.ImplementationType == typeof(RestierApiVersioningOptionsConfigurator));
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierApiVersioning_ReplacesAnyPriorIApiVersionDescriptionProviderWithComposite()
         {
             var services = new ServiceCollection();
@@ -94,7 +95,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Extensions
                 "the composite is registered via factory so it can capture and inject the prior provider");
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierApiVersioning_CalledTwice_DoesNotDoubleReplaceProvider()
         {
             var services = new ServiceCollection();

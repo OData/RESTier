@@ -13,23 +13,27 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Tests.AspNetCore.NSwag.Infrastructure;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSwag.AspNetCore;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.NSwag.IntegrationTests
 {
 
+    [TestClass]
     public class CombinedAppTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+
+        [TestMethod]
         public async Task RestierDocAndControllersDoc_AreIsolated()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -50,10 +54,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.IntegrationTests
                 "RestierController must be filtered out of the controllers doc by the ApiExplorer convention");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task RestierDocs_AreNotInNSwagRegistry()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildAsync(cancellationToken);
             var client = host.GetTestClient();
 

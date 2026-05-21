@@ -79,7 +79,7 @@ Uses `Microsoft.Extensions.DependencyInjection` with per-route service container
 
 ## Test Conventions
 
-- **Framework:** xUnit v3, FluentAssertions (AwesomeAssertions), NSubstitute
+- **Framework:** MSTest 3.x, FluentAssertions (AwesomeAssertions), NSubstitute
 - **Project naming:** `X` -> `X.Tests` (e.g., `Microsoft.Restier.Core` -> `Microsoft.Restier.Tests.Core`)
 - **File naming:** `X/Y/Z/A.cs` -> `X.Tests/Y/Z/ATests.cs`
 - **Namespace:** must match folder path (e.g., `Microsoft.Restier.Tests.Core.Convention`)

@@ -16,13 +16,14 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore;
 
 /// <summary>
 /// Tests that verify RESTier's exception handling correctly maps exceptions to HTTP status codes.
 /// </summary>
+[TestClass]
 public class ExceptionHandlerTests : RestierTestBase<StoreApi>
 {
     private const string conflictMessage = "Record could not be saved.";
@@ -30,7 +31,7 @@ public class ExceptionHandlerTests : RestierTestBase<StoreApi>
     private const string securityError = "Security error.";
     private const string somethingHappened = "Something happened.";
 
-    [Fact]
+    [TestMethod]
     public async Task ODataException_Returns400()
     {
         static void di(IServiceCollection services)
@@ -53,7 +54,7 @@ public class ExceptionHandlerTests : RestierTestBase<StoreApi>
         result.ErrorContent.Error.Message.Should().Be(somethingHappened);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ShouldReturn403HandlerThrowsSecurityException()
     {
         static void di(IServiceCollection services)
@@ -74,7 +75,7 @@ public class ExceptionHandlerTests : RestierTestBase<StoreApi>
         result.ErrorContent.Error.Message.Should().Be(securityError);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NullReferenceException_ReturnsProperPayload()
     {
         static void di(IServiceCollection services)

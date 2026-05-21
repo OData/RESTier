@@ -22,7 +22,7 @@ Install the NuGet package into your test project:
 dotnet add package Microsoft.Restier.Breakdance
 ```
 
-You will also need a test framework. RESTier's own tests use xUnit v3, FluentAssertions, and NSubstitute,
+You will also need a test framework. RESTier's own tests use MSTest 3.x, FluentAssertions, and NSubstitute,
 but any .NET test framework will work.
 
 ## Using RestierTestHelpers (Static Methods)
@@ -40,11 +40,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+[TestClass]
 public class BookQueryTests
 {
-    [Fact]
+    [TestMethod]
     public async Task GetBooksReturns200()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -60,7 +61,7 @@ public class BookQueryTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MetadataDocumentIsValid()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi>(
@@ -112,8 +113,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Breakdance;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+[TestClass]
 public class LibraryApiTests : RestierBreakdanceTestBase<LibraryApi>
 {
     public LibraryApiTests()
@@ -132,7 +134,7 @@ public class LibraryApiTests : RestierBreakdanceTestBase<LibraryApi>
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetBooksReturns200()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Books");
@@ -141,7 +143,7 @@ public class LibraryApiTests : RestierBreakdanceTestBase<LibraryApi>
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MetadataEndpointReturnsValidXml()
     {
         XDocument metadata = await GetApiMetadataAsync();
@@ -149,7 +151,7 @@ public class LibraryApiTests : RestierBreakdanceTestBase<LibraryApi>
         metadata.Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void EdmModelIsAvailable()
     {
         IEdmModel model = GetModel();

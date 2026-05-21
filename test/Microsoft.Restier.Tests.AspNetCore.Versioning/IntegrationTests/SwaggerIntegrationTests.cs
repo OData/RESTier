@@ -20,18 +20,22 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.AspNetCore.Versioning.Infrastructure;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
 {
 
+    [TestClass]
     public class SwaggerIntegrationTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+
+        [TestMethod]
         public async Task SwaggerJson_AtVersionGroupName_ReturnsCorrectVersionedDoc()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildAsync(cancellationToken);
             var client = host.GetTestClient();
 

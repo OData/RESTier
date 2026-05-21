@@ -8,18 +8,22 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Restier.Tests.AspNetCore.Versioning.Infrastructure;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
 {
 
+    [TestClass]
     public class VersionHeadersIntegrationTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+
+        [TestMethod]
         public async Task V1Response_CarriesSupportedAndDeprecatedVersionsHeaders()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await VersionedApiFixture.BuildHostAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -29,10 +33,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
             response.Headers.GetValues("api-deprecated-versions").Single().Should().Be("1.0");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task V2Response_CarriesSupportedHeader_AndDeprecatedHeader()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await VersionedApiFixture.BuildHostAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -42,10 +46,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
             response.Headers.GetValues("api-deprecated-versions").Single().Should().Be("1.0");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task UnrelatedPath_DoesNotCarryHeaders()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await VersionedApiFixture.BuildHostAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -54,10 +58,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
             response.Headers.Contains("api-supported-versions").Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GroupIsolation_OrdersHeadersDoNotIncludeInventoryVersions()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await MultiGroupApiFixture.BuildHostAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -68,11 +72,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
             inventoryResponse.Headers.GetValues("api-supported-versions").Single().Should().Be("1.0");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task SunsetHeader_OnlyEmittedForVersionWithSunsetConfigured()
         {
             var sunset = new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero);
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await MultiGroupApiFixture.BuildHostAsync(cancellationToken, ordersV2Sunset: sunset);
             var client = host.GetTestClient();
 

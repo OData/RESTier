@@ -9,6 +9,7 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -25,6 +25,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="DefaultQueryHandler"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultQueryHandlerTests
     {
         private readonly IChainOfResponsibilityFactory<IQueryExpressionSourcer> sourcerFactory = Substitute.For<IChainOfResponsibilityFactory<IQueryExpressionSourcer>>();
@@ -69,7 +70,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can construct instance of the <see cref="DefaultQueryHandler"/> class.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new DefaultQueryHandler(
@@ -85,7 +86,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot construct with a null sourcer.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullSourcer()
         {
             sourcerFactory.Create().Returns(default(IQueryExpressionSourcer));
@@ -102,7 +103,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot construct with a null executor.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullExecutor()
         {
             executorFactory.Create().Returns(default(IQueryExecutor));
@@ -119,7 +120,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot construct with a null model mapper.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullModelMapper()
         {
             modelMapperFactory.Create().Returns(default(IModelMapper));
@@ -137,7 +138,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Can call QueryAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallQueryAsync()
         {
             var instance = new DefaultQueryHandler(
@@ -185,7 +186,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Can call QueryAsync with count option.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallQueryAsyncWithCount()
         {
             var instance = new DefaultQueryHandler(
@@ -238,7 +239,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Cannot call QueryAsync with a null context.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallQueryAsyncWithNullContext()
         {
             var instance = new DefaultQueryHandler(

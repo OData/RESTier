@@ -6,18 +6,19 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
 using Microsoft.OData.Edm.Vocabularies;
 using Microsoft.Restier.Core.Model;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Model;
 
+[TestClass]
 public class ModelMergerTests
 {
     private ModelMerger _modelMerger = new ModelMerger();
 
-    [Fact]
+    [TestMethod]
     public void Merge_Should_Add_SchemaElements_Except_EntityContainer()
     {
         // Arrange
@@ -37,7 +38,7 @@ public class ModelMergerTests
         targetModel.SchemaElements.Should().ContainSingle().Which.Should().Be(entityType);
     }
 
-    [Fact]
+    [TestMethod]
     public void Merge_Should_Add_VocabularyAnnotations()
     {
         // Arrange
@@ -54,7 +55,7 @@ public class ModelMergerTests
         targetModel.VocabularyAnnotations.Should().ContainSingle().Which.Should().Be(annotation);
     }
 
-    [Fact]
+    [TestMethod]
     public void Merge_Should_Add_EntitySets_If_Not_Exists()
     {
         // Arrange
@@ -80,7 +81,7 @@ public class ModelMergerTests
         targetContainer.FindEntitySet("Entities").Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Merge_Should_Add_Singletons_If_Not_Exists()
     {
         // Arrange
@@ -106,7 +107,7 @@ public class ModelMergerTests
         targetContainer.FindSingleton("Single").Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Merge_Should_Add_OperationImports_If_Not_Exists()
     {
         // Arrange
@@ -132,7 +133,7 @@ public class ModelMergerTests
         targetContainer.FindOperationImports("Func").Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Merge_Should_Return_If_SourceEntityContainer_Is_Null()
     {
         // Arrange

@@ -21,18 +21,22 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.AspNetCore.Versioning.Infrastructure;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
 {
 
+    [TestClass]
     public class NSwagIntegrationTests
     {
 
-        [Fact]
+        public TestContext TestContext { get; set; }
+
+
+        [TestMethod]
         public async Task OpenApi_AtVersionGroupName_ReturnsCorrectVersionedDoc()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -50,10 +54,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
                 .Should().Contain(p => p.Name.Contains("/AuditLogs"));
         }
 
-        [Fact]
+        [TestMethod]
         public async Task OpenApi_AtRoutePrefix_FallbackPath_StillWorksForBackCompat()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -63,10 +67,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
                 .Should().BeTrue("either the legacy fallback path works or the new path is the only supported path");
         }
 
-        [Fact]
+        [TestMethod]
         public async Task RegistryEmpty_FallsBackToPrefixBasedBehavior()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildHostWithEmptyRegistryAsync(cancellationToken);
             var client = host.GetTestClient();
 
@@ -77,10 +81,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task OpenApi_MultiGroupDocs_AreIndependentlyReachable()
         {
-            var cancellationToken = TestContext.Current.CancellationToken;
+            var cancellationToken = TestContext.CancellationTokenSource.Token;
             using var host = await BuildMultiGroupHostAsync(cancellationToken);
             var client = host.GetTestClient();
 

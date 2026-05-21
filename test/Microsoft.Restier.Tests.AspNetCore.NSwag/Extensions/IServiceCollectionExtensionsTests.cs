@@ -5,15 +5,16 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
 {
 
+    [TestClass]
     public class IServiceCollectionExtensionsTests
     {
 
-        [Fact]
+        [TestMethod]
         public void AddRestierNSwag_NoSettingsAction_RegistersAtLeastOneService()
         {
             var collection = new ServiceCollection();
@@ -21,7 +22,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             collection.Should().NotBeEmpty();
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierNSwag_WithSettingsAction_RegistersConfiguratorAsSingleton()
         {
             var collection = new ServiceCollection();
@@ -32,7 +33,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.NSwag.Extensions
             configurator.Should().NotBeNull("the settings action must be retrievable as a singleton service");
         }
 
-        [Fact]
+        [TestMethod]
         public void AddRestierNSwag_RegistersApiExplorerConvention_OnMvcOptions()
         {
             var collection = new ServiceCollection();

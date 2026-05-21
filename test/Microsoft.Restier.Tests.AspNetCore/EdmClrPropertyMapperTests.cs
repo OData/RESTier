@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.Restier.AspNetCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore
 {
@@ -16,9 +16,10 @@ namespace Microsoft.Restier.Tests.AspNetCore
         public string LastName { get; set; }
     }
 
+    [TestClass]
     public class EdmClrPropertyMapperTests
     {
-        [Fact]
+        [TestMethod]
         public void GetClrPropertyName_WithoutCamelCase_ReturnsEdmName()
         {
             var builder = new ODataConventionModelBuilder();
@@ -33,7 +34,7 @@ namespace Microsoft.Restier.Tests.AspNetCore
             result.Should().Be("FirstName");
         }
 
-        [Fact]
+        [TestMethod]
         public void GetClrPropertyName_WithCamelCase_ReturnsClrName()
         {
             var builder = new ODataConventionModelBuilder();
@@ -51,7 +52,7 @@ namespace Microsoft.Restier.Tests.AspNetCore
             result.Should().Be("FirstName");
         }
 
-        [Fact]
+        [TestMethod]
         public void GetClrPropertyName_WithCamelCase_KeyProperty_ReturnsClrName()
         {
             var builder = new ODataConventionModelBuilder();

@@ -11,7 +11,7 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -21,7 +21,7 @@ public abstract class ValidationOptionsTests<TApi, TContext> : RestierTestBase<T
 {
     protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task Bag_MaxTop_RejectsOverLimitTopWithBadRequest()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -37,7 +37,7 @@ public abstract class ValidationOptionsTests<TApi, TContext> : RestierTestBase<T
         content.Should().Contain("Top");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Bag_MaxTop_AllowsUnderLimitTop()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(

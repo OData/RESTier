@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Batch;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using System;
@@ -15,13 +17,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Batch;
 
 /// <summary>
 /// Unit tests for the <see cref="RestierChangeSetProperty"/> class.
 /// </summary>
+[TestClass]
 public class RestierChangeSetPropertyTests
 {
     private readonly IQueryHandler queryHandler;
@@ -38,7 +40,7 @@ public class RestierChangeSetPropertyTests
         apiBase = Substitute.For<EmptyApi>(model, queryHandler, submitHandler);
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_ShouldInitializeProperties()
     {
         // Arrange
@@ -51,12 +53,12 @@ public class RestierChangeSetPropertyTests
         var changeSetProperty = new RestierChangeSetProperty(changeSetRequestItem);
 
         // Assert
-        Assert.NotNull(changeSetProperty.Exceptions);
-        Assert.Empty(changeSetProperty.Exceptions);
-        Assert.Null(changeSetProperty.ChangeSet);
+        changeSetProperty.Exceptions.Should().NotBeNull();
+        changeSetProperty.Exceptions.Should().BeEmpty();
+        changeSetProperty.ChangeSet.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OnChangeSetCompleted_ShouldCompleteSuccessfully_WhenNoExceptions()
     {
         // Arrange
@@ -78,7 +80,7 @@ public class RestierChangeSetPropertyTests
         await submitHandler.Received(1).SubmitAsync(Arg.Any<SubmitContext>(), Arg.Any<CancellationToken>());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OnChangeSetCompleted_ShouldHandleExceptionsFromSubmitChangeSet()
     {
         // Arrange
@@ -94,8 +96,8 @@ public class RestierChangeSetPropertyTests
         };
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => changeSetProperty.OnChangeSetCompleted());
-        Assert.Equal("Test exception", exception.Message);
+        var exception = (await FluentActions.Awaiting(() => changeSetProperty.OnChangeSetCompleted()).Should().ThrowAsync<InvalidOperationException>()).Which;
+        exception.Message.Should().Be("Test exception");
     }
 
     public class EmptyApi : ApiBase

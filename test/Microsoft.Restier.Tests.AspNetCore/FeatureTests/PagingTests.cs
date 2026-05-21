@@ -9,9 +9,9 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -19,7 +19,7 @@ public abstract class PagingTests<TApi, TContext> : RestierTestBase<TApi> where 
 {
     protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task PagingTests_MaxTop()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(

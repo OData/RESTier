@@ -5,14 +5,15 @@ namespace Microsoft.Restier.Tests.Core.Submit
 {
     using FluentAssertions;
     using Microsoft.Restier.Core.Submit;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using Xunit;
 
     /// <summary>
     /// Unit tests for <see cref="SubmitResult"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class SubmitResultTests
     {
         private SubmitResult testClass;
@@ -32,7 +33,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can construct a new Submit result.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new SubmitResult(exception);
@@ -44,7 +45,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot construct with a null exception.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullException()
         {
             Action act = () => new SubmitResult(default(Exception));
@@ -54,7 +55,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot construct with a null completed changeset.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullCompletedChangeSet()
         {
             Action act = () => new SubmitResult(default(ChangeSet));
@@ -64,7 +65,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Exception is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ExceptionIsInitializedCorrectly()
         {
             testClass.Exception.Should().Be(exception);
@@ -73,7 +74,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can get and set Exception.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetException()
         {
             var testValue = new Exception();
@@ -84,7 +85,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Setting the exception resets the completed changeset.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ExceptionResetsCompletedChangeSet()
         {
             testClass.CompletedChangeSet = new ChangeSet();
@@ -96,7 +97,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// CompletedChangeSet is initialized.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CompletedChangeSetIsInitializedCorrectly()
         {
             testClass = new SubmitResult(completedChangeSet);
@@ -106,7 +107,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can get and set completed Changeset.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetCompletedChangeSet()
         {
             var testValue = new ChangeSet();
@@ -117,7 +118,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Setting the completed changeset resets the Exception.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CompletedChangeSetResetsException()
         {
             var testValue = new Exception();

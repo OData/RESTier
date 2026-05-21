@@ -16,10 +16,11 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore.MultiTenancy;
 
+[TestClass]
 public class MultiTenancyTests : RestierTestBase<MultiTenantApi>
 {
     private static readonly string AcmeDb = $"tenant-acme-{Guid.NewGuid():N}";
@@ -103,7 +104,7 @@ public class MultiTenancyTests : RestierTestBase<MultiTenantApi>
         ctx.SaveChanges();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Acme_GetsAcmeData()
     {
         var response = await ExecuteTestRequest(
@@ -117,7 +118,7 @@ public class MultiTenancyTests : RestierTestBase<MultiTenantApi>
         content.Should().NotContain("GlobexBook");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Globex_GetsGlobexData()
     {
         var response = await ExecuteTestRequest(
@@ -131,7 +132,7 @@ public class MultiTenancyTests : RestierTestBase<MultiTenantApi>
         content.Should().NotContain("AcmeBook");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CrossTenantIsolation_PostToAcme_DoesNotLeakToGlobex()
     {
         var newBookTitle = $"NewAcmeBook-{Guid.NewGuid():N}";
@@ -154,7 +155,7 @@ public class MultiTenancyTests : RestierTestBase<MultiTenantApi>
         globexContent.Should().NotContain(newBookTitle, because: "the new book was POSTed to acme; it must not be visible to globex");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OdataContextUrlPreservesTenantPrefix()
     {
         var response = await ExecuteTestRequest(
@@ -168,7 +169,7 @@ public class MultiTenancyTests : RestierTestBase<MultiTenantApi>
             because: "if PathBase is preserved, generated context URLs include the tenant segment so OData clients can follow links back");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnknownTenant_Returns400()
     {
         var response = await ExecuteTestRequest(

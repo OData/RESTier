@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter
 {
     /// <summary>
     /// Unit tests for the <see cref="DefaultRestierSerializerProvider"/> class.
     /// </summary>
+    [TestClass]
     public class DefaultRestierSerializerProviderTests
     {
         private readonly IServiceProvider _serviceProvider;
@@ -26,7 +27,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             _serializerProvider = new DefaultRestierSerializerProvider(_serviceProvider);
         }
 
-        [Fact]
+        [TestMethod]
         public void Constructor_ShouldThrow_WhenServiceProviderIsNull()
         {
             // Act
@@ -36,7 +37,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             act.Should().Throw<ArgumentNullException>().WithParameterName("serviceProvider");
         }
 
-        [Fact]
+        [TestMethod]
         public void GetODataPayloadSerializer_ShouldReturnCorrectSerializer_ForKnownTypes()
         {
             // Arrange
@@ -62,7 +63,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
                 .Should().BeOfType<RestierEnumSerializer>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetODataPayloadSerializer_ShouldThrow_ForUnknownType()
         {
             // Arrange
@@ -76,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             act.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetEdmTypeSerializer_ShouldReturnCorrectSerializer_ForEdmTypes()
         {
             // Arrange
@@ -99,7 +100,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             _serializerProvider.GetEdmTypeSerializer(collectionTypeReference).Should().BeOfType<RestierCollectionSerializer>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetEdmTypeSerializer_ShouldFallbackToBase_ForUnknownEdmType()
         {
             // Arrange

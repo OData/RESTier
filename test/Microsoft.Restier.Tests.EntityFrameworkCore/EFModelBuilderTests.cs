@@ -13,13 +13,16 @@ using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.EntityFrameworkCore.Scenarios.IncorrectLibrary;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore.Views;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFrameworkCore;
 
+[TestClass]
 public class EFModelBuilderTests
 {
-    [Fact]
+    public TestContext TestContext { get; set; }
+
+    [TestMethod]
     public async Task DbSetOnComplexType_Should_ThrowException()
     {
         var getModelAction = async () =>
@@ -31,7 +34,7 @@ public class EFModelBuilderTests
             .Where(c => c.ToString().Contains("Address") && c.ToString().Contains("Universe"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EFModelBuilder_Should_HandleViews()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryWithViewsApi>(
@@ -49,7 +52,7 @@ public class EFModelBuilderTests
         metadataString.Should().MatchRegex("Function Name=\"BooksByPublisher\"[\\s\\S]*ReturnType[\\s\\S]*Type=\"Collection\\([^\"]*BooksByPublisher\\)\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EFModelBuilder_Should_HandleMixedModel()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryWithViewsApi>(
@@ -67,7 +70,7 @@ public class EFModelBuilderTests
         metadataString.Should().Contain("FunctionImport Name=\"BooksByPublisher\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EFModelBuilder_LowerCamelCase_KeylessViewImport_MatchesEntitySetCasing()
     {
         // ODataConventionModelBuilder.EnableLowerCamelCase() lower-camel-cases *property* and
@@ -83,7 +86,7 @@ public class EFModelBuilderTests
             namingConvention: RestierNamingConvention.LowerCamelCase);
 
         response.IsSuccessStatusCode.Should().BeTrue();
-        var metadataString = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var metadataString = await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token);
 
         // Convention sanity: entity-set names stay PascalCase, but properties get camelCased.
         metadataString.Should().Contain("EntitySet Name=\"Books\"");
@@ -94,7 +97,7 @@ public class EFModelBuilderTests
         metadataString.Should().NotContain("FunctionImport Name=\"booksByPublisher\"");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetEdmModel_ShouldBuildValidModel_ForStandardContext()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi>(

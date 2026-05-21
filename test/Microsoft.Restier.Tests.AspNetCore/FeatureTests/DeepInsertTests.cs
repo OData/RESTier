@@ -13,7 +13,7 @@ using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -29,7 +29,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
         return id.Length > 64 ? id[..64] : id;
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_CollectionNavProperty()
     {
         var pubId = UniqueId();
@@ -69,7 +69,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
         publisher.Books.Should().HaveCount(2);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_ServerGeneratedKeys()
     {
         var pubId = UniqueId();
@@ -109,7 +109,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: "OnInsertingBook should have assigned a server-generated Guid");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_FiresConventionMethods()
     {
         // Post with a Book that has Id = Guid.Empty, which OnInsertingBook should replace with a real Guid
@@ -150,7 +150,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: "OnInsertingBook convention should have assigned a non-empty Guid");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_MaxDepth1_AllowsOneLevel()
     {
         var pubId = UniqueId();
@@ -177,7 +177,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: $"MaxDepth=1 should allow one level of nesting. Response: {postContent}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_ExceedsMaxDepth_Returns400()
     {
         // A payload with 2 levels of nesting: Publisher -> Books -> Reviews
@@ -217,7 +217,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: "nesting depth exceeds MaxDepth=1 (Publisher->Books is OK at depth 0, but Books->Reviews at depth 1 should be rejected)");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_WithKeyOnlyNestedEntity_TreatedAsBind()
     {
         // A nested entity with only key properties is detected as a bind reference
@@ -266,7 +266,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
         publisher.Id.Should().Be(pubId);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_ResponseIncludesExpandedBooks()
     {
         var pubId = UniqueId();
@@ -296,7 +296,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: "the deep insert 201 response should expand nested Books in the response body");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_ResponseIncludesMultiLevelExpand()
     {
         // POST Publisher with Books containing Reviews (2-level nesting)
@@ -341,7 +341,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: "response should include expanded Reviews within Books (multi-level expansion)");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_ResponseHasExpandedNavigationShape()
     {
         var pubId = UniqueId();
@@ -374,7 +374,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
         publisher.Books[0].Title.Should().Be("Structural Test Book");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_BindReferenceNotFound_Returns400()
     {
         // When a nested entity is detected as a bind reference (only key properties)
@@ -404,7 +404,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: $"referencing a non-existent Book as a bind reference should return 400. Response: {postContent}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_BindDoesNotFireConventionMethods()
     {
         // Use a seeded, active Book: "Color Purple, The" (Publisher2)
@@ -476,7 +476,7 @@ public abstract class DeepInsertTests<TApi, TContext> : RestierTestBase<TApi>
             because: "only the bound book should be linked — no new book should have been inserted");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeepInsert_MultiLevel()
     {
         var pubId = UniqueId();

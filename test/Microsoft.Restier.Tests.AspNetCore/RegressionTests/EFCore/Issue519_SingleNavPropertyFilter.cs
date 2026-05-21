@@ -12,7 +12,7 @@ using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests.EFCore;
 
@@ -46,7 +46,8 @@ public class FilteredPublisherLibraryApi : EntityFrameworkApi<LibraryContext>
         => entitySet.Where(p => p.Id == "Publisher1");
 }
 
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class Issue519_SingleNavPropertyFilter
     : Issue519_SingleNavPropertyFilter<FilteredPublisherLibraryApi, LibraryContext>
 {

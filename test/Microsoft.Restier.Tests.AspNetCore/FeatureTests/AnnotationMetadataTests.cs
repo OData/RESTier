@@ -14,10 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared.Scenarios.Annotated;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
+[TestClass]
 public class AnnotationMetadataTests
 {
     private const string RelativePath = "..//..//..//..//Microsoft.Restier.Tests.AspNetCore//";
@@ -31,7 +32,7 @@ public class AnnotationMetadataTests
 
     private static Action<IServiceCollection> ConfigureServices => BuildServices($"AnnotationTests-{Guid.NewGuid()}");
 
-    [Fact]
+    [TestMethod]
     public async Task AnnotatedApi_MetadataMatchesBaseline()
     {
         var fileName = $"{Path.Combine(RelativePath, BaselineFolder)}{nameof(AnnotatedApi)}-ApiMetadata.txt";
@@ -44,7 +45,7 @@ public class AnnotationMetadataTests
         oldReport.Should().BeEquivalentTo(newReport.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PostingComputedProperty_ReturnsServerAssignedId()
     {
         // Arrange — POST with Id=9999 in the body. Expect the server to ignore it.
@@ -76,7 +77,7 @@ public class AnnotationMetadataTests
             "Core.V1.Computed should cause Restier to drop the client-supplied Id from the change set");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PatchingImmutableProperty_DoesNotChangePersistedValue()
     {
         // Arrange — single stable DB; POST creates a row, PATCH attempts to change CreatedOn,

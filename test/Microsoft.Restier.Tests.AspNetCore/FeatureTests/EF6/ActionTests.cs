@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 
-[Collection("LibraryApiEF6")]
-public class ActionTests(ITestOutputHelper outputHelper) : ActionTests<LibraryApi, LibraryContext>(outputHelper)
+[TestClass]
+[DoNotParallelize]
+public class ActionTests : ActionTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices
         => services => services.AddEntityFrameworkServices<LibraryContext>();

@@ -5,7 +5,7 @@ using System.Data.Entity;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Restier.EntityFramework;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFramework.Query
 {
@@ -15,23 +15,24 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
     /// higher-level Breakdance scenario suites that run against real SQL Server.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class EFQueryNoTrackingTests
     {
-        [Fact]
+        [TestMethod]
         public void Default_TrackingBehavior_IsDefault()
         {
             var options = new RestierEFOptions();
             options.TrackingBehavior.Should().Be(RestierEFTrackingBehavior.Default);
         }
 
-        [Fact]
+        [TestMethod]
         public void TrackingBehavior_RoundTrips_TrackAll()
         {
             var options = new RestierEFOptions { TrackingBehavior = RestierEFTrackingBehavior.TrackAll };
             options.TrackingBehavior.Should().Be(RestierEFTrackingBehavior.TrackAll);
         }
 
-        [Fact]
+        [TestMethod]
         public void TrackingBehavior_RoundTrips_NoTracking()
         {
             var options = new RestierEFOptions { TrackingBehavior = RestierEFTrackingBehavior.NoTracking };
@@ -44,7 +45,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
         /// <c>AsNoTracking</c> because EF6 has no equivalent API. This test only
         /// verifies the enum value round-trips through the options surface.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void TrackingBehavior_RoundTrips_NoTrackingWithIdentityResolution()
         {
             var options = new RestierEFOptions
@@ -117,15 +118,19 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
     /// source DbSet, which is what we assert on.
     /// </remarks>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class EFQuerySourcerTrackingTests
     {
         private readonly TrackingTestContext context = new TrackingTestContext();
+
+        [TestCleanup]
+        public void Cleanup() => context?.Dispose();
 
         /// <summary>
         /// EF6 + Default + no cycle → wraps DbSet with AsNoTracking (returns a
         /// different IQueryable than the bare DbSet).
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void Default_NoRecursiveExpand_AppliesAsNoTracking()
         {
             var set = context.Entities;
@@ -143,7 +148,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
         /// EF6 has no AsNoTrackingWithIdentityResolution, so a cycle in $expand
         /// forces a tracked query to preserve identity.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void Default_HasRecursiveExpand_FallsBackToTracked()
         {
             var set = context.Entities;
@@ -158,7 +163,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
         /// <summary>
         /// EF6 + TrackAll → bare DbSet regardless of recursive-expand.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void TrackAll_AlwaysTracked()
         {
             var set = context.Entities;
@@ -175,7 +180,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
         /// EF6 + NoTracking → always wraps with AsNoTracking, overriding the
         /// recursive-expand hint.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void NoTracking_OverridesRecursiveExpandHint()
         {
             var set = context.Entities;
@@ -194,7 +199,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Query
         /// The returned IQueryable is wrapped (not the same instance as the
         /// input DbSet).
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void NoTrackingWithIdentityResolution_FallsBackToNoTracking_OnEF6()
         {
             var set = context.Entities;

@@ -5,13 +5,14 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Restier.Core.Model;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core.Model;
 
+[TestClass]
 public class KeylessViewRegistryTests
 {
-    [Fact]
+    [TestMethod]
     public void Register_StoresEntry_RetrievableByName()
     {
         var registry = new KeylessViewRegistry();
@@ -26,7 +27,7 @@ public class KeylessViewRegistryTests
         entry.SourceFactory.Should().BeSameAs(factory);
     }
 
-    [Fact]
+    [TestMethod]
     public void TryGet_ReturnsFalse_ForUnknownName()
     {
         var registry = new KeylessViewRegistry();
@@ -35,7 +36,7 @@ public class KeylessViewRegistryTests
         entry.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Register_Throws_OnDuplicateName()
     {
         var registry = new KeylessViewRegistry();
@@ -47,7 +48,7 @@ public class KeylessViewRegistryTests
             .Where(e => e.Message.Contains("MyView"));
     }
 
-    [Fact]
+    [TestMethod]
     public void Register_RejectsNullName()
     {
         var registry = new KeylessViewRegistry();
@@ -55,7 +56,7 @@ public class KeylessViewRegistryTests
         act.Should().Throw<ArgumentException>();
     }
 
-    [Fact]
+    [TestMethod]
     public void Register_RejectsNullType()
     {
         var registry = new KeylessViewRegistry();
@@ -63,7 +64,7 @@ public class KeylessViewRegistryTests
         act.Should().Throw<ArgumentNullException>();
     }
 
-    [Fact]
+    [TestMethod]
     public void Register_RejectsNullFactory()
     {
         var registry = new KeylessViewRegistry();

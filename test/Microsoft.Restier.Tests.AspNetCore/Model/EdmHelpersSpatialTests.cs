@@ -6,29 +6,30 @@ using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model
 {
+    [TestClass]
     public class EdmHelpersSpatialTests
     {
-        [Theory]
-        [InlineData(typeof(GeographyPoint), EdmPrimitiveTypeKind.GeographyPoint)]
-        [InlineData(typeof(GeographyLineString), EdmPrimitiveTypeKind.GeographyLineString)]
-        [InlineData(typeof(GeographyPolygon), EdmPrimitiveTypeKind.GeographyPolygon)]
-        [InlineData(typeof(GeographyMultiPoint), EdmPrimitiveTypeKind.GeographyMultiPoint)]
-        [InlineData(typeof(GeographyMultiLineString), EdmPrimitiveTypeKind.GeographyMultiLineString)]
-        [InlineData(typeof(GeographyMultiPolygon), EdmPrimitiveTypeKind.GeographyMultiPolygon)]
-        [InlineData(typeof(GeographyCollection), EdmPrimitiveTypeKind.GeographyCollection)]
-        [InlineData(typeof(Geography), EdmPrimitiveTypeKind.Geography)]
-        [InlineData(typeof(GeometryPoint), EdmPrimitiveTypeKind.GeometryPoint)]
-        [InlineData(typeof(GeometryLineString), EdmPrimitiveTypeKind.GeometryLineString)]
-        [InlineData(typeof(GeometryPolygon), EdmPrimitiveTypeKind.GeometryPolygon)]
-        [InlineData(typeof(GeometryMultiPoint), EdmPrimitiveTypeKind.GeometryMultiPoint)]
-        [InlineData(typeof(GeometryMultiLineString), EdmPrimitiveTypeKind.GeometryMultiLineString)]
-        [InlineData(typeof(GeometryMultiPolygon), EdmPrimitiveTypeKind.GeometryMultiPolygon)]
-        [InlineData(typeof(GeometryCollection), EdmPrimitiveTypeKind.GeometryCollection)]
-        [InlineData(typeof(Geometry), EdmPrimitiveTypeKind.Geometry)]
+        [TestMethod]
+        [DataRow(typeof(GeographyPoint), EdmPrimitiveTypeKind.GeographyPoint)]
+        [DataRow(typeof(GeographyLineString), EdmPrimitiveTypeKind.GeographyLineString)]
+        [DataRow(typeof(GeographyPolygon), EdmPrimitiveTypeKind.GeographyPolygon)]
+        [DataRow(typeof(GeographyMultiPoint), EdmPrimitiveTypeKind.GeographyMultiPoint)]
+        [DataRow(typeof(GeographyMultiLineString), EdmPrimitiveTypeKind.GeographyMultiLineString)]
+        [DataRow(typeof(GeographyMultiPolygon), EdmPrimitiveTypeKind.GeographyMultiPolygon)]
+        [DataRow(typeof(GeographyCollection), EdmPrimitiveTypeKind.GeographyCollection)]
+        [DataRow(typeof(Geography), EdmPrimitiveTypeKind.Geography)]
+        [DataRow(typeof(GeometryPoint), EdmPrimitiveTypeKind.GeometryPoint)]
+        [DataRow(typeof(GeometryLineString), EdmPrimitiveTypeKind.GeometryLineString)]
+        [DataRow(typeof(GeometryPolygon), EdmPrimitiveTypeKind.GeometryPolygon)]
+        [DataRow(typeof(GeometryMultiPoint), EdmPrimitiveTypeKind.GeometryMultiPoint)]
+        [DataRow(typeof(GeometryMultiLineString), EdmPrimitiveTypeKind.GeometryMultiLineString)]
+        [DataRow(typeof(GeometryMultiPolygon), EdmPrimitiveTypeKind.GeometryMultiPolygon)]
+        [DataRow(typeof(GeometryCollection), EdmPrimitiveTypeKind.GeometryCollection)]
+        [DataRow(typeof(Geometry), EdmPrimitiveTypeKind.Geometry)]
         public void GetPrimitiveTypeReference_recognizes_Microsoft_Spatial_types(Type clrType, EdmPrimitiveTypeKind expected)
         {
             var reference = clrType.GetPrimitiveTypeReference();

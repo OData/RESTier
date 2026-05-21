@@ -6,12 +6,12 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// </summary>
     [ExcludeFromCodeCoverage]
 
+    [TestClass]
     public class QueryContextTests
     {
         private readonly IQueryHandler queryHandler;
@@ -39,7 +40,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can construct a new QueryContext.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot construct with a null api.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullApi()
         {
             var queryableSource = new QueryableSource<Test>(Expression.Constant(Substitute.For<IQueryable>()));
@@ -66,7 +67,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot construct with a null request.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullRequest()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -77,7 +78,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get and set the model.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetModel()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -93,7 +94,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Request is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void RequestIsInitializedCorrectly()
         {
             var api = new TestApi(model, queryHandler, submitHandler);

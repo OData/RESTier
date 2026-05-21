@@ -12,7 +12,7 @@ using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.IntegrationTests;
 
@@ -21,7 +21,8 @@ namespace Microsoft.Restier.Tests.AspNetCore.IntegrationTests;
 /// These tests exercise the EDM model metadata and HTTP query surface for the
 /// <c>SpatialPlaces</c> entity set introduced in H1.
 /// </summary>
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
 {
     private readonly Action<IServiceCollection> _configureServices
@@ -91,7 +92,7 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// so they resolve to Edm.GeographyPoint.  ServiceArea is an NTS Polygon geography column,
     /// so it resolves to Edm.GeographyPolygon.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task EFCore_Metadata_SpatialPlace_HasCorrectEdmTypes()
     {
         var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi>(
@@ -129,7 +130,7 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// <summary>
     /// EFCore: GET /SpatialPlaces must return 200 OK (entity set is routable).
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task EFCore_Get_SpatialPlaces_Returns200()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -146,7 +147,7 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// The seeded record always exists (spatial values may be null when SQL CLR is disabled,
     /// but the record itself is always inserted).
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task EFCore_Get_SpatialPlaces_ByKey_Returns200()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -175,10 +176,16 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// the previous spec-A negative assertion to a positive one. Requires CLR on the
     /// SQL Server instance.
     /// </summary>
-    [Fact(SkipUnless = nameof(SqlServerClrEnabled),
-          Skip = "Requires SQL Server CLR for geography spatial method execution (sp_configure 'clr enabled', 1).")]
+    [TestMethod]
     public async Task EFCore_Filter_GeoDistance_TranslatesAndReturnsSeededRow()
     {
+        if (!SqlServerClrEnabled)
+        {
+            Assert.Inconclusive(
+                "Requires SQL Server CLR for geography spatial method execution "
+                + "(sp_configure 'clr enabled', 1).");
+        }
+
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
             HttpMethod.Get,
             resource: "/SpatialPlaces?$filter=geo.distance(HeadquartersLocation,geography'SRID=4326;POINT(0 0)') lt 10000000",
@@ -196,10 +203,16 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// EFCore: $filter using geo.length must return 200 OK and include the seeded RouteLine row.
     /// The seeded LineString (0,0)->(1,1)->(2,2) has positive length, so it survives the filter.
     /// </summary>
-    [Fact(SkipUnless = nameof(SqlServerClrEnabled),
-          Skip = "Requires SQL Server CLR for geography spatial method execution (sp_configure 'clr enabled', 1).")]
+    [TestMethod]
     public async Task EFCore_Filter_GeoLength_TranslatesPropertyAccess()
     {
+        if (!SqlServerClrEnabled)
+        {
+            Assert.Inconclusive(
+                "Requires SQL Server CLR for geography spatial method execution "
+                + "(sp_configure 'clr enabled', 1).");
+        }
+
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
             HttpMethod.Get,
             resource: "/SpatialPlaces?$filter=geo.length(RouteLine) gt 0",
@@ -216,10 +229,16 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// ServiceArea row when the test point lies inside the polygon. The seeded polygon
     /// covers (0,0)–(1,1) so a query point at (0.5, 0.5) intersects.
     /// </summary>
-    [Fact(SkipUnless = nameof(SqlServerClrEnabled),
-          Skip = "Requires SQL Server CLR for geography spatial method execution (sp_configure 'clr enabled', 1).")]
+    [TestMethod]
     public async Task EFCore_Filter_GeoIntersects_TranslatesMethodCall()
     {
+        if (!SqlServerClrEnabled)
+        {
+            Assert.Inconclusive(
+                "Requires SQL Server CLR for geography spatial method execution "
+                + "(sp_configure 'clr enabled', 1).");
+        }
+
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
             HttpMethod.Get,
             resource: "/SpatialPlaces?$filter=geo.intersects(ServiceArea,geography'SRID=4326;POINT(0.5 0.5)')",
@@ -235,10 +254,16 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// EFCore: path-segment $filter syntax (/Entities/$filter(...)) must also translate
     /// geo.distance.  Exercises the RestierQueryBuilder.HandleFilterPathSegment change.
     /// </summary>
-    [Fact(SkipUnless = nameof(SqlServerClrEnabled),
-          Skip = "Requires SQL Server CLR for geography spatial method execution (sp_configure 'clr enabled', 1).")]
+    [TestMethod]
     public async Task EFCore_Filter_GeoDistance_PathSegmentSyntax_TranslatesToo()
     {
+        if (!SqlServerClrEnabled)
+        {
+            Assert.Inconclusive(
+                "Requires SQL Server CLR for geography spatial method execution "
+                + "(sp_configure 'clr enabled', 1).");
+        }
+
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
             HttpMethod.Get,
             resource: "/SpatialPlaces/$filter(geo.distance(HeadquartersLocation,geography'SRID=4326;POINT(0 0)') lt 10000000)",
@@ -259,7 +284,7 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// function signature matching rejects cross-genus calls at parse time before the
     /// binder ever sees the call — see the implementation note in the spec.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task EFCore_Filter_GeoDistance_GenusMismatch_Returns400()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
@@ -277,7 +302,7 @@ public class SpatialTypeIntegrationTests : RestierTestBase<LibraryApi>
     /// Unknown geo.* function names (geo.area, etc.) must be rejected with 4xx —
     /// proves the binder's default: arm forwards to AspNetCoreOData's base FilterBinder.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task EFCore_Filter_GeoArea_UnknownFunction_Returns400()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(

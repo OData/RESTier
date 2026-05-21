@@ -17,7 +17,7 @@ using Microsoft.Restier.EntityFramework;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 
@@ -34,7 +34,8 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 /// is plain <c>AsNoTracking</c>, and the recursive-expand case falls back
 /// to a bare DbSet (tracked) to preserve identity across the cycle.
 /// </summary>
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class NoTrackingTests : RestierTestBase<LibraryApi>
 {
     private static Action<IServiceCollection> ConfigureWithRecorderAndDefault =>
@@ -62,7 +63,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
             services.AddSingleton<IChainedService<IQueryExecutor>, EF6RecordingQueryExecutor>();
         };
 
-    [Fact]
+    [TestMethod]
     public async Task Get_AppliesAsNoTracking_ByDefault()
     {
         EF6RecordingQueryExecutor.Reset();
@@ -83,7 +84,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
             .Should().NotContain(s => s.Contains("AsNoTrackingWithIdentityResolution"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_TrackAll_DoesNotWrapDbSet()
     {
         EF6RecordingQueryExecutor.Reset();
@@ -98,7 +99,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
             .Should().NotContain(s => s.Contains("NoTracking"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_NoTrackingBehavior_AppliesAsNoTracking()
     {
         EF6RecordingQueryExecutor.Reset();
@@ -132,7 +133,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
     /// EF6 client-projection path when the second-level Publisher expand
     /// is materialized for that orphan row.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task Get_WithRecursiveExpand_FallsBackToTracked()
     {
         EF6RecordingQueryExecutor.Reset();

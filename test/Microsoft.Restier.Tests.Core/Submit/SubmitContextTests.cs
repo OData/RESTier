@@ -8,15 +8,16 @@ namespace Microsoft.Restier.Tests.Core.Submit
     using Microsoft.Restier.Core;
     using Microsoft.Restier.Core.Query;
     using Microsoft.Restier.Core.Submit;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using Xunit;
 
     /// <summary>
     /// Unit tests for the <see cref="SubmitContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class SubmitContextTests
     {
         private readonly IQueryHandler queryHandler;
@@ -39,27 +40,27 @@ namespace Microsoft.Restier.Tests.Core.Submit
             testClass = new SubmitContext(api, changeSet);
         }
 
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new SubmitContext(api, changeSet);
             instance.Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullApi()
         {
             Action act = () => new SubmitContext(default(ApiBase), new ChangeSet());
             act.Should().Throw<ArgumentNullException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void ChangeSetIsInitializedCorrectly()
         {
             testClass.ChangeSet.Should().Be(changeSet);
         }
 
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetChangeSet()
         {
             var testValue = new ChangeSet();
@@ -67,7 +68,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
             testClass.ChangeSet.Should().Be(testValue);
         }
 
-        [Fact]
+        [TestMethod]
         public void CannotSetAndGetChangeSetWithResult()
         {
             var testValue = new ChangeSet();
@@ -77,7 +78,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
             act.Should().Throw<InvalidOperationException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetResult()
         {
             var testValue = new SubmitResult(new Exception());

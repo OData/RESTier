@@ -15,8 +15,8 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -24,6 +24,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedChangeSetItemValidator"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedChangeSetItemValidatorTests
     {
         private readonly IQueryHandler queryHandler;
@@ -61,7 +62,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks whether the <see cref="ConventionBasedChangeSetItemValidator"/> can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ConventionBasedChangeSetItemValidator();
@@ -72,7 +73,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that ValidateChangeSetItemAsync can be called.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallValidateChangeSetItemAsync()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -88,7 +89,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Make sure that calling ValidateChangeSetItemAsync actually validates the resource.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task ValidateChangeSetItemAsyncValidates()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -119,7 +120,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that ValidateChangeSetItemAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallValidateChangeSetItemAsyncWithNullContext()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -135,7 +136,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that ValidateChangeSetItemAsync throws when the changesetitem is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallValidateChangeSetItemAsyncWithNullItem()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -152,7 +153,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that ValidateChangeSetItemAsync throws when the collection of <see cref="ChangeSetItemValidationResult"/> is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallValidateChangeSetItemAsyncWithNullValidationResults()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -168,7 +169,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Validates a resource with multiple validation errors.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public async Task ValidateChangeSetItemAsync_MultipleValidationErrors()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -190,7 +191,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Validates a resource with no validation attributes.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public async Task ValidateChangeSetItemAsync_NoValidationAttributes()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -208,7 +209,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Validates a resource with valid data.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public async Task ValidateChangeSetItemAsync_ValidData()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -230,7 +231,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Validates a resource with a null Resource property.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public async Task ValidateChangeSetItemAsync_NullResource()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();
@@ -248,7 +249,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Validates a resource with custom validation logic.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public async Task ValidateChangeSetItemAsync_CustomValidationLogic()
         {
             var testClass = new ConventionBasedChangeSetItemValidator();

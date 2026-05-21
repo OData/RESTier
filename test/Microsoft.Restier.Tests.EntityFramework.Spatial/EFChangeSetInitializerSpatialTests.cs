@@ -6,14 +6,15 @@ using FluentAssertions;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFramework;
 using Microsoft.Spatial;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.EntityFramework.Spatial
 {
+    [TestClass]
     public class EFChangeSetInitializerSpatialTests
     {
-        [Fact]
+        [TestMethod]
         public void ConvertToEfValue_dispatches_to_registered_spatial_converter_for_DbGeography()
         {
             var fakeDbg = DbGeography.FromText("POINT(1 2)", 4326);
@@ -30,7 +31,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Spatial
             result.Should().BeSameAs(fakeDbg);
         }
 
-        [Fact]
+        [TestMethod]
         public void ConvertToEfValue_passes_through_when_no_converter_registered()
         {
             var initializer = new EFChangeSetInitializer();

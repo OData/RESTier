@@ -5,7 +5,7 @@ using System;
 using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.EntityFrameworkCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #pragma warning disable CS0618 // Date and TimeOfDay are obsolete but still used by OData
 namespace Microsoft.Restier.Tests.AspNetCore;
@@ -13,6 +13,7 @@ namespace Microsoft.Restier.Tests.AspNetCore;
 /// <summary>
 /// Unit tests for the <see cref="EFChangeSetInitializer.ConvertToEfValue"/> method.
 /// </summary>
+[TestClass]
 public class EFChangeSetInitializerTests
 {
     private readonly EFChangeSetInitializer _initializer;
@@ -22,7 +23,7 @@ public class EFChangeSetInitializerTests
         _initializer = new EFChangeSetInitializer();
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnDateOnly_ForEdmDateAndDateOnlyTarget()
     {
         // Arrange
@@ -35,7 +36,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<DateOnly>().Which.Should().Be(new DateOnly(2025, 4, 21));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnDateTime_ForEdmDateAndDateTimeTarget()
     {
         // Arrange
@@ -48,7 +49,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<DateTime>().Which.Should().Be(new DateTime(2025, 4, 21));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnTimeOnly_ForEdmTimeOfDayAndTimeOnlyTarget()
     {
         // Arrange
@@ -61,7 +62,7 @@ public class EFChangeSetInitializerTests
         result.Should().BeOfType<TimeOnly>().Which.Should().Be(new TimeOnly(10, 30, 45, 500));
     }
 
-    [Fact]
+    [TestMethod]
     public void ConvertToEfValue_ShouldReturnTimeSpan_ForEdmTimeOfDayAndTimeSpanTarget()
     {
         // Arrange

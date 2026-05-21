@@ -9,9 +9,9 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -19,7 +19,7 @@ public abstract class InTests<TApi, TContext> : RestierTestBase<TApi> where TApi
 {
     protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task InQueries_IdInList()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(

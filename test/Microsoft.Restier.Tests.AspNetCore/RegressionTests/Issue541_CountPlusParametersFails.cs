@@ -12,7 +12,7 @@ using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests;
 
@@ -37,7 +37,7 @@ public abstract class Issue541_CountPlusParametersFails<TApi, TContext> : Restie
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CountShouldntThrowExceptions()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$count=true");
@@ -46,7 +46,7 @@ public abstract class Issue541_CountPlusParametersFails<TApi, TContext> : Restie
         content.Should().Contain("\"@odata.count\":2,");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CountPlusTopShouldntThrowExceptions()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true");
@@ -55,7 +55,7 @@ public abstract class Issue541_CountPlusParametersFails<TApi, TContext> : Restie
         content.Should().Contain("\"@odata.count\":2,");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CountPlusTopPlusFilterShouldntThrowExceptions()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$filter=FullName eq 'p1'");
@@ -64,7 +64,7 @@ public abstract class Issue541_CountPlusParametersFails<TApi, TContext> : Restie
         content.Should().Contain("\"@odata.count\":1,");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CountPlusTopPlusProjectionShouldntThrowExceptions()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$top=5&$count=true&$select=Id,FullName");
@@ -73,7 +73,7 @@ public abstract class Issue541_CountPlusParametersFails<TApi, TContext> : Restie
         content.Should().Contain("\"@odata.count\":2,");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CountPlusSelectShouldntThrowExceptions()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Readers?$count=true&$select=Id,FullName");
@@ -82,7 +82,7 @@ public abstract class Issue541_CountPlusParametersFails<TApi, TContext> : Restie
         content.Should().Contain("\"@odata.count\":2,");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CountPlusExpandShouldntThrowExceptions()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Publishers?$top=5&$count=true&$expand=Books");

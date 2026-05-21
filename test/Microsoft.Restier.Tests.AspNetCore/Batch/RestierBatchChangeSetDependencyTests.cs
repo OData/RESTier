@@ -12,6 +12,7 @@ using Microsoft.Restier.AspNetCore.Batch;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Concurrent;
@@ -20,7 +21,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Batch;
 
@@ -28,11 +28,12 @@ namespace Microsoft.Restier.Tests.AspNetCore.Batch;
 /// Integration tests for <see cref="RestierBatchChangeSetRequestItem"/> dependency-aware execution.
 /// Validates the three strategies: concurrent, pre-resolve + concurrent, and sequential fallback.
 /// </summary>
+[TestClass]
 public class RestierBatchChangeSetDependencyTests
 {
     #region Test 1: No Dependencies - Concurrent Execution
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_NoDependencies_ExecutesConcurrently()
     {
         // Arrange
@@ -79,7 +80,7 @@ public class RestierBatchChangeSetDependencyTests
 
     #region Test 2: Dependencies With Client Keys - Pre-Resolve $ContentId
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_WithDependencies_ResolvesDollarContentId()
     {
         // Arrange
@@ -130,7 +131,7 @@ public class RestierBatchChangeSetDependencyTests
         result.Should().BeOfType<ChangeSetResponseItem>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_WithDependencies_ResolvesDollarContentIdWithSuffix()
     {
         // Arrange — request 2 URL is "$1/Details" (with path suffix).
@@ -184,7 +185,7 @@ public class RestierBatchChangeSetDependencyTests
 
     #region Test 2b: Chained Dependencies (A→B→C)
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_ChainedDependencies_ResolvesInOrder()
     {
         // Arrange — three requests where C references B which references A.
@@ -243,7 +244,7 @@ public class RestierBatchChangeSetDependencyTests
 
     #region Test 3: Server-Generated Key - Sequential Fallback
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_ServerGeneratedKey_FallsBackToSequential()
     {
         // Arrange
@@ -296,7 +297,7 @@ public class RestierBatchChangeSetDependencyTests
 
     #region Test 4: Sequential Fallback - Rolls Back on Failure
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_SequentialFallback_RollsBackOnFailure()
     {
         // Arrange

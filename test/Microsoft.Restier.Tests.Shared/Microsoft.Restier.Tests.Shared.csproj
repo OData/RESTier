@@ -23,7 +23,7 @@
   <ItemGroup>
 	   <PackageReference Include="Microsoft.OData.ModelBuilder" Version="2.*" />
     <PackageReference Include="Breakdance.AspNetCore" Version="$(RestierBreakdanceVersion)" />
-	   <PackageReference Include="xunit.v3.extensibility.core" Version="3.*" />
+	   <PackageReference Include="MSTest.TestFramework" Version="3.*" />
 	</ItemGroup>
 
 	<ItemGroup>

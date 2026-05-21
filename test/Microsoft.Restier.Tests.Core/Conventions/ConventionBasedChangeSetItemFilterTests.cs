@@ -13,8 +13,8 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedChangeSetItemFilter"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedChangeSetItemFilterTests
     {
         private readonly IQueryHandler queryHandler;
@@ -55,7 +56,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks whether the <see cref="ConventionBasedChangeSetItemFilter"/> can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that the constructor cannot be called with a null type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullTargetType()
         {
             Action act = () => new ConventionBasedChangeSetItemFilter(default(Type));
@@ -76,7 +77,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync can be called.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallOnChangeSetItemProcessingAsync()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -89,7 +90,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync invokes the OnInsertingObject method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessingAsyncInvokesConventionMethod()
         {
             var api = new InsertApi(model, queryHandler, submitHandler);
@@ -104,7 +105,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnChangeSetItemProcessingAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallOnChangeSetItemProcessingAsyncWithNullContext()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -119,7 +120,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnChangeSetItemProcessingAsync throws when the item is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallOnChangeSetItemProcessingAsyncWithNullItem()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -134,7 +135,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessedAsync can be called.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallOnChangeSetItemProcessedAsync()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -147,7 +148,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessedAsync invokes the OnInsertedObject method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessedAsyncInvokesConventionMethod()
         {
             var api = new InsertApi(model, queryHandler, submitHandler);
@@ -162,7 +163,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync does not invoke OnInsertingObject because of an incorrect visibility.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessingAsyncWithPrivateMethod()
         {
             testTraceListener.Clear();
@@ -179,7 +180,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync does not invoke OnInsertingObject because of a wrong return type.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessingWithWrongReturnType()
         {
             testTraceListener.Clear();
@@ -196,7 +197,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync does not invoke OnInsertingTest because of a wrong resource name.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessingWithWrongMethod()
         {
             testTraceListener.Clear();
@@ -213,7 +214,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync does not invoke OnInsertingObject because of a wrong api type.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessingWithWrongApiType()
         {
             testTraceListener.Clear();
@@ -230,7 +231,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnChangeSetItemProcessingAsync does not invoke OnInsertingObject because of a wrong number of arguments.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnChangeSetItemProcessingWithWrongNumberOfArguments()
         {
             testTraceListener.Clear();
@@ -247,7 +248,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnChangeSetItemProcessedAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallOnChangeSetItemProcessedAsyncWithNullContext()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -262,7 +263,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnChangeSetItemProcessedAsync throws when the item is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallOnChangeSetItemProcessedAsyncWithNullItem()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));
@@ -277,7 +278,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that the Inner filter is invoked when set.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task InnerFilterIsInvoked()
         {
             var innerFilter = Substitute.For<IChangeSetItemFilter>();
@@ -300,7 +301,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnChangeSetItemProcessingAsync handles multiple ChangeSetItems.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanProcessMultipleChangeSetItems()
         {
             var testClass = new ConventionBasedChangeSetItemFilter(typeof(EmptyApi));

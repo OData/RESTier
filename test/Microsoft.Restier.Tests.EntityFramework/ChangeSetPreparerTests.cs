@@ -12,7 +12,7 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #if EFCore
 using Microsoft.Restier.EntityFrameworkCore;
@@ -25,9 +25,10 @@ using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
 namespace Microsoft.Restier.Tests.EntityFramework;
 #endif
 
+[TestClass]
 public class ChangeSetPreparerTests : RestierTestBase<LibraryApi>
 {
-    [Fact]
+    [TestMethod]
     public async Task ComplexTypeUpdate()
     {
         var provider = await RestierTestHelpers.GetTestableInjectionContainer<LibraryApi>(

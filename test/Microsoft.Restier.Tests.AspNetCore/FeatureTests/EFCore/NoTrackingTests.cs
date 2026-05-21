@@ -17,7 +17,7 @@ using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EFCore;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore;
 
@@ -32,7 +32,8 @@ namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EFCore;
 /// cover enum round-tripping and an isolated EF Core API sanity check —
 /// they don't exercise the controller path.
 /// </summary>
-[Collection("LibraryApiEFCore")]
+[TestClass]
+[DoNotParallelize]
 public class NoTrackingTests : RestierTestBase<LibraryApi>
 {
     private static Action<IServiceCollection> ConfigureWithRecorderAndDefault =>
@@ -60,7 +61,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
             services.AddSingleton<IChainedService<IQueryExecutor>, RecordingQueryExecutor>();
         };
 
-    [Fact]
+    [TestMethod]
     public async Task Get_AppliesAsNoTrackingWithIdentityResolution_ByDefault()
     {
         RecordingQueryExecutor.Reset();
@@ -76,7 +77,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
             .And.Contain("AsNoTrackingWithIdentityResolution");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_TrackAll_DoesNotWrapDbSet()
     {
         RecordingQueryExecutor.Reset();
@@ -92,7 +93,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
             .And.NotContain("AsNoTracking");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_NoTrackingBehavior_AppliesPlainAsNoTracking()
     {
         RecordingQueryExecutor.Reset();
@@ -121,7 +122,7 @@ public class NoTrackingTests : RestierTestBase<LibraryApi>
     /// so <c>/Publishers('Publisher1')/PublishedBooks()</c> exercises the
     /// OperationSegment branch.
     /// </summary>
-    [Fact]
+    [TestMethod]
     public async Task Get_BoundFunction_AppliesAsNoTrackingWithIdentityResolution_OnBindingSource()
     {
         RecordingQueryExecutor.Reset();

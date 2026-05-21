@@ -8,11 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Breakdance;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library.EF6;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests.EF6;
 
-[Collection("LibraryApiEF6")]
+[TestClass]
+[DoNotParallelize]
 public class NavigationPropertyTests : NavigationPropertyTests<LibraryApi, LibraryContext>
 {
     protected override Action<IServiceCollection> ConfigureServices

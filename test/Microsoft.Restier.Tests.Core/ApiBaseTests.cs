@@ -8,6 +8,7 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections;
@@ -18,7 +19,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -26,8 +26,11 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ApiBase"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public partial class ApiBaseTests
     {
+        public TestContext TestContext { get; set; }
+
         private TestApiBase testClass;
         DefaultQueryHandler queryHandler;
         DefaultSubmitHandler submitHandler;
@@ -84,7 +87,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot construct with a null model.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullModel()
         {
             Action act = () => new TestApiBase(default(IEdmModel), queryHandler, submitHandler);
@@ -94,7 +97,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot construct with a null query handler.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullQueryHandler()
         {
             Action act = () => new TestApiBase(modelBuilder.GetEdmModel(), default(IQueryHandler), submitHandler);
@@ -104,7 +107,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot construct with a null submit handler.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullSubmitHandler()
         {
             Action act = () => new TestApiBase(modelBuilder.GetEdmModel(), queryHandler, default(ISubmitHandler));
@@ -115,7 +118,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Can call SubmitAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallSubmitAsync()
         {
             var changeSetItemAuthorizer = Substitute.For<IChangeSetItemAuthorizer>();
@@ -202,7 +205,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Can call SubmitAsync with unprocessed results. They should be returned immediately.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallSubmitAsyncWithUnprocessedResults()
         {
             var changeSetItemAuthorizer = Substitute.For<IChangeSetItemAuthorizer>();
@@ -242,14 +245,14 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can call Dispose with no parameters.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallDisposeWithNoParameters()
         {
             testClass.Dispose();
             testClass.Disposed.Should().BeTrue("ApiBase instance is not disposed.");
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultApiBaseCanBeCreatedAndDisposed()
         {
             var model = modelBuilder.GetEdmModel();
@@ -259,7 +262,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().NotThrow<Exception>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_EntitySet_IsConfiguredCorrectly()
         {
             var model = modelBuilder.GetEdmModel();
@@ -269,7 +272,7 @@ namespace Microsoft.Restier.Tests.Core
 
             CheckQueryable(source, typeof(string), new List<string> { "Test" }, arguments);
         }
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_OfT_EntitySet_IsConfiguredCorrectly()
         {
             var model = modelBuilder.GetEdmModel();
@@ -280,7 +283,7 @@ namespace Microsoft.Restier.Tests.Core
             CheckQueryable(source, typeof(string), new List<string> { "Test" }, arguments);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_EntitySet_ThrowsIfNotMapped()
         {
             _sourcerFactory.Create().Returns(new TestQuerySourcer());
@@ -305,7 +308,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_OfT_ContainerElementThrowsIfWrongType()
         {
             var model = modelBuilder.GetEdmModel();
@@ -317,7 +320,7 @@ namespace Microsoft.Restier.Tests.Core
 
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_ComposableFunction_IsConfiguredCorrectly()
         {
             var model = modelBuilder.GetEdmModel();
@@ -328,7 +331,7 @@ namespace Microsoft.Restier.Tests.Core
             CheckQueryable(source, typeof(DateTime), new List<string> { "Namespace", "Function" }, arguments);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_OfT_ComposableFunction_IsConfiguredCorrectly()
         {
             var model = modelBuilder.GetEdmModel();
@@ -339,7 +342,7 @@ namespace Microsoft.Restier.Tests.Core
             CheckQueryable(source, typeof(DateTime), new List<string> { "Namespace", "Function" }, arguments);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_ComposableFunction_ThrowsIfNotMapped()
         {
             _sourcerFactory.Create().Returns(new TestQuerySourcer());
@@ -364,7 +367,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_OfT_ComposableFunction_ThrowsIfNotMapped()
         {
             _sourcerFactory.Create().Returns(new TestQuerySourcer());
@@ -388,7 +391,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_ComposableFunction_ThrowsIfWrongType()
         {
             var model = modelBuilder.GetEdmModel();
@@ -399,41 +402,41 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<ArgumentException>();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task QueryAsync_WithQueryReturnsResults()
         {
             var model = modelBuilder.GetEdmModel();
             var api = new EmptyApi(model, queryHandler, submitHandler);
 
             var request = new QueryRequest(api.GetQueryableSource<string>("Test"));
-            var result = await api.QueryAsync(request, TestContext.Current.CancellationToken);
+            var result = await api.QueryAsync(request, TestContext.CancellationTokenSource.Token);
             var results = result.Results.Cast<string>();
 
             results.SequenceEqual(new[] { "Test" }).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task QueryAsync_CorrectlyForwardsCall()
         {
             var model = modelBuilder.GetEdmModel();
             var api = new EmptyApi(model, queryHandler, submitHandler);
             var queryRequest = new QueryRequest(api.GetQueryableSource<string>("Test"));
-            var queryResult = await api.QueryAsync(queryRequest, TestContext.Current.CancellationToken);
+            var queryResult = await api.QueryAsync(queryRequest, TestContext.CancellationTokenSource.Token);
 
             queryResult.Results.Cast<string>().SequenceEqual(new[] { "Test" }).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task SubmitAsync_CorrectlyForwardsCall()
         {
             var model = modelBuilder.GetEdmModel();
             var api = new EmptyApi(model, queryHandler, submitHandler);
-            var submitResult = await api.SubmitAsync(cancellationToken: TestContext.Current.CancellationToken);
+            var submitResult = await api.SubmitAsync(cancellationToken: TestContext.CancellationTokenSource.Token);
 
             submitResult.CompletedChangeSet.Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_CannotEnumerate()
         {
             var model = modelBuilder.GetEdmModel();
@@ -444,7 +447,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_CannotEnumerateIEnumerable()
         {
             var model = modelBuilder.GetEdmModel();
@@ -455,7 +458,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_ProviderCannotGenericExecute()
         {
             var model = modelBuilder.GetEdmModel();
@@ -466,7 +469,7 @@ namespace Microsoft.Restier.Tests.Core
             exceptionTest.Should().Throw<NotSupportedException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetQueryableSource_ProviderCannotExecute()
         {
             var model = modelBuilder.GetEdmModel();

@@ -5,8 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -14,12 +14,13 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="QueryModelReference" /> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class QueryModelReferenceTests
     {
         /// <summary>
         /// Can get the entity set.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetEntitySet()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
@@ -31,7 +32,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetType()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();

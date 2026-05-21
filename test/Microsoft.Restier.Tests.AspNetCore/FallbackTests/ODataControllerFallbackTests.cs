@@ -15,10 +15,11 @@ using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FallbackTests;
 
+[TestClass]
 public class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
 {
     public ODataControllerFallbackTests()
@@ -49,7 +50,7 @@ public class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
             .AddSingleton<ISubmitExecutor, DefaultSubmitExecutor>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FallbackApi_EntitySet_ShouldFallBack()
     {
         // Should fallback to PeopleController.
@@ -62,7 +63,7 @@ public class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
         first.Id.Should().Be(999);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FallbackApi_NavigationProperty_ShouldFallBack()
     {
         // Should fallback to PeopleController.
@@ -76,17 +77,17 @@ public class ODataControllerFallbackTests : RestierTestBase<FallbackApi>
         first.Id.Should().Be(123);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FallbackApi_EntitySet_ShouldNotFallBack()
     {
         // Should be routed to RestierController.
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Orders");
         _ = await TraceListener.LogAndReturnMessageContentAsync(response);
         response.IsSuccessStatusCode.Should().BeTrue();
-        (await response.Content.ReadAsStringAsync(Xunit.TestContext.Current.CancellationToken)).Should().Contain("\"Id\":234");
+        (await response.Content.ReadAsStringAsync(TestContext.CancellationTokenSource.Token)).Should().Contain("\"Id\":234");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FallbackApi_Resource_ShouldNotFallBack()
     {
         // Should be routed to RestierController.

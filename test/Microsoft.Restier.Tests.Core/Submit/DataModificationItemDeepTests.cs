@@ -7,13 +7,14 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core.Submit;
 
+[TestClass]
 public class DataModificationItemDeepTests
 {
-    [Fact]
+    [TestMethod]
     public void NestedItems_DefaultsToEmptyList()
     {
         var item = CreateItem("Books", RestierEntitySetOperation.Insert);
@@ -21,7 +22,7 @@ public class DataModificationItemDeepTests
         item.NestedItems.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void NavigationBindings_DefaultsToEmptyDictionary()
     {
         var item = CreateItem("Books", RestierEntitySetOperation.Insert);
@@ -29,7 +30,7 @@ public class DataModificationItemDeepTests
         item.NavigationBindings.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public void ParentItem_DefaultsToNull()
     {
         var item = CreateItem("Books", RestierEntitySetOperation.Insert);
@@ -37,7 +38,7 @@ public class DataModificationItemDeepTests
         item.ParentNavigationPropertyName.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void ParentItem_CanBeSet()
     {
         var parent = CreateItem("Publishers", RestierEntitySetOperation.Insert);
@@ -49,7 +50,7 @@ public class DataModificationItemDeepTests
         child.ParentNavigationPropertyName.Should().Be("Books");
     }
 
-    [Fact]
+    [TestMethod]
     public void FlattenDepthFirst_SingleItem_ReturnsSelf()
     {
         var item = CreateItem("Publishers", RestierEntitySetOperation.Insert);
@@ -58,7 +59,7 @@ public class DataModificationItemDeepTests
         flat[0].Should().BeSameAs(item);
     }
 
-    [Fact]
+    [TestMethod]
     public void FlattenDepthFirst_WithChildren_ReturnsParentBeforeChildren()
     {
         var parent = CreateItem("Publishers", RestierEntitySetOperation.Insert);
@@ -74,7 +75,7 @@ public class DataModificationItemDeepTests
         flat[2].Should().BeSameAs(child2);
     }
 
-    [Fact]
+    [TestMethod]
     public void FlattenDepthFirst_MultiLevel_ReturnsCorrectOrder()
     {
         var root = CreateItem("Publishers", RestierEntitySetOperation.Insert);

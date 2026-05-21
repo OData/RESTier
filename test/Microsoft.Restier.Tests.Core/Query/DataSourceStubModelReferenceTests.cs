@@ -6,13 +6,13 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="DataSourceStubModelReference"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DataSourceStubModelReferenceTests
     {
         private readonly IQueryHandler queryHandler;
@@ -47,7 +48,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Tests whether the DataSourceStubModelReference can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var queryContext = new QueryContext(
@@ -61,7 +62,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Tests whether the DataSourceStubModelReference can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstructWithNamespace()
         {
             var queryContext = new QueryContext(
@@ -75,7 +76,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can Get an EntitySet.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetEntitySet()
         {
             var model = Substitute.For<IEdmModel>();
@@ -104,7 +105,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot get an EntitySet.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotGetEntitySet()
         {
             var model = Substitute.For<IEdmModel>();
@@ -133,7 +134,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the Edm Type from an IEdmNavigationSource.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetTypeIEdmNavigationSource()
         {
             var model = Substitute.For<IEdmModel>();
@@ -166,7 +167,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the Edm Type from an IEdmFunctionImport.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetTypeIEdmFunctionImport()
         {
             var model = Substitute.For<IEdmModel>();
@@ -201,7 +202,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the Edm Type from an IEdmFunction.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetTypeIEdmFunction()
         {
             var model = Substitute.For<IEdmModel>();
@@ -236,7 +237,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot get the Edm Type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotGetType()
         {
             var model = Substitute.For<IEdmModel>();
@@ -264,7 +265,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get an element.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetElement()
         {
             var model = Substitute.For<IEdmModel>();
@@ -292,7 +293,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot get an element.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotGetElement()
         {
             var model = Substitute.For<IEdmModel>();

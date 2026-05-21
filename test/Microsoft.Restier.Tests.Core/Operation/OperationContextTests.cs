@@ -7,12 +7,12 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Operation
 {
@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
     /// Unit tests for the <see cref="OperationContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class OperationContextTests
     {
         private OperationContext testClass;
@@ -53,7 +54,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Can construct a new <see cref="OperationContext"/>.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new OperationContext(
@@ -68,7 +69,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Cannot construct the <see cref="OperationContext"/> with a null Api.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullApi()
         {
             Action act = () => new OperationContext(
@@ -83,7 +84,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Cannot construct the <see cref="OperationContext"/> with a null getParameterValueFunc.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullGetParameterValueFunc()
         {
             Action act = () => new OperationContext(
@@ -98,7 +99,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Cannot construct the <see cref="OperationContext"/> with a null bindingParameterValue.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullBindingParameterValue()
         {
             Action act = () => new OperationContext(
@@ -114,10 +115,10 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// Cannot construct the <see cref="OperationContext"/> with an invalid OperationName.
         /// </summary>
         /// <param name="value">OperationName.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotConstructWithInvalidOperationName(string value)
         {
             Action act = () => new OperationContext(
@@ -132,7 +133,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Test that the Operation name is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void OperationNameIsInitializedCorrectly()
         {
             testClass.OperationName.Should().Be(operationName);
@@ -141,7 +142,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Tests that the getParameterValueFunc is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void GetParameterValueFuncIsInitializedCorrectly()
         {
             testClass.GetParameterValueFunc.Should().Be(getParameterValueFunc);
@@ -150,7 +151,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Tests that the isFunction property is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void IsFunctionIsInitializedCorrectly()
         {
             testClass.IsFunction.Should().Be(isFunction);
@@ -159,7 +160,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Tests that the bindingParameterValue is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void BindingParameterValueIsInitializedCorrectly()
         {
             testClass.BindingParameterValue.Should().BeEquivalentTo(bindingParameterValue);
@@ -168,7 +169,7 @@ namespace Microsoft.Restier.Tests.Core.Operation
         /// <summary>
         /// Tests that ParameterValues can be set and get.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetParameterValues()
         {
             var testValue = new List<object>();

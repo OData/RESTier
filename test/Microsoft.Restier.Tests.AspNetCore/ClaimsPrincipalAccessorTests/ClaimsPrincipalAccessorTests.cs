@@ -12,12 +12,13 @@ using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.AspNetCore.ClaimsPrincipalAccessor;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore;
 
+[TestClass]
 public class ClaimsPrincipalAccessorTests : RestierTestBase<ClaimsPrincipalApi>
 {
     public ClaimsPrincipalAccessorTests()
@@ -37,7 +38,7 @@ public class ClaimsPrincipalAccessorTests : RestierTestBase<ClaimsPrincipalApi>
         TestSetup();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ClaimsPrincipalCurrent_IsNotNull()
     {
         var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/ClaimsPrincipalCurrentIsNotNull()");

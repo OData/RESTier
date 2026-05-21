@@ -1,20 +1,22 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Restier.AspNetCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System.Net;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Extensions
 {
     /// <summary>
     /// Unit tests for the <see cref="RestierHttpRequestExtensions"/> class.
     /// </summary>
+    [TestClass]
     public class RestierHttpRequestExtensionsTests
     {
-        [Fact]
+        [TestMethod]
         public void IsLocal_ReturnsTrue_WhenRemoteAndLocalIpAreEqual()
         {
             // Arrange
@@ -27,10 +29,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var result = httpRequest.IsLocal();
 
             // Assert
-            Assert.True(result);
+            result.Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void IsLocal_ReturnsTrue_WhenRemoteIpIsLoopback()
         {
             // Arrange
@@ -43,10 +45,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var result = httpRequest.IsLocal();
 
             // Assert
-            Assert.True(result);
+            result.Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void IsLocal_ReturnsTrue_WhenBothRemoteAndLocalIpAreNull()
         {
             // Arrange
@@ -59,10 +61,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var result = httpRequest.IsLocal();
 
             // Assert
-            Assert.True(result);
+            result.Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void IsLocal_ReturnsFalse_WhenRemoteAndLocalIpAreDifferent()
         {
             // Arrange
@@ -75,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var result = httpRequest.IsLocal();
 
             // Assert
-            Assert.False(result);
+            result.Should().BeFalse();
         }
 
         private static HttpRequest CreateHttpRequest(IPAddress remoteIpAddress, IPAddress localIpAddress)

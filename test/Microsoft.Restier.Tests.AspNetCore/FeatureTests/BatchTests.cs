@@ -9,13 +9,13 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -27,7 +27,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
 
     protected abstract Task CleanupBatchBindAsync();
 
-    [Fact]
+    [TestMethod]
     public async Task BatchTests_AddMultipleEntries()
     {
         await CleanupBatchBooksAsync();
@@ -41,7 +41,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
             };
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("multipart/mixed;boundary=batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b");
 
-            var batchResponse = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+            var batchResponse = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
             _ = await TraceListener.LogAndReturnMessageContentAsync(batchResponse);
             batchResponse.IsSuccessStatusCode.Should().BeTrue();
 
@@ -61,7 +61,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task BatchTests_MimePayloadTest()
     {
         await CleanupBatchBooksAsync();
@@ -75,7 +75,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
             };
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("multipart/mixed;boundary=batch_2e6281b5-fc5f-47c1-9692-5ad43fa6088b");
 
-            var response = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+            var response = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
             var content = await TraceListener.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -92,7 +92,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task BatchTests_JsonPayloadTest()
     {
         await CleanupBatchBooksAsync();
@@ -106,7 +106,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
             };
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("application/json");
 
-            var response = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+            var response = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
             var content = await TraceListener.LogAndReturnMessageContentAsync(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -118,7 +118,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task BatchTests_SelectPlusFunctionResult()
     {
         var client = await GetHttpClientAsync();
@@ -128,7 +128,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
         };
         request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("application/json");
 
-        var response = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+        var response = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
         var content = await TraceListener.LogAndReturnMessageContentAsync(response);
 
         response.IsSuccessStatusCode.Should().BeTrue();
@@ -136,7 +136,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
         content.Should().Contain("The Cat in the Hat");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task BatchTests_CollectionBindToExistingBook()
     {
         // Regression coverage for OData/RESTier#663: a $batch changeset containing a POST whose
@@ -154,7 +154,7 @@ public abstract class BatchTests<TApi, TContext> : RestierTestBase<TApi> where T
             };
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse("multipart/mixed;boundary=batch_3f83a52d-e1bc-4dca-b1f0-c14b35cce0df");
 
-            var batchResponse = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+            var batchResponse = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
             var batchBody = await TraceListener.LogAndReturnMessageContentAsync(batchResponse);
             batchResponse.IsSuccessStatusCode.Should().BeTrue(
                 because: $"the batched POST with Books@odata.bind should succeed. Body: {batchBody}");

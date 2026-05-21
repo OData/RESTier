@@ -9,6 +9,7 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -17,15 +18,17 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter;
 
 /// <summary>
 /// Unit tests for <see cref="RestierResourceSetSerializer"/>.
 /// </summary>
+[TestClass]
 public class RestierResourceSetSerializerTests
 {
+    public TestContext TestContext { get; set; }
+
     private readonly IServiceProvider _serviceProvider;
     private readonly ODataSerializerProvider _serializerProvider;
     private readonly RestierResourceSetSerializer _serializer;
@@ -37,7 +40,7 @@ public class RestierResourceSetSerializerTests
         _serializer = new RestierResourceSetSerializer(_serializerProvider);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_Should_Call_Base_When_Not_ResourceSetResult()
     {
         // Arrange
@@ -66,11 +69,11 @@ public class RestierResourceSetSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteObjectAsync_Should_Handle_ResourceSetResult()
     {
 
@@ -99,11 +102,11 @@ public class RestierResourceSetSerializerTests
         // Assert
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var result = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+        var result = await reader.ReadToEndAsync(TestContext.CancellationTokenSource.Token);
         result.Should().Be(expected);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryWriteAggregationResult_Should_Return_True_For_DynamicTypeWrapper()
     {
         // Arrange
@@ -134,7 +137,7 @@ public class RestierResourceSetSerializerTests
         result.Should().BeTrue();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task TryWriteAggregationResult_Should_Return_False_For_NonDynamicTypeWrapper()
     {
         // Arrange

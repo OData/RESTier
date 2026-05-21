@@ -9,14 +9,15 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder.Annotations;
 using Microsoft.Restier.AspNetCore.Formatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Formatter
 {
     /// <summary>
     /// Unit tests for the <see cref="RestierEnumDeserializer"/> class."/>
     /// </summary>
+    [TestClass]
     public class RestierEnumDeserializerTests
     {
         private readonly RestierEnumDeserializer deserializer;
@@ -26,7 +27,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             deserializer = new RestierEnumDeserializer();
         }
 
-        [Fact]
+        [TestMethod]
         public void Constructor_ShouldInitialize()
         {
             // Act
@@ -36,7 +37,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             instance.Should().NotBeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void ReadInline_ShouldReturnEnumValue_WhenResultIsEdmEnumObject()
         {
             // Arrange
@@ -55,7 +56,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             result.Should().Be(AttributeTargets.Parameter);
         }
 
-        [Fact]
+        [TestMethod]
         public void ReadInline_ShouldReturnBaseResult_WhenResultIsNotEdmEnumObject()
         {
             // Arrange
@@ -76,7 +77,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Formatter
             result.Should().Be(nonEnumObject);
         }
 
-        [Fact]
+        [TestMethod]
         public void ReadInline_ShouldThrowArgumentNullException_WhenEdmTypeIsNull()
         {
             // Arrange

@@ -15,7 +15,7 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.RegressionTests;
 
@@ -51,7 +51,7 @@ public abstract class Issue759_BatchInsertWithRelatedEntities<TApi, TContext> : 
 
     protected abstract Task CleanupIssue759Async();
 
-    [Fact]
+    [TestMethod]
     public async Task Issue759_BatchChangeSet_DollarContentIdResolvesAndChildReachesController()
     {
         // Direct regression for the #759 URL parse failure: the reporter's "/$121/boxes" pattern.
@@ -76,7 +76,7 @@ public abstract class Issue759_BatchInsertWithRelatedEntities<TApi, TContext> : 
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse(
                 "multipart/mixed;boundary=batch_759_outer");
 
-            var batchResponse = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+            var batchResponse = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
             var batchBody = await TraceListener.LogAndReturnMessageContentAsync(batchResponse);
 
             // The $batch envelope itself returns 200 (per-request status is inside the multipart body).
@@ -120,7 +120,7 @@ public abstract class Issue759_BatchInsertWithRelatedEntities<TApi, TContext> : 
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Issue759_BatchChangeSet_ParentAndChild_AllInnerRequestsSucceed()
     {
         // Direct regression for the bug found while writing the earlier test on this branch:
@@ -147,7 +147,7 @@ public abstract class Issue759_BatchInsertWithRelatedEntities<TApi, TContext> : 
             request.Content.Headers.ContentType = MediaTypeWithQualityHeaderValue.Parse(
                 "multipart/mixed;boundary=batch_759_outer");
 
-            var batchResponse = await client.SendAsync(request, Xunit.TestContext.Current.CancellationToken);
+            var batchResponse = await client.SendAsync(request, TestContext.CancellationTokenSource.Token);
             var batchBody = await TraceListener.LogAndReturnMessageContentAsync(batchResponse);
 
             batchResponse.IsSuccessStatusCode.Should().BeTrue(
@@ -169,7 +169,7 @@ public abstract class Issue759_BatchInsertWithRelatedEntities<TApi, TContext> : 
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Issue759_DeepInsert_PostParentWithNestedChild_NoForeignKeyOnChild()
     {
         // Covers #759 point (2): the reporter wanted to avoid setting the parent's key on each

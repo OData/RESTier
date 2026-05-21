@@ -15,7 +15,7 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Model;
 
@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Model;
 /// Tests for the <see cref="RestierWebApiModelExtender"/> verifying entity set/singleton
 /// discovery, inheritance, navigation property bindings, and property overriding.
 /// </summary>
+[TestClass]
 public class RestierModelExtenderTests
 {
     private static void ConfigureWithModelBuilder(IServiceCollection services)
@@ -36,7 +37,7 @@ public class RestierModelExtenderTests
         services.AddTestDefaultServices();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldProduceEmptyModelForEmptyApi()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestEmptyApi>(
@@ -45,7 +46,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.Elements.Should().BeEmpty();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldProduceCorrectModelForBasicScenario()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestApiA>(
@@ -56,7 +57,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.FindSingleton("Me").Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldProduceCorrectModelForDerivedApi()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestApiB>(
@@ -68,7 +69,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.FindEntitySet("People").Should().NotBeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldProduceCorrectModelForOverridingProperty()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestApiC>(
@@ -80,7 +81,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.FindSingleton("Me").EntityType.Name.Should().Be("ExtenderTestCustomer");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldProduceCorrectModelForIgnoringInheritedProperty()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestApiD>(
@@ -91,7 +92,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.FindSingleton("Me").EntityType.Name.Should().Be("ExtenderTestCustomer");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldSkipEntitySetWithUndeclaredType()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestApiE>(
@@ -100,7 +101,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.Elements.Select(e => e.Name).Should().NotContain("Orders");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldSkipExistingEntitySet()
     {
         var model = await RestierTestHelpers.GetTestableModelAsync<ExtenderTestApiF>(
@@ -108,7 +109,7 @@ public class RestierModelExtenderTests
         model.EntityContainer.FindEntitySet("VipCustomers").EntityType.Name.Should().Be("ExtenderTestVipCustomer");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldCorrectlyAddBindingsForCollectionNavigationProperty()
     {
         // In this case, only one entity set People has entity type Person.
@@ -138,7 +139,7 @@ public class RestierModelExtenderTests
         bestFriendBinding2.Target.Name.Should().Be("People");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldCorrectlyAddBindingsForSingletonNavigationProperty()
     {
         // In this case, only one singleton Me has entity type Person.
@@ -154,7 +155,7 @@ public class RestierModelExtenderTests
         binding.Target.Name.Should().Be("Me");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApiModelBuilder_ShouldNotAddAmbiguousNavigationPropertyBindings()
     {
         // In this case, two entity sets Employees and People have entity type Person.

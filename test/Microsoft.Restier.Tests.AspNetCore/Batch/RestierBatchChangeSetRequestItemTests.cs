@@ -10,20 +10,23 @@ using Microsoft.Restier.AspNetCore.Batch;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Batch;
 
 /// <summary>
 /// Unit tests for the <see cref="RestierBatchChangeSetRequestItem"/> class."/>
 /// </summary>
+[TestClass]
 public class RestierBatchChangeSetRequestItemTests
 {
+    public TestContext TestContext { get; set; }
+
     private readonly IQueryHandler queryHandler;
     private readonly IEdmModel model;
     private readonly ISubmitHandler submitHandler;
@@ -47,7 +50,7 @@ public class RestierBatchChangeSetRequestItemTests
         testItem = new RestierBatchChangeSetRequestItem(apiBase, httpContexts);
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_ShouldThrowArgumentNullException_WhenApiIsNull()
     {
         // Act
@@ -57,7 +60,7 @@ public class RestierBatchChangeSetRequestItemTests
         act.Should().Throw<ArgumentNullException>().WithMessage("*api*");
     }
 
-    [Fact]
+    [TestMethod]
     public void Constructor_ShouldThrowArgumentNullException_WhenContextsIsNull()
     {
         // Act
@@ -67,7 +70,7 @@ public class RestierBatchChangeSetRequestItemTests
         act.Should().Throw<ArgumentNullException>().WithMessage("*contexts*");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_ShouldThrowArgumentNullException_WhenHandlerIsNull()
     {
         // Act
@@ -77,7 +80,7 @@ public class RestierBatchChangeSetRequestItemTests
         await act.Should().ThrowAsync<ArgumentNullException>().WithMessage("*handler*");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_ShouldReturnChangeSetResponseItem_WhenRequestFails()
     {
         // Arrange
@@ -95,7 +98,7 @@ public class RestierBatchChangeSetRequestItemTests
         responseItem.Contexts.First().Response.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SendRequestAsync_ShouldReturnChangeSetResponseItem_WhenAllRequestsSucceed()
     {
         // Arrange
@@ -113,7 +116,7 @@ public class RestierBatchChangeSetRequestItemTests
         responseItem.Contexts.First().Response.StatusCode.Should().Be(StatusCodes.Status200OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SubmitChangeSet_ShouldCallApiSubmitAsync()
     {
         // Arrange
@@ -123,10 +126,10 @@ public class RestierBatchChangeSetRequestItemTests
         await testItem.SubmitChangeSet(changeSet);
 
         // Assert
-        await apiBase.Received(1).SubmitAsync(changeSet, TestContext.Current.CancellationToken);
+        await apiBase.Received(1).SubmitAsync(changeSet, TestContext.CancellationTokenSource.Token);
     }
 
-    [Fact]
+    [TestMethod]
     public void SetChangeSetProperty_ShouldSetChangeSetPropertyOnAllContexts()
     {
         // Arrange

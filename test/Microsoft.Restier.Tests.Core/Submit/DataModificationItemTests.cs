@@ -4,11 +4,11 @@
 using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Submit
 {
@@ -16,6 +16,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DataModificationItem"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DataModificationItemTests
     {
         private readonly DataModificationItem testClass;
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can construct the <see cref="DataModificationItem"/> instance.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new DataModificationItem(
@@ -69,7 +70,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot construct with null expected resource type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullExpectedResourceType()
         {
             Action act = () => new DataModificationItem(
@@ -86,7 +87,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot call ApplyTo with a null query.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallApplyToWithNullQuery()
         {
             Action act = () => testClass.ApplyTo(default(IQueryable));
@@ -96,7 +97,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot call ApplyTo with an insert operation.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallApplyToWithInsertOperation()
         {
             var queryable = new List<Test>
@@ -115,7 +116,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot call ApplyTo with an Empty set of resource keys.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallApplyToWithEmptyResourceKey()
         {
             var queryable = new List<Test>
@@ -133,7 +134,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can call apply to.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallApplyTo()
         {
             var queryable = new List<Test>
@@ -153,7 +154,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can call apply to with multiple keys.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallApplyToWithMultipleKeys()
         {
             var queryable = new List<Test>
@@ -174,7 +175,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can call ValidateEtag.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallValidateEtag()
         {
             var queryable = new List<Test>
@@ -192,7 +193,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can call ValidateEtag with match.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallValidateEtagWithMatch()
         {
             var queryable = new List<Test>
@@ -209,7 +210,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can call ValidateEtag with IfNoneMatch.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallValidateEtagWithIfNoneMatch()
         {
             var queryable = new List<Test>
@@ -227,7 +228,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot call ValidateEtag with a null query argument.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallValidateEtagWithNullQuery()
         {
             Action act = () => testClass.ValidateEtag(default(IQueryable));
@@ -237,7 +238,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Checks that the ResourceSetName is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ResourceSetNameIsInitializedCorrectly()
         {
             testClass.ResourceSetName.Should().Be(resourceSetName);
@@ -246,7 +247,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Checks that the expected resource type is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ExpectedResourceTypeIsInitializedCorrectly()
         {
             testClass.ExpectedResourceType.Should().Be(expectedResourceType);
@@ -255,7 +256,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Actual resource type is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ActualResourceTypeIsInitializedCorrectly()
         {
             testClass.ActualResourceType.Should().Be(actualResourceType);
@@ -264,7 +265,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Resource key is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ResourceKeyIsInitializedCorrectly()
         {
             testClass.ResourceKey.Should().BeEquivalentTo(resourceKey);
@@ -273,7 +274,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can set and get EntitySetOperation.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetEntitySetOperation()
         {
             var testValue = RestierEntitySetOperation.Filter;
@@ -284,7 +285,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can set and get IsFullReplaceUpdateRequest.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetIsFullReplaceUpdateRequest()
         {
             var testValue = true;
@@ -295,7 +296,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can set and get Resource.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetResource()
         {
             var testValue = new object();
@@ -306,7 +307,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// OriginalValues is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void OriginalValuesIsInitializedCorrectly()
         {
             testClass.OriginalValues.Should().BeEquivalentTo(originalValues);
@@ -315,7 +316,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// LocalValues is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void LocalValuesIsInitializedCorrectly()
         {
             testClass.LocalValues.Should().BeEquivalentTo(localValues);

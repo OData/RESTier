@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore;
@@ -9,14 +10,15 @@ using Microsoft.Restier.AspNetCore.Batch;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Extensions
 {
     /// <summary>
     /// Unit tests for the <see cref="RestierHttpContextExtensions"/> class.
     /// </summary>
+    [TestClass]
     public class RestierHttpContextExtensionsTests
     {
         private readonly RestierBatchChangeSetRequestItem restierBatchRequestItem;
@@ -29,7 +31,7 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             );
         }
 
-        [Fact]
+        [TestMethod]
         public void SetChangeSet_ShouldAddChangeSetToHttpContextItems()
         {
             // Arrange
@@ -43,11 +45,11 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             context.SetChangeSet(changeSetProperty);
 
             // Assert
-            Assert.True(items.ContainsKey("Microsoft.Restier.Submit.ChangeSet"));
-            Assert.Equal(changeSetProperty, items["Microsoft.Restier.Submit.ChangeSet"]);
+            items.ContainsKey("Microsoft.Restier.Submit.ChangeSet").Should().BeTrue();
+            items["Microsoft.Restier.Submit.ChangeSet"].Should().Be(changeSetProperty);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetChangeSet_ShouldReturnChangeSetFromHttpContextItems()
         {
             // Arrange
@@ -61,10 +63,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var result = context.GetChangeSet();
 
             // Assert
-            Assert.Equal(changeSetProperty, result);
+            result.Should().Be(changeSetProperty);
         }
 
-        [Fact]
+        [TestMethod]
         public void GetChangeSet_ShouldReturnNullIfChangeSetNotPresent()
         {
             // Arrange
@@ -76,10 +78,10 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var result = context.GetChangeSet();
 
             // Assert
-            Assert.Null(result);
+            result.Should().BeNull();
         }
 
-        [Fact]
+        [TestMethod]
         public void SetChangeSet_ShouldThrowArgumentNullException_WhenContextIsNull()
         {
             // Arrange
@@ -87,17 +89,17 @@ namespace Microsoft.Restier.Tests.AspNetCore.Extensions
             var changeSetProperty = new RestierChangeSetProperty(restierBatchRequestItem);
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => context.SetChangeSet(changeSetProperty));
+            FluentActions.Invoking(() => context.SetChangeSet(changeSetProperty)).Should().Throw<ArgumentNullException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GetChangeSet_ShouldThrowArgumentNullException_WhenContextIsNull()
         {
             // Arrange
             HttpContext context = null;
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => context.GetChangeSet());
+            FluentActions.Invoking(() => context.GetChangeSet()).Should().Throw<ArgumentNullException>();
         }
 
         public class EmptyApi : ApiBase

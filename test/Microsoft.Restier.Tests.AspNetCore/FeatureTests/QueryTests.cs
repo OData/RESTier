@@ -9,11 +9,11 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Tests.Shared;
 using Microsoft.Restier.Tests.Shared.Extensions;
 using Microsoft.Restier.Tests.Shared.Scenarios.Library;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.FeatureTests;
 
@@ -24,7 +24,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
 {
     protected abstract Action<IServiceCollection> ConfigureServices { get; }
 
-    [Fact]
+    [TestMethod]
     public async Task EmptyEntitySetQueryReturns200Not404()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -37,7 +37,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EmptyFilterQueryReturns200Not404()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -50,7 +50,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NonExistentEntitySetReturns404()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -63,7 +63,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ObservableCollectionsAsCollectionNavigationProperties()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -76,7 +76,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NonExistentEntityByKeyReturns404()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -88,7 +88,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NonExistentParentEntityNavigationPropertyReturns404()
     {
         var response = await RestierTestHelpers.ExecuteTestRequest<TApi>(
@@ -100,7 +100,7 @@ public abstract class QueryTests<TApi, TContext> : RestierTestBase<TApi> where T
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task NestedNonExistentEntityReturns404()
     {
         // Publisher exists but book ID does not

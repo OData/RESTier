@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.OData;
 using Microsoft.Restier.AspNetCore;
 using Microsoft.Restier.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -17,13 +19,13 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.AspNetCore.Filters;
 
 /// <summary>
 /// Unit tests for the <see cref="RestierExceptionFilterAttribute"/> class.
 /// </summary>
+[TestClass]
 public class RestierExceptionFilterAttributeTests
 {
     private readonly RestierExceptionFilterAttribute _filter;
@@ -33,7 +35,7 @@ public class RestierExceptionFilterAttributeTests
         _filter = new RestierExceptionFilterAttribute();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OnExceptionAsync_Should_Handle_ChangeSetValidationException()
     {
         // Arrange
@@ -44,10 +46,10 @@ public class RestierExceptionFilterAttributeTests
         await _filter.OnExceptionAsync(context);
 
         // Assert
-        Assert.IsType<UnprocessableEntityObjectResult>(context.Result);
+        context.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task OnExceptionAsync_Should_Handle_CommonException()
     {
         // Arrange
@@ -58,11 +60,11 @@ public class RestierExceptionFilterAttributeTests
         await _filter.OnExceptionAsync(context);
 
         // Assert
-        var result = Assert.IsType<ObjectResult>(context.Result);
-        Assert.Equal((int)HttpStatusCode.BadRequest, result.StatusCode);
+        var result = context.Result.Should().BeOfType<ObjectResult>().Subject;
+        result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task HandleChangeSetValidationException_Should_Return_True_For_ChangeSetValidationException()
     {
         // Arrange
@@ -75,11 +77,11 @@ public class RestierExceptionFilterAttributeTests
             new object[] { context, cancellationToken });
 
         // Assert
-        Assert.True(result);
-        Assert.IsType<UnprocessableEntityObjectResult>(context.Result);
+        result.Should().BeTrue();
+        context.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
     }
 
-    [Fact]
+    [TestMethod]
     public async Task HandleCommonException_Should_Return_True_For_ODataException()
     {
         // Arrange
@@ -92,12 +94,12 @@ public class RestierExceptionFilterAttributeTests
             new object[] { context, cancellationToken });
 
         // Assert
-        Assert.True(result);
-        var objectResult = Assert.IsType<ObjectResult>(context.Result);
-        Assert.Equal((int)HttpStatusCode.BadRequest, objectResult.StatusCode);
+        result.Should().BeTrue();
+        var objectResult = context.Result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task HandleCommonException_Should_Return_False_For_Null_Exception()
     {
         // Arrange
@@ -110,8 +112,8 @@ public class RestierExceptionFilterAttributeTests
             new object[] { context, cancellationToken });
 
         // Assert
-        Assert.False(result);
-        Assert.Null(context.Result);
+        result.Should().BeFalse();
+        context.Result.Should().BeNull();
     }
 
     private ExceptionContext CreateExceptionContext(Exception exception)
@@ -120,7 +122,7 @@ public class RestierExceptionFilterAttributeTests
         var routeData = new RouteData();
 
         var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor(), new ModelStateDictionary());
-        
+
         return new ExceptionContext(actionContext, new List<IFilterMetadata>())
         {
             Exception = exception

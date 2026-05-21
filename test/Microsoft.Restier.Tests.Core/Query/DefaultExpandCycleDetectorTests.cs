@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.Core.Query;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -33,25 +33,26 @@ namespace Microsoft.Restier.Tests.Core.Query
     ///   Address  (terminal — no navs)
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultExpandCycleDetectorTests
     {
         private readonly TestEdm edm = new();
         private readonly DefaultExpandCycleDetector detector = new();
 
-        [Fact]
+        [TestMethod]
         public void NullClause_ReturnsFalse()
         {
             detector.HasCycle(edm.EmployeeType, null).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void NoExpand_ReturnsFalse()
         {
             var clause = new SelectExpandClause(Array.Empty<SelectItem>(), allSelected: true);
             detector.HasCycle(edm.EmployeeType, clause).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void NonRecursiveExpand_ReturnsFalse()
         {
             // /Employees?$expand=Department
@@ -59,7 +60,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.EmployeeType, clause).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void SelfCycleViaSingleNav_ReturnsTrue()
         {
             // /Employees?$expand=Manager  (Manager : Employee)
@@ -67,7 +68,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.EmployeeType, clause).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void SelfCycleViaCollectionNav_ReturnsTrue()
         {
             // /Employees?$expand=Reports
@@ -75,7 +76,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.EmployeeType, clause).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void CrossTypeCycle_ReturnsTrue()
         {
             // /Departments?$expand=Employees($expand=Department)
@@ -84,7 +85,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.DepartmentType, clause).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void NestedNonCycle_ReturnsFalse()
         {
             // /Employees?$expand=Department($expand=Location)  — terminal Address, no cycle
@@ -93,7 +94,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.EmployeeType, clause).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void SiblingExpandsNoCycle_ReturnsFalse()
         {
             // /Employees?$expand=Department,Customer  (Customer has no nav back)
@@ -104,7 +105,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.EmployeeType, clause).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void InheritanceCounts_DerivedTypeRevisitsBase_ReturnsTrue()
         {
             // /Departments?$expand=HeadManager($expand=Reports)
@@ -117,7 +118,7 @@ namespace Microsoft.Restier.Tests.Core.Query
             detector.HasCycle(edm.DepartmentType, clause).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void DeepCrossTypeCycle_ReturnsTrue()
         {
             // /Employees?$expand=Department($expand=Employees($expand=Department))

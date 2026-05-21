@@ -38,7 +38,7 @@ These are the recommended steps to create a pull request:<br />
 17. Microsoft OData team will merge the pull request into upstream
 
 ### Test specification
-All tests need to be written with xUnit. Here are some rules to follow when you are organizing the test code:
+All tests need to be written with MSTest. Here are some rules to follow when you are organizing the test code:
 - **Project name correspondence** (`X -> X.Tests`). For instance, all the test code of the `Microsoft.Restier.Core` project should be placed in the `Microsoft.Restier.Core.Tests` project. Path and file name correspondence. (`X/Y/Z/A.cs -> X.Tests/Y/Z/ATests.cs`). For example, the test code of the `ConventionBasedApiModelBuilder` class (in the `Microsoft.Restier.Core/Convention/ConventionBasedApiModelBuilder.cs` file) should be placed in the `Microsoft.Restier.Core.Tests/Convention/ConventionBasedApiModelBuilderTests.cs` file.
 - **Namespace correspondence** (`X.Tests/Y/Z -> X.Tests.Y.Z`). The namespace of the file should strictly follow the path. For example, the namespace of the `ConventionBasedApiModelBuilderTests.cs` file should be `Microsoft.Restier.Core.Tests.Convention`.
 - **Utility classes**. The file for a utility class can be placed at the same level of its user or a shared level that is visible to all its users. But the file name must **NOT** be ended with `Tests` to avoid any confusion.
