@@ -135,9 +135,9 @@
 
 	<PropertyGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true' and $(IsTestSharedProject) != 'true'">
 		<!--
-		  Both MSTest and xUnit.v3 reference the Microsoft Testing Platform. Setting EnableMSTestRunner=true
-		  ensures the MSTest.TestAdapter Reference (which owns Microsoft.VisualStudio.TestTools.UnitTesting.TestingPlatformBuilderHook)
-		  is added, satisfying the auto-generated SelfRegisteredExtensions.cs while we run both adapters side-by-side.
+		  MSTest runs on the Microsoft Testing Platform. EnableMSTestRunner=true pulls in the
+		  MSTest.TestAdapter reference that owns Microsoft.VisualStudio.TestTools.UnitTesting.TestingPlatformBuilderHook
+		  (referenced by the auto-generated SelfRegisteredExtensions.cs).
 		-->
 		<EnableMSTestRunner>true</EnableMSTestRunner>
 	</PropertyGroup>
@@ -148,8 +148,6 @@
 		<PackageReference Include="AwesomeAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.*" />
 		<PackageReference Include="MSTest.TestAdapter" Version="3.*" />
-		<PackageReference Include="xunit.v3" Version="3.*" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="3.*" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
 		<PackageReference Include="NSubstitute" Version="5.3.0"></PackageReference>
 	</ItemGroup>
