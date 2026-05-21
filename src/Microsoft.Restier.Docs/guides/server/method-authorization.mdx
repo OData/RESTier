@@ -385,11 +385,11 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.Service.Sample.Trippin.Api;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
-using Xunit;
 
 namespace Trippin.Tests.Api
 {
@@ -397,6 +397,7 @@ namespace Trippin.Tests.Api
     /// <summary>
     /// Test cases for the RESTier Method Authorizers.
     /// </summary>
+    [TestClass]
     public class TrippinApiAuthorizationTests
     {
 
@@ -413,27 +414,27 @@ namespace Trippin.Tests.Api
             api = new TrippinApi(dbContext, model, queryHandler, submitHandler);
         }
 
-        [Fact]
+        [TestMethod]
         public void CanDeleteTrips_ShouldReturnFalse()
         {
             api.CanDeleteTrips().Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void CanUpdateTrips_WhenAdmin_ShouldReturnTrue()
         {
             AuthenticateAsAdmin();
             api.CanUpdateTrips().Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void CanUpdateTrips_WhenNotAdmin_ShouldReturnFalse()
         {
             AuthenticateAsNonAdmin();
             api.CanUpdateTrips().Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void CanExecuteResetDataSource_ShouldReturnFalse()
         {
             api.CanExecuteResetDataSource().Should().BeFalse();

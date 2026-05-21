@@ -224,14 +224,15 @@ up the full Restier pipeline:
 ```csharp TrippinApiInterceptorTests.cs
 using FluentAssertions;
 using Microsoft.OData;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Trippin.Tests.Api
 {
+    [TestClass]
     public class TrippinApiInterceptorTests
     {
-        [Fact]
+        [TestMethod]
         public void OnInsertingTrip_WithBlankDescription_ThrowsODataException()
         {
             // Arrange
@@ -246,7 +247,7 @@ namespace Trippin.Tests.Api
                 .WithMessage("*Description*blank*");
         }
 
-        [Fact]
+        [TestMethod]
         public void OnInsertingTrip_WithValidDescription_DoesNotThrow()
         {
             // Arrange
