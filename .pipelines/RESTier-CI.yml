@@ -91,6 +91,38 @@ stages:
         arguments: >
           --configuration $(BuildConfiguration)
           --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory $(Agent.TempDirectory)/TestResults
+        publishTestResults: true
+
+    # --- Coverage report ---
+    - task: DotNetCoreCLI@2
+      displayName: Install ReportGenerator
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install dotnet-reportgenerator-globaltool --tool-path $(Agent.TempDirectory)/tools
+
+    - powershell: |
+        & "$(Agent.TempDirectory)/tools/reportgenerator.exe" `
+          "-reports:$(Agent.TempDirectory)/TestResults/**/coverage.cobertura.xml" `
+          "-targetdir:$(Build.ArtifactStagingDirectory)/CoverageReport" `
+          "-reporttypes:Cobertura;HtmlInline_AzurePipelines;TextSummary"
+        Get-Content "$(Build.ArtifactStagingDirectory)/CoverageReport/Summary.txt"
+      displayName: Generate Coverage Report
+
+    - task: PublishCodeCoverageResults@2
+      displayName: Publish Code Coverage
+      inputs:
+        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/CoverageReport/Cobertura.xml'
+        pathToSources: '$(Build.SourcesDirectory)'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: CoverageReport'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/CoverageReport'
+        artifact: CoverageReport
+      condition: succeededOrFailed()
 
     # --- Pack ---
     - powershell: |
