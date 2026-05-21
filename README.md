@@ -33,6 +33,30 @@ to push the format as an industry standard.
 
 Work on the current version of the protocol (V4) began in April 2012, and was ratified by OASIS as an industry standard in Feb 2014.
 
+## What's New in 2.0 (Beta)
+
+Restier 2.0 is a ground-up modernization of the framework — keeping the convention-based simplicity that made
+the original Restier a joy to use, while embracing the current .NET stack. Highlights:
+
+- **Modern targets:** ASP.NET Core on .NET 8, 9, and 10, on top of Microsoft.AspNetCore.OData 9.x.
+- **Endpoint routing:** Routes register against the standard endpoint-routing pipeline via `AddRestierRoute` / `MapRestier`.
+- **API versioning:** First-class support via `Microsoft.Restier.AspNetCore.Versioning`, with per-version EDM models.
+- **OpenAPI / Swagger:** Both Swashbuckle and NSwag integrations, including combined Restier + plain-controller documents.
+- **Deep operations:** Cascade insert, update, and delete across navigation properties in a single request.
+- **Keyless views:** Map read-only DbContext views (`HasNoKey()`) as queryable EDM entity sets.
+- **Spatial types:** Round-trip `Edm.Geography*` between Microsoft.Spatial and NetTopologySuite (EF Core) or SQL Server (EF6).
+- **Multi-tenancy:** Per-tenant API instances resolved from the request, with isolated `DbContext` factories.
+- **Authorization attributes:** Declarative `[RestierAuthorize]` for entity-set and operation policies.
+- **AsNoTracking by default:** Read queries no longer pollute the change tracker, with opt-in `TrackingBehavior` for write paths.
+- **Magical operations:** Function and action bindings receive the typed entity directly — no `(int key, ...)` boilerplate.
+- **Dynamic routing:** Register Restier routes at runtime without restarting the host.
+- **Deferred query materialization:** Large result sets stream without buffering the full collection in memory.
+- **Conformance options:** Per-API `RestierConformanceOptions` toggles behaviors that diverge from strict OData v4.01.
+- **Validation options bag:** Centralized `RestierValidationOptions` for tweaking validator behavior per API.
+- **MSTest test framework:** The internal test suite uses MSTest 3.x with cross-process coverage collection on Windows CI.
+
+Restier 2.0 ships as a beta while the new surface stabilizes — please file issues against any rough edges.
+
 ## Getting Started
 1. Create an ASP.NET Classic or ASP.NET Core web project.
 2. Add the corresponding Restier package for the flavor of ASP.NET you're targeting: `Microsoft.Restier.AspNet` or `Microsoft.Restier.AspNetCore`.
@@ -43,19 +67,26 @@ Work on the current version of the protocol (V4) began in April 2012, and was ra
 Coming Soon!
 
 ## Supported Platforms
-Restier 1.1 currently supports the following platforms:
-- Classic ASP.NET 5.2.7 and later
-- ASP.NET Core 6.0, 7.0, and 8.0 (Binaries targeting deprecated versions of .NET are still available on NuGet.org)
-- Entity Framework 6.4 and later
-- Entity Framework Core 6.0 and later
+Restier 2.0 (Beta) targets modern .NET only and runs on the current OData v4.01 stack:
+- ASP.NET Core 8.0, 9.0, and 10.0 (on Microsoft.AspNetCore.OData 9.x)
+- Entity Framework 6.5 and later
+- Entity Framework Core 8.0, 9.0, and 10.0
+- Microsoft.OData.Core / Microsoft.OData.Edm 8.x
+
+> The Restier 1.x line on Classic ASP.NET 5.2.7+ and earlier .NET versions remains available on
+> NuGet, but is no longer actively developed. New projects should target 2.0.
 
 ## Restier Components
 Restier is made up of the following components:
-- **Microsoft.Restier.AspNet & Microsoft.Restier.AspNetCore:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
-- **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
-- **Microsoft.Restier.EntityFramework & Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
-- **Microsoft.Restier.Breakdance:** Unit test Restier services and components in-memory without spinning up a separate IIS instance, as well as verify the availability of your custom convention-based interceptors.
-- **Microsoft.Restier.AspNetCore.Swagger:** Automatically generates Swagger documentation for your ASP.NET Core Restier service.
+- **Microsoft.Restier.Core:** Convention-based interception framework — chain-of-responsibility query and submit pipelines, DI, and the `ApiBase` programming model.
+- **Microsoft.Restier.AspNetCore:** ASP.NET Core integration — endpoint routing, the `RestierController`, batching, multi-tenancy, and HTTP-context plumbing.
+- **Microsoft.Restier.EntityFramework:** Entity Framework 6.x provider — translates intercepted queries to a `DbContext`.
+- **Microsoft.Restier.EntityFrameworkCore:** Entity Framework Core 8.x+ provider — same surface, modern stack.
+- **Microsoft.Restier.AspNetCore.Swagger:** Swagger / OpenAPI generation via Swashbuckle.
+- **Microsoft.Restier.AspNetCore.NSwag:** NSwag-based OpenAPI generation, including combined Restier + plain-controller documents.
+- **Microsoft.Restier.AspNetCore.Versioning:** API versioning via Asp.Versioning, with per-version EDM models.
+- **Microsoft.Restier.EntityFramework.Spatial / Microsoft.Restier.EntityFrameworkCore.Spatial:** Spatial-type conversion between Microsoft.Spatial and NetTopologySuite or SQL Server geography.
+- **Microsoft.Restier.Breakdance:** In-memory test framework — exercise Restier APIs end-to-end without spinning up a real host.
 
 ## Ecosystem
 Restier is used in solutions from:
