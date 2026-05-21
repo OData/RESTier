@@ -86,9 +86,17 @@ namespace Microsoft.Restier.Tests.EntityFramework.Spatial
             roundTrip.CoordinateSystemId.Should().Be(original.CoordinateSystemId);
         }
 
-        [TestMethod, Ignore("Requires Windows-only SqlServerSpatial160.dll (geodesic LineString/Polygon validity check). Install Microsoft.SqlServer.Types and call SqlServerTypes.Utilities.LoadNativeAssemblies(...) at startup to enable.")]
+        [TestMethod]
         public void Round_trips_LineString()
         {
+            if (!GeodeticNativeAvailable)
+            {
+                Assert.Inconclusive(
+                    "Requires Windows-only SqlServerSpatial160.dll (geodesic LineString/Polygon "
+                    + "validity check). Install Microsoft.SqlServer.Types and call "
+                    + "SqlServerTypes.Utilities.LoadNativeAssemblies(...) at startup to enable.");
+            }
+
             var original = DbGeography.FromText("LINESTRING(0 0, 1 1, 2 2)", 4326);
 
             var edm = (GeographyLineString)_converter.ToEdm(original, typeof(GeographyLineString));
@@ -98,9 +106,17 @@ namespace Microsoft.Restier.Tests.EntityFramework.Spatial
             roundTrip.CoordinateSystemId.Should().Be(original.CoordinateSystemId);
         }
 
-        [TestMethod, Ignore("Requires Windows-only SqlServerSpatial160.dll (geodesic LineString/Polygon validity check). Install Microsoft.SqlServer.Types and call SqlServerTypes.Utilities.LoadNativeAssemblies(...) at startup to enable.")]
+        [TestMethod]
         public void Round_trips_Polygon()
         {
+            if (!GeodeticNativeAvailable)
+            {
+                Assert.Inconclusive(
+                    "Requires Windows-only SqlServerSpatial160.dll (geodesic LineString/Polygon "
+                    + "validity check). Install Microsoft.SqlServer.Types and call "
+                    + "SqlServerTypes.Utilities.LoadNativeAssemblies(...) at startup to enable.");
+            }
+
             var original = DbGeography.FromText("POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))", 4326);
 
             var edm = (GeographyPolygon)_converter.ToEdm(original, typeof(GeographyPolygon));
