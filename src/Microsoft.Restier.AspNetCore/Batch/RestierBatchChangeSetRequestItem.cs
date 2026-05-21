@@ -55,7 +55,13 @@ namespace Microsoft.Restier.AspNetCore.Batch
             if (dependencies is not null)
             {
                 // Dependencies found — attempt pre-resolution using the EDM model.
-                if (!TryPreResolve(dependencies, contentIdToLocationMapping))
+                // Pre-resolution uses its own private mapping to rewrite dependent request URLs
+                // in-place. The framework's contentIdToLocationMapping is NOT pre-populated with
+                // entries for ContentIds whose requests are still pending, because the framework
+                // expects to populate those itself from each inner response's Location header.
+                // Pre-populating leaks state the framework treats as a conflict, and the parent
+                // request's 201 response gets silently rewritten to 500.
+                if (!TryPreResolve(dependencies))
                 {
                     // Pre-resolution failed — fall back to sequential execution.
                     return await SendRequestsSequentiallyAsync(handler, contentIdToLocationMapping)
@@ -224,20 +230,23 @@ namespace Microsoft.Restier.AspNetCore.Batch
         }
 
         /// <summary>
-        /// Attempts to pre-resolve $ContentId references in dependent request URLs.
+        /// Attempts to pre-resolve $ContentId references in dependent request URLs by rewriting
+        /// them in-place. Uses a private mapping so the framework's contentIdToLocationMapping
+        /// is not pre-populated with entries for ContentIds whose requests are still pending —
+        /// the framework expects to fill those entries itself from each inner response's
+        /// Location header, and treats pre-existing entries as a conflict that silently
+        /// rewrites the parent request's success response to 500.
         /// </summary>
         /// <param name="dependencies">The dependency map from <see cref="DetectDependencies"/>.</param>
-        /// <param name="contentIdToLocationMapping">The mapping to populate with resolved entity URLs.</param>
         /// <returns>True if all references were resolved; false otherwise.</returns>
-        private bool TryPreResolve(
-            Dictionary<string, List<string>> dependencies,
-            IDictionary<string, string> contentIdToLocationMapping)
+        private bool TryPreResolve(Dictionary<string, List<string>> dependencies)
         {
+            var resolverMapping = new ConcurrentDictionary<string, string>();
             return ChangeSetDependencyResolver.PreResolveContentIdReferences(
                 Contexts,
                 dependencies,
                 api.Model,
-                contentIdToLocationMapping);
+                resolverMapping);
         }
 
         /// <summary>
