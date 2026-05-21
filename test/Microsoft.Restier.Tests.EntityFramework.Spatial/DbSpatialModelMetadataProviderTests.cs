@@ -5,10 +5,11 @@ using System.Data.Entity.Spatial;
 using FluentAssertions;
 using Microsoft.Restier.Core.Spatial;
 using Microsoft.Restier.EntityFramework.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.EntityFramework.Spatial
 {
+    [TestClass]
     public class DbSpatialModelMetadataProviderTests
     {
         private class Probe
@@ -20,28 +21,28 @@ namespace Microsoft.Restier.Tests.EntityFramework.Spatial
 
         private readonly DbSpatialModelMetadataProvider _provider = new();
 
-        [Fact]
+        [TestMethod]
         public void IsSpatialStorageType_recognizes_DbGeography_and_DbGeometry()
         {
             _provider.IsSpatialStorageType(typeof(DbGeography)).Should().BeTrue();
             _provider.IsSpatialStorageType(typeof(DbGeometry)).Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void IsSpatialStorageType_rejects_other_types()
         {
             _provider.IsSpatialStorageType(typeof(string)).Should().BeFalse();
             _provider.IsSpatialStorageType(typeof(int)).Should().BeFalse();
         }
 
-        [Fact]
+        [TestMethod]
         public void IgnoredStorageTypes_lists_DbGeography_and_DbGeometry()
         {
             _provider.IgnoredStorageTypes
                 .Should().BeEquivalentTo(new[] { typeof(DbGeography), typeof(DbGeometry) });
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_Geography_for_DbGeography_property()
         {
             var prop = typeof(Probe).GetProperty(nameof(Probe.Geo));
@@ -49,7 +50,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Spatial
                 .Should().Be(SpatialGenus.Geography);
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_Geometry_for_DbGeometry_property()
         {
             var prop = typeof(Probe).GetProperty(nameof(Probe.Geom));
@@ -57,7 +58,7 @@ namespace Microsoft.Restier.Tests.EntityFramework.Spatial
                 .Should().Be(SpatialGenus.Geometry);
         }
 
-        [Fact]
+        [TestMethod]
         public void InferGenus_returns_null_for_non_spatial_property()
         {
             var prop = typeof(Probe).GetProperty(nameof(Probe.NotSpatial));
