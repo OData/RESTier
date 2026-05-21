@@ -6,12 +6,12 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Submit
 {
@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DefaultSubmitExecutor"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultSubmitExecutorTests
     {
         private readonly IQueryHandler queryHandler;
@@ -41,7 +42,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can construct.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new DefaultSubmitExecutor();
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// Can call ExecuteSubmitAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallExecuteSubmitAsync()
         {
             var context = new SubmitContext(new TestApi(model, queryHandler, submitHandler), new ChangeSet());
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// Cannot call ExecuteSubmitAsync with a null context.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallExecuteSubmitAsyncWithNullContext()
         {
             Func<Task> act = () => testClass.ExecuteSubmitAsync(default(SubmitContext), CancellationToken.None);

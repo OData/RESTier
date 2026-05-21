@@ -4,10 +4,10 @@
 using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Submit
 {
@@ -16,6 +16,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="ChangeSet"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ChangeSetTests
     {
         private readonly ChangeSet testClass;
@@ -59,7 +60,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can construct.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ChangeSet(entries);
@@ -69,7 +70,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Cannot construct with null entries.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstructWithNullEntries()
         {
             var instance = new ChangeSet();
@@ -80,7 +81,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Entries is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void EntriesIsInitializedCorrectly()
         {
             testClass.Entries.Should().BeEquivalentTo(entries);

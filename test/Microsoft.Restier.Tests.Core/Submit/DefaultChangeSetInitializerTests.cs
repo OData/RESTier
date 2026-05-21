@@ -6,12 +6,12 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Submit
 {
@@ -20,6 +20,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="DefaultChangeSetInitializer"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultChangeSetInitializerTests
     {
         private readonly IQueryHandler queryHandler;
@@ -41,7 +42,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can construct an instance of the <see cref="DefaultChangeSetInitializer"/> class.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new DefaultChangeSetInitializer();
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// Can call InitializeAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallInitializeAsync()
         {
             var serviceProvider = Substitute.For<IServiceProvider>();
@@ -68,7 +69,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// Cannot call InitializeAsync with a null context.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallInitializeAsyncWithNullContext()
         {
             Func<Task> act = () => testClass.InitializeAsync(default(SubmitContext), CancellationToken.None);

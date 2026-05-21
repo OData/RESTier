@@ -7,6 +7,7 @@ using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedChangeSetItemAuthorizer"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedChangeSetItemAuthorizerTests
     {
         private readonly IQueryHandler queryHandler;
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks whether the <see cref="ConventionBasedChangeSetItemAuthorizer"/> can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ConventionBasedChangeSetItemAuthorizer(typeof(EmptyApi));
@@ -62,7 +63,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that the constructor cannot be called with a null type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullTargetType()
         {
             Action act = () => new ConventionBasedChangeSetItemAuthorizer(default(Type));
@@ -73,7 +74,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync can be called and returns true by default.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallAuthorizeAsync()
         {
             var context = new SubmitContext(new EmptyApi(model, queryHandler, submitHandler), new ChangeSet());
@@ -87,7 +88,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync invokes the CanInsertObject method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task AuthorizeAsyncInvokesConventionMethod()
         {
             var api = new NoPermissionApi(model, queryHandler, submitHandler);
@@ -103,7 +104,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync invokes the CanInsertObject method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task AuthorizeAsyncInvokesAsyncConventionMethod()
         {
             var api = new AsyncApi(model, queryHandler, submitHandler);
@@ -119,7 +120,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync does not invoke CanInsertObject because of an incorrect visibility.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task AuthorizeAsyncWithPrivateMethod()
         {
             testTraceListener.Clear();
@@ -137,7 +138,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync does not invoke CanInsertObject because of a wrong return type.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task AuthorizeAsyncWithWrongReturnType()
         {
             testTraceListener.Clear();
@@ -155,7 +156,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync does not invoke CanInsertObject because of a wrong api type.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task AuthorizeAsyncWithWrongApiType()
         {
             testTraceListener.Clear();
@@ -173,7 +174,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that AuthorizeAsync does not invoke CanInsertObject because of a wrong number of arguments.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task AuthorizeAsyncWithWrongNumberOfArguments()
         {
             testTraceListener.Clear();
@@ -191,7 +192,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that AuthorizeAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallAuthorizeAsyncWithNullContext()
         {
             var testClass = new ConventionBasedChangeSetItemAuthorizer(typeof(EmptyApi));
@@ -206,7 +207,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that AuthorizeAsync throws when the item. is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallAuthorizeAsyncWithNullItem()
         {
             var testClass = new ConventionBasedChangeSetItemAuthorizer(typeof(EmptyApi));
@@ -217,7 +218,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that the Inner property is null by default.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void InnerPropertyIsNullByDefault()
         {
             var testClass = new ConventionBasedChangeSetItemAuthorizer(typeof(EmptyApi));
@@ -227,7 +228,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that the Inner property can be set and retrieved.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetInnerProperty()
         {
             var testClass = new ConventionBasedChangeSetItemAuthorizer(typeof(EmptyApi));
@@ -240,7 +241,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that the Inner property is invoked during AuthorizeAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task InnerPropertyIsInvokedDuringAuthorizeAsync()
         {
             var mockInner = Substitute.For<IChangeSetItemAuthorizer>();

@@ -4,20 +4,21 @@
 using System;
 using FluentAssertions;
 using Microsoft.Restier.Core.Spatial;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core.Spatial
 {
+    [TestClass]
     public class SridPrefixHelpersTests
     {
-        [Fact]
+        [TestMethod]
         public void Format_emits_canonical_SRID_prefix()
         {
             var text = SridPrefixHelpers.FormatWithSridPrefix(4326, "POINT(1 2)");
             text.Should().Be("SRID=4326;POINT(1 2)");
         }
 
-        [Fact]
+        [TestMethod]
         public void Parse_returns_srid_and_body_for_prefixed_input()
         {
             var (srid, body) = SridPrefixHelpers.ParseSridPrefix("SRID=4269;POINT(1 2)");
@@ -25,7 +26,7 @@ namespace Microsoft.Restier.Tests.Core.Spatial
             body.Should().Be("POINT(1 2)");
         }
 
-        [Fact]
+        [TestMethod]
         public void Parse_returns_null_srid_for_input_without_prefix()
         {
             var (srid, body) = SridPrefixHelpers.ParseSridPrefix("POINT(1 2)");
@@ -33,17 +34,17 @@ namespace Microsoft.Restier.Tests.Core.Spatial
             body.Should().Be("POINT(1 2)");
         }
 
-        [Theory]
-        [InlineData("SRID=POINT(1 2)")]                    // no semicolon
-        [InlineData("SRID=;POINT(1 2)")]                   // empty SRID
-        [InlineData("SRID=abc;POINT(1 2)")]                // non-integer SRID
+        [TestMethod]
+        [DataRow("SRID=POINT(1 2)")]                    // no semicolon
+        [DataRow("SRID=;POINT(1 2)")]                   // empty SRID
+        [DataRow("SRID=abc;POINT(1 2)")]                // non-integer SRID
         public void Parse_throws_for_malformed_prefix(string input)
         {
             var act = () => SridPrefixHelpers.ParseSridPrefix(input);
             act.Should().Throw<FormatException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void Round_trip_is_lossless()
         {
             var formatted = SridPrefixHelpers.FormatWithSridPrefix(3857, "LINESTRING(0 0, 1 1)");

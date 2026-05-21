@@ -6,6 +6,7 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="DefaultQueryExecutor"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class DefaultQueryExecutorTests
     {
         private readonly DefaultQueryExecutor testClass;
@@ -52,7 +53,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Tests that a new instance can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new DefaultQueryExecutor();
@@ -63,7 +64,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Can call ExecuteQueryAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallExecuteQueryAsync()
         {
             var context = new QueryContext(
@@ -82,7 +83,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Verifies that ExecuteQueryAsync returns the IQueryable without materializing it.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task ExecuteQueryAsync_ReturnsDeferredQueryable()
         {
             var context = new QueryContext(
@@ -101,7 +102,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Cannot call ExecuteQueryAsync with a null context.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallExecuteQueryAsyncWithNullContext()
         {
             Func<Task> act = () =>
@@ -116,7 +117,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Cannot call ExecuteQueryAsync with a null context.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallExecuteQueryAsyncWithNullQuery()
         {
             var context = new QueryContext(
@@ -133,7 +134,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Can call ExecuteExpressionAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallExecuteExpressionAsync()
         {
             var context = new QueryContext(
@@ -161,7 +162,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Cannot call ExpressionAsync with a null query provider.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallExecuteExpressionAsyncWithNullQueryProvider()
         {
             var context = new QueryContext(
@@ -182,7 +183,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// Cannot call ExecuteExpressionAsync with a null expression.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallExecuteExpressionAsyncWithNullExpression()
         {
             var context = new QueryContext(

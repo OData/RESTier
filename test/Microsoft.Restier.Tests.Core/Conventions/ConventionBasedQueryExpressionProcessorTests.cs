@@ -14,8 +14,8 @@ using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -23,6 +23,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedQueryExpressionProcessorTests
     {
         private readonly IQueryHandler queryHandler;
@@ -45,7 +46,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that we can construct the <see cref="ConventionBasedQueryExpressionProcessor"/> class.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ConventionBasedQueryExpressionProcessor(typeof(EmptyApi));
@@ -55,7 +56,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that we cannot construct ConventionBasedQueryExpressionProcessor with a null api type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullTargetType()
         {
             Action act = () => new ConventionBasedQueryExpressionProcessor(default(Type));
@@ -64,7 +65,7 @@ namespace Microsoft.Restier.Tests.Core
 
         // TODO: more testing.
         /*
-                [Fact]
+                [TestMethod]
                 public void CanCallProcess()
                 {
                     var context = new QueryExpressionContext(new QueryContext(new ApiBase(new Mock<IServiceProvider>().Object), new QueryRequest(new Mock<IQueryable>().Object)));
@@ -76,7 +77,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that processing by the inner processorFactory will bypass the current one.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void InnerProcessorShortCircuits()
         {
             queryHandler.EnsureElementType(Arg.Any<InvocationContext>(), null, "Tests").Returns(typeof(Test));
@@ -101,7 +102,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot call the Process method with a null context.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallProcessWithNullContext()
         {
             var instance = new ConventionBasedQueryExpressionProcessor(typeof(EmptyApi));
@@ -112,7 +113,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can get and set the Inner property.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetInner()
         {
             var instance = new ConventionBasedQueryExpressionProcessor(typeof(EmptyApi));
@@ -128,7 +129,7 @@ namespace Microsoft.Restier.Tests.Core
         /// invoked, and a non-null filtered expression is returned. This is the
         /// function-import counterpart to the IEdmEntitySet branch.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void Process_FunctionImportReturningComplexCollection_InvokesOnFilterConvention()
         {
             // Arrange — EDM scaffold: one ComplexType + one function import returning Collection(ComplexType).

@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Submit;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core.Submit;
 
+[TestClass]
 public class BindReferenceTests
 {
-    [Fact]
+    [TestMethod]
     public void BindReference_CanStoreResourceSetAndKey()
     {
         var bindRef = new BindReference
@@ -25,14 +26,14 @@ public class BindReferenceTests
         bindRef.ResourceKey.Should().ContainKey("Id").WhoseValue.Should().Be("PUB01");
     }
 
-    [Fact]
+    [TestMethod]
     public void BindReference_ResolvedEntity_DefaultsToNull()
     {
         var bindRef = new BindReference();
         bindRef.ResolvedEntity.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void NavigationBindings_CanStoreMultipleReferences()
     {
         var item = new DataModificationItem(

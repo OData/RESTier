@@ -4,20 +4,21 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Core.DependencyInjection.Tests;
 
 /// <summary>
 /// Unit tests for the <see cref="DefaultChainOfResponsibilityFactory{T}"/> class.
 /// </summary>
+[TestClass]
 public class DefaultChainOfResponsibilityFactoryTests
 {
     public interface ITestChainedService : IChainedService<ITestChainedService> { }
 
-    [Fact]
+    [TestMethod]
     public void Create_ShouldReturnNull_WhenNoServicesAreRegistered()
     {
         // Arrange
@@ -33,7 +34,7 @@ public class DefaultChainOfResponsibilityFactoryTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Create_ShouldReturnSingleService_WhenOneServiceIsRegistered()
     {
         // Arrange
@@ -51,7 +52,7 @@ public class DefaultChainOfResponsibilityFactoryTests
         result.Inner.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Create_ShouldChainServicesInOrder_WhenMultipleServicesAreRegistered()
     {
         // Arrange

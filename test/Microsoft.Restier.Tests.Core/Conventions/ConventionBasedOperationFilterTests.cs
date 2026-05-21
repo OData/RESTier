@@ -8,13 +8,13 @@ using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.Tests.Shared;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
@@ -22,6 +22,7 @@ namespace Microsoft.Restier.Tests.Core
     /// Unit tests for the <see cref="ConventionBasedOperationFilter"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ConventionBasedOperationFilterTests
     {
         private readonly IQueryHandler queryHandler;
@@ -43,7 +44,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks whether the <see cref="ConventionBasedOperationFilter"/> can be constructed.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ConventionBasedOperationFilter(typeof(EmptyApi));
@@ -53,7 +54,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Checks that the constructor cannot be called with a null type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullTargetType()
         {
             Action act = () => new ConventionBasedOperationFilter(default(Type));
@@ -64,7 +65,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync can be called.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallOnOperationExecutingAsync()
         {
             var testClass = new ConventionBasedOperationFilter(typeof(EmptyApi));
@@ -82,7 +83,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync invokes the OnExecutingTest method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingAsyncInvokesConventionMethod()
         {
             var api = new ExecuteApi(model, queryHandler, submitHandler);
@@ -102,7 +103,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync invokes the OnExecutingTest method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingAsyncInvokesAsyncConventionMethod()
         {
             var api = new ExecuteApi(model, queryHandler, submitHandler);
@@ -122,7 +123,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnOperationExecutingAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallOnOperationExecutingAsyncWithNullContext()
         {
             var testClass = new ConventionBasedOperationFilter(typeof(EmptyApi));
@@ -136,7 +137,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutedAsync can be called.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallOnOperationExecutedAsync()
         {
             var api = new EmptyApi(model, queryHandler, submitHandler);
@@ -155,7 +156,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutedAsync invokes the OnExecutedTest method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutedAsyncInvokesConventionMethod()
         {
             var api = new ExecuteApi(model, queryHandler, submitHandler);
@@ -175,7 +176,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutedAsync invokes the OnExecutedTestAsync method according to convention.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutedAsyncInvokesAsyncConventionMethod()
         {
             var api = new ExecuteAsyncApi(model, queryHandler, submitHandler);
@@ -195,7 +196,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync does not invoke OnExecutingTest because of an incorrect visibility.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingAsyncWithPrivateMethod()
         {
             var api = new PrivateMethodApi(model, queryHandler, submitHandler);
@@ -216,7 +217,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync does not invoke OnExecutingTest because of a wrong return type.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingWithWrongReturnType()
         {
             var api = new WrongReturnTypeApi(model, queryHandler, submitHandler);
@@ -237,7 +238,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync does not invoke OnExecutingTest because of a wrong api type.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingWithWrongApiType()
         {
             var api = new PrivateMethodApi(model, queryHandler, submitHandler);
@@ -258,7 +259,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync does not invoke OnExecutingTest because of a wrong number of arguments.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingWithWrongNumberOfArguments()
         {
             var api = new IncorrectArgumentsApi(model, queryHandler, submitHandler);
@@ -279,7 +280,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Checks that OnOperationExecutedAsync throws when the submit context is null.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallOnOperationExecutedAsyncWithNullContext()
         {
             var testClass = new ConventionBasedOperationFilter(typeof(EmptyApi));
@@ -293,7 +294,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutingAsync invokes the Inner IOperationFilter.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutingAsyncInvokesInnerFilter()
         {
             // Arrange
@@ -321,7 +322,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Check that OnOperationExecutedAsync invokes the Inner IOperationFilter.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task OnOperationExecutedAsyncInvokesInnerFilter()
         {
             // Arrange

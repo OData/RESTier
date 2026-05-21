@@ -4,12 +4,12 @@
 using FluentAssertions;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
@@ -17,6 +17,7 @@ namespace Microsoft.Restier.Tests.Core.Query
     /// Unit tests for the <see cref="QueryRequest"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class QueryRequestTests
     {
         private QueryRequest testClass;
@@ -34,7 +35,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can construct.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             testClass.Should().NotBeNull();
@@ -43,7 +44,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot construct with null query.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullQuery()
         {
             Action act = () => new QueryRequest(default(IQueryable));
@@ -54,7 +55,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can set and get the IQueryable.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetIQuerable()
         {
             var testValue = Substitute.For<IQueryable>();
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can set and get ShouldReturnCount.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetShouldReturnCount()
         {
             var testValue = true;
@@ -76,7 +77,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// HasRecursiveExpand defaults to false.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void HasRecursiveExpand_DefaultsToFalse()
         {
             testClass.HasRecursiveExpand.Should().BeFalse();
@@ -85,7 +86,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// HasRecursiveExpand can be set by internal code (e.g. the controller layer).
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void HasRecursiveExpand_CanBeSet()
         {
             typeof(QueryRequest)
@@ -98,7 +99,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// AllowNoTracking defaults to false so the submit pipeline and any
         /// direct (non-controller) QueryAsync call preserves tracked behavior.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void AllowNoTracking_DefaultsToFalse()
         {
             testClass.AllowNoTracking.Should().BeFalse();
@@ -107,7 +108,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// AllowNoTracking can be set by internal code (the AspNetCore controller).
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void AllowNoTracking_CanBeSet()
         {
             typeof(QueryRequest)

@@ -3,9 +3,9 @@
 
 using FluentAssertions;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Submit
 {
@@ -14,6 +14,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
     /// Unit tests for the <see cref="ChangeSetItemValidationResult"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ChangeSetItemValidationResultTests
     {
         private readonly ChangeSetItemValidationResult testClass;
@@ -29,7 +30,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can construct an instance.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new ChangeSetItemValidationResult();
@@ -39,7 +40,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can call the ToString() method.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallToString()
         {
             testClass.Message = "Lorem ipsum";
@@ -50,7 +51,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can get and set the Validator type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetValidatorType()
         {
             var testValue = "TestValue1505985619";
@@ -61,7 +62,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can get and set the target.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetTarget()
         {
             var testValue = new object();
@@ -72,7 +73,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can get and set the property name.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetPropertyName()
         {
             var testValue = "TestValue595224707";
@@ -83,7 +84,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can set and get the severity.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetSeverity()
         {
             var testValue = EventLevel.Informational;
@@ -94,7 +95,7 @@ namespace Microsoft.Restier.Tests.Core.Submit
         /// <summary>
         /// Can set and get the message.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanSetAndGetMessage()
         {
             var testValue = "TestValue2070305587";

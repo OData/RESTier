@@ -6,14 +6,15 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core.Extensions
 {
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class ServiceCollectionExtensionsTests
     {
-        [Fact]
+        [TestMethod]
         public void AddRestierCoreServices_RegistersDefaultExpandCycleDetector()
         {
             var services = new ServiceCollection();

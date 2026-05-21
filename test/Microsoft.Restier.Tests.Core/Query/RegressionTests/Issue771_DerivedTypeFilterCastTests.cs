@@ -10,8 +10,8 @@ using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query.RegressionTests.Issue771
 {
@@ -48,9 +48,10 @@ namespace Microsoft.Restier.Tests.Core.Query.RegressionTests.Issue771
     /// <c>PropertyModelReference</c> constructor — which threw
     /// <see cref="ArgumentNullException"/>.
     /// </remarks>
+    [TestClass]
     public class Issue771_DerivedTypeFilterCastTests
     {
-        [Fact]
+        [TestMethod]
         public void ComputeMemberModelReference_TypeAsToDerivedWithUncachedParameter_DoesNotThrow()
         {
             var model = BuildModelWithInheritance();

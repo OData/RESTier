@@ -5,14 +5,15 @@ namespace Microsoft.Restier.Tests.Core.Spatial
 {
     using FluentAssertions;
     using Microsoft.Restier.Core.Spatial;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using Xunit;
 
     /// <summary>
     /// Unit tests for the <see cref="SpatialAttribute"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class SpatialAttributeTests
     {
         private class Probe
@@ -24,7 +25,7 @@ namespace Microsoft.Restier.Tests.Core.Spatial
         /// <summary>
         /// EdmType returns the constructor argument.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void EdmType_returns_constructor_argument()
         {
             var attr = new SpatialAttribute(typeof(int));
@@ -34,7 +35,7 @@ namespace Microsoft.Restier.Tests.Core.Spatial
         /// <summary>
         /// Attribute is readable via reflection.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void Attribute_is_readable_via_reflection()
         {
             var prop = typeof(Probe).GetProperty(nameof(Probe.Annotated));

@@ -8,6 +8,7 @@ using Microsoft.Restier.Core.DependencyInjection;
 using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core
 {
     /// <summary>
     /// Unit tests for the <see cref="ApiBase"/> queryable extension methods.
     /// </summary>
+    [TestClass]
     public class QueryableApiExtensionsTests
     {
         private readonly IQueryHandler queryHandler;
@@ -57,7 +58,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can call GetQueryAbleSource.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallGetQueryableSourceWithApiBaseAndStringAndArrayOfObject()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -75,7 +76,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannnot call GetQueryAbleSource with a first argument that is null.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithApiBaseAndStringAndArrayOfObjectWithNullApi()
         {
             Action act = () => default(ApiBase).GetQueryableSource("TestValue119728298", new[] { new object(), new object(), new object() });
@@ -86,10 +87,10 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotCallGetQueryableSourceWithApiBaseAndStringAndArrayOfObjectWithInvalidName(string value)
         {
             switch (value)
@@ -108,7 +109,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can call GetQueryAbleSource with a namespace.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallGetQueryableSourceWithApiBaseAndStringAndStringAndArrayOfObject()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -127,7 +128,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannnot call GetQueryAbleSource with a first argument that is null.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithApiBaseAndStringAndStringAndArrayOfObjectWithNullApi()
         {
             Action act = () => default(ApiBase).GetQueryableSource("TestValue486544476", "TestValue2009865785", new[] { new object(), new object(), new object() });
@@ -138,10 +139,10 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource with an invalid namespace name.
         /// </summary>
         /// <param name="value">The namespace name.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotCallGetQueryableSourceWithApiBaseAndStringAndStringAndArrayOfObjectWithInvalidNamespaceName(string value)
         {
             switch (value)
@@ -161,10 +162,10 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotCallGetQueryableSourceWithApiBaseAndStringAndStringAndArrayOfObjectWithInvalidName(string value)
         {
             switch (value)
@@ -181,7 +182,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can call GetQueryAbleSource`1[TElement].
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallGetQueryableSourceWithTElementAndApiBaseAndStringAndArrayOfObject()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -199,7 +200,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannnot call GetQueryAbleSource`1[TElement]. with an invalid TElement type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithInvalidTElement()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -217,7 +218,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannnot call GetQueryAbleSource`1[TElement]. with a first argument that is null.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithTElementAndApiBaseAndStringAndArrayOfObjectWithNullApi()
         {
             Action act = () => default(ApiBase).GetQueryableSource<Test>("TestValue2056669437", new[] { new object(), new object(), new object() });
@@ -227,7 +228,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can call the non-generic Type-keyed GetQueryableSource overload.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallGetQueryableSourceWithApiBaseAndTypeAndStringAndArrayOfObject()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -245,7 +246,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot call the non-generic Type-keyed GetQueryableSource with a null api.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithApiBaseAndTypeAndStringAndArrayOfObjectWithNullApi()
         {
             Action act = () => default(ApiBase).GetQueryableSource(typeof(Test), "TestValue", new[] { new object() });
@@ -255,7 +256,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot call the non-generic Type-keyed GetQueryableSource with a null element type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithApiBaseAndNullTypeAndStringAndArrayOfObject()
         {
             Action act = () => new TestApi(model, queryHandler, submitHandler).GetQueryableSource(default(Type), "TestValue", new[] { new object() });
@@ -266,7 +267,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call the non-generic Type-keyed GetQueryableSource when the supplied element type
         /// does not match the type resolved from the model.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithApiBaseAndMismatchedTypeAndStringAndArrayOfObject()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -283,10 +284,10 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource`1[TElement]. with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotCallGetQueryableSourceWithTElementAndApiBaseAndStringAndArrayOfObjectWithInvalidName(string value)
         {
             switch (value)
@@ -303,7 +304,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can call GetQueryAbleSource`1[TElement].
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanCallGetQueryableSourceWithTElementAndApiBaseAndStringAndStringAndArrayOfObject()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -322,7 +323,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannnot call GetQueryAbleSource`1[TElement]. with an invalid TElement type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithInvalidTElementAndNamespace()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -341,7 +342,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannnot call GetQueryAbleSource with a first argument that is null.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotCallGetQueryableSourceWithTElementAndApiBaseAndStringAndStringAndArrayOfObjectWithNullApi()
         {
             Action act = () => default(ApiBase).GetQueryableSource<Test>("TestValue1686186750", "TestValue1325825672", new[] { new object(), new object(), new object() });
@@ -352,10 +353,10 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource`1[TElement]. with an invalid namespace name.
         /// </summary>
         /// <param name="value">The namespace name.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotCallGetQueryableSourceWithTElementAndApiBaseAndStringAndStringAndArrayOfObjectWithInvalidNamespaceName(string value)
         {
             switch (value)
@@ -373,10 +374,10 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call GetQueryAbleSource`1[TElement] with an invalid ElementType name.
         /// </summary>
         /// <param name="value">The element Type name.</param>
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
+        [TestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
         public void CannotCallGetQueryableSourceWithTElementAndApiBaseAndStringAndStringAndArrayOfObjectWithInvalidName(string value)
         {
             switch (value)
@@ -394,7 +395,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Can call QueryAsync.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CanCallQueryAsync()
         {
             var api = new TestApi(model, queryHandler, submitHandler);
@@ -422,7 +423,7 @@ namespace Microsoft.Restier.Tests.Core
         /// Cannot call QueryAsync with a null Query request.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
+        [TestMethod]
         public async Task CannotCallQueryAsyncWithNullRequest()
         {
             Func<Task> act = () => new TestApi(model, queryHandler, submitHandler).QueryAsync(default(QueryRequest), CancellationToken.None);

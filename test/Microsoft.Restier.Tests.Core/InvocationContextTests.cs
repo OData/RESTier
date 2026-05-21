@@ -8,15 +8,16 @@ namespace Microsoft.Restier.Tests.Core
     using Microsoft.Restier.Core;
     using Microsoft.Restier.Core.Query;
     using Microsoft.Restier.Core.Submit;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using Xunit;
 
     /// <summary>
     /// Unit tests for the <see cref="InvocationContext"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class InvocationContextTests
     {
         private readonly InvocationContext testClass;
@@ -34,7 +35,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Can construct an InvocationContext.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new InvocationContext(api);
@@ -44,7 +45,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Cannot construct an InvocationContext with a null api.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotConstructWithNullApi()
         {
             Action act = () => new InvocationContext(default(ApiBase));
@@ -54,7 +55,7 @@ namespace Microsoft.Restier.Tests.Core
         /// <summary>
         /// Api is initialized correctly.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void ApiIsInitializedCorrectly()
         {
             testClass.Api.Should().Be(api);

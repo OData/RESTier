@@ -3,13 +3,14 @@
 
 using FluentAssertions;
 using Microsoft.Restier.Core;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Restier.Tests.Core;
 
+[TestClass]
 public class RestierValidationOptionsTests
 {
-    [Fact]
+    [TestMethod]
     public void Defaults_AreAllNull()
     {
         var options = new RestierValidationOptions();
@@ -22,7 +23,7 @@ public class RestierValidationOptionsTests
         options.MaxNodeCount.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void Properties_AreMutable()
     {
         var options = new RestierValidationOptions
@@ -43,7 +44,7 @@ public class RestierValidationOptionsTests
         options.MaxNodeCount.Should().Be(50);
     }
 
-    [Fact]
+    [TestMethod]
     public void Properties_AreReassignableAfterConstruction()
     {
         var options = new RestierValidationOptions { MaxTop = 50 };
@@ -53,7 +54,7 @@ public class RestierValidationOptionsTests
         options.MaxTop.Should().Be(100);
     }
 
-    [Fact]
+    [TestMethod]
     public void RestierRouteOptions_Validation_DefaultsToNonNullEmptyBag()
     {
         var route = new RestierRouteOptions();
@@ -63,7 +64,7 @@ public class RestierValidationOptionsTests
         route.Validation.MaxExpansionDepth.Should().BeNull();
     }
 
-    [Fact]
+    [TestMethod]
     public void RestierRouteOptions_Validation_IsMutableViaPropertyAccess()
     {
         var route = new RestierRouteOptions();

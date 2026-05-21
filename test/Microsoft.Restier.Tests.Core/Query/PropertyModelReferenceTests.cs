@@ -4,21 +4,22 @@
 using FluentAssertions;
 using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using System;
-using Xunit;
 
 namespace Microsoft.Restier.Tests.Core.Query
 {
     /// <summary>
     /// Unit tests for the <see cref="PropertyModelReference"/> tests.
     /// </summary>
+    [TestClass]
     public class PropertyModelReferenceTests
     {
         /// <summary>
         /// Can construct an instance of <see cref="PropertyModelReference"/>.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstruct()
         {
             var instance = new PropertyModelReference(new QueryModelReference(), "Name");
@@ -28,7 +29,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can construct an instance of <see cref="PropertyModelReference"/> with three arguments.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanConstructThreeArgs()
         {
             var edmProperty = Substitute.For<IEdmProperty>();
@@ -39,7 +40,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the source.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetSource()
         {
             var queryModelReference = new QueryModelReference();
@@ -51,7 +52,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the EntitySet.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetEntitySet()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
@@ -65,7 +66,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot get the entitySet.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotHaveDefaultQueryReference()
         {
             var edmProperty = Substitute.For<IEdmProperty>();
@@ -76,7 +77,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get the type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetType()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
@@ -94,7 +95,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Cannot get the type.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotGetType()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
@@ -107,7 +108,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get a property.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetProperty()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
@@ -121,7 +122,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get a property.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CanGetPropertyThroughReference()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
@@ -137,7 +138,7 @@ namespace Microsoft.Restier.Tests.Core.Query
         /// <summary>
         /// Can get a property.
         /// </summary>
-        [Fact]
+        [TestMethod]
         public void CannotGetProperty()
         {
             var edmEntitySet = Substitute.For<IEdmEntitySet>();
