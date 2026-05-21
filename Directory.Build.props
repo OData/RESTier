@@ -133,10 +133,21 @@
 		<InternalsVisibleTo Include="$(AssemblyName.Replace('Microsoft.Restier.', 'Microsoft.Restier.Tests.')), $(StrongNamePublicKey)" />
 	</ItemGroup>
 
+	<PropertyGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true' and $(IsTestSharedProject) != 'true'">
+		<!--
+		  Both MSTest and xUnit.v3 reference the Microsoft Testing Platform. Setting EnableMSTestRunner=true
+		  ensures the MSTest.TestAdapter Reference (which owns Microsoft.VisualStudio.TestTools.UnitTesting.TestingPlatformBuilderHook)
+		  is added, satisfying the auto-generated SelfRegisteredExtensions.cs while we run both adapters side-by-side.
+		-->
+		<EnableMSTestRunner>true</EnableMSTestRunner>
+	</PropertyGroup>
+
 	<ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true' and $(IsTestSharedProject) != 'true'">
 		<PackageReference Include="coverlet.collector" Version="6.*" />
 		<PackageReference Include="AwesomeAssertions" Version="8.*" PrivateAssets="All" />
 		<PackageReference Include="AwesomeAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.*" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.*" />
 		<PackageReference Include="xunit.v3" Version="3.*" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.*" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
