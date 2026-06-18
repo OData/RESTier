@@ -63,8 +63,6 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMiddleware<Restier.AspNetCore.Middleware.ODataBatchHttpContextFixerMiddleware>();
-            app.UseODataBatching();
             app.UseODataRouteDebug();
             app.UseRouting();
             app.UseAuthorization();

@@ -132,8 +132,6 @@ namespace Microsoft.Restier.Tests.AspNetCore.Versioning.Infrastructure
                     })
                     .Configure(app =>
                     {
-                        app.UseMiddleware<Microsoft.Restier.AspNetCore.Middleware.ODataBatchHttpContextFixerMiddleware>();
-                        app.UseODataBatching();
                         app.UseRouting();
                         app.UseRestierVersionHeaders();
                         app.UseEndpoints(endpoints =>

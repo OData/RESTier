@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.Routing;
@@ -30,6 +31,8 @@ public static class RestierIMvcBuilderExtensions
         services.AddTransient<Routing.RestierRouteValueTransformer>();
         services.TryAddEnumerable(
             ServiceDescriptor.Singleton<MatcherPolicy, RestierAuthorizationMetadataPolicy>());
+        services.TryAddEnumerable(
+            ServiceDescriptor.Transient<IStartupFilter, RestierBatchingStartupFilter>());
     }
 
     /// <summary>

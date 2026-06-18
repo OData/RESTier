@@ -84,8 +84,6 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMiddleware<Restier.AspNetCore.Middleware.ODataBatchHttpContextFixerMiddleware>();
-            app.UseODataBatching();
             app.UseODataRouteDebug();
             app.UseRouting();
             app.UseAuthorization();
