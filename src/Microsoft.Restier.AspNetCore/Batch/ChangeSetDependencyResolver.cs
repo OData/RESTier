@@ -276,6 +276,67 @@ namespace Microsoft.Restier.AspNetCore.Batch
         }
 
         /// <summary>
+        /// Resolves a leading $ContentId reference in a request-line URL to the referenced entity URL.
+        /// The reference must be the first path segment (e.g. <c>$1/Books</c> or
+        /// <c>http://host/$1/Books</c>); the scheme/host/$ContentId portion is replaced by the entity
+        /// URL and any trailing path plus query string is preserved. Unlike <see cref="ResolveContentIdInUrl"/>,
+        /// this substitutes the whole entity-addressing prefix rather than the bare <c>$N</c> token, so an
+        /// absolute source URL does not end up with a doubled scheme/host.
+        /// </summary>
+        /// <param name="url">The request-line URL that may begin with a $ContentId reference.</param>
+        /// <param name="contentIdToLocationMapping">The mapping of ContentId to entity URL.</param>
+        /// <returns>The resolved URL, or the original URL when no leading reference resolves.</returns>
+        internal static string ResolveContentIdReferenceUrl(string url, IDictionary<string, string> contentIdToLocationMapping)
+        {
+            Ensure.NotNull(url, nameof(url));
+            Ensure.NotNull(contentIdToLocationMapping, nameof(contentIdToLocationMapping));
+
+            string path;
+            var query = string.Empty;
+
+            if (Uri.TryCreate(url, UriKind.Absolute, out var absolute))
+            {
+                path = absolute.AbsolutePath;
+                query = absolute.Query;
+            }
+            else
+            {
+                var queryIndex = url.IndexOf('?');
+                if (queryIndex >= 0)
+                {
+                    path = url.Substring(0, queryIndex);
+                    query = url.Substring(queryIndex);
+                }
+                else
+                {
+                    path = url;
+                }
+            }
+
+            var trimmedPath = path.TrimStart('/');
+            var match = ContentIdPattern.Match(trimmedPath);
+
+            if (!match.Success || match.Index != 0)
+            {
+                return url;
+            }
+
+            var referencedId = match.Groups[1].Value;
+            if (ODataSystemQueryOptions.Contains(referencedId))
+            {
+                return url;
+            }
+
+            if (!contentIdToLocationMapping.TryGetValue(referencedId, out var entityUrl))
+            {
+                return url;
+            }
+
+            var suffix = trimmedPath.Substring(match.Length);
+            return entityUrl + suffix + query;
+        }
+
+        /// <summary>
         /// Resolves $ContentId references in a URL by replacing them with the corresponding entity URLs.
         /// </summary>
         /// <param name="url">The URL that may contain $ContentId references.</param>
@@ -305,13 +366,58 @@ namespace Microsoft.Restier.AspNetCore.Batch
         }
 
         /// <summary>
+        /// Computes the expected entity URL for a raw batch sub-request that has not yet been
+        /// materialized into an <see cref="HttpContext"/>. Used during batch parsing, before the
+        /// framework validates each sub-request URI against the OData service root.
+        /// </summary>
+        /// <param name="method">The HTTP method of the sub-request.</param>
+        /// <param name="url">The absolute request URL of the sub-request.</param>
+        /// <param name="body">The request body stream (read for POST key extraction).</param>
+        /// <param name="model">The EDM model.</param>
+        /// <returns>
+        /// The expected entity URL, or null if it cannot be computed. For PUT/PATCH/DELETE, returns
+        /// the request URL. For POST, constructs the entity URL from key values in the body.
+        /// </returns>
+        public static string ComputeEntityUrl(string method, Uri url, Stream body, IEdmModel model)
+        {
+            Ensure.NotNull(method, nameof(method));
+            Ensure.NotNull(url, nameof(url));
+            Ensure.NotNull(model, nameof(model));
+
+            if (!url.IsAbsoluteUri)
+            {
+                return null;
+            }
+
+            if (string.Equals(method, HttpMethods.Put, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(method, HttpMethods.Patch, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(method, HttpMethods.Delete, StringComparison.OrdinalIgnoreCase))
+            {
+                return url.AbsoluteUri;
+            }
+
+            if (string.Equals(method, HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
+            {
+                return ComputePostEntityUrlCore(url.AbsolutePath, url.AbsoluteUri, body, model);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Computes the entity URL for a POST request by extracting key values from the request body.
         /// </summary>
         private static string ComputePostEntityUrl(HttpContext context, IEdmModel model)
         {
             var request = context.Request;
-            var path = request.Path.Value;
+            return ComputePostEntityUrlCore(request.Path.Value, request.GetEncodedUrl(), request.Body, model);
+        }
 
+        /// <summary>
+        /// Computes the entity URL for a POST from its path, encoded URL, body, and the EDM model.
+        /// </summary>
+        private static string ComputePostEntityUrlCore(string path, string encodedUrl, Stream body, IEdmModel model)
+        {
             if (string.IsNullOrEmpty(path))
             {
                 return null;
@@ -343,14 +449,14 @@ namespace Microsoft.Restier.AspNetCore.Batch
             }
 
             // Extract key values from the request body
-            var keyValues = ExtractKeyValuesFromBody(request, keyProperties);
+            var keyValues = ExtractKeyValuesFromBody(body, keyProperties);
             if (keyValues is null)
             {
                 return null;
             }
 
             var keySegment = FormatKeySegment(keyValues);
-            var postUrl = request.GetEncodedUrl().TrimEnd('/');
+            var postUrl = encodedUrl.TrimEnd('/');
 
             return $"{postUrl}({keySegment})";
         }
@@ -359,10 +465,9 @@ namespace Microsoft.Restier.AspNetCore.Batch
         /// Extracts key property values from a JSON request body.
         /// </summary>
         private static Dictionary<string, string> ExtractKeyValuesFromBody(
-            HttpRequest request,
+            Stream body,
             List<IEdmStructuralProperty> keyProperties)
         {
-            var body = request.Body;
             if (body is null || !body.CanRead)
             {
                 return null;
