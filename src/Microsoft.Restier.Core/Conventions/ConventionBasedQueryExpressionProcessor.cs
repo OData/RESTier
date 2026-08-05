@@ -236,6 +236,19 @@ namespace Microsoft.Restier.Core
         private static Expression ApplySingleNavigationFilter(
             QueryExpressionContext context, MethodInfo expectedMethod, object apiBase)
         {
+            // Only filter the navigation when it is consumed as an entity (i.e. projected/expanded),
+            // where nulling it is meaningful and EF Core can translate the resulting CASE. When the
+            // navigation node is instead the source of a member access — e.g. "book.Publisher.Id"
+            // inside another predicate — replacing it with "predicate ? book.Publisher : null" would
+            // both change the meaning of that scalar path and yield "(predicate ? entity : null).Member",
+            // which the EF Core relational translator rejects (HTTP 500). Leave such references intact.
+            // See BLR-7389 and https://github.com/OData/RESTier/issues/519.
+            if (context.ParentNode is MemberExpression parentMember
+                && parentMember.Expression == context.VisitedNode)
+            {
+                return null;
+            }
+
             var elementType = context.VisitedNode.Type;
             var returnType = typeof(IQueryable<>).MakeGenericType(elementType);
 
@@ -278,55 +291,73 @@ namespace Microsoft.Restier.Core
         }
 
         /// <summary>
-        /// Extracts and combines all Where predicates from a queryable expression tree into a single lambda.
-        /// Walks the full expression chain, skipping non-Where operators (e.g. OrderBy) to find all
-        /// Queryable.Where calls, then combines their predicates with AND.
+        /// Extracts the combined membership predicate from a queryable expression tree into a single
+        /// lambda over <paramref name="elementType"/>. Chained <c>Where</c> calls combine with AND,
+        /// <c>Union</c> branches combine with OR (set union is disjunction of membership), and other
+        /// operators (e.g. <c>OrderBy</c>, <c>Distinct</c>) are transparent. Returns <c>null</c> when
+        /// the tree contains no <c>Where</c> predicate at all (i.e. every row passes).
         /// </summary>
         private static LambdaExpression ExtractCombinedPredicate(Expression expression, Type elementType)
         {
-            var predicates = new List<LambdaExpression>();
+            var parameter = Expression.Parameter(elementType, "entity");
+            var body = ExtractPredicateBody(expression, parameter);
+            return body is null ? null : Expression.Lambda(body, parameter);
+        }
 
-            // Walk the entire Queryable method call chain, extracting predicates from Where calls
-            // and skipping past other operators (OrderBy, Select, etc.)
-            while (expression is MethodCallExpression methodCall &&
-                   methodCall.Method.DeclaringType == typeof(Queryable))
+        /// <summary>
+        /// Recursively builds a boolean expression over <paramref name="parameter"/> describing which
+        /// rows the queryable in <paramref name="expression"/> keeps, or <c>null</c> when it filters
+        /// nothing (every row passes). Handles <c>Where</c> (AND with its source), <c>Union</c>
+        /// (OR of both branches — the branch that <c>ExtractCombinedPredicate</c> previously dropped),
+        /// and passes through any other <see cref="Queryable"/> operator to its source.
+        /// </summary>
+        private static Expression ExtractPredicateBody(Expression expression, ParameterExpression parameter)
+        {
+            if (expression is not MethodCallExpression methodCall ||
+                methodCall.Method.DeclaringType != typeof(Queryable))
             {
-                if (methodCall.Method.Name == nameof(Queryable.Where))
-                {
-                    var predicateArg = methodCall.Arguments[1];
-
-                    // Unwrap Quote expressions to get the underlying lambda
-                    if (predicateArg is UnaryExpression quote && quote.NodeType == ExpressionType.Quote)
-                    {
-                        predicateArg = quote.Operand;
-                    }
-
-                    if (predicateArg is LambdaExpression lambda)
-                    {
-                        predicates.Add(lambda);
-                    }
-                }
-
-                // Move to the source expression (first argument of any Queryable extension method)
-                expression = methodCall.Arguments[0];
-            }
-
-            if (predicates.Count == 0)
-            {
+                // The chain has bottomed out at the source (e.g. the EnumerableQuery constant): no filter.
                 return null;
             }
 
-            // Combine all predicates using a single shared parameter
-            var parameter = Expression.Parameter(elementType, "entity");
-            Expression combinedBody = null;
-
-            foreach (var pred in predicates)
+            if (methodCall.Method.Name == nameof(Queryable.Where))
             {
-                var body = new ParameterReplacingVisitor(pred.Parameters[0], parameter).Visit(pred.Body);
-                combinedBody = combinedBody is null ? body : Expression.AndAlso(combinedBody, body);
+                var sourceBody = ExtractPredicateBody(methodCall.Arguments[0], parameter);
+
+                var predicateArg = methodCall.Arguments[1];
+
+                // Unwrap Quote expressions to get the underlying lambda
+                if (predicateArg is UnaryExpression quote && quote.NodeType == ExpressionType.Quote)
+                {
+                    predicateArg = quote.Operand;
+                }
+
+                if (predicateArg is not LambdaExpression lambda)
+                {
+                    return sourceBody;
+                }
+
+                var thisBody = new ParameterReplacingVisitor(lambda.Parameters[0], parameter).Visit(lambda.Body);
+                return sourceBody is null ? thisBody : Expression.AndAlso(sourceBody, thisBody);
             }
 
-            return Expression.Lambda(combinedBody, parameter);
+            if (methodCall.Method.Name == nameof(Queryable.Union) && methodCall.Arguments.Count == 2)
+            {
+                var left = ExtractPredicateBody(methodCall.Arguments[0], parameter);
+                var right = ExtractPredicateBody(methodCall.Arguments[1], parameter);
+
+                // If either branch filters nothing, their union keeps every row, so there is no
+                // effective predicate to apply.
+                if (left is null || right is null)
+                {
+                    return null;
+                }
+
+                return Expression.OrElse(left, right);
+            }
+
+            // Any other operator (OrderBy, Select, Distinct, OfType, ...) is transparent to membership.
+            return ExtractPredicateBody(methodCall.Arguments[0], parameter);
         }
 
         /// <summary>

@@ -59,6 +59,14 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
+        /// Gets the expression node that encloses <see cref="VisitedNode"/> (its parent in the
+        /// expression tree), or <c>null</c> when the visited node is the outermost node of the
+        /// current visit. Only nodes within the current contiguous (non-null) visit trail are
+        /// considered, matching the semantics used elsewhere in this class.
+        /// </summary>
+        public Expression ParentNode => GetExpressionTrail().Skip(1).FirstOrDefault();
+
+        /// <summary>
         /// Gets a reference to the model element
         /// that represents the visited node.
         /// </summary>
