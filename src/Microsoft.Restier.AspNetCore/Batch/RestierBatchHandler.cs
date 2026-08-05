@@ -101,7 +101,7 @@ namespace Microsoft.Restier.AspNetCore.Batch
         /// Matches the request line of a batch sub-request (e.g. <c>POST http://host/$1/Books HTTP/1.1</c>).
         /// </summary>
         private static readonly Regex RequestLineRegex = new Regex(
-            @"^(?<method>GET|POST|PUT|PATCH|DELETE|MERGE)[ \t]+(?<url>\S+)[ \t]+HTTP/\d(?:\.\d)?[ \t]*$",
+            @"^(?<method>GET|POST|PUT|PATCH|DELETE|MERGE)[ \t]+(?<url>\S+)[ \t]+HTTP/\d(?:\.\d)?[ \t]*\r?$",
             RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>

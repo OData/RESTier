@@ -236,7 +236,11 @@ public abstract class Issue759_BatchInsertWithRelatedEntities<TApi, TContext> : 
     // "/$121/boxes". The fixed-Guid book id makes the assertion deterministic across runs.
     private const string Issue759ChildBookId = "d7591759-7591-7591-7591-759175917591";
 
-    private const string Issue759MimeBatchRequest =
+    // MIME/HTTP require CRLF line endings. Normalize explicitly so the payload is identical on
+    // every platform regardless of how the .cs file is checked out (LF on *nix, CRLF on Windows
+    // via .gitattributes `*.cs text`) — otherwise this regression is invisible on LF checkouts.
+    private static readonly string Issue759MimeBatchRequest =
+        NormalizeToCrlf(
 @"--batch_759_outer
 Content-Type: multipart/mixed;boundary=changeset_759_inner
 
@@ -266,5 +270,12 @@ Content-Type: application/json;odata.metadata=minimal;odata.streaming=true;IEEE7
 {""@odata.type"":""#Microsoft.Restier.Tests.Shared.Scenarios.Library.Book"",""Id"":""d7591759-7591-7591-7591-759175917591"",""Isbn"":""7597597597597"",""Title"":""Issue759 Child Book"",""IsActive"":true}
 --changeset_759_inner--
 --batch_759_outer--
-";
+");
+
+    /// <summary>
+    /// Normalizes all line endings in <paramref name="text"/> to CRLF, independent of how the
+    /// source file was checked out.
+    /// </summary>
+    private static string NormalizeToCrlf(string text) =>
+        text.Replace("\r\n", "\n").Replace("\n", "\r\n");
 }
