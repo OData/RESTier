@@ -155,6 +155,18 @@ namespace System
             var underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
             return underlyingTypeOrSelf == typeof(DateTimeOffset);
         }
+
+        public static bool IsDateOnly(Type type)
+        {
+            var underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
+            return underlyingTypeOrSelf == typeof(DateOnly);
+        }
+
+        public static bool IsTimeOnly(Type type)
+        {
+            var underlyingTypeOrSelf = GetUnderlyingTypeOrSelf(type);
+            return underlyingTypeOrSelf == typeof(TimeOnly);
+        }
     }
 
     internal static class TypeConverter

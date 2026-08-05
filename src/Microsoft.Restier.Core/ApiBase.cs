@@ -2,6 +2,7 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
 using System;
@@ -22,81 +23,67 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public abstract class ApiBase : IDisposable
     {
-
-        #region Private Members
-
-        private readonly DefaultSubmitHandler submitHandler;
-
-        private readonly DefaultQueryHandler queryHandler;
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        /// Gets the <see cref="IServiceProvider"/> which contains all services.
-        /// </summary>
-        public IServiceProvider ServiceProvider { get; private set; }
-
-        #endregion
-
-        #region Internal Properties
+        private readonly ISubmitHandler submitHandler;
 
         /// <summary>
         /// Gets a reference to the Query Handler for this <see cref="ApiBase"/> instance.
         /// </summary>
-        internal DefaultQueryHandler QueryHandler => queryHandler;
+        internal IQueryHandler QueryHandler { get; }
 
-        #endregion
-
-        #region Constructors
+        /// <summary>
+        /// Gets the model.
+        /// </summary>
+        public IEdmModel Model { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiBase" /> class.
         /// </summary>
-        /// <param name="serviceProvider">
-        /// An <see cref="IServiceProvider"/> containing all services.
+        /// <param name="model">
+        /// The model that is used by this API.
         /// </param>
-        protected ApiBase(IServiceProvider serviceProvider)
+        /// <param name="queryHandler">
+        /// The handler to use for querying.
+        /// </param>
+        /// <param name="submitHandler">
+        /// The handler to use for submitting changes.
+        /// </param>
+        protected ApiBase(IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler)
         {
-            ServiceProvider = serviceProvider;
-
-            //RWM: This stuff SHOULD be getting passed into a constructor. But the DI implementation is less than awesome.
-            //     So we'll work around it for now and still save some allocations.
-            //     There are certain unit te
-            var queryExpressionSourcer = serviceProvider.GetService<IQueryExpressionSourcer>();
-            var queryExpressionAuthorizer = serviceProvider.GetService<IQueryExpressionAuthorizer>();
-            var queryExpressionExpander = serviceProvider.GetService<IQueryExpressionExpander>();
-            var queryExpressionProcessor = serviceProvider.GetService<IQueryExpressionProcessor>();
-            var changeSetInitializer = serviceProvider.GetService<IChangeSetInitializer>();
-            var changeSetItemAuthorizer = serviceProvider.GetService<IChangeSetItemAuthorizer>();
-            var changeSetItemValidator = serviceProvider.GetService<IChangeSetItemValidator>();
-            var changeSetItemFilter = serviceProvider.GetService<IChangeSetItemFilter>();
-            var submitExecutor = serviceProvider.GetService<ISubmitExecutor>();
-
-            if (queryExpressionSourcer is null)
-            {
-                // Missing sourcer
-                throw new NotSupportedException(Resources.MissingQueryExpressionSourcer);
-            }
-
-            if (changeSetInitializer is null)
-            {
-                throw new NotSupportedException(Resources.MissingChangeSetInitializer);
-            }
-
-            if (submitExecutor is null)
-            {
-                throw new NotSupportedException(Resources.MissingSubmitExecutor);
-            }
-
-            queryHandler = new DefaultQueryHandler(queryExpressionSourcer, queryExpressionAuthorizer, queryExpressionExpander, queryExpressionProcessor);
-            submitHandler = new DefaultSubmitHandler(changeSetInitializer, submitExecutor, changeSetItemAuthorizer, changeSetItemValidator, changeSetItemFilter);
+            Ensure.NotNull(model, nameof(model));
+            Ensure.NotNull(queryHandler, nameof(queryHandler));
+            Ensure.NotNull(submitHandler, nameof(submitHandler));
+            Model = model;
+            QueryHandler = queryHandler;
+            this.submitHandler = submitHandler;
         }
 
-        #endregion
+        /// <summary>
+        /// Asynchronously queries for data using an API context.
+        /// </summary>
+        /// <param name="request">
+        /// A query request.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// An optional cancellation token.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous
+        /// operation whose result is a query result.
+        /// </returns>
+        public async Task<QueryResult> QueryAsync(QueryRequest request, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Ensure.NotNull(request, nameof(request));
 
-        #region Public Methods
+            if (!(request.Query is QueryableSource))
+            {
+                throw new NotSupportedException(
+                    Resources.QueryableSourceCannotBeUsedAsQuery);
+            }
+
+            var queryContext = new QueryContext(this, request);
+            queryContext.Model = Model;
+            return await QueryHandler.QueryAsync(queryContext, cancellationToken).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Asynchronously submits changes made using an API context.
@@ -110,10 +97,6 @@ namespace Microsoft.Restier.Core
             return await submitHandler.SubmitAsync(submitContext, cancellationToken).ConfigureAwait(false);
         }
 
-        #endregion
-
-        #region IDisposable Pattern
-
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -123,25 +106,12 @@ namespace Microsoft.Restier.Core
             GC.SuppressFinalize(this);
         }
 
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="disposing"></param>
-        /// <remarks>RWM: See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca1063-implement-idisposable-correctly?view=vs-2017 for more information.</remarks>
         protected virtual void Dispose(bool disposing)
         {
-            // RWM: This Dispose method isn't implemented properly, and may actually be doing more harm than good.
-            //      I'm leaving it for now so we can open an issue and ask the question if this class needs to do more on Dispose,
-            //      But I have a feeling we need to kill this with fire.   
-            if (disposing)
-            {
-                // free managed resources
-            }
         }
-
-        #endregion
-
     }
-
 }

@@ -5,11 +5,9 @@ icon: "house"
 sidebarTitle: "Home"
 ---
 
-# Microsoft Restier - OData Made Simple
-
 <div align="center">
 
-[Releases](https://github.com/OData/RESTier/releases) | Documentation | [OData v4.01 Documentation](https://www.odata.org/documentation/)
+[Releases](https://github.com/OData/RESTier/releases) | Documentation | [OData v4.01 Documentation](https://www.odata.org/documentation/) | [License](license)
 
 [![Build Status](https://img.shields.io/azure-devops/build/cloudnimble/restier/8.svg?style=for-the-badge&logo=azuredevops)](https://dev.azure.com/cloudnimble/Restier/_build?definitionId=8) [![Release Status](https://img.shields.io/azure-devops/release/cloudnimble/d3aaa016-9aea-4903-b6a6-abda1d4c84f0/1/1.svg?style=for-the-badge&logo=azuredevops)](https://dev.azure.com/cloudnimble/Restier/_release?view=all&definitionId=1) [![Nightly Feed](https://img.shields.io/badge/continuous%20integration-feed-0495dc.svg?style=for-the-badge&logo=nuget&logoColor=fff)](https://www.myget.org/F/restier-nightly/api/v3/index.json)
 
@@ -19,116 +17,102 @@ sidebarTitle: "Home"
 
 ## What is Restier?
 
-Restier is an API development framework for building standardized, **OData V4 based RESTful services** on .NET.
+RESTier is an API development framework for building standardized, OData V4 based RESTful services on .NET.
 
-Restier is the spiritual successor to [WCF Data Services](https://en.wikipedia.org/wiki/WCF_Data_Services). Instead of generating endless boilerplate code with the current Web API + OData toolchain, RESTier helps you bootstrap a standardized, queryable HTTP-based REST interface in literally minutes.
+RESTier is the spiritual successor to [WCF Data Services](https://en.wikipedia.org/wiki/WCF_Data_Services). Instead of
+generating endless boilerplate code with the current Web API + OData toolchain, RESTier helps you bootstrap a standardized,
+queryable HTTP-based REST interface in literally minutes. And that's just the beginning.
 
 <Info>
-Like WCF Data Services before it, Restier provides simple and straightforward ways to shape queries and intercept submissions **before** and **after** they hit the database. And like Web API + OData, you still have the flexibility to add your own custom queries and actions with techniques you're already familiar with.
+Like WCF Data Services before it, RESTier provides simple and straightforward ways to shape queries and intercept submissions
+_before_ and _after_ they hit the database. And like Web API + OData, you still have the flexibility to add your own
+custom queries and actions with techniques you're already familiar with.
 </Info>
 
 ## What is OData?
 
-**OData** stands for the Open Data Protocol. OData enables the creation and consumption of RESTful APIs, which allow resources, defined in a data model and identified by using URLs, to be published and edited by Web clients using simple HTTP requests.
+OData stands for the Open Data Protocol. OData enables the creation and consumption of RESTful APIs, which allow
+resources, defined in a data model and identified by using URLs, to be published and edited by Web clients using
+simple HTTP requests.
 
 <Note>
-OData was originally designed by Microsoft to be a framework for exposing Entity Framework objects over REST services. The first concepts shipped as "Project Astoria" in 2007. By 2009, the concept had evolved enough for Microsoft to announce OData, along with a [larger effort](https://blogs.msdn.microsoft.com/odatateam/2009/11/17/breaking-down-data-silos-the-open-data-protocol-odata/) to push the format as an industry standard.
+OData was originally designed by Microsoft to be a framework for exposing Entity Framework objects over REST services.
+The first concepts shipped as "Project Astoria" in 2007. By 2009, the concept had evolved enough for Microsoft to
+announce OData, along with a [larger effort](https://blogs.msdn.microsoft.com/odatateam/2009/11/17/breaking-down-data-silos-the-open-data-protocol-odata/)
+to push the format as an industry standard.
 </Note>
 
-Work on the current version of the protocol (V4) began in April 2012, and was ratified by OASIS as an industry standard in February 2014.
+Work on the current version of the protocol (V4) began in April 2012, and was ratified by OASIS as an industry standard in Feb 2014.
 
 ## Getting Started
 
-Now that the project has restarted, we have a new location for our [Continuous Integration builds][nightly-feed]. We've simplified the NuGet packages as well, so now you can just reference the following packages and we'll take care of the rest:
+To get started with RESTier, see the [Quickstart](/quickstart). Reference the
+`Microsoft.Restier.AspNetCore` and `Microsoft.Restier.EntityFrameworkCore` NuGet packages in your project
+and RESTier will take care of the rest.
 
 <CodeGroup>
-
-```bash ASP.NET
-dotnet add package Microsoft.Restier.AspNet
-```
 
 ```bash ASP.NET Core
 dotnet add package Microsoft.Restier.AspNetCore
 ```
 
+```bash Entity Framework Core
+dotnet add package Microsoft.Restier.EntityFrameworkCore
+```
+
 </CodeGroup>
-
-## Use Cases
-
-<Warning>
-Coming Soon!
-</Warning>
 
 ## Supported Platforms
 
 <Tip>
-Restier 1.0 currently ships with support for Classic ASP.NET 5.2.3 and later. Support for ASP.NET Core 2.2 is coming in the first half of 2019.
+RESTier currently supports .NET 8.0, .NET 9.0, and .NET 10.0.
 </Tip>
 
-## Restier Components
+Both Entity Framework Core and Entity Framework 6.x are supported on all listed platforms via the `Microsoft.Restier.EntityFrameworkCore` and `Microsoft.Restier.EntityFramework` packages respectively.
 
-<Tabs>
-  <Tab title="ASP.NET">
-    The Classic ASP.NET flavor of Restier is made up of the following components:
+## RESTier Components
 
-    - **Microsoft.Restier.AspNet:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
-    - **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
-    - **Microsoft.Restier.EntityFramework:** Translates intercepted queries down to the database level to be executed.
-  </Tab>
+RESTier is made up of the following packages:
 
-  <Tab title="ASP.NET Core">
-    The ASP.NET Core flavor of Restier consists of the following:
-
-    - **Microsoft.Restier.AspNetCore:** Plugs into the OData/WebApi processing pipeline and provides query interception capabilities.
-    - **Microsoft.Restier.Core:** The base library that contains the core convention-based interception framework.
-    - **Microsoft.Restier.EntityFrameworkCore:** Translates intercepted queries down to the database level to be executed.
-  </Tab>
-</Tabs>
+| Package | Description |
+|---------|-------------|
+| **Microsoft.Restier.AspNetCore** | ASP.NET Core integration, routing, and OData controller |
+| **Microsoft.Restier.Core** | Core convention-based interception framework and pipeline |
+| **Microsoft.Restier.EntityFrameworkCore** | Entity Framework Core data provider |
+| **Microsoft.Restier.EntityFramework** | Entity Framework 6.x data provider |
+| **Microsoft.Restier.AspNetCore.Swagger** | OpenAPI/Swagger document generation |
+| **Microsoft.Restier.Breakdance** | In-memory integration testing framework |
 
 ## Ecosystem
 
-<AccordionGroup>
-  <Accordion title="Who Uses Restier?" icon="building">
-    Restier is used in production solutions from:
-    - [BurnRate.io](https://burnrate.io)
-    - [CloudNimble, Inc.](https://nimbleapps.cloud)
-    - [Florida Agency for Health Care Administration](https://ahca.myflorida.com)
-  </Accordion>
+There is a growing set of tools to support RESTier-based development:
 
-  <Accordion title="Development Tools" icon="toolbox">
-    There is also a growing set of tools to support Restier-based development:
-    - [Breakdance.Restier](https://github.com/cloudnimble/breakdance): Convention-based name troubleshooting and integration test support.
-  </Accordion>
-</AccordionGroup>
+<CardGroup cols={1}>
+  <Card title="Breakdance" icon="vial" href="https://github.com/cloudnimble/breakdance">
+    Convention-based name troubleshooting and integration test support.
+  </Card>
+</CardGroup>
 
 ## Community
 
-<Info>
-After a couple years in stasis, Restier is in active development once again. The project is led by Robert McLaws and Chris Woodruff.
-</Info>
-
-### Weekly Standups
-
-The core development team meets once a week on Google Hangouts to discuss pressing items and work through the issues list. A history of those meetings can be found in the Wiki.
-
 ### Contributing
 
-If you'd like to help out with the project, our Contributor's Handbook is also located in the Wiki.
+If you'd like to help out with the project, please see our [Contribution Guidelines](/contribution-guidelines).
 
 ## Contributors
 
 Special thanks to everyone involved in making RESTier the best API development platform for .NET. The following people
 have made various contributions to the codebase:
 
-| Microsoft     | External       |
-|---------------|----------------|
-| Lewis Cheng   | Cengiz Ilerler |
-| Challenh      | Kemal M        |
-| Eric Erhardt  | Robert McLaws  |
-| Vincent He    |                |
-| Dong Liu      |                |
-| Layla Liu     |                |
-| Fan Ouyang    |                |
-| Congyong S    |                |
-| Mark Stafford |                |
-| Ray Yao       |                |
+| Microsoft     | External         |
+|---------------|------------------|
+| Lewis Cheng   | Cengiz Ilerler   |
+| Challenh      | Kemal M          |
+| Eric Erhardt  | Robert McLaws    |
+| Vincent He    | Jan-Willem Spuij |
+| Dong Liu      |                  |
+| Layla Liu     |                  |
+| Fan Ouyang    |                  |
+| Congyong S    |                  |
+| Mark Stafford |                  |
+| Ray Yao       |                  |

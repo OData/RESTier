@@ -1,0 +1,94 @@
+---
+title: "Why Restier?"
+description: "What problems Restier solves and when to choose it"
+icon: "lightbulb"
+sidebarTitle: "Why Restier?"
+---
+
+Restier is for teams who want a queryable, standardized REST API without writing a controller per resource. Point it at an Entity Framework `DbContext` and you get a fully-shaped OData v4 service in minutes — including filtering, sorting, pagination, projection, and expansion — with convention-based hooks for the policy and validation that the protocol can't express.
+
+## The problem Restier solves
+
+Building a CRUD API over an existing data model means writing a lot of code that does the same thing for every resource: routes, parameter binding, query parsing, sorting, paging, validation, authorization. Multiply that by every entity in the model and the boilerplate quickly outweighs the actual business rules.
+
+OData solves the *protocol* side of this — it standardizes how clients ask for filtering, ordering, projection, expansion, and counting. But Web API + OData still leaves you wiring per-entity controllers, registering each EntitySet on the model builder, and re-implementing filter and authorization logic for each resource.
+
+Restier removes that layer. It introspects the `DbContext`, exposes every `DbSet` as an OData EntitySet, and gives you convention-based interception points (`OnFilter*`, `OnInserting*`, `Can*`) where the per-entity policy actually belongs.
+
+## What you get
+
+<CardGroup cols={2}>
+  <Card title="Auto-generated model and queryable surface" icon="sitemap">
+    Restier reads your `DbContext` and produces the EDM model, exposes every `DbSet` as an EntitySet, and supports the full OData v4 query syntax (`$filter`, `$orderby`, `$top`, `$skip`, `$select`, `$expand`, `$count`, `$apply`) out of the box.
+  </Card>
+  <Card title="Convention-based interception" icon="filter">
+    Filtering, validation, interceptors, and authorization all hang off naming conventions (`OnFilter{Set}`, `OnInserting{Type}`, `OnValidating{Type}`, `Can{Operation}{Set}`). No attributes to register, no per-entity controllers.
+  </Card>
+  <Card title="ASP.NET Core integration" icon="route">
+    Endpoint routing, dependency injection, and per-route service containers — Restier composes cleanly with the rest of your ASP.NET Core pipeline.
+  </Card>
+  <Card title="OpenAPI / Swagger" icon="code">
+    `Microsoft.Restier.AspNetCore.Swagger` generates an OpenAPI document from your OData model so existing Swagger UI and client-generation tooling work without extra configuration.
+  </Card>
+</CardGroup>
+
+## When Restier is the right fit
+
+- Data-centric services where most endpoints are CRUD over Entity Framework.
+- Internal tools and admin APIs that benefit from rich query capability for free.
+- Replacing legacy WCF Data Services or aging Web API + OData services with a modern .NET stack.
+- Prototypes and minimum viable services that need to expose a queryable surface in a single afternoon.
+
+## How it compares
+
+| You'd otherwise reach for… | What Restier changes |
+|---|---|
+| **Web API + OData** | Same protocol, far less per-entity code. EDM, controllers, and query plumbing are convention-driven. |
+| **WCF Data Services** | Same conceptual model — expose a data source as a queryable REST service — rebuilt for ASP.NET Core, EF Core, async, and modern .NET hosting. |
+| **ASP.NET Core minimal APIs** | Restier is opinionated for queryable resources; minimal APIs are not. If your service is mostly CRUD with rich query needs, Restier is dramatically less code. |
+
+## Architecture at a glance
+
+Restier ships as a small set of focused packages. You pick the surface you need:
+
+- **`Microsoft.Restier.Core`** — pipeline, conventions, dependency-injection plumbing. Required.
+- **`Microsoft.Restier.AspNetCore`** — ASP.NET Core hosting, routing, OData controller. Required for HTTP.
+- **`Microsoft.Restier.EntityFrameworkCore`** — Entity Framework Core data provider.
+- **`Microsoft.Restier.EntityFramework`** — Entity Framework 6.x data provider (alternative to EF Core).
+- **`Microsoft.Restier.AspNetCore.Swagger`** — optional OpenAPI/Swagger document generation.
+- **`Microsoft.Restier.Breakdance`** — in-memory integration testing helpers.
+
+The pipeline itself is built on a chain-of-responsibility pattern: queries flow through sourcer → authorizer → expander → processor → executor; submissions flow through initializer → filter → authorizer → validator → executor. You compose policy by adding services to those chains, either through conventions or by registering custom services.
+
+## Beyond Restier: the EasyAF ecosystem
+
+Restier gives you a queryable OData service over an EF model. Most real applications need more than that — business-logic managers, audit trails, configuration patterns, state machines, observable objects for client binding, testing infrastructure, and Blazor integration.
+
+[**EasyAF**](https://easyaf.dev), built and maintained by [CloudNimble](https://nimbleapps.cloud), is an opinionated application framework that layers those concerns on top of Restier. It includes:
+
+- **`EasyAFEntityFrameworkApi`** — a Restier base class that integrates `SimpleMessageBus` event publishing and structured logging into the submit pipeline.
+- **Business-logic managers** — `EntityManager`, `IdentifiableEntityManager`, `StateMachineEntityManager`, `StatusEntityManager` for CRUD, audit, and lifecycle.
+- **Audit and tracking interfaces** — `ICreatedAuditable`, `IUpdatedAuditable`, and friends, with automatic tracking on save.
+- **Configuration patterns** — attribute-driven HTTP endpoint registration and secrets management.
+- **Observable objects** — `DbObservableObject`, `EasyObservableObject` for property-change notification (especially useful with Blazor).
+- **Testing infrastructure** — built on Breakdance: in-memory HTTP test servers, response snapshots, `.http` file support.
+- **BlazorEssentials** — MVVM, IndexedDB / TursoDb access, navigation patterns for the client side.
+
+If you're building anything beyond a single small service, EasyAF is worth a look — it solves the problems that show up *after* you've stood Restier up. See [easyaf.dev](https://easyaf.dev) for the full reference.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build a working Restier API in under ten minutes.
+  </Card>
+  <Card title="Customizing the Entity Model" icon="sitemap" href="/guides/server/model-building">
+    Shape the OData model that Restier generates from your DbContext.
+  </Card>
+  <Card title="Filters" icon="filter-list" href="/guides/server/filters">
+    Restrict query results based on the current user, business rules, or any other criterion.
+  </Card>
+  <Card title="Interceptors" icon="filter" href="/guides/server/interceptors">
+    Hook into the submit pipeline to validate, transform, or react to changes.
+  </Card>
+</CardGroup>

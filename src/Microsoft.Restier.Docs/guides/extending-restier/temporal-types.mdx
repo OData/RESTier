@@ -1,26 +1,42 @@
 ---
 title: "Temporal Types"
-description: "Working with date and time types in Restier"
+description: "Working with date and time types in Restier across EF6 and EF Core"
 icon: "clock"
 sidebarTitle: "Temporal Types"
 ---
 
-# Temporal Types
+When using the Entity Framework providers (`Microsoft.Restier.EntityFrameworkCore` or `Microsoft.Restier.EntityFramework`), temporal types are supported. The tables below show how temporal CLR types map to SQL and OData EDM types.
 
-When using the Microsoft.Restier.Providers.EntityFramework provider, temporal types are now supported. The table below 
-shows how Temporal Types map to SQL Types:
+## EF Core type mappings
 
-|        EF Type        |      SQL Type      |      Edm Type      | Need ColumnAttribute? |
-|:---------------------:|:------------------:|:------------------:|:---------------------:|
-| System.DateTime       | DateTime/DateTime2 | Edm.DateTimeOffset | Y                     |
-| System.DateTimeOffset | DateTimeOffset     | Edm.DateTimeOffset | N                     |
-| System.DateTime       | Date               | Edm.Date           | Y                     |
-| System.TimeSpan       | Time               | Edm.TimeOfDay      | Y                     |
-| System.TimeSpan       | Time               | Edm.Duration       | N                     |
+When using `Microsoft.Restier.EntityFrameworkCore`, the following mappings are available:
 
-The next sections illustrate how to use use temporal types in various scenarios.
+|        CLR Type         |      SQL Type      |      Edm Type      | Need ColumnAttribute? |
+|:-----------------------:|:------------------:|:------------------:|:---------------------:|
+| System.DateTime         | DateTime/DateTime2 | Edm.DateTimeOffset | Y                     |
+| System.DateTimeOffset   | DateTimeOffset     | Edm.DateTimeOffset | N                     |
+| System.DateTime         | Date               | Edm.Date           | Y                     |
+| **System.DateOnly**     | **Date**           | **Edm.Date**       | **N**                 |
+| System.TimeSpan         | Time               | Edm.TimeOfDay      | Y                     |
+| **System.TimeOnly**     | **Time**           | **Edm.TimeOfDay**  | **N**                 |
+| System.TimeSpan         | Time               | Edm.Duration       | N                     |
+
+## EF6 type mappings
+
+When using `Microsoft.Restier.EntityFramework`, `DateOnly` and `TimeOnly` are **not** available. EF6 does not natively support these types. Use the classic mappings instead:
+
+|        CLR Type         |      SQL Type      |      Edm Type      | Need ColumnAttribute? |
+|:-----------------------:|:------------------:|:------------------:|:---------------------:|
+| System.DateTime         | DateTime/DateTime2 | Edm.DateTimeOffset | Y                     |
+| System.DateTimeOffset   | DateTimeOffset     | Edm.DateTimeOffset | N                     |
+| System.DateTime         | Date               | Edm.Date           | Y                     |
+| System.TimeSpan         | Time               | Edm.TimeOfDay      | Y                     |
+| System.TimeSpan         | Time               | Edm.Duration       | N                     |
+
+The next sections illustrate how to use temporal types in various scenarios.
 
 ## Edm.DateTimeOffset
+
 Suppose you have an entity class `Person`, all the following code define `Edm.DateTimeOffset` properties in the
 EDM model though the underlying SQL types are different (see the value of the `TypeName` property). You can see
 Column attribute is optional here.
@@ -43,9 +59,24 @@ public class Person
 }
 ```
 
-
 ## Edm.Date
-The following code define an `Edm.Date` property in the EDM model.
+
+### Using DateOnly (EF Core only)
+
+With EF Core, the preferred way to define an `Edm.Date` property is to use `System.DateOnly`. No `ColumnAttribute` is needed — EF Core natively maps `DateOnly` to the SQL `date` type and Restier maps it to `Edm.Date` automatically.
+
+```csharp
+using System;
+
+public class Person
+{
+    public DateOnly BirthDate { get; set; }
+}
+```
+
+### Using DateTime (EF Core and EF6)
+
+You can also use `System.DateTime` with a `ColumnAttribute` to define an `Edm.Date` property. This works with both EF Core and EF6.
 
 ```csharp
 using System;
@@ -59,11 +90,11 @@ public class Person
 ```
 
 ## Edm.Duration
-The following code define an `Edm.Duration` property in the EDM model.
+
+The following code defines an `Edm.Duration` property in the EDM model.
 
 ```csharp
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 public class Person
 {
@@ -72,8 +103,23 @@ public class Person
 ```
 
 ## Edm.TimeOfDay
-The following code define an `Edm.TimeOfDay` property in the EDM model. Please note that you MUST NOT omit the
-`ColumnTypeAttribute` on a `TimeSpan` property otherwise it will be recognized as an `Edm.Duration` as described above.
+
+### Using TimeOnly (EF Core only)
+
+With EF Core, the preferred way to define an `Edm.TimeOfDay` property is to use `System.TimeOnly`. No `ColumnAttribute` is needed — EF Core natively maps `TimeOnly` to the SQL `time` type and Restier maps it to `Edm.TimeOfDay` automatically.
+
+```csharp
+using System;
+
+public class Person
+{
+    public TimeOnly BirthTime { get; set; }
+}
+```
+
+### Using TimeSpan (EF Core and EF6)
+
+You can also use `System.TimeSpan` with a `ColumnAttribute` to define an `Edm.TimeOfDay` property. This works with both EF Core and EF6. Please note that you **must** include the `ColumnAttribute` on a `TimeSpan` property, otherwise it will be recognized as `Edm.Duration` as described above.
 
 ```csharp
 using System;
@@ -86,6 +132,29 @@ public class Person
 }
 ```
 
-As before, if you have the need to override `ODataPayloadValueConverter`, please now change to override 
-`RestierPayloadValueConverter` instead in order not to break the payload value conversion specialized for these 
-temporal types.
+## Filtering by `DateTime` and time zones
+
+When a client issues a `$filter` like `?$filter=ReleaseDate gt 2024-01-01T00:00:00Z`, AspNetCore.OData binds the literal `2024-01-01T00:00:00Z` to a `System.DateTime` constant whose `Kind` is decided by the route-scoped `ODataQuerySettings.TimeZone`. Restier propagates `ODataOptions.TimeZone` (configured via `AddOData(...)` at startup) into the per-route `ODataQuerySettings`, so the filter binder honors whichever zone you configured.
+
+```csharp
+services.AddControllers().AddOData(options =>
+{
+    options.TimeZone = TimeZoneInfo.Utc;       // recommended for most APIs
+    // ... other route configuration ...
+});
+```
+
+With `TimeZoneInfo.Utc`, UTC literals (`...Z` suffix) bind as `DateTime` with `Kind = Utc`. Without explicit configuration, AspNetCore.OData's default is `TimeZoneInfo.Local`, which binds `DateTime` constants with `Kind = Local` — typically the wrong choice for filter expressions against database columns.
+
+<Note>
+**Npgsql + `timestamp with time zone`:** Npgsql 6+ rejects `DateTime` values with `Kind = Unspecified` or `Kind = Local` when writing or filtering `timestamp with time zone` (a.k.a. `timestamptz`) columns. If your Postgres schema uses `timestamptz` and your filters fail with *"Cannot write DateTime with Kind=…"*, set `options.TimeZone = TimeZoneInfo.Utc` on the route.
+</Note>
+
+The same configuration also applies to path-segment `$filter` syntax (`/Books/$filter(ReleaseDate gt …)`) — both paths resolve the same route-scoped `ODataQuerySettings`.
+
+## Payload value conversion
+
+If you have the need to override `ODataPayloadValueConverter`, please now change to override
+`RestierPayloadValueConverter` instead in order not to break the payload value conversion specialized for these
+temporal types. Restier handles the conversions between CLR and OData types automatically for all
+the mappings listed above, including `DateOnly` and `TimeOnly`.

@@ -1,0 +1,179 @@
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="Microsoft.Restier.Tests.Shared.Scenarios.Library" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Book">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Isbn" Type="Edm.String" MaxLength="13" />
+        <Property Name="Title" Type="Edm.String" />
+        <Property Name="PublisherId" Type="Edm.String" />
+        <Property Name="IsActive" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="Category" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.BookCategory" />
+        <Property Name="PublishDate" Type="Edm.DateTimeOffset" />
+        <NavigationProperty Name="Publisher" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher">
+          <ReferentialConstraint Property="PublisherId" ReferencedProperty="Id" />
+        </NavigationProperty>
+        <NavigationProperty Name="Reviews" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Review)" />
+      </EntityType>
+      <EntityType Name="LibraryCard">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="DateRegistered" Type="Edm.DateTimeOffset" Nullable="false" />
+      </EntityType>
+      <EntityType Name="Publisher">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.String" Nullable="false" />
+        <Property Name="Addr" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Address" />
+        <Property Name="LastUpdated" Type="Edm.DateTimeOffset" Nullable="false" />
+        <NavigationProperty Name="Books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+      </EntityType>
+      <EntityType Name="Employee">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="FullName" Type="Edm.String" />
+        <Property Name="Addr" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Address" />
+        <Property Name="Universe" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Universe" />
+      </EntityType>
+      <EntityType Name="Review">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Content" Type="Edm.String" />
+        <Property Name="Rating" Type="Edm.Int32" Nullable="false" />
+        <Property Name="BookId" Type="Edm.Guid" />
+        <NavigationProperty Name="Book" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
+          <ReferentialConstraint Property="BookId" ReferencedProperty="Id" />
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="SpatialPlace">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Name" Type="Edm.String" />
+        <Property Name="HeadquartersLocation" Type="Edm.GeographyPoint" />
+        <Property Name="ServiceArea" Type="Edm.GeographyPolygon" />
+        <Property Name="IndoorOrigin" Type="Edm.GeographyPoint" />
+        <Property Name="RouteLine" Type="Edm.GeographyLineString" />
+      </EntityType>
+      <ComplexType Name="BooksByPublisher">
+        <Property Name="PublisherId" Type="Edm.String" />
+        <Property Name="BookName" Type="Edm.String" />
+        <Property Name="BookCount" Type="Edm.Int32" Nullable="false" />
+      </ComplexType>
+      <ComplexType Name="Address">
+        <Property Name="Street" Type="Edm.String" />
+        <Property Name="Zip" Type="Edm.String" />
+      </ComplexType>
+      <EntityType Name="AudioBook" BaseType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
+        <Property Name="Duration" Type="Edm.Duration" Nullable="false" />
+        <Property Name="Narrator" Type="Edm.String" />
+      </EntityType>
+      <ComplexType Name="Universe">
+        <Property Name="BinaryProperty" Type="Edm.Binary" />
+        <Property Name="BooleanProperty" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="ByteProperty" Type="Edm.Byte" Nullable="false" />
+        <Property Name="DateTimeOffsetProperty" Type="Edm.DateTimeOffset" Nullable="false" />
+        <Property Name="DecimalProperty" Type="Edm.Decimal" Nullable="false" Scale="variable" />
+        <Property Name="DoubleProperty" Type="Edm.Double" Nullable="false" />
+        <Property Name="DurationProperty" Type="Edm.Duration" Nullable="false" />
+        <Property Name="GuidProperty" Type="Edm.Guid" Nullable="false" />
+        <Property Name="Int16Property" Type="Edm.Int16" Nullable="false" />
+        <Property Name="Int32Property" Type="Edm.Int32" Nullable="false" />
+        <Property Name="Int64Property" Type="Edm.Int64" Nullable="false" />
+        <Property Name="SingleProperty" Type="Edm.Single" Nullable="false" />
+        <Property Name="StringProperty" Type="Edm.String" />
+        <Property Name="TimeOfDayProperty" Type="Edm.TimeOfDay" Nullable="false" />
+      </ComplexType>
+      <EnumType Name="BookCategory">
+        <Member Name="Fiction" Value="0" />
+        <Member Name="NonFiction" Value="1" />
+        <Member Name="Science" Value="2" />
+      </EnumType>
+      <Action Name="CheckoutBook">
+        <Parameter Name="book" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Action>
+      <Function Name="DiscontinueBooks" IsBound="true" EntitySetPath="books" IsComposable="true">
+        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" Nullable="false" />
+        <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+      </Function>
+      <Function Name="FavoriteBooks">
+        <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+      </Function>
+      <Function Name="PublishBook">
+        <Parameter Name="IsActive" Type="Edm.Boolean" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Function>
+      <Function Name="PublishBooks">
+        <Parameter Name="Count" Type="Edm.Int32" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Function>
+      <Action Name="PublishNewBook" IsBound="true" EntitySetPath="publisher">
+        <Parameter Name="publisher" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher" />
+        <Parameter Name="bookId" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher" />
+      </Action>
+      <Function Name="PublishedBooks" IsBound="true" EntitySetPath="publisher/Books" IsComposable="true">
+        <Parameter Name="publisher" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher" />
+        <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" />
+      </Function>
+      <Function Name="SubmitTransaction">
+        <Parameter Name="Id" Type="Edm.Guid" Nullable="false" />
+        <ReturnType Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book" />
+      </Function>
+      <Action Name="DeactivateBooks" IsBound="true" EntitySetPath="books">
+        <Parameter Name="books" Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.Book)" Nullable="false" />
+      </Action>
+      <EntityContainer Name="Container">
+        <EntitySet Name="Books" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
+          <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
+          <NavigationPropertyBinding Path="Reviews" Target="Reviews" />
+        </EntitySet>
+        <EntitySet Name="LibraryCards" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.LibraryCard">
+          <Annotation Term="Org.OData.Core.V1.OptimisticConcurrency">
+            <Collection>
+              <PropertyPath>DateRegistered</PropertyPath>
+            </Collection>
+          </Annotation>
+        </EntitySet>
+        <EntitySet Name="Publishers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Publisher">
+          <NavigationPropertyBinding Path="Books" Target="Books" />
+        </EntitySet>
+        <EntitySet Name="Readers" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Employee" />
+        <EntitySet Name="Reviews" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Review">
+          <NavigationPropertyBinding Path="Book" Target="Books" />
+        </EntitySet>
+        <EntitySet Name="SpatialPlaces" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.SpatialPlace" />
+        <FunctionImport Name="BooksByPublisher" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.Views.BooksByPublisher" />
+        <Singleton Name="MyFavoriteBook" Type="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
+          <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
+          <NavigationPropertyBinding Path="Reviews" Target="Reviews" />
+        </Singleton>
+        <EntitySet Name="BooksWithPublisher" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Library.Book">
+          <NavigationPropertyBinding Path="Publisher" Target="Publishers" />
+          <NavigationPropertyBinding Path="Reviews" Target="Reviews" />
+        </EntitySet>
+        <ActionImport Name="CheckoutBook" Action="Microsoft.Restier.Tests.Shared.Scenarios.Library.CheckoutBook" EntitySet="Books" />
+        <FunctionImport Name="FavoriteBooks" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.FavoriteBooks" EntitySet="Books" />
+        <FunctionImport Name="PublishBook" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBook" EntitySet="Books" />
+        <FunctionImport Name="PublishBooks" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.PublishBooks" EntitySet="Books" />
+        <FunctionImport Name="SubmitTransaction" Function="Microsoft.Restier.Tests.Shared.Scenarios.Library.SubmitTransaction" EntitySet="Books" />
+      </EntityContainer>
+    </Schema>
+    <Schema Namespace="Microsoft.Restier.Tests.Shared.Scenarios.Library.Views" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Function Name="BooksByPublisher">
+        <ReturnType Type="Collection(Microsoft.Restier.Tests.Shared.Scenarios.Library.BooksByPublisher)" Nullable="false" />
+      </Function>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

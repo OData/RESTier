@@ -5,16 +5,14 @@ using System;
 
 namespace Microsoft.Restier.Core
 {
-
     /// <summary>
     /// Represents an exception that indicates validation errors occurred on entities.
     /// </summary>
     [Serializable]
     public class EdmModelValidationException : Exception
     {
-
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="EdmModelValidationException"/> class.
         /// </summary>
         public EdmModelValidationException()
         {
@@ -48,7 +46,5 @@ namespace Microsoft.Restier.Core
         {
             throw new NotImplementedException();
         }
-
     }
-
 }

@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.Submit;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Restier.Core.Submit;
 
 namespace Microsoft.Restier.Core
 {
@@ -27,11 +27,21 @@ namespace Microsoft.Restier.Core
             this.targetApiType = targetApiType;
         }
 
+        /// <summary>
+        /// Gets or sets the inner authorizer.
+        /// </summary>
+        public IChangeSetItemAuthorizer Inner { get; set; }
+
         /// <inheritdoc/>
-        public Task<bool> AuthorizeAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
+        public async Task<bool> AuthorizeAsync(SubmitContext context, ChangeSetItem item, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
             Ensure.NotNull(item, nameof(item));
+
+            if (Inner != null && !await Inner.AuthorizeAsync(context, item, cancellationToken).ConfigureAwait(false))
+            {
+                return false;
+            }
 
             var dataModification = (DataModificationItem)item;
             var expectedMethodName = ConventionBasedMethodNameFactory.GetEntitySetMethodName(dataModification, RestierPipelineState.Authorization);
@@ -41,19 +51,19 @@ namespace Microsoft.Restier.Core
 
             if (expectedMethod is null)
             {
-                return Task.FromResult(true);
+                return true;
             }
 
             if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
             {
                 Trace.WriteLine($"Restier ConventionBasedChangeSetItemAuthorizer found '{expectedMethod}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
-                return Task.FromResult(true);
+                return true;
             }
 
             if (expectedMethod.ReturnType != typeof(bool) && !typeof(Task<bool>).IsAssignableFrom(expectedMethod.ReturnType))
             {
                 Trace.WriteLine($"Restier ConventionBasedChangeSetItemAuthorizer found '{expectedMethod}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
-                return Task.FromResult(true);
+                return true;
             }
 
             object target = null;
@@ -63,7 +73,7 @@ namespace Microsoft.Restier.Core
                 if (!targetApiType.IsInstanceOfType(target))
                 {
                     Trace.WriteLine("The Restier API is of the incorrect type.");
-                    return Task.FromResult(true);
+                    return true;
                 }
             }
 
@@ -71,7 +81,7 @@ namespace Microsoft.Restier.Core
             if (parameters.Length > 0)
             {
                 Trace.WriteLine($"Restier ConventionBasedChangeSetItemAuthorizer found '{expectedMethod}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
-                return Task.FromResult(true);
+                return true;
             }
 
             //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
@@ -80,16 +90,14 @@ namespace Microsoft.Restier.Core
                 var result = expectedMethod.Invoke(target, null);
                 if (result is Task<bool> resultTask)
                 {
-                    return resultTask;
+                    return await resultTask;
                 }
-                return Task.FromResult((bool)result);
+                return (bool)result;
             }
             catch (TargetInvocationException ex)
             {
                 throw new ConventionInvocationException($"ConventionBasedChangeSetItemAuthorizer {expectedMethod} invocation failed. Check the inner exception for more details.", ex.InnerException);
             }
         }
-
     }
-
 }

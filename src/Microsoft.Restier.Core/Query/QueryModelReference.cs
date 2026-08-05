@@ -124,7 +124,7 @@ namespace Microsoft.Restier.Core.Query
                     var function = Element as IEdmFunctionImport;
                     if (function is not null)
                     {
-                        return function.Function.ReturnType.Definition;
+                        return function.Function.GetReturn().Type.Definition;
                     }
                 }
                 else
@@ -132,7 +132,7 @@ namespace Microsoft.Restier.Core.Query
                     var function = Element as IEdmFunction;
                     if (function is not null)
                     {
-                        return function.ReturnType.Definition;
+                        return function.GetReturn().Type.Definition;
                     }
                 }
 

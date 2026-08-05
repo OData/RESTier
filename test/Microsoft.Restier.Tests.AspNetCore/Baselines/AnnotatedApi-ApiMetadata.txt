@@ -1,0 +1,40 @@
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="Microsoft.Restier.Tests.Shared.Scenarios.Annotated" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="AnnotatedEntity">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Org.OData.Core.V1.Description" String="Database-assigned identifier." />
+          <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+        </Property>
+        <Property Name="Name" Type="Edm.String">
+          <Annotation Term="Org.OData.Core.V1.Description" String="The display name of the widget." />
+        </Property>
+        <Property Name="CreatedOn" Type="Edm.DateTimeOffset" Nullable="false">
+          <Annotation Term="Org.OData.Core.V1.Description" String="UTC timestamp of when the widget was created." />
+          <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true" />
+        </Property>
+        <Property Name="Score" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Org.OData.Core.V1.Description" String="Score between 0 and 100." />
+          <Annotation Term="Org.OData.Validation.V1.Minimum" Int="0" />
+          <Annotation Term="Org.OData.Validation.V1.Maximum" Int="100" />
+        </Property>
+        <Property Name="CountryCode" Type="Edm.String">
+          <Annotation Term="Org.OData.Core.V1.Description" String="Two-letter country code." />
+          <Annotation Term="Org.OData.Validation.V1.Pattern" String="^[A-Z]{2}$" />
+        </Property>
+        <Annotation Term="Org.OData.Core.V1.Description" String="A widget — used by annotation integration tests." />
+      </EntityType>
+      <Function Name="CountWidgets">
+        <ReturnType Type="Edm.Int32" Nullable="false" />
+        <Annotation Term="Org.OData.Core.V1.Description" String="Returns the count of widgets currently stored." />
+      </Function>
+      <EntityContainer Name="Container">
+        <EntitySet Name="AnnotatedEntities" EntityType="Microsoft.Restier.Tests.Shared.Scenarios.Annotated.AnnotatedEntity" />
+        <FunctionImport Name="CountWidgets" Function="Microsoft.Restier.Tests.Shared.Scenarios.Annotated.CountWidgets" />
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

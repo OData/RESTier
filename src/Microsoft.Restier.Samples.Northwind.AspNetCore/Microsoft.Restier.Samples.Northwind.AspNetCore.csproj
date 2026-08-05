@@ -5,7 +5,8 @@
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<TargetFramework>net10.0</TargetFramework>
-	</PropertyGroup>
+	  <UserSecretsId>61f6f488-ca86-4337-a5bf-64668390db68</UserSecretsId>
+  </PropertyGroup>
 
 	<PropertyGroup>
 		<NoWarn>;NU5125;NU5105;CA1812;CA1001;CA1062;CA1707;CA1716;CA1801;CA1819;CA1822;CA2007;CA2227</NoWarn>
@@ -20,8 +21,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.Restier.AspNetCore.Swagger\Microsoft.Restier.AspNetCore.Swagger.csproj" />
 		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNetCore.NSwag\Microsoft.Restier.AspNetCore.NSwag.csproj" />
 		<ProjectReference Include="..\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
 	</ItemGroup>
 

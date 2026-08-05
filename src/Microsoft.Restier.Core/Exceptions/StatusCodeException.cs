@@ -13,17 +13,10 @@ namespace Microsoft.Restier.Core
     [Serializable]
     public class StatusCodeException : Exception
     {
-
-        #region Properties
-
         /// <summary>
-        /// 
+        /// Gets the HTTP status code.
         /// </summary>
         public HttpStatusCode StatusCode { get; private set; } = HttpStatusCode.BadRequest;
-
-        #endregion
-
-        #region Default Constructors
 
         /// <summary>
         /// Initializes a new instance of the StatusCodeException class.
@@ -49,8 +42,6 @@ namespace Microsoft.Restier.Core
         public StatusCodeException(string message, Exception innerException) : base(message, innerException)
         {
         }
-
-        #endregion
 
         /// <summary>
         /// Initializes a new instance of the StatusCodeException class.
@@ -84,5 +75,4 @@ namespace Microsoft.Restier.Core
             throw new NotImplementedException();
         }
     }
-
 }

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Restier.AspNetCore.Middleware
 {
-
     /// <summary>
     /// Fixes the issue outlined in https://github.com/OData/WebApi/issues/2294
     /// </summary>
@@ -16,14 +15,7 @@ namespace Microsoft.Restier.AspNetCore.Middleware
     /// </remarks>
     public class RestierClaimsPrincipalMiddleware
     {
-
-        #region Private Members
-
         private readonly RequestDelegate requestDelegate;
-
-        #endregion
-
-        #region Constructor
 
         /// <summary>
         /// The default constructor for the middleware.
@@ -33,10 +25,6 @@ namespace Microsoft.Restier.AspNetCore.Middleware
         {
             this.requestDelegate = requestDelegate;
         }
-
-        #endregion
-
-        #region Middleware
 
         /// <summary>
         /// 
@@ -50,10 +38,6 @@ namespace Microsoft.Restier.AspNetCore.Middleware
             ClaimsPrincipal.ClaimsPrincipalSelector = () => contextAccessor.HttpContext.User;
             await requestDelegate(httpContext);
         }
-
-        #endregion
-
     }
-
 }
 

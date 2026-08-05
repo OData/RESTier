@@ -1,0 +1,163 @@
+---
+title: "Keyless Views"
+description: "Expose EF Core keyless types (typically database views) as read-only RESTier resources"
+icon: "eye"
+sidebarTitle: "Keyless Views"
+---
+
+<Info>
+RESTier auto-maps EF Core `[Keyless]` / `HasNoKey()` / `ToView()` types — typically database views — to read-only OData function imports. No hand-authored `[UnboundOperation]` wrappers, no synthetic keys.
+</Info>
+
+## What gets auto-mapped
+
+The EF model builder detects any EF Core entity type whose primary key is `null` (`[Keyless]` attribute or fluent `HasNoKey()`) and:
+
+1. Registers it as an EDM **`ComplexType`** (not an entity type — entity types in OData v4 require keys).
+2. Adds an unbound **`FunctionImport`** named after the `DbSet` property, returning `Collection(<ComplexType>)`. The backing `EdmFunction` lives in a `<namespace>.Views` sub-namespace so its schema-level name doesn't collide with the `ComplexType`.
+
+So a `DbSet<BooksByPublisher> BooksByPublisher` on a keyless type shows up in `$metadata` like:
+
+```xml
+<ComplexType Name="BooksByPublisher">
+  <Property Name="PublisherId" Type="Edm.String" />
+  <Property Name="BookName" Type="Edm.String" />
+  <Property Name="BookCount" Type="Edm.Int32" Nullable="false" />
+</ComplexType>
+
+<!-- in the <namespace>.Views schema -->
+<Function Name="BooksByPublisher">
+  <ReturnType Type="Collection(MyApp.BooksByPublisher)" Nullable="false" />
+</Function>
+
+<!-- in the EntityContainer -->
+<FunctionImport Name="BooksByPublisher"
+                Function="MyApp.Views.BooksByPublisher" />
+```
+
+## Querying
+
+The URL shape is a function-call (parentheses required):
+
+```http
+GET /odata/BooksByPublisher()
+```
+
+OData query options work as usual on the returned collection:
+
+```http
+GET /odata/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'
+GET /odata/BooksByPublisher()?$select=BookName,BookCount
+GET /odata/BooksByPublisher()?$orderby=BookCount desc&$top=10
+```
+
+## End-to-end sample (EF Core)
+
+```csharp
+public class LibraryContext : DbContext
+{
+    public DbSet<Book> Books { get; set; }
+    public DbSet<BooksByPublisher> BooksByPublisher { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder mb)
+    {
+        mb.Entity<BooksByPublisher>(e =>
+        {
+            e.HasNoKey();
+            e.ToView("BooksByPublisher");
+        });
+    }
+}
+
+[Keyless]
+public class BooksByPublisher
+{
+    public string PublisherId { get; set; }
+    public string BookName { get; set; }
+    public int BookCount { get; set; }
+}
+
+public class LibraryApi : EntityFrameworkApi<LibraryContext>
+{
+    public LibraryApi(LibraryContext dbContext, IEdmModel model,
+        IQueryHandler queryHandler, ISubmitHandler submitHandler)
+        : base(dbContext, model, queryHandler, submitHandler) { }
+}
+```
+
+That's it. No `[UnboundOperation]`, no manual model-builder code. Hitting `GET /odata/BooksByPublisher()?$filter=PublisherId eq 'Publisher1'` returns the matching rows as a JSON collection.
+
+<Note>
+**EF Core only.** EF6 doesn't support keyless entity types in code-first — EF6's model validation rejects any entity without a key, and the EDMX-defined-keyless-entity-set path is explicitly out of scope. EF6 users who want view-shaped resources should hand-author `[UnboundOperation]` methods on their API class. See [Operations](./operations) for that pattern.
+</Note>
+
+## Read-only by construction
+
+Writes (POST, PATCH, PUT, DELETE) return **HTTP 405 Method Not Allowed**:
+
+```http
+POST /odata/BooksByPublisher()  →  405 Method Not Allowed
+PATCH /odata/BooksByPublisher() →  405 Method Not Allowed
+PUT /odata/BooksByPublisher()   →  405 Method Not Allowed
+DELETE /odata/BooksByPublisher() → 405 Method Not Allowed
+```
+
+No submit-pipeline plumbing is involved — there's no entity set to write to.
+
+## Interceptors
+
+Keyless-view function imports flow through the normal RESTier query pipeline, so convention-based filters and centralized query-expression services run for view GETs the same way they do for entity sets.
+
+### Convention-based filter (`OnFilter<View>`)
+
+Add a `protected internal` method named `OnFilter{ViewName}` to your API class — exactly the same shape as the [EntitySet filter convention](/guides/server/filters). The method takes and returns `IQueryable<T>`; the returned `Where` composes into the deferred expression tree, so OData query options (`$filter`, `$select`, `$top`, `$orderby`) still execute provider-side as a single SQL roundtrip.
+
+```csharp
+public class LibraryApi : EntityFrameworkApi<LibraryContext>
+{
+    public LibraryApi(LibraryContext dbContext, IEdmModel model,
+        IQueryHandler queryHandler, ISubmitHandler submitHandler)
+        : base(dbContext, model, queryHandler, submitHandler) { }
+
+    /// <summary>
+    /// Filters the BooksByPublisher keyless view to public rows only. Composes
+    /// into the EF Core query, so $filter / $top / $orderby still run as one SQL
+    /// query against the view.
+    /// </summary>
+    protected internal IQueryable<BooksByPublisher> OnFilterBooksByPublisher(
+        IQueryable<BooksByPublisher> source)
+    {
+        return source.Where(b => b.IsPublic);
+    }
+}
+```
+
+<Note>
+The convention name is `OnFilter<ViewName>` — **no gerund**, matching the entity-set `OnFilter<EntitySet>` contract. Pre-2.0 documentation referred to the convention as `OnFiltering<View>`; that was a doc bug. The gerund form was never observable because pre-2.0 keyless views did not run the convention pipeline at all.
+</Note>
+
+### Centralized query interception and authorization
+
+The full query pipeline runs for keyless-view GETs, so custom registrations on these services see view requests just like entity-set requests:
+
+- **`IQueryExpressionAuthorizer`** — register via `AddChainedService<IQueryExpressionAuthorizer>()` to reject view queries based on the current principal, headers, or claims. Throwing or returning `false` from the chain produces a 403 the same way it does for entity sets.
+- **`IQueryExpressionProcessor`** — register via `AddChainedService<IQueryExpressionProcessor>()` to centralize cross-cutting filters (row-level security, tenant scoping, soft-delete exclusion) across all views and entity sets. This is also the recommended hook if you need pre/post-execution side effects on view reads.
+
+See [Interceptors](/guides/server/interceptors) for the general convention vocabulary and [EntitySet Filters](/guides/server/filters) for the centralized-filter pattern.
+
+### Tracking behavior
+
+`RestierEFOptions.TrackingBehavior` applies to keyless-view reads. The default (`RestierEFTrackingBehavior.Default`) translates to provider-aware no-tracking for top-level GETs — including views — and `NoTracking`, `NoTrackingWithIdentityResolution`, and `TrackAll` work as documented in [Performance — Tracking behavior](/guides/server/performance#tracking-behavior).
+
+<Note>
+The operation-filter pipeline (`IOperationFilter` / `OnExecuting<View>` / `OnExecuted<View>`) does **not** fire for keyless-view GETs. The RESTier controller routes view requests through the query pipeline rather than the operation executor, so view requests bypass operation-level filters even though `$metadata` exposes the view as a `FunctionImport`. Use `IQueryExpressionProcessor` or the `OnFilter<View>` convention for pre/post hooks on view reads.
+</Note>
+
+## Mapping table
+
+| Source | RESTier surface |
+|---|---|
+| EF Core `[Keyless]` + `DbSet<T>` | `ComplexType<T>` + `FunctionImport` named after the DbSet |
+| EF Core `HasNoKey()` + `ToView("X")` + `DbSet<T>` | Same |
+| EF Core keyless type with no `DbSet<T>` (pure query type) | Not exposed — no entity-set-name to map to a function import |
+| **EF6 (any flavour)** | **Not supported** — `EFModelBuilder` throws `InvalidOperationException` with a "use EF Core" message. Hand-author `[UnboundOperation]` for view-shaped resources on EF6. |

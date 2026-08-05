@@ -2,12 +2,14 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
+
 #if EFCore
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
-using Microsoft.Restier.Core.Model;
 
 #if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
@@ -18,8 +20,12 @@ namespace Microsoft.Restier.EntityFramework
     /// <summary>
     /// Represents a model mapper based on a DbContext.
     /// </summary>
-    internal class EFModelMapper : IModelMapper
+    public class EFModelMapper : IModelMapper
     {
+        /// <summary>
+        /// Gets or sets the inner mapper.
+        /// </summary>
+        public IModelMapper Inner { get; set; }
 
         /// <summary>
         /// Tries to get the relevant type of an entity
@@ -40,7 +46,7 @@ namespace Microsoft.Restier.EntityFramework
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ModelContext context,
+            InvocationContext context,
             string name,
             out Type relevantType)
         {
@@ -93,7 +99,7 @@ namespace Microsoft.Restier.EntityFramework
         /// provided; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetRelevantType(
-            ModelContext context,
+            InvocationContext context,
             string namespaceName,
             string name,
             out Type relevantType)

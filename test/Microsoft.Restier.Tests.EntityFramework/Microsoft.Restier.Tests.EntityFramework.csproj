@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+		<ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+	</ItemGroup>
+
+</Project>

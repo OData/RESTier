@@ -5,16 +5,14 @@ icon: "sitemap"
 sidebarTitle: "Model Building"
 ---
 
-# Customizing the Entity Model
-
 OData and the Entity Framework are based on the same underlying concept for mapping the idea of an Entity with
 its representation in the database. That "mapping" layer is called the Entity Data Model, or EDM for short.
 
-Part of the beautiy of RESTier is that, for the majority of API builders, it can construct your EDM for you
+Part of the beauty of RESTier is that, for the majority of API builders, it can construct your EDM for you
 *automagically*. But there are times where you have to take charge of the process. And as with many things in RESTier,
 the intrepid developers at Microsoft provide you with two ways to do so.
 
-The first method allows you to completely relpace the automagic model construction with your own, in a manner
+The first method allows you to completely replace the automagic model construction with your own, in a manner
 very similar to Web API OData.
 
 The second method lets RESTier do the initial work for you, and then you manipulate the resulting EDM metadata.
@@ -26,56 +24,59 @@ Let's take a look at how each of these methods work.
 There are several situations where you are likely going to want to use this approach to create your Model.
 For example, if you're migrating from an existing Web API OData v3 or v4 implementation, and needed to
 customize that model, you will be able to copy/paste your existing code over, with just a few small changes.
-If you're building a new model, but you're using Entity Framework Model First + SQL Views, then you'll
-likely need to define a primary key, or omit the View from your service.
+
+For SQL views specifically, RESTier auto-maps EF Core `[Keyless]` / `HasNoKey()` / `ToView()` types to
+read-only OData function imports — no custom model code required. See [Keyless Views](./keyless-views).
+EF6 users still need to define a primary key on the view's CLR type or omit the view from their service.
 
 With the Entity Framework provider, the model is built with the
 [**ODataConventionModelBuilder**](http://odata.github.io/WebApi/#02-04-convention-model-builder). To 
 understand how this ModelBuilder works, please take a few minutes and review that documentation.
 
-# Example
+### Example
 
-```cs
+```csharp CustomizedModelBuilder.cs
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.Restier.Core.Model;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.OData.Builder;
 
 namespace Microsoft.OData.Service.Sample.TrippinInMemory
 {
 
     internal class CustomizedModelBuilder : IModelBuilder
     {
-        public Task<IEdmModel> GetModelAsync(ModelContext context, CancellationToken cancellationToken)
+        public IModelBuilder Inner { get; set; }
+
+        public IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
             builder.EntityType<Person>();
-            return Task.FromResult(builder.GetEdmModel());
+            return builder.GetEdmModel();
         }
     }
-
-    ///<summary>
-    ///
-    ///</summary>
-    public class TrippinApi : ApiBase
-    {
-
-        ///<summary>
-        ///
-        ///</summary>
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
-        {
-            return base.ConfigureApi(services)
-                .AddService<IModelBuilder, CustomizedModelBuilder>();
-        }
-
-    }
-
 }
+```
+
+The custom model builder is registered in the route configuration using `AddChainedService<IModelBuilder>()`:
+
+```csharp Program.cs
+using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.EntityFrameworkCore;
+
+services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.AddRestierRoute<TrippinApi>("", restierServices =>
+        {
+            restierServices
+                .AddEFCoreProviderServices<TrippinContext>(...)
+                .AddChainedService<IModelBuilder>((sp, next) =>
+                    new CustomizedModelBuilder());
+        });
+    });
 ```
 
 If RESTier entity framework provider is used and user has no additional types other than those in the database schema, no 
@@ -95,25 +96,27 @@ will be added into the model.
  - Public
  - Has getter
  - Either static or instance
+ - Decorated with the `[Resource]` attribute
  - There is no existing entity set with the same name
  - Return type must be `IQueryable<T>` where `T` is class type
 
 Example:
 
-```cs
-using System.Collections.Generic;
+```csharp TrippinApi.cs
 using System.Linq;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Provider.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
+        [Resource]
         public IQueryable<Person> PeopleWithFriends
         {
-            get { return Context.People.Include("Friends"); }
+            get { return DbContext.People.Include(p => p.Friends); }
         }
         ...
     }
@@ -127,16 +130,16 @@ will be added into the model.
  - Public
  - Has getter
  - Either static or instance
+ - Decorated with the `[Resource]` attribute
  - There is no existing singleton with the same name
  - Return type must be non-generic class type
 
 Example:
 
-```cs
-using System.Collections.Generic;
+```csharp TrippinApi.cs
 using System.Linq;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Provider.EntityFramework;
+using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
@@ -144,6 +147,7 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
         ...
+        [Resource]
         public Person Me { get { return DbContext.People.Find(1); } }
         ...
     }
@@ -154,7 +158,7 @@ Due to some limitations from Entity Framework and OData spec, CUD (insertion, up
 **NOT** supported directly by RESTier. Users need to define their own route to achieve these operations.
 
 **Navigation property binding**
-Starting from version 0.5.0, the `RestierModelExtender` follows the rules below to add navigation property bindings after entity 
+The `RestierModelExtender` follows the rules below to add navigation property bindings after entity 
     sets and singletons have been built.
 
  - Bindings will **ONLY** be added for those entity sets and singletons that have been built inside `RestierModelExtender`.
@@ -176,15 +180,18 @@ If a method declared in the `Api` class satisfies the following conditions, an o
 
  - Public
  - Either static or instance
+ - Decorated with `[BoundOperation]` or `[UnboundOperation]`
  - There is no existing operation with the same name
 
-Example (namespace should be specified if the namespace of the method does not match the model):
+Operations are categorized as either **unbound** (function imports / action imports) or **bound** (operations on a specific entity or collection). Use the `OperationType` property to distinguish between functions (HTTP GET, the default) and actions (HTTP POST).
 
-```cs
+Example:
+
+```csharp TrippinApi.cs
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Provider.EntityFramework;
+using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.OData.Service.Sample.Trippin.Models;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
@@ -192,20 +199,20 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
     public class TrippinApi : EntityFrameworkApi<TrippinModel>
     {
         ...
-        // Action import
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        // Action import (unbound action)
+        [UnboundOperation(OperationType = OperationType.Action)]
         public void CleanUpExpiredTrips() {}
         
-        // Bound action
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", HasSideEffects = true)]
+        // Bound action (first parameter is the binding parameter)
+        [BoundOperation(OperationType = OperationType.Action)]
         public Trip EndTrip(Trip bindingParameter) { ... }
         
-        // Function import
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        // Function import (unbound function, default OperationType)
+        [UnboundOperation(EntitySet = "People")]
         public IEnumerable<Person> GetPeopleWithFriendsAtLeast(int n) { ... }
         
-        // Bound function
-        [Operation(Namespace = "Microsoft.OData.Service.Sample.Trippin.Models", EntitySet = "People")]
+        // Bound function (composable, first parameter is the binding parameter)
+        [BoundOperation(IsComposable = true)]
         public Person GetPersonWithMostFriends(IEnumerable<Person> bindingParameter) { ... }
         ...
     }
@@ -214,71 +221,84 @@ namespace Microsoft.OData.Service.Sample.Trippin.Api
 
 Note:
 
-1. Operation attribute's EntitySet property is needed if there are more than one entity set of the entity type that is type of result defined. Take an example if two EntitySet People and AllPersons are defined whose entity type is Person, and the function returns Person or List of Person, then the Operation attribute for function must have EntitySet defined, or EntitySet property is optional. 
+1. The `EntitySet` property on `[UnboundOperation]` is needed if there are more than one entity set of the entity type that is the type of the result. For example, if two entity sets `People` and `AllPersons` are both of type `Person`, and the function returns `Person` or `List<Person>`, then the `EntitySet` property must be specified. Otherwise it is optional.
 
-2. Function and Action uses the same attribute, and if the method is an action, must specify property HasSideEffects with value of true whose default value is false.
+2. Functions and Actions are distinguished by the `OperationType` property. The default is `OperationType.Function` (responds to HTTP GET). Set `OperationType = OperationType.Action` for operations that have side effects (responds to HTTP POST).
+
+3. For bound operations, the first parameter is the binding parameter. If a method is marked with `[BoundOperation]` but has no parameters, RESTier will register it as an unbound operation instead and log a warning.
+
+4. Use `IsComposable = true` on `[BoundOperation]` to mark a bound function as composable, allowing further query composition on the result.
+
+5. Use `EntitySetPath` on `[BoundOperation]` to specify the navigation path from the binding parameter to the returned entities (e.g., `EntitySetPath = "publisher/Books"`).
     
-3. In order to access an operation user must define an action with `ODataRouteAttribute` in his custom controller.
-Refer to [section 3.3](http://odata.github.io/RESTier/#03-03-Operation) for more information.
-
 ## Custom model extension
-If users have the need to extend the model even after RESTier's conventions have been applied, user can use IServiceCollection AddService to add a ModelBuilder after calling base.ConfigureApi(services).
+If you need to extend the model after RESTier's conventions have been applied, you can register a custom `IModelBuilder` using `AddChainedService<IModelBuilder>()` in the route configuration. The `Inner` property gives you access to the next builder in the chain, so you can call it to get the base model and then modify it.
 
-```cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+```csharp CustomizedModelBuilder.cs
 using Microsoft.OData.Edm;
-using Microsoft.Restier.Core;
 using Microsoft.Restier.Core.Model;
-using Microsoft.Restier.Provider.EntityFramework;
-using Microsoft.OData.Service.Sample.Trippin.Models;
 
 namespace Microsoft.OData.Service.Sample.Trippin.Api
 {
-    public class TrippinAttribute : ApiConfiguratorAttribute
+    internal class CustomizedModelBuilder : IModelBuilder
     {
-        protected override IServiceCollection ConfigureApi(IServiceCollection services)
-        {
-            services = base.ConfigureApi(services);
-            // Add your custom model extender here.
-            services.AddService<IModelBuilder, CustomizedModelBuilder>();
-            return services;
-        }
+        public IModelBuilder Inner { get; set; }
 
-        private class CustomizedModelBuilder : IModelBuilder
+        public IEdmModel GetEdmModel()
         {
-            public IModelBuilder InnerModelBuilder { get; set; }
-
-            public async Task<IEdmModel> GetModelAsync(InvocationContext context, CancellationToken cancellationToken)
+            IEdmModel model = null;
+            
+            // Call inner model builder to get a model to extend.
+            if (this.Inner != null)
             {
-                IEdmModel model = null;
-                
-                // Call inner model builder to get a model to extend.
-                if (this.InnerModelBuilder != null)
-                {
-                    model = await this.InnerModelBuilder.GetModelAsync(context, cancellationToken);
-                }
-
-                // Do sth to extend the model such as add custom navigation property binding.
-
-                return model;
+                model = this.Inner.GetEdmModel();
             }
+
+            // Extend the model here, e.g. add custom navigation property bindings.
+
+            return model;
         }
     }
 }
 ```
-    
-After the above steps, the final process of building the model will be:
 
- - User's model builder registered before base.ConfigureApi(services) is called first.
- - RESTier's model builder includes EF model builder and RestierModelExtender will be called.
- - User's model builder registered after base.ConfigureApi(services) is called.
+Register the custom model builder in the route configuration:
+
+```csharp Program.cs
+using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.Core.Model;
+using Microsoft.Restier.EntityFrameworkCore;
+
+services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.AddRestierRoute<TrippinApi>("", restierServices =>
+        {
+            restierServices
+                .AddEFCoreProviderServices<TrippinContext>(...)
+                .AddChainedService<IModelBuilder>((sp, next) =>
+                    new CustomizedModelBuilder());
+        });
+    });
+```
+
+The final process of building the model follows the chain of responsibility pattern:
+
+ - Model builders registered earlier in the chain (e.g., the EF provider's model builder) are called first via the `Inner` property.
+ - RESTier's built-in model builders (EF model builder, `RestierModelExtender`) form the core of the chain.
+ - Your custom model builder wraps the chain and can modify the model after the inner builders have run.
  <br/>
  
-If InnerModelBuilder method is not called first, then the calling sequence will be different.
-Actually this order not only applies to the `IModelBuilder` but also all other services.
+If the `Inner` property is not called, the inner builders are skipped entirely, giving you full control over the model.
+This chain of responsibility pattern applies not only to `IModelBuilder` but also to all other chained services in RESTier.
 
-Refer to [section 4.3](http://odata.github.io/RESTier/#04-03-Api-Service) for more details of RESTier API Service.
+<Note>
+For the common case of attaching descriptions and validation hints to your
+model, you don't need a custom `IModelBuilder` — RESTier's convention
+builder maps standard .NET attributes (`[Description]`, `[DatabaseGenerated]`,
+`[ReadOnly]`, `[Range]`, `[RegularExpression]`) to OData vocabulary annotations
+automatically. See [OpenAPI Annotation Attributes](./openapi-annotations).
+Use a custom builder when the conventions don't cover what you need —
+e.g., capabilities, role-based restrictions, or dynamic descriptions.
+</Note>

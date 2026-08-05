@@ -27,18 +27,31 @@
             "icon": "server",
             "pages": [
               "guides/server/model-building",
+              "guides/server/keyless-views",
               "guides/server/method-authorization",
               "guides/server/filters",
-              "guides/server/interceptors"
+              "guides/server/interceptors",
+              "guides/server/operations",
+              "guides/server/nswag",
+              "guides/server/swagger",
+              "guides/server/openapi-annotations",
+              "guides/server/testing",
+              "guides/server/naming-conventions",
+              "guides/server/api-versioning",
+              "guides/server/multi-tenancy",
+              "guides/server/concurrency",
+              "guides/server/conformance-options",
+              "guides/server/validation-options",
+              "guides/server/performance"
             ]
           },
           {
             "group": "Extending Restier",
             "icon": "puzzle",
             "pages": [
-              "guides/extending-restier/additional-operations",
               "guides/extending-restier/in-memory-provider",
-              "guides/extending-restier/temporal-types"
+              "guides/extending-restier/temporal-types",
+              "guides/extending-restier/spatial-types"
             ]
           },
           {
@@ -53,36 +66,23 @@
         ]
       },
       {
-        "group": "Providers",
-        "icon": "books",
+        "group": "Release Notes",
+        "icon": "clipboard-list",
         "pages": [
-          "providers/index",
-          {
-            "group": "EF 6",
-            "icon": "/images/icons/mintlify.svg",
-            "pages": [
-              "providers/mintlify/index",
-              "providers/mintlify/navigation",
-              "providers/mintlify/dotnet-library"
-            ]
-          },
-          {
-            "group": "EF Core",
-            "icon": "/images/icons/mintlify.svg",
-            "pages": [
-              "providers/mintlify/index",
-              "providers/mintlify/navigation",
-              "providers/mintlify/dotnet-library"
-            ]
-          }
-        ]
-      },
-      {
-        "group": "Learnings",
-        "icon": "chalkboard-user",
-        "pages": [
-          "learnings/bridge-assemblies",
-          "learnings/sdk-packaging"
+          "release-notes/index",
+          "release-notes/2-0-0-beta",
+          "release-notes/1-2-0",
+          "release-notes/1-1-0",
+          "release-notes/1-0-0",
+          "release-notes/1-0-0-rc1",
+          "release-notes/1-0-0-beta",
+          "release-notes/0-6-0",
+          "release-notes/0-5-0-beta",
+          "release-notes/0-4-0-rc2",
+          "release-notes/0-4-0-rc",
+          "release-notes/0-4-0-beta",
+          "release-notes/0-3-0-beta2",
+          "release-notes/0-3-0-beta1"
         ]
       },
       {
@@ -93,6 +93,44 @@
             "group": "Microsoft",
             "icon": "folder-tree",
             "pages": [
+              {
+                "group": "AspNetCore",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Builder",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/Builder/index",
+                      "api-reference/Microsoft/AspNetCore/Builder/IApplicationBuilder"
+                    ]
+                  },
+                  {
+                    "group": "Http",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/Http/index",
+                      "api-reference/Microsoft/AspNetCore/Http/HttpRequest"
+                    ]
+                  },
+                  {
+                    "group": "OData",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/OData/index",
+                      "api-reference/Microsoft/AspNetCore/OData/ODataOptions"
+                    ]
+                  },
+                  {
+                    "group": "Routing",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/AspNetCore/Routing/index",
+                      "api-reference/Microsoft/AspNetCore/Routing/IEndpointRouteBuilder"
+                    ]
+                  }
+                ]
+              },
               {
                 "group": "EntityFrameworkCore",
                 "icon": "folder-tree",
@@ -110,7 +148,23 @@
                     "icon": "folder-tree",
                     "pages": [
                       "api-reference/Microsoft/Extensions/DependencyInjection/index",
+                      "api-reference/Microsoft/Extensions/DependencyInjection/IMvcBuilder",
                       "api-reference/Microsoft/Extensions/DependencyInjection/IServiceCollection"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "OData",
+                "icon": "folder-tree",
+                "pages": [
+                  {
+                    "group": "Edm",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/OData/Edm/index",
+                      "api-reference/Microsoft/OData/Edm/IEdmModel",
+                      "api-reference/Microsoft/OData/Edm/IEdmType"
                     ]
                   }
                 ]
@@ -119,6 +173,120 @@
                 "group": "Restier",
                 "icon": "folder-tree",
                 "pages": [
+                  {
+                    "group": "AspNetCore",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/AspNetCore/index",
+                      "api-reference/Microsoft/Restier/AspNetCore/RestierController",
+                      "api-reference/Microsoft/Restier/AspNetCore/RestierPayloadValueConverter",
+                      {
+                        "group": "Batch",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Batch/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Batch/RestierBatchChangeSetRequestItem",
+                          "api-reference/Microsoft/Restier/AspNetCore/Batch/RestierBatchHandler"
+                        ]
+                      },
+                      {
+                        "group": "Formatter",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/DefaultRestierDeserializerProvider",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/DefaultRestierSerializerProvider",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierCollectionSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierEnumSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierPrimitiveSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierRawSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierResourceSerializer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Formatter/RestierResourceSetSerializer"
+                        ]
+                      },
+                      {
+                        "group": "Middleware",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Middleware/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Middleware/ODataBatchHttpContextFixerMiddleware",
+                          "api-reference/Microsoft/Restier/AspNetCore/Middleware/RestierClaimsPrincipalMiddleware"
+                        ]
+                      },
+                      {
+                        "group": "Model",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/BoundOperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/ConventionBasedAnnotationModelBuilder",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationParameterClassifier",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationType",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OperationTypeRegistrationModelBuilder",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/OptionalAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/ResourceAttribute",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/RestierModelMapper",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/RestierWebApiModelBuilder",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/RestierWebApiModelExtender",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/RestierWebApiModelMapper",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/RestierWebApiOperationModelBuilder",
+                          "api-reference/Microsoft/Restier/AspNetCore/Model/UnboundOperationAttribute"
+                        ]
+                      },
+                      {
+                        "group": "Operation",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Operation/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Operation/RestierOperationContext",
+                          "api-reference/Microsoft/Restier/AspNetCore/Operation/RestierOperationExecutor"
+                        ]
+                      },
+                      {
+                        "group": "Query",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Query/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Query/RestierQueryExpressionExpander",
+                          "api-reference/Microsoft/Restier/AspNetCore/Query/RestierQueryExpressionSourcer",
+                          "api-reference/Microsoft/Restier/AspNetCore/Query/RestierSpatialFilterBinder"
+                        ]
+                      },
+                      {
+                        "group": "Routing",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Routing/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Routing/RestierValidationOptionsResolver"
+                        ]
+                      },
+                      {
+                        "group": "Versioning",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/AspNetCore/Versioning/index",
+                          "api-reference/Microsoft/Restier/AspNetCore/Versioning/ApiVersionSegmentFormatters",
+                          "api-reference/Microsoft/Restier/AspNetCore/Versioning/IRestierApiVersioningBuilder",
+                          "api-reference/Microsoft/Restier/AspNetCore/Versioning/IRestierApiVersionRegistry",
+                          "api-reference/Microsoft/Restier/AspNetCore/Versioning/RestierApiVersionDescriptor",
+                          "api-reference/Microsoft/Restier/AspNetCore/Versioning/RestierVersioningOptions"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Breakdance",
+                    "icon": "folder-tree",
+                    "pages": [
+                      "api-reference/Microsoft/Restier/Breakdance/index",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierBreakdanceTestBase",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierConventionDefinition",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierConventionEntitySetDefinition",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierConventionMethodDefinition",
+                      "api-reference/Microsoft/Restier/Breakdance/RestierTestHelpers"
+                    ]
+                  },
                   {
                     "group": "Core",
                     "icon": "folder-tree",
@@ -137,12 +305,13 @@
                       "api-reference/Microsoft/Restier/Core/DataSourceStub",
                       "api-reference/Microsoft/Restier/Core/EdmModelValidationException",
                       "api-reference/Microsoft/Restier/Core/InvocationContext",
-                      "api-reference/Microsoft/Restier/Core/RestierApiBuilder",
-                      "api-reference/Microsoft/Restier/Core/RestierContainerBuilder",
+                      "api-reference/Microsoft/Restier/Core/RestierConformanceOptions",
                       "api-reference/Microsoft/Restier/Core/RestierEntitySetOperation",
+                      "api-reference/Microsoft/Restier/Core/RestierNamingConvention",
                       "api-reference/Microsoft/Restier/Core/RestierOperationMethod",
                       "api-reference/Microsoft/Restier/Core/RestierPipelineState",
-                      "api-reference/Microsoft/Restier/Core/RestierRouteBuilder",
+                      "api-reference/Microsoft/Restier/Core/RestierRouteOptions",
+                      "api-reference/Microsoft/Restier/Core/RestierValidationOptions",
                       "api-reference/Microsoft/Restier/Core/StatusCodeException",
                       {
                         "group": "Authorization",
@@ -154,13 +323,24 @@
                         ]
                       },
                       {
+                        "group": "DependencyInjection",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/DependencyInjection/index",
+                          "api-reference/Microsoft/Restier/Core/DependencyInjection/IChainedService",
+                          "api-reference/Microsoft/Restier/Core/DependencyInjection/IChainOfResponsibilityFactory"
+                        ]
+                      },
+                      {
                         "group": "Model",
                         "icon": "folder-tree",
                         "pages": [
                           "api-reference/Microsoft/Restier/Core/Model/index",
                           "api-reference/Microsoft/Restier/Core/Model/IModelBuilder",
                           "api-reference/Microsoft/Restier/Core/Model/IModelMapper",
-                          "api-reference/Microsoft/Restier/Core/Model/ModelContext"
+                          "api-reference/Microsoft/Restier/Core/Model/KeylessViewEntry",
+                          "api-reference/Microsoft/Restier/Core/Model/KeylessViewRegistry",
+                          "api-reference/Microsoft/Restier/Core/Model/ModelMerger"
                         ]
                       },
                       {
@@ -180,11 +360,14 @@
                         "pages": [
                           "api-reference/Microsoft/Restier/Core/Query/index",
                           "api-reference/Microsoft/Restier/Core/Query/DataSourceStubModelReference",
+                          "api-reference/Microsoft/Restier/Core/Query/DefaultQueryExecutor",
+                          "api-reference/Microsoft/Restier/Core/Query/IExpandCycleDetector",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExecutor",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionAuthorizer",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionExpander",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionProcessor",
                           "api-reference/Microsoft/Restier/Core/Query/IQueryExpressionSourcer",
+                          "api-reference/Microsoft/Restier/Core/Query/IQueryHandler",
                           "api-reference/Microsoft/Restier/Core/Query/ParameterModelReference",
                           "api-reference/Microsoft/Restier/Core/Query/PropertyModelReference",
                           "api-reference/Microsoft/Restier/Core/Query/QueryContext",
@@ -195,15 +378,29 @@
                         ]
                       },
                       {
+                        "group": "Spatial",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/Core/Spatial/index",
+                          "api-reference/Microsoft/Restier/Core/Spatial/ISpatialModelMetadataProvider",
+                          "api-reference/Microsoft/Restier/Core/Spatial/ISpatialTypeConverter",
+                          "api-reference/Microsoft/Restier/Core/Spatial/SpatialAttribute",
+                          "api-reference/Microsoft/Restier/Core/Spatial/SpatialGenus",
+                          "api-reference/Microsoft/Restier/Core/Spatial/SridPrefixHelpers"
+                        ]
+                      },
+                      {
                         "group": "Submit",
                         "icon": "folder-tree",
                         "pages": [
                           "api-reference/Microsoft/Restier/Core/Submit/index",
+                          "api-reference/Microsoft/Restier/Core/Submit/BindReference",
                           "api-reference/Microsoft/Restier/Core/Submit/ChangeSet",
                           "api-reference/Microsoft/Restier/Core/Submit/ChangeSetItem",
                           "api-reference/Microsoft/Restier/Core/Submit/ChangeSetItemValidationResult",
                           "api-reference/Microsoft/Restier/Core/Submit/DataModificationItem",
                           "api-reference/Microsoft/Restier/Core/Submit/DataModificationItem",
+                          "api-reference/Microsoft/Restier/Core/Submit/DeepOperationSettings",
                           "api-reference/Microsoft/Restier/Core/Submit/DefaultChangeSetInitializer",
                           "api-reference/Microsoft/Restier/Core/Submit/DefaultSubmitExecutor",
                           "api-reference/Microsoft/Restier/Core/Submit/IChangeSetInitializer",
@@ -211,6 +408,8 @@
                           "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemFilter",
                           "api-reference/Microsoft/Restier/Core/Submit/IChangeSetItemValidator",
                           "api-reference/Microsoft/Restier/Core/Submit/ISubmitExecutor",
+                          "api-reference/Microsoft/Restier/Core/Submit/ISubmitHandler",
+                          "api-reference/Microsoft/Restier/Core/Submit/RelationshipRemoval",
                           "api-reference/Microsoft/Restier/Core/Submit/SubmitContext",
                           "api-reference/Microsoft/Restier/Core/Submit/SubmitResult"
                         ]
@@ -223,8 +422,35 @@
                     "pages": [
                       "api-reference/Microsoft/Restier/EntityFramework/index",
                       "api-reference/Microsoft/Restier/EntityFramework/EFChangeSetInitializer",
+                      "api-reference/Microsoft/Restier/EntityFramework/EFModelBuilder",
+                      "api-reference/Microsoft/Restier/EntityFramework/EFModelMapper",
                       "api-reference/Microsoft/Restier/EntityFramework/EntityFrameworkApi",
-                      "api-reference/Microsoft/Restier/EntityFramework/IEntityFrameworkApi"
+                      "api-reference/Microsoft/Restier/EntityFramework/IEntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFramework/RestierEFOptions",
+                      "api-reference/Microsoft/Restier/EntityFramework/RestierEFTrackingBehavior",
+                      {
+                        "group": "Shared",
+                        "icon": "folder-tree",
+                        "pages": [
+                          {
+                            "group": "Model",
+                            "icon": "folder-tree",
+                            "pages": [
+                              "api-reference/Microsoft/Restier/EntityFramework/Shared/Model/index",
+                              "api-reference/Microsoft/Restier/EntityFramework/Shared/Model/SpatialModelConvention"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Spatial",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/EntityFramework/Spatial/index",
+                          "api-reference/Microsoft/Restier/EntityFramework/Spatial/DbSpatialConverter",
+                          "api-reference/Microsoft/Restier/EntityFramework/Spatial/DbSpatialModelMetadataProvider"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -233,19 +459,23 @@
                     "pages": [
                       "api-reference/Microsoft/Restier/EntityFrameworkCore/index",
                       "api-reference/Microsoft/Restier/EntityFrameworkCore/EFChangeSetInitializer",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/EFModelBuilder",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/EFModelMapper",
                       "api-reference/Microsoft/Restier/EntityFrameworkCore/EntityFrameworkApi",
-                      "api-reference/Microsoft/Restier/EntityFrameworkCore/IEntityFrameworkApi"
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/IEntityFrameworkApi",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/RestierEFOptions",
+                      "api-reference/Microsoft/Restier/EntityFrameworkCore/RestierEFTrackingBehavior",
+                      {
+                        "group": "Spatial",
+                        "icon": "folder-tree",
+                        "pages": [
+                          "api-reference/Microsoft/Restier/EntityFrameworkCore/Spatial/index",
+                          "api-reference/Microsoft/Restier/EntityFrameworkCore/Spatial/NtsSpatialConverter",
+                          "api-reference/Microsoft/Restier/EntityFrameworkCore/Spatial/NtsSpatialModelMetadataProvider"
+                        ]
+                      }
                     ]
                   }
-                ]
-              },
-              {
-                "group": "Spatial",
-                "icon": "folder-tree",
-                "pages": [
-                  "api-reference/Microsoft/Spatial/index",
-                  "api-reference/Microsoft/Spatial/GeographyLineString",
-                  "api-reference/Microsoft/Spatial/GeographyPoint"
                 ]
               }
             ]
@@ -254,26 +484,9 @@
             "group": "System",
             "icon": "folder-tree",
             "pages": [
-              {
-                "group": "Data",
-                "icon": "folder-tree",
-                "pages": [
-                  {
-                    "group": "Entity",
-                    "icon": "folder-tree",
-                    "pages": [
-                      {
-                        "group": "Spatial",
-                        "icon": "folder-tree",
-                        "pages": [
-                          "api-reference/System/Data/Entity/Spatial/index",
-                          "api-reference/System/Data/Entity/Spatial/DbGeography"
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
+              "api-reference/System/index",
+              "api-reference/System/IServiceProvider",
+              "api-reference/System/Type"
             ]
           }
         ]

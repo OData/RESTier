@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Microsoft.Restier.Samples.Postgres.AspNetCore": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5245;http://localhost:5244"
+    }
+  }
+}

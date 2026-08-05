@@ -268,6 +268,24 @@ namespace Microsoft.Restier.AspNetCore {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot bind &apos;{0}&apos; on &apos;{1}&apos; ({2}) against a {3} literal..
+        /// </summary>
+        internal static string SpatialFilter_GenusMismatch {
+            get {
+                return ResourceManager.GetString("SpatialFilter_GenusMismatch", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Function &apos;{0}&apos;, property &apos;{1}&apos;: no ISpatialTypeConverter is registered for storage type &apos;{2}&apos;. Did you forget to call AddRestierSpatial()?.
+        /// </summary>
+        internal static string SpatialFilter_NoConverterForStorageType {
+            get {
+                return ResourceManager.GetString("SpatialFilter_NoConverterForStorageType", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Currently only EntitySets can be updated..
         /// </summary>
         internal static string UpdateOnlySupportedOnEntitySet {

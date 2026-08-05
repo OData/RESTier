@@ -1,0 +1,162 @@
+---
+title: "Optimistic Concurrency"
+description: "Built-in OData ETag-based concurrency control for safe updates"
+icon: "key"
+sidebarTitle: "Concurrency"
+---
+
+RESTier provides built-in support for OData optimistic concurrency control using ETags. When you mark
+entity properties with concurrency attributes, RESTier automatically:
+
+- Includes `@odata.etag` annotations in entity responses
+- Requires `If-Match` headers on updates and deletes
+- Returns the correct HTTP status codes when preconditions fail
+
+No additional configuration is required beyond marking your entity properties.
+
+## Marking Entities for Concurrency
+
+Use `[ConcurrencyCheck]` or `[Timestamp]` on properties that should participate in concurrency checking.
+RESTier detects these attributes through the OData model builder and registers them as concurrency tokens
+in the EDM model.
+
+```csharp
+using System;
+using System.ComponentModel.DataAnnotations;
+
+public class Product
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public decimal Price { get; set; }
+
+    [ConcurrencyCheck]
+    public DateTimeOffset LastModified { get; set; }
+}
+```
+
+You can also use `[Timestamp]` on a `byte[]` property, which is typical for SQL Server `rowversion` columns:
+
+```csharp
+public class Invoice
+{
+    public int Id { get; set; }
+
+    public decimal Amount { get; set; }
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; }
+}
+```
+
+Multiple concurrency properties are supported on a single entity. The ETag value is computed from all
+marked properties.
+
+## How It Works
+
+Once an entity has concurrency tokens, RESTier enforces the following behavior automatically.
+
+### Reading Entities
+
+When you query an entity with concurrency tokens, the response includes an `@odata.etag` annotation:
+
+```http
+GET /api/Products(1) HTTP/1.1
+```
+
+```json
+{
+    "@odata.context": "...$metadata#Products/$entity",
+    "@odata.etag": "W/\"MjAyNi0wNC0yMlQxMDozMDowMFo=\"",
+    "Id": 1,
+    "Name": "Widget",
+    "Price": 9.99,
+    "LastModified": "2026-04-22T10:30:00Z"
+}
+```
+
+### Conditional Reads (If-None-Match)
+
+Use the `If-None-Match` header with a previously received ETag to avoid re-downloading unchanged data.
+If the entity has not changed, the server returns **304 Not Modified** with no body:
+
+```http
+GET /api/Products(1) HTTP/1.1
+If-None-Match: W/"MjAyNi0wNC0yMlQxMDozMDowMFo="
+```
+
+```
+HTTP/1.1 304 Not Modified
+```
+
+If the entity has changed, the full entity is returned as normal.
+
+### Updating Entities (If-Match)
+
+Updates (`PATCH` or `PUT`) to concurrency-enabled entities **require** an `If-Match` header containing the
+entity's current ETag. This ensures you are modifying the version you last read, preventing lost updates.
+
+```http
+PATCH /api/Products(1) HTTP/1.1
+If-Match: W/"MjAyNi0wNC0yMlQxMDozMDowMFo="
+Content-Type: application/json
+
+{
+    "Price": 12.99
+}
+```
+
+If the ETag matches, the update succeeds. If another client modified the entity since you last read it,
+the server returns **412 Precondition Failed**.
+
+### Deleting Entities (If-Match)
+
+Deletes behave the same way -- the `If-Match` header is required for concurrency-enabled entities.
+A successful delete returns **204 No Content**:
+
+```http
+DELETE /api/Products(1) HTTP/1.1
+If-Match: W/"MjAyNi0wNC0yMlQxMDozMDowMFo="
+```
+
+```
+HTTP/1.1 204 No Content
+```
+
+### Wildcard ETags
+
+You can use `If-Match: *` to indicate that the operation should proceed regardless of the entity's
+current version. This bypasses the concurrency check while still satisfying the header requirement:
+
+```http
+PATCH /api/Products(1) HTTP/1.1
+If-Match: *
+Content-Type: application/json
+
+{
+    "Price": 12.99
+}
+```
+
+## HTTP Status Codes
+
+RESTier uses the following status codes for concurrency scenarios:
+
+| Status Code | Meaning | When It Occurs |
+|---|---|---|
+| **200 OK** | Success | Entity returned (GET), or update succeeded |
+| **204 No Content** | Success (no body) | Delete succeeded |
+| **304 Not Modified** | Resource unchanged | GET with `If-None-Match` and the ETag matches |
+| **412 Precondition Failed** | ETag mismatch | `If-Match` value doesn't match the current entity version |
+| **428 Precondition Required** | Missing header | Update or delete on a concurrency-enabled entity without an `If-Match` header |
+
+## Naming Conventions
+
+ETags work correctly with both the default PascalCase naming and the `LowerCamelCase` naming convention.
+When using camelCase, RESTier automatically normalizes ETag property names between the camelCase EDM
+representation and the PascalCase CLR property names used by Entity Framework. No additional configuration
+is needed.
+
+See [Naming Conventions](naming-conventions) for details on enabling camelCase.

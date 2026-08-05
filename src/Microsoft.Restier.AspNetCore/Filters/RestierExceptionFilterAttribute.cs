@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.AspNet.OData;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.OData;
 using Microsoft.Restier.Core;
 using System;
@@ -85,11 +84,11 @@ namespace Microsoft.Restier.AspNetCore
         /// <returns></returns>
         private static Task<bool> HandleCommonException(ExceptionContext context, CancellationToken cancellationToken)
         {
-            var exception = context.Exception.Demystify();
+            var exception = context.Exception;
             if (exception is AggregateException)
             {
                 // In async call, the exception will be wrapped as AggregateException
-                exception = exception.InnerException.Demystify();
+                exception = exception.InnerException;
             }
 
             if (exception is null)

@@ -19,10 +19,9 @@
 		<PackageTags>$(PackageTags);aspnetcore;batch</PackageTags>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Ben.Demystifier" Version="[0.*, 2.0.0)" />
-		<PackageReference Include="Microsoft.AspNetCore.OData" Version="7.*" />
-		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
+<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OData" Version="[9.*, 10.0.0]" />
+		<PackageReference Include="Microsoft.OData.Core" Version="[8.*, 9.0.0]" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -49,11 +48,8 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<Import Project="..\Microsoft.Restier.AspNet.Shared\Microsoft.Restier.AspNet.Shared.projitems" Label="Shared" />
-
-	<ItemGroup>
-		<InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCorePlusEF6, $(StrongNamePublicKey)" />
-		<InternalsVisibleTo Include="Microsoft.Restier.Breakdance, $(StrongNamePublicKey)" />
-	</ItemGroup>
-
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Restier.Tests.AspNetCore, $(StrongNamePublicKey)" />
+    <InternalsVisibleTo Include="Microsoft.Restier.Tests.EntityFrameworkCore.Spatial, $(StrongNamePublicKey)" />
+  </ItemGroup>
 </Project>

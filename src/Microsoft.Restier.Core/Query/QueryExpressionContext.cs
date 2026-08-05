@@ -59,6 +59,14 @@ namespace Microsoft.Restier.Core.Query
         }
 
         /// <summary>
+        /// Gets the expression node that encloses <see cref="VisitedNode"/> (its parent in the
+        /// expression tree), or <c>null</c> when the visited node is the outermost node of the
+        /// current visit. Only nodes within the current contiguous (non-null) visit trail are
+        /// considered, matching the semantics used elsewhere in this class.
+        /// </summary>
+        public Expression ParentNode => GetExpressionTrail().Skip(1).FirstOrDefault();
+
+        /// <summary>
         /// Gets a reference to the model element
         /// that represents the visited node.
         /// </summary>
@@ -205,7 +213,7 @@ namespace Microsoft.Restier.Core.Query
                 if (edmElementType is not null)
                 {
                     var edmType = edmElementType as IEdmType;
-                    edmTypeReference = edmType.GetTypeReference();
+                    edmTypeReference = edmType.ToEdmTypeReference();
 
                     if (edmTypeReference is not null)
                     {
@@ -361,8 +369,23 @@ namespace Microsoft.Restier.Core.Query
                     {
                         var property = structuredType.FindProperty(member.Member.Name);
                         modelReference = GetModelReferenceForNode(parameterExpression);
-                        modelReference = new PropertyModelReference(modelReference, member.Member.Name, property);
-                        return modelReference;
+
+                        // The default ExpressionVisitor visits a lambda's body before its
+                        // parameters, so when this method runs for "$it As Derived" inside the body
+                        // the parameter hasn't been pushed yet and its model reference is missing
+                        // from the cache. Compute it inline from the enclosing query context so we
+                        // don't pass null to the PropertyModelReference ctor (issue #771).
+                        if (modelReference is null && parameterExpression is ParameterExpression parameter)
+                        {
+                            modelReference = ComputeParameterModelReference(parameter);
+                        }
+
+                        if (modelReference is not null)
+                        {
+                            return new PropertyModelReference(modelReference, member.Member.Name, property);
+                        }
+
+                        return null;
                     }
                 }
             }

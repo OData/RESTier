@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+	  <ProjectReference Include="..\Microsoft.Restier.Tests.Core\Microsoft.Restier.Tests.Core.csproj" />
+	  <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Microsoft.Restier.Tests.Shared.EntityFramework.csproj" />
+	  <ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+	  <ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
+	  <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
+	  <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework.Spatial\Microsoft.Restier.EntityFramework.Spatial.csproj" />
+	  <ProjectReference Include="..\..\src\Microsoft.Restier.EntityFrameworkCore.Spatial\Microsoft.Restier.EntityFrameworkCore.Spatial.csproj" />
+	</ItemGroup>
+
+	
+	<ItemGroup>
+	  <Folder Include="Extensions\" />
+	  <Folder Include="Formatter\Deserialization\" />
+	  <Folder Include="Formatter\Serialization\" />
+	  <Folder Include="MiddleWare\" />
+	  <Folder Include="Query\" />
+	  <Folder Include="Operation\" />
+	</ItemGroup>
+
+	
+</Project>

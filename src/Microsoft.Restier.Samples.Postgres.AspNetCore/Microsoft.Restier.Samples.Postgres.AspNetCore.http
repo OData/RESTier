@@ -1,6 +1,16 @@
 @Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress = http://localhost:5244
 
-GET {{Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress}}/weatherforecast/
+GET {{Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress}}/v3/$metadata
+Accept: application/xml
+
+###
+
+GET {{Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress}}/v3/Users
+Accept: application/json
+
+###
+
+GET {{Microsoft.Restier.Samples.Postgres.AspNetCore_HostAddress}}/v3/UserTypes
 Accept: application/json
 
 ###

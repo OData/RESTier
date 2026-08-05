@@ -186,6 +186,12 @@
   <data name="ResourceNotFound" xml:space="preserve">
     <value>The resource you requested is not found.</value>
   </data>
+  <data name="SpatialFilter_GenusMismatch" xml:space="preserve">
+    <value>Cannot bind '{0}' on '{1}' ({2}) against a {3} literal.</value>
+  </data>
+  <data name="SpatialFilter_NoConverterForStorageType" xml:space="preserve">
+    <value>Function '{0}', property '{1}': no ISpatialTypeConverter is registered for storage type '{2}'. Did you forget to call AddRestierSpatial()?</value>
+  </data>
   <data name="UpdateOnlySupportedOnEntitySet" xml:space="preserve">
     <value>Currently only EntitySets can be updated.</value>
   </data>

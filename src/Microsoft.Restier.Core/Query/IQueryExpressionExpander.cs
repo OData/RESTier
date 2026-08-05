@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
 using System.Linq.Expressions;
 
 namespace Microsoft.Restier.Core.Query
@@ -22,7 +23,7 @@ namespace Microsoft.Restier.Core.Query
     /// normalization, inspection, expansion, filtering and sourcing occurs.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionExpander
+    public interface IQueryExpressionExpander : IChainedService<IQueryExpressionExpander>
     {
         /// <summary>
         /// Expands an expression.

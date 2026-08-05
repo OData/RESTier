@@ -1,19 +1,18 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Restier.AspNetCore;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Samples.Northwind.AspNet.Controllers;
+using NSwag.AspNetCore;
 using System;
-using System.Linq;
 
 namespace Microsoft.Restier.Samples.Northwind.AspNetCore
 {
@@ -44,25 +43,30 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRestier((builder) =>
-            {
-                // This delegate is executed after OData is added to the container.
-                // Add your replacement services here.
-                builder.AddRestierApi<NorthwindApi>(routeServices =>
+            services
+                .AddControllers()
+                .AddRestier(options =>
                 {
-                    routeServices
-                        .AddEFCoreProviderServices<NorthwindContext>((services, options) => options.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")))
-                        .AddSingleton(new ODataValidationSettings
-                        {
-                            MaxTop = 5,
-                            MaxAnyAllExpressionDepth = 3,
-                            MaxExpansionDepth = 3,
-                        });
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
+                    options.TimeZone = TimeZoneInfo.Utc;
 
-                });
-            }, true);
+                    options.AddRestierRoute<NorthwindApi>(string.Empty, restierServices =>
+                    {
+                        restierServices
+                            .AddEFCoreProviderServices<NorthwindContext>((services, dbOptions) =>
+                                dbOptions.UseSqlServer(Configuration.GetConnectionString("NorthwindEntities")));
+                    },
+                    bag =>
+                    {
+                        bag.Validation.MaxAnyAllExpressionDepth = 3;
+                        bag.Validation.MaxExpansionDepth = 3;
+                    });
+                })
+                .AddApplicationPart(typeof(NorthwindApi).Assembly)
+                .AddApplicationPart(typeof(RestierController).Assembly);
 
-            services.AddRestierSwagger();
+            services.AddRestierNSwag();
+            services.AddOpenApiDocument(c => c.DocumentName = "controllers");
 
             //RWM: Since AddRestier calls .AddAuthorization(), you can uncomment the line below if you want every request to be authenticated.
             //services.Configure<AuthorizationOptions>(options => options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
@@ -80,23 +84,25 @@ namespace Microsoft.Restier.Samples.Northwind.AspNetCore
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRestierBatching();
+            app.UseODataRouteDebug();
             app.UseRouting();
-
             app.UseAuthorization();
-            app.UseClaimsPrincipals();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
-                endpoints.MapRestier(builder =>
-                {
-                    //builder.MapApiRoute<NorthwindApi>("ApiV1", "test", true);
-                    builder.MapApiRoute<NorthwindApi>("ApiV1", "", true);
-                });
+                endpoints.MapControllers();
+                endpoints.MapRestier();
             });
 
-            app.UseRestierSwagger(true);
+            app.UseRestierOpenApi();
+            app.UseRestierReDoc();
+            app.UseRestierNSwagUI();
+            app.UseOpenApi();
+            app.UseReDoc(c =>
+            {
+                c.Path = "/redoc/controllers";
+                c.DocumentPath = "/swagger/controllers/swagger.json";
+            });
         }
 
     }

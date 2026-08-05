@@ -79,24 +79,6 @@ namespace Microsoft.Restier.EntityFramework {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Need &apos;LineString type&apos;, while input is {0}..
-        /// </summary>
-        internal static string InvalidLineStringGeographyType {
-            get {
-                return ResourceManager.GetString("InvalidLineStringGeographyType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Need &apos;Point type&apos;, while input is {0}..
-        /// </summary>
-        internal static string InvalidPointGeographyType {
-            get {
-                return ResourceManager.GetString("InvalidPointGeographyType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This project has multiple EntityFrameworkApi using different DbContexts, and the correct context could not be loaded. \r\n The contexts available are &apos;{0}&apos; but the Container expects &apos;{1}&apos;..
         /// </summary>
         internal static string MultipleDbContextsExpectedException {

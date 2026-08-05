@@ -44,7 +44,7 @@ namespace Microsoft.Restier.Breakdance
             Ensure.ArgumentNotNull(api, nameof(api));
 
             var sb = new StringBuilder();
-            var model = (EdmModel)api.GetModel();
+            var model = (EdmModel)api.Model;
             var apiType = api.GetType();
 
             var conventions = model.GenerateConventionDefinitions();

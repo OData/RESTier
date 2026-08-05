@@ -11,9 +11,6 @@ namespace Microsoft.Restier.Core.Authorization
     /// </summary>
     public class AuthorizationEntry
     {
-
-        #region Public Properties
-
         /// <summary>
         /// The <see cref="Type"/> to register this <see cref="AuthorizationEntry"/> for in the <see cref="AuthorizationFactory">AuthorizationFactory's</see> backing Dictionary.
         /// </summary>
@@ -33,10 +30,6 @@ namespace Microsoft.Restier.Core.Authorization
         /// A <see cref="Func{Boolean}"/> that evaluates to a <see cref="bool"/> specifying whether or not a record can be deleted through the Restier API. The default is false.
         /// </summary>
         public Func<bool> CanDeleteAction { get; set; }
-
-        #endregion
-
-        #region Constructors
 
         /// <summary>
         /// Creates a new instance of an <see cref="AuthorizationEntry"/> for a given <see cref="Type"/>. Assumes all authorization checks will return false by default.
@@ -82,9 +75,5 @@ namespace Microsoft.Restier.Core.Authorization
         {
             CanDeleteAction = canDeleteAction;
         }
-
-        #endregion
-
     }
-
 }

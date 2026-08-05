@@ -8,37 +8,41 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.OData;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Formatter;
-using Microsoft.AspNet.OData.Query;
-using Microsoft.AspNet.OData.Results;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Extensions;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.UriParser;
 using Microsoft.Restier.AspNetCore.Model;
 using Microsoft.Restier.AspNetCore.Operation;
 using Microsoft.Restier.AspNetCore.Query;
+using Microsoft.Restier.AspNetCore.Submit;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Model;
 using Microsoft.Restier.Core.Operation;
 using Microsoft.Restier.Core.Query;
 using Microsoft.Restier.Core.Submit;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query.Validator;
+using Microsoft.AspNetCore.OData.Routing;
+using Microsoft.AspNetCore.OData.Formatter.Value;
+using Microsoft.AspNetCore.OData.Query.Expressions;
+using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.Restier.AspNetCore
 {
-    // This is a must for creating response with correct extension method
-    using ODataPath = Microsoft.AspNet.OData.Routing.ODataPath;
-
     /// <summary>
     /// The all-in-one controller class to handle API requests.
     /// </summary>
-    [ODataFormatting]
     [RestierExceptionFilter]
     public class RestierController : ODataController
     {
@@ -61,6 +65,26 @@ namespace Microsoft.Restier.AspNetCore
         }
 
         /// <summary>
+        /// Handles a GET request for the OData $metadata document.
+        /// </summary>
+        /// <returns>The EDM model for the current route.</returns>
+        public IActionResult GetMetadata()
+        {
+            var model = HttpContext.ODataFeature().Model;
+            return Ok(model);
+        }
+
+        /// <summary>
+        /// Handles a GET request for the OData service document.
+        /// </summary>
+        /// <returns>The OData service document for the current route.</returns>
+        public IActionResult GetServiceDocument()
+        {
+            var model = HttpContext.ODataFeature().Model;
+            return Ok(model);
+        }
+
+        /// <summary>
         /// Handles a GET request to query entities.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -70,7 +94,7 @@ namespace Microsoft.Restier.AspNetCore
             EnsureInitialized();
 
             var path = GetPath();
-            var lastSegment = path.Segments.LastOrDefault() ?? 
+            var lastSegment = path.LastOrDefault() ?? 
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
 
             IQueryable result = null;
@@ -79,16 +103,55 @@ namespace Microsoft.Restier.AspNetCore
             var queryable = GetQuery(path);
             ETag etag;
 
+
             // TODO #365 Do not support additional path segment after function call now
             if (lastSegment is OperationImportSegment unboundSegment)
             {
                 var operation = unboundSegment.OperationImports.FirstOrDefault();
-                Func<string, object> getParaValueFunc = p => unboundSegment.Parameters.FirstOrDefault(c => c.Name == p).Value;
-                result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
+                var routeServices = HttpContext.Request.GetRouteServices();
+                var registry = routeServices?.GetService<KeylessViewRegistry>();
 
-                var applied = ApplyQueryOptions(result, path, true);
-                result = applied.Queryable;
-                etag = applied.Etag;
+                if (registry is not null && registry.TryGet(operation.Name, out var viewEntry))
+                {
+                    // Auto-generated keyless-view function import. Route through the full
+                    // query pipeline so the sourcer chain replaces the DataSourceStub call
+                    // with the registered IQueryable (KeylessViewQueryExpressionSourcer),
+                    // the processor chain fires OnFilter<View>
+                    // (ConventionBasedQueryExpressionProcessor), and any registered
+                    // IQueryExpressionAuthorizer runs. EF composes the whole tree into a
+                    // single SQL roundtrip.
+                    var queryableSource = api.GetQueryableSource(viewEntry.ClrType, operation.Name);
+
+                    var queryRequest = new QueryRequest(queryableSource)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                        AllowNoTracking = true, // HTTP read path; matches the entity-set ApplyQueryOptions wiring.
+                    };
+
+                    etag = ApplyQueryOptions(queryRequest, path, true);
+                    result = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Hand-authored [UnboundOperation] method — keep V1 enumerate-at-
+                    // serialisation behaviour. ApplyQueryOptions composes onto the raw
+                    // queryable returned by ExecuteOperationAsync; CreateQueryResponse
+                    // enumerates downstream.
+                    Func<string, (bool Present, object Value)> getParaValueFunc = p =>
+                    {
+                        var match = unboundSegment.Parameters.FirstOrDefault(c => c.Name == p);
+                        return (match is not null, match?.Value);
+                    };
+                    result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, null, cancellationToken).ConfigureAwait(false);
+
+                    var queryRequest = new QueryRequest(result)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                    };
+
+                    etag = ApplyQueryOptions(queryRequest, path, true);
+                    result = queryRequest.Query;
+                }
             }
             else
             {
@@ -99,25 +162,45 @@ namespace Microsoft.Restier.AspNetCore
 
                 if (lastSegment is OperationSegment segment)
                 {
-                    result = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
+                    // The binding-source query for a bound function (HTTP GET)
+                    // is a top-level read path — opt it into no-tracking.
+                    // ApplyQueryOptions runs later on the operation's *result*
+                    // (line 143), which is a different QueryRequest, so we set
+                    // AllowNoTracking here on the binding-source request explicitly.
+                    var queryRequest = new QueryRequest(queryable)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                        AllowNoTracking = true,
+                    };
+
+                    result = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
 
                     var operation = segment.Operations.FirstOrDefault();
-                    Func<string, object> getParaValueFunc = p => segment.Parameters.FirstOrDefault(c => c.Name == p).Value;
+                    Func<string, (bool Present, object Value)> getParaValueFunc = p =>
+                    {
+                        var match = segment.Parameters.FirstOrDefault(c => c.Name == p);
+                        return (match is not null, match?.Value);
+                    };
                     result = await ExecuteOperationAsync(getParaValueFunc, operation.Name, true, result, cancellationToken).ConfigureAwait(false);
-
-                    var applied = ApplyQueryOptions(result, path, true);
-                    result = applied.Queryable;
-                    etag = applied.Etag;
+                    queryRequest = new QueryRequest(result)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                    };
+                    etag = ApplyQueryOptions(queryRequest, path, true);
+                    result = queryRequest.Query;
                 }
                 else
                 {
-                    var applied = ApplyQueryOptions(queryable, path, false);
-                    result = await ExecuteQuery(applied.Queryable, cancellationToken).ConfigureAwait(false);
-                    etag = applied.Etag;
+                    var queryRequest = new QueryRequest(queryable)
+                    {
+                        ShouldReturnCount = shouldReturnCount,
+                    };
+                    etag = ApplyQueryOptions(queryRequest, path, false);
+                    result = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
                 }
             }
 
-            return CreateQueryResponse(result, path.EdmType, etag);
+            return await CreateQueryResponse(result, path.GetEdmType(), etag, path, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -129,7 +212,7 @@ namespace Microsoft.Restier.AspNetCore
         public async Task<IActionResult> Post(EdmEntityObject edmEntityObject, CancellationToken cancellationToken)
         {
             var path = GetPath();
-            var lastSegment = path.Segments.Last();
+            var lastSegment = path.Last();
 
             // if the request is to a function or function import, return MethodNotAllowed
             if (lastSegment is OperationSegment operationSegment && 
@@ -144,13 +227,22 @@ namespace Microsoft.Restier.AspNetCore
                 return MethodNotAllowed();
             }
 
-            if (path.NavigationSource is not IEdmEntitySet entitySet)
+            if (path.NavigationSource() is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.InsertOnlySupportedOnEntitySet);
             }
 
             if (edmEntityObject is null)
             {
+                var odataVersion = Request.Headers["OData-Version"].FirstOrDefault()?.Trim();
+                if (string.Equals(odataVersion, "4.01", StringComparison.Ordinal))
+                {
+                    throw new ODataException(
+                        "OData-Version 4.01 is not supported for deep operations. " +
+                        "ASP.NET Core OData 9.x does not support untyped (EdmEntityObject) deserialization with 4.01. " +
+                        "Remove the OData-Version header or use OData-Version: 4.0.");
+                }
+
                 throw new ODataException("A POST requires an object to be present in the request body.");
             }
 
@@ -158,15 +250,15 @@ namespace Microsoft.Restier.AspNetCore
             CheckModelState();
 
             // In case of type inheritance, the actual type will be different from entity type
-            var expectedEntityType = path.EdmType;
-            var actualEntityType = path.EdmType as IEdmStructuredType;
+            var expectedEntityType = path.GetEdmType();
+            var actualEntityType = path.GetEdmType() as IEdmStructuredType;
             if (edmEntityObject.ActualEdmType is not null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = api.GetModel();
+            var model = api.Model;
 
             var postItem = new DataModificationItem(
                 entitySet.Name,
@@ -177,20 +269,52 @@ namespace Microsoft.Restier.AspNetCore
                 null,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, true));
 
+            // Extract nested entities for deep insert
+            var deepSettings = HttpContext.Request.GetRouteServices().GetService<DeepOperationSettings>() ?? new DeepOperationSettings();
+            if (deepSettings.MaxDepth > 0)
+            {
+                var extractor = new DeepOperationExtractor(model, api, deepSettings);
+                extractor.ExtractNestedItems(edmEntityObject, actualEntityType, postItem, isCreation: true);
+            }
+
             var changeSetProperty = HttpContext.GetChangeSet();
             if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
-                changeSet.Entries.Enqueue(postItem);
+                foreach (var item in postItem.FlattenDepthFirst())
+                {
+                    changeSet.Entries.Enqueue(item);
+                }
 
-                // TODO: RWM: Feels like we should be doing something with this.
-                var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    // TODO: RWM: Feels like we should be doing something with this.
+                    var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (IsRelationshipConstraintViolation(ex))
+                {
+                    return BadRequest($"A relationship constraint was violated: {ex.GetBaseException().Message}");
+                }
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Enqueue(postItem);
+                foreach (var item in postItem.FlattenDepthFirst())
+                {
+                    changeSetProperty.ChangeSet.Entries.Enqueue(item);
+                }
 
                 await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
+            }
+
+            // OData 4.01 requires 201 responses to be expanded to at least the depth present
+            // in the deep insert request. Setting SelectExpandClause on ODataFeature drives
+            // the serializer to expand nested navigation properties in the response body.
+            // Fix: child SelectExpandClause must be non-null (empty clause instead of null)
+            // to avoid NullReferenceException in SelectedPropertiesNode.Create.
+            var selectExpandClause = DeepOperationResponseBuilder.BuildSelectExpandClause(postItem, model, entitySet);
+            if (selectExpandClause is not null)
+            {
+                HttpContext.ODataFeature().SelectExpandClause = selectExpandClause;
             }
 
             return CreateCreatedODataResult(postItem.Resource);
@@ -234,7 +358,22 @@ namespace Microsoft.Restier.AspNetCore
         {
             EnsureInitialized();
             var path = GetPath();
-            if (path.NavigationSource is not IEdmEntitySet entitySet)
+            var lastSegment = path.Last();
+
+            // if the request is to a function or function import, return MethodNotAllowed
+            if (lastSegment is OperationSegment operationSegment &&
+                operationSegment.Operations.FirstOrDefault().IsFunction())
+            {
+                return MethodNotAllowed();
+            }
+
+            if (lastSegment is OperationImportSegment operationImportSegment &&
+                operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            {
+                return MethodNotAllowed();
+            }
+
+            if (path.NavigationSource() is not IEdmEntitySet entitySet)
             {
                 throw new NotImplementedException(Resources.DeleteOnlySupportedOnEntitySet);
             }
@@ -242,14 +381,14 @@ namespace Microsoft.Restier.AspNetCore
             var propertiesInEtag = GetOriginalValues(entitySet) ??
                 throw new StatusCodeException((HttpStatusCode)428, Resources.PreconditionRequired);
 
-            var model = api.GetModel();
+            var model = api.Model;
 
             var deleteItem = new DataModificationItem(
                 entitySet.Name,
-                path.EdmType.GetClrType(model),
+                path.GetEdmType().GetClrType(model),
                 null,
                 RestierEntitySetOperation.Delete,
-                RestierQueryBuilder.GetPathKeyValues(path),
+                RestierQueryBuilder.GetPathKeyValues(path, model),
                 propertiesInEtag,
                 null);
 
@@ -284,19 +423,19 @@ namespace Microsoft.Restier.AspNetCore
             CheckModelState();
             var path = GetPath();
 
-            var lastSegment = path.Segments.LastOrDefault() ??
+            var lastSegment = path.LastOrDefault() ??
                 throw new InvalidOperationException(Resources.ControllerRequiresPath);
 
             IQueryable result = null;
-            object GetParaValueFunc(string p)
+            (bool Present, object Value) GetParaValueFunc(string p)
             {
                 if (parameters is null)
                 {
-                    return null;
+                    return (false, null);
                 }
 
-                parameters.TryGetValue(p, out var parameter);
-                return parameter;
+                var found = parameters.TryGetValue(p, out var parameter);
+                return (found, parameter);
             }
 
             if (lastSegment is OperationImportSegment segment)
@@ -308,6 +447,12 @@ namespace Microsoft.Restier.AspNetCore
             {
                 // Get queryable path builder to builder
                 var queryable = GetQuery(path);
+
+                var queryRequest = new QueryRequest(queryable)
+                {
+                    ShouldReturnCount = shouldReturnCount,
+                };
+
                 if (queryable is null)
                 {
                     return NotFound(Resources.ResourceNotFound);
@@ -316,19 +461,19 @@ namespace Microsoft.Restier.AspNetCore
                 if (lastSegment is OperationSegment operationSegment)
                 {
                     var operation = operationSegment.Operations.FirstOrDefault();
-                    var queryResult = await ExecuteQuery(queryable, cancellationToken).ConfigureAwait(false);
+                    var queryResult = await ExecuteQuery(queryRequest, cancellationToken).ConfigureAwait(false);
                     result = await ExecuteOperationAsync(GetParaValueFunc, operation.Name, false, queryResult, cancellationToken).ConfigureAwait(false);
                 }
             }
 
-            if (path.EdmType is null)
+            if (path.GetEdmType() is null)
             {
                 // This is a void action, return 204 directly
                 Trace.TraceWarning($"The operation '{path}' did not return a type. Sending a 204 status code instead.");
                 return StatusCode((int)HttpStatusCode.NoContent);
             }
 
-            return CreateQueryResponse(result, path.EdmType, null);
+            return await CreateQueryResponse(result, path.GetEdmType(), null, path, cancellationToken).ConfigureAwait(false);
         }
 
         private static IEdmTypeReference GetTypeReference(IEdmType edmType)
@@ -353,14 +498,44 @@ namespace Microsoft.Restier.AspNetCore
             bool isFullReplaceUpdate,
             CancellationToken cancellationToken)
         {
-            EnsureInitialized();
-            CheckModelState();
             var path = GetPath();
-            var entitySet = path.NavigationSource as IEdmEntitySet;
+            var lastSegment = path.Last();
+
+            // if the request is to a function or function import, return MethodNotAllowed
+            if (lastSegment is OperationSegment operationSegment &&
+                operationSegment.Operations.FirstOrDefault().IsFunction())
+            {
+                return MethodNotAllowed();
+            }
+
+            if (lastSegment is OperationImportSegment operationImportSegment &&
+                operationImportSegment.OperationImports.FirstOrDefault().IsFunctionImport())
+            {
+                return MethodNotAllowed();
+            }
+
+            var entitySet = path.NavigationSource() as IEdmEntitySet;
             if (entitySet is null)
             {
                 throw new NotImplementedException(Resources.UpdateOnlySupportedOnEntitySet);
             }
+
+            if (edmEntityObject is null)
+            {
+                var odataVersion = Request.Headers["OData-Version"].FirstOrDefault()?.Trim();
+                if (string.Equals(odataVersion, "4.01", StringComparison.Ordinal))
+                {
+                    throw new ODataException(
+                        "OData-Version 4.01 is not supported for deep operations. " +
+                        "ASP.NET Core OData 9.x does not support untyped (EdmEntityObject) deserialization with 4.01. " +
+                        "Remove the OData-Version header or use OData-Version: 4.0.");
+                }
+
+                throw new ODataException("An update requires an object to be present in the request body.");
+            }
+
+            EnsureInitialized();
+            CheckModelState();
 
             var propertiesInEtag = GetOriginalValues(entitySet);
             if (propertiesInEtag is null)
@@ -374,50 +549,113 @@ namespace Microsoft.Restier.AspNetCore
             // copy over the key values and set any updated values from the client on the new instance.
             // Then apply all the properties of the new instance to the instance to be updated.
             // This will set any unspecified properties to their default value.
-            var expectedEntityType = path.EdmType;
-            var actualEntityType = path.EdmType as IEdmStructuredType;
+            var expectedEntityType = path.GetEdmType();
+            var actualEntityType = path.GetEdmType() as IEdmStructuredType;
             if (edmEntityObject.ActualEdmType is not null)
             {
                 expectedEntityType = edmEntityObject.ExpectedEdmType;
                 actualEntityType = edmEntityObject.ActualEdmType;
             }
 
-            var model = api.GetModel();
+            var model = api.Model;
 
             var updateItem = new DataModificationItem(
                 entitySet.Name,
                 expectedEntityType.GetClrType(model),
                 actualEntityType.GetClrType(model),
                 RestierEntitySetOperation.Update,
-                RestierQueryBuilder.GetPathKeyValues(path),
+                RestierQueryBuilder.GetPathKeyValues(path, model),
                 propertiesInEtag,
                 edmEntityObject.CreatePropertyDictionary(actualEntityType, api, false))
             {
                 IsFullReplaceUpdateRequest = isFullReplaceUpdate,
             };
 
+            // Extract nested entities for deep update
+            var deepSettings = HttpContext.Request.GetRouteServices().GetService<DeepOperationSettings>() ?? new DeepOperationSettings();
+            if (deepSettings.MaxDepth > 0)
+            {
+                var extractor = new DeepOperationExtractor(model, api, deepSettings);
+                extractor.ExtractNestedItems(edmEntityObject, actualEntityType, updateItem, isCreation: false);
+            }
+
+            // Classify nested items (Insert vs Update, generate relationship removals)
+            if (updateItem.NestedItems.Count > 0
+                || updateItem.NullNavigationProperties.Count > 0
+                || updateItem.NavigationBindings.Count > 0)
+            {
+                var classifier = new DeepUpdateClassifier(api, model);
+                await classifier.ClassifyAsync(updateItem, entitySet, isFullReplaceUpdate, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
             var changeSetProperty = HttpContext.GetChangeSet();
             if (changeSetProperty is null)
             {
                 var changeSet = new ChangeSet();
-                changeSet.Entries.Enqueue(updateItem);
+                foreach (var item in updateItem.FlattenDepthFirst())
+                {
+                    changeSet.Entries.Enqueue(item);
+                }
 
-                // RWM: Seems like we should be using the result here. For something else.
-                var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    var result = await api.SubmitAsync(changeSet, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (IsRelationshipConstraintViolation(ex))
+                {
+                    return BadRequest($"A relationship constraint was violated: {ex.GetBaseException().Message}");
+                }
             }
             else
             {
-                changeSetProperty.ChangeSet.Entries.Enqueue(updateItem);
+                foreach (var item in updateItem.FlattenDepthFirst())
+                {
+                    changeSetProperty.ChangeSet.Entries.Enqueue(item);
+                }
 
                 await changeSetProperty.OnChangeSetCompleted().ConfigureAwait(false);
+            }
+
+            // Same response expansion as Post() — expand nested nav props in the 200/204 response.
+            var selectExpandClause = DeepOperationResponseBuilder.BuildSelectExpandClause(updateItem, model, entitySet);
+            if (selectExpandClause is not null)
+            {
+                HttpContext.ODataFeature().SelectExpandClause = selectExpandClause;
             }
 
             return CreateUpdatedODataResult(updateItem.Resource);
         }
 
-        private IActionResult CreateQueryResponse(IQueryable query, IEdmType edmType, ETag etag)
+        private async Task<IActionResult> CreateQueryResponse(IQueryable query, IEdmType edmType, ETag etag, ODataPath path, CancellationToken cancellationToken)
         {
             var typeReference = GetTypeReference(edmType);
+
+            // Opt-in OData v4 §11.2.6 strictness: when a request addresses a
+            // collection-valued navigation property (or its $count) below a key
+            // segment whose parent does not exist, the addressed resource doesn't
+            // exist either, so 404 is required by the spec. Off by default — see
+            // RestierConformanceOptions.StrictMissingParentForCollections.
+            //
+            // The check covers both shapes:
+            //   * GET /Entity(missing)/CollectionNav         → typeReference is Collection
+            //   * GET /Entity(missing)/CollectionNav/$count  → typeReference is Primitive
+            //                                                  but shouldReturnCount is set
+            if (path.OfType<KeySegment>().Any() && (typeReference.IsCollection() || shouldReturnCount))
+            {
+                var conformance = HttpContext.Request.GetRouteServices()
+                    .GetService<RestierConformanceOptions>();
+                if (conformance?.StrictMissingParentForCollections == true)
+                {
+                    var parentExists = await ParentEntityExistsAsync(path, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (!parentExists)
+                    {
+                        return NotFound(Resources.ResourceNotFound);
+                    }
+                }
+            }
+
             BaseSingleResult singleResult = null;
             IActionResult response = null;
 
@@ -464,6 +702,16 @@ namespace Microsoft.Restier.AspNetCore
             {
                 if (singleResult.Result is null)
                 {
+                    // Check if parent entity doesn't exist (404) vs property is null (204)
+                    if (path.OfType<KeySegment>().Any())
+                    {
+                        var parentExists = await ParentEntityExistsAsync(path, cancellationToken).ConfigureAwait(false);
+                        if (!parentExists)
+                        {
+                            return NotFound(Resources.ResourceNotFound);
+                        }
+                    }
+
                     // Per specification, If the property is single-valued and has the null value,
                     // the service responds with 204 No Content.
                     return NoContent();
@@ -486,6 +734,25 @@ namespace Microsoft.Restier.AspNetCore
             var entityResult = query.SingleOrDefault();
             if (entityResult is null)
             {
+                var lastSegment = path.LastOrDefault();
+                var isKeyRequest = lastSegment is KeySegment
+                    || (lastSegment is TypeSegment && path.Count >= 2 && path[path.Count - 2] is KeySegment);
+
+                if (isKeyRequest)
+                {
+                    return NotFound(Resources.ResourceNotFound);
+                }
+
+                // Parent entity might not exist — check before returning 204
+                if (path.OfType<KeySegment>().Any())
+                {
+                    var parentExists = await ParentEntityExistsAsync(path, cancellationToken).ConfigureAwait(false);
+                    if (!parentExists)
+                    {
+                        return NotFound(Resources.ResourceNotFound);
+                    }
+                }
+
                 return NoContent();
             }
 
@@ -512,9 +779,47 @@ namespace Microsoft.Restier.AspNetCore
             return Ok(entityResult);
         }
 
+        private async Task<bool> ParentEntityExistsAsync(ODataPath fullPath, CancellationToken cancellationToken)
+        {
+            // Build a path through the last KeySegment (not the first). For nested paths
+            // like /Publishers('P1')/Books(<missing-id>)/Title, the immediate keyed parent
+            // is Books(<missing-id>), not Publishers('P1').
+            var parentSegments = new List<ODataPathSegment>();
+            var lastKeyIndex = -1;
+            var index = 0;
+            foreach (var segment in fullPath)
+            {
+                parentSegments.Add(segment);
+                if (segment is KeySegment)
+                {
+                    lastKeyIndex = index;
+                }
+
+                index++;
+            }
+
+            if (lastKeyIndex >= 0)
+            {
+                parentSegments = parentSegments.GetRange(0, lastKeyIndex + 1);
+            }
+
+            var parentPath = new ODataPath(parentSegments);
+            var filterBinder = HttpContext.Request.GetRouteServices().GetService<IFilterBinder>();
+            var parentQuery = new RestierQueryBuilder(api, parentPath, querySettings, filterBinder).BuildQuery();
+            if (parentQuery is null)
+            {
+                return false;
+            }
+
+            var queryRequest = new QueryRequest(parentQuery);
+            var result = await api.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
+            return result.Results.Cast<object>().Any();
+        }
+
         private IQueryable GetQuery(ODataPath path)
         {
-            var builder = new RestierQueryBuilder(api, path);
+            var filterBinder = HttpContext.Request.GetRouteServices().GetService<IFilterBinder>();
+            var builder = new RestierQueryBuilder(api, path, querySettings, filterBinder);
             var queryable = builder.BuildQuery();
             shouldReturnCount = builder.IsCountPathSegmentPresent;
             shouldWriteRawValue = builder.IsValuePathSegmentPresent;
@@ -522,20 +827,48 @@ namespace Microsoft.Restier.AspNetCore
             return queryable;
         }
 
-        private (IQueryable Queryable, ETag Etag) ApplyQueryOptions(IQueryable queryable, ODataPath path, bool applyCount)
+        private ETag ApplyQueryOptions(QueryRequest queryRequest, ODataPath path, bool applyCount)
         {
             ETag etag = null;
 
             if (shouldWriteRawValue)
             {
                 // Query options don't apply to $value.
-                return (queryable, null);
+                return null;
             }
 
             var feature = HttpContext.ODataFeature();
-            var model = api.GetModel();
-            var queryContext = new ODataQueryContext(model, queryable.ElementType, path);
+            var model = api.Model;
+            var queryContext = new ODataQueryContext(model, queryRequest.Query.ElementType, path);
             var queryOptions = new ODataQueryOptions(queryContext, Request);
+
+            // This is the controller's HTTP read path — opt this request into
+            // the no-tracking transformation. Internal QueryAsync calls (submit
+            // pipeline, deep-update classifier, ResourceExists checks at
+            // line 712) leave AllowNoTracking false and stay tracked.
+            queryRequest.AllowNoTracking = true;
+
+            // Surface the recursive-expand hint on the QueryRequest so the
+            // EF6 sourcer can fall back to tracked queries (EFCore ignores
+            // the hint — AsNoTrackingWithIdentityResolution covers it).
+            var rootEntityType = path.GetEdmType() switch
+            {
+                IEdmCollectionType coll => coll.ElementType.Definition as IEdmEntityType,
+                IEdmEntityType entity => entity,
+                _ => null,
+            };
+
+            if (rootEntityType is not null && queryOptions.SelectExpand?.SelectExpandClause is not null)
+            {
+                var detector = HttpContext.Request.GetRouteServices()
+                    .GetService(typeof(IExpandCycleDetector)) as IExpandCycleDetector;
+                if (detector is not null)
+                {
+                    queryRequest.HasRecursiveExpand = detector.HasCycle(
+                        rootEntityType,
+                        queryOptions.SelectExpand.SelectExpandClause);
+                }
+            }
 
             // Get etag for query request
             if (queryOptions.IfMatch is not null)
@@ -551,15 +884,14 @@ namespace Microsoft.Restier.AspNetCore
             if (shouldReturnCount)
             {
                 // Query options other than $filter and $search don't apply to $count.
-                queryable = queryOptions.ApplyTo(queryable, querySettings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
-                return (queryable, etag);
+                queryRequest.Query = queryOptions.ApplyTo(queryRequest.Query, querySettings, AllowedQueryOptions.All ^ AllowedQueryOptions.Filter);
+                return etag;
             }
 
             if (queryOptions.Count is not null && !applyCount)
             {
-                var queryExecutorOptions = api.GetApiService<RestierQueryExecutorOptions>();
-                queryExecutorOptions.IncludeTotalCount = queryOptions.Count.Value;
-                queryExecutorOptions.SetTotalCount = value => feature.TotalCount = value;
+                queryRequest.IncludeTotalCount = queryOptions.Count.Value;
+                queryRequest.SetTotalCount = value => feature.TotalCount = value;
             }
 
             // Validate query before apply, and query setting like MaxExpansionDepth can be customized here
@@ -569,23 +901,18 @@ namespace Microsoft.Restier.AspNetCore
             // expression is just a placeholder to be replaced by the expression sourcer.
             if (!applyCount)
             {
-                queryable = queryOptions.ApplyTo(queryable, querySettings, AllowedQueryOptions.Count);
+                queryRequest.Query = queryOptions.ApplyTo(queryRequest.Query, querySettings, AllowedQueryOptions.Count);
             }
             else
             {
-                queryable = queryOptions.ApplyTo(queryable, querySettings);
+                queryRequest.Query = queryOptions.ApplyTo(queryRequest.Query, querySettings);
             }
 
-            return (queryable, etag);
+            return etag;
         }
 
-        private async Task<IQueryable> ExecuteQuery(IQueryable queryable, CancellationToken cancellationToken)
+        private async Task<IQueryable> ExecuteQuery(QueryRequest queryRequest, CancellationToken cancellationToken)
         {
-            var queryRequest = new QueryRequest(queryable)
-            {
-                ShouldReturnCount = shouldReturnCount,
-            };
-
             var queryResult = await api.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
             var result = queryResult.Results.AsQueryable();
             return result;
@@ -601,7 +928,7 @@ namespace Microsoft.Restier.AspNetCore
         }
 
         private Task<IQueryable> ExecuteOperationAsync(
-            Func<string, object> getParaValueFunc,
+            Func<string, (bool Present, object Value)> getParaValueFunc,
             string operationName,
             bool isFunction,
             IQueryable bindingParameterValue,
@@ -623,34 +950,67 @@ namespace Microsoft.Restier.AspNetCore
         {
             var originalValues = new Dictionary<string, object>();
 
-            if (Request.Headers.TryGetValue("IfMatch", out var ifMatchValues))
+            if (Request.Headers.TryGetValue("If-Match", out var ifMatchValues)
+                || Request.Headers.TryGetValue("IfMatch", out ifMatchValues))
             {
                 var etagHeaderValue = EntityTagHeaderValue.Parse(ifMatchValues.SingleOrDefault());
+
+                // Wildcard ETag (*) means "any version" — satisfy the precondition requirement
+                // but skip concurrency validation downstream.
+                if (etagHeaderValue == EntityTagHeaderValue.Any)
+                {
+                    return originalValues;
+                }
+
                 var etag = Request.GetETag(etagHeaderValue);
                 etag.ApplyTo(originalValues);
 
                 originalValues.Add(IfMatchKey, etagHeaderValue.Tag);
-                return originalValues;
+                return NormalizePropertyNames(originalValues, entitySet.EntityType, api.Model);
             }
 
-            if (Request.Headers.TryGetValue("IfNoneMatch", out var ifNoneMatchValues))
+            if (Request.Headers.TryGetValue("If-None-Match", out var ifNoneMatchValues)
+                || Request.Headers.TryGetValue("IfNoneMatch", out ifNoneMatchValues))
             {
                 var etagHeaderValue = EntityTagHeaderValue.Parse(ifNoneMatchValues.SingleOrDefault());
                 var etag = Request.GetETag(etagHeaderValue);
                 etag.ApplyTo(originalValues);
 
                 originalValues.Add(IfNoneMatchKey, etagHeaderValue.Tag);
-                return originalValues;
+                return NormalizePropertyNames(originalValues, entitySet.EntityType, api.Model);
             }
 
             // return 428(Precondition Required) if entity requires concurrency check.
-            var model = api.GetModel();
+            var model = api.Model;
             if (model.IsConcurrencyCheckEnabled(entitySet))
             {
                 return null;
             }
 
             return originalValues;
+        }
+
+        private static IReadOnlyDictionary<string, object> NormalizePropertyNames(
+            Dictionary<string, object> values, IEdmStructuredType edmType, IEdmModel model)
+        {
+            var normalized = new Dictionary<string, object>(values.Count);
+            foreach (var kvp in values)
+            {
+                if (kvp.Key.StartsWith("@", StringComparison.Ordinal))
+                {
+                    // Preserve internal keys like @IfMatchKey, @IfNoneMatchKey
+                    normalized.Add(kvp.Key, kvp.Value);
+                    continue;
+                }
+
+                var edmProperty = edmType.FindProperty(kvp.Key);
+                var clrName = edmProperty is not null
+                    ? EdmClrPropertyMapper.GetClrPropertyName(edmProperty, model)
+                    : kvp.Key;
+                normalized.Add(clrName, kvp.Value);
+            }
+
+            return normalized;
         }
 
         private static IActionResult CreateCreatedODataResult(object entity) => CreateResult(typeof(CreatedODataResult<>), entity);
@@ -662,6 +1022,26 @@ namespace Microsoft.Restier.AspNetCore
             var genericResultType = resultType.MakeGenericType(result.GetType());
 
             return (IActionResult)Activator.CreateInstance(genericResultType, result);
+        }
+
+        private static bool IsRelationshipConstraintViolation(Exception ex)
+        {
+            // Walk the exception chain to find constraint violation indicators
+            var current = ex;
+            while (current is not null)
+            {
+                var message = current.Message;
+                if (message.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase)
+                    || message.Contains("REFERENCE constraint", StringComparison.OrdinalIgnoreCase)
+                    || message.Contains("referential integrity", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                current = current.InnerException;
+            }
+
+            return false;
         }
 
         private void CheckModelState()
@@ -688,11 +1068,17 @@ namespace Microsoft.Restier.AspNetCore
 
         private void EnsureInitialized()
         {
-            var container = HttpContext.Request.GetRequestContainer();
+            var container = HttpContext.Request.GetRouteServices();
             api = container.GetRequiredService<ApiBase>();
             querySettings = container.GetRequiredService<ODataQuerySettings>();
-            validationSettings = container.GetRequiredService<ODataValidationSettings>();
             operationExecutor = container.GetRequiredService<IOperationExecutor>();
+
+            // ODataValidationSettings is no longer a DI service — build it
+            // from the route's bag plus the app-level ODataOptions snapshot.
+            var bag = container.GetRequiredService<RestierValidationOptions>();
+            var odataOptions = HttpContext.RequestServices
+                .GetService<IOptions<ODataOptions>>()?.Value;
+            validationSettings = Routing.RestierValidationOptionsResolver.Build(bag, odataOptions);
         }
     }
 }

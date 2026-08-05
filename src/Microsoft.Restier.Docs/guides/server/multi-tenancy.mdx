@@ -1,0 +1,374 @@
+---
+title: "Multi-Tenancy"
+description: "Serve multiple tenants from one Restier API by resolving the tenant from the URL in middleware and selecting a per-tenant connection string at DbContext resolution time."
+icon: "building"
+sidebarTitle: "Multi-Tenancy"
+---
+
+import { Steps, Tabs, Tab, CodeGroup, Note, Tip, Warning } from "/snippets/mintlify-components.mdx";
+
+Restier's per-route scoped DI plus EF Core's runtime `DbContextOptions` configuration are enough to build a DB-per-tenant SaaS service from one `ApiBase` subclass. ASP.NET Core middleware reads the tenant id from the URL, populates a scoped `ITenantContext`, and the per-route `AddDbContext` factory bridges back to it via `IHttpContextAccessor` to pick the right connection string at request time. **No changes to RESTier itself are required.**
+
+<Note>
+**Scope:** shared schema, DB-per-tenant. For shared-DB-with-tenant-column see [Hardening: shared-database alternative](#hardening%3A-shared-database-alternative) below.
+</Note>
+
+## How it works
+
+```
+HTTP request
+    │
+    ▼
+TenantResolutionMiddleware  ◀── runs BEFORE UseRouting
+    ├── extracts tenant from URL
+    ├── validates via IConnectionStringProvider.TryGetConnectionString
+    ├── writes app-scoped ITenantContext.TenantId
+    └── (path-segment flavor only) moves stripped segment to Request.PathBase
+UseRouting ──▶ matches RESTier's odata/{**odataPath} pattern on the rewritten path
+UseEndpoints ──▶ RestierController resolves MultiTenantApi from Request.GetRouteServices()
+                  └─ TenantDbContext options factory reads ITenantContext via
+                     IHttpContextAccessor and picks the connection string.
+```
+
+## Setup
+
+<Steps>
+<Step title="Define ITenantContext + scoped impl, register at the app level">
+
+```csharp
+public interface ITenantContext { string TenantId { get; set; } }
+public class TenantContext : ITenantContext { public string TenantId { get; set; } }
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddSingleton<IConnectionStringProvider, ConfigurationConnectionStringProvider>();
+```
+
+The provider is registered in **app DI** so the middleware can read it via constructor injection (ASP.NET Core resolves `app.UseMiddleware<T>()` constructor parameters from the app container). The per-route `AddDbContext` factory in Step 4 also reads the provider, but it reaches into app DI through `IHttpContextAccessor.HttpContext.RequestServices` rather than asking the route container — so a single app-DI registration is enough.
+
+</Step>
+<Step title="Define IConnectionStringProvider and a default impl">
+
+```csharp
+public interface IConnectionStringProvider
+{
+    string GetConnectionString(string tenantId);
+    bool TryGetConnectionString(string tenantId, out string connectionString);
+}
+
+public sealed class ConfigurationConnectionStringProvider : IConnectionStringProvider
+{
+    private readonly IConfiguration config;
+    public ConfigurationConnectionStringProvider(IConfiguration config) => this.config = config;
+
+    public string GetConnectionString(string tenantId)
+        => TryGetConnectionString(tenantId, out var s)
+            ? s
+            : throw new InvalidOperationException($"Unknown tenant '{tenantId}'.");
+
+    public bool TryGetConnectionString(string tenantId, out string connectionString)
+    {
+        connectionString = config.GetConnectionString($"Tenant_{tenantId}");
+        return !string.IsNullOrEmpty(connectionString);
+    }
+}
+```
+
+Configuration looks like:
+
+```json
+{
+  "ConnectionStrings": {
+    "Tenant_acme":   "Server=...;Database=acme",
+    "Tenant_globex": "Server=...;Database=globex"
+  }
+}
+```
+
+</Step>
+<Step title="Define the tenant-resolution middleware">
+
+The path-segment flavor; subdomain/header flavors are in the next section.
+
+```csharp
+public class PathSegmentTenantResolutionMiddleware
+{
+    private readonly RequestDelegate next;
+    private readonly IConnectionStringProvider connectionStrings;
+
+    public PathSegmentTenantResolutionMiddleware(RequestDelegate next, IConnectionStringProvider connectionStrings)
+    {
+        this.next = next;
+        this.connectionStrings = connectionStrings;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var path = context.Request.Path.Value ?? string.Empty;
+        var trimmed = path.TrimStart('/');
+        var slash = trimmed.IndexOf('/');
+        var tenantId = slash < 0 ? trimmed : trimmed.Substring(0, slash);
+
+        if (string.IsNullOrEmpty(tenantId) || !connectionStrings.TryGetConnectionString(tenantId, out _))
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsync($"Unknown or missing tenant '{tenantId}'.");
+            return;
+        }
+
+        var tenantContext = context.RequestServices.GetRequiredService<ITenantContext>();
+        tenantContext.TenantId = tenantId;
+
+        var remainder = slash < 0 ? string.Empty : trimmed.Substring(slash);
+        context.Request.PathBase = context.Request.PathBase.Add("/" + tenantId);
+        context.Request.Path = remainder;
+
+        await next(context);
+    }
+}
+```
+
+</Step>
+<Step title="Register MultiTenantApi with the bridging AddDbContext factory">
+
+```csharp
+public class MultiTenantApi : EntityFrameworkApi<TenantDbContext>
+{
+    public MultiTenantApi(TenantDbContext dbContext, IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler)
+        : base(dbContext, model, queryHandler, submitHandler) { }
+}
+
+services.AddControllers().AddRestier(options =>
+{
+    options.AddRestierRoute<MultiTenantApi>("odata", routeServices =>
+    {
+        // IHttpContextAccessor is the only service the route container needs to
+        // register itself — it's the entry point into the bridge below. ITenantContext
+        // and IConnectionStringProvider both live in app DI and are reached through
+        // http.RequestServices.
+        routeServices.AddHttpContextAccessor();
+        routeServices.AddEFCoreProviderServices<TenantDbContext>((sp, opt) =>
+        {
+            // The options lambda runs TWICE: once at model-build time (HttpContext is
+            // null — RESTier instantiates TenantDbContext to inspect its DbSets for EDM
+            // construction) and once per request. Guard the null HttpContext with a
+            // placeholder connection string that EDM reflection never opens.
+            var http = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            var conn = http != null
+                ? http.RequestServices.GetRequiredService<IConnectionStringProvider>()
+                      .GetConnectionString(http.RequestServices.GetRequiredService<ITenantContext>().TenantId
+                                           ?? "__model_build__")
+                : "Server=__model_build__;Database=__model_build__";
+            opt.UseSqlServer(conn);
+        });
+    });
+});
+```
+
+The `(sp, opt)` lambda runs at two distinct times: once at startup (model-build) and once per request. `sp` is the route-scope provider — narrow on purpose, only `IHttpContextAccessor` needs to live there. At request time `IHttpContextAccessor.HttpContext.RequestServices` reaches the app scope where both `ITenantContext` (populated by the middleware) and `IConnectionStringProvider` live. At startup `HttpContext` is null and the placeholder connection string is fed to EDM reflection — RESTier never opens it.
+
+</Step>
+<Step title="Wire the middleware in the pipeline — BEFORE UseRouting">
+
+```csharp
+app.UseMiddleware<PathSegmentTenantResolutionMiddleware>();   // first
+app.UseRouting();
+app.UseEndpoints(e =>
+{
+    e.MapControllers();
+    e.MapRestier();
+});
+```
+
+</Step>
+</Steps>
+
+<Warning>
+**Middleware ordering is not optional.** RESTier registers its endpoint at `{prefix}/{**odataPath}`. In path-segment mode the request URL doesn't match that pattern until after the tenant segment is stripped, so the middleware that does the stripping must run **before** `UseRouting`. Put it after `UseRouting` and every request will 404.
+</Warning>
+
+## Tenant resolution strategies
+
+<Tabs>
+<Tab title="Path segment">
+
+`/{tenant}/odata/Books` — tenant lives in the URL path. Public-facing URLs include the tenant id; clients construct URLs by string concatenation. The middleware must move the stripped segment to `Request.PathBase` so generated `@odata.context` and entity-link URLs in response bodies include the tenant prefix.
+
+```csharp
+// (full middleware code shown in Step 3 above)
+```
+
+</Tab>
+<Tab title="Subdomain">
+
+`acme.example.com/odata/Books` — tenant is the first label of the host. Cleaner public URLs but requires wildcard DNS for production. No path mutation.
+
+```csharp
+public class SubdomainTenantResolutionMiddleware
+{
+    private readonly RequestDelegate next;
+    private readonly IConnectionStringProvider connectionStrings;
+
+    public SubdomainTenantResolutionMiddleware(RequestDelegate next, IConnectionStringProvider connectionStrings)
+    {
+        this.next = next;
+        this.connectionStrings = connectionStrings;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var host = context.Request.Host.Host;
+        var dot = host.IndexOf('.');
+        var tenantId = dot < 0 ? string.Empty : host.Substring(0, dot);
+
+        if (string.IsNullOrEmpty(tenantId) || !connectionStrings.TryGetConnectionString(tenantId, out _))
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsync($"Unknown or missing tenant '{tenantId}'.");
+            return;
+        }
+
+        context.RequestServices.GetRequiredService<ITenantContext>().TenantId = tenantId;
+        await next(context);
+    }
+}
+```
+
+</Tab>
+<Tab title="Header">
+
+`X-Tenant-Id: acme` — tenant in a request header. Trivial to implement, but awkward for browser usage and for OpenAPI/Swagger UIs that don't auto-attach the header.
+
+```csharp
+public class HeaderTenantResolutionMiddleware
+{
+    private const string HeaderName = "X-Tenant-Id";
+    private readonly RequestDelegate next;
+    private readonly IConnectionStringProvider connectionStrings;
+
+    public HeaderTenantResolutionMiddleware(RequestDelegate next, IConnectionStringProvider connectionStrings)
+    {
+        this.next = next;
+        this.connectionStrings = connectionStrings;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var tenantId = context.Request.Headers[HeaderName].ToString();
+
+        if (string.IsNullOrEmpty(tenantId) || !connectionStrings.TryGetConnectionString(tenantId, out _))
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsync($"Unknown or missing tenant '{tenantId}'.");
+            return;
+        }
+
+        context.RequestServices.GetRequiredService<ITenantContext>().TenantId = tenantId;
+        await next(context);
+    }
+}
+```
+
+</Tab>
+</Tabs>
+
+<Warning>
+**PathBase preservation (path-segment flavor only).** The stripped tenant segment MUST be moved to `Request.PathBase`. RESTier composes `@odata.context`, `@odata.id`, and entity-link URLs from `Request.PathBase + route prefix`. Without `PathBase`, response bodies advertise URLs at `/odata/...` instead of `/{tenant}/odata/...`, and OData clients will follow them straight off the cliff.
+</Warning>
+
+## Connection string sources
+
+The default `ConfigurationConnectionStringProvider` shown above suffices for static tenant lists in `appsettings.json`. For production:
+
+- **Azure Key Vault** — wrap a `SecretClient` in your `IConnectionStringProvider` impl; cache resolutions per tenant.
+- **Tenant registry table** — a `Tenants` table in a meta-database; the provider reads the row by id.
+- **Dynamic provisioning** — provision a new tenant DB on first request (with care: don't block the request thread on long-running provisioning).
+
+<Tip>
+The provider is registered as a singleton, so caching tenant → connection-string lookups in a `ConcurrentDictionary<string, string>` is straightforward and recommended for any provider that hits a network.
+</Tip>
+
+## Failure semantics
+
+The recipe above validates the tenant up-front in middleware and returns `400 Bad Request` for unknown ids. Two reasonable variants:
+
+- **Skip validation, let the provider throw → 500.** Less code; worse UX (a 500 implies a server bug, not a bad request). Fine for diagnostic builds.
+- **Map unknown tenants to 404.** Sensible if tenants are addressable resources in your domain (and reachable via a `Tenants` collection): a one-line change in the middleware (`StatusCodes.Status404NotFound`) makes the failure consistent with "resource not found".
+
+## Hardening: shared-database alternative
+
+DB-per-tenant gives you blast-radius isolation but is heavyweight. The opposite extreme is a **shared database with a `tenant_id` column** on every entity, plus a RESTier filter method per entity set that AND's `e => e.TenantId == currentTenantId`. RESTier's convention names these methods `OnFilter{EntitySetName}` (e.g., `OnFilterBooks`).
+
+```csharp
+public class SharedDbApi : EntityFrameworkApi<SharedDbContext>
+{
+    private readonly IHttpContextAccessor http;
+
+    public SharedDbApi(
+        SharedDbContext dbContext,
+        IEdmModel model,
+        IQueryHandler queryHandler,
+        ISubmitHandler submitHandler,
+        IHttpContextAccessor http)
+        : base(dbContext, model, queryHandler, submitHandler)
+    {
+        this.http = http;
+    }
+
+    private string CurrentTenantId
+        => http.HttpContext!.RequestServices.GetRequiredService<ITenantContext>().TenantId;
+
+    protected internal IQueryable<Book> OnFilterBooks(IQueryable<Book> query)
+        => query.Where(b => b.TenantId == CurrentTenantId);
+
+    protected internal IQueryable<Customer> OnFilterCustomers(IQueryable<Customer> query)
+        => query.Where(c => c.TenantId == CurrentTenantId);
+}
+```
+
+<Note>
+The method suffix is the **entity set name** (typically the plural `DbSet<T>` property name on your `DbContext`), not the entity type name. `OnFilterBooks` matches a `DbSet<Book> Books` property; a method named `OnFilterBook` would be silently ignored — RESTier traces a warning to debug output but does not surface an error. Verify the spelling matches the entity-set name in your EDM `$metadata`.
+</Note>
+
+The `IHttpContextAccessor` injection (rather than direct `ITenantContext`) is the same bridge pattern from Step 4: `ITenantContext` lives in app DI but is read inside RESTier's route container, so we resolve it through `HttpContext.RequestServices`. Filter methods always run in a request context, so the `HttpContext!` non-null assertion is safe — unlike the `AddDbContext` factory which also runs at model-build time.
+
+This is a **different multi-tenancy strategy**, not an addition to the one above. Pick one. DB-per-tenant gives stronger isolation but heavier ops; shared-DB is lighter but requires defense-in-depth (foreign-key constraints, audit logging) to compensate.
+
+## Limitations
+
+- **Schema-per-tenant is not supported by this pattern.** One `ApiBase` per route means one EDM is built at startup. Tenants with different schemas need separate API classes (or separate deployments — see below).
+- **`AddDbContextPool` is incompatible.** The pool keys options at startup and won't pick up a per-request connection string. Use plain `AddDbContext`/`AddEFCoreProviderServices`.
+- **First request per tenant pays connection-open / migration cost.** Standard EF behavior; not a RESTier concern.
+- **Tenant authorization (is the principal allowed to act on this tenant?)** is application-specific and out of scope for this guide.
+
+## Alternative: per-tenant deployment behind a reverse proxy
+
+Like API versioning, multi-tenancy has a "scale out" topology where each tenant gets its own RESTier process with a fixed connection string, and a reverse proxy routes by subdomain or path to the right backend. No middleware, no `ITenantContext`, no `IConnectionStringProvider` — each backend is a plain `AddRestierRoute<MyApi>("odata", ...)` deployment.
+
+```text
+client                     reverse proxy                    backends
+acme.example.com/odata → forward by host    → restier-acme:8080/odata
+globex.example.com/odata → forward by host  → restier-globex:8080/odata
+```
+
+### When to choose which
+
+<Tip>
+**In-process DB-per-tenant** (`ITenantContext` + middleware) fits SaaS workloads where most tenants are small and onboarding is cheap. **Per-tenant deployment** fits enterprise customers who require strict blast-radius isolation, independent rollouts, or tenant-specific runtime/dependency divergence.
+</Tip>
+
+| Concern | In-process per-tenant DB | Per-tenant deployment |
+|---|---|---|
+| Blast radius | one process, all tenants | hard isolation |
+| Per-tenant rollout | coupled (one binary) | independent |
+| New-tenant onboarding | config + DB provision | new deployment |
+| Mixed runtime versions per tenant | not possible | natural |
+| Cross-tenant code reuse | direct (shared DI/types) | requires extracting a shared NuGet |
+| Operational footprint | one process | N processes |
+
+If you forward the original public URL prefix to the backend so generated `@odata.context` URLs match what the client sees, use the same `X-Forwarded-Prefix` recipe documented in the [API Versioning guide](api-versioning#what-restier-needs-from-the-proxy).
+
+## See also
+
+- [API Versioning](api-versioning) — same per-prefix-route mechanic; useful comparison.
+- [`AddRouteComponents`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.odata.odataoptions.addroutecomponents) (upstream) — the OData primitive RESTier builds on.

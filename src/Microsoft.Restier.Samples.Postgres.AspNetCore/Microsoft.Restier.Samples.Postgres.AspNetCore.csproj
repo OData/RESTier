@@ -1,17 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<TargetFramework>net10.0</TargetFramework>
+		<UserSecretsId>9b720050-5198-45dd-9d7b-d0ce71e558b2</UserSecretsId>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<NoWarn>;NU5125;NU5105;CA1812;CA1001;CA1062;CA1707;CA1716;CA1801;CA1819;CA1822;CA2007;CA2227</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.*" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.*" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.*" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
 		<ProjectReference Include="..\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.EntityFrameworkCore.Spatial\Microsoft.Restier.EntityFrameworkCore.Spatial.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.AspNetCore.NSwag\Microsoft.Restier.AspNetCore.NSwag.csproj" />
 	</ItemGroup>
 
 </Project>

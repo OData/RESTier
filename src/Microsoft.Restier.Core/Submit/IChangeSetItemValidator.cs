@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set entry validator.
     /// </summary>
-    public interface IChangeSetItemValidator
+    public interface IChangeSetItemValidator : IChainedService<IChangeSetItemValidator>
     {
         /// <summary>
         /// Asynchronously validates a change set item.

@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
+		<IsTestProject>false</IsTestProject>
+		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+		<UserSecretsId>a3d6432c-d914-44a1-93d6-fa96f123ca2f</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Extensions\**\*.cs" LinkBase="Extensions" />
+		<Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\Scenarios\**\*.cs" LinkBase="Scenarios" />
+		<Compile Include="..\Microsoft.Restier.Tests.Shared.EntityFramework\IDatabaseInitializer.cs" Link="IDatabaseInitializer.cs" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="[8.*, 9.0.0)" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(RestierNet9UserSecretsVersion)" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(RestierNet10UserSecretsVersion)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(RestierNet10EntityFrameworkVersion)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(RestierNet10EntityFrameworkVersion)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="$(RestierNet10EntityFrameworkVersion)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(RestierNet9EntityFrameworkVersion)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(RestierNet9EntityFrameworkVersion)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="$(RestierNet9EntityFrameworkVersion)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="8.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
+		<ProjectReference Include="..\..\src\Microsoft.Restier.EntityFrameworkCore.Spatial\Microsoft.Restier.EntityFrameworkCore.Spatial.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" Condition="'$(IsNetCore)' == 'true'" />
+	</ItemGroup>
+
+</Project>

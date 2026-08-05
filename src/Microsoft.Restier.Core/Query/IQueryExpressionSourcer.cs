@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
 using System.Linq.Expressions;
 
 namespace Microsoft.Restier.Core.Query
@@ -20,7 +21,7 @@ namespace Microsoft.Restier.Core.Query
     /// data that cannot be expanded into any more primitive of an expression.
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionSourcer
+    public interface IQueryExpressionSourcer : IChainedService<IQueryExpressionSourcer>
     {
         /// <summary>
         /// Replace queryable source of an expression.

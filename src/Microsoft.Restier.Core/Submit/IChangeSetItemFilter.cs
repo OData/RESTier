@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// Represents a change set item filter to have logic before and after change set item processed.
     /// </summary>
-    public interface IChangeSetItemFilter
+    public interface IChangeSetItemFilter : IChainedService<IChangeSetItemFilter>
     {
         /// <summary>
         /// Asynchronously applies logic before a change set item is processed.

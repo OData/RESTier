@@ -1,0 +1,168 @@
+---
+title: "Spatial Types"
+description: "How to expose Microsoft.Spatial-typed properties via Restier on top of EF6 DbGeography/DbGeometry or EF Core NetTopologySuite columns."
+icon: "globe"
+sidebarTitle: "Spatial Types"
+---
+
+import { Tabs, Tab } from "@mintlify/components";
+
+Restier publishes spatial columns as OData `Edm.Geography*` / `Edm.Geometry*` primitives while letting your entity properties stay typed in the storage library. Microsoft.Spatial round-trips through a payload-value-converter on read and a change-set-initializer hook on write. SRID and Z/M coordinates are preserved.
+
+## Install the package
+
+<Tabs>
+  <Tab title="EF6">
+    ```bash
+    dotnet add package Microsoft.Restier.EntityFramework.Spatial
+    ```
+
+    <Note>
+    On .NET 5+ (including .NET 8/9/10 on Windows) you also need the `Microsoft.SqlServer.Types` package or EF6 will throw on every spatial read/write. See [Running EF6 spatial on .NET 5+](#running-ef6-spatial-on-net-5) below.
+    </Note>
+  </Tab>
+  <Tab title="EF Core">
+    ```bash
+    dotnet add package Microsoft.Restier.EntityFrameworkCore.Spatial
+    ```
+  </Tab>
+</Tabs>
+
+Register the converter and metadata provider with the route services:
+
+```csharp
+services
+    .AddRestierEntityFrameworkProviderServices<MyDbContext>(...)
+    .AddRestierSpatial();
+```
+
+## Declare your entity properties
+
+<Tabs>
+  <Tab title="EF6">
+    ```csharp
+    public class City
+    {
+        public int Id { get; set; }
+
+        public DbGeography HeadquartersLocation { get; set; }       // -> Edm.Geography (abstract base)
+
+        [Spatial(typeof(GeographyPolygon))]
+        public DbGeography ServiceArea { get; set; }                 // -> Edm.GeographyPolygon
+
+        public DbGeometry FloorPlan { get; set; }                    // -> Edm.Geometry
+    }
+    ```
+  </Tab>
+  <Tab title="EF Core">
+    ```csharp
+    public class City
+    {
+        public int Id { get; set; }
+
+        public Point HeadquartersLocation { get; set; }              // -> Edm.GeographyPoint (with HasColumnType("geography"))
+        public Polygon ServiceArea { get; set; }                      // -> Edm.GeographyPolygon
+
+        [Spatial(typeof(GeometryPoint))]
+        public Point IndoorOrigin { get; set; }                       // -> Edm.GeometryPoint (attribute override)
+    }
+    ```
+
+    For EF Core, the genus is inferred from the relational column type:
+    ```csharp
+    modelBuilder.Entity<City>(e =>
+    {
+        e.Property(x => x.HeadquartersLocation).HasColumnType("geography");
+        e.Property(x => x.ServiceArea).HasColumnType("geography");
+    });
+    ```
+
+    Without `HasColumnType` and without `[Spatial]`, model-build fails with `EdmModelValidationException` — annotate with `[Spatial]` to disambiguate.
+  </Tab>
+</Tabs>
+
+## Running EF6 spatial on .NET 5+
+
+If your EF6 app on .NET 5+ throws *"Spatial types and functions are not available for this provider because the assembly 'Microsoft.SqlServer.Types' version 10 or higher could not be found"* on every `DbGeography` / `DbGeometry` operation, the cause is the runtime: `Microsoft.SqlServer.Types` is not present by default on .NET 5+ — not even on Windows.
+
+Under the hood, EF6's spatial bridge (`DbGeography.FromText`, `DbSpatialServices.Default.AsText…`) reflects into `Microsoft.SqlServer.Types` via `Assembly.Load` against a hardcoded strong-name list (official Microsoft public key). On **.NET Framework + Windows + SQL Server installed** that assembly lives in the GAC alongside its native `SqlServerSpatial*.dll`. On **.NET 5+**, neither is wired up out of the box.
+
+<Warning>
+This affects RESTier too — if you've installed `Microsoft.Restier.EntityFramework.Spatial` on a .NET 5+ host without the package below, `DbSpatialConverter` will throw on every read/write. `Microsoft.Restier.EntityFramework.Spatial` deliberately does **not** take a hard dependency on the backing assembly so that you stay in control of how/whether the Windows-only native binaries are deployed.
+</Warning>
+
+### Recommended: install `Microsoft.SqlServer.Types` 160.x
+
+The official Microsoft package ships `lib/netstandard2.1/Microsoft.SqlServer.Types.dll` strong-named with the Microsoft key (`PublicKeyToken=89845dcd8080cc91`, `Version=16.0.0.0`), which EF6 6.5.x accepts on .NET 8/9/10:
+
+```bash
+dotnet add package Microsoft.SqlServer.Types --version 160.1000.6
+```
+
+This is what the RESTier test suite uses. With just the package installed, `DbGeography` Points and all `DbGeometry` types round-trip through `DbSpatialConverter` on Windows, Linux, and macOS using only the managed types.
+
+#### When you also need native operations
+
+`SqlGeography`'s constructor calls `IsValidExpensive` → `GeodeticIsValid` for multi-point geographies (LineString, Polygon, …), which requires the Windows-only native `SqlServerSpatial160.dll`. `SpatialEquals`, `STDistance`, `STIntersects` and the other computational-geometry methods also live in the native binary. To enable any of these you must call the loader once at process startup:
+
+```csharp
+// Program.cs (or any one-time init)
+Microsoft.SqlServer.Types.SqlServerTypes.Utilities
+    .LoadNativeAssemblies(AppContext.BaseDirectory);
+```
+
+Linux / macOS hosts cannot run native operations — those code paths will throw `PlatformNotSupportedException` or `DllNotFoundException`. Stick to Point geography and `DbGeometry` types, where the managed path is sufficient, until server-side `$filter` translation lands (see [What's not yet supported](#whats-not-yet-supported) below).
+
+<Warning>
+**`dotMorten.Microsoft.SqlServer.Types` is not a viable substitute for EF6.** Although it's frequently recommended as a cross-platform shim for SqlClient consumers, dotMorten ships **unsigned** (`PublicKeyToken=null`) with `Version=2.5.0.0`. EF6's `SqlTypesAssemblyLoader` rejects it on both checks and falls through to the *"version 10 or higher could not be found"* error. If you want EF6 spatial on .NET 5+, you need the strong-named official package.
+</Warning>
+
+<Info>
+EF Core users do not need any of this — the EF Core spatial path uses NetTopologySuite, which is a self-contained managed library with no native dependencies.
+</Info>
+
+## Server-side filtering with `geo.*` functions
+
+Once `AddRestierSpatial()` is wired into route services (see [Install the package](#install-the-package) above), the three OData v4-core spatial functions translate to native SQL spatial operators server-side. The exact translation depends on the EF flavor and the database provider, but the OData URL surface is identical.
+
+| Function | OData syntax | Translates to |
+|----------|--------------|---------------|
+| `geo.distance` | `?$filter=geo.distance(LocationProp,geography'SRID=4326;POINT(lon lat)') lt N` | `DbGeography.Distance` (EF6) or `NetTopologySuite.Geometries.Geometry.Distance` (EF Core), then native SQL `geography::STDistance` / `ST_Distance`. |
+| `geo.length` | `?$filter=geo.length(LineStringProp) gt 0` | `DbGeography.Length` (EF6) or `NetTopologySuite.Geometries.Geometry.Length` (EF Core), then native SQL `geography::STLength` / `ST_Length`. Input must be a LineString — non-LineString inputs return null (EF6) or boundary length (NTS). |
+| `geo.intersects` | `?$filter=geo.intersects(PolygonProp,geography'SRID=4326;POINT(lon lat)')` | `DbGeography.Intersects` (EF6) or `Geometry.Intersects` (EF Core), then native SQL `geography::STIntersects` / `ST_Intersects`. |
+
+Path-segment `$filter` syntax (`/SpatialPlaces/$filter(geo.distance(...) lt N)`) works the same as the URL-query form.
+
+<Note>
+The `geography::STDistance`, `STLength`, and `STIntersects` methods on SQL Server require CLR to be enabled (`sp_configure 'clr enabled', 1`). SQL Server Express does not support CLR; other editions need an admin to enable it. PostGIS via Npgsql has no equivalent requirement.
+</Note>
+
+### Error responses
+
+- **Genus mismatch.** Comparing a Geography property to a Geometry literal (or vice versa) → HTTP 400. ODL's function signature matching rejects cross-genus calls at parse time, before the request reaches the route handler.
+- **Unsupported function.** Calls to `geo.*` functions outside the three above (`geo.area`, `geo.contains`, `geo.coveredby`, ...) → HTTP 400 with AspNetCoreOData's stock "unknown function" error. Forward-compat for future OData v4 spec additions.
+- **Missing `AddRestierSpatial()`.** If the spatial extension is not registered but a `geo.*` filter is issued against a spatial property → HTTP 400 with a diagnostic naming the function, property, and the missing `AddRestierSpatial()` call.
+
+### Custom IFilterBinder
+
+Restier registers `RestierSpatialFilterBinder` before invoking the user-supplied route-services delegate. Consumers who need their own custom `IFilterBinder` register it inside that delegate (it runs after Restier's registration and wins):
+
+```csharp
+services.AddRestier(...)
+    // Restier registers RestierSpatialFilterBinder here.
+    .AddRouteComponents("api", model, route =>
+    {
+        // Your custom registration runs after Restier's and overrides it.
+        route.RemoveAll<IFilterBinder>();
+        route.AddSingleton<IFilterBinder, MyCustomFilterBinder>();
+    });
+```
+
+## What's not yet supported
+
+- `$orderby=geo.distance(...)` and other `geo.*` operators in `$orderby`. Planned for a future spec.
+- Non-EPSG `CoordinateSystem` values throw `InvalidOperationException` on write. Default-SRID configuration is planned for a future spec.
+
+## How it works
+
+Round-trip flows through Microsoft.Spatial's `WellKnownTextSqlFormatter` (SQL Server extended WKT with `SRID=N;` prefix) and the storage-library WKT APIs (`DbGeography.FromText` / NTS `WKTReader`). SRID and Z/M ordinates survive both directions.

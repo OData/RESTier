@@ -28,11 +28,20 @@ namespace Microsoft.Restier.Core
             this.targetApiType = targetApiType;
         }
 
+        /// <summary>
+        /// Gets or sets the inner operation authorizer.
+        /// </summary>
+        public IOperationAuthorizer Inner { get; set; }
+
         /// <inheritdoc/>
-        public Task<bool> AuthorizeAsync(OperationContext context, CancellationToken cancellationToken)
+        public async Task<bool> AuthorizeAsync(OperationContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
-            var result = true;
+
+            if (Inner != null && !await Inner.AuthorizeAsync(context, cancellationToken).ConfigureAwait(false))
+            {
+                return false;
+            }
 
             var expectedMethodName = ConventionBasedMethodNameFactory.GetFunctionMethodName(context, RestierPipelineState.Authorization, RestierOperationMethod.Execute);
 
@@ -41,19 +50,19 @@ namespace Microsoft.Restier.Core
 
             if (expectedMethod is null)
             {
-                return Task.FromResult(result);
+                return true;
             }
 
             if (!expectedMethod.IsFamily && !expectedMethod.IsFamilyOrAssembly)
             {
                 Trace.WriteLine($"Restier ConventionBasedOperationAuthorizer found '{expectedMethodName}' but it is inaccessible due to its protection level. Your method will not be called until you change it to 'protected internal'.");
-                return Task.FromResult(result);
+                return true;
             }
 
             if (expectedMethod.ReturnType != typeof(bool))
             {
                 Trace.WriteLine($"Restier ConventionBasedOperationAuthorizer found '{expectedMethodName}' but it does not return a boolean value. Your method will not be called until you correct the return type.");
-                return Task.FromResult(result);
+                return true;
             }
 
             object target = null;
@@ -63,7 +72,7 @@ namespace Microsoft.Restier.Core
                 if (!targetApiType.IsInstanceOfType(target))
                 {
                     Trace.WriteLine("The Restier API is of the incorrect type.");
-                    return Task.FromResult(result);
+                    return true;
                 }
             }
 
@@ -71,21 +80,23 @@ namespace Microsoft.Restier.Core
             if (parameters.Length > 0)
             {
                 Trace.WriteLine($"Restier ConventionBasedOperationAuthorizer found '{expectedMethodName}', but it has an incorrect number of arguments. Found {parameters.Length} arguments, expected 0.");
-                return Task.FromResult(result);
+                return true;
             }
 
             //RWM: We've bounced you out of every situation where we can't process anything. So do the work.
             try
             {
-                result = (bool)expectedMethod.Invoke(target, null);
-                return Task.FromResult(result);
+                var result = expectedMethod.Invoke(target, null);
+                if (result is Task<bool> resultTask)
+                {
+                    return await resultTask;
+                }
+                return (bool)result;
             }
             catch (TargetInvocationException ex)
             {
                 throw new ConventionInvocationException($"ConventionBasedOperationAuthorizer {expectedMethodName} invocation failed. Check the inner exception for more details.", ex.InnerException);
             }
         }
-
     }
-
 }

@@ -3,13 +3,11 @@
 
 namespace System
 {
-
     /// <summary>
     /// Ensures that values of parameters are not null.
     /// </summary>
     internal static partial class Ensure
     {
-
         /// <summary>
         /// Ensures that a value of a parameter is not null.
         /// </summary>
@@ -57,7 +55,5 @@ namespace System
         private sealed class ValidatedNotNullAttribute : Attribute
         {
         }
-
     }
-
 }

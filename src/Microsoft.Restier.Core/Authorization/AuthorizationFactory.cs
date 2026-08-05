@@ -1,29 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Ben.Collections;
 using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Restier.Core.Authorization
 {
-
     /// <summary>
     /// Maintains a Dictionary of <see cref="AuthorizationEntry">AuthorizationEntries</see> for eacy access by Restier's Authorization framework.
     /// </summary>
     public static class AuthorizationFactory
     {
-
-        #region Private Members
-
         /// <summary>
         /// The backing collection that will store the <see cref="AuthorizationEntry">AuthorizationEntries</see>.
         /// </summary>
-        private static readonly TypeDictionary<AuthorizationEntry> _entries = new TypeDictionary<AuthorizationEntry>();
-
-        #endregion
-
-        #region Public Methods
+        private static readonly Dictionary<Type,AuthorizationEntry> _entries = new Dictionary<Type, AuthorizationEntry>();
 
         /// <summary>
         /// Returns an <see cref="AuthorizationEntry"/> for a given <typeparamref name="T"/>.
@@ -83,9 +74,5 @@ namespace Microsoft.Restier.Core.Authorization
         /// </code>
         /// </example>
         public static void RegisterEntries(List<AuthorizationEntry> entries) => entries?.ForEach(c => _entries[c.Type] = c);
-
-        #endregion
-
     }
-
 }

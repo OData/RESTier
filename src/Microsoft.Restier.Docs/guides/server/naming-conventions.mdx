@@ -1,0 +1,181 @@
+---
+title: "Naming Conventions"
+description: "Configure JSON property naming for your OData API (PascalCase, camelCase)"
+icon: "tag"
+sidebarTitle: "Naming"
+---
+
+By default, RESTier uses PascalCase property names in OData JSON payloads, matching the CLR type definitions
+in your Entity Framework model. If your API consumers prefer camelCase (common in JavaScript/TypeScript clients),
+RESTier provides an opt-in naming convention that transforms property names throughout the entire pipeline --
+from `$metadata` and query responses to request deserialization and ETag handling.
+
+## Configuring the Naming Convention
+
+Pass the `namingConvention` parameter to `AddRestierRoute` in your route configuration:
+
+```csharp
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+
+        options.AddRestierRoute<BookstoreApi>("api", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<BookstoreContext>(dbOptions =>
+                dbOptions.UseSqlServer(connectionString));
+        },
+        opts => opts.NamingConvention = RestierNamingConvention.LowerCamelCase);
+    });
+```
+
+The `RestierNamingConvention` enum has three values:
+
+| Value | Description |
+|-------|-------------|
+| `PascalCase` | Default. Property names match your CLR types (e.g. `FirstName`). |
+| `LowerCamelCase` | Property names are converted to camelCase (e.g. `firstName`). Enum member names remain PascalCase. |
+| `LowerCamelCaseWithEnumMembers` | Both property names and enum member names are converted to camelCase (e.g. `firstName`, `scienceFiction`). |
+
+## What It Affects
+
+Once enabled, the naming convention applies consistently across the entire OData pipeline:
+
+| Area | Effect |
+|------|--------|
+| `$metadata` | EDM property names appear in camelCase in the CSDL document |
+| GET responses | JSON property names are in camelCase |
+| `$filter`, `$select`, `$expand`, `$orderby` | Query options accept camelCase property names |
+| POST / PUT / PATCH requests | Request payloads are expected in camelCase |
+| ETags and concurrency | ETag property names are normalized correctly |
+| Enum values | With `LowerCamelCaseWithEnumMembers`, enum member names also appear in camelCase |
+
+## Example
+
+Given this entity model:
+
+```csharp
+public class Book
+{
+    public int Id { get; set; }
+
+    public string Title { get; set; }
+
+    public string AuthorName { get; set; }
+
+    public BookCategory Category { get; set; }
+}
+
+public enum BookCategory
+{
+    Fiction,
+    NonFiction,
+    ScienceFiction,
+}
+```
+
+### PascalCase (default)
+
+```
+GET /api/Books
+```
+
+```json
+{
+    "value": [
+        {
+            "Id": 1,
+            "Title": "Clean Code",
+            "AuthorName": "Robert C. Martin",
+            "Category": "Fiction"
+        }
+    ]
+}
+```
+
+### LowerCamelCase
+
+```
+GET /api/Books?$filter=authorName eq 'Robert C. Martin'&$select=title,authorName
+```
+
+```json
+{
+    "value": [
+        {
+            "title": "Clean Code",
+            "authorName": "Robert C. Martin"
+        }
+    ]
+}
+```
+
+Note that enum member names remain unchanged (`"Fiction"`, not `"fiction"`).
+
+### LowerCamelCaseWithEnumMembers
+
+With `RestierNamingConvention.LowerCamelCaseWithEnumMembers`, enum member names are also camelCased:
+
+```json
+{
+    "value": [
+        {
+            "id": 1,
+            "title": "Clean Code",
+            "authorName": "Robert C. Martin",
+            "category": "fiction"
+        }
+    ]
+}
+```
+
+And in a POST request:
+
+```json
+{
+    "title": "Dune",
+    "authorName": "Frank Herbert",
+    "category": "scienceFiction"
+}
+```
+
+## Per-Route Configuration
+
+The naming convention is configured per route. This means different API routes can use different conventions.
+For example, you could expose a legacy API in PascalCase and a new API in camelCase:
+
+```csharp
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+
+        // Legacy API -- PascalCase (default)
+        options.AddRestierRoute<LegacyApi>("api/v1", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<AppContext>(dbOptions =>
+                dbOptions.UseSqlServer(connectionString));
+        });
+
+        // New API -- camelCase
+        options.AddRestierRoute<ModernApi>("api/v2", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<AppContext>(dbOptions =>
+                dbOptions.UseSqlServer(connectionString));
+        },
+        opts => opts.NamingConvention = RestierNamingConvention.LowerCamelCase);
+    });
+```
+
+## Concurrency and ETags
+
+If your entities use optimistic concurrency (via `[ConcurrencyCheck]` or `[Timestamp]` attributes),
+ETags work correctly with camelCase naming. RESTier automatically normalizes ETag property names between
+the camelCase EDM representation and the PascalCase CLR property names used by Entity Framework.
+
+No additional configuration is required -- just use `If-Match` and `If-None-Match` headers as usual.
+
+For full details on how ETags and optimistic concurrency work in RESTier, see
+[Optimistic Concurrency](concurrency).

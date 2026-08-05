@@ -27,6 +27,8 @@ public partial class RestierTestContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
 
+            entity.Property(e => e.HomeLocation).HasColumnType("geography(Point,4326)");
+
             entity.HasOne(d => d.UserType).WithMany(p => p.Users)
                 .HasForeignKey(d => d.UserTypeId)
                 .HasConstraintName("FK_Users_UserTypes");

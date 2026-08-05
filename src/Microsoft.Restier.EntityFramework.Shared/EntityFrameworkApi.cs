@@ -2,12 +2,17 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
+using System.Linq;
 #if EFCore
 using Microsoft.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 #endif
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.Core;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 
 #if EFCore
 namespace Microsoft.Restier.EntityFrameworkCore
@@ -33,23 +38,21 @@ namespace Microsoft.Restier.EntityFramework
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityFrameworkApi{T}" /> class.
         /// </summary>
-        /// <param name="serviceProvider">
-        /// An <see cref="IServiceProvider"/> containing all services of this <see cref="EntityFrameworkApi{T}"/>.
-        /// </param>
-        public EntityFrameworkApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        /// <param name="dbContext"></param>
+        /// <param name="model"></param>
+        /// <param name="queryHandler"></param>
+        /// <param name="submitHandler"></param>
+        public EntityFrameworkApi(T dbContext, IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler) 
+            : base(model, queryHandler, submitHandler)
         {
+            Ensure.NotNull(dbContext, nameof(dbContext));
+            DbContext = dbContext;
         }
 
         /// <summary>
         /// Gets the underlying DbContext for this API.
         /// </summary>
-        public T DbContext
-        {
-            get
-            {
-                return this.GetApiService<T>();
-            }
-        }
+        public T DbContext { get; }
 
         /// <summary>
         /// Gets the Context Type.

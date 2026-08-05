@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Microsoft.Restier.EntityFramework.Spatial\Microsoft.Restier.EntityFramework.Spatial.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+			Test-only PackageReference. Microsoft.SqlServer.Types 160.x ships
+			lib/netstandard2.1/Microsoft.SqlServer.Types.dll with the official Microsoft
+			strong name (PublicKeyToken=89845dcd8080cc91) and Version=16.0.0.0, which
+			EF6's SqlTypesAssemblyLoader accepts on .NET 5+. WKT round-trip operations
+			run entirely in the managed types — the Windows-only SqlServerSpatial160.dll
+			is only needed for computational-geometry methods (STEquals, STIntersects,
+			etc.) which the converter under test does not invoke.
+
+			We avoid dotMorten.Microsoft.SqlServer.Types here: it ships unsigned
+			(PublicKeyToken=null) with Version=2.5.0.0, and EF6 rejects both.
+		-->
+		<PackageReference Include="Microsoft.SqlServer.Types" Version="160.1000.6" />
+	</ItemGroup>
+
+</Project>

@@ -1,12 +1,14 @@
-﻿#if NET6_0_OR_GREATER
-
-using CloudNimble.Breakdance.AspNetCore;
+﻿using CloudNimble.Breakdance.AspNetCore;
 using CloudNimble.EasyAF.Http.OData;
-using Microsoft.AspNet.OData.Extensions;
+using Flurl;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,16 +32,10 @@ namespace Microsoft.Restier.Breakdance
     public class RestierBreakdanceTestBase<TApi> : AspNetCoreBreakdanceTestBase
         where TApi : ApiBase
     {
-
         /// <summary>
         /// 
         /// </summary>
-        public Action<RestierApiBuilder> AddRestierAction { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Action<RestierRouteBuilder> MapRestierAction { get; set; }
+        public Action<ODataOptions> AddRestierAction { get; set; }
 
         /// <summary>
         /// 
@@ -47,84 +43,82 @@ namespace Microsoft.Restier.Breakdance
         public Action<IApplicationBuilder> ApplicationBuilderAction { get; set; }
 
         /// <summary>
-        /// Helps people that decide to use RestierTestHelpers specify which 
-        /// </summary>
-        public bool UseEndpointRouting { get; }
-
-        /// <summary>
         /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/>.
         /// </summary>
-        /// <param name="useEndpointRouting">Whether to use endpoint routing or not.</param>
         /// <remarks>
-        /// To properly configure these tests, please set your <see cref="AddRestierAction"/> and <see cref="MapRestierAction"/> actions before
+        /// To properly configure these tests, please set your <see cref="AddRestierAction"/>  action before
         /// calling <see cref="AspNetCoreBreakdanceTestBase.AssemblySetup"/> or <see cref="AspNetCoreBreakdanceTestBase.TestSetup"/>.
         /// </remarks>
-        public RestierBreakdanceTestBase(bool useEndpointRouting = false)
+        public RestierBreakdanceTestBase()
         {
-            UseEndpointRouting = useEndpointRouting;
-            TestHostBuilder.ConfigureServices(services =>
+            TestHostBuilder.ConfigureServices((context, services) =>
             {
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                         .AddCookie(options =>
                         {
-                            options.Events.OnRedirectToAccessDenied = context => {
-                                context.Response.StatusCode = 403;
+                            options.Events.OnRedirectToAccessDenied = ctx => {
+                                ctx.Response.StatusCode = 403;
                                 return Task.CompletedTask;
                             };
                         });
-
                 services
-                    .AddRestier(apiBuilder =>
+                    .AddControllers()
+                    .AddRestier(options =>
                     {
-                        AddRestierAction?.Invoke(apiBuilder);
-                    },
-                    useEndpointRouting)
-
+                        options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
+                        options.TimeZone = TimeZoneInfo.Utc;
+                        AddRestierAction?.Invoke(options);
+                    })
                     .AddApplicationPart(typeof(TApi).Assembly)
                     .AddApplicationPart(typeof(RestierController).Assembly);
             });
+        }
 
-            TestHostBuilder.Configure(builder =>
+        // Workaround for Breakdance 8.0 bug: AspNetCoreBreakdanceTestBase.TestSetupAsync() calls
+        // base.TestSetup() instead of base.TestSetupAsync(), and BreakdanceTestBase.TestSetup()
+        // calls TestSetupAsync() — creating infinite mutual recursion that stack overflows.
+        // Remove these overrides once Breakdance ships a fix.
+
+        /// <inheritdoc/>
+        public override void TestSetup()
+        {
+            EnsureTestServerAsync().GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
+        public override async Task TestSetupAsync()
+        {
+            await EnsureTestServerAsync();
+        }
+
+        private new async Task EnsureTestServerAsync()
+        {
+            if (TestServer is not null)
             {
-                ApplicationBuilderAction?.Invoke(builder);
+                return;
+            }
 
-
-                if (useEndpointRouting)
+            TestHostBuilder.ConfigureWebHost(webBuilder =>
+            {
+                webBuilder.UseTestServer();
+                webBuilder.Configure(builder =>
                 {
-                    builder.UseRestierBatching();
-
+                    ApplicationBuilderAction?.Invoke(builder);
+                    builder.UseDeveloperExceptionPage();
+                    builder.UseODataRouteDebug();
                     builder.UseRouting();
                     builder.UseAuthorization();
-
-                    builder.UseDeveloperExceptionPage();
                     builder.UseEndpoints(endpoints =>
                     {
-                        endpoints
-                            .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)
-                            .MapRestier(restierRouteBuilder =>
-                            {
-                                MapRestierAction?.Invoke(restierRouteBuilder);
-                            });
+                        endpoints.MapControllers();
+                        endpoints.MapRestier();
                     });
-                }
-                else
-                {
-                    builder.UseAuthorization();
-                    builder.UseDeveloperExceptionPage();
-
-                    builder.UseRestierBatching();
-                    builder.UseMvc(routeBuilder =>
-                    {
-                        routeBuilder
-                            .Select().Expand().Filter().OrderBy().MaxTop(null).Count().SetTimeZoneInfo(TimeZoneInfo.Utc)
-                            .MapRestier(restierRouteBuilder =>
-                            {
-                                MapRestierAction?.Invoke(restierRouteBuilder);
-                            })
-                            .MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                    });
-                }
+                });
             });
+
+            var host = TestHostBuilder.Build();
+            await host.StartAsync();
+            TestServer = host.GetTestServer();
         }
 
         /// <summary>
@@ -174,24 +168,21 @@ namespace Microsoft.Restier.Breakdance
         /// <param name="routeName">
         /// The name of the registered route to retrieve the <see cref="IServiceProvider"/> for. Defaults to <see cref="WebApiConstants.RouteName"/>.
         /// </param>
-        /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>A scoped <see cref="IServiceProvider"/> containing all of the services available to the specified route.</returns>
-        public IServiceProvider GetScopedRequestContainer(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false)
+        public IServiceProvider GetScopedRequestContainer(string routeName = WebApiConstants.RouteName)
         {
             var context = new DefaultHttpContext
             {
                 RequestServices = TestServer.Services
             };
 
-            if (useEndpointRouting)
-            {
-                routeName = Restier_IEndpointRouteBuilderExtensions.GetCleanRouteName(routeName);
-            }
+            //if (useEndpointRouting)
+            //{
+            //    routeName = Restier_IEndpointRouteBuilderExtensions.GetCleanRouteName(routeName);
+            //}
             
-            context.ODataFeature().RouteName = routeName;
-            context.Request.CreateRequestContainer(routeName);
-
-            return context.Request.ODataFeature().RequestScope.ServiceProvider;
+            context.ODataFeature().RoutePrefix = routeName;
+            return context.Request.GetRouteServices();
         }
 
         /// <summary>
@@ -202,7 +193,7 @@ namespace Microsoft.Restier.Breakdance
         /// </param>
         /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>An <typeparamref name="TApi"/> instance from the scoped <see cref="IServiceProvider"/> for the specified route.</returns>
-        public TApi GetApiInstance(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetScopedRequestContainer(routeName, useEndpointRouting).GetService<TApi>();
+        public TApi GetApiInstance(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetScopedRequestContainer(routeName).GetService<TApi>();
 
         /// <summary>
         /// Retrieves the <see cref="IEdmModel"/> instance from <typeparamref name="TApi"/> for the specified route.
@@ -212,9 +203,6 @@ namespace Microsoft.Restier.Breakdance
         /// </param>
         /// <param name="useEndpointRouting">Specifies whether or not to use Endpoint Routing. Defaults to false for backwards compatibility, but will change in Restier 2.0.</param>
         /// <returns>The <see cref="IEdmModel"/> instance from <typeparamref name="TApi"/> for the specified route.</returns>
-        public IEdmModel GetModel(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetApiInstance(routeName, useEndpointRouting).GetModel();
-
+        public IEdmModel GetModel(string routeName = WebApiConstants.RouteName, bool useEndpointRouting = false) => GetApiInstance(routeName, useEndpointRouting).Model;
     }
 }
-
-#endif

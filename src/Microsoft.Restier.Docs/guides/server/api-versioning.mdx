@@ -1,0 +1,223 @@
+---
+title: "API Versioning"
+description: "Expose multiple URL-segment versions of a Restier API with versioned $metadata, NSwag/Swagger documents per version, and standard version-discovery response headers."
+icon: "code-branch"
+sidebarTitle: "API Versioning"
+---
+
+import { Steps, Tabs, Tab, CodeGroup, Note, Tip, Warning } from "/snippets/mintlify-components.mdx";
+
+Restier integrates with [`Asp.Versioning`](https://github.com/dotnet/aspnet-api-versioning) for **URL-segment** API versioning via the optional `Microsoft.Restier.AspNetCore.Versioning` package. Each version is a separate `ApiBase` subclass; routes are exposed at distinct prefixes (e.g., `/api/v1`, `/api/v2`) with their own EDMs, `$metadata`, and OpenAPI documents.
+
+<Note>
+**Scope:** URL-segment versioning only. Header / query-string / media-type versioning is not yet supported.
+</Note>
+
+## Setup
+
+<Steps>
+<Step title="Install the package">
+
+```bash
+dotnet add package Microsoft.Restier.AspNetCore.Versioning
+```
+
+</Step>
+<Step title="Define one ApiBase subclass per version">
+
+Each version gets its own `ApiBase` subclass and is decorated with `[ApiVersion]`:
+
+```csharp
+[ApiVersion("1.0", Deprecated = true)]
+public class NorthwindApiV1 : EntityFrameworkApi<NorthwindContextV1> { /* ... */ }
+
+[ApiVersion("2.0")]
+public class NorthwindApiV2 : EntityFrameworkApi<NorthwindContextV2> { /* ... */ }
+```
+
+</Step>
+<Step title="Register versions in ConfigureServices">
+
+```csharp
+services.AddApiVersioning(o =>
+{
+    o.DefaultApiVersion = new ApiVersion(2, 0);
+    o.ReportApiVersions = true;
+    o.ApiVersionReader = new UrlSegmentApiVersionReader();
+}).AddApiExplorer();
+
+services.AddControllers().AddRestier(options =>
+{
+    options.Select().Expand().Filter().OrderBy().Count();
+});
+
+services.AddRestierApiVersioning(b => b
+    .AddVersion<NorthwindApiV1>("api", svc =>
+        svc.AddEFCoreProviderServices<NorthwindContextV1>(/* ... */))
+    .AddVersion<NorthwindApiV2>("api", svc =>
+        svc.AddEFCoreProviderServices<NorthwindContextV2>(/* ... */)));
+```
+
+The base prefix `"api"` is combined with the version segment (default `v1`, `v2`) to produce the route prefix.
+
+</Step>
+<Step title="Add the headers middleware">
+
+```csharp
+app.UseRouting();
+app.UseRestierVersionHeaders();   // before MapRestier
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapRestier();
+});
+```
+
+</Step>
+</Steps>
+
+## What you get
+
+- `GET /api/v1/$metadata` returns the V1 EDM; `GET /api/v2/$metadata` returns V2's.
+- `GET /openapi/v1/openapi.json` serves the V1 OpenAPI document; `GET /openapi/v2/openapi.json` serves V2's.
+- The NSwag UI dropdown at `/swagger` shows `v1` and `v2`.
+- Every response on a versioned route carries:
+  - `api-supported-versions: 1.0, 2.0`
+  - `api-deprecated-versions: 1.0` (only versions marked `Deprecated = true`)
+  - `Sunset: <RFC 1123 date>` (only when `RestierVersioningOptions.SunsetDate` is set)
+
+## Configuration reference
+
+### `RestierVersioningOptions`
+
+| Property | Default | Purpose |
+|----------|---------|---------|
+| `SegmentFormatter` | `ApiVersionSegmentFormatters.Major` (`v1`, `v2`) | How `ApiVersion` is rendered as a URL segment. Use `ApiVersionSegmentFormatters.MajorMinor` for `v1.0`/`v2.1`, or supply a custom `Func<ApiVersion, string>`. |
+| `ExplicitRoutePrefix` | null | Override the composed route prefix entirely. When set, `SegmentFormatter` and the base prefix are ignored. |
+| `SunsetDate` | null | Optional date emitted via the `Sunset` response header. |
+
+### Imperative overload (no `[ApiVersion]` attribute)
+
+```csharp
+services.AddRestierApiVersioning(b => b
+    .AddVersion<MyApi>(
+        new ApiVersion(1, 0),
+        deprecated: false,
+        basePrefix: "api",
+        configureRouteServices: svc => /* ... */));
+```
+
+## Multiple logical APIs
+
+Two unrelated APIs at different base prefixes don't leak versions into each other's headers:
+
+```csharp
+services.AddRestierApiVersioning(b => b
+    .AddVersion<OrdersApiV1>("orders", /* ... */)
+    .AddVersion<OrdersApiV2>("orders", /* ... */)
+    .AddVersion<InventoryApi>(new ApiVersion(1, 0), false, "inventory", /* ... */));
+```
+
+A `GET /orders/v1` response has `api-supported-versions: 1.0, 2.0` (Orders only). A `GET /inventory/v1` response has `api-supported-versions: 1.0` (Inventory only).
+
+## Mixing versioned and unversioned routes
+
+You can mix `AddRestierRoute` (unversioned) and `AddRestierApiVersioning` in the same app. The NSwag UI dropdown will show one entry per registered version (by group name) plus one per unversioned prefix.
+
+## Alternative: separate deployments behind a reverse proxy
+
+When versions diverge enough that they're effectively different services — different EF model, different .NET version, different release cadence, different team ownership — running each version as its own RESTier process behind a reverse proxy is often simpler than co-hosting them. In that setup, neither backend uses `Microsoft.Restier.AspNetCore.Versioning`; each one is a plain `AddRestierRoute<TApi>("api", ...)` deployment, and the proxy maps a versioned public path to a per-version backend.
+
+```text
+client                  reverse proxy                    backends
+GET /api/v1/Customers → strip /v1, forward to host A → restier-v1:8080/api/Customers
+GET /api/v2/Customers → strip /v2, forward to host B → restier-v2:8080/api/Customers
+```
+
+### When to choose which
+
+<Tip>
+**In-process versioning** (`AddRestierApiVersioning`) fits tightly-coupled minor versions that share most of their model and ship together. **Reverse-proxy deployment** fits versions that have already drifted apart in dependencies, runtime, or release cadence.
+</Tip>
+
+| Concern | In-process (`AddRestierApiVersioning`) | Reverse proxy |
+|---|---|---|
+| Deploy / rollback per version | Coupled — one binary, one rollout | Independent per version |
+| Cross-version code reuse | Direct — shared DI, shared types | Requires extracting a shared NuGet |
+| Mixed runtimes (e.g., v1 on .NET 8, v2 on .NET 10) | Not possible | Natural |
+| Version-discovery headers (`api-supported-versions`, `api-deprecated-versions`, `Sunset`) | Emitted automatically by `UseRestierVersionHeaders()` | You emit them at the proxy |
+| OpenAPI / NSwag UI | Single dropdown listing all versions | Per-backend UI, or aggregated at the proxy |
+
+### What RESTier needs from the proxy
+
+<Warning>
+The proxy **must strip the `/v1` / `/v2` segment before forwarding**. RESTier builds `$metadata`, service-document URLs, and entity links from `HttpRequest.PathBase` + the registered route prefix; if the version segment is still present when the request reaches the backend, generated URLs will be wrong and OData clients will follow broken links.
+</Warning>
+
+If you want the backend to *see* the original public prefix in generated URLs (so `@odata.context` reads `https://example.com/api/v1/$metadata` rather than `https://restier-v1:8080/api/$metadata`), forward the prefix as a header and have ASP.NET Core apply it to `PathBase`:
+
+```csharp
+// At the proxy: send X-Forwarded-Prefix: /api/v1 (YARP transform, nginx, etc.)
+
+// In the backend's Program.cs, before UseRouting:
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor
+                     | ForwardedHeaders.XForwardedProto
+                     | ForwardedHeaders.XForwardedHost,
+});
+
+app.Use((context, next) =>
+{
+    if (context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var prefix))
+    {
+        context.Request.PathBase = new PathString(prefix.ToString().TrimEnd('/'));
+    }
+    return next();
+});
+```
+
+`X-Forwarded-Prefix` is not part of `ForwardedHeadersOptions` — the small middleware above is the standard ASP.NET Core idiom for honoring it.
+
+### Emitting version-discovery headers at the proxy
+
+Because each backend is unaware of the other versions, `UseRestierVersionHeaders()` can't see the full set. Add the headers at the proxy instead. With YARP:
+
+```csharp
+// appsettings.json — Routes/Clusters omitted for brevity
+"Transforms": [
+  { "ResponseHeader": "api-supported-versions", "Set": "1.0, 2.0", "When": "Always" },
+  { "ResponseHeader": "api-deprecated-versions", "Set": "1.0", "When": "Always" }
+]
+```
+
+With nginx, the equivalent is `add_header api-supported-versions "1.0, 2.0" always;` in the relevant `location` block.
+
+### Migration path between the two approaches
+
+Going from reverse-proxy to in-process is mostly a packaging exercise: bring both APIs into one solution, register them with `AddRestierApiVersioning`, and remove the proxy's path-rewrite rules. Going the other direction — splitting an in-process versioned app into separate deployments — is usually driven by a runtime or dependency divergence that already forces the split; once the projects are separate, drop the `Microsoft.Restier.AspNetCore.Versioning` package from each and replace `AddRestierApiVersioning` with a plain `AddRestierRoute`.
+
+## Limitations
+
+- Header / query-string / media-type version readers are not supported. RESTier's dynamic route transformer keys off URL prefix only.
+- `OData-Deprecation` annotations on entity sets/properties in the EDM are not emitted automatically. (Tracked separately; overlaps with the OpenAPI annotation work.)
+- A request to `/api` without a version segment returns 404. Register a non-versioned `AddRestierRoute<TApi>("api", ...)` if you want a default.
+- A sunset date in the past is reported via the `Sunset` header but does not cause RESTier to return 410 Gone.
+
+## Migrating from unversioned
+
+<Note>
+Before migrating, decide whether in-process versioning or [separate deployments behind a reverse proxy](#alternative%3A-separate-deployments-behind-a-reverse-proxy) fits your situation better — the choice affects how you split the project.
+</Note>
+
+If you currently call `AddRestierRoute<TApi>("api", ...)` and want to introduce versions:
+
+1. Rename `TApi` to `TApiV1`. Add `[ApiVersion("1.0")]`.
+2. Replace the `AddRestierRoute` call with `services.AddRestierApiVersioning(b => b.AddVersion<TApiV1>("api", /* ... */))`.
+3. Old client URLs change from `/api/Customers` to `/api/v1/Customers`. If you want to keep the legacy URL, register the same API class twice — once via `AddRestierRoute<TApiV1>("api", ...)` (unversioned) and once via `AddRestierApiVersioning`.
+
+## See also
+
+- [NSwag](nswag) — the recommended OpenAPI integration; understands the version registry automatically.
+- [Swagger](swagger) — works with versioning the same way; alternative to NSwag.
+- [Asp.Versioning documentation](https://github.com/dotnet/aspnet-api-versioning/wiki) — upstream reference.

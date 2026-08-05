@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="[8.*, 11.0.0)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[8.*, 11.0.0)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+		<ProjectReference Include="..\..\src\Microsoft.Restier.EntityFrameworkCore.Spatial\Microsoft.Restier.EntityFrameworkCore.Spatial.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+	</ItemGroup>
+
+</Project>

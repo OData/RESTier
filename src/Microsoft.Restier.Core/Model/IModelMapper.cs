@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
 using System;
 
 namespace Microsoft.Restier.Core.Model
@@ -9,7 +10,7 @@ namespace Microsoft.Restier.Core.Model
     /// Represents a service that maps between
     /// the model space and the object space.
     /// </summary>
-    public interface IModelMapper
+    public interface IModelMapper : IChainedService<IModelMapper>
     {
         /// <summary>
         /// Tries to get the relevant type of an entity
@@ -47,7 +48,7 @@ namespace Microsoft.Restier.Core.Model
         /// specifically opting to not support the specified queryable source.
         /// </para>
         /// </remarks>
-        bool TryGetRelevantType(ModelContext context, string name, out Type relevantType);
+        bool TryGetRelevantType(InvocationContext context, string name, out Type relevantType);
 
         /// <summary>
         /// Tries to get the relevant type of a composable function.
@@ -81,6 +82,6 @@ namespace Microsoft.Restier.Core.Model
         /// specifically opting to not support the specified composable function.
         /// </para>
         /// </remarks>
-        bool TryGetRelevantType(ModelContext context, string namespaceName, string name, out Type relevantType);
+        bool TryGetRelevantType(InvocationContext context, string namespaceName, string name, out Type relevantType);
     }
 }

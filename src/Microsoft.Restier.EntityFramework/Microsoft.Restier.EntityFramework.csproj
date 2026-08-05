@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net48;netstandard2.1;net8.0;net9.0;net10.0;</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0;</TargetFrameworks>
 		<DefineConstants>$(DefineConstants);EF6</DefineConstants>
 		<StrongNamePublicKey>$(StrongNamePublicKey)</StrongNamePublicKey>
 		<DocumentationFile>$(DocumentationFile)\$(AssemblyName).xml</DocumentationFile>
@@ -22,12 +22,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="EntityFramework" Version="[6.5.*, 7.0.0)" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.*" />
-		<!--<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 7.14.0)" />
-		<PackageReference Include="Microsoft.OData.Edm" Version="[7.*, 7.14.0)" />-->
-		<PackageReference Include="Microsoft.OData.Core" Version="[7.*, 8.0.0)" />
-		<PackageReference Include="Microsoft.OData.Edm" Version="[7.*, 8.0.0)" />
-	</ItemGroup>
+		<PackageReference Include="Microsoft.OData.Core" Version="[8.*, 9.0.0)" />
+    <PackageReference Include="Microsoft.OData.ModelBuilder" Version="[2.*, 3.0.0)" />
+
+  </ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />

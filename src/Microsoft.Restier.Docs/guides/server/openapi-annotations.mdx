@@ -1,0 +1,303 @@
+---
+title: "OpenAPI Annotation Attributes"
+description: "Enrich your OData $metadata and OpenAPI/Swagger output with .NET attributes"
+icon: "tags"
+sidebarTitle: "OpenAPI Annotations"
+---
+
+RESTier scans your CLR types for standard .NET attributes and emits the
+corresponding OData vocabulary annotations into `$metadata`. Tools that
+read `$metadata` — including the [NSwag](./nswag) and [Swagger](./swagger)
+integrations — surface those annotations in the generated OpenAPI document
+as descriptions, validation hints, and `readOnly` flags.
+
+<Info>
+This is on by default. There is no registration step. If your model already
+carries any of the supported attributes, you'll see the new annotations in
+`$metadata` (and your OpenAPI document) after upgrading.
+</Info>
+
+<Warning>
+**`[DatabaseGenerated]` and `[ReadOnly]` are not metadata-only.** RESTier's
+submit pipeline already reads `Core.V1.Computed` and `Core.V1.Immutable`
+to drop properties from POST/PATCH/PUT request bodies before the change
+set is applied.
+
+After upgrading, a client that POSTs an `Id` value to a property marked
+with `[DatabaseGenerated(DatabaseGeneratedOption.Identity)]` will see that
+value silently replaced by the database-assigned one. A client that PATCHes
+a property marked with `[ReadOnly(true)]` will see the change ignored.
+
+This is the intended behavior — it is why the `Core.V1.Computed` and
+`Core.V1.Immutable` terms exist in OData. But it is a meaningful change
+for any API already using these attributes for, e.g., display formatting
+or EF migrations. See [Overriding or extending](#overriding-or-extending)
+below for the opt-out pattern.
+</Warning>
+
+## Supported attributes
+
+| .NET attribute | Target | OData term | OpenAPI effect | Server effect |
+|---|---|---|---|---|
+| `[Description("…")]` | type, property, operation | `Org.OData.Core.V1.Description` | `description` | none |
+| `[DatabaseGenerated(Identity)]` / `[DatabaseGenerated(Computed)]` | property | `Org.OData.Core.V1.Computed` | `readOnly: true` | dropped from POST, PATCH, and PUT bodies |
+| `[ReadOnly(true)]` | property | `Org.OData.Core.V1.Immutable` | `readOnly: true` (in update payloads) | dropped from PATCH and PUT bodies |
+| `[Range(min, max)]` | numeric property | `Org.OData.Validation.V1.Minimum` / `Maximum` | `minimum` / `maximum` | none |
+| `[RegularExpression(pattern)]` | string property | `Org.OData.Validation.V1.Pattern` | `pattern` | none |
+
+## Walkthrough
+
+<Steps>
+<Step title="Add attributes to your model">
+
+```csharp Widget.cs
+using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Contoso.Catalog;
+
+[Description("A widget in the catalog.")]
+public class Widget
+{
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Description("Database-assigned identifier.")]
+    public int Id { get; set; }
+
+    [Description("The display name of the widget.")]
+    public string Name { get; set; }
+
+    [Range(0, 100)]
+    [Description("Quality score from 0 to 100.")]
+    public int Score { get; set; }
+
+    [RegularExpression("^[A-Z]{2}$")]
+    [Description("Two-letter country code.")]
+    public string CountryCode { get; set; }
+}
+```
+
+</Step>
+<Step title="Inspect $metadata">
+
+```xml
+<EntityType Name="Widget">
+  <Annotation Term="Org.OData.Core.V1.Description" String="A widget in the catalog." />
+  <Key>
+    <PropertyRef Name="Id" />
+  </Key>
+  <Property Name="Id" Type="Edm.Int32" Nullable="false">
+    <Annotation Term="Org.OData.Core.V1.Description" String="Database-assigned identifier." />
+    <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+  </Property>
+  <Property Name="Name" Type="Edm.String">
+    <Annotation Term="Org.OData.Core.V1.Description" String="The display name of the widget." />
+  </Property>
+  <Property Name="Score" Type="Edm.Int32" Nullable="false">
+    <Annotation Term="Org.OData.Core.V1.Description" String="Quality score from 0 to 100." />
+    <Annotation Term="Org.OData.Validation.V1.Minimum" Int="0" />
+    <Annotation Term="Org.OData.Validation.V1.Maximum" Int="100" />
+  </Property>
+  <Property Name="CountryCode" Type="Edm.String">
+    <Annotation Term="Org.OData.Core.V1.Description" String="Two-letter country code." />
+    <Annotation Term="Org.OData.Validation.V1.Pattern" String="^[A-Z]{2}$" />
+  </Property>
+</EntityType>
+```
+
+</Step>
+<Step title="View the OpenAPI document">
+
+```json
+"Widget": {
+  "title": "Widget",
+  "description": "A widget in the catalog.",
+  "type": "object",
+  "properties": {
+    "Id": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Database-assigned identifier.",
+      "readOnly": true
+    },
+    "Name": {
+      "type": "string",
+      "description": "The display name of the widget."
+    },
+    "Score": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Quality score from 0 to 100.",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "CountryCode": {
+      "type": "string",
+      "description": "Two-letter country code.",
+      "pattern": "^[A-Z]{2}$"
+    }
+  }
+}
+```
+
+</Step>
+</Steps>
+
+## What about `[MaxLength]` and `[StringLength]`?
+
+<Note>
+RESTier deliberately **does not** emit a `Org.OData.Validation.V1.MaxLength`
+vocabulary annotation from `[MaxLength]` or `[StringLength]`.
+
+`ODataConventionModelBuilder` already absorbs these as the structural
+`MaxLength` facet on `Edm.String` and `Edm.Binary` properties:
+
+```xml
+<Property Name="ISBN" Type="Edm.String" MaxLength="13" />
+```
+
+`Microsoft.OpenApi.OData` reads that facet and emits `"maxLength": 13` in
+JSON Schema. Adding a vocabulary annotation on top would duplicate the
+constraint and risk inconsistent renderings.
+
+If you need to express a max-length constraint somewhere the structural
+facet doesn't apply (e.g., a collection size), use a custom `IModelBuilder`
+to add the annotation manually.
+</Note>
+
+## Range value typing
+
+`[Range]` values are coerced to match the target property's EDM primitive
+kind. `int`/`short`/`long` properties produce integer-typed `Minimum` and
+`Maximum`; `float`/`double` produce floating-typed; `decimal` produces
+decimal-typed. This is required because the OData `Validation.Minimum`
+and `Validation.Maximum` terms accept primitive constants whose type
+must match the property they annotate.
+
+`[Range]` on a non-numeric property (e.g., `string`) is logged via
+`Trace.TraceWarning` and skipped. This typically indicates a misplaced
+attribute rather than an intended use.
+
+## Operations
+
+`[Description]` works on `[BoundOperation]` and `[UnboundOperation]`
+methods too:
+
+```csharp
+[UnboundOperation]
+[Description("Returns widgets created in the last seven days.")]
+public IQueryable<Widget> GetRecentWidgets() => DbContext.Widgets.Where(w => w.CreatedOn >= DateTimeOffset.UtcNow.AddDays(-7));
+```
+
+This produces:
+
+```xml
+<Function Name="GetRecentWidgets">
+  <Annotation Term="Org.OData.Core.V1.Description" String="Returns widgets created in the last seven days." />
+  <ReturnType Type="Collection(Contoso.Catalog.Widget)" />
+</Function>
+```
+
+…and a `description` field on the corresponding OpenAPI path.
+
+## Overriding or extending
+
+Use a custom `IModelBuilder` (see [Customizing the Entity Model](./model-building#custom-model-extension))
+to extend or override the default behavior.
+
+<Note>
+Custom builders registered via `AddChainedService<IModelBuilder>` run **inside**
+the convention annotation builder — meaning your builder runs first, the
+convention builder enriches its result. You cannot remove a convention-emitted
+annotation from a custom builder. Instead, **pre-add the annotation you want**
+and the convention builder will see it and skip emitting its own (the convention
+builder is idempotent — it never overrides a term already present on a target).
+</Note>
+
+**Opt out of `Computed` on a specific property:**
+
+The submit pipeline only drops a property from request bodies when `Core.V1.Computed = true`.
+Pre-adding `Core.V1.Computed = false` neutralizes both the convention emission
+and the submit-pipeline behavior:
+
+```csharp
+using System.Linq;
+using Microsoft.OData.Edm;
+using Microsoft.OData.Edm.Csdl;
+using Microsoft.OData.Edm.Vocabularies;
+using Microsoft.OData.Edm.Vocabularies.V1;
+using Microsoft.Restier.Core.Model;
+
+public class OptOutOfComputedForId : IModelBuilder
+{
+    public IModelBuilder Inner { get; set; }
+
+    public IEdmModel GetEdmModel()
+    {
+        var inner = Inner?.GetEdmModel();
+        if (inner is not EdmModel model)
+        {
+            return inner;
+        }
+
+        var widget = model.FindDeclaredType("Contoso.Catalog.Widget") as IEdmEntityType;
+        var idProperty = widget?.FindProperty("Id");
+        if (idProperty is null) return model;
+
+        // Convention builder skips emission if ANY Core.V1.Computed annotation
+        // already exists on the target. The submit pipeline triggers
+        // IgnoreForCreation/IgnoreForUpdate only on Computed = true, so this
+        // neutralizes the side-effect.
+        var annotation = new EdmVocabularyAnnotation(
+            idProperty,
+            CoreVocabularyModel.ComputedTerm,
+            new EdmBooleanConstant(false));
+        annotation.SetSerializationLocation(model, EdmVocabularyAnnotationSerializationLocation.Inline);
+        model.AddVocabularyAnnotation(annotation);
+
+        return model;
+    }
+}
+```
+
+Register it inside `AddRestierRoute` like any other chained model builder:
+
+```csharp
+options.AddRestierRoute<CatalogApi>("", restierServices =>
+{
+    restierServices
+        .AddEFCoreProviderServices<CatalogContext>(/* ... */)
+        .AddChainedService<IModelBuilder>((sp, next) =>
+            new OptOutOfComputedForId { Inner = next });
+});
+```
+
+The same pattern works for `Core.V1.Immutable` (pre-add `false`), `Core.V1.Description`
+(pre-add a different string — the convention will not override yours), and the
+validation terms.
+
+<Tip>
+For more elaborate annotations — e.g., capabilities (`UpdateRestrictions`,
+`InsertRestrictions`) or role-based permissions — write a custom
+`IModelBuilder` that adds them. The convention builder is one piece of an
+extensible chain.
+</Tip>
+
+## XML doc comments
+
+<Note>
+RESTier does not currently read XML doc summaries (`/// <summary>...`) as a
+description source. Use `[Description]` for now; doc-comment-derived
+descriptions may be added in a future release.
+</Note>
+
+## Limitations
+
+- Operation **parameters** are not annotated; only the operation itself.
+- XML doc comments are not used as a description source.
+- No support yet for capabilities-vocabulary annotations (`UpdateRestrictions`,
+  `InsertRestrictions`, etc.). Use a custom `IModelBuilder` for those.
+- `[MaxLength]` and `[StringLength]` are intentionally not mapped to vocabulary
+  annotations (see above).

@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
         private const string MethodNameOfQueryWhere = "Where";
         private const string MethodNameOfQueryOrderBy = "OrderBy";
         private const string InterfaceNameISelectExpandWrapper = "ISelectExpandWrapper";
-        private const string ExpandClauseReflectedTypeName = "SelectExpandBinder";
+
 
         /// <summary>
         /// Executes <see cref="Queryable.Select{TSource, TResult}(IQueryable{TSource}, Expression{Func{TSource, int, TResult}})"/> using the specified select expression.
@@ -283,10 +283,10 @@ namespace System.Linq.Expressions
         {
             // Get the generic type of a type. e.g. if type is SelectAllAndExpand<Namespace.Product>,
             // then type Namespace.Product will be returned.
-            // Only generic type of expand clause will be retrieved to make the logic specified for $expand
+            // In OData v9 the wrapper types (SelectSome, SelectAllAndExpand, etc.) are no longer
+            // nested inside SelectExpandBinder, so we detect them via the ISelectExpandWrapper interface.
             var typeInfo = elementType.GetTypeInfo();
-            if (typeInfo.IsGenericType && typeInfo.ReflectedType is not null
-                && typeInfo.ReflectedType.Name == ExpandClauseReflectedTypeName)
+            if (typeInfo.IsGenericType && typeInfo.GetInterface(InterfaceNameISelectExpandWrapper) is not null)
             {
                 elementType = typeInfo.GenericTypeArguments[0];
             }

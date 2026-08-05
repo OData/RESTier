@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.OData.Edm;
 using Microsoft.Restier.AspNetCore.Model;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
 using Microsoft.Restier.EntityFrameworkCore;
 using Microsoft.Restier.Samples.Northwind.AspNetCore;
 
@@ -9,12 +12,13 @@ namespace Microsoft.Restier.Samples.Northwind.AspNet.Controllers
 {
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public partial class NorthwindApi : EntityFrameworkApi<NorthwindContext>
     {
 
-        public NorthwindApi(IServiceProvider serviceProvider) : base(serviceProvider)
+        public NorthwindApi(NorthwindContext dbContext, IEdmModel model, IQueryHandler queryHandler, ISubmitHandler submitHandler)
+            : base(dbContext, model, queryHandler, submitHandler)
         {
         }
 

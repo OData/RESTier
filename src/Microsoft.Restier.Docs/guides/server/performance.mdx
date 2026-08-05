@@ -1,0 +1,88 @@
+---
+title: "Performance Considerations"
+description: "Performance notes and known limitations for RESTier query execution"
+icon: "gauge-high"
+sidebarTitle: "Performance"
+---
+
+## Query Execution and Streaming
+
+RESTier passes `IQueryable` results from Entity Framework through to the OData serializer without buffering the entire result set in memory. For collection queries (e.g., `GET /Products`), the OData serializer enumerates the `IQueryable` directly, which means:
+
+- Results are not fully loaded into memory before serialization begins
+- Memory usage is proportional to the serialization buffer, not the full result set
+- This is the same pattern used by standard ASP.NET Core OData controllers
+
+For single-entity queries (e.g., `GET /Products(1)`), the result is a single row and is evaluated eagerly in the controller.
+
+## Entity Framework 6: `$expand` and `$select` Materialization
+
+When using **Entity Framework 6** (not EF Core) with `$expand` or `$select` query options, RESTier must materialize the full result set in memory before serialization. This is because OData v9's `SelectExpandBinder` generates LINQ expression trees that contain `IEdmModel` constants, which EF6 cannot translate to SQL.
+
+RESTier works around this by:
+
+1. Stripping the `$expand`/`$select` projection from the LINQ expression tree
+2. Adding `Include()` calls for navigation properties referenced by `$expand`
+3. Executing the stripped query against EF6 to load entities
+4. Re-applying the projection in memory
+
+This workaround does not affect **Entity Framework Core**, which handles these expression trees natively.
+
+If you are using EF6 and working with large result sets combined with `$expand`/`$select`, consider:
+
+- Using server-side paging (`$top` / `$skip`) to limit result sizes
+- Migrating to Entity Framework Core, which does not have this limitation
+
+## Tracking behavior
+
+By default, RESTier executes GET queries with change tracking disabled —
+the single largest perf knob for read-heavy APIs. The behavior differs
+slightly between EF Core and EF6:
+
+- **EF Core**: `AsNoTrackingWithIdentityResolution()`. Entities are not
+  added to the change tracker, but identity is preserved within a single
+  query result, so recursive `$expand` (e.g. `Employee → Manager: Employee`)
+  still returns the same instance per key.
+- **EF6**: `AsNoTracking()` — except when the request's `$expand` tree
+  contains a cycle (same-type recursion or cross-type cycles like
+  `Department → Employees → Department`). In that case RESTier falls back
+  to a tracked query, because EF6 has no
+  `AsNoTrackingWithIdentityResolution` equivalent.
+
+<Info>
+Internal queries (the submit pipeline's UPDATE/DELETE entity load, deep-
+update parent lookups, ResourceExists checks) always stay tracked.
+Only top-level HTTP read paths flow through the no-tracking
+transformation.
+</Info>
+
+<Warning>
+If hook code (`OnFiltering*`, `OnLoaded*`, etc.) mutates entities returned
+from a GET expecting those mutations to be persisted on the next
+`SaveChanges`, opt back into tracking with
+`RestierEFTrackingBehavior.TrackAll`.
+</Warning>
+
+### Overriding the default
+
+<CodeGroup>
+
+```csharp EF Core
+services.AddEFCoreProviderServices<LibraryContext>(
+    dbOpts => dbOpts.UseSqlServer(connectionString),
+    restierOpts => restierOpts.TrackingBehavior = RestierEFTrackingBehavior.TrackAll);
+```
+
+```csharp EF6
+services.AddEF6ProviderServices<LibraryContext>(
+    restierOpts => restierOpts.TrackingBehavior = RestierEFTrackingBehavior.NoTracking);
+```
+
+</CodeGroup>
+
+The available values are:
+
+- `Default` — provider-aware default (EFCore: identity-resolved no-tracking; EF6: no-tracking with cycle-aware fallback).
+- `NoTracking` — force `AsNoTracking()` regardless of request shape.
+- `NoTrackingWithIdentityResolution` — EFCore only; falls back to `NoTracking` on EF6.
+- `TrackAll` — restore pre-1.2 behavior.

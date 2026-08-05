@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using System;
 #if !EFCore
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 #endif
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 #if EFCore
@@ -66,7 +68,20 @@ namespace Microsoft.Restier.EntityFramework
             if (query.Provider is IDbAsyncQueryProvider)
 #endif
             {
-                return new QueryResult(await query.ToArrayAsync(cancellationToken).ConfigureAwait(false));
+#if !EFCore
+                // Workaround for https://github.com/OData/AspNetCoreOData/issues/367
+                // OData v9's SelectExpandBinder injects IEdmModel constants into the LINQ expression
+                // tree when processing $expand/$select. The resulting expression tree is not EF6
+                // compatible because EF6 cannot translate IEdmModel to SQL. EF Core is not affected.
+                // When a SelectExpand wrapper is detected, strip the projection, execute the base
+                // query against EF6, then re-apply the projection in-memory.
+                if (SelectExpandHelper.HasSelectExpandProjection<TElement>())
+                {
+                    return await SelectExpandHelper.ExecuteWithClientProjectionAsync(query, cancellationToken).ConfigureAwait(false);
+                }
+#endif
+
+                return new QueryResult(query);
             }
 
             return await Inner.ExecuteQueryAsync(context, query, cancellationToken).ConfigureAwait(false);
@@ -119,5 +134,6 @@ namespace Microsoft.Restier.EntityFramework
 
             return await Inner.ExecuteExpressionAsync<TResult>(context, queryProvider, expression, cancellationToken).ConfigureAwait(false);
         }
+
     }
 }

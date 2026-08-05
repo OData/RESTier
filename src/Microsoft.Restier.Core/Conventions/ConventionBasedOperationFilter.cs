@@ -19,6 +19,11 @@ namespace Microsoft.Restier.Core
         private readonly Type targetApiType;
 
         /// <summary>
+        /// Gets or sets the inner operation filter.
+        /// </summary>
+        public IOperationFilter Inner { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConventionBasedOperationFilter"/> class.
         /// </summary>
         /// <param name="targetApiType">The target type to check for filter functions.</param>
@@ -29,17 +34,25 @@ namespace Microsoft.Restier.Core
         }
 
         /// <inheritdoc/>
-        public Task OnOperationExecutingAsync(OperationContext context, CancellationToken cancellationToken)
+        public async Task OnOperationExecutingAsync(OperationContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
-            return InvokeProcessorMethodAsync(context, RestierPipelineState.PreSubmit);
+            if (Inner != null)
+            {
+                await Inner.OnOperationExecutingAsync(context, cancellationToken);
+            }
+            await InvokeProcessorMethodAsync(context, RestierPipelineState.PreSubmit);
         }
 
         /// <inheritdoc/>
-        public Task OnOperationExecutedAsync(OperationContext context, CancellationToken cancellationToken)
+        public async Task OnOperationExecutedAsync(OperationContext context, CancellationToken cancellationToken)
         {
             Ensure.NotNull(context, nameof(context));
-            return InvokeProcessorMethodAsync(context, RestierPipelineState.PostSubmit);
+            if (Inner != null)
+            {
+                await Inner.OnOperationExecutedAsync(context, cancellationToken);
+            }
+            await InvokeProcessorMethodAsync(context, RestierPipelineState.PostSubmit);
         }
 
         private static bool ParametersMatch(ParameterInfo[] methodParameters, object[] parameters)

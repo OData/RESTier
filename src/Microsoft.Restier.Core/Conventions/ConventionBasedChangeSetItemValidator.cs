@@ -19,17 +19,32 @@ namespace Microsoft.Restier.Core
     public class ConventionBasedChangeSetItemValidator :
         IChangeSetItemValidator
     {
+        /// <summary>
+        /// Gets or sets the inner <see cref="IChangeSetItemValidator"/>.
+        /// </summary>
+        public IChangeSetItemValidator Inner { get; set; }
+
         /// <inheritdoc/>
-        public Task ValidateChangeSetItemAsync( SubmitContext context, ChangeSetItem item, Collection<ChangeSetItemValidationResult> validationResults, 
+        public async Task ValidateChangeSetItemAsync( SubmitContext context, ChangeSetItem item, Collection<ChangeSetItemValidationResult> validationResults, 
             CancellationToken cancellationToken)
         {
             Ensure.NotNull(validationResults, nameof(validationResults));
             Ensure.NotNull(context, nameof(context));
             Ensure.NotNull(item, nameof(item));
 
+            if (Inner != null)
+            {
+                await Inner.ValidateChangeSetItemAsync(context, item, validationResults, cancellationToken).ConfigureAwait(false);
+            }
+
             if (item is DataModificationItem dataModificationItem)
             {
                 var resource = dataModificationItem.Resource;
+
+                if (resource == null)
+                {
+                    return;
+                }
 
                 // TODO GitHubIssue#50 : should this PropertyDescriptorCollection be cached?
                 var properties = new AssociatedMetadataTypeTypeDescriptionProvider(resource.GetType())
@@ -58,10 +73,6 @@ namespace Microsoft.Restier.Core
                     }
                 }
             }
-
-            return Task.CompletedTask;
         }
-
     }
-
 }

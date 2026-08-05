@@ -1,0 +1,158 @@
+---
+title: "OpenAPI / Swagger Support"
+description: "Generate OpenAPI documents from your Restier API automatically"
+icon: "code"
+sidebarTitle: "OpenAPI"
+---
+
+RESTier can automatically generate an [OpenAPI](https://www.openapis.org/) (formerly Swagger) document from
+your EDM model and serve an interactive Swagger UI for exploring your API. This is provided by the
+`Microsoft.Restier.AspNetCore.Swagger` package, which builds on
+[Microsoft.OpenApi.OData](https://github.com/microsoft/OpenAPI.NET.OData) for document generation and
+[Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) for the UI.
+
+<Note>For new projects we recommend the [NSwag integration](nswag). NSwag supports ReDoc, NSwagStudio
+client-code generation, and combining Restier with plain ASP.NET Core controllers in the same
+application's OpenAPI surface. Both packages remain supported.</Note>
+
+<Tip>
+RESTier emits OData vocabulary annotations from standard .NET attributes
+like `[Description]`, `[DatabaseGenerated]`, and `[Range]` automatically.
+Swagger picks these up and surfaces them as descriptions, `readOnly` flags,
+and validation constraints in your OpenAPI document — no extra
+configuration needed. See [OpenAPI Annotation Attributes](./openapi-annotations).
+</Tip>
+
+## Setup
+
+### Install the NuGet Package
+
+```bash
+dotnet add package Microsoft.Restier.AspNetCore.Swagger
+```
+
+### Register Services
+
+In your `Program.cs`, call `AddRestierSwagger()` on the service collection:
+
+```csharp
+builder.Services.AddRestierSwagger();
+```
+
+### Add Middleware
+
+After building the app but before `app.Run()`, call `UseRestierSwaggerUI()`:
+
+```csharp
+app.UseRestierSwaggerUI();
+```
+
+### Complete Example
+
+```csharp
+using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.AspNetCore.Swagger;
+using Microsoft.Restier.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRestierSwagger();
+
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+
+        options.AddRestierRoute<MyApi>("api", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<MyDbContext>(dbOptions =>
+                dbOptions.UseSqlServer(connectionString));
+        });
+    });
+
+var app = builder.Build();
+
+app.UseRouting();
+app.MapControllers();
+app.MapRestier();
+
+app.UseRestierSwaggerUI();
+
+app.Run();
+```
+
+## Usage
+
+Once the middleware is registered, two endpoints become available:
+
+| Endpoint | Description |
+|----------|-------------|
+| `/swagger` | Interactive Swagger UI for browsing and testing your API |
+| `/swagger/{documentName}/swagger.json` | Raw OpenAPI 3.0 JSON document |
+
+The `{documentName}` corresponds to the OData route prefix you registered. If you registered a route with
+the prefix `"api"`, the document URL will be `/swagger/api/swagger.json`. If the route prefix is empty,
+the document name defaults to `"default"`, so the URL will be `/swagger/default/swagger.json`.
+
+## Configuration
+
+You can customize the generated OpenAPI document by passing an `Action<OpenApiConvertSettings>` to
+`AddRestierSwagger()`. The `OpenApiConvertSettings` class comes from the
+[Microsoft.OpenApi.OData](https://github.com/microsoft/OpenAPI.NET.OData) package and controls how the
+EDM model is converted to OpenAPI.
+
+```csharp
+builder.Services.AddRestierSwagger(settings =>
+{
+    settings.TopExample = 10;
+    settings.PathPrefix = "v1";
+    settings.EnableKeyAsSegment = true;
+});
+```
+
+<Note>RESTier automatically sets `TopExample` to the resolved `MaxTop` value (the bag's
+`RestierRouteOptions.Validation.MaxTop`, or — when the bag is silent — the value from
+`ODataOptions.SetMaxTop`). It also populates `ServiceRoot` from the incoming HTTP request. Any values
+you set in the configuration action will override these defaults.</Note>
+
+For the full list of available settings, refer to the
+[OpenApiConvertSettings documentation](https://github.com/microsoft/OpenAPI.NET.OData#readme).
+
+## Multiple APIs
+
+If your application registers multiple Restier APIs with different route prefixes, `UseRestierSwaggerUI()`
+automatically discovers all of them and creates a separate OpenAPI document for each. The Swagger UI will
+show a dropdown in the top-right corner that lets you switch between APIs.
+
+For example, if you register two routes:
+
+```csharp
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+
+        options.AddRestierRoute<TripsApi>("trips", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<TripsContext>(dbOptions => /* ... */);
+        });
+
+        options.AddRestierRoute<BookingsApi>("bookings", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<BookingsContext>(dbOptions => /* ... */);
+        });
+    });
+```
+
+Two OpenAPI documents will be served:
+
+- `/swagger/trips/swagger.json`
+- `/swagger/bookings/swagger.json`
+
+Both will appear in the Swagger UI dropdown at `/swagger`.
+
+For multi-version API support, see [API Versioning](api-versioning) — the Swagger integration mirrors the NSwag behavior.

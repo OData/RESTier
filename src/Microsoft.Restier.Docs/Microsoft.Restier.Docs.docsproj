@@ -22,23 +22,36 @@
                 <Pages>
                     <Groups>
                         <Group Name="Getting Started" Icon="stars">
-                            <Pages>index;why-restier;quickstart</Pages>
+                            <Pages>index;why-restier;quickstart;contribution-guidelines</Pages>
                         </Group>
                         <Group Name="Guides" Icon="dog-leashed">
                             <Pages>guides/index</Pages>
                             <Group Name="Server" Icon="server">
                                 <Pages>
                                     guides/server/model-building;
+                                    guides/server/keyless-views;
                                     guides/server/method-authorization;
                                     guides/server/filters;
                                     guides/server/interceptors;
+                                    guides/server/operations;
+                                    guides/server/nswag;
+                                    guides/server/swagger;
+                                    guides/server/openapi-annotations;
+                                    guides/server/testing;
+                                    guides/server/naming-conventions;
+                                    guides/server/api-versioning;
+                                    guides/server/multi-tenancy;
+                                    guides/server/concurrency;
+                                    guides/server/conformance-options;
+                                    guides/server/validation-options;
+                                    guides/server/performance;
                                 </Pages>
                             </Group>
                             <Group Name="Extending Restier" Icon="puzzle">
                                 <Pages>
-                                    guides/extending-restier/additional-operations;
                                     guides/extending-restier/in-memory-provider;
                                     guides/extending-restier/temporal-types;
+                                    guides/extending-restier/spatial-types;
                                 </Pages>
                             </Group>
                             <Group Name="Clients" Icon="laptop-code">
@@ -49,19 +62,23 @@
                                 </Pages>
                             </Group>
                         </Group>
-                        <Group Name="Providers" Icon="books">
-                            <Pages>providers/index</Pages>
-                            <Groups>
-                                <Group Name="EF 6" Icon="/images/icons/mintlify.svg">
-                                    <Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
-                                </Group>
-                                <Group Name="EF Core" Icon="/images/icons/mintlify.svg">
-                                    <Pages>providers/mintlify/index;providers/mintlify/navigation;providers/mintlify/dotnet-library</Pages>
-                                </Group>
-                            </Groups>
-                        </Group>
-                        <Group Name="Learnings" Icon="chalkboard-user">
-                            <Pages>learnings/bridge-assemblies;learnings/sdk-packaging</Pages>
+                        <Group Name="Release Notes" Icon="clipboard-list">
+                            <Pages>
+                                release-notes/index;
+                                release-notes/2-0-0-beta;
+                                release-notes/1-2-0;
+                                release-notes/1-1-0;
+                                release-notes/1-0-0;
+                                release-notes/1-0-0-rc1;
+                                release-notes/1-0-0-beta;
+                                release-notes/0-6-0;
+                                release-notes/0-5-0-beta;
+                                release-notes/0-4-0-rc2;
+                                release-notes/0-4-0-rc;
+                                release-notes/0-4-0-beta;
+                                release-notes/0-3-0-beta2;
+                                release-notes/0-3-0-beta1;
+                            </Pages>
                         </Group>
                     </Groups>
                 </Pages>
@@ -72,5 +89,40 @@
     <ItemGroup>
       <Folder Include="snippets\" />
     </ItemGroup>
+
+    <ItemGroup>
+        <!-- The DotNetDocs SDK uses its own DiscoverDocumentedProjectsTask to find source projects
+             and resolves assembly paths against bin/Debug/net8.0/. ProjectReferences from this
+             NoTargets-style docsproj don't reliably trigger a full Build of multi-targeted source
+             projects (MSBuild may call GetTargetPath instead of Build), so the SDK's
+             GenerateDocumentation target can fire before the net8.0 outputs exist. The
+             BuildSourceProjects target below explicitly builds each source project for net8.0
+             before doc generation runs. -->
+        <ProjectReference Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.AspNetCore.NSwag\Microsoft.Restier.AspNetCore.NSwag.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.AspNetCore.Swagger\Microsoft.Restier.AspNetCore.Swagger.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.AspNetCore.Versioning\Microsoft.Restier.AspNetCore.Versioning.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+        <ProjectReference Include="..\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <_DocsSourceProject Include="..\Microsoft.Restier.Core\Microsoft.Restier.Core.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.AspNetCore.NSwag\Microsoft.Restier.AspNetCore.NSwag.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.AspNetCore.Swagger\Microsoft.Restier.AspNetCore.Swagger.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.AspNetCore.Versioning\Microsoft.Restier.AspNetCore.Versioning.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.Breakdance\Microsoft.Restier.Breakdance.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.EntityFramework\Microsoft.Restier.EntityFramework.csproj" />
+        <_DocsSourceProject Include="..\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
+    </ItemGroup>
+
+    <Target Name="BuildSourceProjectsForDocs" BeforeTargets="GenerateDocumentation">
+        <MSBuild Projects="@(_DocsSourceProject)"
+                 Targets="Build"
+                 Properties="TargetFramework=net8.0;Configuration=$(Configuration)" />
+    </Target>
 
 </Project>

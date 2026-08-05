@@ -5,4 +5,258 @@ icon: "rocket"
 sidebarTitle: "Quickstart"
 ---
 
-[THIS IS A PLACEHOLDER FOR FUTURE CONTENT]
+This guide walks you through creating a simple OData V4 API using RESTier with ASP.NET Core and Entity Framework Core. By the end, you will have a working bookstore API that supports querying, filtering, sorting, and CRUD operations out of the box.
+
+## Prerequisites
+
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download) or later
+
+## 1. Create a New Project
+
+Create a new ASP.NET Core Web API project:
+
+```bash Create a new project
+dotnet new web -n BookstoreApi
+cd BookstoreApi
+```
+
+## 2. Install NuGet Packages
+
+Add the RESTier packages and an Entity Framework Core database provider:
+
+```bash Install packages
+dotnet add package Microsoft.Restier.AspNetCore
+dotnet add package Microsoft.Restier.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.InMemory
+```
+
+<Tip>For a real application, replace `Microsoft.EntityFrameworkCore.InMemory` with a production provider such as `Microsoft.EntityFrameworkCore.SqlServer` or `Npgsql.EntityFrameworkCore.PostgreSQL`.</Tip>
+
+## 3. Define the Entity Model
+
+Create a `Book.cs` file with a simple entity class:
+
+```csharp Book.cs
+namespace BookstoreApi;
+
+public class Book
+{
+    public int Id { get; set; }
+
+    public string Title { get; set; }
+
+    public string Author { get; set; }
+
+    public decimal Price { get; set; }
+
+    public int Year { get; set; }
+}
+```
+
+## 4. Create the DbContext
+
+Create a `BookstoreContext.cs` file. The `DbSet` properties you define here become OData EntitySets automatically:
+
+```csharp BookstoreContext.cs
+using Microsoft.EntityFrameworkCore;
+
+namespace BookstoreApi;
+
+public class BookstoreContext : DbContext
+{
+    public BookstoreContext(DbContextOptions<BookstoreContext> options)
+        : base(options)
+    {
+    }
+
+    public DbSet<Book> Books { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Seed some sample data
+        modelBuilder.Entity<Book>().HasData(
+            new Book { Id = 1, Title = "Clean Code", Author = "Robert C. Martin", Price = 31.99m, Year = 2008 },
+            new Book { Id = 2, Title = "The Pragmatic Programmer", Author = "David Thomas", Price = 49.99m, Year = 2019 },
+            new Book { Id = 3, Title = "Design Patterns", Author = "Erich Gamma", Price = 39.99m, Year = 1994 }
+        );
+    }
+}
+```
+
+## 5. Create the RESTier API Class
+
+Create a `BookstoreApi.cs` file. This class connects RESTier to your DbContext. All dependencies are provided through constructor injection:
+
+```csharp BookstoreApi.cs
+using Microsoft.OData.Edm;
+using Microsoft.Restier.Core.Query;
+using Microsoft.Restier.Core.Submit;
+using Microsoft.Restier.EntityFrameworkCore;
+
+namespace BookstoreApi;
+
+public class BookstoreApi : EntityFrameworkApi<BookstoreContext>
+{
+    public BookstoreApi(
+        BookstoreContext dbContext,
+        IEdmModel model,
+        IQueryHandler queryHandler,
+        ISubmitHandler submitHandler)
+        : base(dbContext, model, queryHandler, submitHandler)
+    {
+    }
+}
+```
+
+RESTier automatically exposes every `DbSet` on your context as a queryable OData EntitySet. No controller code is needed.
+
+## 6. Configure Services in Program.cs
+
+Replace the contents of `Program.cs` with the following:
+
+```csharp Program.cs
+using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.EntityFrameworkCore;
+using BookstoreApi;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddControllers()
+    .AddRestier(options =>
+    {
+        // Enable standard OData query options
+        options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+
+        // Register the RESTier API with a route prefix
+        options.AddRestierRoute<BookstoreApi.BookstoreApi>("api", routeServices =>
+        {
+            routeServices.AddEFCoreProviderServices<BookstoreContext>(dbOptions =>
+                dbOptions.UseInMemoryDatabase("Bookstore"));
+        });
+    });
+
+var app = builder.Build();
+
+// Ensure the database is created and seeded
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BookstoreContext>();
+    db.Database.EnsureCreated();
+}
+
+app.UseRouting();
+app.MapControllers();
+app.MapRestier();
+
+app.Run();
+```
+
+Key points about the configuration:
+
+- **`AddRestier`** registers RESTier and OData services. The lambda configures which OData query options are enabled.
+- **`AddRestierRoute<TApi>`** maps your API class to a route prefix (`"api"` in this example). Use an empty string for no prefix.
+- **`AddEFCoreProviderServices<TDbContext>`** registers Entity Framework Core as the data provider and configures the DbContext.
+- **`MapRestier()`** sets up the dynamic routing that dispatches OData requests to the RESTier controller.
+
+### Configuring OData Validation Settings
+
+You can tighten per-route query validation limits via the `RestierRouteOptions.Validation` bag passed as a third argument to `AddRestierRoute`. This is useful when clients send complex `$filter` expressions that exceed default thresholds:
+
+```csharp Program.cs (with validation settings)
+options.Select().Expand().Filter().OrderBy().SetMaxTop(100).Count();
+
+options.AddRestierRoute<BookstoreApi.BookstoreApi>(
+    "api",
+    restierServices => restierServices
+        .AddEFCoreProviderServices<BookstoreContext>(dbOptions =>
+            dbOptions.UseInMemoryDatabase("Bookstore")),
+    bag =>
+    {
+        bag.Validation.MaxExpansionDepth = 5;
+        bag.Validation.MaxAnyAllExpressionDepth = 3;
+        bag.Validation.MaxNodeCount = 200;   // default is 100; increase for complex $filter expressions
+    });
+```
+
+`MaxTop` is set globally via `SetMaxTop(100)` on the outer `ODataOptions`; the bag inherits it automatically. If you do not configure the bag, RESTier uses the defaults shown in the [Validation Options guide](/guides/server/validation-options).
+
+## 7. Run the Application
+
+Start the application:
+
+```bash
+dotnet run
+```
+
+The API is now available. Try the following URLs in a browser or with `curl` (assuming the default port):
+
+| URL | Description |
+|-----|-------------|
+| `http://localhost:5000/api` | OData service document listing available EntitySets |
+| `http://localhost:5000/api/$metadata` | OData metadata document (CSDL) describing the entity model |
+| `http://localhost:5000/api/Books` | Query all books |
+| `http://localhost:5000/api/Books(1)` | Get a single book by key |
+| `http://localhost:5000/api/Books?$filter=Price lt 40` | Filter books where Price is less than 40 |
+| `http://localhost:5000/api/Books?$select=Title,Author` | Return only the Title and Author properties |
+| `http://localhost:5000/api/Books?$orderby=Year desc` | Sort books by Year in descending order |
+| `http://localhost:5000/api/Books?$top=2&$skip=1` | Pagination: skip the first result and take two |
+| `http://localhost:5000/api/Books/$count` | Return the total count of books |
+
+RESTier also supports full CRUD operations. You can create, update, and delete books by sending `POST`, `PATCH`/`PUT`, and `DELETE` requests to the appropriate URLs.
+
+## HTTP Status Codes for Query Results
+
+RESTier follows the OData specification for HTTP status codes when queries return no results:
+
+| Scenario | Status Code | Explanation |
+|----------|-------------|-------------|
+| Entity by key exists | **200 OK** | Entity is returned in the response body |
+| Entity by key does not exist | **404 Not Found** | No entity with that key |
+| Single-valued property or navigation is null | **204 No Content** | Parent entity exists but the property value is null |
+| Single-valued navigation, parent does not exist | **404 Not Found** | Parent entity with the given key was not found |
+| Collection query (even if empty) | **200 OK** | Returns the collection (which may have zero items) |
+
+For concurrency-related status codes (ETags, `If-Match`, `If-None-Match`), see [Optimistic Concurrency](/guides/server/concurrency).
+
+## Next Steps
+
+Now that you have a working RESTier API, explore these topics to add more capabilities:
+
+<CardGroup cols={2}>
+  <Card title="EntitySet Filters" icon="filter-list" href="/guides/server/filters">
+    Automatically filter query results based on business rules or the current user.
+  </Card>
+  <Card title="Method Authorization" icon="shield-halved" href="/guides/server/method-authorization">
+    Control which CRUD operations are allowed on each EntitySet.
+  </Card>
+  <Card title="Interceptors" icon="filter" href="/guides/server/interceptors">
+    Run custom logic before and after entities are inserted, updated, or deleted.
+  </Card>
+  <Card title="Customizing the Entity Model" icon="sitemap" href="/guides/server/model-building">
+    Adjust the OData model that RESTier generates from your DbContext.
+  </Card>
+  <Card title="Naming Conventions" icon="tag" href="/guides/server/naming-conventions">
+    Use camelCase property names in JSON payloads for JavaScript-friendly APIs.
+  </Card>
+  <Card title="Optimistic Concurrency" icon="key" href="/guides/server/concurrency">
+    Use ETags to prevent lost updates with `If-Match` and `If-None-Match` headers.
+  </Card>
+  <Card title="Operations" icon="bolt" href="/guides/server/operations">
+    Add custom OData actions and functions to your API.
+  </Card>
+  <Card title="OpenAPI / Swagger" icon="code" href="/guides/server/swagger">
+    Generate interactive API documentation.
+  </Card>
+  <Card title="Testing with Breakdance" icon="vial" href="/guides/server/testing">
+    Write in-memory integration tests for your API.
+  </Card>
+  <Card title="Temporal Types" icon="clock" href="/guides/extending-restier/temporal-types">
+    Work with date and time types in your OData model.
+  </Card>
+  <Card title="In-Memory Provider" icon="database" href="/guides/extending-restier/in-memory-provider">
+    Use a non-EF data source with RESTier.
+  </Card>
+</CardGroup>

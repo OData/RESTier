@@ -1,0 +1,191 @@
+---
+title: "Testing with Breakdance"
+description: "In-memory integration testing for Restier APIs using Microsoft.Restier.Breakdance"
+icon: "vial"
+sidebarTitle: "Testing"
+---
+
+RESTier includes the `Microsoft.Restier.Breakdance` package, which provides in-memory integration testing
+for your RESTier APIs. It builds on the [Breakdance](https://github.com/CloudNimble/Breakdance) testing
+framework and uses the ASP.NET Core `TestServer` to spin up a fully configured OData pipeline without
+requiring a running web server.
+
+There are two approaches to writing tests: static helper methods via `RestierTestHelpers`, and a base class
+approach via `RestierBreakdanceTestBase<TApi>`. Both achieve the same goal; pick whichever fits your test
+style.
+
+## Setup
+
+Install the NuGet package into your test project:
+
+```
+dotnet add package Microsoft.Restier.Breakdance
+```
+
+You will also need a test framework. RESTier's own tests use MSTest 3.x, FluentAssertions, and NSubstitute,
+but any .NET test framework will work.
+
+## Using RestierTestHelpers (Static Methods)
+
+The `RestierTestHelpers` class exposes static generic methods that create an in-memory test server, execute
+requests, and retrieve runtime components -- all in a single call. This is the simplest way to write one-off
+tests because there is no base class to inherit.
+
+### Example
+
+```csharp
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Restier.Breakdance;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class BookQueryTests
+{
+    [TestMethod]
+    public async Task GetBooksReturns200()
+    {
+        var response = await RestierTestHelpers.ExecuteTestRequest<LibraryApi>(
+            HttpMethod.Get,
+            resource: "/Books",
+            serviceCollection: services =>
+            {
+                services.AddEFCoreProviderServices<LibraryContext>(options =>
+                    options.UseInMemoryDatabase("LibraryTests"));
+            });
+
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [TestMethod]
+    public async Task MetadataDocumentIsValid()
+    {
+        var metadata = await RestierTestHelpers.GetApiMetadataAsync<LibraryApi>(
+            serviceCollection: services =>
+            {
+                services.AddEFCoreProviderServices<LibraryContext>(options =>
+                    options.UseInMemoryDatabase("LibraryTests"));
+            });
+
+        metadata.Should().NotBeNull();
+    }
+}
+```
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `ExecuteTestRequest<TApi>(...)` | Configures the pipeline in-memory and sends an HTTP request, returning the `HttpResponseMessage` for inspection. |
+| `GetTestableApiInstance<TApi>(...)` | Retrieves the `TApi` instance from the dependency injection container. |
+| `GetTestableModelAsync<TApi>(...)` | Retrieves the `IEdmModel` used by the API. |
+| `GetApiMetadataAsync<TApi>(...)` | Sends a `GET /$metadata` request and returns the result as an `XDocument`. |
+| `GetTestableHttpClient<TApi>(...)` | Returns an `HttpClient` pre-configured to send requests to the in-memory test server. |
+| `GetTestableInjectedService<TApi, TService>(...)` | Resolves a service of type `TService` from the API's DI container. |
+| `GetTestableInjectionContainer<TApi>(...)` | Returns the scoped `IServiceProvider` created by the Restier pipeline. |
+| `GetModelBuilderHierarchy<TApi>(...)` | Returns the ordered list of `IModelBuilder` instances registered in the builder chain -- useful for troubleshooting model construction. |
+| `WriteCurrentApiMetadata<TApi>(...)` | Writes the `$metadata` output to a file on disk for snapshot comparison. |
+
+Most methods accept optional parameters for `routeName`, `routePrefix`, and a `serviceCollection` action to
+register additional services (such as your Entity Framework provider).
+
+## Using RestierBreakdanceTestBase (Base Class)
+
+If you prefer a base class that manages the test server lifecycle for you, inherit from
+`RestierBreakdanceTestBase<TApi>`. This is useful when multiple tests in the same class share configuration,
+because the server is set up once and reused.
+
+### Example
+
+```csharp
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using FluentAssertions;
+using Microsoft.AspNetCore.OData;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
+using Microsoft.Restier.AspNetCore;
+using Microsoft.Restier.Breakdance;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class LibraryApiTests : RestierBreakdanceTestBase<LibraryApi>
+{
+    public LibraryApiTests()
+    {
+        // Configure the Restier route and services before the test server starts.
+        AddRestierAction = options =>
+        {
+            options.AddRestierRoute<LibraryApi>("Library", services =>
+            {
+                services.AddEFCoreProviderServices<LibraryContext>(opt =>
+                    opt.UseInMemoryDatabase("LibraryTests"));
+            });
+        };
+
+        // Start the in-memory test server.
+        TestSetup();
+    }
+
+    [TestMethod]
+    public async Task GetBooksReturns200()
+    {
+        var response = await ExecuteTestRequest(HttpMethod.Get, resource: "/Books");
+
+        response.IsSuccessStatusCode.Should().BeTrue();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [TestMethod]
+    public async Task MetadataEndpointReturnsValidXml()
+    {
+        XDocument metadata = await GetApiMetadataAsync();
+
+        metadata.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public void EdmModelIsAvailable()
+    {
+        IEdmModel model = GetModel();
+
+        model.Should().NotBeNull();
+    }
+}
+```
+
+### Available Members
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `AddRestierAction` | `Action<ODataOptions>` | Set this before calling `TestSetup()` to register Restier routes and services. |
+| `ApplicationBuilderAction` | `Action<IApplicationBuilder>` | Set this before calling `TestSetup()` to add custom middleware. |
+
+#### Methods
+
+| Method | Description |
+|--------|-------------|
+| `ExecuteTestRequest(...)` | Sends an HTTP request through the in-memory test server and returns the `HttpResponseMessage`. |
+| `GetApiMetadataAsync(...)` | Sends a `GET /$metadata` request and returns the result as an `XDocument`. |
+| `GetScopedRequestContainer(...)` | Returns the scoped `IServiceProvider` for a given route name. |
+| `GetApiInstance(...)` | Retrieves the `TApi` instance from the DI container for a given route. |
+| `GetModel(...)` | Retrieves the `IEdmModel` for a given route. |
+
+## Choosing an Approach
+
+Use **`RestierTestHelpers`** (static methods) when you want self-contained tests that do not require a shared
+base class. Each call creates its own test server, which keeps tests isolated but adds a small amount of setup
+overhead per call.
+
+Use **`RestierBreakdanceTestBase<TApi>`** when many tests in a class share the same API configuration. The
+test server is created once in the constructor and reused across all test methods in the class, reducing
+repeated setup.

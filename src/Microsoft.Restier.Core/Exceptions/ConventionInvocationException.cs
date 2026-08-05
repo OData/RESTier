@@ -13,9 +13,8 @@ namespace Microsoft.Restier.Core
     [Serializable]
     public class ConventionInvocationException : Exception
     {
-
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="EdmModelValidationException"/> class.
         /// </summary>
         public ConventionInvocationException()
         {
@@ -49,7 +48,5 @@ namespace Microsoft.Restier.Core
         {
             throw new NotImplementedException();
         }
-
     }
-
 }

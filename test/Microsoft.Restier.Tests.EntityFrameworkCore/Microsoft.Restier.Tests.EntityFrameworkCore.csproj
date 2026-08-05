@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+		<DefineConstants>$(DefineConstants);EFCore</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Microsoft.Restier.Tests.EntityFramework\ChangeSetPreparerTests.cs" Link="ChangeSetPreparerTests.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Microsoft.Restier.AspNetCore\Microsoft.Restier.AspNetCore.csproj" />
+		<ProjectReference Include="..\..\src\Microsoft.Restier.EntityFrameworkCore\Microsoft.Restier.EntityFrameworkCore.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared.EntityFrameworkCore\Microsoft.Restier.Tests.Shared.EntityFrameworkCore.csproj" />
+		<ProjectReference Include="..\Microsoft.Restier.Tests.Shared\Microsoft.Restier.Tests.Shared.csproj" />
+	</ItemGroup>
+
+</Project>

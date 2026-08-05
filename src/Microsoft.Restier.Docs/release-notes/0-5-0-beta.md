@@ -1,3 +1,9 @@
+---
+title: "Restier 0.5.0 Beta"
+description: "Released 2016-05-24: DI integration, $apply support, temporal types"
+sidebarTitle: "0.5.0 Beta"
+---
+
 ## Downloads
 
  - NuGet: `Install-Package Microsoft.Restier -Pre` [[Website](http://www.nuget.org/packages/Microsoft.Restier/0.5.0-beta)]

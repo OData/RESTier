@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,10 +17,8 @@ namespace Microsoft.Restier.Core.Submit
     /// <summary>
     /// The default handler for submitting changes through the <see cref="ApiBase"/>.
     /// </summary>
-    internal class DefaultSubmitHandler
+    internal class DefaultSubmitHandler : ISubmitHandler
     {
-
-        #region Private Members
 
         private readonly IChangeSetInitializer initializer;
         private readonly IChangeSetItemAuthorizer authorizer;
@@ -27,35 +26,30 @@ namespace Microsoft.Restier.Core.Submit
         private readonly IChangeSetItemFilter filter;
         private readonly ISubmitExecutor executor;
 
-        #endregion
-
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSubmitHandler"/> class.
         /// </summary>
         /// <param name="initializer">A reference to a service that can initialize a change set.</param>
         /// <param name="executor">A reference to a service that executes a submission.</param>
-        /// <param name="authorizer">An optional reference to an service that authorizes a submission.</param>
+        /// <param name="authorizerFactory">An optional reference to an service that authorizes a submission.</param>
         /// <param name="validator">An optional reference to a service that validates a submission.</param>
         /// <param name="filter">An optional reference to a service that executes logic before and after a submission.</param>
-        public DefaultSubmitHandler(IChangeSetInitializer initializer, ISubmitExecutor executor,
-                                    IChangeSetItemAuthorizer authorizer = null, IChangeSetItemValidator validator = null,
-                                    IChangeSetItemFilter filter = null)
+        public DefaultSubmitHandler(
+            IChangeSetInitializer initializer,
+            ISubmitExecutor executor,
+            IChainOfResponsibilityFactory<IChangeSetItemAuthorizer> authorizerFactory = null,
+            IChainOfResponsibilityFactory<IChangeSetItemValidator> validator = null,
+            IChainOfResponsibilityFactory<IChangeSetItemFilter> filter = null)
         {
             Ensure.NotNull(initializer, nameof(initializer));
             Ensure.NotNull(executor, nameof(executor));
 
             this.initializer = initializer;
-            this.authorizer = authorizer;
-            this.validator = validator;
-            this.filter = filter;
+            this.authorizer = authorizerFactory?.Create();
+            this.validator = validator?.Create();
+            this.filter = filter?.Create();
             this.executor = executor;
         }
-
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Asynchronously executes the submit flow.
@@ -90,19 +84,11 @@ namespace Microsoft.Restier.Core.Submit
 
             await PerformPersist(context, cancellationToken).ConfigureAwait(false);
 
-#if NET48
-            while (context.ChangeSet.Entries.TryDequeue(out _))
-#else
             context.ChangeSet.Entries.Clear();
-#endif
             await PerformPostEvent(context, currentChangeSetItems, cancellationToken).ConfigureAwait(false);
 
             return context.Result;
         }
-
-        #endregion
-
-        #region Private Methods
 
         private static string GetAuthorizeFailedMessage(ChangeSetItem item)
         {
@@ -248,9 +234,5 @@ namespace Microsoft.Restier.Core.Submit
                 await filter.OnChangeSetItemProcessedAsync(context, item, cancellationToken).ConfigureAwait(false);
             }
         }
-
-        #endregion
-
     }
-
 }

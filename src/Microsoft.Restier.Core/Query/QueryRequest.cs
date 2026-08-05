@@ -21,19 +21,14 @@ namespace Microsoft.Restier.Core.Query
         public QueryRequest(IQueryable query)
         {
             Ensure.NotNull(query, nameof(query));
-            if (!(query is QueryableSource))
-            {
-                throw new NotSupportedException(
-                    Resources.QueryableSourceCannotBeUsedAsQuery);
-            }
 
-            Expression = query.Expression;
+            this.Query = query;
         }
 
         /// <summary>
         /// Gets or sets the composed query expression.
         /// </summary>
-        public Expression Expression { get; set; }
+        public Expression Expression => Query.Expression;
 
         /// <summary>
         /// Gets or sets a value indicating whether the number
@@ -41,5 +36,52 @@ namespace Microsoft.Restier.Core.Query
         /// items themselves.
         /// </summary>
         public bool ShouldReturnCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the total
+        /// number of items should be retrieved when the
+        /// result has been filtered using paging operators.
+        /// </summary>
+        /// <remarks>
+        /// Setting this to <c>true</c> may have a performance impact as
+        /// the data provider may need to execute two independent queries.
+        /// </remarks>
+        public bool IncludeTotalCount { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the OData <c>$expand</c> tree of the
+        /// originating request contains a cycle — that is, a navigation chain
+        /// that revisits an entity type (or a type in the same inheritance
+        /// hierarchy) already present in the chain.
+        /// </summary>
+        /// <remarks>
+        /// Set by the AspNetCore layer from the parsed <c>SelectExpandClause</c>.
+        /// EF providers use this hint to choose a safe tracking behavior — see
+        /// <c>RestierEFTrackingBehavior</c>. Default <c>false</c>.
+        /// </remarks>
+        public bool HasRecursiveExpand { get; internal set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the EF query pipeline is permitted
+        /// to drop change tracking for this request.
+        /// </summary>
+        /// <remarks>
+        /// Set to <c>true</c> by the AspNetCore controller for top-level HTTP
+        /// read requests. Submit-pipeline and deep-update internal queries
+        /// leave this <c>false</c>, since those code paths mutate the returned
+        /// entities via <c>DbContext.Entry(...)</c> and depend on tracking
+        /// (or at least on the original-values snapshot) being available.
+        /// </remarks>
+        public bool AllowNoTracking { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets an action to set the total count.
+        /// </summary>
+        public Action<long> SetTotalCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Query.
+        /// </summary>
+        public IQueryable Query{ get; internal set; }
     }
 }

@@ -15,14 +15,7 @@ namespace Microsoft.Restier.AspNetCore.Middleware
     /// </remarks>
     public class ODataBatchHttpContextFixerMiddleware
     {
-
-        #region Private Members
-
         private readonly RequestDelegate requestDelegate;
-
-        #endregion
-
-        #region Constructor
 
         /// <summary>
         /// The default constructor for the middleware.
@@ -32,10 +25,6 @@ namespace Microsoft.Restier.AspNetCore.Middleware
         {
             this.requestDelegate = requestDelegate;
         }
-
-        #endregion
-
-        #region Middleware
 
         /// <summary>
         /// 
@@ -48,9 +37,6 @@ namespace Microsoft.Restier.AspNetCore.Middleware
             contextAccessor.HttpContext ??= httpContext;
             await requestDelegate(httpContext);
         }
-
-        #endregion
-
     }
 
 }

@@ -1,12 +1,15 @@
+// Copyright (c) Microsoft Corporation.  All rights reserved.
+// Licensed under the MIT License.  See License.txt in the project root for license information.
 
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Restier.AspNetCore;
-using Microsoft.Restier.Core;
+using Microsoft.Restier.EntityFrameworkCore;
+using Microsoft.Restier.EntityFrameworkCore.Spatial;
 using Microsoft.Restier.Samples.Postgres.AspNetCore.Controllers;
 using Microsoft.Restier.Samples.Postgres.AspNetCore.Models;
 using System;
@@ -19,54 +22,61 @@ namespace Microsoft.Restier.Samples.Postgres.AspNetCore
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services
-                .AddRestier(
-                    restierBuilder =>
-                    {
-                        // This delegate is executed after OData is added to the container.
-                        // Add you replacement services here.
-                        restierBuilder.AddRestierApi<RestierTestContextApi>(routeServices =>
-                        {
-                            routeServices
-                                .AddEFCoreProviderServices<RestierTestContext>((services, options) =>
-                                    options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(RestierTestContext))))
-                                .AddSingleton(new ODataValidationSettings
-                                {
-                                    MaxTop = 5,
-                                    MaxAnyAllExpressionDepth = 3,
-                                    MaxExpansionDepth = 3,
-                                });
-                        });
+                .AddControllers()
+                .AddRestier(options =>
+                {
+                    options.Select().Expand().Filter().OrderBy().SetMaxTop(5).Count();
+                    options.TimeZone = TimeZoneInfo.Utc;
 
-                    }, true);
+                    options.AddRestierRoute<RestierTestContextApi>("v3", restierServices =>
+                    {
+                        var connectionString = builder.Configuration.GetConnectionString(nameof(RestierTestContext));
+                        restierServices
+                            .AddEFCoreProviderServices<RestierTestContext>(dbOptions =>
+                                dbOptions.UseNpgsql(connectionString, o => o.UseNetTopologySuite()))
+                            .AddRestierSpatial();
+                    },
+                    bag =>
+                    {
+                        bag.Validation.MaxAnyAllExpressionDepth = 3;
+                        bag.Validation.MaxExpansionDepth = 3;
+                    });
+                })
+                .AddApplicationPart(typeof(RestierTestContextApi).Assembly)
+                .AddApplicationPart(typeof(RestierController).Assembly);
+
+            builder.Services.AddRestierNSwag();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Apply pending migrations and seed data on startup.
+            var optionsBuilder = new DbContextOptionsBuilder<RestierTestContext>();
+            optionsBuilder.UseNpgsql(app.Configuration.GetConnectionString(nameof(RestierTestContext)), o => o.UseNetTopologySuite());
+            using (var db = new RestierTestContext(optionsBuilder.Options))
+            {
+                db.Database.Migrate();
+            }
 
-            app.UseRestierBatching();
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-            app.UseHttpsRedirection();
-
+            app.UseODataRouteDebug();
             app.UseRouting();
-
             app.UseAuthorization();
-
 
 #pragma warning disable ASP0014 // Suggest using top level route registrations
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Select().Expand().Filter().OrderBy().MaxTop(100).Count().SetTimeZoneInfo(TimeZoneInfo.Utc);
-
-                endpoints.MapRestier(builder =>
-                {
-                    builder.MapApiRoute<RestierTestContextApi>("ApiV3", "/v3", true);
-                });
-
+                endpoints.MapControllers();
+                endpoints.MapRestier();
             });
 #pragma warning restore ASP0014 // Suggest using top level route registrations
+
+            app.UseRestierOpenApi();
+            app.UseRestierReDoc();
 
             app.Run();
         }

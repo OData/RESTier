@@ -2,6 +2,9 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using Microsoft.Restier.Core.Spatial;
+using Microsoft.Spatial;
+using NetTopologySuite.Geometries;
 
 namespace Microsoft.Restier.Samples.Postgres.AspNetCore.Models;
 
@@ -10,6 +13,9 @@ public partial class User
     public Guid Id { get; set; }
 
     public string EmailAddress { get; set; }
+
+    [Spatial(typeof(GeographyPoint))]
+    public Point HomeLocation { get; set; }
 
     public Guid? UserTypeId { get; set; }
 

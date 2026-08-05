@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
+using Microsoft.Restier.Core.DependencyInjection;
+
 namespace Microsoft.Restier.Core.Query
 {
     /// <summary>
@@ -19,7 +21,7 @@ namespace Microsoft.Restier.Core.Query
     /// the exception of normalization of expressions identifying API data).
     /// </para>
     /// </remarks>
-    public interface IQueryExpressionAuthorizer
+    public interface IQueryExpressionAuthorizer : IChainedService<IQueryExpressionAuthorizer>
     {
         /// <summary>
         /// Check an expression to see whether it is authorized.

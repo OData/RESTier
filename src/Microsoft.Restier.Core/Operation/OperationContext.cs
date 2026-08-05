@@ -13,28 +13,23 @@ namespace Microsoft.Restier.Core.Operation
     /// </summary>
     public class OperationContext : InvocationContext
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationContext" /> class.
         /// </summary>
-        /// <param name="api">
-        /// An Api.
-        /// </param>
+        /// <param name="api">An Api.</param>
         /// <param name="getParameterValueFunc">
-        /// The function that used to retrieve the parameter value name.
+        /// The function used to retrieve a parameter's URL value alongside a presence flag.
+        /// The flag is <see langword="true"/> when the parameter name appears in the request
+        /// URL or body, regardless of whether the value is <see langword="null"/>.
         /// </param>
-        /// <param name="operationName">
-        /// The operation name.
-        /// </param>
-        /// <param name="isFunction">
-        /// A flag indicates this is a function call or action call.
-        /// </param>
+        /// <param name="operationName">The operation name.</param>
+        /// <param name="isFunction">A flag indicating this is a function call or action call.</param>
         /// <param name="bindingParameterValue">
-        /// A queryable for binding parameter value and if it is function/action import, the value will be null.
+        /// A queryable for the binding-parameter value; <see langword="null"/> for function/action imports.
         /// </param>
         public OperationContext(
             ApiBase api,
-            Func<string, object> getParameterValueFunc,
+            Func<string, (bool Present, object Value)> getParameterValueFunc,
             string operationName,
             bool isFunction,
             IEnumerable bindingParameterValue)
@@ -55,9 +50,11 @@ namespace Microsoft.Restier.Core.Operation
         public string OperationName { get; }
 
         /// <summary>
-        /// Gets the function that used to retrieve the parameter value name.
+        /// Gets the function used to retrieve a parameter's URL value along with a
+        /// presence flag distinguishing an omitted parameter (Present = false) from
+        /// an explicit null value (Present = true, Value = null).
         /// </summary>
-        public Func<string, object> GetParameterValueFunc { get; }
+        public Func<string, (bool Present, object Value)> GetParameterValueFunc { get; }
 
         /// <summary>
         /// Gets a value indicating whether it is a function call or action call.
@@ -65,8 +62,8 @@ namespace Microsoft.Restier.Core.Operation
         public bool IsFunction { get; }
 
         /// <summary>
-        /// Gets the queryable for binding parameter value,
-        /// and if it is function/action import, the value will be null.
+        /// Gets the queryable for the binding-parameter value;
+        /// <see langword="null"/> for function/action imports.
         /// </summary>
         public IEnumerable BindingParameterValue { get; }
 

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.  See License.txt in the project root for license information.
 
 using System;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Restier.Core
 {
@@ -16,8 +15,6 @@ namespace Microsoft.Restier.Core
     /// </remarks>
     public class InvocationContext
     {
-        private readonly IServiceProvider provider;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InvocationContext" /> class.
         /// </summary>
@@ -27,8 +24,6 @@ namespace Microsoft.Restier.Core
         public InvocationContext(ApiBase api)
         {
             Ensure.NotNull(api, nameof(api));
-            // JWS: until we have removed all calls to GetApiService.
-            provider = api.ServiceProvider;
             Api = api;
         }
 
@@ -36,27 +31,6 @@ namespace Microsoft.Restier.Core
         /// Gets the <see cref="ApiBase"/> descendant for this invocation.
         /// </summary>
         public ApiBase Api { get; }
-
-        /// <summary>
-        /// Gets an API service.
-        /// </summary>
-        /// <typeparam name="T">The API service type.</typeparam>
-        /// <returns>The API service instance.</returns>
-        public T GetApiService<T>() where T : class
-        {
-            return provider.GetService<T>();
-        }
-
-        /// <summary>
-        /// Gets an API service.
-        /// </summary>
-        /// <param name="type">The API service type.</param>
-        /// <returns>The API service instance.</returns>
-        public object GetApiService(Type type)
-        {
-            return provider.GetService(type);
-        }
-
     }
 
 }

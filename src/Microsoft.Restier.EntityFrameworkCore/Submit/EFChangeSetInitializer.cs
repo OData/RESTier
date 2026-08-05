@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Threading;
@@ -26,6 +27,25 @@ namespace Microsoft.Restier.EntityFrameworkCore
     public class EFChangeSetInitializer : DefaultChangeSetInitializer
     {
         private static readonly MethodInfo HandleMethod = typeof(EFChangeSetInitializer).GetMethod("HandleEntitySet", BindingFlags.Instance | BindingFlags.NonPublic);
+        private readonly Microsoft.Restier.Core.Spatial.ISpatialTypeConverter[] spatialConverters;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EFChangeSetInitializer"/> class.
+        /// </summary>
+        public EFChangeSetInitializer()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EFChangeSetInitializer"/> class
+        /// with the specified spatial type converters.
+        /// </summary>
+        /// <param name="spatialConverters">The registered spatial type converters, or null for none.</param>
+        public EFChangeSetInitializer(System.Collections.Generic.IEnumerable<Microsoft.Restier.Core.Spatial.ISpatialTypeConverter> spatialConverters)
+        {
+            this.spatialConverters = spatialConverters?.ToArray() ?? System.Array.Empty<Microsoft.Restier.Core.Spatial.ISpatialTypeConverter>();
+        }
 
         /// <summary>
         /// Asynchronously prepare the <see cref="ChangeSet"/>.
@@ -48,9 +68,52 @@ namespace Microsoft.Restier.EntityFrameworkCore
 
             var dbContext = frameworkApi.DbContext;
 
+            // Phase 1: Validate and resolve entity references (bind references) and relationship removals.
+            // This runs before any entity materialization so invalid references fail atomically.
             foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
             {
-                var strongTypedDbSet = dbContext.GetType().GetProperty(entry.ResourceSetName).GetValue(dbContext);
+                if (entry.NavigationBindings.Count > 0)
+                {
+                    foreach (var binding in entry.NavigationBindings)
+                    {
+                        foreach (var bindRef in binding.Value)
+                        {
+                            bindRef.ResolvedEntity = await ResolveBindReference(context, bindRef, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+                }
+
+                foreach (var removal in entry.RelationshipRemovals)
+                {
+                    var bindRef = new BindReference
+                    {
+                        ResourceSetName = removal.ResourceSetName,
+                        ResourceKey = removal.ResourceKey,
+                    };
+                    try
+                    {
+                        removal.ResolvedEntity = await ResolveBindReference(context, bindRef, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    catch (StatusCodeException)
+                    {
+                        // Entity no longer exists (concurrent deletion) — skip
+                    }
+                }
+            }
+
+            // Phase 2: Materialize entities and wire relationships.
+            foreach (var entry in context.ChangeSet.Entries.OfType<DataModificationItem>())
+            {
+                var dbSetProperty = dbContext.GetType().GetProperty(entry.ResourceSetName);
+                if (dbSetProperty is null)
+                {
+                    throw new InvalidOperationException(
+                        $"The DbContext '{dbContext.GetType().Name}' does not have a property named '{entry.ResourceSetName}'. " +
+                        $"Check that the entity set name matches a DbSet property on the context.");
+                }
+
+                var strongTypedDbSet = dbSetProperty.GetValue(dbContext);
                 var resourceType = strongTypedDbSet.GetType().GetGenericArguments()[0];
 
                 // This means request resource is sub type of resource type
@@ -63,6 +126,64 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 var typedMethodCall = HandleMethod.MakeGenericMethod(new Type[] { resourceType });
                 var task = typedMethodCall.Invoke(this, new object[] { context, dbContext, entry, resourceType, cancellationToken }) as Task;
                 await task.ConfigureAwait(false);
+
+                // Wire parent-child relationships after materialization.
+                if (entry.ParentItem?.Resource is not null && entry.Resource is not null)
+                {
+                    WireParentChildRelationship(entry);
+                }
+
+                // Wire bind references after materialization.
+                if (entry.NavigationBindings.Count > 0 && entry.Resource is not null)
+                {
+                    WireBindReferences(entry);
+                }
+
+                // Process relationship removals after materialization.
+                if (entry.RelationshipRemovals.Count > 0 && entry.Resource is not null)
+                {
+                    foreach (var removal in entry.RelationshipRemovals)
+                    {
+                        if (removal.ResolvedEntity is null)
+                        {
+                            continue;
+                        }
+
+                        if (removal.FkPropertyName is not null)
+                        {
+                            // Set FK to null directly on the child entity — most reliable approach
+                            var fkPropInfo = removal.ResolvedEntity.GetType().GetProperty(removal.FkPropertyName);
+                            if (fkPropInfo is not null)
+                            {
+                                // Check if the FK type is nullable — non-nullable FKs cannot be set to null
+                                var fkType = fkPropInfo.PropertyType;
+                                var isNullable = !fkType.IsValueType || Nullable.GetUnderlyingType(fkType) is not null;
+                                if (!isNullable)
+                                {
+                                    throw new StatusCodeException(HttpStatusCode.BadRequest,
+                                        $"Cannot unlink relationship via '{removal.FkPropertyName}': " +
+                                        $"the foreign key property is required (non-nullable type {fkType.Name}).");
+                                }
+
+                                fkPropInfo.SetValue(removal.ResolvedEntity, null);
+                            }
+                        }
+                        else if (removal.InverseNavigationPropertyName is not null)
+                        {
+                            // Clear inverse nav on child — EF infers FK null
+                            SetNavigationProperty(removal.ResolvedEntity, removal.InverseNavigationPropertyName, null);
+                        }
+                        else
+                        {
+                            // Single nav on parent — set to null
+                            var navPropInfo = entry.Resource.GetType().GetProperty(removal.NavigationPropertyName);
+                            if (navPropInfo is not null)
+                            {
+                                navPropInfo.SetValue(entry.Resource, null);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -75,15 +196,23 @@ namespace Microsoft.Restier.EntityFrameworkCore
         public virtual object ConvertToEfValue(Type type, object value)
         {
             // string[EdmType = Enum] => System.Enum
+            // Use ignoreCase to support camelCase enum member names from EnableLowerCamelCase
             if (TypeHelper.IsEnum(type))
             {
-                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value);
+                return Enum.Parse(TypeHelper.GetUnderlyingTypeOrSelf(type), (string)value, ignoreCase: true);
+            }
+
+            // Edm.Date => System.DateOnly
+#pragma warning disable CS0618 // Date and TimeOfDay are obsolete but still used by OData
+            if (value is Date dateValue && TypeHelper.IsDateOnly(type))
+            {
+                return new DateOnly(dateValue.Year, dateValue.Month, dateValue.Day);
             }
 
             // Edm.Date => System.DateTime[SqlType = Date]
-            if (value is Date dateValue)
+            if (value is Date dateValueForDateTime)
             {
-                return (DateTime)dateValue;
+                return (DateTime)dateValueForDateTime;
             }
 
             // System.DateTimeOffset => System.DateTime[SqlType = DateTime or DateTime2]
@@ -93,12 +222,19 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 return dateTimeOffsetValue.DateTime;
             }
 
+            // Edm.TimeOfDay => System.TimeOnly
+            if (value is TimeOfDay timeOfDayForTimeOnly && TypeHelper.IsTimeOnly(type))
+            {
+                return new TimeOnly(timeOfDayForTimeOnly.Hours, timeOfDayForTimeOnly.Minutes, timeOfDayForTimeOnly.Seconds, (int)timeOfDayForTimeOnly.Milliseconds);
+            }
+
             // Edm.TimeOfDay => System.TimeSpan[SqlType = Time]
             if (value is TimeOfDay && TypeHelper.IsTimeSpan(type))
             {
                 var timeOfDayValue = (TimeOfDay)value;
                 return (TimeSpan)timeOfDayValue;
             }
+#pragma warning restore CS0618
 
             // In case key is long type, when put an resource, key value will be from key parsing which is type of int
             if (value is int && type == typeof(long))
@@ -106,23 +242,34 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 return Convert.ToInt64(value, CultureInfo.InvariantCulture);
             }
 
-#if !EFCore
-            // Todo: Restore geometry handling
-            if (type == typeof(DbGeography))
+            if (value is not null && IsNtsGeometryType(type))
             {
-                if (value is GeographyPoint point)
+                for (var i = 0; i < spatialConverters.Length; i++)
                 {
-                    return point.ToDbGeography();
-                }
-
-                if (value is GeographyLineString s)
-                {
-                    return s.ToDbGeography();
+                    if (spatialConverters[i].CanConvert(type))
+                    {
+                        return spatialConverters[i].ToStorage(type, value);
+                    }
                 }
             }
-#endif
 
             return value;
+        }
+
+        private static bool IsNtsGeometryType(Type type)
+        {
+            var t = type;
+            while (t is not null && t != typeof(object))
+            {
+                if (t.FullName == "NetTopologySuite.Geometries.Geometry")
+                {
+                    return true;
+                }
+
+                t = t.BaseType;
+            }
+
+            return false;
         }
 
         private static async Task<object> FindResource(SubmitContext context, DataModificationItem item, CancellationToken cancellationToken)
@@ -133,9 +280,20 @@ namespace Microsoft.Restier.EntityFrameworkCore
 
             var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken).ConfigureAwait(false);
 
-            var resource = result.Results.SingleOrDefault();
+            // Materialize preserving the entity element type so that ValidateEtag can build
+            // typed expressions (Expression.Property requires the real entity type, not object).
+            var elementType = query.ElementType;
+            var toArray = ExpressionHelperMethods.EnumerableToArrayGeneric.MakeGenericMethod(elementType);
+            var materialized = (Array)toArray.Invoke(null, new object[] { result.Results });
+
+            var resource = materialized.Length == 1 ? materialized.GetValue(0) : null;
             if (resource is null)
             {
+                if (materialized.Length > 1)
+                {
+                    throw new InvalidOperationException(Core.Resources.QueryShouldGetSingleRecord);
+                }
+
                 throw new StatusCodeException(HttpStatusCode.NotFound, Resources.ResourceNotFound);
             }
 
@@ -145,7 +303,8 @@ namespace Microsoft.Restier.EntityFrameworkCore
                 return resource;
             }
 
-            resource = item.ValidateEtag(result.Results.AsQueryable());
+            var asQueryable = ExpressionHelperMethods.QueryableAsQueryableGeneric.MakeGenericMethod(elementType);
+            resource = item.ValidateEtag((IQueryable)asQueryable.Invoke(null, new object[] { materialized }));
             return resource;
         }
 
@@ -272,6 +431,100 @@ namespace Microsoft.Restier.EntityFrameworkCore
             }
 
             entry.Resource = resource;
+        }
+
+        private static async Task<object> ResolveBindReference(SubmitContext context, BindReference bindRef, CancellationToken cancellationToken)
+        {
+            var apiBase = context.Api;
+            var query = apiBase.GetQueryableSource(bindRef.ResourceSetName);
+            var elementType = query.ElementType;
+            var param = Expression.Parameter(elementType);
+            Expression where = null;
+
+            foreach (var keyPair in bindRef.ResourceKey)
+            {
+                var property = Expression.Property(param, keyPair.Key);
+                var value = keyPair.Value;
+                if (value.GetType() != property.Type)
+                {
+                    value = Convert.ChangeType(value, property.Type, CultureInfo.InvariantCulture);
+                }
+
+                var equal = Expression.Equal(property, Expression.Constant(value, property.Type));
+                where = where is null ? equal : Expression.AndAlso(where, equal);
+            }
+
+            var whereLambda = Expression.Lambda(where, param);
+            query = ExpressionHelpers.Where(query, whereLambda, elementType);
+
+            var result = await apiBase.QueryAsync(new QueryRequest(query), cancellationToken).ConfigureAwait(false);
+            var toArray = ExpressionHelperMethods.EnumerableToArrayGeneric.MakeGenericMethod(elementType);
+            var materialized = (Array)toArray.Invoke(null, new object[] { result.Results });
+
+            if (materialized.Length == 0)
+            {
+                var keyDescription = string.Join(", ", bindRef.ResourceKey.Select(k => $"{k.Key}={k.Value}"));
+                throw new StatusCodeException(HttpStatusCode.BadRequest,
+                    $"Referenced entity '{bindRef.ResourceSetName}' with key ({keyDescription}) does not exist.");
+            }
+
+            return materialized.GetValue(0);
+        }
+
+        private void WireParentChildRelationship(DataModificationItem childEntry)
+        {
+            var parentResource = childEntry.ParentItem.Resource;
+            var childResource = childEntry.Resource;
+            var navPropName = childEntry.ParentNavigationPropertyName;
+
+            var parentNavPropInfo = parentResource.GetType().GetProperty(navPropName);
+            if (parentNavPropInfo is null)
+            {
+                return;
+            }
+
+            if (typeof(IEnumerable).IsAssignableFrom(parentNavPropInfo.PropertyType)
+                && parentNavPropInfo.PropertyType != typeof(string))
+            {
+                AddToCollectionNavigationProperty(parentResource, navPropName, childResource);
+            }
+            else
+            {
+                SetNavigationProperty(parentResource, navPropName, childResource);
+            }
+        }
+
+        private void WireBindReferences(DataModificationItem entry)
+        {
+            foreach (var binding in entry.NavigationBindings)
+            {
+                var navPropName = binding.Key;
+                var navPropInfo = entry.Resource.GetType().GetProperty(navPropName);
+                if (navPropInfo is null)
+                {
+                    continue;
+                }
+
+                if (typeof(IEnumerable).IsAssignableFrom(navPropInfo.PropertyType)
+                    && navPropInfo.PropertyType != typeof(string))
+                {
+                    foreach (var bindRef in binding.Value)
+                    {
+                        if (bindRef.ResolvedEntity is not null)
+                        {
+                            AddToCollectionNavigationProperty(entry.Resource, navPropName, bindRef.ResolvedEntity);
+                        }
+                    }
+                }
+                else
+                {
+                    var bindRef = binding.Value.FirstOrDefault();
+                    if (bindRef?.ResolvedEntity is not null)
+                    {
+                        SetNavigationProperty(entry.Resource, navPropName, bindRef.ResolvedEntity);
+                    }
+                }
+            }
         }
     }
 }
