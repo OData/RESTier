@@ -12,6 +12,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.OpenApi.OData" Version="[3.*, 4.0.0)" />
+		<!-- Microsoft.OpenApi.OData 3.x pulls in Microsoft.OpenApi 3.5.1 transitively, which has a
+		     high-severity advisory (GHSA-v5pm-xwqc-g5wc, patched in 3.5.4). Pin it forward so the
+		     NuGetAudit restore stays clean; the floor still satisfies OpenApi.OData's dependency. -->
+		<PackageReference Include="Microsoft.OpenApi" Version="[3.5.4, 4.0.0)" />
 		<PackageReference Include="NSwag.AspNetCore" Version="14.*" />
 	</ItemGroup>
 
