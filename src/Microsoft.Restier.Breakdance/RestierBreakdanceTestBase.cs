@@ -32,32 +32,140 @@ namespace Microsoft.Restier.Breakdance
     {
 
         /// <summary>
-        /// 
+        /// Registers the <typeparamref name="TApi"/> (and any additional APIs) with Restier. Invoked from inside
+        /// <c>services.AddRestier(...)</c> when the <see cref="AspNetCoreBreakdanceTestBase.TestServer"/> is built.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// AddRestierAction = apiBuilder =>
+        /// {
+        ///     apiBuilder.AddRestierApi&lt;LibraryApi&gt;(services =>
+        ///     {
+        ///         services.AddEFCoreProviderServices&lt;LibraryContext&gt;((_, options) => options.UseInMemoryDatabase("Library"));
+        ///     });
+        /// };
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Set this in your test class constructor, before <see cref="AspNetCoreBreakdanceTestBase.AssemblySetup"/> or
+        /// <see cref="AspNetCoreBreakdanceTestBase.TestSetup"/> runs. Every API you expect to route to must be added here;
+        /// the base class does not register <typeparamref name="TApi"/> for you.
+        /// </remarks>
         public Action<RestierApiBuilder> AddRestierAction { get; set; }
 
         /// <summary>
-        /// 
+        /// Maps the OData routes for the APIs registered in <see cref="AddRestierAction"/>. Invoked from inside
+        /// <c>MapRestier(...)</c> while the request pipeline is being built.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// MapRestierAction = routeBuilder =>
+        /// {
+        ///     routeBuilder.MapApiRoute&lt;LibraryApi&gt;("Library", "library");
+        /// };
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Set this in your test class constructor. The route name and prefix you choose here are the values to pass to
+        /// <see cref="GetScopedRequestContainer"/>, <see cref="GetApiInstance"/>, <see cref="GetModel"/>, and
+        /// <see cref="ExecuteTestRequest"/>; the defaults on those methods assume <see cref="WebApiConstants.RouteName"/>
+        /// and <see cref="WebApiConstants.RoutePrefix"/>.
+        /// </remarks>
         public Action<RestierRouteBuilder> MapRestierAction { get; set; }
 
         /// <summary>
-        /// 
+        /// Adds middleware to the <b>front</b> of the request pipeline, before routing, authorization, and the Restier
+        /// endpoints are registered.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// ApplicationBuilderAction = app =>
+        /// {
+        ///     app.UseCors("AllowAll");
+        /// };
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Use this for middleware that must observe every request before it is routed, such as CORS, request logging, or
+        /// exception handling. Nothing has been mapped yet when this runs, so middleware that inspects the endpoint table
+        /// (anything that calls <c>UseEndpoints</c> or reads <see cref="EndpointDataSource"/>) belongs in
+        /// <see cref="ApplicationBuilderLastAction"/> instead.
+        /// </remarks>
         public Action<IApplicationBuilder> ApplicationBuilderAction { get; set; }
 
         /// <summary>
-        /// Helps people that decide to use RestierTestHelpers specify which 
+        /// Adds middleware to the <b>end</b> of the request pipeline, after the Restier endpoints have been mapped and
+        /// the endpoint table is complete.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// ApplicationBuilderLastAction = app =>
+        /// {
+        ///     app.UseODataMcp();
+        /// };
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// Use this for middleware that discovers the routes Restier mapped, or that needs <c>UseRouting</c> to already be
+        /// in the pipeline. Because the <see cref="AspNetCoreBreakdanceTestBase.TestHostBuilder"/> replaces the entire
+        /// pipeline on each <c>Configure</c> call, this hook is the supported way to append to the pipeline the base class
+        /// builds; calling <c>TestHostBuilder.Configure</c> yourself would discard the Restier configuration.
+        /// </remarks>
+        public Action<IApplicationBuilder> ApplicationBuilderLastAction { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the pipeline was built with ASP.NET Core endpoint routing (<c>true</c>) or the
+        /// legacy MVC router (<c>false</c>). Set by the constructor's <c>useEndpointRouting</c> argument.
+        /// </summary>
+        /// <remarks>
+        /// Pass the same value to the <c>useEndpointRouting</c> parameter of <see cref="GetScopedRequestContainer"/>,
+        /// <see cref="GetApiInstance"/>, and <see cref="GetModel"/>, because endpoint routing rewrites route names and those
+        /// helpers must look the route up under the rewritten name.
+        /// </remarks>
         public bool UseEndpointRouting { get; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/>.
+        /// Creates a new instance of the <see cref="RestierBreakdanceTestBase{TApi}"/> and queues the Restier service
+        /// registration and request pipeline on the <see cref="AspNetCoreBreakdanceTestBase.TestHostBuilder"/>.
         /// </summary>
-        /// <param name="useEndpointRouting">Whether to use endpoint routing or not.</param>
+        /// <param name="useEndpointRouting">
+        /// <c>true</c> to build the pipeline with ASP.NET Core endpoint routing (<c>UseRouting</c> / <c>UseEndpoints</c>);
+        /// <c>false</c> to use the legacy MVC router (<c>UseMvc</c>). Defaults to <c>false</c> for backwards compatibility.
+        /// </param>
+        /// <example>
+        /// <code>
+        /// [TestClass]
+        /// public class LibraryApiTests : RestierBreakdanceTestBase&lt;LibraryApi&gt;
+        /// {
+        ///     public LibraryApiTests() : base(useEndpointRouting: true)
+        ///     {
+        ///         AddRestierAction = apiBuilder => apiBuilder.AddRestierApi&lt;LibraryApi&gt;(services => services.AddEFCoreProviderServices&lt;LibraryContext&gt;());
+        ///         MapRestierAction = routeBuilder => routeBuilder.MapApiRoute&lt;LibraryApi&gt;("Library", "library");
+        ///         ApplicationBuilderLastAction = app => app.UseODataMcp();
+        ///     }
+        ///
+        ///     [TestInitialize]
+        ///     public void Setup() => TestSetup();
+        ///
+        ///     [TestCleanup]
+        ///     public void TearDown() => TestTearDown();
+        /// }
+        /// </code>
+        /// </example>
         /// <remarks>
-        /// To properly configure these tests, please set your <see cref="AddRestierAction"/> and <see cref="MapRestierAction"/> actions before
+        /// <para>
+        /// The pipeline is assembled in this order: <see cref="ApplicationBuilderAction"/>, Restier batching, routing,
+        /// authorization, the developer exception page, the Restier endpoints from <see cref="MapRestierAction"/>, and finally
+        /// <see cref="ApplicationBuilderLastAction"/>. Cookie authentication is registered so that access-denied responses
+        /// return 403 instead of redirecting.
+        /// </para>
+        /// <para>
+        /// The hook properties are read when the <see cref="AspNetCoreBreakdanceTestBase.TestServer"/> starts, not when this
+        /// constructor runs, so set <see cref="AddRestierAction"/> and <see cref="MapRestierAction"/> (and the optional
+        /// <see cref="ApplicationBuilderAction"/> / <see cref="ApplicationBuilderLastAction"/>) in your constructor before
         /// calling <see cref="AspNetCoreBreakdanceTestBase.AssemblySetup"/> or <see cref="AspNetCoreBreakdanceTestBase.TestSetup"/>.
+        /// Do not call <c>TestHostBuilder.Configure</c> yourself; it replaces the pipeline built here.
+        /// </para>
         /// </remarks>
         public RestierBreakdanceTestBase(bool useEndpointRouting = false)
         {
@@ -67,7 +175,8 @@ namespace Microsoft.Restier.Breakdance
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                         .AddCookie(options =>
                         {
-                            options.Events.OnRedirectToAccessDenied = context => {
+                            options.Events.OnRedirectToAccessDenied = context =>
+                            {
                                 context.Response.StatusCode = 403;
                                 return Task.CompletedTask;
                             };
@@ -87,7 +196,6 @@ namespace Microsoft.Restier.Breakdance
             TestHostBuilder.Configure(builder =>
             {
                 ApplicationBuilderAction?.Invoke(builder);
-
 
                 if (useEndpointRouting)
                 {
@@ -124,20 +232,35 @@ namespace Microsoft.Restier.Breakdance
                             .MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
                     });
                 }
+
+                ApplicationBuilderLastAction?.Invoke(builder);
             });
         }
 
         /// <summary>
-        /// 
+        /// Sends a single OData request to the <typeparamref name="TApi"/> hosted in the
+        /// <see cref="AspNetCoreBreakdanceTestBase.TestServer"/> and returns the raw response.
         /// </summary>
-        /// <param name="httpMethod"></param>
-        /// <param name="host"></param>
-        /// <param name="routePrefix"></param>
-        /// <param name="resource"></param>
-        /// <param name="acceptHeader"></param>
-        /// <param name="payload"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
+        /// <param name="httpMethod">The <see cref="HttpMethod"/> to use for the request.</param>
+        /// <param name="host">The scheme and host for the request. Defaults to <see cref="WebApiConstants.Localhost"/>; change it only if that collides with another service on the machine.</param>
+        /// <param name="routePrefix">The route prefix mapped in <see cref="MapRestierAction"/>. Defaults to <see cref="WebApiConstants.RoutePrefix"/>.</param>
+        /// <param name="resource">The OData resource path relative to the route prefix, for example <c>Books?$top=5</c> or <c>Books(1)</c>. <c>null</c> requests the service root.</param>
+        /// <param name="acceptHeader">The <c>Accept</c> header value. Defaults to <see cref="ODataConstants.MinimalAcceptHeader"/>.</param>
+        /// <param name="payload">An object to serialize as the JSON request body for POST, PUT, and PATCH requests, or <c>null</c> for no body.</param>
+        /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> used to serialize <paramref name="payload"/>, or <c>null</c> for the defaults.</param>
+        /// <returns>The <see cref="HttpResponseMessage"/> returned by the test server. The caller owns the response and should dispose it.</returns>
+        /// <example>
+        /// <code>
+        /// var response = await ExecuteTestRequest(HttpMethod.Get, routePrefix: "library", resource: "Books?$top=5");
+        /// response.StatusCode.Should().Be(HttpStatusCode.OK);
+        /// var json = await response.Content.ReadAsStringAsync();
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// The request is built by <see cref="HttpClientHelpers.GetTestableHttpRequestMessage"/> and sent through
+        /// <see cref="AspNetCoreBreakdanceTestBase.GetHttpClient(string)"/>, so the <see cref="HttpClient.BaseAddress"/> already
+        /// includes <paramref name="routePrefix"/>. Non-success status codes are returned, not thrown.
+        /// </remarks>
         public async Task<HttpResponseMessage> ExecuteTestRequest(HttpMethod httpMethod, string host = WebApiConstants.Localhost,
             string routePrefix = WebApiConstants.RoutePrefix, string resource = null, string acceptHeader = ODataConstants.MinimalAcceptHeader,
             object payload = null, JsonSerializerOptions jsonSerializerOptions = null)
@@ -187,7 +310,7 @@ namespace Microsoft.Restier.Breakdance
             {
                 routeName = Restier_IEndpointRouteBuilderExtensions.GetCleanRouteName(routeName);
             }
-            
+
             context.ODataFeature().RouteName = routeName;
             context.Request.CreateRequestContainer(routeName);
 
