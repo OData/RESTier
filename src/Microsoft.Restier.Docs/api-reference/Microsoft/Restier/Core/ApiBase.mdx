@@ -1,9 +1,8 @@
 ---
 title: ApiBase
-description: "Represents a base class for an API."
-icon: shapes
-tag: "ABSTRACT"
-keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core', 'class', 'System.Object', 'System.IDisposable']
+description: "Extension methods for ApiBase from Microsoft.Restier.Core"
+icon: file-brackets-curly
+keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core', 'error']
 ---
 
 ## Definition
@@ -11,8 +10,6 @@ keywords: ['ApiBase', 'Microsoft.Restier.Core.ApiBase', 'Microsoft.Restier.Core'
 **Assembly:** Microsoft.Restier.Core.dll
 
 **Namespace:** Microsoft.Restier.Core
-
-**Inheritance:** System.Object
 
 ## Syntax
 
@@ -22,19 +19,11 @@ Microsoft.Restier.Core.ApiBase
 
 ## Summary
 
-Represents a base class for an API.
+This type is defined in Microsoft.Restier.Core.
 
 ## Remarks
 
-
-
-
-            An API configuration is intended to be long-lived, and can be statically cached according to an API type specified when the
-            configuration is created. Additionally, the API model produced as a result of a particular configuration is cached under the same
-            API type to avoid re-computing it on each invocation.
-            
-
-
+See [Microsoft documentation](https://learn.microsoft.com/dotnet/api/microsoft.restier.core.apibase) for more information about the rest of the API.
 
 ## Constructors
 
@@ -52,7 +41,7 @@ public Object()
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ServiceProvider
 
-Gets the [IServiceProvider](https://learn.microsoft.com/dotnet/api/system.iserviceprovider) which contains all services.
+Gets the [IServiceProvider](/api-reference/System/IServiceProvider) which contains all services.
 
 #### Syntax
 
@@ -116,6 +105,31 @@ public static bool Equals(object objA, object objB)
 #### Returns
 
 Type: `bool`
+
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GenerateVisibilityMatrix <Badge color="green">Extension</Badge>
+
+<Note>Extension method from `Microsoft.Restier.Breakdance.ApiBaseExtensions`</Note>
+
+An extension method that generates a Markdown table of all of the possible Restier methods for the given API in the first column, and a boolean
+indicating whether or not the method was found in the second column.
+
+#### Syntax
+
+```csharp
+public static string GenerateVisibilityMatrix(Microsoft.Restier.Core.ApiBase api, bool markdown = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to process. |
+| `markdown` | `bool` | - |
+
+#### Returns
+
+Type: `string`
+A string containing the Markdown table of results.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetApiService <Badge color="green">Extension</Badge>
 
@@ -182,7 +196,7 @@ Type: `int`
 
 <Note>Extension method from `Microsoft.Restier.Core.ApiBaseExtensions`</Note>
 
-Retrieves the [IEdmModel](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmmodel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
+Retrieves the [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
 
 #### Syntax
 
@@ -199,7 +213,7 @@ public static Microsoft.OData.Edm.IEdmModel GetModel(Microsoft.Restier.Core.ApiB
 #### Returns
 
 Type: `Microsoft.OData.Edm.IEdmModel`
-The [IEdmModel](https://learn.microsoft.com/dotnet/api/microsoft.odata.edm.iedmmodel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
+The [IEdmModel](/api-reference/Microsoft/OData/Edm/IEdmModel) used by this [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetProperty <Badge color="green">Extension</Badge>
 
@@ -272,7 +286,7 @@ public static System.Linq.IQueryable GetQueryableSource(Microsoft.Restier.Core.A
 | `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
 | `name` | `string` | The name of an entity set, singleton or composable function import. |
 | `arguments` | `object[]` | If *name* is a composable function import,
-            the arguments to be passed to the composable function import. |
+the arguments to be passed to the composable function import. |
 
 #### Returns
 
@@ -281,22 +295,12 @@ A queryable source.
 
 #### Remarks
 
+If the name identifies a singleton or a composable function import
+whose result is a singleton, the resulting queryable source will
+be configured such that it represents exactly zero or one result.
 
-
-
-            If the name identifies a singleton or a composable function import
-            whose result is a singleton, the resulting queryable source will
-            be configured such that it represents exactly zero or one result.
-            
-
-
-
-
-            Note that the resulting queryable source cannot be synchronously
-            enumerated as the API engine only operates asynchronously.
-            
-
-
+Note that the resulting queryable source cannot be synchronously
+enumerated as the API engine only operates asynchronously.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetQueryableSource <Badge color="green">Extension</Badge>
 
@@ -326,22 +330,12 @@ A queryable source.
 
 #### Remarks
 
+If the name identifies a composable function whose result is a
+singleton, the resulting queryable source will be configured such
+that it represents exactly zero or one result.
 
-
-
-            If the name identifies a composable function whose result is a
-            singleton, the resulting queryable source will be configured such
-            that it represents exactly zero or one result.
-            
-
-
-
-
-            Note that the resulting queryable source cannot be synchronously
-            enumerated, as the API engine only operates asynchronously.
-            
-
-
+Note that the resulting queryable source cannot be synchronously
+enumerated, as the API engine only operates asynchronously.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetQueryableSource <Badge color="green">Extension</Badge>
 
@@ -362,7 +356,7 @@ public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(Micr
 | `api` | `Microsoft.Restier.Core.ApiBase` | An API. |
 | `name` | `string` | The name of an entity set, singleton or composable function import. |
 | `arguments` | `object[]` | If *name* is a composable function import,
-            the arguments to be passed to the composable function import. |
+the arguments to be passed to the composable function import. |
 
 #### Returns
 
@@ -375,22 +369,12 @@ A queryable source.
 
 #### Remarks
 
+If the name identifies a singleton or a composable function import
+whose result is a singleton, the resulting queryable source will
+be configured such that it represents exactly zero or one result.
 
-
-
-            If the name identifies a singleton or a composable function import
-            whose result is a singleton, the resulting queryable source will
-            be configured such that it represents exactly zero or one result.
-            
-
-
-
-
-            Note that the resulting queryable source cannot be synchronously
-            enumerated, as the API engine only operates asynchronously.
-            
-
-
+Note that the resulting queryable source cannot be synchronously
+enumerated, as the API engine only operates asynchronously.
 
 ### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetQueryableSource <Badge color="green">Extension</Badge>
 
@@ -424,22 +408,12 @@ A queryable source.
 
 #### Remarks
 
+If the name identifies a composable function whose result is a
+singleton, the resulting queryable source will be configured such
+that it represents exactly zero or one result.
 
-
-
-            If the name identifies a composable function whose result is a
-            singleton, the resulting queryable source will be configured such
-            that it represents exactly zero or one result.
-            
-
-
-
-
-            Note that the resulting queryable source cannot be synchronously
-            enumerated, as the API engine only operates asynchronously.
-            
-
-
+Note that the resulting queryable source cannot be synchronously
+enumerated, as the API engine only operates asynchronously.
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetType <Badge color="gray">Inherited</Badge>
 
@@ -517,7 +491,7 @@ public static System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResu
 
 Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult>`
 A task that represents the asynchronous
-            operation whose result is a query result.
+operation whose result is a query result.
 
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ReferenceEquals <Badge color="gray">Inherited</Badge>
 
@@ -615,7 +589,25 @@ public virtual string ToString()
 
 Type: `string?`
 
-## Related APIs
+### <Icon icon="puzzle-piece" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> WriteCurrentVisibilityMatrix <Badge color="green">Extension</Badge>
 
-- System.IDisposable
+<Note>Extension method from `Microsoft.Restier.Breakdance.ApiBaseExtensions`</Note>
+
+An extension method that generates the Visibility Matrix for the current Api and writes it to a text file.
+
+#### Syntax
+
+```csharp
+public static void WriteCurrentVisibilityMatrix(Microsoft.Restier.Core.ApiBase api, string sourceDirectory = "", string suffix = "ApiSurface", bool markdown = false)
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `api` | `Microsoft.Restier.Core.ApiBase` | The [ApiBase](/api-reference/Microsoft/Restier/Core/ApiBase) instance to build the Visibility Matrix for. |
+| `sourceDirectory` | `string` | A string containing the relative or absolute path to use as the root. The default is "". If you want to be able to have it as part of the project,
+so you can check it into source control, use "..//..//". |
+| `suffix` | `string` | A string to append to the Api name when writing the text file. |
+| `markdown` | `bool` | - |
 

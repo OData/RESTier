@@ -108,7 +108,7 @@ public Object()
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
 Gets the name of the actual resource type in question.
-            In type inheritance case, this is different from expectedResourceType
+In type inheritance case, this is different from expectedResourceType
 
 #### Syntax
 
@@ -187,7 +187,7 @@ Type: `bool`
 #### Remarks
 
 If true, all properties will be updated, even if the property isn't in LocalValues.
-            If false, only properties identified in LocalValues will be updated on the resource.
+If false, only properties identified in LocalValues will be updated on the resource.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> LocalValues <Badge color="gray">Inherited</Badge>
 
@@ -246,7 +246,7 @@ Type: `T`
 #### Remarks
 
 Initially this will be `null`, however after the change
-            set has been prepared it will represent the pending resource.
+set has been prepared it will represent the pending resource.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Resource <Badge color="gray">Inherited</Badge>
 
@@ -267,7 +267,7 @@ Type: `object`
 #### Remarks
 
 Initially this will be `null`, however after the change
-            set has been prepared it will represent the pending resource.
+set has been prepared it will represent the pending resource.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ResourceKey <Badge color="gray">Inherited</Badge>
 
@@ -320,7 +320,7 @@ Type: `System.Collections.Generic.IReadOnlyDictionary<string, object>`
 #### Remarks
 
 For new entities, this property is `null`. For updated
-            entities, it is `null` until the change set is prepared.
+entities, it is `null` until the change set is prepared.
 
 ### <Icon icon="tag" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> Type <Badge color="gray">Inherited</Badge>
 
@@ -345,7 +345,7 @@ Type: `Microsoft.Restier.Core.Submit.ChangeSetItemType`
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
 Applies the current DataModificationItem's KeyValues and OriginalValues to the
-            specified query and returns the new query.
+specified query and returns the new query.
 
 #### Syntax
 
@@ -504,7 +504,7 @@ Type: `string?`
 <Note>Inherited from `Microsoft.Restier.Core.Submit.DataModificationItem`</Note>
 
 Validate the e-tag via applies the current DataModificationItem's OriginalValues to the
-            specified query and returns result.
+specified query and returns result.
 
 #### Syntax
 

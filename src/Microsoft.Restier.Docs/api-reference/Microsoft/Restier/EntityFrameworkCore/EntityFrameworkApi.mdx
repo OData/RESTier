@@ -25,16 +25,10 @@ Represents an API over a DbContext.
 
 ## Remarks
 
-
-
-
-            This class tries to instantiate *T* with the best matched constructor
-            base on services configured. Descendants could override by registering *T*
-            as a scoped service. But in this case, proxy creation must be disabled in the constructors of
-            *T* under Entity Framework 6.
-            
-
-
+This class tries to instantiate *T* with the best matched constructor
+base on services configured. Descendants could override by registering *T*
+as a scoped service. But in this case, proxy creation must be disabled in the constructors of
+*T* under Entity Framework 6.
 
 ## Type Parameters
 
@@ -56,7 +50,7 @@ public EntityFrameworkApi(System.IServiceProvider serviceProvider)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `serviceProvider` | `System.IServiceProvider` | An [IServiceProvider](https://learn.microsoft.com/dotnet/api/system.iserviceprovider) containing all services of this [EntityFrameworkApi`1](https://learn.microsoft.com/dotnet/api/microsoft.restier.entityframeworkcore.entityframeworkapi-1). |
+| `serviceProvider` | `System.IServiceProvider` | An [IServiceProvider](/api-reference/System/IServiceProvider) containing all services of this [EntityFrameworkApi`1](https://learn.microsoft.com/dotnet/api/microsoft.restier.entityframeworkcore.entityframeworkapi-1). |
 
 ## Properties
 

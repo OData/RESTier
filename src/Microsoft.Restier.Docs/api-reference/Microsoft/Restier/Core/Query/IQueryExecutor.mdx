@@ -24,14 +24,14 @@ Represents a service that executes a query.
 ## Remarks
 
 Data provider implemented IQueryExecutor should only handle queries against the specific
-            provider, and delegates all other queries to inner IQueryExecutor.
+provider, and delegates all other queries to inner IQueryExecutor.
 
 ## Methods
 
 ### <Icon icon="function" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> ExecuteExpressionAsync <Badge color="orange">Abstract</Badge>
 
 Asynchronously executes a singleton
-            query and produces a query result.
+query and produces a query result.
 
 #### Syntax
 
@@ -52,7 +52,7 @@ System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult> ExecuteExp
 
 Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult>`
 A task that represents the asynchronous
-            operation whose result is a query result.
+operation whose result is a query result.
 
 #### Type Parameters
 
@@ -80,7 +80,7 @@ System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult> ExecuteQue
 
 Type: `System.Threading.Tasks.Task<Microsoft.Restier.Core.Query.QueryResult>`
 A task that represents the asynchronous
-            operation whose result is a query result.
+operation whose result is a query result.
 
 #### Type Parameters
 

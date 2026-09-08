@@ -38,14 +38,14 @@ public RestierController()
 #### Remarks
 
 Please note that this controller needs a few dependencies
-            to work correctly. The second constructor with arguments specifies those
-            dependencies. When using the constructor without arguments, a DI container
-            is requested from the HttpRequestMessage and the dependencies are
-            resolved at run time. 
-            It is better to use a DI framework and register RestierController yourself
-            to allow the DI container to explicitly resolve dependencies at the start
-            of your application.
-            It is possible that the default constructor will be removed in the future.
+to work correctly. The second constructor with arguments specifies those
+dependencies. When using the constructor without arguments, a DI container
+is requested from the HttpRequestMessage and the dependencies are
+resolved at run time. 
+It is better to use a DI framework and register RestierController yourself
+to allow the DI container to explicitly resolve dependencies at the start
+of your application.
+It is possible that the default constructor will be removed in the future.
 
 ### <Icon icon="hammer" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> .ctor
 

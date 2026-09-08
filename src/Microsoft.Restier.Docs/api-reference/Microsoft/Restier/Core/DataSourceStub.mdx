@@ -27,9 +27,9 @@ Represents method stubs that identify API data source.
 ## Remarks
 
 The methods in this class are stubs that identify API data source
-            inside a query expression. This is a generic way to reference a
-            data source in API. Later in the query pipeline the sourcer from
-            the data provider will replace the stub with the actual data source.
+inside a query expression. This is a generic way to reference a
+data source in API. Later in the query pipeline the sourcer from
+the data provider will replace the stub with the actual data source.
 
 ## Methods
 
@@ -54,7 +54,7 @@ public static TResult GetPropertyValue<TResult>(object source, string propertyNa
 
 Type: `TResult`
 A representation of the value of the
-            extended property of the object.
+extended property of the object.
 
 #### Type Parameters
 
@@ -63,7 +63,7 @@ A representation of the value of the
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetQueryableSource
 
 Identifies an entity set, singleton or queryable data
-            resulting from a call to a composable function import.
+resulting from a call to a composable function import.
 
 #### Syntax
 
@@ -77,13 +77,13 @@ public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(stri
 |------|------|-------------|
 | `name` | `string` | The name of an entity set, singleton or composable function import. |
 | `arguments` | `object[]` | If *name* is a composable function import,
-            the arguments to be passed to the composable function import. |
+the arguments to be passed to the composable function import. |
 
 #### Returns
 
 Type: `System.Linq.IQueryable<TElement>`
 A representation of the entity set, singleton or queryable
-            data resulting from a call to the composable function import.
+data resulting from a call to the composable function import.
 
 #### Type Parameters
 
@@ -92,7 +92,7 @@ A representation of the entity set, singleton or queryable
 ### <Icon icon="thumbtack" iconType="duotone" color="#419AC5" size={24} className="mr-2" /> GetQueryableSource
 
 Identifies queryable data resulting
-            from a call to a composable function.
+from a call to a composable function.
 
 #### Syntax
 
@@ -112,7 +112,7 @@ public static System.Linq.IQueryable<TElement> GetQueryableSource<TElement>(stri
 
 Type: `System.Linq.IQueryable<TElement>`
 A representation of the queryable data resulting
-            from a call to the composable function.
+from a call to the composable function.
 
 #### Type Parameters
 

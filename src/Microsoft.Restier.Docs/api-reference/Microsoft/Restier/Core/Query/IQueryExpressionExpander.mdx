@@ -23,25 +23,15 @@ Represents a service that expands a query expression.
 
 ## Remarks
 
+Query expression expansion converts an expression that represents
+normalized API data into an expression using more primitive nodes.
 
-
-
-            Query expression expansion converts an expression that represents
-            normalized API data into an expression using more primitive nodes.
-            
-
-
-
-
-            Expansion is the second step that occurs when processing a query
-            expression after its children have been visited, so it occurs during
-            upward traversal of the query expression and after inspection. Since
-            expansion fundamentally alters the query expression, the resulting
-            expression is recursively processed to ensure that all appropriate
-            normalization, inspection, expansion, filtering and sourcing occurs.
-            
-
-
+Expansion is the second step that occurs when processing a query
+expression after its children have been visited, so it occurs during
+upward traversal of the query expression and after inspection. Since
+expansion fundamentally alters the query expression, the resulting
+expression is recursively processed to ensure that all appropriate
+normalization, inspection, expansion, filtering and sourcing occurs.
 
 ## Methods
 
@@ -65,5 +55,5 @@ System.Linq.Expressions.Expression Expand(Microsoft.Restier.Core.Query.QueryExpr
 
 Type: `System.Linq.Expressions.Expression`
 An expanded expression of the same type as the visited node, or
-            if expansion did not apply, the visited node or `null`.
+if expansion did not apply, the visited node or `null`.
 

@@ -28,7 +28,8 @@
         <!--<PackageReference Update="MSTest" Version="3.*" NoWarn="NU1608" />
 		<PackageReference Include="MSTest.TestFramework" Version="4.*" />-->
         <PackageReference Include="Simple.OData.V4.Client" Version="6.*-*" />
-		<PackageReference Include="System.Text.Json" Version="9.*" />
+		<!-- MSTest 4.4+ (via Microsoft.Testing.Extensions.CodeCoverage) requires System.Text.Json 10.x. -->
+		<PackageReference Include="System.Text.Json" Version="10.*" />
 	</ItemGroup>
 
 	<ItemGroup>
