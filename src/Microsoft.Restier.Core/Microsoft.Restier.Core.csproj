@@ -64,6 +64,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Microsoft.OData.Mcp.AspNetCore, $(ODataMcpStrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.AspNet, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.AspNetCore, $(StrongNamePublicKey)" />
 		<InternalsVisibleTo Include="Microsoft.Restier.AspNetCore.Swagger, $(StrongNamePublicKey)" />

@@ -20,6 +20,7 @@
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)restier.snk</AssemblyOriginatorKeyFile>
 		<StrongNamePublicKey>PublicKey=0024000004800000940000000602000000240000525341310004000001000100f1fcc0061e7ed7476808f86fdecd6a9585915f329fc6312d08331c971da86230330e42ed8ffbd528c523fa023d92c3db1123b5d044b3aad9e04fd3877ffca8e4ba836a740ec3074f0fcbef770ff14d2fa1b5a8403ab16f398ac14998bd011c35505b6bc555326037a7ab7dcca118000a19a5475377358e9dea38df76452b01c9</StrongNamePublicKey>
+		<ODataMcpStrongNamePublicKey>PublicKey=0024000004800000140100000602000000240000525341310008000001000100591e86cb4aab73b707e214cf7b4984a64e1e0a3a1767097d7186bcb20cdd4b7d059311c1e06f8892c799bff7c46787967850a9c1ccaf4aa8ea6ebb51ec904b937d49587ab68d67f236dc462d30af4063c03a6b6e21c4bdf796adddef10af7e411d65b9ece98dc3ce8b612e5f1f67b152714a418081973831e6cfbcdfa60ccefbd3b583bfe23342de47b00ca4d5f42df5a33863f30bd708024196cceaff158ef6655379c67c5ce85ea9c8a882a17c875eded465a9c06a65c77345cd67d801029d13b4af158d031f993645cf72aeb288713478ccd9ca7dba9f13307cdc8b33df4760f86b486f8689017a04a5288f0683f91470843c8ccaa4e7acbc76b0c64870ea</ODataMcpStrongNamePublicKey>
 
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
@@ -111,7 +112,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition=" $(IsTestProject) != 'true' AND $(IsSampleProject) != 'true'">
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.*" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.*" PrivateAssets="All" />
 		<InternalsVisibleTo Include="$(AssemblyName.Replace('Microsoft.Restier.', 'Microsoft.Restier.Tests.')), $(StrongNamePublicKey)" />
 	</ItemGroup>
 
